@@ -70,9 +70,9 @@ const ArgumentRules& Func_readRelativeNodeAgeWeightedConstraints::getArgumentRul
 const std::string& Func_readRelativeNodeAgeWeightedConstraints::getClassType(void)
 {
     
-    static std::string revType = "Func_readRelativeNodeAgeWeightedConstraints";
+    static std::string rev_type = "Func_readRelativeNodeAgeWeightedConstraints";
     
-    return revType;
+    return rev_type;
 }
 
 

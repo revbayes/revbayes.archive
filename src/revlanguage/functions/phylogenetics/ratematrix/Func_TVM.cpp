@@ -74,9 +74,9 @@ const ArgumentRules& Func_TVM::getArgumentRules( void ) const
 const std::string& Func_TVM::getClassType(void)
 {
     
-    static std::string revType = "Func_TVM";
+    static std::string rev_type = "Func_TVM";
     
-    return revType;
+    return rev_type;
 }
 
 

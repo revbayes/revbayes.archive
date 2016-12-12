@@ -96,9 +96,9 @@ const ArgumentRules& Func_consensusTree::getArgumentRules( void ) const
 const std::string& Func_consensusTree::getClassType(void)
 {
     
-    static std::string revType = "Func_consensusTree";
+    static std::string rev_type = "Func_consensusTree";
     
-    return revType;
+    return rev_type;
 }
 
 

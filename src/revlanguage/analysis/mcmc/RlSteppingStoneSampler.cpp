@@ -71,9 +71,9 @@ RevPtr<RevVariable> SteppingStoneSampler::executeMethod(std::string const &name,
 const std::string& SteppingStoneSampler::getClassType(void)
 {
     
-    static std::string revType = "SteppingStoneSampler";
+    static std::string rev_type = "SteppingStoneSampler";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */

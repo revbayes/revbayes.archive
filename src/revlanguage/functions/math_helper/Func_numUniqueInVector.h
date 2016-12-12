@@ -110,9 +110,9 @@ template <typename valType>
 const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassType(void)
 {
     
-    static std::string revType = "Func_numUniqueInVector";
+    static std::string rev_type = "Func_numUniqueInVector";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

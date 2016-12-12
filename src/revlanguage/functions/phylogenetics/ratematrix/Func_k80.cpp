@@ -63,9 +63,9 @@ const ArgumentRules& Func_k80::getArgumentRules( void ) const
 const std::string& Func_k80::getClassType(void)
 {
     
-    static std::string revType = "Func_k80";
+    static std::string rev_type = "Func_k80";
     
-    return revType;
+    return rev_type;
 }
 
 

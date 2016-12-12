@@ -70,9 +70,9 @@ void Move_DiscreteEventCategoryRandomWalk::constructInternalObject( void )
 const std::string& Move_DiscreteEventCategoryRandomWalk::getClassType(void)
 {
     
-    static std::string revType = "Move_DiscreteEventCategoryRandomWalk";
+    static std::string rev_type = "Move_DiscreteEventCategoryRandomWalk";
     
-    return revType;
+    return rev_type;
 }
 
 

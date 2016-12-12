@@ -144,9 +144,9 @@ const ArgumentRules& Func_ls::getArgumentRules( void ) const
 const std::string& Func_ls::getClassType(void)
 {
     
-    static std::string revType = "Func_ls";
+    static std::string rev_type = "Func_ls";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

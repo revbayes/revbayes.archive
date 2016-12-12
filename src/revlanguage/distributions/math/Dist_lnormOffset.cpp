@@ -36,9 +36,9 @@ RevBayesCore::LognormalWithOffsetDistribution* Dist_lnormOffset::createDistribut
 /* Get Rev type of object */
 const std::string& Dist_lnormOffset::getClassType(void) {
     
-    static std::string revType = "Dist_lnormOffset";
+    static std::string rev_type = "Dist_lnormOffset";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

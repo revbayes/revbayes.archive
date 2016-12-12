@@ -110,9 +110,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__le<leftValType,rightValType
 template <typename leftValType, typename rightValType>
 const std::string& RevLanguage::Func__le<leftValType,rightValType>::getClassType(void) { 
     
-    static std::string revType = "Func__le<" + leftValType::getClassType() + "," + rightValType::getClassType() + ">";
+    static std::string rev_type = "Func__le<" + leftValType::getClassType() + "," + rightValType::getClassType() + ">";
     
-	return revType; 
+	return rev_type; 
 }
 
 

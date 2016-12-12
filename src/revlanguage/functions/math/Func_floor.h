@@ -105,9 +105,9 @@ template <typename valType, typename retType>
 const std::string& RevLanguage::Func_floor<valType, retType>::getClassType(void)
 {
 
-    static std::string revType = "Func_floor<" + valType::getClassType() + "," + retType::getClassType() + ">";
+    static std::string rev_type = "Func_floor<" + valType::getClassType() + "," + retType::getClassType() + ">";
     
-	return revType; 
+	return rev_type; 
 }
 
 

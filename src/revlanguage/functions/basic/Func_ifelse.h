@@ -119,9 +119,9 @@ template <typename valType>
 const std::string& RevLanguage::Func_ifelse<valType>::getClassType(void)
 {
     
-    static std::string revType = "Func_ifelse<" + valType::getClassType() + ">";
+    static std::string rev_type = "Func_ifelse<" + valType::getClassType() + ">";
     
-	return revType;
+	return rev_type;
 }
 
 

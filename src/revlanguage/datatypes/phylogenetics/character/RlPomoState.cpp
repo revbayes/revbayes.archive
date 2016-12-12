@@ -51,9 +51,9 @@ PomoState* PomoState::clone(void) const {
 /** Get Rev type of object */
 const std::string& PomoState::getClassType(void) {
     
-    static std::string revType = "Pomo";
+    static std::string rev_type = "Pomo";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */

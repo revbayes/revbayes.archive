@@ -53,9 +53,9 @@ void Move_WeightedNodeTimeSlide::constructInternalObject( void )
 /** Get Rev type of object */
 const std::string& Move_WeightedNodeTimeSlide::getClassType(void) { 
     
-    static std::string revType = "Move_WeightedNodeTimeSlide";
+    static std::string rev_type = "Move_WeightedNodeTimeSlide";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

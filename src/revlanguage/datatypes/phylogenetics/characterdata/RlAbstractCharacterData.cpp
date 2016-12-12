@@ -268,9 +268,9 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
 const std::string& AbstractCharacterData::getClassType(void)
 {
     
-    static std::string revType = "AbstractCharacterData";
+    static std::string rev_type = "AbstractCharacterData";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

@@ -75,9 +75,9 @@ const ArgumentRules& Func_readPomoCountFile::getArgumentRules( void ) const
 const std::string& Func_readPomoCountFile::getClassType(void)
 {
 
-	static std::string revType = "Func_readPomoCountFile";
+	static std::string rev_type = "Func_readPomoCountFile";
 
-	return revType;
+	return rev_type;
 }
 
 

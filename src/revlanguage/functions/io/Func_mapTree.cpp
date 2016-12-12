@@ -95,9 +95,9 @@ const ArgumentRules& Func_mapTree::getArgumentRules( void ) const
 const std::string& Func_mapTree::getClassType(void)
 {
     
-    static std::string revType = "Func_mapTree";
+    static std::string rev_type = "Func_mapTree";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

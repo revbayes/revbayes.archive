@@ -64,9 +64,9 @@ const ArgumentRules& Func_TaxonReader::getArgumentRules( void ) const
 const std::string& Func_TaxonReader::getClassType(void)
 {
     
-    static std::string revType = "Func_TaxonReader";
+    static std::string rev_type = "Func_TaxonReader";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */

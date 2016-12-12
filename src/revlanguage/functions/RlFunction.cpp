@@ -397,9 +397,9 @@ std::vector<Argument>& Function::getArguments(void)
 const std::string& Function::getClassType(void)
 {
     
-    static std::string revType = "Function";
+    static std::string rev_type = "Function";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

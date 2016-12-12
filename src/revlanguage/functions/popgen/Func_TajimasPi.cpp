@@ -63,9 +63,9 @@ const ArgumentRules& Func_TajimasPi::getArgumentRules( void ) const
 const std::string& Func_TajimasPi::getClassType(void)
 {
     
-    static std::string revType = "Func_TajimasPi";
+    static std::string rev_type = "Func_TajimasPi";
     
-    return revType;
+    return rev_type;
 }
 
 

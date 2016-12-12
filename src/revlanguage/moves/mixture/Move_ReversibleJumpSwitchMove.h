@@ -102,10 +102,10 @@ template <class rlValueType>
 const std::string& RevLanguage::Move_ReversibleJumpSwitch<rlValueType>::getClassType(void)
 {
     
-    //    static std::string revType = "Move_ReversibleJumpSwitch<" + rlValueType::getClassType() + ">";
-    static std::string revType = "Move_ReversibleJumpSwitch__" + rlValueType::getClassType();
+    //    static std::string rev_type = "Move_ReversibleJumpSwitch<" + rlValueType::getClassType() + ">";
+    static std::string rev_type = "Move_ReversibleJumpSwitch__" + rlValueType::getClassType();
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

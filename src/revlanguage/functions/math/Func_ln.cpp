@@ -66,9 +66,9 @@ const ArgumentRules& Func_ln::getArgumentRules( void ) const
 const std::string& Func_ln::getClassType(void)
 {
     
-    static std::string revType = "Func_ln";
+    static std::string rev_type = "Func_ln";
     
-	return revType; 
+	return rev_type; 
 }
 
 

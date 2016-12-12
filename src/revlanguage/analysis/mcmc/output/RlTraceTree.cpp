@@ -4,7 +4,9 @@
 #include "ModelVector.h"
 #include "Natural.h"
 #include "Probability.h"
+#include "RlBranchLengthTree.h"
 #include "RlClade.h"
+#include "RlTimeTree.h"
 #include "RlTraceTree.h"
 #include "RlTree.h"
 #include "RlUtils.h"
@@ -109,7 +111,16 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         
         const RevBayesCore::Tree &current_tree = this->value->getTreeTrace().objectAt( i );
         
-        return new RevVariable( new Tree( current_tree ) );
+        Tree *rl_tree = NULL;
+        if ( this->value->getTreeTrace().isClock() == true )
+        {
+            rl_tree = new TimeTree( current_tree );
+        }
+        else
+        {
+            rl_tree = new BranchLengthTree( current_tree );
+        }
+        return new RevVariable( rl_tree );
     }
     else if ( name == "getTopologyFrequency" )
     {
@@ -146,10 +157,10 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
 
 const std::string& TraceTree::getClassType(void)
 {
+
+    static std::string rev_type = "TraceTree";
     
-    static std::string revType = "TreeTrace";
-    
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

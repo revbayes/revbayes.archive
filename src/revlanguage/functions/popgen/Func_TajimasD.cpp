@@ -61,9 +61,9 @@ const ArgumentRules& Func_TajimasD::getArgumentRules( void ) const
 const std::string& Func_TajimasD::getClassType(void)
 {
     
-    static std::string revType = "Func_TajimasD";
+    static std::string rev_type = "Func_TajimasD";
     
-    return revType;
+    return rev_type;
 }
 
 

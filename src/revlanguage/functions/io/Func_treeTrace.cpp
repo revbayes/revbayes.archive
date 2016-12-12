@@ -94,9 +94,9 @@ const ArgumentRules& Func_treeTrace::getArgumentRules( void ) const
 const std::string& Func_treeTrace::getClassType(void)
 {
     
-    static std::string revType = "Func_treeTrace";
+    static std::string rev_type = "Func_treeTrace";
     
-    return revType;
+    return rev_type;
 }
 
 

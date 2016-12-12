@@ -76,9 +76,9 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
 const std::string& Dist_CharacterDependentBirthDeathProcess::getClassType(void)
 {
     
-    static std::string revType = "Dist_CharacterDependentBirthDeathProcess";
+    static std::string rev_type = "Dist_CharacterDependentBirthDeathProcess";
     
-    return revType;
+    return rev_type;
 }
 
 

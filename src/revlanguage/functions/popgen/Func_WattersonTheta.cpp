@@ -63,9 +63,9 @@ const ArgumentRules& Func_WattersonTheta::getArgumentRules( void ) const
 const std::string& Func_WattersonTheta::getClassType(void)
 {
     
-    static std::string revType = "Func_WattersonTheta";
+    static std::string rev_type = "Func_WattersonTheta";
     
-    return revType;
+    return rev_type;
 }
 
 

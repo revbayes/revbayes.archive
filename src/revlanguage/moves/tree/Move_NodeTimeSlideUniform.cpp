@@ -52,9 +52,9 @@ void Move_NodeTimeSlideUniform::constructInternalObject( void )
 const std::string& Move_NodeTimeSlideUniform::getClassType(void)
 {
     
-    static std::string revType = "Move_NodeTimeSlideUniform";
+    static std::string rev_type = "Move_NodeTimeSlideUniform";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

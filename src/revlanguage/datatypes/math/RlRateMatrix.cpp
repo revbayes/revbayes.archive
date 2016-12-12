@@ -59,9 +59,9 @@ RevPtr<RevVariable> RateMatrix::executeMethod(std::string const &name, const std
 /* Get Rev type of object */
 const std::string& RateMatrix::getClassType(void) {
     
-    static std::string revType = "RateMatrix";
+    static std::string rev_type = "RateMatrix";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

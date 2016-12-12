@@ -59,9 +59,9 @@ const ArgumentRules& Func_gamma::getArgumentRules( void ) const
 const std::string& Func_gamma::getClassType(void)
 {
     
-    static std::string revType = "Func_gamma";
+    static std::string rev_type = "Func_gamma";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

@@ -72,9 +72,9 @@ void Move_ElementScale::constructInternalObject( void )
 const std::string& Move_ElementScale::getClassType(void)
 {
     
-    static std::string revType = "Move_ElementScale";
+    static std::string rev_type = "Move_ElementScale";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

@@ -100,9 +100,9 @@ size_t RlRelativeNodeAgeConstraints::getNumberOfConstraints( void ) const
 /* Get Rev type of object */
 const std::string& RlRelativeNodeAgeConstraints::getClassType(void) {
     
-    static std::string revType = "RlRelativeNodeAgeConstraints";
+    static std::string rev_type = "RlRelativeNodeAgeConstraints";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

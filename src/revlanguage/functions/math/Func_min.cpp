@@ -68,9 +68,9 @@ const ArgumentRules& Func_min::getArgumentRules( void ) const
 const std::string& Func_min::getClassType(void)
 {
     
-    static std::string revType = "Func_min";
+    static std::string rev_type = "Func_min";
     
-	return revType;
+	return rev_type;
 }
 
 

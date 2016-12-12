@@ -92,10 +92,10 @@ RevPtr<RevLanguage::RevVariable> RevLanguage::PosteriorPredictiveSimulation::exe
 const std::string& RevLanguage::PosteriorPredictiveSimulation::getClassType(void)
 {
     
-    //    static std::string revType = "PosteriorPredictiveSimulation<" + treeType::getClassType() + ">";
-    static std::string revType = "PosteriorPredictiveSimulation";
+    //    static std::string rev_type = "PosteriorPredictiveSimulation<" + treeType::getClassType() + ">";
+    static std::string rev_type = "PosteriorPredictiveSimulation";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

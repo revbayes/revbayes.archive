@@ -74,9 +74,9 @@ const ArgumentRules& Func_TIM::getArgumentRules( void ) const
 const std::string& Func_TIM::getClassType(void)
 {
     
-    static std::string revType = "Func_TIM";
+    static std::string rev_type = "Func_TIM";
     
-    return revType;
+    return rev_type;
 }
 
 

@@ -109,9 +109,9 @@ template <class valType>
 const std::string& Move_DPPTableValueUpdate<valType>::getClassType(void)
 {
     
-    static std::string revType = "Move_DPPTableValueUpdate";
+    static std::string rev_type = "Move_DPPTableValueUpdate";
     
-    return revType;
+    return rev_type;
 }
 
 

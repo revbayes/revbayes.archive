@@ -52,9 +52,9 @@ void GelmanRubinStoppingRule::constructInternalObject( void )
 const std::string& GelmanRubinStoppingRule::getClassType(void)
 {
     
-    static std::string revType = "GelmanRubinStoppingRule";
+    static std::string rev_type = "GelmanRubinStoppingRule";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

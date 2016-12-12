@@ -97,9 +97,9 @@ const ArgumentRules& Func_convertToPhylowood::getArgumentRules( void ) const
 const std::string& Func_convertToPhylowood::getClassType(void)
 {
     
-    static std::string revType = "Func_convertToPhylowood";
+    static std::string rev_type = "Func_convertToPhylowood";
     
-    return revType;
+    return rev_type;
 }
 
 

@@ -74,9 +74,9 @@ void HillClimber::constructInternalObject( void )
 const std::string& HillClimber::getClassType(void)
 {
     
-    static std::string revType = "HillClimber";
+    static std::string rev_type = "HillClimber";
     
-    return revType;
+    return rev_type;
 }
 
 /**

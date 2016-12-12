@@ -336,8 +336,8 @@ const ArgumentRules& Func_readDiscreteCharacterData::getArgumentRules( void ) co
 const std::string& Func_readDiscreteCharacterData::getClassType(void)
 {
     
-    static std::string revType = "Func_readDiscreteCharacterData";
-	return revType;
+    static std::string rev_type = "Func_readDiscreteCharacterData";
+	return rev_type;
 }
 
 

@@ -59,9 +59,9 @@ void Move_NodeTimeScale::constructInternalObject( void )
 const std::string& Move_NodeTimeScale::getClassType(void)
 {
     
-    static std::string revType = "Move_NodeTimeScale";
+    static std::string rev_type = "Move_NodeTimeScale";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

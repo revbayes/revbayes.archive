@@ -251,9 +251,9 @@ RealPos* Natural::divide(const RevLanguage::RealPos &rhs) const
 const std::string& Natural::getClassType(void)
 {
     
-    static std::string revType = "Natural";
+    static std::string rev_type = "Natural";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

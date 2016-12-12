@@ -73,9 +73,9 @@ void Move_EventTimeSlide::constructInternalObject( void )
 const std::string& Move_EventTimeSlide::getClassType(void)
 {
     
-    static std::string revType = "Move_EventTimeSlide";
+    static std::string rev_type = "Move_EventTimeSlide";
     
-    return revType;
+    return rev_type;
 }
 
 

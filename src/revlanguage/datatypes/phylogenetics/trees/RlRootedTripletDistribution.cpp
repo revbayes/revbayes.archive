@@ -214,9 +214,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RootedTripletDistribution::execute
 /** Get Rev type of object */
 const std::string& RootedTripletDistribution::getClassType(void) {
     
-    static std::string revType = "RootedTripletDistribution";
+    static std::string rev_type = "RootedTripletDistribution";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */

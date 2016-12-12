@@ -77,9 +77,9 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void )
 const std::string& Mntr_ExtendedNewickFile::getClassType(void)
 {
     
-    static std::string revType = "Mntr_ExtendedNewickFile";
+    static std::string rev_type = "Mntr_ExtendedNewickFile";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

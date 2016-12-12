@@ -42,9 +42,9 @@ RevBayesCore::CategoricalDistribution* Dist_categorical::createDistribution( voi
 /* Get Rev type of class (static) */
 const std::string& Dist_categorical::getClassType( void )
 {
-    static std::string revType = "Dist_categorical";
+    static std::string rev_type = "Dist_categorical";
     
-    return revType;
+    return rev_type;
 }
 
 

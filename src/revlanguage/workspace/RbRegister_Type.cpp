@@ -155,6 +155,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
+        AddWorkspaceVectorType<Tree,3>::addTypeToWorkspace( *this, new Tree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
 		
         

@@ -60,9 +60,9 @@ void Mntr_Screen::constructInternalObject( void )
 const std::string& Mntr_Screen::getClassType(void)
 {
     
-    static std::string revType = "Mntr_Screen";
+    static std::string rev_type = "Mntr_Screen";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
