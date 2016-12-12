@@ -26,9 +26,10 @@ Clade::Clade( void ) :
 /**
  * Constructor with a single taxon.
  */
-Clade::Clade( const Taxon &t ) :
+Clade::Clade( const Taxon &t, const RbBitSet &b ) :
     age( 0.0 ),
-    num_missing( 0 ),
+    bitset( b ),
+    num_missing( b.size() > 1 ? b.size() - 1 : 0 ),
     taxa()
 {
     
@@ -42,9 +43,10 @@ Clade::Clade( const Taxon &t ) :
  *
  * \param[in]   n    The vector containing the taxon names.
  */
-Clade::Clade(const std::vector<Taxon> &n) :
+Clade::Clade(const std::vector<Taxon> &n, const RbBitSet &b) :
     age( 0.0 ),
-    num_missing( 0 ),
+    bitset( b ),
+    num_missing( b.size() > n.size() ? b.size() - n.size() : 0 ),
     taxa( n )
 {
     
@@ -56,7 +58,7 @@ Clade::Clade(const std::vector<Taxon> &n) :
 
 /**
  * Overloaded equals operator.
- * Only if we have the extact same taxon names then these two clades are equal.
+ * Only if we have the exact same taxon names then these two clades are equal.
  */
 bool Clade::operator==(const Clade &c) const 
 {
@@ -236,10 +238,18 @@ const RbBitSet& Clade::getBitRepresentation( void ) const
     return bitset;
 }
 
-void Clade::setBitRepresentation( RbBitSet b )
+
+/**
+ * Get the mrca taxon.
+ *
+ * \return       The mrca taxon
+ *
+ */
+const Taxon& Clade::getMrca(void) const
 {
-    bitset = b;
+    return mrca;
 }
+
 
 /**
  * Get number of missing taxa.
@@ -319,6 +329,34 @@ const std::string& Clade::getTaxonName(size_t i) const
 void Clade::setAge(double a)
 {
     age = a;
+}
+
+
+/**
+ * Set the bitset of the clade.
+ *
+ * \param[in]    bitset  The bitset representation of this clade.
+ *
+ */
+void Clade::setBitRepresentation( RbBitSet b )
+{
+    bitset = b;
+}
+
+
+/**
+ * Set the mrca taxon. Must be empty taxon or a taxon already contained in the clade.
+ *
+ * \param[in]    t      The taxon to be set as the mrca
+ *
+ */
+void Clade::setMrca(const Taxon& t)
+{
+    if( t != Taxon() && std::find(taxa.begin(), taxa.end(), t) == taxa.end())
+    {
+        throw(RbException("Could not find mrca taxon in clade"));
+    }
+    mrca = t;
 }
 
 

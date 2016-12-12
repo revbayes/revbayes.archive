@@ -16,57 +16,87 @@
 #include <string>
 
 namespace RevBayesCore {
+
+    /*
+     * This functor is used as a comparator to identify equivalence classes
+     * of unrooted splits, and rooted clades with or without sampled mrcas
+     */
+    struct CladeComparator
+    {
+        CladeComparator(bool r = true, const Clade& c = Clade() ) : clade(c), rooted(r) {};
+
+        bool operator()(const Clade& a, const Clade& b) const;
+        bool operator()(const Sample<Clade>& s) const;
+
+        Clade clade;
+        bool rooted;
+    };
     
-    class TreeSummary {
+    struct AnnotationReport
+    {
+        bool ages             = true;
+        bool ccp              = true;
+        bool conditional_ages = false;
+        bool input_tree_ages  = false;
+        bool map_parameters   = false;
+        bool mean             = true;
+        bool posterior        = true;
+        double hpd            = 0.95;
+    };
+
+    class TreeSummary : public Cloneable {
         
     public:
         
         TreeSummary(void);
         TreeSummary(const TraceTree &t);
         
+        TreeSummary*                                                            clone(void) const;
+
         Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site);
-        void                                                                    annotate(Tree &inputTree);
-        void                                                                    annotateTree(Tree &inputTree, bool c);
-        void                                                                    annotateHPDAges(Tree &inputTree, double hpd);
-        double                                                                  cladeProbability(const Clade &c) const;
+        void                                                                    annotateTree(Tree &inputTree, AnnotationReport report );
+        double                                                                  cladeProbability(const Clade &c);
         Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site);
-        Tree*                                                                   conTree(double cutoff);
-        std::string                                                             getSiteState( const std::string &site_sample, size_t site );
         int                                                                     getNumberSamples(void) const;
-        std::vector<Tree>                                                       getUniqueTrees(double ci=0.95) const;
-        int                                                                     getTopologyFrequency(const Tree &t) const;
+        std::vector<Tree>                                                       getUniqueTrees(double ci=0.95);
+        int                                                                     getTopologyFrequency(const Tree &t);
+        const TraceTree&                                                        getTreeTrace(void) const;
         bool                                                                    isTreeContainedInCredibleInterval(const Tree &t, double size);
-        Tree*                                                                   map(bool c);
+        Tree*                                                                   mapTree(void);
+        Tree*                                                                   mccTree(void);
+        Tree*                                                                   mrTree(double cutoff);
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95);
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05);
         void                                                                    setBurnin(int b);
-        void                                                                    summarizeClades(bool clock);
-		void                                                                    summarizeConditionalClades(bool clock);
-		void                                                                    summarizeTrees(void);
-        void                                                                    summarizeCladesForTree(const Tree &reference_tree, bool c);
 
     private:
-        void                                                                    annotateContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, bool np=true );
-        void                                                                    annotateDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, bool np=true );
-        
-		TopologyNode*															assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff);
-		Clade                                                                   fillClades(const TopologyNode &n, std::vector<Clade> &c, bool clock);
-		Clade                                                                   fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &cc, std::vector<Clade> &c, bool cl);
-        Sample<Clade>&                                                          findCladeSample(const Clade &n);
-		void                                                                    calculateMedianAges(TopologyNode* n, double parentAge, std::vector<double> *ages);
-		void																	resolveConsensusBush(TopologyNode* root, std::vector<TopologyNode*> nodes, std::vector<std::string> tipNames, std::vector<double> pp, double cutoff);
 
-		size_t                                                                  burnin;
+        void                                                                    enforceNonnegativeBranchLengths(TopologyNode& tree) const;
+        Clade                                                                   fillConditionalClades(const TopologyNode &n, std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> &cc);
+        const Sample<Clade>&                                                    findCladeSample(const Clade &n) const;
+        TopologyNode*                                                           findParentNode(TopologyNode&, const Clade &, std::vector<TopologyNode*>&) const;
+        std::string                                                             getSiteState( const std::string &site_sample, size_t site );
+        void                                                                    mapContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, bool np=true ) const;
+        void                                                                    mapDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, bool np=true ) const;
+        void                                                                    mapParameters(Tree &inputTree) const;
+        void                                                                    summarize(void);
+
+        size_t                                                                  burnin;
+        bool                                                                    clock;
+        bool                                                                    rooted;
+        bool                                                                    summarized;
         TraceTree                                                               trace;
         bool                                                                    use_tree_trace;
-        std::vector<Sample<std::string> >                                       treeSamples;
+
         std::vector<Sample<Clade> >                                             cladeSamples;
-		std::map<Clade, std::vector<double> >                                   cladeAges;
-        std::map<Clade, std::vector<double> >                                   cladeAgesOfBestTree;
-		std::map<Clade, std::map<Clade, std::vector<double> > >                 conditionalCladeFrequencies;
+        std::vector<Sample<std::string> >                                       treeSamples;
+
+        std::map<Clade, std::vector<double>, CladeComparator >                                    cladeAges;
+        std::map<Clade, std::map<Clade, std::vector<double>, CladeComparator >, CladeComparator > conditionalCladeAges;
+        std::map<std::string, std::map<Clade, std::vector<double>, CladeComparator > >            treeCladeAges;
     };
     
-    
+
 } //end namespace RevBayesCore
 
 

@@ -44,7 +44,7 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
     RevBayesCore::Tree* tree = static_cast<const Tree&>( this->args[arg_index++].getVariable()->getRevObject() ).getValue().clone();
     
     // get the  tree trace
-    const TraceTree& tt = static_cast<const TraceTree&>( args[arg_index++].getVariable()->getRevObject() );
+    TraceTree& tt = static_cast<TraceTree&>( args[arg_index++].getVariable()->getRevObject() );
     
     // get the filename
     const std::string& filename = static_cast<const RlString&>( args[arg_index++].getVariable()->getRevObject() ).getValue();
@@ -55,19 +55,12 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
 //    // get burnin
 //    int burnin = static_cast<const Integer &>(args[arg_index++].getVariable()->getRevObject()).getValue();
     
-    // make a new tree summary object
-    RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
+    // do not make a new tree summary object
+    // this way we don't need to resummarize every time we annotate a tree
+    // RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
     
-    // get the tree with x% HPD node ages
-    summary.setBurnin( 0 );
-
-    bool clock = tt.getValue().isClock();
-    summary.summarizeClades( clock );
-    summary.summarizeConditionalClades( clock );
-    summary.summarizeTrees();
-    summary.summarizeCladesForTree( *tree, clock );
-
-    summary.annotateTree( *tree, clock );
+    RevBayesCore::AnnotationReport report;
+    tt.getValue().annotateTree( *tree, report );
     
     // return the tree
     if ( filename != "" )
@@ -102,8 +95,8 @@ const ArgumentRules& Func_annotateTree::getArgumentRules( void ) const
     if (!rules_set)
     {
 //        argumentRules.push_back( new ArgumentRule( "hpd"   ,    Probability::getClassTypeSpec() , "The probability contained in the highest posterior density interval.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95) ) );
-        argumentRules.push_back( new ArgumentRule( "inputtree", Tree::getClassTypeSpec()        , "The input tree which will be annotated.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec()   , "The sample trace.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec()        , "The input tree which will be annotated.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec()   , "The sample trace.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()    , "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 //        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()     , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         rules_set = true;

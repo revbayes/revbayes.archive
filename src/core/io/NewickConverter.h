@@ -34,8 +34,7 @@ namespace RevBayesCore {
         NewickConverter();
         virtual                 ~NewickConverter();
     
-        Tree*                   convertFromNewick(const std::string &n);
-		Tree*                   convertFromNewickNoReIndexing(const std::string &n);
+        Tree*                   convertFromNewick(const std::string &n, bool reindex = true );
 //        AdmixtureTree*          getAdmixtureTreeFromNewick(const std::string &n);
 
     private:

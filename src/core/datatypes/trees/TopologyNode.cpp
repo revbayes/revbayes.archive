@@ -28,7 +28,8 @@ TopologyNode::TopologyNode(size_t indx) :
     root_node( true ),
     tip_node( true ),
     fossil( false ),
-    sampled_ancestor( false )
+    sampled_ancestor( false ),
+    constrained( false )
 {
     
 }
@@ -47,7 +48,8 @@ TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
     root_node( true ),
     tip_node( true ),
     fossil( false ),
-    sampled_ancestor( false )
+    sampled_ancestor( false ),
+    constrained( false )
 {
     
 }
@@ -66,7 +68,8 @@ TopologyNode::TopologyNode(const std::string& n, size_t indx) :
     root_node( true ),
     tip_node( true ),
     fossil( false ),
-    sampled_ancestor( false )
+    sampled_ancestor( false ),
+    constrained( false )
 {
     
 }
@@ -84,6 +87,7 @@ TopologyNode::TopologyNode(const TopologyNode &n) :
     tip_node( n.tip_node ),
     fossil( n.fossil ),
     sampled_ancestor( n.sampled_ancestor ),
+    constrained( n.constrained ),
     node_comments( n.node_comments ),
     branch_comments( n.branch_comments )
 {
@@ -778,13 +782,40 @@ std::vector<int> TopologyNode::getChildrenIndices() const
 
 Clade TopologyNode::getClade( void ) const
 {
-    
+    Taxon mrca = taxon;
+
+    // if this node or its parent/child is a sampled ancestor, its taxon is the mrca
+    for(size_t i = 0; i < children.size(); i++)
+    {
+        if( children[i]->isSampledAncestor() )
+        {
+            mrca = children[i]->getTaxon();
+            break;
+        }
+    }
+
+    Clade c;
+
+    // get the clade taxa
     std::vector<Taxon> taxa;
-    getTaxa( taxa );
-    
-    Clade c = Clade( taxa );
-    c.setAge( getAge() );
-    
+
+    if( tree != NULL )
+    {
+        // initialize the clade bitset
+        RbBitSet bitset( tree->getNumberOfTips() );
+        getTaxa(taxa, bitset);
+
+        c = Clade(taxa, bitset);
+    }
+    else
+    {
+        getTaxa(taxa);
+        c = Clade(taxa);
+    }
+
+    c.setAge( age );
+    c.setMrca( mrca );
+
     return c;
 }
 
@@ -940,6 +971,27 @@ void TopologyNode::getTaxa(RbBitSet &taxa) const
     }
     
     
+}
+
+
+void TopologyNode::getTaxa(std::vector<Taxon> &taxa, RbBitSet &bitset) const
+{
+
+    if ( isTip() )
+    {
+        taxa.push_back( taxon );
+        std::map<std::string, size_t> taxon_bitset_map = tree->getTaxonBitSetMap();
+        bitset.set( taxon_bitset_map[taxon.getName()] );
+    }
+    else
+    {
+        for ( std::vector<TopologyNode* >::const_iterator i=children.begin(); i!=children.end(); i++ )
+        {
+            (*i)->getTaxa( taxa, bitset );
+        }
+    }
+
+
 }
 
 

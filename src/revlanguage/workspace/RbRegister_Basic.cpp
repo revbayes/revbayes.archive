@@ -170,6 +170,7 @@
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
 #include "Func_mapTree.h"
+#include "Func_mccTree.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
 #include "Func_readCharacterDataDelimited.h"
@@ -442,6 +443,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
 		addFunction( new Func_consensusTree()                          );
         addFunction( new Func_convertToPhylowood()                     );
         addFunction( new Func_mapTree()                                );
+        addFunction( new Func_mccTree()                                );
         addFunction( new Func_module()                                 );
         addFunction( new Func_readAncestralStateTreeTrace()            );
 		addFunction( new Func_readAncestralStateTrace()	               );

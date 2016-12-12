@@ -49,7 +49,7 @@ RevBayesCore::EmpiricalTreeDistribution* Dist_empiricalTree::createDistribution(
     // get the parameters
     
     // tree trace
-    const RevBayesCore::TraceTree &tt = static_cast<const TraceTree &>( trace->getRevObject() ).getValue();
+    const RevBayesCore::TraceTree &tt = static_cast<const TraceTree &>( trace->getRevObject() ).getValue().getTreeTrace();
     // burnin
     int b = static_cast<const Natural &>( burnin->getRevObject() ).getDagNode()->getValue();
     
@@ -105,9 +105,8 @@ const MemberRules& Dist_empiricalTree::getParameterRules(void) const
     
     if ( !rules_set )
     {
-        
-        memberRules.push_back( new ArgumentRule( "burnin", Natural::getClassTypeSpec(), "The number of samples to discard.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "burnin", Integer::getClassTypeSpec(), "The number of samples to discard.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         
         rules_set = true;
     }
@@ -129,7 +128,7 @@ const TypeSpec& Dist_empiricalTree::getTypeSpec( void ) const
 void Dist_empiricalTree::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "TraceTree" ) {
+    if ( name == "trace" ) {
         trace = var;
     }
     else if ( name == "burnin" ) {

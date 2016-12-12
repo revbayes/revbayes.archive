@@ -113,9 +113,11 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t, bool
     for (size_t i = 0; i < nodes.size(); ++i) 
     {
         nodes[i]->setAge( ages[i] );
-        if ( nodes[i]->isTip() && ages[i] > 0.05)
+
+        if ( nodes[i]->isTip() && ages[i] > 0.0)
         {
             nodes[i]->setFossil( true );
+            nodes[i]->setSampledAncestor( nodes[i]->getBranchLength() == 0.0 || nodes[i]->isSampledAncestor() );
         }
         
     }
@@ -298,7 +300,12 @@ std::string RevBayesCore::TreeUtilities::uniqueNewickTopologyRecursive(const Top
     // check whether this is an internal node
     if ( n.isTip() ) 
     {
-        return n.getName();
+        std::string name = n.getName();
+        if( n.isSampledAncestor() )
+        {
+            name += "[&sampled_ancestor]";
+        }
+        return name;
     } 
     else 
     {

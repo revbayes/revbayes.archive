@@ -1,6 +1,6 @@
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "Func_mapTree.h"
+#include "Func_mccTree.h"
 #include "ModelVector.h"
 #include "NexusWriter.h"
 #include "RbException.h"
@@ -28,15 +28,15 @@ using namespace RevLanguage;
  *
  * \return A new copy of the process.
  */
-Func_mapTree* Func_mapTree::clone( void ) const
+Func_mccTree* Func_mccTree::clone( void ) const
 {
     
-    return new Func_mapTree( *this );
+    return new Func_mccTree( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_mapTree::execute( void )
+RevPtr<RevVariable> Func_mccTree::execute( void )
 {
     
     TraceTree& tt = static_cast<TraceTree&>( args[0].getVariable()->getRevObject() );
@@ -45,7 +45,7 @@ RevPtr<RevVariable> Func_mapTree::execute( void )
     //int burnin = static_cast<const Integer &>(args[2].getVariable()->getRevObject()).getValue();
     //tt.getTreeSummary().setBurnin(burnin);
     
-    RevBayesCore::Tree* tree = tt.getValue().mapTree();
+    RevBayesCore::Tree* tree = tt.getValue().mccTree();
     
     
     if ( filename != "" )
@@ -71,7 +71,7 @@ RevPtr<RevVariable> Func_mapTree::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_mapTree::getArgumentRules( void ) const
+const ArgumentRules& Func_mccTree::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -92,16 +92,16 @@ const ArgumentRules& Func_mapTree::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_mapTree::getClassType(void)
+const std::string& Func_mccTree::getClassType(void)
 {
     
-    static std::string revType = "Func_mapTree";
+    static std::string revType = "Func_mccTree";
     
     return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_mapTree::getClassTypeSpec(void)
+const TypeSpec& Func_mccTree::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -113,17 +113,17 @@ const TypeSpec& Func_mapTree::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_mapTree::getFunctionName( void ) const
+std::string Func_mccTree::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "mapTree";
+    std::string f_name = "mccTree";
     
     return f_name;
 }
 
 
 /** Get type spec */
-const TypeSpec& Func_mapTree::getTypeSpec( void ) const
+const TypeSpec& Func_mccTree::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -133,7 +133,7 @@ const TypeSpec& Func_mapTree::getTypeSpec( void ) const
 
 
 /** Get return type */
-const TypeSpec& Func_mapTree::getReturnType( void ) const
+const TypeSpec& Func_mccTree::getReturnType( void ) const
 {
     
     static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();

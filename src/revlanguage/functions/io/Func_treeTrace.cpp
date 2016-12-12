@@ -60,6 +60,10 @@ RevPtr<RevVariable> Func_treeTrace::execute( void )
         }
     }
 
+    int burnin = static_cast<const Integer &>(args[1].getVariable()->getRevObject()).getValue();
+
+    t.setBurnin(burnin);
+
     return new RevVariable( new TraceTree( t ) );
 }
 
@@ -77,6 +81,7 @@ const ArgumentRules& Func_treeTrace::getArgumentRules( void ) const
         treeTypes.push_back( ModelVector<TimeTree>::getClassTypeSpec() );
         treeTypes.push_back( ModelVector<BranchLengthTree>::getClassTypeSpec() );
         argumentRules.push_back( new ArgumentRule( "trees", treeTypes, "Vector of trees.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()     , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         
         rules_set = true;
     }
