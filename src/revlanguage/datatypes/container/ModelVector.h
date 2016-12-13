@@ -338,9 +338,9 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
 template <typename rlType>
 const std::string& ModelVector<rlType>::getClassType(void)
 {
-    static std::string revType = rlType::getClassType() + "[]";
+    static std::string rev_type = rlType::getClassType() + "[]";
     
-	return revType;
+	return rev_type;
 }
 
 

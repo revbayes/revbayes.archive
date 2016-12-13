@@ -70,9 +70,9 @@ void Move_BirthDeathFromAgeEvent::constructInternalObject( void )
 const std::string& Move_BirthDeathFromAgeEvent::getClassType(void)
 {
     
-    static std::string revType = "Move_BirthDeathFromAgeEvent";
+    static std::string rev_type = "Move_BirthDeathFromAgeEvent";
     
-    return revType;
+    return rev_type;
 }
 
 

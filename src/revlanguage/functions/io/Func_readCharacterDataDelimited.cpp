@@ -267,9 +267,9 @@ const ArgumentRules& Func_readCharacterDataDelimited::getArgumentRules( void ) c
 const std::string& Func_readCharacterDataDelimited::getClassType(void)
 {
     
-    static std::string revType = "Func_readCharacterDataDelimited";
+    static std::string rev_type = "Func_readCharacterDataDelimited";
     
-    return revType;
+    return rev_type;
 }
 
 

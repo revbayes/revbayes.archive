@@ -53,9 +53,9 @@ namespace RevBayesCore {
     class TopologyNode  {
         
     public:
-        TopologyNode(size_t indx=0);                                                                                                       //!< Default constructor with optional index
-        TopologyNode(const std::string& n, size_t indx=0);                                                                                 //!< Constructor with name and optional index
-        TopologyNode(const Taxon& t, size_t indx=0);                                                                                 //!< Constructor with taxon and optional index
+        TopologyNode(size_t indx=0);                                                                                                    //!< Default constructor with optional index
+        TopologyNode(const std::string& n, size_t indx=0);                                                                              //!< Constructor with name and optional index
+        TopologyNode(const Taxon& t, size_t indx=0);                                                                                    //!< Constructor with taxon and optional index
         TopologyNode(const TopologyNode &n);                                                                                            //!< Copy constructor
         virtual                                    ~TopologyNode(void);                                                                 //!< Destructor
         TopologyNode&                               operator=(const TopologyNode& n);
@@ -78,8 +78,8 @@ namespace RevBayesCore {
         void                                        clearParameters(void);                                                              //!< Clear the node and branch parameters
         void                                        clearBranchParameters(void);
 		void                                        clearNodeParameters(void);
-        virtual std::string                         computeNewick(void);                                                                //!< Compute the newick string for this clade
-        std::string                                 computePlainNewick(void) const;                                                     //!< Compute the newick string for this clade as a plain string without branch length
+        virtual std::string                         computeNewick( bool expand = false );                                                                //!< Compute the newick string for this clade
+        std::string                                 computePlainNewick( bool expand = false ) const;                                                     //!< Compute the newick string for this clade as a plain string without branch length
         bool                                        containsClade(const TopologyNode* c, bool strict) const;
         bool                                        containsClade(const Clade &c, bool strict) const;
         bool                                        containsClade(const RbBitSet &c, bool strict) const;
@@ -109,8 +109,9 @@ namespace RevBayesCore {
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
         std::string                                 getSpeciesName() const;                                                             //!< Get the species name for the node
         void                                        getTaxa(std::vector<Taxon> &taxa) const;                                            //!< Fill the vector of taxa
-        void                                        getTaxa(RbBitSet &taxa) const;                                            //!< Fill the vector of taxa
-        const Taxon&                                getTaxon() const;                                                                   //!< Fill the vector of taxa
+        void                                        getTaxa(RbBitSet &taxa) const;                                                      //!< Fill the taxon bitset
+        void                                        getTaxa(std::vector<Taxon> &taxa, RbBitSet &bitset) const;                          //!< Fill the vector of taxa and the taxon bitset
+        const Taxon&                                getTaxon() const;                                                                   //!< Get the taxon for this node
         double                                      getTmrca(const Clade &c) const;
         double                                      getTmrca(const TopologyNode &n) const;
         double                                      getTmrca(const std::vector<Taxon> &t) const;
@@ -144,7 +145,7 @@ namespace RevBayesCore {
     protected:
         
         // helper methods
-        virtual std::string                         buildNewickString(void);                                                            //!< compute the newick string for a tree rooting at this node
+        virtual std::string                         buildNewickString( bool expand = false );                                                            //!< compute the newick string for a tree rooting at this node
         
         // protected members
         double                                      age;

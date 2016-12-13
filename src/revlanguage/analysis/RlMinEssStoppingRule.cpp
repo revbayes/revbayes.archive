@@ -53,9 +53,9 @@ void MinEssStoppingRule::constructInternalObject( void )
 const std::string& MinEssStoppingRule::getClassType(void)
 {
     
-    static std::string revType = "MinEssStoppingRule";
+    static std::string rev_type = "MinEssStoppingRule";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

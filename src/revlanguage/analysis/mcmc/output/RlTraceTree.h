@@ -11,7 +11,7 @@
 
 namespace RevLanguage {
     
-    class TraceTree : public WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree> {
+    class TraceTree : public WorkspaceToCoreWrapperObject<RevBayesCore::TreeSummary> {
         
     public:
         
@@ -28,17 +28,13 @@ namespace RevLanguage {
         
         // Member method inits
         virtual RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
-        
+
     protected:
         
         
         void                                        initMethods(void);
         virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);          //!< Set member variable
-        
-    private:
-        
-        RevBayesCore::TreeSummary                   tree_summary;
     };
     
 }

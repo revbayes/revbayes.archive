@@ -92,10 +92,10 @@ template <typename rlType>
 const std::string& RevLanguage::TypedDistribution<rlType>::getClassType(void)
 {
     
-//    static std::string revType = "Distribution<"+ rlType::getClassType() +">";
-    static std::string revType = "Distribution__"+ rlType::getClassType();
+//    static std::string rev_type = "Distribution<"+ rlType::getClassType() +">";
+    static std::string rev_type = "Distribution__"+ rlType::getClassType();
     
-	return revType; 
+	return rev_type; 
 }
 
 

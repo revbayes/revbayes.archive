@@ -111,9 +111,9 @@ template <typename leftValType, typename rightValType>
 const std::string& RevLanguage::Func__eq<leftValType,rightValType>::getClassType(void)
 {
     
-    static std::string revType = "Func__eq<" + leftValType::getClassType() + "," + rightValType::getClassType() + ">";
+    static std::string rev_type = "Func__eq<" + leftValType::getClassType() + "," + rightValType::getClassType() + ">";
     
-	return revType; 
+	return rev_type; 
 }
 
 

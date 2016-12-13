@@ -121,9 +121,9 @@ RevPtr<RevVariable> UserFunction::executeCode( void )
 /** Get Rev type (static) */
 const std::string& UserFunction::getClassType(void)
 {
-    static std::string revType = "UserFunction";
+    static std::string rev_type = "UserFunction";
     
-	return revType; 
+	return rev_type; 
 }
 
 

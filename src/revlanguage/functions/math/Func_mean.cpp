@@ -60,9 +60,9 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const
 const std::string& Func_mean::getClassType(void)
 {
     
-    static std::string revType = "Func_mean";
+    static std::string rev_type = "Func_mean";
     
-	return revType; 
+	return rev_type; 
 }
 
 

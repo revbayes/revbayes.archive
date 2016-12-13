@@ -152,9 +152,9 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
 const std::string& MonteCarloAnalysis::getClassType(void)
 {
     
-    static std::string revType = "MonteCarloAnalysis";
+    static std::string rev_type = "MonteCarloAnalysis";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

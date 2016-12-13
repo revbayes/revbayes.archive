@@ -66,9 +66,9 @@ const ArgumentRules& Func_freeSymmetricRateMatrix::getArgumentRules( void ) cons
 const std::string& Func_freeSymmetricRateMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_freeSymmetricRateMatrix";
+    static std::string rev_type = "Func_freeSymmetricRateMatrix";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

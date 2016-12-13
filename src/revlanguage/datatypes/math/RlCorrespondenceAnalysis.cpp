@@ -114,9 +114,9 @@ RevPtr<RevVariable> CorrespondenceAnalysis::executeMethod(std::string const &nam
 const std::string& CorrespondenceAnalysis::getClassType(void)
 {
     
-    static std::string revType = "CorrespondenceAnalysis";
+    static std::string rev_type = "CorrespondenceAnalysis";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

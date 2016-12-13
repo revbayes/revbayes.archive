@@ -122,9 +122,9 @@ const ArgumentRules& Func_write::getArgumentRules( void ) const
 const std::string& Func_write::getClassType(void)
 {
     
-    static std::string revType = "Func_write";
+    static std::string rev_type = "Func_write";
     
-	return revType; 
+	return rev_type; 
 }
 
 

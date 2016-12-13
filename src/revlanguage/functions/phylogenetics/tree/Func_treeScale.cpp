@@ -98,9 +98,9 @@ const ArgumentRules& Func_treeScale::getArgumentRules( void ) const
 const std::string& Func_treeScale::getClassType(void)
 {
     
-    static std::string revType = "Func_treeScale";
+    static std::string rev_type = "Func_treeScale";
     
-	return revType;
+	return rev_type;
 }
 
 

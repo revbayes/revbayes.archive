@@ -54,9 +54,9 @@ const ArgumentRules& Func_jones::getArgumentRules( void ) const
 const std::string& Func_jones::getClassType(void)
 {
     
-    static std::string revType = "Func_jones";
+    static std::string rev_type = "Func_jones";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

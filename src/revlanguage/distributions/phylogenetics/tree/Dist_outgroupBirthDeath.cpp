@@ -96,9 +96,9 @@ RevBayesCore::ConstantRateOutgroupBirthDeathProcess* Dist_outgroupBirthDeath::cr
 const std::string& Dist_outgroupBirthDeath::getClassType( void )
 {
     
-    static std::string revType = "Dist_outgroupBirthDeath";
+    static std::string rev_type = "Dist_outgroupBirthDeath";
     
-    return revType;
+    return rev_type;
 }
 
 

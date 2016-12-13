@@ -64,9 +64,9 @@ const ArgumentRules& Func_tmrca::getArgumentRules( void ) const
 const std::string& Func_tmrca::getClassType(void)
 {
     
-    static std::string revType = "Func_tmrca";
+    static std::string rev_type = "Func_tmrca";
     
-	return revType; 
+	return rev_type; 
 }
 
 

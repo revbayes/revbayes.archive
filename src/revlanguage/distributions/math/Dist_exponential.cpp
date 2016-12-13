@@ -62,9 +62,9 @@ RevBayesCore::ExponentialDistribution* Dist_exponential::createDistribution( voi
 const std::string& Dist_exponential::getClassType(void) 
 { 
     
-    static std::string revType = "Dist_exponential";
+    static std::string rev_type = "Dist_exponential";
     
-	return revType; 
+	return rev_type; 
 }
 
 

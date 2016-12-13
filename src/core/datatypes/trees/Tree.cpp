@@ -20,7 +20,8 @@ Tree::Tree(void) :
     binary( true ),
     rooted( false ),
     numTips( 0 ),
-    num_nodes( 0 )
+    num_nodes( 0 ),
+    expand( false )
 {
     
 }
@@ -34,7 +35,8 @@ Tree::Tree(const Tree& t) :
     rooted( t.rooted ),
     numTips( t.numTips ),
     num_nodes( t.num_nodes ),
-    taxon_bitset_map( t.taxon_bitset_map )
+    taxon_bitset_map( t.taxon_bitset_map ),
+    expand( t.expand )
 {
         
     // need to perform a deep copy of the BranchLengthTree nodes
@@ -398,7 +400,7 @@ const TopologyNode& Tree::getInteriorNode( size_t indx ) const
 std::string Tree::getNewickRepresentation() const
 {
     
-    return root->computeNewick();
+    return root->computeNewick(expand);
 }
 
 
@@ -477,7 +479,7 @@ size_t Tree::getNumberOfTips( void ) const
 std::string Tree::getPlainNewickRepresentation() const
 {
     
-    return root->computePlainNewick();
+    return root->computePlainNewick(expand);
 }
 
 
@@ -927,6 +929,11 @@ TopologyNode& Tree::reverseParentChild(TopologyNode &n)
 }
 
 
+void Tree::setExpand(bool ex)
+{
+
+    expand = ex;
+}
 
 
 void Tree::setRooted(bool tf)
@@ -938,11 +945,10 @@ void Tree::setRooted(bool tf)
 void Tree::setRoot( TopologyNode* r, bool resetIndex )
 {
 
-    // delete the old root
-    if ( r != root )
-    {
-        //delete root;
-    }
+    // delete the old root if it's not in this tree
+    bool found = false;
+
+    TopologyNode* old_root = root;
     
     // set the root
     root = r;
@@ -976,11 +982,20 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
             std::cerr << i << " - " << nodes[i] << std::endl;
             throw RbException("Problem while reading in tree.");
         }
+        if( nodes[i] == old_root)
+        {
+            found = true;
+        }
         numTips += ( nodes[i]->isTip() ? 1 : 0);
     }
     
     
     root->setTree( this );
+
+    if( found == false )
+    {
+        delete old_root;
+    }
 
 }
 

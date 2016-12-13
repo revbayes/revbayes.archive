@@ -62,9 +62,9 @@ const ArgumentRules& Func_exists::getArgumentRules( void ) const
 const std::string& Func_exists::getClassType(void)
 {
     
-    static std::string revType = "Func_exists";
+    static std::string rev_type = "Func_exists";
     
-    return revType;
+    return rev_type;
 }
 
 

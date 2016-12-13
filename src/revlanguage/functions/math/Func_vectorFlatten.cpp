@@ -72,9 +72,9 @@ const ArgumentRules& Func_vectorFlatten::getArgumentRules( void ) const
 /** Get Rev type of object (static version) */
 const std::string& Func_vectorFlatten::getClassType( void )
 {
-    static std::string revType = "Func_vectorFlatten";
+    static std::string rev_type = "Func_vectorFlatten";
     
-	return revType;
+	return rev_type;
 }
 
 

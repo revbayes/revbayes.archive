@@ -46,8 +46,8 @@ RevBayesCore::MultinomialDistribution* Dist_multinomial::createDistribution( voi
 const std::string& Dist_multinomial::getClassType(void)
 {
     
-    static std::string revType = "Dist_multinomial";
-    return revType;
+    static std::string rev_type = "Dist_multinomial";
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

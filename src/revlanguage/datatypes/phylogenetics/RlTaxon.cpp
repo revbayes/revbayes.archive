@@ -160,9 +160,9 @@ const MemberRules& Taxon::getParameterRules(void) const
 /** Get Rev type of object */
 const std::string& Taxon::getClassType(void) { 
     
-    static std::string revType = "Taxon";
+    static std::string rev_type = "Taxon";
     
-    return revType; 
+    return rev_type; 
 }
 
 /** Get class type spec describing type of object */

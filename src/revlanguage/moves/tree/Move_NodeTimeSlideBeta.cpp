@@ -55,9 +55,9 @@ void Move_NodeTimeSlideBeta::constructInternalObject( void )
 /** Get Rev type of object */
 const std::string& Move_NodeTimeSlideBeta::getClassType(void) {
     
-    static std::string revType = "Move_NodeTimeSlideBeta";
+    static std::string rev_type = "Move_NodeTimeSlideBeta";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */

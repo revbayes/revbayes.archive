@@ -346,9 +346,9 @@ RevPtr<RevVariable> Move_UpDownTreeScale::executeMethod(const std::string& name,
 const std::string& Move_UpDownTreeScale::getClassType(void)
 {
     
-    static std::string revType = "Move_UpDownTreeScale";
+    static std::string rev_type = "Move_UpDownTreeScale";
     
-    return revType;
+    return rev_type;
 }
 
 

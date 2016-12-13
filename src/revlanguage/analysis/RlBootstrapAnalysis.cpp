@@ -87,9 +87,9 @@ RevPtr<RevVariable> BootstrapAnalysis::executeMethod(std::string const &name, co
 const std::string& BootstrapAnalysis::getClassType(void)
 {
     
-    static std::string revType = "BootstrapAnalysis";
+    static std::string rev_type = "BootstrapAnalysis";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

@@ -69,9 +69,9 @@ const ArgumentRules& Func_simplex::getArgumentRules( void ) const
 /** Get Rev type of object (static) */
 const std::string& Func_simplex::getClassType( void )
 {
-    static std::string revType = "Func_simplex";
+    static std::string rev_type = "Func_simplex";
     
-	return revType; 
+	return rev_type; 
 }
 
 

@@ -15,47 +15,15 @@ using namespace RevLanguage;
  * Construct rule with single type;
  * use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt ) :
-    argTypeSpecs( 1, argTypeSp ),
-    defaultVar( NULL ),
-    evalType( et ),
-    nodeType( dt ),
-    label( argName ),
-    description( argDesc ),
-    hasDefaultVal( false )
-{
-    
-}
-
-/**
- * Construct rule with single type;
- * use "" for no label.
- */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( 1, argTypeSp ),
     defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
+    aliases( std::vector<std::string>(1, argName) ),
     label( argName ),
     description( argDesc ),
     hasDefaultVal( true )
-{
-    
-}
-
-
-/**
- * Construct rule with multiple types;
- * use "" for no label.
- */
-ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt ) :
-    argTypeSpecs( argTypeSp ),
-    defaultVar( NULL ),
-    evalType( et ),
-    nodeType( dt ),
-    label( argName ),
-    description( argDesc ),
-    hasDefaultVal( false )
 {
     
 }
@@ -70,6 +38,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpe
     defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
+    aliases( std::vector<std::string>(1, argName) ),
     label( argName ),
     description( argDesc ),
     hasDefaultVal( true )
@@ -77,6 +46,91 @@ ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpe
     
 }
 
+
+/**
+ * Construct rule with single type;
+ * use "" for no label.
+ */
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt) :
+    argTypeSpecs( 1, argTypeSp ),
+    defaultVar( NULL ),
+    evalType( et ),
+    nodeType( dt ),
+    aliases( std::vector<std::string>(1, argName) ),
+    label( argName ),
+    description( argDesc ),
+    hasDefaultVal( false )
+{
+
+}
+
+
+/**
+ * Construct rule with multiple types;
+ * use "" for no label.
+ */
+ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt) :
+    argTypeSpecs( argTypeSp ),
+    defaultVar( NULL ),
+    evalType( et ),
+    nodeType( dt ),
+    aliases( std::vector<std::string>(1, argName) ),
+    label( argName ),
+    description( argDesc ),
+    hasDefaultVal( false )
+{
+
+}
+
+
+/**
+ * Construct rule with single type and multiple names;
+ * use "" for no label.
+ */
+ArgumentRule::ArgumentRule(const std::vector<std::string>& argNames, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt) :
+    argTypeSpecs( 1, argTypeSp ),
+    defaultVar( NULL ),
+    evalType( et ),
+    nodeType( dt ),
+    aliases( argNames ),
+    description( argDesc ),
+    hasDefaultVal( false )
+{
+    label = "";
+    for(size_t i = 0; i < argNames.size(); i++)
+    {
+        if(i > 0)
+        {
+            label += "/";
+        }
+        label += argNames[i];
+    }
+}
+
+
+/**
+ * Construct rule with multiple types and multiple names;
+ * use "" for no label.
+ */
+ArgumentRule::ArgumentRule(const std::vector<std::string>& argNames, const std::vector<TypeSpec>& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt) :
+    argTypeSpecs( argTypeSp ),
+    defaultVar( NULL ),
+    evalType( et ),
+    nodeType( dt ),
+    aliases( argNames ),
+    description( argDesc ),
+    hasDefaultVal( false )
+{
+    label = "";
+    for(size_t i = 0; i < argNames.size(); i++)
+    {
+        if(i > 0)
+        {
+            label += "/";
+        }
+        label += argNames[i];
+    }
+}
 
 
 ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
@@ -116,7 +170,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             if ( theVar->getRevObject().isType( *it ) )
             {
                 RevPtr<RevVariable> valueVar = RevPtr<RevVariable>( new RevVariable(theVar->getRevObject().clone(),arg.getLabel()) );
-                return Argument( valueVar, getArgumentLabel(), false );
+                return Argument( valueVar, arg.getLabel(), false );
             }
             else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1)
             {
@@ -124,7 +178,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
 
                 RevPtr<RevVariable> valueVar = RevPtr<RevVariable>( new RevVariable(convertedObject,arg.getLabel()) );
-                return Argument( valueVar, getArgumentLabel(), false );
+                return Argument( valueVar, arg.getLabel(), false );
                 
             }
         } // if (by-value)
@@ -137,7 +191,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             
                 if ( !isEllipsis() )
                 {
-                    return Argument( theVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+                    return Argument( theVar, arg.getLabel(), evalType == BY_CONSTANT_REFERENCE );
                 }
                 else
                 {
@@ -153,7 +207,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 theVar->setRequiredTypeSpec( *it );
                 if ( !isEllipsis() )
                 {
-                    return Argument( theVar, getArgumentLabel(), false );
+                    return Argument( theVar, arg.getLabel(), false );
                 }
                 else
                 {
@@ -196,10 +250,10 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                     conversionVar->setHiddenVariableState( true );
                     conversionVar->setRequiredTypeSpec( *it );
                 
-                    return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+                    return Argument( conversionVar, arg.getLabel(), evalType == BY_CONSTANT_REFERENCE );
                 
                 }
-                catch (RbException e)
+                catch (RbException& e)
                 {
                 // we do nothing here
                 }
@@ -213,6 +267,12 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
         
     throw RbException( "Argument type mismatch fitting a " + theVar->getRevObject().getType() + " argument to formal " +
                         getArgumentTypeSpec()[0].getType() + " " + getArgumentLabel() );
+}
+
+
+const std::vector<std::string>& ArgumentRule::getArgumentAliases( void ) const
+{
+    return aliases;
 }
 
 
@@ -343,7 +403,7 @@ double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
                 env.getFunction(functionName, args, once);
                 return 0.1;
             }
-            catch (RbException e)
+            catch (RbException& e)
             {
                 // we do nothing here
             }

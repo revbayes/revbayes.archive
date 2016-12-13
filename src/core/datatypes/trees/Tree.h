@@ -103,6 +103,7 @@ namespace RevBayesCore {
         void                                                orderNodesByIndex();
         void                                                reroot(const std::string &outgroup);                                                                //!< Re-root the tree with the given outgroup
         void                                                reroot(TopologyNode &n);
+        void                                                setExpand(bool expand);
         void                                                setRoot(TopologyNode* r, bool resetIndex=true);                                                     //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
         void                                                setTaxonIndices(const TaxonMap &tm);                                                                //!< Set the indices of the taxa from the taxon map
@@ -128,6 +129,7 @@ namespace RevBayesCore {
         size_t                                              numTips;
         size_t                                              num_nodes;
         std::map<std::string, size_t>                       taxon_bitset_map;
+        bool                                                expand;
 
     };
 

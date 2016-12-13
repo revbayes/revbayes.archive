@@ -75,9 +75,9 @@ void Mcmc::constructInternalObject( void )
 const std::string& Mcmc::getClassType(void)
 {
     
-    static std::string revType = "Mcmc";
+    static std::string rev_type = "Mcmc";
     
-    return revType;
+    return rev_type;
 }
 
 /** 

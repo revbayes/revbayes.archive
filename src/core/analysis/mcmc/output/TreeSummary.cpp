@@ -1,6 +1,7 @@
 #include "ProgressBar.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathLogic.h"
 #include "RbVectorUtilities.h"
@@ -18,23 +19,42 @@
 
 using namespace RevBayesCore;
 
-
-
 TreeSummary::TreeSummary( void ) :
-    burnin( 0 ),
+    clock( true ),
+    rooted( true ),
+    summarized( false ),
     trace( false ),
     use_tree_trace( false )
 {
-    
+    setBurnin( 0 );
 }
 
 TreeSummary::TreeSummary( const TraceTree &t ) :
-    burnin( 0 ),
+    clock( t.isClock() ),
+    rooted( t.objectAt(0).isRooted() ),
+    summarized( false ),
     trace( t ),
-    use_tree_trace( true )
+    use_tree_trace( true ),
+    cladeAges( CladeComparator(rooted) ),
+    conditionalCladeAges( CladeComparator(rooted) )
 {
-    
+    setBurnin( t.getBurnin() );
 }
+
+
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+
+TreeSummary* TreeSummary::clone(void) const
+{
+
+    return new TreeSummary(*this);
+}
+
 
 
 /*
@@ -901,10 +921,9 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
     return final_summary_tree;
 }
 
-void TreeSummary::annotate( Tree &tree )
+// annotate the MAP node/branch parameters
+void TreeSummary::mapParameters( Tree &tree ) const
 {
-    
-    RBOUT("Annotating tree ...");
     
     const Tree& sample_tree = trace.objectAt( 0 );
     
@@ -932,11 +951,11 @@ void TreeSummary::annotate( Tree &tree )
         
         if ( StringUtilities::isNumber( pair[1] ) && !StringUtilities::isIntegerNumber( pair[1] ) )
         {
-            annotateContinuous(tree, pair[0], i, 0.95, true);
+            mapContinuous(tree, pair[0], i, 0.95, true);
         }
         else
         {
-            annotateDiscrete(tree, pair[0], i, 3, true);
+            mapDiscrete(tree, pair[0], i, 3, true);
         }
         
     }
@@ -970,11 +989,11 @@ void TreeSummary::annotate( Tree &tree )
         
         if ( StringUtilities::isNumber( pair[1] ) )
         {
-            annotateContinuous(tree, pair[0], i, 0.95, false);
+            mapContinuous(tree, pair[0], i, 0.95, false);
         }
         else
         {
-            annotateDiscrete(tree, pair[0], i, 3, false);
+            mapDiscrete(tree, pair[0], i, 3, false);
         }
         
     }
@@ -986,7 +1005,7 @@ void TreeSummary::annotate( Tree &tree )
 /*
  * this method calculates the MAP ancestral character states for the nodes on the input_tree
  */
-void TreeSummary::annotateDiscrete(Tree &tree, const std::string &n, size_t paramIndex, size_t num, bool isNodeParameter )
+void TreeSummary::mapDiscrete(Tree &tree, const std::string &n, size_t paramIndex, size_t num, bool isNodeParameter ) const
 {
     
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
@@ -1208,7 +1227,7 @@ void TreeSummary::annotateDiscrete(Tree &tree, const std::string &n, size_t para
 /*
  * this method calculates the MAP ancestral character states for the nodes on the input_tree
  */
-void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t paramIndex, double hpd, bool isNodeParameter )
+void TreeSummary::mapContinuous(Tree &tree, const std::string &n, size_t paramIndex, double hpd, bool isNodeParameter ) const
 {
     
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
@@ -1439,438 +1458,332 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
 }
 
 
-void TreeSummary::annotateHPDAges(Tree &tree, double hpd )
+void TreeSummary::annotateTree( Tree &tree, AnnotationReport report )
 {
+    summarize();
+
+    RBOUT("Annotating tree ...");
+
+    std::string newick;
     
-    std::stringstream ss;
-    ss << "Compiling " << hpd * 100 << "% HPD node ages from " << trace.size() << " total trees in tree trace, using a burnin of " << burnin << " trees.\n";
-    RBOUT(ss.str());
-    
-    
-    summarizeClades( true );
-    
-    const std::vector<TopologyNode*> &nodes = tree.getNodes();
-    std::vector<std::string*> node_intervals(nodes.size());
-    
-    
-    for (size_t i = 0; i < nodes.size(); i++)
+    if( report.input_tree_ages )
     {
-        // first get all the node ages for this node and sort them
-        std::vector<Taxon> taxa;
-        nodes[i]->getTaxa(taxa);
-        Clade c(taxa); // clade age not used here
-        std::map<Clade, std::vector<double> >::iterator entry_clade_age = cladeAges.find( c );
-        
-        // check that there is this clade
-        // we may have ommited tip ages ...
-        if ( entry_clade_age == cladeAges.end() ) continue;
-        
-        std::vector<double> branch_lengths = entry_clade_age->second;
-        std::sort(branch_lengths.begin(), branch_lengths.end());
-        
-        size_t total_branch_lengths = branch_lengths.size();
-        double min_range = std::numeric_limits<double>::max();
-        
-        size_t interval_start = 0;
-        int interval_size = (int)(hpd * (double)total_branch_lengths);
-        
-        // find the smallest interval that contains x% of the samples
-        for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++)
+        Tree* tmp_tree = NULL;
+        if ( clock == true )
         {
-            double temp_lower = branch_lengths[j];
-            double temp_upper = branch_lengths[j + interval_size - 1];
-            double temp_range = std::fabs(temp_upper - temp_lower);
-            if (temp_range < min_range)
-            {
-                min_range = temp_range;
-                interval_start = j;
-            }
+            tmp_tree = TreeUtilities::convertTree( tree );
         }
-        double lower = branch_lengths[interval_start];
-        double upper = branch_lengths[interval_start + interval_size - 1];
-        
-        // make node age annotation
-        node_intervals[i] = new std::string("{" + StringUtilities::toString(lower)
-                                            + "," + StringUtilities::toString(upper) + "}");
+        else
+        {
+            tmp_tree = tree.clone();
+        }
+
+        if( tmp_tree->isRooted() == false && rooted == false )
+        {
+            tmp_tree->reroot( trace.objectAt(0).getTipNames()[0] );
+        }
+        else if( tmp_tree->isRooted() != rooted )
+        {
+            throw(RbException("Rooting of input tree differs from the tree sample"));
+        }
+
+        newick = TreeUtilities::uniqueNewickTopology( *tmp_tree );
+
+        delete tmp_tree;
+
+        if( treeCladeAges.find(newick) == treeCladeAges.end() )
+        {
+            throw(RbException("Could not find input tree in tree sample"));
+        }
     }
-    
-    std::string label = "height_" + StringUtilities::toString( (int)(hpd * 100) ) + "%_HPD";
-    tree.addNodeParameter(label, node_intervals, true);
-    
-}
 
-
-void TreeSummary::annotateTree(RevBayesCore::Tree &reference_tree, bool clock)
-{
-    
-    const std::vector<TopologyNode*> &nodes = reference_tree.getNodes();
+    const std::vector<TopologyNode*> &nodes = tree.getNodes();
     
     double sampleSize = trace.size() - burnin;
     
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         TopologyNode* n = nodes[i];
-        if ( n->isTip() == false || clock == false )
+
+        Clade c = n->getClade();
+
+        // annotate clade posterior prob
+        if ( !n->isTip() && !n->isRoot() && report.posterior )
         {
-            // first we compute the posterior probability of the clade
-            std::vector<Taxon> taxa;
-            n->getTaxa(taxa);
-            Clade c( taxa );
-            
             double cladeFreq = findCladeSample( c ).getFrequency();
             double pp = cladeFreq / sampleSize;
             n->addNodeParameter("posterior",pp);
-            
-            // second we compute the conditional clade probability
-            double ccp = 1.0;
-            if ( n->isRoot() == false )
+        }
+
+        // are we using sampled ancestors?
+        if( sampledAncestorSamples.empty() == false )
+        {
+            double saFreq = sampledAncestorSamples[n->getTaxon()].getFrequency();
+
+            // annotate sampled ancestor prob
+            if( ((n->isTip() && n->isFossil()) || saFreq > 0) && report.sa )
             {
-                std::vector<Taxon> parentTaxa;
-                n->getParent().getTaxa(parentTaxa);
-                Clade parent( parentTaxa);
-                std::map<Clade, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent];
+                n->addNodeParameter("sampled_ancestor", saFreq / sampleSize);
+            }
+        }
+
+        // annotate conditional clade probs and get node ages
+        std::vector<double> nodeAges;
+
+        if ( !n->isRoot() )
+        {
+            Clade parent = n->getParent().getClade();
+            std::map<Clade, std::vector<double>, CladeComparator >& condCladeAges = conditionalCladeAges[parent];
+            nodeAges = report.conditional_ages ? condCladeAges[c] : cladeAges[c];
+
+            // annotate CCPs
+            if( !n->isTip() && report.ccp )
+            {
                 double parentCladeFreq = findCladeSample( parent ).getFrequency();
-                std::vector<double> condCladeSamples = condCladeFreqs[c];
-                size_t condCladeSampleSize = condCladeSamples.size();
-                ccp = condCladeSampleSize / parentCladeFreq;
-                
+                double ccp = condCladeAges[c].size() / parentCladeFreq;
+                n->addNodeParameter("ccp",ccp);
             }
-            n->addNodeParameter("ccp",ccp);
+        }
+        else
+        {
+            nodeAges = cladeAges[c];
+        }
+
+        if ( report.input_tree_ages )
+        {
+            nodeAges = treeCladeAges[newick][ c ];
+        }
             
-        }
-        
-    }
-    
-}
-
-
-TopologyNode* TreeSummary::assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff)
-{
-    //first create a bush
-    TopologyNode* root = new TopologyNode(tipNames.size()); //construct root node with index = nb Tips
-    root->setNodeType(false, true, true);
-    
-    for (size_t i = 0; i < tipNames.size(); i++)
-    {
-        TopologyNode* tipNode = new TopologyNode(tipNames.at(i), i); //Topology node constructor adding tip name and index=taxon nb
-        tipNode->setNodeType(true, false, false);
-        
-        // set the parent-child relationship
-        root->addChild(tipNode);
-        tipNode->setParent(root);
-        nodes->push_back(tipNode); //add the tip nodes to the node vector (they need to be first in the vector)
-        pp->push_back(1.0);
-    }
-    
-    nodes->push_back(root); //finally add the root node, is next index after the tips
-    pp->push_back(1.0);
-    
-    size_t nIndex = tipNames.size();
-    
-    for (size_t j = 0; j < cladeSamples.size(); j++)
-    {
-        size_t rIndex = cladeSamples.size() - 1 - j;	//reverse pass through because clades are sorted in ascending frequency
-        float cladeFreq = cladeSamples[rIndex].getFrequency() / (float)(trace.size() - burnin);
-        if (cladeFreq < cutoff)  break;
-        
-        Clade clade = cladeSamples[rIndex].getValue();
-        std::vector<Taxon> intNodeTaxa = clade.getTaxa();
-        
-        //make sure we have an internal node
-        if (intNodeTaxa.size() == 1 || intNodeTaxa.size() == tipNames.size())  continue;
-        
-        nIndex++;	//increment node index
-        TopologyNode* intNode = new TopologyNode(nIndex); //Topology node constructor, with proper node index
-        intNode->setNodeType(false, false, true);
-        
-        //find parent node
-        Taxon firstTaxon = intNodeTaxa.at(0);
-        TopologyNode* parentNode = NULL;
-        bool isCompatible = true;
-        
-        for (size_t l = 0; l < tipNames.size(); l++)
+        // set the node ages/branch lengths
+        if( report.ages )
         {
-            if (firstTaxon != nodes->at(l)->getTaxon() )
+            double age = 0.0;
+
+            if ( report.mean )
             {
-                parentNode = &nodes->at(l)->getParent();
-                break;
-            }
-        }
-        while (parentNode != NULL)
-        {
-            std::vector<Taxon> subtendedTaxa;
-            parentNode->getTaxa(subtendedTaxa);
-            if (subtendedTaxa.size() >= intNodeTaxa.size())
-            {
-                //check if parent is compatible with new node
-                size_t inBoth = 0;
-                for (size_t ll = 0; ll < intNodeTaxa.size(); ll++)
+                // finally, we compute the mean conditional age
+                for (size_t i = 0; i<nodeAges.size(); ++i)
                 {
-                    for (size_t lll = 0; lll < subtendedTaxa.size(); lll++)
-                    {
-                        if ( intNodeTaxa[ll] != subtendedTaxa[lll] )
-                            inBoth++;
-                    }
+                    age += nodeAges[i];
                 }
-                if (inBoth != intNodeTaxa.size()) {
-                    isCompatible = false;
-                }
-                
-                break;
+                age /= nodeAges.size();
             }
-            parentNode = &parentNode->getParent();
-        }
-        
-        if (!isCompatible)
-        {
-            delete intNode;
-            nIndex--;
-            continue;
-        }
-        
-        //go through nodes subtended by parent, get children
-        std::vector<TopologyNode*> children = parentNode->getChildren();
-        std::vector<bool> isChild(children.size(), false);
-        TopologyNode* childNode;
-        
-        for (size_t k = 0; k < children.size(); k++)
-        {
-            childNode = children[k];
-            std::vector<Taxon> childTaxa;
-            int found = 0;
-            childNode->getTaxa(childTaxa);
-            
-            for (size_t i = 0; i < childTaxa.size(); i++)
+            else // use median
             {
-                for (size_t ii = 0; ii < intNodeTaxa.size(); ii++)
+
+                size_t idx = nodeAges.size() / 2;
+                std::sort( nodeAges.begin(), nodeAges.end() );
+                if (nodeAges.size() % 2 == 1)
                 {
-                    if ( childTaxa[i] != intNodeTaxa[ii] )
-                    {
-                        found++;
-                    }
+                    age = nodeAges[idx];
+                }
+                else
+                {
+                    age = (nodeAges[idx-1] + nodeAges[idx]) / 2;
+                }
+
+            }
+
+            // finally, we set the age/length
+            if ( clock )
+            {
+                n->setAge( age );
+            }
+            else
+            {
+                n->setBranchLength( age );
+            }
+        }
+
+        // annotate the HPD node age intervals
+        if( report.hpd )
+        {
+            nodeAges = cladeAges[c];
+
+            std::sort(nodeAges.begin(), nodeAges.end());
+
+            size_t total_branch_lengths = nodeAges.size();
+            double min_range = std::numeric_limits<double>::max();
+
+            size_t interval_start = 0;
+            int interval_size = (int)(report.hpd * (double)total_branch_lengths);
+
+            // find the smallest interval that contains x% of the samples
+            for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++)
+            {
+                double temp_lower = nodeAges[j];
+                double temp_upper = nodeAges[j + interval_size - 1];
+                double temp_range = std::fabs(temp_upper - temp_lower);
+                if (temp_range < min_range)
+                {
+                    min_range = temp_range;
+                    interval_start = j;
                 }
             }
-            
-            if (found == childTaxa.size())
+            double lower = nodeAges[interval_start];
+            double upper = nodeAges[interval_start + interval_size - 1];
+
+            // make node age annotation
+            std::string interval = "{" + StringUtilities::toString(lower)
+                                 + "," + StringUtilities::toString(upper) + "}";
+
+            if( clock )
             {
-                isChild[k] = true;
+                if( !n->isTip() || ( ( n->isFossil() || upper != lower) && !n->isSampledAncestor() ) )
+                {
+                    std::string label = "age_" + StringUtilities::toString( (int)(report.hpd * 100) ) + "%_HPD";
+                    n->addNodeParameter(label, interval);
+                }
             }
-            else if (found > 0 && found < childTaxa.size()) {
-                isCompatible = false;
-                break;
-            }
-        }
-        
-        if (!isCompatible)
-        {
-            delete intNode;
-            nIndex--;
-            continue;
-        }
-        
-        for (size_t kk = 0; kk < children.size(); kk++)
-        {
-            if (isChild[kk])
+            else if( !n->isRoot() )
             {
-                childNode = children[kk];
-                parentNode->removeChild(childNode);
-                intNode->addChild(childNode);
-                childNode->setParent(intNode);
+                std::string label = "brlen_" + StringUtilities::toString( (int)(report.hpd * 100) ) + "%_HPD";
+                n->addBranchParameter(label, interval);
             }
         }
-        intNode->setParent(parentNode);
-        parentNode->addChild(intNode);
-        nodes->push_back(intNode); //add internal node to node vector
-        pp->push_back(cladeFreq);
+
     }
     
-    return(root);
+    if( !report.conditional_ages && clock )
+    {
+        enforceNonnegativeBranchLengths( tree.getRoot() );
+    }
+
+    if( report.map_parameters )
+    {
+        mapParameters( tree );
+    }
+
 }
 
 
-
-/*
- *	recursively calculates the median node age from the root, and tests that it is not older than its parent node
- */
-void TreeSummary::calculateMedianAges(TopologyNode* n, double parentAge, std::vector<double> *ages)
+double TreeSummary::cladeProbability(const RevBayesCore::Clade &c )
 {
-    if (cladeAges.size() < 1)
-        return;
-    
-    std::vector<Taxon> taxa;
-    n->getTaxa(taxa);
-    Clade c (taxa);
-    c.setAge( n->getAge() );
-    
-    std::vector<double> ageVec = cladeAges.find(c)->second;
-    std::sort(ageVec.begin(), ageVec.end());
-    double medianAge;
-    
-    size_t nbValues = ageVec.size();
-    if ((nbValues % 2) == 0)
+    summarize();
+
+    return findCladeSample(c).getFrequency();
+}
+
+
+void TreeSummary::enforceNonnegativeBranchLengths(TopologyNode& node) const
+{
+    std::vector<TopologyNode*> children = node.getChildren();
+
+    for(size_t i = 0; i < children.size(); i++)
     {
-        medianAge = (ageVec[nbValues / 2] + ageVec[(nbValues / 2) - 1]) / 2.0;
-    }
-    else
-    {
-        medianAge = ageVec[nbValues / 2];
-    }
-    if (parentAge < medianAge) medianAge = parentAge;
-    ages->at( n->getIndex() ) = medianAge;
-    
-    for (size_t i = 0; i < n->getNumberOfChildren(); i++)
-    {
-        
-        TopologyNode *child = &(n->getChild(i));
-        if ( !child->isTip() )
+        if(children[i]->getAge() > node.getAge())
         {
-            calculateMedianAges(child, medianAge, ages);
+            children[i]->setAge( node.getAge() );
         }
-        
+        enforceNonnegativeBranchLengths( *children[i] );
     }
-    
 }
-
-
-double TreeSummary::cladeProbability(const RevBayesCore::Clade &c ) const
-{
-    
-    double n_samples = trace.size() - burnin;
-    double occurences = 0.0;
-    for (size_t i = burnin; i < trace.size(); ++i)
-    {
-        const Tree &tree = trace.objectAt(i);
-        
-        bool contains = tree.getRoot().containsClade(c, true);
-        if ( contains == true )
-        {
-            ++occurences;
-        }
-        
-    }
-    
-    return occurences / n_samples;
-}
-
-
-
-Tree* TreeSummary::conTree(double cutoff)
-{
-    
-    std::stringstream ss;
-    ss << "Compiling consensus tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
-    RBOUT(ss.str());
-    
-    //fill in clades, use all above 50% to resolve the bush with the consensus partitions
-    summarizeClades( false );		//fills std::vector<Sample<std::string> > cladeSamples, sorts them by descending freq
-    
-    //set up variables for consensus tree assembly
-    const Tree &temptree = trace.objectAt(0);
-    std::vector<std::string> tipNames = temptree.getTipNames();
-    std::vector<double> pp;
-    std::vector<TopologyNode*> nodes;
-    
-    if (cutoff < 0.0 || cutoff > 1.0) cutoff = 0.5;
-    
-    ss << "Assembling clades into a MR consensus tree, using a " << cutoff << " cutoff...\n";
-    RBOUT(ss.str());
-    TopologyNode* root = assembleConsensusTopology(&nodes, tipNames, &pp, cutoff);
-    
-    //now put the tree together
-    Tree* consensusTree = new Tree();
-    consensusTree->addNodeParameter("posterior", pp, true);
-    
-    //calculate node ages for consensus tree
-    RBOUT("Calculating node ages...\n");
-    double maxAge = 2147483647; //just a very high nb, so that age of root will be smaller
-    std::vector<double> ages(nodes.size(), 0.0);
-    calculateMedianAges(root, maxAge, &ages);
-    
-    for (size_t x = 0; x < ages.size(); x++)
-    {
-        consensusTree->getNode(x).setAge(ages[x]);
-    }
-    
-    return consensusTree;
-}
-
 
 
 //filling in clades and clade ages - including tip nodes in clade sample - to get age for serially sampled tips in time trees
-Clade TreeSummary::fillClades(const TopologyNode &n, std::vector<Clade> &clades, bool clock)
-{
-    std::vector<Taxon> taxa;
-    n.getTaxa(taxa);
-    Clade parentClade( taxa );
-    parentClade.setAge( (clock == true ? n.getAge() : n.getBranchLength() ) );
-    clades.push_back(parentClade);
-    
-    if ( n.isTip() == false )
-    {
-        for (size_t i = 0; i < n.getNumberOfChildren(); i++)
-        {
-            const TopologyNode &childNode = n.getChild(i);
-            Clade ChildClade = fillClades(childNode, clades, clock);
-        }
-    }
-    
-    return parentClade;
-}
-
-
-Clade TreeSummary::fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &condClades, std::vector<Clade> &clades, bool clock)
+Clade TreeSummary::fillConditionalClades(const TopologyNode &n, std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> &condClades)
 {
     
-    std::vector<Taxon> taxa;
-    n.getTaxa(taxa);
+    Clade parent = n.getClade();
+    parent.setAge( (clock == true ? n.getAge() : n.getBranchLength() ) );
     
-    double a = 0;
-    if ( clock == true )
-    {
-        a = n.getAge();
-    }
-    else
-    {
-        a = n.getBranchLength();
-    }
-    Clade parent(taxa);
-    parent.setAge( a );
-    clades.push_back(parent);
-    
+    std::set<Clade, CladeComparator> children( (CladeComparator(rooted)) );
+
     for (size_t i = 0; i < n.getNumberOfChildren(); i++)
     {
         const TopologyNode &childNode = n.getChild(i);
-        if ( !childNode.isTip() )
-        {
-            Clade ChildClade = fillConditionalClades(childNode, condClades, clades, clock);
-            ConditionalClade cc = ConditionalClade(parent, ChildClade);
-            condClades.push_back(cc);
-        }
-        else if ( clock == false )
-        {
-            Clade ChildClade = fillConditionalClades(childNode, condClades, clades, clock);
-            ConditionalClade cc = ConditionalClade(parent, ChildClade);
-            condClades.push_back(cc);
-        }
+
+        Clade ChildClade = fillConditionalClades(childNode, condClades);
+        children.insert(ChildClade);
     }
     
+    condClades[parent] = children;
+
     return parent;
 }
 
 
-Sample<Clade>& TreeSummary::findCladeSample(const Clade &n)
+const Sample<Clade>& TreeSummary::findCladeSample(const Clade &n) const
 {
     
-    for (std::vector<Sample<Clade> >::iterator it=cladeSamples.begin(); it!= cladeSamples.end(); ++it)
+    std::vector<Sample<Clade> >::const_iterator it = find_if(cladeSamples.begin(), cladeSamples.end(), CladeComparator(rooted, n) );
+
+    if(it != cladeSamples.end())
     {
-        if ( it->getValue() == n )
-        {
-            return *it;
-        }
-        
+        return *it;
     }
     
     throw RbException("Couldn't find a clade with name '" + n.toString() + "'.");
+}
+
+
+TopologyNode* TreeSummary::findParentNode(TopologyNode& node, const Clade& tmp_clade, std::vector<TopologyNode*>& children) const
+{
+    Clade parentClade = node.getClade();
+    RbBitSet pb = parentClade.getBitRepresentation();
+
+    Clade clade = tmp_clade;
+    RbBitSet b  = clade.getBitRepresentation();
+
+    RbBitSet mb  = pb | b;
+
+    bool compatible = true;
+
+    if( !rooted )
+    {
+        RbBitSet nb = b; ~nb;
+        RbBitSet nmb = pb | nb;
+
+        if( nmb == pb )
+        {
+            b  = nb;
+            mb = nmb;
+            clade.setBitRepresentation(nb);
+        }
+        else if( mb != pb )
+        {
+            compatible = false;
+        }
+
+        if( mb == b )
+        {
+            children.push_back(&node);
+        }
+    }
+    else if( mb == b )
+    {
+        compatible = false;
+        children.push_back(&node);
+    }
+    else if( mb != pb)
+    {
+        compatible = false;
+    }
+
+    TopologyNode* parent = NULL;
+
+    if(compatible)
+    {
+        std::vector<TopologyNode*> childs;
+
+        parent = &node;
+
+        std::vector<TopologyNode*> c = node.getChildren();
+
+        for(size_t i = 0; i < c.size(); i++)
+        {
+            TopologyNode* child = findParentNode(*c[i], clade, childs);
+
+            if(child != NULL)
+            {
+                parent = child;
+            }
+        }
+
+        children = childs;
+    }
+
+    return parent;
 }
 
 
@@ -1904,13 +1817,28 @@ std::string TreeSummary::getSiteState( const std::string &site_sample, size_t si
 }
 
 
-
-int TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree) const
+const RevBayesCore::TraceTree & TreeSummary::getTreeTrace(void) const
 {
+    return trace;
+}
+
+
+int TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree)
+{
+    summarize();
     
-    std::string newick = TreeUtilities::uniqueNewickTopology( tree );
+    std::string outgroup = trace.objectAt(0).getTipNames()[0];
+
+    Tree t = tree;
+
+    if( t.isRooted() == false && rooted == false )
+    {
+        t.reroot( outgroup );
+    }
+
+    std::string newick = TreeUtilities::uniqueNewickTopology( t );
     
-    double total_samples = trace.size();
+    //double total_samples = trace.size();
     double freq = 0;
     
     for (std::vector<Sample<std::string> >::const_reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
@@ -1931,8 +1859,9 @@ int TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree) const
 }
 
 
-std::vector<Tree> TreeSummary::getUniqueTrees( double credible_interval_size ) const
+std::vector<Tree> TreeSummary::getUniqueTrees( double credible_interval_size )
 {
+    summarize();
     
     std::vector<Tree> unique_trees;
     NewickConverter converter;
@@ -1961,35 +1890,20 @@ std::vector<Tree> TreeSummary::getUniqueTrees( double credible_interval_size ) c
 
 bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t, double size)
 {
-    
-    bool clock = true;
-
-    // use the default burnin
-    int b = -1;
-    setBurnin( b );
-    
-    summarizeClades( clock );
-    summarizeTrees();
-    
-//    double meanRootAge = 0.0;
-//    std::vector<double> rootAgeSamples;
-//    if ( clock == true )
-//    {
-//        for (size_t i = burnin; i < trace.size(); ++i)
-//        {
-//            // get the sampled tree
-//            const Tree &tree = trace.objectAt( i );
-//            
-//            // add this root age to our variable
-//            meanRootAge += tree.getRoot().getAge();
-//            
-//            rootAgeSamples.push_back(tree.getRoot().getAge());
-//            
-//        }
-//        
-//    }
+    summarize();
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
+
+    std::string outgroup = trace.objectAt(0).getTipNames()[0];
+
+    Tree tree = t;
+
+    if( tree.isRooted() == false && rooted == false )
+    {
+        tree.reroot( outgroup );
+    }
+
+    std::string newick = TreeUtilities::uniqueNewickTopology(tree);
    
     double totalSamples = trace.size();
     double totalProb = 0.0;
@@ -2003,14 +1917,10 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
         if ( include_prob > rng->uniform01() )
         {
             const std::string &current_sample = it->getValue();
-            NewickConverter converter;
-            Tree* current_tree = converter.convertFromNewick( current_sample );
-            if ( current_tree->hasSameTopology( t ) )
+            if ( newick == current_sample )
             {
-                delete current_tree;
                 return true;
             }
-            delete current_tree;
             
         }
         
@@ -2028,197 +1938,239 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
 }
 
 
-Tree* TreeSummary::map( bool clock )
+Tree* TreeSummary::mapTree()
 {
-    bool useMean = true;
-    // should we use the ages only from the best tree???
-    bool use_best_tree = true;
-    
     std::stringstream ss;
-    ss << "Compiling MAP tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
+    ss << "Compiling maximum a posteriori tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
     RBOUT(ss.str());
     
-    summarizeClades( clock );
-    summarizeConditionalClades( clock );
-    summarizeTrees();
+    summarize();
     
     // get the tree with the highest posterior probability
     std::string bestNewick = treeSamples.rbegin()->getValue();
     NewickConverter converter;
     Tree* tmp_best_tree = converter.convertFromNewick( bestNewick );
-    Tree* best_tree = NULL;
+    
+    Tree* tmp_tree = NULL;
+
     if ( clock == true )
     {
-        best_tree = TreeUtilities::convertTree( *tmp_best_tree );
+        tmp_tree = TreeUtilities::convertTree( *tmp_best_tree );
     }
     else
     {
-        best_tree = tmp_best_tree->clone();
+        tmp_tree = tmp_best_tree->clone();
     }
-    size_t num_taxa = best_tree->getNumberOfTips();
-    
+
+    delete tmp_best_tree;
+
     TaxonMap tm = TaxonMap( trace.objectAt(0) );
-    best_tree->setTaxonIndices( tm );
+    tmp_tree->setTaxonIndices( tm );
 
-    // now we summarize the clades for the best tree
-    summarizeCladesForTree(*best_tree, clock);
+    AnnotationReport report;
+    report.input_tree_ages = true;
+    report.map_parameters  = true;
+    annotateTree(*tmp_tree, report );
+    
+    return tmp_tree;
+}
 
-    const std::vector<TopologyNode*> &nodes = best_tree->getNodes();
-    
-    
-    double sampleSize = trace.size() - burnin;
-    
-    double meanRootAge = 0.0;
-    std::vector<double> rootAgeSamples;
-    if ( clock == true )
+
+Tree* TreeSummary::mccTree( void )
+{
+    std::stringstream ss;
+    ss << "Compiling maximum clade credibility tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
+    RBOUT(ss.str());
+
+    summarize();
+
+    Tree* best_tree = NULL;
+    double max_cc = 0;
+
+    // find the clade credibility score for each tree
+    for(size_t t = 0; t < treeSamples.size(); t++)
     {
-        for (size_t i = burnin; i < trace.size(); ++i)
+        std::string newick = treeSamples[t].getValue();
+
+        // now we summarize the clades for the best tree
+        std::map<Clade, std::vector<double>, CladeComparator> cladeAges = treeCladeAges[newick];
+
+        double cc = 0;
+
+        // find the product of the clade frequencies
+        for(std::map<Clade, std::vector<double>, CladeComparator>::iterator clade = cladeAges.begin(); clade != cladeAges.end(); clade++)
         {
-            // get the sampled tree
-            const Tree &tree = trace.objectAt( i );
-        
-            // add this root age to our variable
-            meanRootAge += tree.getRoot().getAge();
-        
-            rootAgeSamples.push_back(tree.getRoot().getAge());
-        
+            cc += log( findCladeSample( clade->first ).getFrequency() );
         }
-        
-    }
-    
-    for (size_t i = 0; i < nodes.size(); ++i)
-    {
-        TopologyNode* n = nodes[i];
-        if ( n->isTip() == false || clock == false )
+
+        if(cc > max_cc)
         {
-            // first we compute the posterior probability of the clade
-            std::vector<Taxon> taxa;
-            n->getTaxa(taxa);
-            Clade c( taxa );
-            
-            double cladeFreq = findCladeSample( c ).getFrequency();
-            double pp = cladeFreq / sampleSize;
-            n->addNodeParameter("posterior",pp);
-            
-            // second we compute the conditional clade probability
-            double ccp = 1.0;
-            double age = 0.0;
-            if ( !n->isRoot() )
-            {
-                std::vector<Taxon> parentTaxa;
-                n->getParent().getTaxa(parentTaxa);
-                Clade parent( parentTaxa );
-                std::map<Clade, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent];
-                double parentCladeFreq = findCladeSample( parent ).getFrequency();
-                std::vector<double> condCladeSamples = condCladeFreqs[c];
-                size_t condCladeSampleSize = condCladeSamples.size();
-                ccp = condCladeSampleSize / parentCladeFreq;
-                
-                if ( use_best_tree )
-                {
-                    const std::vector<double> &age_samples = cladeAgesOfBestTree[ c ];
-                    size_t age_sample_size = age_samples.size();
-                    // finally, we compute the mean conditional age
-                    for (size_t i = 0; i<age_sample_size; ++i)
-                    {
-                        age += age_samples[i];
-                    }
-                    age /= age_sample_size;
-                }
-                else if ( useMean == true )
-                {
-                    // finally, we compute the mean conditional age
-                    for (size_t i = 0; i<condCladeSampleSize; ++i)
-                    {
-                        age += condCladeSamples[i];
-                    }
-                    age /= condCladeSampleSize;
-                }
-                else
-                {
-                    
-                    size_t idx = condCladeSampleSize / 2;
-                    std::sort( condCladeSamples.begin(), condCladeSamples.end() );
-                    if (condCladeSampleSize % 2 == 1)
-                    {
-                        age = condCladeSamples[idx];
-                    }
-                    else
-                    {
-                        age = (condCladeSamples[idx-1] + condCladeSamples[idx]) / 2;
-                    }
-                    
-                }
-                
-            }
-            else
-            {
-                if ( useMean == true )
-                {
-                    age = meanRootAge / sampleSize;
-                }
-                else
-                {
-                    std::sort( rootAgeSamples.begin(), rootAgeSamples.end() );
-                    size_t idx = rootAgeSamples.size() / 2;
-                    if (rootAgeSamples.size() % 2 == 1)
-                    {
-                        age = rootAgeSamples[idx];
-                    }
-                    else
-                    {
-                        age = (rootAgeSamples[idx-1] + rootAgeSamples[idx]) / 2;
-                    }
-                }
-            }
-            n->addNodeParameter("ccp",ccp);
-            
-            // finally, we compute the mean conditional age
+            delete best_tree;
+
+            NewickConverter converter;
+            Tree* tmp_tree = converter.convertFromNewick( newick );
             if ( clock == true )
             {
-                best_tree->getNode( i ).setAge( age );
+                best_tree = TreeUtilities::convertTree( *tmp_tree );
             }
             else
             {
-                best_tree->getNode( i ).setBranchLength( age );
+                best_tree = tmp_tree->clone();
             }
-            
+
+            TaxonMap tm = TaxonMap( trace.objectAt(0) );
+            best_tree->setTaxonIndices( tm );
+
+            delete tmp_tree;
         }
-        
     }
-    
-    if ( clock == true )
-    {
-        const Tree &firstTree = trace.objectAt( 0 );
-        const std::vector<TopologyNode*> &firstNodes = firstTree.getNodes();
-        for (size_t i = 0; i < num_taxa; i++)
-        {
-            
-            if (firstNodes[i]->isTip())
-            {
-                
-                for (size_t j = 0; j < num_taxa; j++)
-                {
-                    if (firstNodes[i]->getName() == nodes[j]->getName())
-                    {
-                        best_tree->getNode( j ).setAge( firstNodes[i]->getAge() );
-                    
-                    }
-            
-                }
-        
-            }
-    
-        }
-        
-    }
-    
+
+    AnnotationReport report;
+    annotateTree(*best_tree, report );
+
     return best_tree;
+}
+
+
+Tree* TreeSummary::mrTree(double cutoff)
+{
+    if (cutoff < 0.0 || cutoff > 1.0) cutoff = 0.5;
+
+    std::stringstream ss;
+    ss << "Compiling majority rule consensus tree (cutoff = " << cutoff << ") from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
+    RBOUT(ss.str());
+
+    //fill in clades, use all above 50% to resolve the bush with the consensus partitions
+    summarize();        //fills std::vector<Sample<std::string> > cladeSamples, sorts them by descending freq
+
+    //set up variables for consensus tree assembly
+    std::vector<std::string> tipNames = trace.objectAt(0).getTipNames();
+
+    //first create a bush
+    TopologyNode* root = new TopologyNode(tipNames.size()); //construct root node with index = nb Tips
+    root->setNodeType(false, true, true);
+
+    for (size_t i = 0; i < tipNames.size(); i++)
+    {
+        TopologyNode* tipNode = new TopologyNode(tipNames.at(i), i); //Topology node constructor adding tip name and index=taxon nb
+        tipNode->setNodeType(true, false, false);
+
+        // set the parent-child relationship
+        root->addChild(tipNode);
+        tipNode->setParent(root);
+    }
+
+    //now put the tree together
+    Tree* consensusTree = new Tree();
+    consensusTree->setRoot(root);
+
+    size_t nIndex = tipNames.size();
+
+    CladeComparator comparator(rooted);
+
+    for (size_t j = 0; j < cladeSamples.size(); j++)
+    {
+        size_t rIndex = cladeSamples.size() - 1 - j;    //reverse pass through because clades are sorted in ascending frequency
+        float cladeFreq = cladeSamples[rIndex].getFrequency() / (float)(trace.size() - burnin);
+        if (cladeFreq < cutoff)  break;
+
+        Clade clade = cladeSamples[rIndex].getValue();
+
+        //make sure we have an internal node
+        if (clade.size() == 1 || clade.size() == tipNames.size())  continue;
+
+        //find parent node
+        std::vector<TopologyNode*> children;
+        TopologyNode* parentNode = findParentNode(*root, clade, children);
+
+        if(parentNode != NULL )
+        {
+            // skip this node if we've already found a clade compatible with it
+            if( children.size() >= parentNode->getNumberOfChildren() ) continue;
+
+            std::vector<TopologyNode*> mrca;
+
+            // find the mrca child if it exists
+            if( !clade.getMrca().empty() )
+            {
+                for (size_t i = 0; i < children.size(); i++)
+                {
+                    if( children[i]->isTip() && std::find(clade.getMrca().begin(), clade.getMrca().end(), children[i]->getTaxon() ) != clade.getMrca().end() )
+                    {
+                        mrca.push_back(children[i]);
+                    }
+                }
+
+                // if we couldn't find the mrca, then this clade is not compatible
+                if( mrca.size() != clade.getMrca().size() )
+                {
+                    continue;
+                }
+                else
+                {
+                    for (size_t i = 0; i < mrca.size(); i++)
+                    {
+                        mrca[i]->setFossil(true);
+                        mrca[i]->setSampledAncestor(true);
+                    }
+                }
+            }
+
+            nIndex++;   //increment node index
+            TopologyNode* intNode = new TopologyNode(nIndex); //Topology node constructor, with proper node index
+            intNode->setNodeType(false, false, true);
+
+
+            for (size_t i = 0; i < children.size(); i++)
+            {
+                parentNode->removeChild(children[i]);
+                intNode->addChild(children[i]);
+                children[i]->setParent(intNode);
+            }
+
+            intNode->setParent(parentNode);
+            parentNode->addChild(intNode);
+
+            // add a mrca child if it exists and there is more than one non-mrca taxa
+            if( !mrca.empty() && children.size() > 2 )
+            {
+                TopologyNode* old_parent = parentNode;
+
+                nIndex++;   //increment node index
+                parentNode = new TopologyNode(nIndex); //Topology node constructor, with proper node index
+                parentNode->setNodeType(false, false, true);
+
+                intNode->removeChild(mrca[0]);
+                parentNode->addChild(mrca[0]);
+                mrca[0]->setParent(parentNode);
+
+                old_parent->removeChild(intNode);
+                old_parent->addChild(parentNode);
+                parentNode->setParent(old_parent);
+
+                parentNode->addChild(intNode);
+                intNode->setParent(parentNode);
+            }
+        }
+
+        root->setTree(consensusTree);
+    }
+
+    //now put the tree together
+    consensusTree->setRoot(root);
+
+    AnnotationReport report;
+    report.ccp = false;
+    report.mean = false;
+    annotateTree(*consensusTree, report );
+
+    return consensusTree;
 }
 
 
 void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability)
 {
+    summarize();
     
     std::stringstream ss;
     ss << std::fixed;
@@ -2237,9 +2189,9 @@ void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability)
     s = "Posterior";
     StringUtilities::fillWithSpaces(s, 16, true);
     o << s;
-    s = "ESS";
+    /*s = "ESS";
     StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
+    o << s;*/
     s = "Clade";
     StringUtilities::fillWithSpaces(s, 16, true);
     o << s;
@@ -2250,7 +2202,10 @@ void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability)
     
     for (std::vector<Sample<Clade> >::reverse_iterator it = cladeSamples.rbegin(); it != cladeSamples.rend(); ++it)
     {
-        
+        size_t num_taxa = it->getValue().size();
+
+        if( num_taxa == 1 ) continue;
+
         double freq =it->getFrequency();
         double p =it->getFrequency()/(totalSamples-burnin);
         
@@ -2272,8 +2227,8 @@ void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability)
         StringUtilities::fillWithSpaces(s, 16, true);
         o << s;
         
-        ss.str(std::string());
-        if ( it->getFrequency() <  totalSamples && it->getFrequency() > 0 )
+        /*ss.str(std::string());
+        if ( it->getFrequency() <  totalSamples - burnin && it->getFrequency() > 0 )
         {
             ss << it->getEss();
         }
@@ -2284,7 +2239,7 @@ void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability)
         }
         s = ss.str();
         StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
+        o << s;*/
         
         o << it->getValue();
         o << std::endl;
@@ -2300,6 +2255,7 @@ void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability)
 
 void TreeSummary::printTreeSummary(std::ostream &o, double credibleIntervalSize)
 {
+    summarize();
     
     std::stringstream ss;
     ss << std::fixed;
@@ -2321,9 +2277,9 @@ void TreeSummary::printTreeSummary(std::ostream &o, double credibleIntervalSize)
     s = "Posterior";
     StringUtilities::fillWithSpaces(s, 16, true);
     o << s;
-    s = "ESS";
+    /*s = "ESS";
     StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
+    o << s;*/
     s = "Tree";
     StringUtilities::fillWithSpaces(s, 16, true);
     o << s;
@@ -2355,11 +2311,11 @@ void TreeSummary::printTreeSummary(std::ostream &o, double credibleIntervalSize)
         StringUtilities::fillWithSpaces(s, 16, true);
         o << s;
         
-        ss.str(std::string());
+        /*ss.str(std::string());
         ss << it->getEss();
         s = ss.str();
         StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
+        o << s;*/
         
         o << it->getValue();
         o << std::endl;
@@ -2379,6 +2335,8 @@ void TreeSummary::printTreeSummary(std::ostream &o, double credibleIntervalSize)
 
 void TreeSummary::setBurnin(int b)
 {
+    size_t old = burnin;
+
     // make sure burnin is proper
     if ( b >= static_cast<int>(trace.size()) && use_tree_trace)
     {
@@ -2392,359 +2350,58 @@ void TreeSummary::setBurnin(int b)
     {
         burnin = size_t(b);
     }
+
+    summarized = summarized && old == burnin;
 }
 
 
-void TreeSummary::summarizeClades( bool clock )
+void TreeSummary::summarize( void )
 {
+    if( summarized ) return;
+
+    cladeAges.clear();
+    conditionalCladeAges.clear();
+    sampledAncestorSamples.clear();
+    treeCladeAges.clear();
     
-    std::map<Clade, Sample<Clade> > cladeAbsencePresence;
-    
+    std::map<Clade, Sample<Clade>, CladeComparator > cladeSampleMap( (CladeComparator(rooted)) );
+    std::map<std::string, Sample<std::string> >      treeSampleMap;
+
     bool verbose = true;
-    bool process_active = true;
     ProgressBar progress = ProgressBar(trace.size(), burnin);
-    if ( verbose == true && process_active == true )
+    if ( verbose )
     {
         RBOUT("Summarizing clades ...\n");
         progress.start();
     }
     
-    std::string outgroup = "";
+    std::string outgroup = trace.objectAt(0).getTipNames()[0];
+
     for (size_t i = burnin; i < trace.size(); ++i)
     {
         
-        if ( verbose == true && process_active == true)
+        if ( verbose )
         {
             progress.update(i);
         }
         
-        const Tree &tree = trace.objectAt(i);
-        
-        // get the clades for this tree
-        std::vector<Clade> clades;
-        fillClades(tree.getRoot(), clades, clock);
-        
-        // collect clade ages and increment the clade frequency counter
-        for (size_t j = 0; j < clades.size(); ++j)
-        {
-            const Clade & c = clades[j];
-            
-            if ( c.size() <= 1 ) continue;
-            
-            Sample<Clade> thisSample = Sample<Clade>(c, 0);
-            
-            const std::map<Clade, Sample<Clade> >::iterator& entry = cladeAbsencePresence.find(c);
-            if (entry == cladeAbsencePresence.end())
-            {
-                
-                Sample<Clade> cladeSample = Sample<Clade>(c, 0);
-                if (i > burnin)
-                {
-                    cladeSample.setTrace(std::vector<double>(i - burnin, 0.0));
-                }
-                else
-                {
-                    cladeSample.setTrace(std::vector<double>());
-                }
-                cladeAbsencePresence.insert(std::pair<Clade, Sample<Clade> >(c, cladeSample));
-                
-                // create a new entry for the age of the clade
-                std::vector<double> tempAgeVec;
-                cladeAges.insert(std::pair<Clade, std::vector<double> >(c, tempAgeVec));
-            }
-            
-            // store the age for this clade
-            std::map<Clade, std::vector<double> >::iterator entry_age = cladeAges.find(c);
-            entry_age->second.push_back(c.getAge());
-            
-        }
-        
-        for (std::map<Clade, Sample<Clade> >::iterator it=cladeAbsencePresence.begin(); it!=cladeAbsencePresence.end(); ++it )
-        {
-            bool found = false;
-            for (size_t i = 0; i < clades.size(); ++i)
-            {
-                Clade c = clades[i];
-                if ( it->first == c )
-                {
-                    found = true;
-                    break;
-                }
-                
-            }
-            
-            if ( found == true )
-            {
-                it->second.addObservation( true );
-            }
-            else
-            {
-                it->second.addObservation( false );
-            }
-            
-        }
-        
-    }
-    
-    if ( verbose == true && process_active == true )
-    {
-        progress.finish();
-    }
-    
-    // collect the samples
-    cladeSamples.clear();
-    for (std::map<Clade, Sample<Clade> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
-    {
-        it->second.computeStatistics();
-        cladeSamples.push_back(it->second);
-    }
-    
-    // sort the samples by frequency
-    VectorUtilities::sort( cladeSamples );
-    
-}
+        Tree tree = trace.objectAt(i);
 
+        if( rooted == false )
+        {
+            tree.reroot( outgroup );
+        }
 
-void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock)
-{
-    
-    cladeAgesOfBestTree.clear();
-    
-    bool verbose = true;
-    bool process_active = true;
-    ProgressBar progress = ProgressBar(trace.size(), burnin);
-    if ( verbose == true && process_active == true )
-    {
-        RBOUT("Summarizing clades for tree ...\n");
-        progress.start();
-    }
-    
-    
-    // get the newick string for the reference tree
-    std::string reference_tree_newick = TreeUtilities::uniqueNewickTopology( reference_tree );
-    
-    std::string outgroup = "";
-    for (size_t i = burnin; i < trace.size(); ++i)
-    {
-        
-        if ( verbose == true && process_active == true)
-        {
-            progress.update(i);
-        }
-        
-        const Tree &tree = trace.objectAt(i);
-        
-        // get the newick string for the current tree
-        std::string current_tree_newick = TreeUtilities::uniqueNewickTopology( tree );
-
-        // if this tree does not equal the reference tree then we skip it
-        if ( current_tree_newick != reference_tree_newick )
-        {
-            continue;
-        }
-        
-        // get the clades for this tree
-        std::vector<Clade> clades;
-        fillClades(tree.getRoot(), clades, clock);
-        
-        // collect clade ages and increment the clade frequency counter
-        for (size_t j = 0; j < clades.size(); ++j)
-        {
-            const Clade & c = clades[j];
-            
-            if ( c.size() <= 1 && clock == true) continue;
-                        
-            const std::map<Clade, std::vector<double> >::iterator& entry = cladeAgesOfBestTree.find(c);
-            if (entry == cladeAgesOfBestTree.end())
-            {
-                // create a new entry for the age of the clade
-                std::vector<double> tempAgeVec;
-                cladeAgesOfBestTree.insert(std::pair<Clade, std::vector<double> >(c, tempAgeVec));
-            }
-            
-            // store the age for this clade
-            std::map<Clade, std::vector<double> >::iterator entry_age = cladeAgesOfBestTree.find(c);
-            entry_age->second.push_back(c.getAge());
-            
-        }
-        
-    }
-    
-    if ( verbose == true && process_active == true )
-    {
-        progress.finish();
-    }
-    
-}
-
-
-void TreeSummary::summarizeConditionalClades( bool clock )
-{
-    std::map<Clade, Sample<Clade> > cladeAbsencePresence;
-    
-    bool verbose = true;
-    bool process_active = true;
-    ProgressBar progress = ProgressBar(trace.size(), burnin);
-    if ( verbose == true && process_active == true )
-    {
-        RBOUT("Summarizing conditional clades ...\n");
-        progress.start();
-    }
-    
-    for (size_t i = burnin; i < trace.size(); ++i)
-    {
-        
-        if ( verbose == true && process_active == true)
-        {
-            progress.update(i);
-        }
-        
-        const Tree &tree = trace.objectAt( i );
-        
-        // get the conditional clades for this
-        std::vector<ConditionalClade> condClades;
-        std::vector<Clade> clades;
-        fillConditionalClades(tree.getRoot(), condClades, clades, clock);
-        
-        // first increment the clade frequency counter
-        // there need to be two loops because otherwise we count the the parent clade twice
-        for (size_t j = 0; j < clades.size(); ++j)
-        {
-            const Clade & c = clades[j];
-            const std::map<Clade, Sample<Clade> >::iterator& entry = cladeAbsencePresence.find( c );
-            if ( entry == cladeAbsencePresence.end() )
-            {
-                Sample<Clade> cladeSample = Sample<Clade>(c,0);
-                if ( i > burnin )
-                {
-                    cladeSample.setTrace( std::vector<double>(i - burnin,0.0) );
-                }
-                else
-                {
-                    cladeSample.setTrace( std::vector<double>() );
-                }
-                cladeAbsencePresence.insert( std::pair<Clade, Sample<Clade> >(c, cladeSample));
-                
-                conditionalCladeFrequencies.insert( std::pair<Clade, std::map<Clade, std::vector<double> > >(c, std::map<Clade, std::vector<double> >()) );
-                
-            }
-            
-        }
-        
-        
-        
-        for (std::map<Clade, Sample<Clade> >::iterator it=cladeAbsencePresence.begin(); it!=cladeAbsencePresence.end(); ++it )
-        {
-            bool found = false;
-            for (size_t j = 0; j < clades.size(); ++j)
-            {
-                Clade c = clades[j];
-                if ( it->first == c )
-                {
-                    found = true;
-                    break;
-                }
-                
-            }
-            
-            if ( found == true )
-            {
-                it->second.addObservation( true );
-            }
-            else
-            {
-                it->second.addObservation( false );
-            }
-            
-        }
-        
-        for (size_t j = 0; j < condClades.size(); ++j)
-        {
-            const ConditionalClade & cc = condClades[j];
-            const Clade &parent = cc.getParent();
-            const Clade &child  = cc.getChild();
-            
-            // now increment the conditional clade frequency counter
-            double childAge = child.getAge();
-            
-            std::map<Clade, std::vector<double> >& parentEntry = conditionalCladeFrequencies.find( parent )->second;
-            const std::map<Clade, std::vector<double> >::iterator& childEntry = parentEntry.find( child );
-            if ( childEntry == parentEntry.end() )
-            {
-                parentEntry.insert( std::pair<Clade, std::vector<double> >(child, std::vector<double>(1,childAge) ));
-            }
-            else
-            {
-                std::vector<double> &samples = childEntry->second;
-                samples.push_back( childAge );
-            }
-            
-        }
-        
-    }
-    
-    if ( verbose == true && process_active == true )
-    {
-        progress.finish();
-    }
-    
-    // collect the samples
-    cladeSamples.clear();
-    for (std::map<Clade, Sample<Clade> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
-    {
-        it->second.computeStatistics();
-        cladeSamples.push_back( it->second );
-    }
-    
-    // sort the samples by frequency
-    sort(cladeSamples.begin(), cladeSamples.end());
-}
-
-
-void TreeSummary::summarizeTrees( void )
-{
-    
-    std::map<std::string, Sample<std::string> > treeAbsencePresence;
-    
-    bool verbose = true;
-    bool process_active = true;
-    ProgressBar progress = ProgressBar(trace.size(), burnin);
-    if ( verbose == true && process_active == true )
-    {
-        RBOUT("Summarizing trees ...\n");
-        progress.start();
-    }
-    
-    std::string outgroup = "";
-    for (size_t i = burnin; i < trace.size(); ++i)
-    {
-        
-        if ( verbose == true && process_active == true)
-        {
-            progress.update(i);
-        }
-        
-        const Tree &tree = trace.objectAt(i);
         std::string newick = TreeUtilities::uniqueNewickTopology( tree );
-        
-        const std::map<std::string, Sample<std::string> >::iterator& entry = treeAbsencePresence.find(newick);
-        if (entry == treeAbsencePresence.end())
+
+        Sample<std::string> treeSample(newick, 0);
+        treeSample.setTrace(std::vector<double>(i - burnin, 0.0));
+        treeSampleMap.insert(std::pair<std::string, Sample<std::string> >(newick, treeSample));
+        treeCladeAges.insert(std::pair<std::string, std::map<Clade, std::vector<double>, CladeComparator > >( newick, std::map<Clade, std::vector<double>, CladeComparator >( (CladeComparator(rooted)) ) ) );
+
+        // add empty observations for all non-matching trees
+        for (std::map<std::string, Sample<std::string> >::iterator it = treeSampleMap.begin(); it != treeSampleMap.end(); ++it)
         {
-            Sample<std::string> treeSample = Sample<std::string>(newick, 0);
-            if (i > burnin)
-            {
-                treeSample.setTrace(std::vector<double>(i - burnin, 0.0));
-            }
-            else
-            {
-                treeSample.setTrace(std::vector<double>());
-            }
-            treeAbsencePresence.insert(std::pair<std::string, Sample<std::string> >(newick, treeSample));
-        }
-        
-        for (std::map<std::string, Sample<std::string> >::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
-        {
-            
             if (it->first == newick)
             {
                 it->second.addObservation(true);
@@ -2753,26 +2410,215 @@ void TreeSummary::summarizeTrees( void )
             {
                 it->second.addObservation(false);
             }
-            
+
         }
         
+        // get the clades for this tree
+        std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> condClades;
+        fillConditionalClades(tree.getRoot(), condClades);
+        
+        // collect clade ages and increment the clade frequency counter
+        for (std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator >::iterator it=condClades.begin(); it!=condClades.end(); ++it )
+        {
+            const Clade& c  = it->first;
+
+            // insert a new sample
+            Sample<Clade> cladeSample = Sample<Clade>(c, 0);
+            cladeSample.setTrace(std::vector<double>(i - burnin, 0.0));
+            // insert silently fails if clade has already been seen
+            cladeSampleMap.insert(std::pair<Clade, Sample<Clade> >(c, cladeSample));
+
+            // store the age for this clade
+            // or create a new entry for the age of the clade
+            cladeAges[c].push_back( c.getAge() );
+            treeCladeAges[newick][c].push_back( c.getAge() );
+
+            // this is an empty set if c is a tip node
+            const std::set<Clade, CladeComparator>& children = it->second;
+
+            // add conditional clade ages
+            for (std::set<Clade, CladeComparator>::const_iterator child=children.begin(); child!=children.end(); ++child )
+            {
+                // inserts new entries if doesn't already exist
+                conditionalCladeAges[c][*child].push_back( child->getAge() );
+            }
+        }
+
+        for (std::map<Clade, Sample<Clade>, CladeComparator >::iterator it=cladeSampleMap.begin(); it!=cladeSampleMap.end(); ++it )
+        {
+            if ( condClades.find( it->first ) != condClades.end() )
+            {
+                it->second.addObservation( true );
+            }
+            else
+            {
+                it->second.addObservation( false );
+            }
+
+        }
+
+        // collect sampled ancestor probs
+        for (size_t j = 0; j < tree.getNumberOfTips(); j++)
+        {
+            const TopologyNode& tip = tree.getTipNode(j);
+
+            Taxon taxon = tip.getTaxon();
+
+            Sample<Taxon> taxonSample(taxon, 0);
+            taxonSample.setTrace(std::vector<double>(i - burnin, 0.0));
+
+            sampledAncestorSamples.insert( std::pair<Taxon, Sample<Taxon> >(taxon, taxonSample) );
+
+            sampledAncestorSamples[taxon].addObservation( tip.isSampledAncestor() );
+        }
     }
     
-    if ( verbose == true && process_active == true )
+    // finish progress bar
+    if ( verbose )
     {
         progress.finish();
+        RBOUT("Collecting samples ...\n");
+    }
+
+    // collect the samples
+    cladeSamples.clear();
+    for (std::map<Clade, Sample<Clade>, CladeComparator >::iterator it = cladeSampleMap.begin(); it != cladeSampleMap.end(); ++it)
+    {
+        it->second.computeStatistics();
+        cladeSamples.push_back(it->second);
     }
     
+    // sort the samples by frequency
+    VectorUtilities::sort( cladeSamples );
+    
+
     // collect the samples
     treeSamples.clear();
-    for (std::map<std::string, Sample<std::string> >::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
+    for (std::map<std::string, Sample<std::string> >::iterator it = treeSampleMap.begin(); it != treeSampleMap.end(); ++it)
     {
         it->second.computeStatistics();
         treeSamples.push_back(it->second);
     }
-    
+
     // sort the samples by frequency
-    sort(treeSamples.begin(), treeSamples.end());
-    
+    VectorUtilities::sort( treeSamples );
+
+
+    // collect the samples
+    bool using_sampled_ancestors = false;
+
+    for (std::map<Taxon, Sample<Taxon> >::iterator it = sampledAncestorSamples.begin(); it != sampledAncestorSamples.end(); ++it)
+    {
+        it->second.computeStatistics();
+
+        using_sampled_ancestors = using_sampled_ancestors || it->second.getFrequency() > 0;
+    }
+
+    if( using_sampled_ancestors == false ) sampledAncestorSamples.clear();
+
+    summarized = true;
+}
+
+/*
+ * Sort rooted clades as normal, or by mrcas
+ * Sort unrooted clades (splits) by min(bitset,~bitset)
+ */
+bool CladeComparator::operator()(const Clade& a, const Clade& b) const
+{
+    const RbBitSet& ab = a.getBitRepresentation();
+    const RbBitSet& bb = b.getBitRepresentation();
+
+    // If clades are rooted or clades are from different sized trees,
+    // do taxon-wise comparison, taking mrcas into account.
+    if( rooted || ab.size() != bb.size() )
+    {
+        if( ab.size() != bb.size() || a.getMrca() == b.getMrca() )
+        {
+            return a < b;
+        }
+        else
+        {
+            return a.getMrca() < b.getMrca();
+        }
+    }
+
+    if( ab.empty() || bb.empty() )
+    {
+        throw(RbException("Cannot compare unrooted clades (splits) with empty bitsets"));
+    }
+
+    // do bitwise comparison
+
+    // if the first bit is 1, negate the bitset
+    bool neg_ab = ab[0];
+    bool neg_bb = bb[0];
+
+    for(size_t i = 0; i < ab.size(); i++)
+    {
+        bool vab = ab[i];
+        bool vbb = bb[i];
+
+        // get bit from min bitset for each clade
+        bool mab = neg_ab ? !vab : vab;
+        bool mbb = neg_bb ? !vbb : vbb;
+
+        // return result from first mismatch
+        if(mab != mbb)
+        {
+            return mab < mbb;
+        }
+    }
+
+    // ignore mrca in unrooted comparison
+    return false;
+}
+
+/*
+ * Rooted clades are equal iff their taxa and mrcas are equal
+ * Unrooted splits are equal iff their taxa are equal or the intersection of their bitsets is empty
+ */
+bool CladeComparator::operator()(const Sample<Clade>& s) const
+{
+    const Clade& a = s.getValue();
+
+    const RbBitSet& ab = a.getBitRepresentation();
+    const RbBitSet& bb = clade.getBitRepresentation();
+
+    // If clades are rooted or clades are from different sized trees,
+    // do taxon-wise comparison, taking mrcas into account.
+    if( rooted || ab.size() != bb.size() )
+    {
+        return a == clade && a.getMrca() == clade.getMrca();
+    }
+
+    if( ab.empty() || bb.empty() )
+    {
+        throw(RbException("Cannot compare unrooted clades (splits) with empty bitsets"));
+    }
+
+    // do bitwise comparison
+
+    // if the first bit is 1, negate the bitset
+    bool neg_ab = ab[0];
+    bool neg_bb = bb[0];
+
+    for(size_t i = 0; i < ab.size(); i++)
+    {
+        bool vab = ab[i];
+        bool vbb = bb[i];
+
+        // get bit from min bitset for each clade
+        bool mab = neg_ab ? !vab : vab;
+        bool mbb = neg_bb ? !vbb : vbb;
+
+        // return result from first mismatch
+        if(mab != mbb)
+        {
+            return false;
+        }
+    }
+
+    // ignore mrca in unrooted comparison
+    return true;
 }
 

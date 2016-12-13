@@ -75,9 +75,9 @@ RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) cons
 const std::string& Dist_wishart::getClassType(void)
 {
     
-    static std::string revType = "Dist_wishart";
+    static std::string rev_type = "Dist_wishart";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

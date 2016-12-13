@@ -52,6 +52,7 @@ namespace RevBayesCore {
         size_t                          position_;                                          //!< The position of the state in the chromosome
         size_t                          virtualPopulationSize_;                             //!< The virtual population size of the Pomo model (by default, 10)
         std::vector<double>             weights_;                                           //!< Weights are used when the "average" option is used
+        bool                            pomoRandomSampling_;                                //!< Do we perform random sampling? Otherwise we would do average.
     };
 
 }

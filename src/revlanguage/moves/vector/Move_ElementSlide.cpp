@@ -70,9 +70,9 @@ void Move_ElementSlide::constructInternalObject( void )
 const std::string& Move_ElementSlide::getClassType(void)
 {
     
-    static std::string revType = "Move_ElementSlide";
+    static std::string rev_type = "Move_ElementSlide";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

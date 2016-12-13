@@ -90,9 +90,9 @@ const ArgumentRules& Func_treePairwiseDistances::getArgumentRules( void ) const
 const std::string& Func_treePairwiseDistances::getClassType(void)
 {
     
-    static std::string revType = "Func_treePairwiseDistances";
+    static std::string rev_type = "Func_treePairwiseDistances";
     
-    return revType;
+    return rev_type;
 }
 
 

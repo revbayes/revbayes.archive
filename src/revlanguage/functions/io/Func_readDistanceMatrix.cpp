@@ -73,9 +73,9 @@ const ArgumentRules& Func_readDistanceMatrix::getArgumentRules( void ) const
 const std::string& Func_readDistanceMatrix::getClassType(void)
 {
 	
-	static std::string revType = "Func_readDistanceMatrix";
+	static std::string rev_type = "Func_readDistanceMatrix";
 	
-	return revType;
+	return rev_type;
 }
 
 

@@ -90,9 +90,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__conversion<rlTypeFrom, rlTy
 template <typename rlTypeFrom, typename rlTypeTo>
 const std::string& RevLanguage::Func__conversion<rlTypeFrom, rlTypeTo>::getClassType(void)
 {
-    static std::string revType = "Func__conversion<" + rlTypeFrom::getClassType() + "," + rlTypeTo::getClassType() + ">";
+    static std::string rev_type = "Func__conversion<" + rlTypeFrom::getClassType() + "," + rlTypeTo::getClassType() + ">";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

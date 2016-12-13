@@ -39,25 +39,13 @@ Func_mapTree* Func_mapTree::clone( void ) const
 RevPtr<RevVariable> Func_mapTree::execute( void )
 {
     
-    // get the x% hpd
-    double x = 0.95;
-    
-    const TraceTree& tt = static_cast<const TraceTree&>( args[0].getVariable()->getRevObject() );
+    TraceTree& tt = static_cast<TraceTree&>( args[0].getVariable()->getRevObject() );
     const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-    int burnin = static_cast<const Integer &>(args[2].getVariable()->getRevObject()).getValue();
     
-    RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
-
-    // set the burnin
-    summary.setBurnin( burnin );
+    //int burnin = static_cast<const Integer &>(args[2].getVariable()->getRevObject()).getValue();
+    //tt.getTreeSummary().setBurnin(burnin);
     
-    RevBayesCore::Tree* tree = summary.map( tt.getValue().isClock() );
-    
-    // get the tree with x% HPD node ages
-    summary.annotateHPDAges(*tree, x );
-    
-    // get the tree with x% HPD node ages
-    summary.annotate(*tree);
+    RevBayesCore::Tree* tree = tt.getValue().mapTree();
     
     
     if ( filename != "" )
@@ -77,7 +65,17 @@ RevPtr<RevVariable> Func_mapTree::execute( void )
         
     }
     
-    return new RevVariable( new Tree( tree ) );
+    Tree* t;
+    if( tt.getValue().getTreeTrace().isClock() )
+    {
+        t = new TimeTree( tree );
+    }
+    else
+    {
+        t = new BranchLengthTree( tree );
+    }
+
+    return new RevVariable( t );
 }
 
 
@@ -92,9 +90,9 @@ const ArgumentRules& Func_mapTree::getArgumentRules( void ) const
     if (!rules_set)
     {
         
-        argumentRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec(), "The samples of trees from the posterior.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec(), "The number of trees to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        argumentRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The samples of trees from the posterior.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
+        //argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec(), "The number of trees to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         
         rules_set = true;
     }
@@ -107,9 +105,9 @@ const ArgumentRules& Func_mapTree::getArgumentRules( void ) const
 const std::string& Func_mapTree::getClassType(void)
 {
     
-    static std::string revType = "Func_mapTree";
+    static std::string rev_type = "Func_mapTree";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

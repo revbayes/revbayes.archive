@@ -77,9 +77,9 @@ const ArgumentRules& Func_biogeo_grm::getArgumentRules( void ) const
 const std::string& Func_biogeo_grm::getClassType(void)
 {
     
-    static std::string revType = "Func_biogeo_grm";
+    static std::string rev_type = "Func_biogeo_grm";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

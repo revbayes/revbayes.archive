@@ -115,9 +115,9 @@ template <typename valType, typename retType>
 const std::string& RevLanguage::Func_ceil<valType, retType>::getClassType(void)
 {
     
-    static std::string revType = "Func_ceil";
+    static std::string rev_type = "Func_ceil";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

@@ -117,9 +117,9 @@ template <typename valType>
 const std::string& RevLanguage::Dist_dpp<valType>::getClassType(void)
 {
     
-    static std::string revType = "Dist_dpp";
+    static std::string rev_type = "Dist_dpp";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

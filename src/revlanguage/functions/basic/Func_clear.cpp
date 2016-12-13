@@ -73,9 +73,9 @@ const ArgumentRules& Func_clear::getArgumentRules( void ) const
 const std::string& Func_clear::getClassType(void)
 {
     
-    static std::string revType = "Func_clear";
+    static std::string rev_type = "Func_clear";
     
-	return revType; 
+	return rev_type; 
 }
 
 

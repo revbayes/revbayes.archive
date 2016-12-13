@@ -82,9 +82,9 @@ RevBayesCore::ConstantPopulationCoalescent* Dist_Coalescent::createDistribution(
 const std::string& Dist_Coalescent::getClassType( void )
 {
     
-    static std::string revType = "Dist_Coalescent";
+    static std::string rev_type = "Dist_Coalescent";
     
-    return revType;
+    return rev_type;
 }
 
 

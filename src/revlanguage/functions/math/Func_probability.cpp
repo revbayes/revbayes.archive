@@ -59,9 +59,9 @@ const ArgumentRules& Func_probability::getArgumentRules( void ) const
 const std::string& Func_probability::getClassType(void)
 {
     
-    static std::string revType = "Func_probability";
+    static std::string rev_type = "Func_probability";
     
-    return revType;
+    return rev_type;
 }
 
 

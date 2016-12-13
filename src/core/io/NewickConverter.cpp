@@ -3,8 +3,6 @@
 #include "TopologyNode.h"
 #include "Tree.h"
 
-#include <boost/lexical_cast.hpp>
-
 #include <sstream>
 #include <vector>
 
@@ -23,7 +21,7 @@ NewickConverter::~NewickConverter()
 
 
 
-Tree* NewickConverter::convertFromNewick(std::string const &n)
+Tree* NewickConverter::convertFromNewick(std::string const &n, bool reindex)
 {
     
     // create and allocate the tree object
@@ -59,76 +57,21 @@ Tree* NewickConverter::convertFromNewick(std::string const &n)
     TopologyNode *root = createNode( trimmed, nodes, brlens );
     
     // set up the tree
-    t->setRoot( root );
+    t->setRoot( root, reindex );
     
     // set the branch lengths
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         t->getNode( nodes[i]->getIndex() ).setBranchLength( brlens[i] );
     }
-    
+
+    // trees with 2-degree root nodes should not be rerooted
+    t->setRooted( root->getNumberOfChildren() == 2 );
+
     // make all internal nodes bifurcating
     // this is important for fossil trees which have sampled ancestors
-    //t->makeInternalNodesBifurcating();  JPH commented this out. The tree reader should be general and not make a bifurcating tree so early
+    t->makeInternalNodesBifurcating();
     
-    // return the tree, the caller is responsible for destruction
-    return t;
-}
-
-
-
-// used for reading in tree with existing node indexes we need to keep
-Tree* NewickConverter::convertFromNewickNoReIndexing(const std::string &n)
-{
-    
-    // create and allocate the tree object
-    Tree *t = new Tree();
-    
-    std::vector<TopologyNode*> nodes;
-    std::vector<double> brlens;
-    
-    // create a string-stream and throw the string into it
-    std::stringstream ss (std::stringstream::in | std::stringstream::out);
-    ss << n;
-    
-    // ignore white spaces
-    std::string trimmed = "";
-    char c;
-    while ( ss.good() )
-    {
-        // check for EOF
-        int c_int = ss.get();
-        if (c_int != EOF)
-        {
-            c = char( c_int );
-            if ( c != ' ')
-            {
-                trimmed += c;
-            }
-            
-        }
-        
-    }
-	
-	// construct the tree starting from the root
-    TopologyNode *root = createNode( trimmed, nodes, brlens );
-	
-    // set up the tree keeping the existing indexes
-	t->setRoot( root, false );
-	
-	// order the nodes
-	t->orderNodesByIndex();
-	
-    // set the branch lengths
-    for (size_t i = 0; i < nodes.size(); ++i)
-    {
-		t->getNode( nodes[i]->getIndex() ).setBranchLength( brlens[i] );
-    }
-    
-    // make all internal nodes bifurcating
-    // this is important for fossil trees which have sampled ancestors
-   // t->makeInternalNodesBifurcating();  JPH commented this out. The tree reader should be general and not make a bifurcating tree so early
-	
     // return the tree, the caller is responsible for destruction
     return t;
 }
@@ -212,7 +155,7 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                 
                 // read the parameter name
                 std::string paramName = "";
-                while ( ss.good() && (c = char( ss.peek() ) ) != '=' && c != ',')
+                while ( ss.good() && (c = char( ss.peek() ) ) != '=' && c != ',' && c != ']')
                 {
                     paramName += char( ss.get() );
                 }
@@ -233,19 +176,15 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
 				if (paramName == "index")
                 {
 					// subtract by 1 to correct RevLanguage 1-based indexing
-                    childNode->setIndex( boost::lexical_cast<std::size_t>(paramValue) - 1 );
+                    childNode->setIndex( atoi(paramValue.c_str()) - 1 );
 					
                 }
                 else if (paramName=="species")
                 {
-					
-					// \todo: Needs implementation
                     childNode->setSpeciesName(paramValue);
-                
 				}
                 else
                 {
-					
                     childNode->addNodeParameter(paramName, paramValue);
                 }
 				
@@ -320,19 +259,14 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                 if (paramName=="index")
                 {
                     // subtract by 1 to correct RevLanguage 1-based indexing
-                    childNode->setIndex( boost::lexical_cast<std::size_t>(paramValue) - 1 );
-                    
+                    childNode->setIndex( atoi(paramValue.c_str()) - 1 );
                 }
                 else if (paramName=="species")
                 {
-                    
-                    // \todo: Needs implementation
                     childNode->setSpeciesName(paramValue);
-                    
                 }
                 else
                 {
-                    
                     childNode->addBranchParameter(paramName, paramValue);
                 }
                 
@@ -355,8 +289,9 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     if (node->getNumberOfChildren() == 1)
     {
         node->setFossil( true );
+        node->setSampledAncestor( true );
     }
-    
+
     // remove closing parenthesis
     ss.ignore();
     
@@ -385,7 +320,7 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
             
             // read the parameter name
             std::string paramName = "";
-            while ( ss.good() && (c = char( ss.peek() )) != '=' && c != ',') 
+            while ( ss.good() && (c = char( ss.peek() )) != '=' && c != ',')
             {
                 paramName += char( ss.get() );
             }
@@ -406,19 +341,15 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
 			if (paramName=="index")
             {
 				// subtract by 1 to correct RevLanguage 1-based indexing
-				node->setIndex( boost::lexical_cast<std::size_t>(paramValue) - 1 );
+				node->setIndex( atoi(paramValue.c_str()) - 1 );
 				
 			}
             else if (paramName=="species")
             {
-				
-				// \todo: Needs implementation
-                node->setSpeciesName(paramValue);
-				
+				node->setSpeciesName(paramValue);
             }
             else
             {
-				
                 node->addNodeParameter(paramName, paramValue);
             }
 
@@ -433,7 +364,7 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
         
     }
     
-    // read the optinal branch length
+    // read the optional branch length
     if ( char( ss.peek() ) == ':' )
     {
         ss.ignore();
@@ -496,19 +427,15 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
             if (paramName=="index")
             {
                 // subtract by 1 to correct RevLanguage 1-based indexing
-                node->setIndex( boost::lexical_cast<std::size_t>(paramValue) - 1 );
+                node->setIndex( atoi(paramValue.c_str()) - 1 );
                 
             }
             else if (paramName=="species")
             {
-                
-                // \todo: Needs implementation
                 node->setSpeciesName(paramValue);
-                
             }
             else
             {
-                
                 node->addBranchParameter(paramName, paramValue);
             }
             

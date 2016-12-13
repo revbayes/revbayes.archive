@@ -78,9 +78,9 @@ const ArgumentRules& Func_readTrees::getArgumentRules( void ) const
 const std::string& Func_readTrees::getClassType(void)
 {
     
-    static std::string revType = "Func_readTrees";
+    static std::string rev_type = "Func_readTrees";
     
-	return revType; 
+	return rev_type; 
 }
 
 

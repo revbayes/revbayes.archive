@@ -50,9 +50,9 @@ RevBayesCore::PhyloWhiteNoiseProcess* Dist_PhyloWhiteNoise::createDistribution( 
 const std::string& Dist_PhyloWhiteNoise::getClassType(void)
 {
     
-    static std::string revType = "Dist_PhyloWhiteNoise";
+    static std::string rev_type = "Dist_PhyloWhiteNoise";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

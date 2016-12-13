@@ -84,3 +84,8 @@ void Argument::printValue(std::ostream &o) const
     
 }
 
+
+void Argument::setLabel( const std::string& l)
+{
+    label = l;
+}

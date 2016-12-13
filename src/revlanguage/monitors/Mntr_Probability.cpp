@@ -61,9 +61,9 @@ void Mntr_Probability::constructInternalObject( void )
 const std::string& Mntr_Probability::getClassType(void)
 {
     
-    static std::string revType = "Mntr_Probability";
+    static std::string rev_type = "Mntr_Probability";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

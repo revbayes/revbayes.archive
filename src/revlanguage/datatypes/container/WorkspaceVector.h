@@ -304,9 +304,9 @@ RevPtr<RevVariable> WorkspaceVector<rlType>::executeMethod( std::string const &n
 template <typename rlType>
 const std::string& WorkspaceVector<rlType>::getClassType(void)
 {
-    static std::string revType = rlType::getClassType() + "[]";
+    static std::string rev_type = rlType::getClassType() + "[]";
     
-	return revType;
+	return rev_type;
 }
 
 

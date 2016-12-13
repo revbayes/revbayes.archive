@@ -92,8 +92,8 @@ void Move_SynchronizedVectorFixedSingleElementSlide::constructInternalObject( vo
 const std::string& Move_SynchronizedVectorFixedSingleElementSlide::getClassType(void)
 {
     
-    static std::string revType = "Move_SynchronizedVectorFixedSingleElementSlide";
-    return revType;
+    static std::string rev_type = "Move_SynchronizedVectorFixedSingleElementSlide";
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

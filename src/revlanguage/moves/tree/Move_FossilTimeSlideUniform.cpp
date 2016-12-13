@@ -58,9 +58,9 @@ void Move_FossilTimeSlideUniform::constructInternalObject( void )
 const std::string& Move_FossilTimeSlideUniform::getClassType(void)
 {
     
-    static std::string revType = "Move_FossilTimeSlideUniform";
+    static std::string rev_type = "Move_FossilTimeSlideUniform";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
