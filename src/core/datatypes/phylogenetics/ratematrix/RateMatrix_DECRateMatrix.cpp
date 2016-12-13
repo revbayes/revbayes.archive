@@ -597,6 +597,16 @@ std::string RateMatrix_DECRateMatrix::getRangeStr(const std::vector<unsigned>& v
     return ss.str();
 }
 
+std::vector<double> RateMatrix_DECRateMatrix::getStationaryFrequencies(void) const
+{
+    // MJL: The initial DEC model uses flat stationary frequencies.
+    //      Two alternative solutions in RevBayes (not yet exposed in RevLanguage):
+    //          1) DEC conditioned on survival without cladogenesis
+    //          2) DEC conditioned on survival with cladogensis
+    std::vector<double> f(num_states, 1.0/num_states);
+    return(f);
+}
+
 /*
 void RateMatrix_DECRateMatrix::initializeStationaryMatrix(void)
 {
