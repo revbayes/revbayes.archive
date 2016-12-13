@@ -6,6 +6,7 @@
 #include "Probability.h"
 #include "RbException.h"
 #include "RevNullObject.h"
+#include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "RlTraceTree.h"
@@ -49,8 +50,22 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
     // get the filename
     const std::string& filename = static_cast<const RlString&>( args[arg_index++].getVariable()->getRevObject() ).getValue();
     
-//    // get the x% hpd
-//    double x = static_cast<const Probability &>(args[arg_index++].getVariable()->getRevObject()).getValue();
+
+    RevBayesCore::AnnotationReport report;
+
+    report.ages = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
+
+    report.mean = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
+
+    // get the x% hpd
+    report.hpd = static_cast<const Probability &>(args[arg_index++].getVariable()->getRevObject()).getValue();
+
+    report.sa = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
+
+    report.conditional_ages = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
+
+    report.ccp = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
+
 //    
 //    // get burnin
 //    int burnin = static_cast<const Integer &>(args[arg_index++].getVariable()->getRevObject()).getValue();
@@ -59,13 +74,12 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
     // this way we don't need to resummarize every time we annotate a tree
     // RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
     
-    RevBayesCore::AnnotationReport report;
     tt.getValue().annotateTree( *tree, report );
     
     // return the tree
     if ( filename != "" )
     {
-        
+
         RevBayesCore::NexusWriter writer(filename);
         writer.openStream();
         
@@ -80,7 +94,17 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
         
     }
     
-    return new RevVariable( new Tree( tree ) );
+    Tree* t;
+    if( tt.getValue().getTreeTrace().isClock() )
+    {
+        t = new TimeTree( tree );
+    }
+    else
+    {
+        t = new BranchLengthTree( tree );
+    }
+
+    return new RevVariable( t );
 }
 
 
@@ -97,7 +121,13 @@ const ArgumentRules& Func_annotateTree::getArgumentRules( void ) const
 //        argumentRules.push_back( new ArgumentRule( "hpd"   ,    Probability::getClassTypeSpec() , "The probability contained in the highest posterior density interval.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95) ) );
         argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec()        , "The input tree which will be annotated.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec()   , "The sample trace.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()    , "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()    , "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("")  ) );
+        argumentRules.push_back( new ArgumentRule( "ages" , RlBoolean::getClassTypeSpec() , "Annotate node ages?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        argumentRules.push_back( new ArgumentRule( "mean" , RlBoolean::getClassTypeSpec() , "Annotate node ages using the mean age instead of the median?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        argumentRules.push_back( new ArgumentRule( "hpd"   ,    Probability::getClassTypeSpec() , "The probability mass of the highest posterior density age interval.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95) ) );
+        argumentRules.push_back( new ArgumentRule( "sampledAncestors" , RlBoolean::getClassTypeSpec() , "Annotate sampled ancestor probs?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "conditionalAges" , RlBoolean::getClassTypeSpec() , "Annotate conditional clade ages?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "ccp" , RlBoolean::getClassTypeSpec() , "Annotate conditional clade probabilities?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
 //        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()     , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         rules_set = true;
     }

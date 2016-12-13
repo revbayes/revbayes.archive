@@ -77,6 +77,7 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
     if ( tn->getNumberOfChildren() == 1 )
     {
         tn->setFossil( true );
+        tn->setSampledAncestor( true );
     }
     
 }
@@ -117,7 +118,6 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t, bool
         if ( nodes[i]->isTip() && ages[i] > 0.0)
         {
             nodes[i]->setFossil( true );
-            nodes[i]->setSampledAncestor( nodes[i]->getBranchLength() == 0.0 || nodes[i]->isSampledAncestor() );
         }
         
     }
@@ -300,32 +300,36 @@ std::string RevBayesCore::TreeUtilities::uniqueNewickTopologyRecursive(const Top
     // check whether this is an internal node
     if ( n.isTip() ) 
     {
-        std::string name = n.getName();
-        if( n.isSampledAncestor() )
-        {
-            name += "[&sampled_ancestor]";
-        }
-        return name;
+        return n.getName();
     } 
     else 
     {
+        std::string fossil = "";
         std::string newick = "(";
-        std::vector<std::string> children;
+        std::vector<std::string> child_newick;
         for (size_t i = 0; i < n.getNumberOfChildren(); ++i) 
         {
-            children.push_back( uniqueNewickTopologyRecursive(n.getChild( i ) ) );
+            const TopologyNode& child = n.getChild( i );
+            if( child.isSampledAncestor() && (child.getName() < fossil || fossil == "") )
+            {
+                fossil = child.getName();
+            }
+            else
+            {
+                child_newick.push_back( uniqueNewickTopologyRecursive( child ) );
+            }
         }
-        sort(children.begin(), children.end());
-        for (std::vector<std::string>::iterator it = children.begin(); it != children.end(); ++it) 
+        sort(child_newick.begin(), child_newick.end());
+        for (std::vector<std::string>::iterator it = child_newick.begin(); it != child_newick.end(); ++it)
         {
-            if ( it != children.begin() ) 
+            if ( it != child_newick.begin() )
             {
                 newick += ",";
             }
             newick += *it;
         }
         newick += ")";
-        newick += n.getName();
+        newick += fossil;
         
         return newick;
     }

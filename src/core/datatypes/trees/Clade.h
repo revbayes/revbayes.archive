@@ -51,7 +51,7 @@ namespace RevBayesCore {
         double                                      getAge(void) const;                                         //!< Get the age of this clade.
         const RbBitSet&                             getBitRepresentation(void) const;                           //!< Get the clade as a bit representation.
         void                                        setBitRepresentation(RbBitSet);
-        const Taxon&                                getMrca(void) const;                                        //!< Get the mrca taxon.
+        const std::vector<Taxon>&                   getMrca(void) const;                                        //!< Get the mrca taxon.
         int                                         getNumberMissingTaxa(void) const;                           //!< Get the number of missing taxa.
         size_t                                      getNumberOfTaxa(void) const;                                //!< Get the number of taxa.
         std::vector<Taxon>&                         getTaxa(void);                                              //!< Get the taxon names.
@@ -59,7 +59,7 @@ namespace RevBayesCore {
         const Taxon&                                getTaxon(size_t i) const;                                   //!< Get a single taxon name.
         const std::string&                          getTaxonName(size_t i) const;                               //!< Get a single taxon name.
         void                                        setAge(double a);                                           //!< Set the age of the clade.
-        void                                        setMrca(const Taxon&);                                      //!< Set the mrca taxon, if applicable.
+        void                                        setMrca(const std::vector<Taxon>&);                         //!< Set the mrca taxon, if applicable.
         void                                        setNumberMissingTaxa(int n);                                //!< Set the number of missing taxa in this clade.
         void                                        setTaxonAge(size_t i, double age);                          //!< Set a single taxon's age.
         size_t                                      size(void) const;                                           //!< Get the number of taxa.
@@ -73,7 +73,7 @@ namespace RevBayesCore {
         double                                      age;
         RbBitSet                                    bitset;
         int                                         num_missing;
-        Taxon                                       mrca;
+        std::vector<Taxon>                          mrca;
         std::vector<Taxon>                          taxa;
         
     };

@@ -64,12 +64,13 @@ Tree* NewickConverter::convertFromNewick(std::string const &n, bool reindex)
     {
         t->getNode( nodes[i]->getIndex() ).setBranchLength( brlens[i] );
     }
-    
+
+    // trees with 2-degree root nodes should not be rerooted
     t->setRooted( root->getNumberOfChildren() == 2 );
 
     // make all internal nodes bifurcating
     // this is important for fossil trees which have sampled ancestors
-    //t->makeInternalNodesBifurcating();  JPH commented this out. The tree reader should be general and not make a bifurcating tree so early
+    t->makeInternalNodesBifurcating();
     
     // return the tree, the caller is responsible for destruction
     return t;
@@ -182,11 +183,6 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                 {
                     childNode->setSpeciesName(paramValue);
 				}
-                else if (paramName=="sampled_ancestor")
-                {
-                    childNode->setFossil( true );
-                    childNode->setSampledAncestor( true );
-                }
                 else
                 {
                     childNode->addNodeParameter(paramName, paramValue);
@@ -293,6 +289,7 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     if (node->getNumberOfChildren() == 1)
     {
         node->setFossil( true );
+        node->setSampledAncestor( true );
     }
 
     // remove closing parenthesis

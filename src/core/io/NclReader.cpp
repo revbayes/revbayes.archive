@@ -260,11 +260,11 @@ std::vector<Tree*>* NclReader::convertTreesFromNcl(void)
 				const NxsFullTreeDescription & ftd = trb->GetFullTreeDescription(j);
 				NxsSimpleTree tree(ftd, -1, -1.0);
                 //                tree.WriteAsNewick(std::cout, true, true, true, tb);
-				Tree* rbTree = translateNclSimpleTreeToBranchLengthTree(tree,tb);
+				Tree* rbTree = translateNclSimpleTreeToBranchLengthTree(tree,tb,ftd.IsRooted());
                 //                rbTree->fillNodeTimes();
                 //                rbTree->equalizeBranchLengths();
                 
-                //rbTree->makeInternalNodesBifurcating(); JPH commented this out. The tree reader should be general and not make a bifurcating tree so early
+                rbTree->makeInternalNodesBifurcating();
                 
 				rbTreesFromFile->push_back( rbTree );
             }
@@ -1841,7 +1841,7 @@ void NclReader::setExcluded( const NxsCharactersBlock* charblock, HomologousChar
 
 
 /** Translate a single NCL tree into a RevBayes tree */
-Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, const NxsTaxaBlock *tb) {
+Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, const NxsTaxaBlock *tb, bool rooted) {
     
     // get the root from the ncl tree
     const NxsSimpleNode* rn = nTree.GetRootConst();
@@ -1862,19 +1862,22 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
     
 	// construct tree recursively
     constructBranchLengthTreefromNclRecursively(root, nodes, brlens, rn, tb);
-    
+
     // create a new simple tree
     Tree* tau = new Tree();
     
     // initialize the topology by setting the root
     tau->setRoot(root);
     
+    // trees with 2-degree root nodes should not be rerooted
+    tau->setRooted( root->getNumberOfChildren() == 2 || rooted);
+
     // finally set the branch lengths
     for ( size_t i = 0; i < nodes.size(); ++i )
     {
         tau->getNode(nodes[i]->getIndex()).setBranchLength( brlens[i] );
     }
     
-	return tau;
+    return tau;
     
 }

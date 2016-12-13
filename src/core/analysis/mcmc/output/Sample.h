@@ -32,7 +32,7 @@ namespace RevBayesCore {
     class Sample {
 
     public:
-        Sample(const valueType& v, unsigned int f=0);
+        Sample(const valueType& v = valueType(), unsigned int f=0);
     
         // overloaded operators
         bool                            operator<(const Sample &s) const;

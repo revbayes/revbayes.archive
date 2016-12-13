@@ -41,6 +41,7 @@ namespace RevBayesCore {
         bool map_parameters   = false;
         bool mean             = true;
         bool posterior        = true;
+        bool sa               = true;
         double hpd            = 0.95;
     };
 
@@ -89,6 +90,7 @@ namespace RevBayesCore {
         bool                                                                    use_tree_trace;
 
         std::vector<Sample<Clade> >                                             cladeSamples;
+        std::map<Taxon, Sample<Taxon> >                                         sampledAncestorSamples;
         std::vector<Sample<std::string> >                                       treeSamples;
 
         std::map<Clade, std::vector<double>, CladeComparator >                                    cladeAges;

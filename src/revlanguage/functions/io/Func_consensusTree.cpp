@@ -11,6 +11,7 @@
 #include "RlTimeTree.h"
 #include "RlTraceTree.h"
 #include "RlUtils.h"
+#include "Probability.h"
 #include "StringUtilities.h"
 #include "TreeSummary.h"
 #include "TraceTree.h"
@@ -65,7 +66,17 @@ RevPtr<RevVariable> Func_consensusTree::execute(void)
         
     }
     
-    return new RevVariable( new Tree( tree ) );
+    Tree* t;
+    if( tt.getValue().getTreeTrace().isClock() )
+    {
+        t = new TimeTree( tree );
+    }
+    else
+    {
+        t = new BranchLengthTree( tree );
+    }
+
+    return new RevVariable( t );
 }
 
 
@@ -81,8 +92,8 @@ const ArgumentRules& Func_consensusTree::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file for storing the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "cutoff"   , RealPos::getClassTypeSpec()  , "The minimum threshold for clade probabilities.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file for storing the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
+        argumentRules.push_back( new ArgumentRule( "cutoff"   , Probability::getClassTypeSpec()  , "The minimum threshold for clade probabilities.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.5) ) );
         //argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         
         rules_set = true;

@@ -60,7 +60,7 @@ Clade::Clade(const std::vector<Taxon> &n, const RbBitSet &b) :
  * Overloaded equals operator.
  * Only if we have the exact same taxon names then these two clades are equal.
  */
-bool Clade::operator==(const Clade &c) const 
+bool Clade::operator==(const Clade &c) const
 {
     
     if ( c.size() != taxa.size() )
@@ -99,7 +99,7 @@ bool Clade::operator!=(const Clade &c) const
 /**
  * Less than operator so that we can sort the clades.
  */
-bool Clade::operator<(const Clade &c) const 
+bool Clade::operator<(const Clade &c) const
 {
     
     if ( taxa.size() < c.size() )
@@ -245,7 +245,7 @@ const RbBitSet& Clade::getBitRepresentation( void ) const
  * \return       The mrca taxon
  *
  */
-const Taxon& Clade::getMrca(void) const
+const std::vector<Taxon>& Clade::getMrca(void) const
 {
     return mrca;
 }
@@ -345,18 +345,16 @@ void Clade::setBitRepresentation( RbBitSet b )
 
 
 /**
- * Set the mrca taxon. Must be empty taxon or a taxon already contained in the clade.
+ * Set the mrca taxa. Must be taxa already contained in the clade.
  *
- * \param[in]    t      The taxon to be set as the mrca
+ * \param[in]    t      The taxa to be set as the mrca
  *
  */
-void Clade::setMrca(const Taxon& t)
+void Clade::setMrca(const std::vector<Taxon>& t)
 {
-    if( t != Taxon() && std::find(taxa.begin(), taxa.end(), t) == taxa.end())
-    {
-        throw(RbException("Could not find mrca taxon in clade"));
-    }
     mrca = t;
+
+    VectorUtilities::sort(mrca);
 }
 
 
@@ -411,7 +409,7 @@ std::string Clade::toString( void ) const
             s += ",";
         }
         s += taxa[i].getName();
-        if( taxa[i] == mrca && taxa.size() > 1 )
+        if( std::find(mrca.begin(), mrca.end(), taxa[i]) != mrca.end() )
         {
             s += "*";
         }

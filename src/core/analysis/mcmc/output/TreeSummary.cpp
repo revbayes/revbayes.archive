@@ -20,27 +20,25 @@
 using namespace RevBayesCore;
 
 TreeSummary::TreeSummary( void ) :
-    burnin( 0 ),
     clock( true ),
     rooted( true ),
     summarized( false ),
     trace( false ),
     use_tree_trace( false )
 {
-    
+    setBurnin( 0 );
 }
 
 TreeSummary::TreeSummary( const TraceTree &t ) :
-    burnin( t.getBurnin() ),
     clock( t.isClock() ),
-    rooted( t.objectAt(0).isRooted() || t.isClock() ),
+    rooted( t.objectAt(0).isRooted() ),
     summarized( false ),
     trace( t ),
     use_tree_trace( true ),
     cladeAges( CladeComparator(rooted) ),
     conditionalCladeAges( CladeComparator(rooted) )
 {
-
+    setBurnin( t.getBurnin() );
 }
 
 
@@ -1507,7 +1505,6 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report )
     {
         TopologyNode* n = nodes[i];
 
-        // first we compute the posterior probability of the clade
         Clade c = n->getClade();
 
         // annotate clade posterior prob
@@ -1518,7 +1515,19 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report )
             n->addNodeParameter("posterior",pp);
         }
 
-        // second we get the age sample for this node
+        // are we using sampled ancestors?
+        if( sampledAncestorSamples.empty() == false )
+        {
+            double saFreq = sampledAncestorSamples[n->getTaxon()].getFrequency();
+
+            // annotate sampled ancestor prob
+            if( ((n->isTip() && n->isFossil()) || saFreq > 0) && report.sa )
+            {
+                n->addNodeParameter("sampled_ancestor", saFreq / sampleSize);
+            }
+        }
+
+        // annotate conditional clade probs and get node ages
         std::vector<double> nodeAges;
 
         if ( !n->isRoot() )
@@ -1620,7 +1629,7 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report )
 
             if( clock )
             {
-                if( !n->isTip() || lower != upper )
+                if( !n->isTip() || ( ( n->isFossil() || upper != lower) && !n->isSampledAncestor() ) )
                 {
                     std::string label = "age_" + StringUtilities::toString( (int)(report.hpd * 100) ) + "%_HPD";
                     n->addNodeParameter(label, interval);
@@ -1826,10 +1835,6 @@ int TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree)
     {
         t.reroot( outgroup );
     }
-    else if( t.isRooted() != rooted )
-    {
-        return 0;
-    }
 
     std::string newick = TreeUtilities::uniqueNewickTopology( t );
     
@@ -1888,6 +1893,17 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
     summarize();
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
+
+    std::string outgroup = trace.objectAt(0).getTipNames()[0];
+
+    Tree tree = t;
+
+    if( tree.isRooted() == false && rooted == false )
+    {
+        tree.reroot( outgroup );
+    }
+
+    std::string newick = TreeUtilities::uniqueNewickTopology(tree);
    
     double totalSamples = trace.size();
     double totalProb = 0.0;
@@ -1901,14 +1917,10 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
         if ( include_prob > rng->uniform01() )
         {
             const std::string &current_sample = it->getValue();
-            NewickConverter converter;
-            Tree* current_tree = converter.convertFromNewick( current_sample );
-            if ( current_tree->hasSameTopology( t ) )
+            if ( newick == current_sample )
             {
-                delete current_tree;
                 return true;
             }
-            delete current_tree;
             
         }
         
@@ -1939,24 +1951,28 @@ Tree* TreeSummary::mapTree()
     NewickConverter converter;
     Tree* tmp_best_tree = converter.convertFromNewick( bestNewick );
     
+    Tree* tmp_tree = NULL;
+
     if ( clock == true )
     {
-        tmp_best_tree = TreeUtilities::convertTree( *tmp_best_tree );
+        tmp_tree = TreeUtilities::convertTree( *tmp_best_tree );
     }
     else
     {
-        tmp_best_tree = tmp_best_tree->clone();
+        tmp_tree = tmp_best_tree->clone();
     }
 
+    delete tmp_best_tree;
+
     TaxonMap tm = TaxonMap( trace.objectAt(0) );
-    tmp_best_tree->setTaxonIndices( tm );
+    tmp_tree->setTaxonIndices( tm );
 
     AnnotationReport report;
     report.input_tree_ages = true;
     report.map_parameters  = true;
-    annotateTree(*tmp_best_tree, report );
+    annotateTree(*tmp_tree, report );
     
-    return tmp_best_tree;
+    return tmp_tree;
 }
 
 
@@ -2067,30 +2083,36 @@ Tree* TreeSummary::mrTree(double cutoff)
         std::vector<TopologyNode*> children;
         TopologyNode* parentNode = findParentNode(*root, clade, children);
 
-        if(parentNode != NULL && children.size() < parentNode->getNumberOfChildren() )
+        if(parentNode != NULL )
         {
-            TopologyNode* mrca = NULL;
+            // skip this node if we've already found a clade compatible with it
+            if( children.size() >= parentNode->getNumberOfChildren() ) continue;
+
+            std::vector<TopologyNode*> mrca;
 
             // find the mrca child if it exists
-            if( clade.getMrca() != Taxon() )
+            if( !clade.getMrca().empty() )
             {
                 for (size_t i = 0; i < children.size(); i++)
                 {
-                    if( children[i]->isTip() && children[i]->getTaxon() == clade.getMrca() )
+                    if( children[i]->isTip() && std::find(clade.getMrca().begin(), clade.getMrca().end(), children[i]->getTaxon() ) != clade.getMrca().end() )
                     {
-                        mrca = children[i];
+                        mrca.push_back(children[i]);
                     }
                 }
 
                 // if we couldn't find the mrca, then this clade is not compatible
-                if( mrca == NULL )
+                if( mrca.size() != clade.getMrca().size() )
                 {
                     continue;
                 }
                 else
                 {
-                    mrca->setFossil(true);
-                    mrca->setSampledAncestor(true);
+                    for (size_t i = 0; i < mrca.size(); i++)
+                    {
+                        mrca[i]->setFossil(true);
+                        mrca[i]->setSampledAncestor(true);
+                    }
                 }
             }
 
@@ -2109,19 +2131,25 @@ Tree* TreeSummary::mrTree(double cutoff)
             intNode->setParent(parentNode);
             parentNode->addChild(intNode);
 
-            // add the mrca child if it exists and the parent node is a multifurcation
-            if( mrca != NULL && children.size() > 2 )
+            // add a mrca child if it exists and there is more than one non-mrca taxa
+            if( !mrca.empty() && children.size() > 2 )
             {
+                TopologyNode* old_parent = parentNode;
+
                 nIndex++;   //increment node index
                 parentNode = new TopologyNode(nIndex); //Topology node constructor, with proper node index
                 parentNode->setNodeType(false, false, true);
 
-                intNode->removeChild(mrca);
-                parentNode->addChild(mrca);
-                mrca->setParent(parentNode);
+                intNode->removeChild(mrca[0]);
+                parentNode->addChild(mrca[0]);
+                mrca[0]->setParent(parentNode);
 
-                intNode->setParent(parentNode);
+                old_parent->removeChild(intNode);
+                old_parent->addChild(parentNode);
+                parentNode->setParent(old_parent);
+
                 parentNode->addChild(intNode);
+                intNode->setParent(parentNode);
             }
         }
 
@@ -2333,6 +2361,7 @@ void TreeSummary::summarize( void )
 
     cladeAges.clear();
     conditionalCladeAges.clear();
+    sampledAncestorSamples.clear();
     treeCladeAges.clear();
     
     std::map<Clade, Sample<Clade>, CladeComparator > cladeSampleMap( (CladeComparator(rooted)) );
@@ -2427,6 +2456,21 @@ void TreeSummary::summarize( void )
             }
 
         }
+
+        // collect sampled ancestor probs
+        for (size_t j = 0; j < tree.getNumberOfTips(); j++)
+        {
+            const TopologyNode& tip = tree.getTipNode(j);
+
+            Taxon taxon = tip.getTaxon();
+
+            Sample<Taxon> taxonSample(taxon, 0);
+            taxonSample.setTrace(std::vector<double>(i - burnin, 0.0));
+
+            sampledAncestorSamples.insert( std::pair<Taxon, Sample<Taxon> >(taxon, taxonSample) );
+
+            sampledAncestorSamples[taxon].addObservation( tip.isSampledAncestor() );
+        }
     }
     
     // finish progress bar
@@ -2447,6 +2491,7 @@ void TreeSummary::summarize( void )
     // sort the samples by frequency
     VectorUtilities::sort( cladeSamples );
     
+
     // collect the samples
     treeSamples.clear();
     for (std::map<std::string, Sample<std::string> >::iterator it = treeSampleMap.begin(); it != treeSampleMap.end(); ++it)
@@ -2457,6 +2502,19 @@ void TreeSummary::summarize( void )
 
     // sort the samples by frequency
     VectorUtilities::sort( treeSamples );
+
+
+    // collect the samples
+    bool using_sampled_ancestors = false;
+
+    for (std::map<Taxon, Sample<Taxon> >::iterator it = sampledAncestorSamples.begin(); it != sampledAncestorSamples.end(); ++it)
+    {
+        it->second.computeStatistics();
+
+        using_sampled_ancestors = using_sampled_ancestors || it->second.getFrequency() > 0;
+    }
+
+    if( using_sampled_ancestors == false ) sampledAncestorSamples.clear();
 
     summarized = true;
 }

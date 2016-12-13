@@ -100,6 +100,16 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         }
         return new RevVariable( new Natural( num ) );
     }
+    else if (name == "expandSampledAncestors")
+    {
+        found = true;
+
+        bool expand = static_cast<const RlBoolean&>( args[0].getVariable()->getRevObject() ).getValue();
+
+        this->dagNode->getValue().setExpand(expand);
+
+        return NULL;
+    }
     
     return Tree::executeMethod( name, args, found );
 }
@@ -154,5 +164,9 @@ void TimeTree::initMethods( void )
     ArgumentRules* nodeAgeArgRules = new ArgumentRules();
     nodeAgeArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<TimeTree, RealPos>( "nodeAge", this, nodeAgeArgRules   ) );
+
+    ArgumentRules* expandArgRules = new ArgumentRules();
+    expandArgRules->push_back( new ArgumentRule( "expand", RlBoolean::getClassTypeSpec(), "Display sampled ancestors with zero-length branches?.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+    methods.addFunction( new MemberProcedure( "expandSampledAncestors", RlUtils::Void, expandArgRules   ) );
 
 }

@@ -65,7 +65,17 @@ RevPtr<RevVariable> Func_mccTree::execute( void )
         
     }
     
-    return new RevVariable( new Tree( tree ) );
+    Tree* t;
+    if( tt.getValue().getTreeTrace().isClock() )
+    {
+        t = new TimeTree( tree );
+    }
+    else
+    {
+        t = new BranchLengthTree( tree );
+    }
+
+    return new RevVariable( t );
 }
 
 
@@ -81,7 +91,7 @@ const ArgumentRules& Func_mccTree::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The samples of trees from the posterior.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("")  ) );
         //argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec(), "The number of trees to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         
         rules_set = true;

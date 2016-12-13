@@ -335,7 +335,7 @@ void TopologyNode::addNodeParameters(std::string const &n, const std::vector<std
 
 
 /* Build newick string */
-std::string TopologyNode::buildNewickString( void )
+std::string TopologyNode::buildNewickString( bool expand )
 {
     
     // create the newick string
@@ -344,6 +344,8 @@ std::string TopologyNode::buildNewickString( void )
     std::fixed(o);
     o.precision( 6 );
     
+    std::vector<std::string> fossil_comments;
+
     // test whether this is a internal or external node
     if ( tip_node == true )
     {
@@ -353,21 +355,33 @@ std::string TopologyNode::buildNewickString( void )
     }
     else
     {
+        std::string fossil_name = "";
+
         o << "(";
-        for (size_t i=0; i<(getNumberOfChildren()-1); i++)
+        size_t j = 0;
+        for (size_t i=0; i< children.size(); i++)
         {
-            o << getChild(i).computeNewick() << ",";
+            if( !expand && children[i]->isSampledAncestor() && (children[i]->getName() < fossil_name || fossil_name == "" ) )
+            {
+                fossil_name = children[i]->getName();
+                fossil_comments = children[i]->getNodeParameters();
+            }
+            else
+            {
+                if(j > 0)
+                {
+                    o << ",";
+                }
+                j++;
+                o << children[i]->computeNewick(expand);
+            }
         }
-        o << getChild(getNumberOfChildren()-1).computeNewick() << ")";
         
-        if ( fossil == true )
-        {
-            o << taxon.getName();
-        }
-        
+        o << ")" << fossil_name;
+
     }
     
-    if ( node_comments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true )
+    if ( node_comments.size() + fossil_comments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true )
     {
         o << "[&";
         
@@ -387,6 +401,16 @@ std::string TopologyNode::buildNewickString( void )
                 o << ",";
             }
             o << node_comments[i];
+            needsComma = true;
+        }
+
+        for (size_t i = 0; i < fossil_comments.size(); ++i)
+        {
+            if ( needsComma == true )
+            {
+                o << ",";
+            }
+            o << fossil_comments[i];
             needsComma = true;
         }
             
@@ -472,15 +496,15 @@ TopologyNode* TopologyNode::clone(void) const
 
 
 
-std::string TopologyNode::computeNewick(void)
+std::string TopologyNode::computeNewick( bool expand )
 {
     
-    return buildNewickString();
+    return buildNewickString(expand);
 }
 
 
 /* Build newick string */
-std::string TopologyNode::computePlainNewick( void ) const
+std::string TopologyNode::computePlainNewick( bool expand ) const
 {
     
     // test whether this is a internal or external node
@@ -491,16 +515,34 @@ std::string TopologyNode::computePlainNewick( void ) const
     }
     else
     {
-        std::string left = getChild(0).computePlainNewick();
-        std::string right = getChild(1).computePlainNewick();
-        if ( left < right )
+        std::string fossil = "";
+        std::string newick = "(";
+        std::vector<std::string> child_newick;
+        for (size_t i = 0; i < getNumberOfChildren(); ++i)
         {
-            return "(" + left + "," + right + ")";
+            const TopologyNode& child = getChild( i );
+            if( !expand && child.isSampledAncestor() && (child.getName() < fossil || fossil == "") )
+            {
+                fossil = child.getName();
+            }
+            else
+            {
+                child_newick.push_back( child.computePlainNewick(expand) );
+            }
         }
-        else
+        sort(child_newick.begin(), child_newick.end());
+        for (std::vector<std::string>::iterator it = child_newick.begin(); it != child_newick.end(); ++it)
         {
-            return "(" + right + "," + left + ")";
+            if ( it != child_newick.begin() )
+            {
+                newick += ",";
+            }
+            newick += *it;
         }
+        newick += ")";
+        newick += fossil;
+
+        return newick;
     }
     
 }
@@ -659,11 +701,6 @@ double TopologyNode::getAge( void ) const
 double TopologyNode::getBranchLength( void ) const
 {
 
-    if (branch_length < 0)
-    {
-        
-        std::cout << "\n";
-    }
     return branch_length;
 }
 
@@ -782,18 +819,6 @@ std::vector<int> TopologyNode::getChildrenIndices() const
 
 Clade TopologyNode::getClade( void ) const
 {
-    Taxon mrca = taxon;
-
-    // if this node or its parent/child is a sampled ancestor, its taxon is the mrca
-    for(size_t i = 0; i < children.size(); i++)
-    {
-        if( children[i]->isSampledAncestor() )
-        {
-            mrca = children[i]->getTaxon();
-            break;
-        }
-    }
-
     Clade c;
 
     // get the clade taxa
@@ -814,7 +839,22 @@ Clade TopologyNode::getClade( void ) const
     }
 
     c.setAge( age );
-    c.setMrca( mrca );
+
+    std::vector<Taxon> mrca;
+
+    // if a child is a sampled ancestor, its taxon is a mrca
+    for(size_t i = 0; i < children.size(); i++)
+    {
+        if( children[i]->isSampledAncestor() )
+        {
+            mrca.push_back( children[i]->getTaxon() );
+        }
+    }
+
+    if( !mrca.empty() )
+    {
+        c.setMrca( mrca );
+    }
 
     return c;
 }
@@ -1127,11 +1167,12 @@ void TopologyNode::makeBifurcating( void )
         if ( isRoot() == false )
         {
             
-            if ( getNumberOfChildren() > 2 )
+            /*if ( getNumberOfChildren() > 2 )
             {
                 throw RbException("Cannot make this node bifurcating because it has more than 2 children.");
             }
-            else if ( getNumberOfChildren() == 1 )
+            else */
+            if ( getNumberOfChildren() == 1 )
             {
                 
                 TopologyNode *new_fossil = new TopologyNode( getTaxon() );
