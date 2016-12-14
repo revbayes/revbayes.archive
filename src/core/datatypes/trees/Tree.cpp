@@ -828,13 +828,13 @@ bool Tree::isUltrametric( void ) const
 }
 
 
-void Tree::makeInternalNodesBifurcating(void)
+void Tree::makeInternalNodesBifurcating(bool reindex)
 {
     
     getRoot().makeBifurcating();
     
     // we need to reset the root so that the vector of nodes get filled again with the new number of nodes
-    setRoot( &getRoot() );
+    setRoot( &getRoot(), reindex );
 
 }
 
@@ -864,7 +864,7 @@ void Tree::orderNodesByIndex( void )
 }
 
 
-void Tree::reroot(const std::string &outgroup)
+void Tree::reroot(const std::string &outgroup, bool reindex)
 {
     std::vector<std::string> tipnames = getTipNames();
     size_t outgroupIndex = tipnames.size();
@@ -888,18 +888,18 @@ void Tree::reroot(const std::string &outgroup)
     outgroupNode.getParent().setParent( NULL );
 
 	// set the new root
-	setRoot( &outgroupNode.getParent() );
+	setRoot( &outgroupNode.getParent(), reindex );
 
 }
 
-void Tree::reroot(TopologyNode &n)
+void Tree::reroot(TopologyNode &n, bool reindex)
 {
 	// reset parent/child relationships
 	reverseParentChild( n.getParent() );
     n.getParent().setParent( NULL );
 
 	// set the new root
-	setRoot( &n.getParent() );
+	setRoot( &n.getParent(), reindex );
 
 }
 

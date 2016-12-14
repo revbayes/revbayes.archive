@@ -264,7 +264,7 @@ std::vector<Tree*>* NclReader::convertTreesFromNcl(void)
                 //                rbTree->fillNodeTimes();
                 //                rbTree->equalizeBranchLengths();
                 
-                rbTree->makeInternalNodesBifurcating();
+                rbTree->makeInternalNodesBifurcating(true);
                 
 				rbTreesFromFile->push_back( rbTree );
             }
@@ -1867,7 +1867,7 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
     Tree* tau = new Tree();
     
     // initialize the topology by setting the root
-    tau->setRoot(root);
+    tau->setRoot(root, true);
     
     // trees with 2-degree root nodes should not be rerooted
     tau->setRooted( root->getNumberOfChildren() == 2 || rooted);

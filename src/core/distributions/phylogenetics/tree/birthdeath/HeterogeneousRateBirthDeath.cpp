@@ -583,7 +583,7 @@ void HeterogeneousRateBirthDeath::simulateTree( void )
     }
     
     // Initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
     
     // Now simulate the speciation times counted from originTime
     std::vector<double> intNodeTimes;

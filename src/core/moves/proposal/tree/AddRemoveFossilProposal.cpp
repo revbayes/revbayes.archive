@@ -188,7 +188,7 @@ double AddRemoveFossilProposal::addFossil(TopologyNode *n)
         new_parent_node->addChild(n);
         n->setParent(new_parent_node);
 
-        t.setRoot(new_parent_node);
+        t.setRoot(new_parent_node, true);
     }
     else
     {
@@ -204,7 +204,7 @@ double AddRemoveFossilProposal::addFossil(TopologyNode *n)
         grandParent->addChild(new_parent_node);
         new_parent_node->setParent(grandParent);
 
-        t.setRoot(&t.getRoot());
+        t.setRoot(&t.getRoot(), true);
     }
     
     // draw the new age for the parent node
@@ -267,7 +267,7 @@ double AddRemoveFossilProposal::removeFossil(TopologyNode *n)
     {
         max_age = origin->getValue();
 
-        t.setRoot(storedSibling);
+        t.setRoot(storedSibling, true);
     }
     else
     {
@@ -280,7 +280,7 @@ double AddRemoveFossilProposal::removeFossil(TopologyNode *n)
         grandParent->addChild(storedSibling);
         storedSibling->setParent(grandParent);
 
-        t.setRoot(&t.getRoot());
+        t.setRoot(&t.getRoot(), true);
     }
 
     double lnJacobian = - log(max_age - storedSibling->getAge());
@@ -347,7 +347,7 @@ void AddRemoveFossilProposal::undoProposal( void )
 
         if(parent->isRoot())
         {
-            t.setRoot(storedSibling);
+            t.setRoot(storedSibling, true);
         }
         else
         {
@@ -357,7 +357,7 @@ void AddRemoveFossilProposal::undoProposal( void )
             grandParent->addChild(storedSibling);
             storedSibling->setParent(grandParent);
 
-            t.setRoot(&t.getRoot());
+            t.setRoot(&t.getRoot(), true);
         }
 
         delete parent;
@@ -371,7 +371,7 @@ void AddRemoveFossilProposal::undoProposal( void )
             parent->addChild(storedSibling);
             storedSibling->setParent(parent);
 
-            t.setRoot(parent);
+            t.setRoot(parent, true);
         }
         else
         {
@@ -383,7 +383,7 @@ void AddRemoveFossilProposal::undoProposal( void )
             parent->addChild(storedSibling);
             storedSibling->setParent(parent);
 
-            t.setRoot(&t.getRoot());
+            t.setRoot(&t.getRoot(), true);
         }
     }
     

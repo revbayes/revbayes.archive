@@ -1478,7 +1478,7 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report, bool verbos
 
         if( tmp_tree->isRooted() == false && rooted == false )
         {
-            tmp_tree->reroot( trace.objectAt(0).getTipNames()[0] );
+            tmp_tree->reroot( trace.objectAt(0).getTipNames()[0], true );
         }
         else if( tmp_tree->isRooted() != rooted )
         {
@@ -1836,7 +1836,7 @@ int TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbo
 
     if( t.isRooted() == false && rooted == false )
     {
-        t.reroot( outgroup );
+        t.reroot( outgroup, true );
     }
 
     std::string newick = TreeUtilities::uniqueNewickTopology( t );
@@ -1904,7 +1904,7 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
 
     if( tree.isRooted() == false && rooted == false )
     {
-        tree.reroot( outgroup );
+        tree.reroot( outgroup, true );
     }
 
     std::string newick = TreeUtilities::uniqueNewickTopology(tree);
@@ -2067,7 +2067,7 @@ Tree* TreeSummary::mrTree(AnnotationReport report, double cutoff, bool verbose)
 
     //now put the tree together
     Tree* consensusTree = new Tree();
-    consensusTree->setRoot(root);
+    consensusTree->setRoot(root, true);
 
     size_t nIndex = tipNames.size();
 
@@ -2162,7 +2162,7 @@ Tree* TreeSummary::mrTree(AnnotationReport report, double cutoff, bool verbose)
     }
 
     //now put the tree together
-    consensusTree->setRoot(root);
+    consensusTree->setRoot(root, true);
 
     report.ages      = true;
     report.cc_ages   = false;
@@ -2394,7 +2394,7 @@ void TreeSummary::summarize( bool verbose )
 
         if( rooted == false )
         {
-            tree.reroot( outgroup );
+            tree.reroot( outgroup, true );
         }
 
         std::string newick = TreeUtilities::uniqueNewickTopology( tree );

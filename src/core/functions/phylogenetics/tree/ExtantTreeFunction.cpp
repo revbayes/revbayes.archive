@@ -67,7 +67,7 @@ void ExtantTreeFunction::update( void )
     // Extant the parent tree
     pruneFossilsRecursively( &value->getRoot() );
     
-    value->setRoot( &value->getRoot() );
+    value->setRoot( &value->getRoot(), true );
 }
 
 void ExtantTreeFunction::pruneFossilsRecursively( TopologyNode *node )
@@ -112,7 +112,7 @@ void ExtantTreeFunction::pruneFossilsRecursively( TopologyNode *node )
         if ( parent->isRoot() == true )
         {
             new_child->setParent( NULL );
-            this->value->setRoot( new_child );
+            this->value->setRoot( new_child, true );
         }
         else
         {
