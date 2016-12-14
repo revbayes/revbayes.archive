@@ -82,7 +82,7 @@ namespace RevBayesCore {
 
         // range events: types, probs, and counts
         std::map< std::vector<unsigned>, unsigned >             eventMapTypes;
-        std::vector< std::vector<unsigned> >                    eventMapCounts;
+        std::map< unsigned, std::vector<unsigned> >             eventMapCounts;
 
         // manages simplex over event type probabilities
         std::vector<std::string>                                eventTypes;
