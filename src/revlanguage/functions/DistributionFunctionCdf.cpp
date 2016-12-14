@@ -178,9 +178,9 @@ const ArgumentRules& DistributionFunctionCdf::getArgumentRules(void) const
 const std::string& DistributionFunctionCdf::getClassType(void)
 {
     
-    static std::string revType = "DistributionFunctionCdf";
+    static std::string rev_type = "DistributionFunctionCdf";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

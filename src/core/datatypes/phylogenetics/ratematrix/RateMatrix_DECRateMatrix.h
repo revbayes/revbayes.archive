@@ -38,18 +38,20 @@ namespace RevBayesCore {
         RateMatrix_DECRateMatrix*           clone(void) const;
         void                                fillRateMatrix(void);
         const RbVector<RbVector<double> >&  getDispersalRates(void) const;
-        const std::vector<double>&          getExtirpationRates(void) const;                                                       //!< Return the extirpation rates
-        const std::vector<double>&          getRangeSize(void) const;                                                       //!< Return the range size simplex
+        const RbVector<RbVector<double> >&  getExtirpationRates(void) const;                                                   //!< Return the extirpation rates
+        const std::vector<double>&          getRangeSize(void) const;                                                          //!< Return the range size simplex
+        virtual std::vector<double>         getStationaryFrequencies(void) const;                                              //!< Return the stationary frequencies
 
-        void                                setDispersalRates(const RbVector<RbVector<double> >& dr);                              //!< Directly set dispersal rates
-        void                                setExtirpationRates(const std::vector<double>& er);                                     //!< Directly set extirpation rates
-        void                                setRangeSize(const std::vector<double>& rs);                                     //!< Directly set range size simplex
+        void                                setDispersalRates(const RbVector<RbVector<double> >& dr);                          //!< Directly set dispersal rates
+        void                                setExtirpationRates(const RbVector<RbVector<double> >& er);                        //!< Directly set extirpation rates
+        void                                setRangeSize(const std::vector<double>& rs);                                       //!< Directly set range size simplex
         void                                setBirthRate(const double& br);
         void                                setCladogeneticMatrix(const MatrixReal& cp);
 
         void                                update(void);
         
     private:
+        std::string                         getRangeStr(const std::vector<unsigned>& v);
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
         void                                exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
         inline void                         multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
@@ -70,6 +72,8 @@ namespace RevBayesCore {
         std::vector<std::vector<unsigned> >                 transitions;
         std::vector<std::vector<unsigned> >                 lossOrGain;
         std::vector<std::vector<std::vector<unsigned> > >   transitionAreas;
+        std::vector<std::vector<unsigned> >                 changedAreas;
+        std::vector<std::vector<std::vector<unsigned> > >   affectingAreas;
         size_t                                              numCharacters;
         size_t                                              num_states;
         bool                                                useSquaring;
@@ -83,7 +87,7 @@ namespace RevBayesCore {
         
         // members
         RbVector<RbVector<double> >                         dispersalRates;
-        std::vector<double>                                 extirpationRates;
+        RbVector<RbVector<double> >                         extirpationRates;
         std::vector<double>                                 rangeSize;
         MatrixReal                                          cladogeneticMatrix;
         double                                              scalingFactor;

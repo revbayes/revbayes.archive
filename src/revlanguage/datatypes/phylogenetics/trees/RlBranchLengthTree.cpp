@@ -94,9 +94,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> BranchLengthTree::executeMethod(st
 const std::string& BranchLengthTree::getClassType(void)
 {
     
-    static std::string revType = "BranchLengthTree";
+    static std::string rev_type = "BranchLengthTree";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

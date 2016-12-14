@@ -54,9 +54,9 @@ void Move_RootTimeSlideUniform::constructInternalObject( void )
 const std::string& Move_RootTimeSlideUniform::getClassType(void)
 {
     
-    static std::string revType = "Move_RootTimeSlideUniform";
+    static std::string rev_type = "Move_RootTimeSlideUniform";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

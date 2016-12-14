@@ -75,9 +75,9 @@ void Move_VectorSingleElementScale::constructInternalObject( void )
 const std::string& Move_VectorSingleElementScale::getClassType(void)
 {
     
-    static std::string revType = "Move_VectorSingleElementScale";
+    static std::string rev_type = "Move_VectorSingleElementScale";
     
-    return revType;
+    return rev_type;
 }
 
 

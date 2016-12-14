@@ -36,9 +36,9 @@ RealPos* PositiveContinuousDistribution::createRandomVariable(void) const {
 /* Get Rev type of object */
 const std::string& PositiveContinuousDistribution::getClassType(void) { 
     
-    static std::string revType = "PositiveContinuousDistribution";
+    static std::string rev_type = "PositiveContinuousDistribution";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

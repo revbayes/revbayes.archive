@@ -57,9 +57,9 @@ void Move_ConjugateInverseWishartBrownian::constructInternalObject( void )
 const std::string& Move_ConjugateInverseWishartBrownian::getClassType(void)
 {
     
-    static std::string revType = "Move_ConjugateInverseWishartBrownian";
+    static std::string rev_type = "Move_ConjugateInverseWishartBrownian";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

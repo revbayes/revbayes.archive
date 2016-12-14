@@ -55,9 +55,9 @@ StandardState* StandardState::clone(void) const
 const std::string& StandardState::getClassType(void)
 {
     
-    static std::string revType = "Standard";
+    static std::string rev_type = "Standard";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

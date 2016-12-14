@@ -269,9 +269,9 @@ size_t RlDistanceMatrix::size( void ) const
 /* Get Rev type of object */
 const std::string& RlDistanceMatrix::getClassType(void) {
     
-    static std::string revType = "RlDistanceMatrix";
+    static std::string rev_type = "RlDistanceMatrix";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

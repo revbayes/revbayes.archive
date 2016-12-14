@@ -53,9 +53,9 @@ RevBayesCore::BurninEstimatorContinuous* AbstractConvergenceStoppingRule::constr
 const std::string& AbstractConvergenceStoppingRule::getClassType(void)
 {
     
-    static std::string revType = "AbstractConvergenceStoppingRule";
+    static std::string rev_type = "AbstractConvergenceStoppingRule";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

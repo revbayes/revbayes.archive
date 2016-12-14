@@ -74,9 +74,9 @@ void Move_EventTimeBeta::constructInternalObject( void )
 const std::string& Move_EventTimeBeta::getClassType(void)
 {
     
-    static std::string revType = "Move_EventTimeBeta";
+    static std::string rev_type = "Move_EventTimeBeta";
     
-    return revType;
+    return rev_type;
 }
 
 

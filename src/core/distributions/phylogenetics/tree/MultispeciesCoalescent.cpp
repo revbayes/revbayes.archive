@@ -16,32 +16,32 @@ using namespace RevBayesCore;
 MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<Tree> *sp,
                                                const std::vector<Taxon> &t) : TypedDistribution<Tree>( NULL ),
     taxa(t),
-    speciesTree( sp ),
+    species_tree( sp ),
     Nes( NULL ),
     Ne( new ConstantNode<double>("Ne", new double(1.0) ) ),
     num_taxa( taxa.size() ),
-    logTreeTopologyProb (0.0)
+    log_tree_topology_prob (0.0)
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
-    addParameter( speciesTree );
+    addParameter( species_tree );
     addParameter( Ne );
     
-    std::set<std::string> speciesNames;
+    std::set<std::string> species_names;
     for (std::vector<Taxon>::const_iterator it=taxa.begin(); it!=taxa.end(); ++it)
     {
-        speciesNames.insert( it->getSpeciesName() );
+        species_names.insert( it->getSpeciesName() );
     }
     
-    if ( sp->getValue().getNumberOfTips() != speciesNames.size() )
-    {
-        //        throw RbException("Unequal number of species between species tree and gene tree.");
-    }
+//    if ( sp->getValue().getNumberOfTips() != species_names.size() )
+//    {
+//        throw RbException("Unequal number of species between species tree and gene tree.");
+//    }
     
-    double lnFact = RbMath::lnFactorial((int)(num_taxa));
+    double ln_fact = RbMath::lnFactorial((int)(num_taxa));
     
-    logTreeTopologyProb = (num_taxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( num_taxa ) ;
+    log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - 2.0 * ln_fact - std::log( num_taxa ) ;
     
     redrawValue();
     
@@ -142,7 +142,7 @@ double MultispeciesCoalescent::computeLnProbability( void )
     // variable declarations and initialization
     double lnProbCoal = 0;
     
-    const Tree &sp = speciesTree->getValue();
+    const Tree &sp = species_tree->getValue();
     
     const std::vector< TopologyNode* > &speciesTreeNodes = sp.getNodes();
     // first let's create a map from species names to the nodes of the species tree
@@ -356,13 +356,13 @@ void MultispeciesCoalescent::redrawValue( void )
     
 }
 
-void MultispeciesCoalescent::setNes(TypedDagNode< RbVector<double> >* inputNes)
+void MultispeciesCoalescent::setNes(TypedDagNode< RbVector<double> >* input_nes)
 {
 
     removeParameter( Nes );
     removeParameter( Ne );
     
-    Nes = inputNes;
+    Nes = input_nes;
     Ne  = NULL;
     
     addParameter( Nes );
@@ -370,13 +370,13 @@ void MultispeciesCoalescent::setNes(TypedDagNode< RbVector<double> >* inputNes)
 }
 
 
-void MultispeciesCoalescent::setNe(TypedDagNode<double>* inputNe)
+void MultispeciesCoalescent::setNe(TypedDagNode<double>* input_ne)
 {
 
     removeParameter( Ne );
     removeParameter( Nes );
     
-    Ne  = inputNe;
+    Ne  = input_ne;
     Nes = NULL;
     
     addParameter( Ne );
@@ -391,30 +391,36 @@ void MultispeciesCoalescent::simulateTree( void )
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    const Tree &sp = speciesTree->getValue();
-    const std::vector< TopologyNode* > &speciesTreeNodes = sp.getNodes();
+    const Tree &sp = species_tree->getValue();
+    const std::vector< TopologyNode* > &species_tree_nodes = sp.getNodes();
     // first let's create a map from species names to the nodes of the species tree
-    std::map<std::string, TopologyNode * > speciesNames2Nodes;
-    for (std::vector< TopologyNode *>::const_iterator it = speciesTreeNodes.begin(); it != speciesTreeNodes.end(); ++it)
+    std::map<std::string, TopologyNode * > species_names_2_nodes;
+    for (std::vector< TopologyNode *>::const_iterator it = species_tree_nodes.begin(); it != species_tree_nodes.end(); ++it)
     {
-        if ( (*it)->isTip() )
+        if ( (*it)->isTip() == true )
         {
             const std::string &name = (*it)->getName();
-            speciesNames2Nodes[name] = *it;
+            species_names_2_nodes[name] = *it;
         }
     }
     
     
-    std::map< const TopologyNode *, std::vector< TopologyNode* > > individualsPerBranch;
+    std::map< const TopologyNode *, std::vector< TopologyNode* > > individuals_per_branch;
     
     for (std::vector< Taxon >::iterator it = taxa.begin(); it != taxa.end(); ++it)
     {
         TopologyNode *n = new TopologyNode( *it );
-        const std::string &speciesName = it->getSpeciesName();
-        TopologyNode *speciesNode = speciesNames2Nodes[speciesName];
+        const std::string &species_name = n->getSpeciesName();
+        
+        if ( species_name == "" )
+        {
+            throw RbException("Cannot match a taxon without species to a tip in the species tree. The taxon map is probably wrong.");
+        }
+        
+        TopologyNode *species_node = species_names_2_nodes[species_name];
         n->setAge( 0.0 );
-        std::vector< TopologyNode * > &nodesAtNode = individualsPerBranch[ speciesNode ];
-        nodesAtNode.push_back( n );
+        std::vector< TopologyNode * > &nodes_at_node = individuals_per_branch[ species_node ];
+        nodes_at_node.push_back( n );
     }
 
     
@@ -429,69 +435,74 @@ void MultispeciesCoalescent::simulateTree( void )
     }
     */
     
-    std::map<TopologyNode *, double> nodes2ages;
+    std::map<TopologyNode *, double> nodes_2_ages;
     TopologyNode *root = NULL;
     // we loop over the nodes of the species tree in phylogenetic traversal
-    for (std::vector<TopologyNode *>::const_iterator it = speciesTreeNodes.begin(); it != speciesTreeNodes.end(); ++it)
+    for (std::vector<TopologyNode *>::const_iterator it = species_tree_nodes.begin(); it != species_tree_nodes.end(); ++it)
     {
-        TopologyNode *spNode = *it;
-        const TopologyNode *spParentNode = NULL;
-        double branchLength = RbConstants::Double::inf;
-        if ( !spNode->isRoot() )
+        TopologyNode *sp_node = *it;
+        const TopologyNode *sp_parent_node = NULL;
+        double branch_length = RbConstants::Double::inf;
+        if ( sp_node->isRoot() == false )
         {
-            spParentNode = &spNode->getParent();
-            branchLength = spParentNode->getAge() - spNode->getAge();
+            sp_parent_node = &sp_node->getParent();
+            branch_length = sp_parent_node->getAge() - sp_node->getAge();
         }
         
-        std::vector<TopologyNode*> initialIndividualsAtBranch = individualsPerBranch[spNode];
-        double branchNe = getNe(spNode->getIndex() );
+        std::vector<TopologyNode*> initial_individuals_at_branch = individuals_per_branch[sp_node];
+        double branch_ne = getNe(sp_node->getIndex() );
 
-        double theta = 1.0 / branchNe;
+        double theta = 1.0 / branch_ne;
         
-        double prevCoalescentTime = 0.0;
+        double prev_coalescent_time = 0.0;
         
-        size_t j = initialIndividualsAtBranch.size();
-        double nPairs = j * (j-1) / 2.0;
-        double lambda = nPairs * theta;
+        size_t j = initial_individuals_at_branch.size();
+        double n_pairs = j * (j-1) / 2.0;
+        double lambda = n_pairs * theta;
         double u = RbStatistics::Exponential::rv( lambda, *rng);
-        double nextCoalescentTime = prevCoalescentTime + u;
+        double next_coalescent_time = prev_coalescent_time + u;
         
-        while ( nextCoalescentTime < branchLength && j > 1 )
+        while ( next_coalescent_time < branch_length && j > 1 )
         {
             // randomly coalesce two lineages
-            size_t index = static_cast<size_t>( floor(rng->uniform01()*initialIndividualsAtBranch.size()) );
-            TopologyNode *left = initialIndividualsAtBranch[index];
-            initialIndividualsAtBranch.erase( initialIndividualsAtBranch.begin() + index);
+            size_t index = static_cast<size_t>( floor(rng->uniform01()*initial_individuals_at_branch.size()) );
+            TopologyNode *left = initial_individuals_at_branch[index];
+            initial_individuals_at_branch.erase( initial_individuals_at_branch.begin() + index);
             
-            index = static_cast<size_t>( floor(rng->uniform01()*initialIndividualsAtBranch.size()) );
-            TopologyNode *right = initialIndividualsAtBranch[index];
-            initialIndividualsAtBranch.erase( initialIndividualsAtBranch.begin() + index);
+            index = static_cast<size_t>( floor(rng->uniform01()*initial_individuals_at_branch.size()) );
+            TopologyNode *right = initial_individuals_at_branch[index];
+            initial_individuals_at_branch.erase( initial_individuals_at_branch.begin() + index);
             
-            TopologyNode *newParent = new TopologyNode();
-            newParent->addChild(left);
-            left->setParent(newParent);
-            newParent->addChild(right);
-            right->setParent(newParent);
+            TopologyNode *new_parent = new TopologyNode();
+            new_parent->addChild(left);
+            left->setParent(new_parent);
+            new_parent->addChild(right);
+            right->setParent(new_parent);
             
-            root = newParent;
+            root = new_parent;
             
-            initialIndividualsAtBranch.push_back( newParent );
+            if ( root == NULL )
+            {
+                std::cerr << "Oh, the root is NULL :(" << std::endl;
+            }
             
-            nodes2ages[newParent] = nextCoalescentTime + spNode->getAge();
+            initial_individuals_at_branch.push_back( new_parent );
+            
+            nodes_2_ages[new_parent] = next_coalescent_time + sp_node->getAge();
             
             
-            prevCoalescentTime = nextCoalescentTime;
+            prev_coalescent_time = next_coalescent_time;
             j--;
-            nPairs = j * (j-1) / 2.0;
-            lambda = nPairs * theta ;
+            n_pairs = j * (j-1) / 2.0;
+            lambda = n_pairs * theta ;
             u = RbStatistics::Exponential::rv( lambda, *rng);
-            nextCoalescentTime = prevCoalescentTime + u;
+            next_coalescent_time = prev_coalescent_time + u;
         }
         
-        if ( spParentNode != NULL )
+        if ( sp_parent_node != NULL )
         {
-            std::vector<TopologyNode *> &incomingLineages = individualsPerBranch[spParentNode];
-            incomingLineages.insert(incomingLineages.end(), initialIndividualsAtBranch.begin(), initialIndividualsAtBranch.end());
+            std::vector<TopologyNode *> &incoming_lineages = individuals_per_branch[sp_parent_node];
+            incoming_lineages.insert(incoming_lineages.end(), initial_individuals_at_branch.begin(), initial_individuals_at_branch.end());
         }
         
         
@@ -506,7 +517,7 @@ void MultispeciesCoalescent::simulateTree( void )
     // initialize the topology by setting the root
     psi->setRoot(root);
     
-    for ( std::map<TopologyNode*, double>::iterator it = nodes2ages.begin(); it != nodes2ages.end(); ++it)
+    for ( std::map<TopologyNode*, double>::iterator it = nodes_2_ages.begin(); it != nodes_2_ages.end(); ++it)
     {
         TopologyNode *node = it->first;
         node->setAge( it->second );
@@ -532,9 +543,9 @@ void MultispeciesCoalescent::swapParameterInternal(const DagNode *oldP, const Da
         Ne = static_cast<const TypedDagNode< double >* >( newP );
     }
     
-    if ( oldP == speciesTree )
+    if ( oldP == species_tree )
     {
-        speciesTree = static_cast<const TypedDagNode< Tree >* >( newP );
+        species_tree = static_cast<const TypedDagNode< Tree >* >( newP );
     }
     
 }

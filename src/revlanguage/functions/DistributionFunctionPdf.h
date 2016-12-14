@@ -162,9 +162,9 @@ template <class valueType>
 const std::string& RevLanguage::DistributionFunctionPdf<valueType>::getClassType(void)
 {
     
-    static std::string revType = "DistributionFunctionPdf";
+    static std::string rev_type = "DistributionFunctionPdf";
     
-	return revType; 
+	return rev_type; 
 }
 
 

@@ -55,7 +55,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     setTaxonNameArgRules->push_back(        new ArgumentRule("new"        , RlString::getClassTypeSpec(), "The new name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
 
-    methods.addFunction( new MemberProcedure( "addMissingTaxon",  RlUtils::Void, addTaxonArgRules ) );
+    methods.addFunction( new MemberProcedure( "addMissingTaxa",  RlUtils::Void, addTaxonArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa",  RlUtils::Void, excludeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa", RlUtils::Void, excludeTaxaArgRules2 ) );
     methods.addFunction( new MemberProcedure( "filename", RlString::getClassTypeSpec(), filenameArgRules ) );
@@ -84,7 +84,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
     
     RevBayesCore::AbstractCharacterData *charDataObject = &getValue();
     
-    if (name == "addMissingTaxon")
+    if (name == "addMissingTaxa")
     {
         found = true;
         
@@ -268,9 +268,9 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
 const std::string& AbstractCharacterData::getClassType(void)
 {
     
-    static std::string revType = "AbstractCharacterData";
+    static std::string rev_type = "AbstractCharacterData";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

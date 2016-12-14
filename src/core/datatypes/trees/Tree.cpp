@@ -927,8 +927,6 @@ TopologyNode& Tree::reverseParentChild(TopologyNode &n)
 }
 
 
-
-
 void Tree::setRooted(bool tf)
 {
     rooted = tf;
@@ -938,11 +936,10 @@ void Tree::setRooted(bool tf)
 void Tree::setRoot( TopologyNode* r, bool resetIndex )
 {
 
-    // delete the old root
-    if ( r != root )
-    {
-        //delete root;
-    }
+    // delete the old root if it's not in this tree
+    bool found = false;
+
+    TopologyNode* old_root = root;
     
     // set the root
     root = r;
@@ -976,11 +973,20 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
             std::cerr << i << " - " << nodes[i] << std::endl;
             throw RbException("Problem while reading in tree.");
         }
+        if( nodes[i] == old_root)
+        {
+            found = true;
+        }
         numTips += ( nodes[i]->isTip() ? 1 : 0);
     }
     
     
     root->setTree( this );
+
+    if( found == false )
+    {
+        delete old_root;
+    }
 
 }
 

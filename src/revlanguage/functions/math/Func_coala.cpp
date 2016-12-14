@@ -69,9 +69,9 @@ const ArgumentRules& Func_coala::getArgumentRules( void ) const
 /** Get Rev type of object (static) */
 const std::string& Func_coala::getClassType( void )
 {
-    static std::string revType = "Func_coala";
+    static std::string rev_type = "Func_coala";
     
-    return revType;
+    return rev_type;
 }
 
 

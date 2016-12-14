@@ -177,9 +177,9 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
 const std::string& RevLanguage::Move_CharacterHistory::getClassType(void)
 {
     
-    static std::string revType = "Move_CharacterHistory"; // <" + treeType::getClassType() + ">";
+    static std::string rev_type = "Move_CharacterHistory"; // <" + treeType::getClassType() + ">";
     
-    return revType;
+    return rev_type;
 }
 
 

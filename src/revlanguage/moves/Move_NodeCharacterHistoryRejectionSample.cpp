@@ -111,9 +111,9 @@ void Move_NodeCharacterHistoryRejectionSample::constructInternalObject( void )
 const std::string& Move_NodeCharacterHistoryRejectionSample::getClassType(void)
 {
     
-    static std::string revType = "Move_NodeCharacterHistoryRejectionSample";
+    static std::string rev_type = "Move_NodeCharacterHistoryRejectionSample";
     
-	return revType;
+	return rev_type;
 }
 
 

@@ -90,9 +90,9 @@ void Move_Slide::constructInternalObject( void )
 const std::string& Move_Slide::getClassType(void)
 {
     
-    static std::string revType = "Move_Slide";
+    static std::string rev_type = "Move_Slide";
     
-    return revType;
+    return rev_type;
 }
 
 

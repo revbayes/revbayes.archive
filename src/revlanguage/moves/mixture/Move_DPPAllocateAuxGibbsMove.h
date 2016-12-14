@@ -105,9 +105,9 @@ template <class valType>
 const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassType(void)
 {
     
-    static std::string revType = "Move_DPPAllocateAuxGibbsMove";
+    static std::string rev_type = "Move_DPPAllocateAuxGibbsMove";
     
-	return revType; 
+	return rev_type; 
 }
 
 

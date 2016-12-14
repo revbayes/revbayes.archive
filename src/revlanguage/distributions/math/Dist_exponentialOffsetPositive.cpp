@@ -40,9 +40,9 @@ RevBayesCore::ExponentialWithOffsetDistribution* Dist_exponentialOffsetPositive:
 /* Get Rev type of object */
 const std::string& Dist_exponentialOffsetPositive::getClassType(void) {
     
-    static std::string revType = "Dist_exponentialOffsetPositive";
+    static std::string rev_type = "Dist_exponentialOffsetPositive";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

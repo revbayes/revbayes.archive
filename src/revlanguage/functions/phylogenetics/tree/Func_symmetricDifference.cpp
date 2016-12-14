@@ -69,9 +69,9 @@ const ArgumentRules& Func_symmetricDifference::getArgumentRules( void ) const
 const std::string& Func_symmetricDifference::getClassType(void)
 {
     
-    static std::string revType = "Func_symmetricDifference";
+    static std::string rev_type = "Func_symmetricDifference";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

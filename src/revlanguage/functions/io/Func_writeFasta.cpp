@@ -81,9 +81,9 @@ const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const
 const std::string& Func_writeFasta::getClassType(void) 
 { 
     
-    static std::string revType = "Func_writeFasta";
+    static std::string rev_type = "Func_writeFasta";
     
-	return revType; 
+	return rev_type; 
 }
 
 

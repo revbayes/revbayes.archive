@@ -55,9 +55,9 @@ void Mntr_StochasticVariable::constructInternalObject( void )
 const std::string& Mntr_StochasticVariable::getClassType(void)
 {
     
-    static std::string revType = "Mntr_StochasticVariable";
+    static std::string rev_type = "Mntr_StochasticVariable";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

@@ -73,9 +73,9 @@ RevBayesCore::CompoundPoissonNormalDistribution* Dist_cppNormal::createDistribut
 const std::string& Dist_cppNormal::getClassType(void)
 {
     
-    static std::string revType = "Dist_cppNormal";
+    static std::string rev_type = "Dist_cppNormal";
     
-	return revType;
+	return rev_type;
 }
 
 

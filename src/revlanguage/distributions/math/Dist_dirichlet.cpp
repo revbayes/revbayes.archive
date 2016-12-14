@@ -45,9 +45,9 @@ RevBayesCore::DirichletDistribution* Dist_dirichlet::createDistribution( void ) 
 const std::string& Dist_dirichlet::getClassType(void)
 {
     
-    static std::string revType = "Dist_dirichlet";
+    static std::string rev_type = "Dist_dirichlet";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

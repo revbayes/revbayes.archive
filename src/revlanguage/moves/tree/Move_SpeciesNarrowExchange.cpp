@@ -76,9 +76,9 @@ void Move_SpeciesNarrowExchange::constructInternalObject( void )
 const std::string& Move_SpeciesNarrowExchange::getClassType(void)
 {
     
-    static std::string revType = "Move_SpeciesNarrowExchange";
+    static std::string rev_type = "Move_SpeciesNarrowExchange";
     
-    return revType;
+    return rev_type;
 }
 
 

@@ -97,9 +97,9 @@ RevPtr<RevVariable> MatrixReal::executeMethod(std::string const &name, const std
 const std::string& MatrixReal::getClassType(void)
 {
     
-    static std::string revType = "MatrixReal";
+    static std::string rev_type = "MatrixReal";
     
-	return revType;
+	return rev_type;
 }
 
 

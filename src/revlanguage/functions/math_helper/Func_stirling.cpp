@@ -84,9 +84,9 @@ const ArgumentRules& Func_stirling::getArgumentRules( void ) const
 const std::string& Func_stirling::getClassType(void)
 {
     
-    static std::string revType = "Func_stirling";
+    static std::string rev_type = "Func_stirling";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

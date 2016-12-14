@@ -64,9 +64,9 @@ const ArgumentRules& Func_nodeAgeByID::getArgumentRules( void ) const
 const std::string& Func_nodeAgeByID::getClassType(void)
 {
     
-    static std::string revType = "Func_nodeAgeByID";
+    static std::string rev_type = "Func_nodeAgeByID";
     
-	return revType; 
+	return rev_type; 
 }
 
 

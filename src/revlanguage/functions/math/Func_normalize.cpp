@@ -67,9 +67,9 @@ const ArgumentRules& Func_normalize::getArgumentRules( void ) const
 const std::string& Func_normalize::getClassType(void)
 {
     
-    static std::string revType = "Func_normalize";
+    static std::string rev_type = "Func_normalize";
     
-	return revType; 
+	return rev_type; 
 }
 
 

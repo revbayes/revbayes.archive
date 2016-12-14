@@ -43,9 +43,9 @@ RevBayesCore::LogUniformDistribution* Dist_logUniform::createDistribution( void 
 const std::string& Dist_logUniform::getClassType(void)
 {
     
-    static std::string revType = "Dist_logUniform";
+    static std::string rev_type = "Dist_logUniform";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

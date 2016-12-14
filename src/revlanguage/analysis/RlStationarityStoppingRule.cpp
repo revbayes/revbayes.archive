@@ -52,9 +52,9 @@ void StationarityStoppingRule::constructInternalObject( void )
 const std::string& StationarityStoppingRule::getClassType(void)
 {
     
-    static std::string revType = "StationarityStoppingRule";
+    static std::string rev_type = "StationarityStoppingRule";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

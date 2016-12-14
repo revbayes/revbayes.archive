@@ -38,9 +38,9 @@ GeographyRateModifier* GeographyRateModifier::clone() const {
 /* Get Rev type of object */
 const std::string& GeographyRateModifier::getClassType(void) {
     
-    static std::string revType = "GeographyRateModifier";
+    static std::string rev_type = "GeographyRateModifier";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

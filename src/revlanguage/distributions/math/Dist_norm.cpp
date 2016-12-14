@@ -63,9 +63,9 @@ Dist_norm* Dist_norm::clone( void ) const
 const std::string& Dist_norm::getClassType(void)
 { 
     
-    static std::string revType = "Dist_norm";
+    static std::string rev_type = "Dist_norm";
     
-	return revType; 
+	return rev_type; 
 }
 
 

@@ -71,9 +71,9 @@ const ArgumentRules& Func_chromosomesCladoProbs::getArgumentRules( void ) const
 const std::string& Func_chromosomesCladoProbs::getClassType(void)
 {
     
-    static std::string revType = "Func_chromosomesCladoProbs";
+    static std::string rev_type = "Func_chromosomesCladoProbs";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

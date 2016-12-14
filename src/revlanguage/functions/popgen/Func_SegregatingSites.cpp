@@ -62,9 +62,9 @@ const ArgumentRules& Func_SegregatingSites::getArgumentRules( void ) const
 const std::string& Func_SegregatingSites::getClassType(void)
 {
     
-    static std::string revType = "Func_SegregatingSites";
+    static std::string rev_type = "Func_SegregatingSites";
     
-    return revType;
+    return rev_type;
 }
 
 

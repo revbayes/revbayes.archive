@@ -57,9 +57,9 @@ void Move_ElementSwapSimplex::constructInternalObject( void )
 const std::string& Move_ElementSwapSimplex::getClassType(void)
 {
     
-    static std::string revType = "Move_ElementSwapSimplex";
+    static std::string rev_type = "Move_ElementSwapSimplex";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

@@ -58,7 +58,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
     const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
-    if ( root_frequencies->getRevObject() != RevNullObject::getInstance() )
+    if ( root_frequencies != NULL && root_frequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     }
@@ -68,6 +68,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         // we get the number of states from the rates matrix
         // set the rate matrix
         size_t nChars = 1;
+        size_t nCharsClado = 1;
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
@@ -78,11 +79,37 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue().getNumberOfStates();
         }
-//        RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
-        size_t rf_size = rf->getValue().size();
-        if (nChars != rf_size) {
-            throw RbException("The root frequencies vector and rate matrix are not the same size.\n");
+        if ( cladoProbs->getRevObject().isType( ModelVector<CladogeneticProbabilityMatrix>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::CladogeneticProbabilityMatrix> >* cp = static_cast<const ModelVector<CladogeneticProbabilityMatrix> &>( q->getRevObject() ).getDagNode();
+            nCharsClado = cp->getValue()[0].getNumberOfStates();
         }
+        else
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp = static_cast<const CladogeneticProbabilityMatrix &>( cladoProbs->getRevObject() ).getDagNode();
+            nCharsClado = cp->getValue().getNumberOfStates();
+        }
+
+        
+//        RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;A
+        
+        // state space size checks
+        
+        if (rf != NULL) {
+            size_t rf_size = rf->getValue().size();
+            if (nChars != rf_size) {
+                throw RbException("The root frequencies vector and rate matrix do not have the same number of states.\n");
+            }
+            if (nCharsClado != rf_size) {
+                throw RbException("The root frequencies vector and cladogenetic probabilities do not have the same number of states.\n");
+            }
+            
+        }
+        
+        if (nChars != nCharsClado) {
+            throw RbException("The cladogenetic probabilities and rate matrix do not have the same number of states.\n");
+        }
+        
         
         RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState>(tau, nChars, true, n, ambig);
         
@@ -152,7 +179,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
-        d = dist;    }
+        d = dist;
+    }
     
     
     return d;
@@ -163,9 +191,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 /* Get Rev type of object */
 const std::string& Dist_phyloCTMCClado::getClassType(void) {
     
-    static std::string revType = "Dist_phyloCTMCClado";
+    static std::string rev_type = "Dist_phyloCTMCClado";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

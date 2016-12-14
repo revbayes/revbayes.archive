@@ -81,9 +81,9 @@ const ArgumentRules& Func_checkNodeOrderConstraints::getArgumentRules( void ) co
 const std::string& Func_checkNodeOrderConstraints::getClassType(void)
 {
     
-    static std::string revType = "Func_checkNodeOrderConstraints";
+    static std::string rev_type = "Func_checkNodeOrderConstraints";
     
-    return revType;
+    return rev_type;
 }
 
 

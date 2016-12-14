@@ -71,9 +71,9 @@ const ArgumentRules& Func_seed::getArgumentRules( void ) const
 const std::string& Func_seed::getClassType(void)
 {
     
-    static std::string revType = "Func_seed";
+    static std::string rev_type = "Func_seed";
     
-	return revType; 
+	return rev_type; 
 }
 
 

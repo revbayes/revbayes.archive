@@ -58,9 +58,9 @@ RevPtr<RevVariable> ModelTrace::executeMethod(std::string const &name, const std
 /** Get Rev type of object */
 const std::string& ModelTrace::getClassType(void) {
     
-    static std::string revType = "ModelTrace";
+    static std::string rev_type = "ModelTrace";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

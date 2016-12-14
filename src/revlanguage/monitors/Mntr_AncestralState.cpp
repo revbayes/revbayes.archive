@@ -90,9 +90,9 @@ void Mntr_AncestralState::constructInternalObject( void )
 const std::string& Mntr_AncestralState::getClassType(void)
 {
     
-    static std::string revType = "Mntr_AncestralState";
+    static std::string rev_type = "Mntr_AncestralState";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

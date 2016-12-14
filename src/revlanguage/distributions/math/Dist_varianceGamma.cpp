@@ -73,9 +73,9 @@ Dist_varianceGamma* Dist_varianceGamma::clone( void ) const
 const std::string& Dist_varianceGamma::getClassType(void)
 {
     
-    static std::string revType = "Dist_varianceGamma";
+    static std::string rev_type = "Dist_varianceGamma";
     
-    return revType;
+    return rev_type;
 }
 
 
