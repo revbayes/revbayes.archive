@@ -37,7 +37,7 @@ namespace RevLanguage {
         // protected methods
         virtual void                assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs) = 0;                       //!< The assignment operation.
         virtual bool                isDynamic(void);                                                                //!< Should the rhs be evaluated dynamically?
-        void                        removeElementVariables(Environment &env, RevPtr<RevVariable> &theVar);             //!< Removing element variables from this variable.
+//        void                        removeElementVariables(Environment &env, RevPtr<RevVariable> &theVar);             //!< Removing element variables from this variable.
         
         // protected members
         SyntaxElement*              lhsExpression;                                                                  //!< The lhs expression

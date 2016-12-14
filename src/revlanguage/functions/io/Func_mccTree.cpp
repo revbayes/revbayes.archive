@@ -55,7 +55,8 @@ RevPtr<RevVariable> Func_mccTree::execute( void )
     report.mean      = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
     report.sa        = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
     
-    RevBayesCore::Tree* tree = tt.getValue().mccTree(report);
+    bool verbose = true;
+    RevBayesCore::Tree* tree = tt.getValue().mccTree(report, verbose);
     
     
     if ( filename != "" )

@@ -106,9 +106,11 @@
 #include "Func_concatenate.h"
 #include "Func_constructRootedTripletDistribution.h"
 #include "Func_extantTree.h"
+#include "Func_formatDiscreteCharacterData.h"
 #include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
 #include "Func_nodeAgeByID.h"
+#include "Func_phyloDiversity.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
 #include "Func_readPomoCountFile.h"
@@ -318,7 +320,6 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
-        addFunction( new Func_phyloDiversity() );
         addFunction( new Func_branchScoreDistance()      );
         addFunction( new Func_checkNodeOrderConstraints());
 //        addFunction( new Func_clade()                    );
@@ -330,6 +331,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_maximumTree()              );
         addFunction( new Func_mrcaIndex()                );
         addFunction( new Func_nodeAgeByID()              );
+        addFunction( new Func_phyloDiversity() );
         addFunction( new Func_pomoStateConverter()       );
         addFunction( new Func_pomoRootFrequencies()      );
         addFunction( new Func_pruneTree()                );

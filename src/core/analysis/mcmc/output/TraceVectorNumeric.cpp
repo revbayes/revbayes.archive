@@ -82,7 +82,7 @@ void TraceVectorNumeric::invalidate()
 }
 
 
-bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i) const
+bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i, bool verbose) const
 {
     
     RbVector<double> sample = RbVector<double>();

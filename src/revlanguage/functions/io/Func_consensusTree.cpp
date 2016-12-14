@@ -54,7 +54,8 @@ RevPtr<RevVariable> Func_consensusTree::execute(void)
     report.mean      = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
     report.sa        = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
 
-    RevBayesCore::Tree* tree = tt.getValue().mrTree(report, cutoff);
+    bool verbose = true;
+    RevBayesCore::Tree* tree = tt.getValue().mrTree(report, cutoff, verbose);
     
     if ( filename != "" )
     {

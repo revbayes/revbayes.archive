@@ -26,7 +26,7 @@ namespace RevBayesCore {
 		
         void                        addObject(Tree *d);
         void                        addValueFromString(const std::string &s);
-        bool                        isCoveredInInterval(const std::string &v, double i) const;
+        bool                        isCoveredInInterval(const std::string &v, double i, bool verbose) const;
         const Tree&                 objectAt(size_t index) const                   { return values.at(index); }
         void                        removeLastObject();
         void                        removeObjectAtIndex(int index);

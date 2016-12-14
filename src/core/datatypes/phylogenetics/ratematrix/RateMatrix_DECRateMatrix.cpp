@@ -238,21 +238,23 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
             // extinction
             if (lossOrGain[i][j] == 0)
             {
-                if (!excludeNullRange || j > 0) {
+                if (excludeNullRange && endState==0)
+                {
+                    v = 0;
+                }
+                else
+                {
                     unsigned changed_area = changedAreas[i][j];
                     std::vector<unsigned> affecting_areas = affectingAreas[i][j];
                     
                     for (size_t k = 0; k < affecting_areas.size(); k++)
                     {
                         double vt = extirpationRates[ affecting_areas[k] ][changed_area];
-//                        std::cout << "\t" << vt << "dr[ " <<  affecting_areas[k] << " ][ " << changed_area << "]\n";
+    //                        std::cout << "\t" << vt << "dr[ " <<  affecting_areas[k] << " ][ " << changed_area << "]\n";
                         v += vt;
                     }
                 }
-                else if (excludeNullRange && j == 0)
-                {
-                    v  = 1e-100;
-                }
+                
             }
             // dispersal
             else if (lossOrGain[i][j] == 1)
@@ -270,38 +272,6 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
 //            std::cout << "\tsum = " << sum << "\n";
             
             v *= p;
-            
-//            for (size_t k = 0; k < transitionAreas[i][j].size(); k++)
-//            {
-//                std::cout << "\t i:" << i << " j:" << j << " k:" << k << "\n";
-//                std::cout << "\t ta_ijk:" << transitionAreas[i][j][k] << "\n";
-////                std::cout << "\t ta_ikj:" << transitionAreas[i][k][j] << "\n";
-//            
-//                // extinction
-//                if (lossOrGain[i][j] == 0)
-//                {
-//                    if (!excludeNullRange || j > 0) {
-////                        double vt = extirpationRates[ transitionAreas[i][j][k] ][ transitionAreas[i][k][j] ];
-//                        double vt = extirpationRates[ transitionAreas[i][j][k] ][ j ];
-//                        std::cout << "\te[ " << transitionAreas[i][j][k] << " ][ " << j << " ] = " << vt << "\n";
-//                        v += vt;
-//                    }
-//                    else if (excludeNullRange && j == 0)
-//                    {
-//                        v  = 1e-100;
-//                    }
-//                }
-//        
-//                // dispersal
-//                else if (lossOrGain[i][j] == 1) // && !maxSize)
-//                {
-//                    double vt = dispersalRates[ transitionAreas[i][j][k] ][ j ];
-//                    std::cout << "\td[ " << transitionAreas[i][j][k] << " ][ " << j << " ] = " << vt << "\n";
-//
-//                    v += dispersalRates[ transitionAreas[i][j][k] ][ j ];
-//                }
-//                v *= p;
-//            }
             
             // store value
             m[ startState ][ endState ] = v;

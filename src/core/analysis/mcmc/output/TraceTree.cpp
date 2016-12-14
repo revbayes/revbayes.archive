@@ -84,14 +84,14 @@ void TraceTree::invalidate()
 }
 
 
-bool TraceTree::isCoveredInInterval(const std::string &v, double i) const
+bool TraceTree::isCoveredInInterval(const std::string &v, double i, bool verbose) const
 {
     
     Tree t = Tree();
     t.initFromString( v );
     
     TreeSummary summary = TreeSummary( *this );
-    bool covered = summary.isTreeContainedInCredibleInterval(t, i);
+    bool covered = summary.isTreeContainedInCredibleInterval(t, i, verbose);
     
     return covered;
 }

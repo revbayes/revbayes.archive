@@ -53,7 +53,8 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::Func__mult<firstValType, secondValType, retType>::Func__mult( void ) : TypedFunction<retType>( ) {
+RevLanguage::Func__mult<firstValType, secondValType, retType>::Func__mult( void ) : TypedFunction<retType>( )
+{
     
 }
 
@@ -65,7 +66,8 @@ RevLanguage::Func__mult<firstValType, secondValType, retType>::Func__mult( void 
  * \return A new copy of the process.
  */
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::Func__mult<firstValType, secondValType, retType>* RevLanguage::Func__mult<firstValType, secondValType, retType>::clone( void ) const {
+RevLanguage::Func__mult<firstValType, secondValType, retType>* RevLanguage::Func__mult<firstValType, secondValType, retType>::clone( void ) const
+{
     
     return new Func__mult( *this );
 }

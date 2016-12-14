@@ -165,12 +165,11 @@ typedef union YYSTYPE
     RevLanguage::SyntaxLabeledExpr*                 syntaxLabeledExpr;
     RevLanguage::SyntaxFormal*                      syntaxFormal;
     std::list<RevLanguage::SyntaxElement*>*         syntaxElementList;
-    std::vector<std::string>*                       stringvector;
     std::list<RevLanguage::SyntaxLabeledExpr*>*     argumentList;
     std::list<RevLanguage::SyntaxFormal*>*          formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 174 "./grammar.tab.h"
+#line 173 "./grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

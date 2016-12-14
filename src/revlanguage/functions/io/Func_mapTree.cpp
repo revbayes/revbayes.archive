@@ -55,7 +55,8 @@ RevPtr<RevVariable> Func_mapTree::execute( void )
     report.mean      = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
     report.sa        = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
     
-    RevBayesCore::Tree* tree = tt.getValue().mapTree(report);
+    bool verbose = true;
+    RevBayesCore::Tree* tree = tt.getValue().mapTree(report, verbose);
     
     
     if ( filename != "" )
@@ -109,7 +110,8 @@ const ArgumentRules& Func_mapTree::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "hpd"   ,    Probability::getClassTypeSpec() , "The probability mass of the highest posterior density age interval.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95) ) );
         argumentRules.push_back( new ArgumentRule( "mean" , RlBoolean::getClassTypeSpec() , "Annotate node ages using the mean age instead of the median?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         argumentRules.push_back( new ArgumentRule( "sampledAncestors" , RlBoolean::getClassTypeSpec() , "Annotate sampled ancestor probs?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-
+        //argumentRules.push_back( new ArgumentRule( "verbose"  , RlBoolean::getClassTypeSpec(), "Printing verbose output.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        
         rules_set = true;
     }
     

@@ -69,7 +69,8 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
     // this way we don't need to resummarize every time we annotate a tree
     // RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
     
-    tt.getValue().annotateTree( *tree, report );
+    bool verbose = true;
+    tt.getValue().annotateTree( *tree, report, verbose );
     
     // return the tree
     if ( filename != "" )
