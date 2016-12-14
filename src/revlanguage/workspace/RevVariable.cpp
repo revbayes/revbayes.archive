@@ -18,6 +18,7 @@ using namespace RevLanguage;
 /** Constructor of empty RevVariable with specified type. */
 RevVariable::RevVariable( const TypeSpec& ts, const std::string& n ) :
     element_index_max(0),
+    last_max_index(0),
     is_element_var( false ),
     is_hidden_var( false ),
     is_reference_var( false ),
@@ -35,6 +36,7 @@ RevVariable::RevVariable( const TypeSpec& ts, const std::string& n ) :
 /** Constructor of filled RevVariable (no type restrictions). */
 RevVariable::RevVariable(RevObject *v, const std::string &n) :
     element_index_max(0),
+    last_max_index(0),
     is_element_var( false ),
     is_hidden_var( false ),
     is_reference_var( false ),
@@ -52,7 +54,8 @@ RevVariable::RevVariable(RevObject *v, const std::string &n) :
 
 /** Constructor of reference RevVariable (no type restrictions). */
 RevVariable::RevVariable(const RevPtr<RevVariable>& refVar, const std::string &n) :
-    element_index_max(0),
+element_index_max(0),
+last_max_index(0),
     is_element_var( false ),
     is_hidden_var( false ),
     is_reference_var( true ),
@@ -71,6 +74,7 @@ RevVariable::RevVariable(const RevPtr<RevVariable>& refVar, const std::string &n
 /** Copy constructor */
 RevVariable::RevVariable(const RevVariable &v) :
     element_index_max( v.element_index_max ),
+    last_max_index(v.last_max_index),
     is_element_var( v.is_element_var ),
     is_hidden_var( v.is_hidden_var ),
     is_reference_var( v.is_hidden_var ),
@@ -119,6 +123,7 @@ RevVariable& RevVariable::operator=(const RevVariable &v)
         is_vector_var       = v.is_vector_var;
         is_workspace_var    = v.is_workspace_var;
         element_index_max   = v.element_index_max;
+        last_max_index      = v.last_max_index;
         referenced_variable = v.referenced_variable;
         
         if ( is_reference_var )
@@ -205,8 +210,10 @@ RevObject& RevVariable::getRevObject(void) const
         return referenced_variable->getRevObject();
     }
     
-    if ( is_vector_var == true )
+    if ( is_vector_var == true && last_max_index != element_index_max )
     {
+        last_max_index = element_index_max;
+        
         //        const std::set<int>& indices = theVar->getElementIndices();
         //        if ( indices.empty() )
         //        {
