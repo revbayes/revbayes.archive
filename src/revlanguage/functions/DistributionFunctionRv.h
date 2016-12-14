@@ -171,9 +171,9 @@ template <class valueType>
 const std::string& RevLanguage::DistributionFunctionRv<valueType>::getClassType(void)
 {
     
-    static std::string revType = "DistributionFunctionRv";
+    static std::string rev_type = "DistributionFunctionRv";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

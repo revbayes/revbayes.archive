@@ -114,9 +114,9 @@ RevPtr<RevVariable> ValidationAnalysis::executeMethod(std::string const &name, c
 const std::string& ValidationAnalysis::getClassType(void)
 {
     
-    static std::string revType = "ValidationAnalysis";
+    static std::string rev_type = "ValidationAnalysis";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

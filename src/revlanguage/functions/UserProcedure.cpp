@@ -76,9 +76,9 @@ RevPtr<RevVariable> UserProcedure::execute( void )
 /** Get Rev type (static) */
 const std::string& UserProcedure::getClassType(void)
 {
-    static std::string revType = "UserProcedure";
+    static std::string rev_type = "UserProcedure";
     
-	return revType;
+	return rev_type;
 }
 
 

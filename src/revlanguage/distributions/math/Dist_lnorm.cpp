@@ -33,9 +33,9 @@ RevBayesCore::LognormalDistribution* Dist_lnorm::createDistribution( void ) cons
 /* Get Rev type of object */
 const std::string& Dist_lnorm::getClassType(void) { 
     
-    static std::string revType = "Dist_lnorm";
+    static std::string rev_type = "Dist_lnorm";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

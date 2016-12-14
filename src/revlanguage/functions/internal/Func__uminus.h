@@ -103,9 +103,9 @@ template <typename firstValType, typename retType>
 const std::string& RevLanguage::Func__uminus<firstValType, retType>::getClassType(void)
 {
     
-    static std::string revType = "Func__uminus<" + firstValType::getClassType() + "," + retType::getClassType() + ">";
+    static std::string rev_type = "Func__uminus<" + firstValType::getClassType() + "," + retType::getClassType() + ">";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

@@ -135,9 +135,9 @@ RevPtr<RevVariable> PowerPosteriorAnalysis::executeMethod(std::string const &nam
 const std::string& PowerPosteriorAnalysis::getClassType(void)
 {
 
-    static std::string revType = "PowerPosteriorAnalysis";
+    static std::string rev_type = "PowerPosteriorAnalysis";
 
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */

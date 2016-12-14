@@ -108,9 +108,9 @@ const ArgumentRules& Func_readAncestralStateTrace::getArgumentRules( void ) cons
 const std::string& Func_readAncestralStateTrace::getClassType(void)
 {
     
-    static std::string revType = "Func_readAncestralStateTrace";
+    static std::string rev_type = "Func_readAncestralStateTrace";
     
-	return revType;
+	return rev_type;
 }
 
 

@@ -70,9 +70,9 @@ void Move_SubtreeScale::constructInternalObject( void )
 const std::string& Move_SubtreeScale::getClassType(void)
 {
     
-    static std::string revType = "Move_SubtreeScale";
+    static std::string rev_type = "Move_SubtreeScale";
     
-    return revType;
+    return rev_type;
 }
 
 

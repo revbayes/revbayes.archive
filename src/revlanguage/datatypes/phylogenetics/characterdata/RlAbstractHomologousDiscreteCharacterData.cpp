@@ -534,9 +534,9 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
 const std::string& AbstractHomologousDiscreteCharacterData::getClassType(void)
 {
     
-    static std::string revType = "AbstractHomologousDiscreteCharacterData";
+    static std::string rev_type = "AbstractHomologousDiscreteCharacterData";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

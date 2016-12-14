@@ -54,9 +54,9 @@ void Move_CollapseExpandFossilBranch::constructInternalObject( void )
 const std::string& Move_CollapseExpandFossilBranch::getClassType(void)
 {
     
-    static std::string revType = "Move_CollapseExpandFossilBranch";
+    static std::string rev_type = "Move_CollapseExpandFossilBranch";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

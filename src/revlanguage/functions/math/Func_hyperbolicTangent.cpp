@@ -59,9 +59,9 @@ const ArgumentRules& Func_hyperbolicTangent::getArgumentRules( void ) const
 const std::string& Func_hyperbolicTangent::getClassType(void)
 {
     
-    static std::string revType = "Func_hyperbolicTangent";
+    static std::string rev_type = "Func_hyperbolicTangent";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

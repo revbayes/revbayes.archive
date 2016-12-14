@@ -161,9 +161,9 @@ template <class valueType>
 const std::string& RevLanguage::DistributionFunctionQuantile<valueType>::getClassType(void)
 {
     
-    static std::string revType = "DistributionFunctionQuantile";
+    static std::string rev_type = "DistributionFunctionQuantile";
     
-    return revType;
+    return rev_type;
 }
 
 

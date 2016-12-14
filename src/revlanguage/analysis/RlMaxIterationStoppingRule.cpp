@@ -48,9 +48,9 @@ void MaxIterationStoppingRule::constructInternalObject( void )
 const std::string& MaxIterationStoppingRule::getClassType(void)
 {
     
-    static std::string revType = "MaxIterationStoppingRule";
+    static std::string rev_type = "MaxIterationStoppingRule";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

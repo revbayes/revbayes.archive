@@ -159,9 +159,9 @@ RevBayesCore::EpisodicBirthDeathProcess* Dist_episodicBirthDeath::createDistribu
 const std::string& Dist_episodicBirthDeath::getClassType( void )
 {
     
-    static std::string revType = "Dist_episodicBirthDeath";
+    static std::string rev_type = "Dist_episodicBirthDeath";
     
-    return revType;
+    return rev_type;
 }
 
 

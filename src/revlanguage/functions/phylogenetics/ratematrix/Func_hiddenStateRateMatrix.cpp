@@ -92,9 +92,9 @@ const ArgumentRules& Func_hiddenStateRateMatrix::getArgumentRules( void ) const
 const std::string& Func_hiddenStateRateMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_hiddenStateRateMatrix";
+    static std::string rev_type = "Func_hiddenStateRateMatrix";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

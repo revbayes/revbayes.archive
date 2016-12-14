@@ -100,9 +100,9 @@ template <typename valueType>
 const std::string& RevLanguage::TypedFunction<valueType>::getClassType(void)
 {
     
-    static std::string revType = "Function<"+ valueType::getClassType() +">";
+    static std::string rev_type = "Function<"+ valueType::getClassType() +">";
     
-	return revType; 
+	return rev_type; 
 }
 
 

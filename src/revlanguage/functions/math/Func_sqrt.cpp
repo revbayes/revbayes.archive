@@ -58,9 +58,9 @@ const ArgumentRules& Func_sqrt::getArgumentRules( void ) const
 const std::string& Func_sqrt::getClassType(void)
 {
     
-    static std::string revType = "Func_sqrt";
+    static std::string rev_type = "Func_sqrt";
     
-	return revType; 
+	return rev_type; 
 }
 
 

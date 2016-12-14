@@ -39,9 +39,9 @@ RevBayesCore::UniformDistribution* Dist_unifPositive::createDistribution( void )
 /* Get Rev type of object */
 const std::string& Dist_unifPositive::getClassType(void) { 
     
-    static std::string revType = "Dist_unif";
+    static std::string rev_type = "Dist_unif";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

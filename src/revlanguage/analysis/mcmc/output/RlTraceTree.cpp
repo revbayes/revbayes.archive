@@ -4,7 +4,9 @@
 #include "ModelVector.h"
 #include "Natural.h"
 #include "Probability.h"
+#include "RlBranchLengthTree.h"
 #include "RlClade.h"
+#include "RlTimeTree.h"
 #include "RlTraceTree.h"
 #include "RlTree.h"
 #include "RlUtils.h"
@@ -21,8 +23,7 @@
 
 
 
-TraceTree::TraceTree(const RevBayesCore::TraceTree &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>( new RevBayesCore::TraceTree( m ) ),
-    tree_summary( *this->value )
+TraceTree::TraceTree(const RevBayesCore::TraceTree &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TreeSummary>( new RevBayesCore::TreeSummary( m ) )
 {
     
     // initialize the methods
@@ -65,9 +66,10 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         double f = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
         
         
-        int b = int( floor( this->value->size()*f ) );
-        tree_summary.setBurnin( b );
+        int b = int( floor( this->value->getTreeTrace().size()*f ) );
+        this->value->setBurnin( b );
         
+        return NULL;
     }
     else if ( name == "summarize" )
     {
@@ -76,10 +78,8 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         double treeCI       = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
         double minCladeProb = static_cast<const Probability &>( args[1].getVariable()->getRevObject() ).getValue();
         
-        tree_summary.summarizeTrees();
-        tree_summary.printTreeSummary(std::cout, treeCI);
-        tree_summary.summarizeClades( true );
-        tree_summary.printCladeSummary(std::cout, minCladeProb);
+        this->value->printTreeSummary(std::cout, treeCI);
+        this->value->printCladeSummary(std::cout, minCladeProb);
         
         return NULL;
     }
@@ -89,7 +89,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         
         const RevBayesCore::Clade &c    = static_cast<const Clade &>( args[0].getVariable()->getRevObject() ).getValue();
         
-        double p = tree_summary.cladeProbability( c );
+        double p = this->value->cladeProbability( c );
         
         return new RevVariable( new Probability( p ) );
 
@@ -98,7 +98,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
     {
         found = true;
         
-        int n = tree_summary.getNumberSamples();
+        int n = this->value->getNumberSamples();
         
         return new RevVariable( new Natural( n ) );
     }
@@ -109,9 +109,18 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         // get the index which is the only argument for this method
         int i    = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         
-        const RevBayesCore::Tree &current_tree = this->value->objectAt( i );
+        const RevBayesCore::Tree &current_tree = this->value->getTreeTrace().objectAt( i );
         
-        return new RevVariable( new Tree( current_tree ) );
+        Tree *rl_tree = NULL;
+        if ( this->value->getTreeTrace().isClock() == true )
+        {
+            rl_tree = new TimeTree( current_tree );
+        }
+        else
+        {
+            rl_tree = new BranchLengthTree( current_tree );
+        }
+        return new RevVariable( rl_tree );
     }
     else if ( name == "getTopologyFrequency" )
     {
@@ -119,8 +128,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         
         // get the tree which is the only argument for this method
         const RevBayesCore::Tree &current_tree = static_cast<const Tree &>( args[0].getVariable()->getRevObject() ).getValue();
-        tree_summary.summarizeTrees();
-        int f = tree_summary.getTopologyFrequency( current_tree );
+        int f = this->value->getTopologyFrequency( current_tree );
         
         return new RevVariable( new Natural( f ) );
     }
@@ -130,8 +138,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         
         double tree_CI       = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
         
-        tree_summary.summarizeTrees();
-        std::vector<RevBayesCore::Tree> trees = tree_summary.getUniqueTrees(tree_CI);
+        std::vector<RevBayesCore::Tree> trees = this->value->getUniqueTrees(tree_CI);
         
         ModelVector<Tree> *rl_trees = new ModelVector<Tree>;
         for (size_t i=0; i<trees.size(); ++i)
@@ -150,10 +157,10 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
 
 const std::string& TraceTree::getClassType(void)
 {
+
+    static std::string rev_type = "TraceTree";
     
-    static std::string revType = "TraceTree";
-    
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
@@ -161,7 +168,7 @@ const std::string& TraceTree::getClassType(void)
 const TypeSpec& TraceTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TreeSummary>::getClassTypeSpec() ) );
     
     return rev_type_spec;
 }
@@ -202,7 +209,7 @@ void TraceTree::initMethods( void )
 {
     
     ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
+    burninArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
     this->methods.addFunction( new MemberProcedure( "setBurnin", RlUtils::Void, burninArgRules) );
     
     ArgumentRules* summarizeArgRules = new ArgumentRules();
@@ -239,7 +246,7 @@ void TraceTree::initMethods( void )
 void TraceTree::printValue(std::ostream &o) const
 {
     
-    o << "TraceTree";
+    o << "TreeTrace";
 }
 
 

@@ -70,9 +70,9 @@ void Move_NarrowExchange::constructInternalObject( void )
 const std::string& Move_NarrowExchange::getClassType(void)
 {
     
-    static std::string revType = "Move_NarrowExchange";
+    static std::string rev_type = "Move_NarrowExchange";
     
-    return revType;
+    return rev_type;
 }
 
 

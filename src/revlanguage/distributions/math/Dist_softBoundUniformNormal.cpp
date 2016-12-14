@@ -66,9 +66,9 @@ Dist_SoftBoundUniformNormal* Dist_SoftBoundUniformNormal::clone( void ) const
 const std::string& Dist_SoftBoundUniformNormal::getClassType(void)
 {
     
-    static std::string revType = "Dist_SoftBoundUniformNormal";
+    static std::string rev_type = "Dist_SoftBoundUniformNormal";
     
-    return revType;
+    return rev_type;
 }
 
 

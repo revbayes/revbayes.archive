@@ -90,9 +90,9 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdpTopology::createDistributio
 const std::string& Dist_bdpTopology::getClassType( void )
 {
 	
-	static std::string revType = "Dist_bdpTopologyTopology";
+	static std::string rev_type = "Dist_bdpTopologyTopology";
 	
-	return revType;
+	return rev_type;
 }
 
 

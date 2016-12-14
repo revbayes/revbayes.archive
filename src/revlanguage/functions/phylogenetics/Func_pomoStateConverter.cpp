@@ -84,9 +84,9 @@ const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const
 const std::string& Func_pomoStateConverter::getClassType(void)
 {
     
-    static std::string revType = "Func_pomoStateConverter";
+    static std::string rev_type = "Func_pomoStateConverter";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

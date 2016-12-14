@@ -67,9 +67,9 @@ Dist_bimodalNorm* Dist_bimodalNorm::clone( void ) const
 const std::string& Dist_bimodalNorm::getClassType(void) 
 { 
     
-    static std::string revType = "Dist_bimodalNorm";
+    static std::string rev_type = "Dist_bimodalNorm";
     
-	return revType; 
+	return rev_type; 
 }
 
 

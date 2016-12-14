@@ -61,9 +61,9 @@ const ArgumentRules& Func_dppConcFromMean::getArgumentRules( void ) const
 const std::string& Func_dppConcFromMean::getClassType(void)
 {
     
-    static std::string revType = "Func_dppConcFromMean";
+    static std::string rev_type = "Func_dppConcFromMean";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

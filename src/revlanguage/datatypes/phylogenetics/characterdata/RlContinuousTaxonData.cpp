@@ -63,9 +63,9 @@ RevPtr<RevLanguage::RevVariable> ContinuousTaxonData::executeMethod(std::string 
 /* Get Rev type of object */
 const std::string& ContinuousTaxonData::getClassType(void) {
     
-    static std::string revType = "ContinuousTaxonData";
+    static std::string rev_type = "ContinuousTaxonData";
     
-    return revType;
+    return rev_type;
 }
 
 

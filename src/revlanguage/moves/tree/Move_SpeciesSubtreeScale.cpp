@@ -110,9 +110,9 @@ RevPtr<RevVariable> Move_SpeciesSubtreeScale::executeMethod(const std::string& n
 const std::string& Move_SpeciesSubtreeScale::getClassType(void)
 {
     
-    static std::string revType = "Move_SpeciesSubtreeScale";
+    static std::string rev_type = "Move_SpeciesSubtreeScale";
     
-    return revType;
+    return rev_type;
 }
 
 

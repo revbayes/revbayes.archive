@@ -52,8 +52,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
     dr = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     // extirpation rates
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er;
-    er = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* er;
+    er = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
     size_t num_statesEr = er->getValue().size();
     std::vector<size_t> num_statesDr;
@@ -136,7 +136,7 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "dispersalRates"  , ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "Matrix of dispersal rates between areas.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "extirpationRates", ModelVector<RealPos>::getClassTypeSpec(), "The per area extinction rates.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "extirpationRates", ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "Matrix of extirpation rates.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "rangeSize",        Simplex::getClassTypeSpec(), "Relative proportions of range sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( RevBayesCore::RbVector<double>() ) ) );
         
         std::vector<std::string> options;
@@ -160,9 +160,9 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
 const std::string& Func_DECRateMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_DECRateMatrix";
+    static std::string rev_type = "Func_DECRateMatrix";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

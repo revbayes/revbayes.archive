@@ -43,9 +43,9 @@ RevBayesCore::UniformIntegerDistribution* Dist_UniformInteger::createDistributio
 const std::string& Dist_UniformInteger::getClassType(void)
 {
     
-    static std::string revType = "Dist_UniformInteger";
+    static std::string rev_type = "Dist_UniformInteger";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

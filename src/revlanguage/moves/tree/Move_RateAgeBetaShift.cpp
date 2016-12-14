@@ -67,9 +67,9 @@ void Move_RateAgeBetaShift::constructInternalObject( void )
 const std::string& Move_RateAgeBetaShift::getClassType(void)
 {
     
-    static std::string revType = "Move_RateAgeBetaShift";
+    static std::string rev_type = "Move_RateAgeBetaShift";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

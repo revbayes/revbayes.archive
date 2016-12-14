@@ -82,9 +82,9 @@ const ArgumentRules& Func_DECRates::getArgumentRules( void ) const
 const std::string& Func_DECRates::getClassType(void)
 {
     
-    static std::string revType = "Func_DECRates";
+    static std::string rev_type = "Func_DECRates";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

@@ -71,6 +71,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     }
 
+    if( !(dt == "Binary" || dt == "Restriction" || dt == "Standard") && code != "all")
+    {
+        throw RbException( "Ascertainment bias correction only supported with Standard and Binary/Restriction datatypes" );
+    }
+
     if ( dt == "DNA" )
     {
         RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState> *dist =
@@ -686,9 +691,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 const std::string& Dist_phyloCTMC::getClassType(void)
 {
 
-    static std::string revType = "Dist_phyloCTMC";
+    static std::string rev_type = "Dist_phyloCTMC";
 
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
@@ -759,7 +764,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "siteRates", ModelVector<RealPos>::getClassTypeSpec(), "The rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         dist_member_rules.push_back( new ArgumentRule( "pInv", Probability::getClassTypeSpec(), "The probability of a site being invariant.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
 
-        dist_member_rules.push_back( new ArgumentRule( "nSites", Natural::getClassTypeSpec(), "The number of sites, used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
+        dist_member_rules.push_back( new ArgumentRule( "nSites", Natural::getClassTypeSpec(), "The number of sites, used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural() ) );
 
         std::vector<std::string> options;
         options.push_back( "DNA" );

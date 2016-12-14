@@ -274,9 +274,9 @@ const ArgumentRules& Func_readContinuousCharacterData::getArgumentRules( void ) 
 const std::string& Func_readContinuousCharacterData::getClassType(void)
 {
     
-    static std::string revType = "Func_readContinuousCharacterData";
+    static std::string rev_type = "Func_readContinuousCharacterData";
     
-    return revType;
+    return rev_type;
 }
 
 

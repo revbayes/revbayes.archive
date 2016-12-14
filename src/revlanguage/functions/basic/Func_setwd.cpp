@@ -66,9 +66,9 @@ const ArgumentRules& Func_setwd::getArgumentRules( void ) const
 const std::string& Func_setwd::getClassType(void)
 {
     
-    static std::string revType = "Func_setwd";
+    static std::string rev_type = "Func_setwd";
     
-	return revType;
+	return rev_type;
 }
 
 

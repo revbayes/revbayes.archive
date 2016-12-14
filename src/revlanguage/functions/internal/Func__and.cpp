@@ -67,9 +67,9 @@ const ArgumentRules& Func__and::getArgumentRules( void ) const
 const std::string& Func__and::getClassType(void)
 {
     
-    static std::string revType = "Func__and";
+    static std::string rev_type = "Func__and";
     
-	return revType; 
+	return rev_type; 
 }
 
 

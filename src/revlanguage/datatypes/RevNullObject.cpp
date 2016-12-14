@@ -54,9 +54,9 @@ RevPtr<RevVariable> RevNullObject::executeMethod(const std::string &name, const 
 const std::string& RevNullObject::getClassType(void)
 {
     
-    static std::string revType = "NULL";
+    static std::string rev_type = "NULL";
     
-	return revType; 
+	return rev_type; 
 }
 
 

@@ -106,9 +106,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_append<valType>::getArgument
 template <typename valType>
 const std::string& RevLanguage::Func_append<valType>::getClassType( void )
 {
-    static std::string revType = "Func_append<" + valType::getClassType() + ">";
+    static std::string rev_type = "Func_append<" + valType::getClassType() + ">";
     
-    return revType;
+    return rev_type;
 }
 
 

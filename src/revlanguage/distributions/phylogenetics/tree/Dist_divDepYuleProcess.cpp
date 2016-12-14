@@ -82,9 +82,9 @@ RevBayesCore::DiversityDependentPureBirthProcess* Dist_divDepYuleProcess::create
 const std::string& Dist_divDepYuleProcess::getClassType( void ) 
 { 
     
-    static std::string revType = "Dist_divDepYuleProcess";
+    static std::string rev_type = "Dist_divDepYuleProcess";
     
-	return revType; 
+	return rev_type; 
 }
 
 

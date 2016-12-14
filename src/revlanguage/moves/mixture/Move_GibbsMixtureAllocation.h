@@ -102,10 +102,10 @@ template <class rlValueType>
 const std::string& RevLanguage::Move_GibbsMixtureAllocation<rlValueType>::getClassType(void)
 {
     
-    //    static std::string revType = "Move_GibbsMixtureAllocation<" + rlValueType::getClassType() + ">";
-    static std::string revType = "Move_GibbsMixtureAllocation__" + rlValueType::getClassType();
+    //    static std::string rev_type = "Move_GibbsMixtureAllocation<" + rlValueType::getClassType() + ">";
+    static std::string rev_type = "Move_GibbsMixtureAllocation__" + rlValueType::getClassType();
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

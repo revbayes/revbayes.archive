@@ -65,9 +65,9 @@ Dist_normalTruncated* Dist_normalTruncated::clone( void ) const
 const std::string& Dist_normalTruncated::getClassType(void)
 {
     
-    static std::string revType = "Dist_normalTruncated";
+    static std::string rev_type = "Dist_normalTruncated";
     
-    return revType;
+    return rev_type;
 }
 
 

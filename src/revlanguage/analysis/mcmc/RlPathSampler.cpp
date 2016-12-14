@@ -71,9 +71,9 @@ RevPtr<RevVariable> PathSampler::executeMethod(std::string const &name, const st
 const std::string& PathSampler::getClassType(void)
 {
     
-    static std::string revType = "PathSampler";
+    static std::string rev_type = "PathSampler";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */

@@ -344,9 +344,9 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
 const std::string& BurninEstimationConvergenceAssessment::getClassType(void)
 {
     
-    static std::string revType = "BurninEstimationConvergenceAssessment";
+    static std::string rev_type = "BurninEstimationConvergenceAssessment";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */

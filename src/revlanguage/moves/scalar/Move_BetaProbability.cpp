@@ -59,9 +59,9 @@ void Move_BetaProbability::constructInternalObject( void )
 const std::string& Move_BetaProbability::getClassType(void)
 {
     
-    static std::string revType = "Move_BetaProbability";
+    static std::string rev_type = "Move_BetaProbability";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

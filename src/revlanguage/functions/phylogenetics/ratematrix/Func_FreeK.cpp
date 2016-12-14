@@ -76,9 +76,9 @@ const ArgumentRules& Func_FreeK::getArgumentRules( void ) const
 const std::string& Func_FreeK::getClassType(void)
 {
     
-    static std::string revType = "Func_FreeK";
+    static std::string rev_type = "Func_FreeK";
     
-	return revType;
+	return rev_type;
 }
 
 
