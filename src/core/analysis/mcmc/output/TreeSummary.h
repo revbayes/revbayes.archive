@@ -35,14 +35,14 @@ namespace RevBayesCore {
     struct AnnotationReport
     {
         bool ages             = true;
+        bool cc_ages          = false;
         bool ccp              = true;
-        bool conditional_ages = false;
-        bool input_tree_ages  = false;
+        bool tree_ages        = false;
+        double hpd            = 0.95;
         bool map_parameters   = false;
         bool mean             = true;
         bool posterior        = true;
         bool sa               = true;
-        double hpd            = 0.95;
     };
 
     class TreeSummary : public Cloneable {
@@ -63,9 +63,9 @@ namespace RevBayesCore {
         int                                                                     getTopologyFrequency(const Tree &t);
         const TraceTree&                                                        getTreeTrace(void) const;
         bool                                                                    isTreeContainedInCredibleInterval(const Tree &t, double size);
-        Tree*                                                                   mapTree(void);
-        Tree*                                                                   mccTree(void);
-        Tree*                                                                   mrTree(double cutoff);
+        Tree*                                                                   mapTree(AnnotationReport report);
+        Tree*                                                                   mccTree(AnnotationReport report);
+        Tree*                                                                   mrTree(AnnotationReport report, double cutoff);
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95);
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05);
         void                                                                    setBurnin(int b);

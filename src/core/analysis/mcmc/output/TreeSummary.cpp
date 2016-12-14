@@ -1466,7 +1466,7 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report )
 
     std::string newick;
     
-    if( report.input_tree_ages )
+    if( report.tree_ages )
     {
         Tree* tmp_tree = NULL;
         if ( clock == true )
@@ -1534,7 +1534,7 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report )
         {
             Clade parent = n->getParent().getClade();
             std::map<Clade, std::vector<double>, CladeComparator >& condCladeAges = conditionalCladeAges[parent];
-            nodeAges = report.conditional_ages ? condCladeAges[c] : cladeAges[c];
+            nodeAges = report.cc_ages ? condCladeAges[c] : cladeAges[c];
 
             // annotate CCPs
             if( !n->isTip() && report.ccp )
@@ -1549,7 +1549,7 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report )
             nodeAges = cladeAges[c];
         }
 
-        if ( report.input_tree_ages )
+        if ( report.tree_ages )
         {
             nodeAges = treeCladeAges[newick][ c ];
         }
@@ -1644,10 +1644,10 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report )
 
     }
     
-    if( !report.conditional_ages && clock )
+    /*if( !report.tree_ages && clock )
     {
         enforceNonnegativeBranchLengths( tree.getRoot() );
-    }
+    }*/
 
     if( report.map_parameters )
     {
@@ -1942,7 +1942,7 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
 }
 
 
-Tree* TreeSummary::mapTree()
+Tree* TreeSummary::mapTree( AnnotationReport report )
 {
     std::stringstream ss;
     ss << "Compiling maximum a posteriori tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
@@ -1971,8 +1971,7 @@ Tree* TreeSummary::mapTree()
     TaxonMap tm = TaxonMap( trace.objectAt(0) );
     tmp_tree->setTaxonIndices( tm );
 
-    AnnotationReport report;
-    report.input_tree_ages = true;
+    report.ages            = true;
     report.map_parameters  = true;
     annotateTree(*tmp_tree, report );
     
@@ -1980,7 +1979,7 @@ Tree* TreeSummary::mapTree()
 }
 
 
-Tree* TreeSummary::mccTree( void )
+Tree* TreeSummary::mccTree( AnnotationReport report )
 {
     std::stringstream ss;
     ss << "Compiling maximum clade credibility tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
@@ -2031,14 +2030,14 @@ Tree* TreeSummary::mccTree( void )
         }
     }
 
-    AnnotationReport report;
+    report.ages = true;
     annotateTree(*best_tree, report );
 
     return best_tree;
 }
 
 
-Tree* TreeSummary::mrTree(double cutoff)
+Tree* TreeSummary::mrTree(AnnotationReport report, double cutoff)
 {
     if (cutoff < 0.0 || cutoff > 1.0) cutoff = 0.5;
 
@@ -2165,9 +2164,10 @@ Tree* TreeSummary::mrTree(double cutoff)
     //now put the tree together
     consensusTree->setRoot(root);
 
-    AnnotationReport report;
-    report.ccp = false;
-    report.mean = false;
+    report.ages      = true;
+    report.cc_ages   = false;
+    report.ccp       = false;
+    report.tree_ages = false;
     annotateTree(*consensusTree, report );
 
     return consensusTree;
