@@ -1592,28 +1592,32 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
 {
 
     bool do_mask = this->dag_node != NULL && this->dag_node->isClamped();
-    std::vector<std::vector<bool> > mask = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
+    std::vector<std::vector<bool> > mask_gap        = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
+    std::vector<std::vector<bool> > mask_missing    = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
     // we cannot use the stored gap matrix because it uses the pattern compression
     // therefore we create our own mask
     if ( do_mask == true )
     {
-        std::vector<size_t> siteIndices = getIncludedSiteIndices();
+        std::vector<size_t> site_indices = getIncludedSiteIndices();
 
         // set the gap states as in the clamped data
         for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
         {
             // create a temporary variable for the taxon
-            std::vector<bool> taxon_mask = std::vector<bool>(num_sites,false);
+            std::vector<bool> taxon_mask_gap        = std::vector<bool>(num_sites,false);
+            std::vector<bool> taxon_mask_missing    = std::vector<bool>(num_sites,false);
 
             const std::string &taxon_name = tau->getValue().getNode( i ).getName();
             AbstractDiscreteTaxonData& taxon = value->getTaxonData( taxon_name );
 
-            for ( size_t site=0; site<siteIndices.size(); ++site)
+            for ( size_t site=0; site<site_indices.size(); ++site)
             {
-                taxon_mask[site] = taxon.getCharacter( siteIndices[site] ).isGapState();
+                taxon_mask_gap[site]        = taxon.getCharacter( site_indices[site] ).isGapState();
+                taxon_mask_missing[site]    = taxon.getCharacter( site_indices[site] ).isMissingState();
             }
 
-            mask[i] = taxon_mask;
+            mask_gap[i]         = taxon_mask_gap;
+            mask_missing[i]     = taxon_mask_missing;
 
         }
 
@@ -1716,9 +1720,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
             for ( size_t site=0; site<num_sites; ++site)
             {
                 DiscreteCharacterState &c = taxon.getCharacter(site);
-                if ( mask[i][site] == true )
+                if ( mask_gap[i][site] == true )
                 {
                     c.setGapState( true );
+                }
+                if ( mask_missing[i][site] == true )
+                {
+                    c.setMissingState( true );
                 }
             }
 
