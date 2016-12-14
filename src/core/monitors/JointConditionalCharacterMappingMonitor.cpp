@@ -116,7 +116,6 @@ void JointConditionalCharacterMappingMonitor::monitor(unsigned long gen)
         std::vector<std::string> character_histories(num_nodes);
 //        sse_process->drawJointConditionalCharacterMap(character_histories);
         
-        // print character map
         const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
         for (int i = 0; i < nds.size(); i++)
         {
@@ -126,7 +125,8 @@ void JointConditionalCharacterMappingMonitor::monitor(unsigned long gen)
             // add a separator before every new element
             outStream << separator;
             
-            // print out branch character history....
+            // print out this branch's character history in the format
+            // used by SIMMAP and phytools
             outStream << character_histories[ node_index ];
             
         }

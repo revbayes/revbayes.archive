@@ -494,6 +494,17 @@ const TopologyNode& Tree::getRoot(void) const
 
 
 /**
+ * Get the tree and character history in newick format
+ * compatible with SIMMAP and phytools
+ */
+std::string Tree::getSimmapNewickRepresentation() const
+{
+    
+//    return root->computeSimmapNewick();
+}
+
+
+/**
  * Get all the species names for this topology.
  * This might include duplicates.
  */
