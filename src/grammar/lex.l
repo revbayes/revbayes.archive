@@ -14,6 +14,7 @@
 #define YY_INPUT rrinput
 
 #include <cstring>
+#include <stdio.h>
 
 /* Hack for Windows */
 #ifdef RB_WIN
@@ -22,9 +23,6 @@
 #define YY_SKIP_YYWRAP
 #define yywrap() 1
 //int isatty(int) { return 0; }
-extern "C" {
-_CRTIMP int __cdecl __MINGW_NOTHROW _fileno (FILE*);
-}
 #else
 extern "C" { 
    char *strdup(const char *s);
