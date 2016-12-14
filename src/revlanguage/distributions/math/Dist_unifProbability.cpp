@@ -43,9 +43,9 @@ RevBayesCore::UniformDistribution* Dist_unifProbability::createDistribution( voi
 const std::string& Dist_unifProbability::getClassType(void)
 {
     
-    static std::string revType = "Dist_unifProbability";
+    static std::string rev_type = "Dist_unifProbability";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

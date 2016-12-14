@@ -59,9 +59,9 @@ void Move_DirichletSimplex::constructInternalObject( void )
 const std::string& Move_DirichletSimplex::getClassType(void)
 {
     
-    static std::string revType = "Move_DirichletSimplex";
+    static std::string rev_type = "Move_DirichletSimplex";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

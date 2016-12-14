@@ -83,9 +83,9 @@ const ArgumentRules& Func_writeCharacterDataDelimited::getArgumentRules( void ) 
 const std::string& Func_writeCharacterDataDelimited::getClassType(void)
 {
     
-    static std::string revType = "Func_writeCharacterDataDelimited";
+    static std::string rev_type = "Func_writeCharacterDataDelimited";
     
-    return revType;
+    return rev_type;
 }
 
 

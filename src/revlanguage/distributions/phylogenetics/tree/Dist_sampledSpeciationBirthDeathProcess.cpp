@@ -68,9 +68,9 @@ RevBayesCore::SampledSpeciationBirthDeathProcess* Dist_sampledSpeciationBirthDea
 const std::string& Dist_sampledSpeciationBirthDeathProcess::getClassType(void)
 {
     
-    static std::string revType = "Dist_sampledSpeciationBirthDeathProcess";
+    static std::string rev_type = "Dist_sampledSpeciationBirthDeathProcess";
     
-    return revType;
+    return rev_type;
 }
 
 

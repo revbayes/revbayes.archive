@@ -60,9 +60,9 @@ const ArgumentRules& Func_powerVector::getArgumentRules( void ) const
 const std::string& Func_powerVector::getClassType(void)
 {
     
-    static std::string revType = "Func_powerVector";
+    static std::string rev_type = "Func_powerVector";
     
-	return revType;
+	return rev_type;
 }
 
 

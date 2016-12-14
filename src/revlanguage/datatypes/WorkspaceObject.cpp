@@ -20,9 +20,9 @@ WorkspaceObject::~WorkspaceObject()
 
 const std::string& WorkspaceObject::getClassType(void) {
     
-    static std::string revType = "WorkspaceObject";
+    static std::string rev_type = "WorkspaceObject";
     
-    return revType;
+    return rev_type;
 }
 
 

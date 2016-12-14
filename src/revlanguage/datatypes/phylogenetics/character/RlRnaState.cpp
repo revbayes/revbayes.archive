@@ -52,9 +52,9 @@ RnaState* RnaState::clone(void) const {
 /** Get Rev type of object */
 const std::string& RnaState::getClassType(void) { 
     
-    static std::string revType = "RNA";
+    static std::string rev_type = "RNA";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

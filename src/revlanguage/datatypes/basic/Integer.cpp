@@ -228,9 +228,9 @@ Real* Integer::divide(const Integer &rhs) const
 const std::string& Integer::getClassType(void)
 {
     
-    static std::string revType = "Integer";
+    static std::string rev_type = "Integer";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** 

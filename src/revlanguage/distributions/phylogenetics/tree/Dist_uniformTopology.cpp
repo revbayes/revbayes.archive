@@ -77,9 +77,9 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
 const std::string& Dist_uniformTopology::getClassType(void) 
 { 
     
-    static std::string revType = "Dist_uniformTopology";
+    static std::string rev_type = "Dist_uniformTopology";
     
-	return revType; 
+	return rev_type; 
 }
 
 

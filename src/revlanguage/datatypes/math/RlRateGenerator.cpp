@@ -58,9 +58,9 @@ RevPtr<RevVariable> RateGenerator::executeMethod(std::string const &name, const 
 /* Get Rev type of object */
 const std::string& RateGenerator::getClassType(void) {
     
-    static std::string revType = "RateGenerator";
+    static std::string rev_type = "RateGenerator";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

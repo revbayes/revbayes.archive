@@ -75,9 +75,9 @@ void Move_Scale::constructInternalObject( void )
 const std::string& Move_Scale::getClassType(void) 
 { 
     
-    static std::string revType = "Move_Scale";
+    static std::string rev_type = "Move_Scale";
     
-	return revType; 
+	return rev_type; 
 }
 
 

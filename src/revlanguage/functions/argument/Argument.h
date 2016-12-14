@@ -44,6 +44,7 @@ class Argument {
     RevPtr<const RevVariable>           getVariable(void) const;                                                    //!< Get the variable contained in this argument
     const RevPtr<RevVariable>&          getReferenceVariable(void) const;
     bool                                isConstant(void) const;
+    void                                setLabel(const std::string&);
 
     private:
     

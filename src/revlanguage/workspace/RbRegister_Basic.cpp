@@ -165,12 +165,12 @@
 
 /* Input/output functions (in folder "functions/io") */
 #include "Func_ancestralStateTree.h"
-#include "Func_annotateHPDAges.h"
 #include "Func_annotateTree.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
 #include "Func_listFiles.h"
 #include "Func_mapTree.h"
+#include "Func_mccTree.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
 #include "Func_readCharacterDataDelimited.h"
@@ -438,12 +438,12 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
 
         /* Input/output functions (in folder "functions/io") */
         addFunction( new Func_ancestralStateTree()                      );
-		addFunction( new Func_annotateHPDAges()                         );
         addFunction( new Func_annotateTree()                            );
 		addFunction( new Func_consensusTree()                           );
         addFunction( new Func_convertToPhylowood()                      );
         addFunction( new Func_listFiles()                               );
         addFunction( new Func_mapTree()                                 );
+        addFunction( new Func_mccTree()                                 );
         addFunction( new Func_module()                                  );
         addFunction( new Func_readAncestralStateTreeTrace()             );
 		addFunction( new Func_readAncestralStateTrace()                 );

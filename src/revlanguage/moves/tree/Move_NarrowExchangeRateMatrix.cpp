@@ -90,9 +90,9 @@ void Move_NarrowExchangeRateMatrix::constructInternalObject( void )
 const std::string& Move_NarrowExchangeRateMatrix::getClassType(void)
 {
     
-    static std::string revType = "Move_NarrowExchangeRateMatrix";
+    static std::string rev_type = "Move_NarrowExchangeRateMatrix";
     
-    return revType;
+    return rev_type;
 }
 
 

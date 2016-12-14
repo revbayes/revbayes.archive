@@ -11,6 +11,7 @@
 #include "RlTimeTree.h"
 #include "RlTraceTree.h"
 #include "RlUtils.h"
+#include "Probability.h"
 #include "StringUtilities.h"
 #include "TreeSummary.h"
 #include "TraceTree.h"
@@ -39,13 +40,16 @@ Func_consensusTree* Func_consensusTree::clone(void) const
 RevPtr<RevVariable> Func_consensusTree::execute(void)
 {
     
-    const TraceTree& tt = static_cast<const TraceTree&>( args[0].getVariable()->getRevObject() );
-    const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-    double cutoff = static_cast<const RealPos &>(args[2].getVariable()->getRevObject()).getValue();
-    int burnin = static_cast<const Integer &>(args[3].getVariable()->getRevObject()).getValue();
-    RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
-    summary.setBurnin( burnin );
-    RevBayesCore::Tree* tree = summary.conTree(cutoff, true);
+
+    TraceTree& tt = static_cast<TraceTree&>( args[0].getVariable()->getRevObject() );
+    double cutoff = static_cast<const Probability &>(args[1].getVariable()->getRevObject()).getValue();
+    const std::string& filename = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
+
+    //int burnin = static_cast<const Integer &>(args[3].getVariable()->getRevObject()).getValue();
+    //tt.getTreeSummary().setBurnin( burnin );
+    
+    bool verbose = true;
+    RevBayesCore::Tree* tree = tt.getValue().mrTree(cutoff, verbose);
     
     if ( filename != "" )
     {
@@ -64,7 +68,17 @@ RevPtr<RevVariable> Func_consensusTree::execute(void)
         
     }
     
-    return new RevVariable( new Tree( tree ) );
+    Tree* t;
+    if( tt.getValue().getTreeTrace().isClock() )
+    {
+        t = new TimeTree( tree );
+    }
+    else
+    {
+        t = new BranchLengthTree( tree );
+    }
+
+    return new RevVariable( t );
 }
 
 
@@ -79,10 +93,10 @@ const ArgumentRules& Func_consensusTree::getArgumentRules( void ) const
     if (!rules_set)
     {
         
-        argumentRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file for storing the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "cutoff"   , RealPos::getClassTypeSpec()  , "The minimum threshold for clade probabilities.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        argumentRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "cutoff"   , Probability::getClassTypeSpec()  , "The minimum threshold for clade probabilities.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.5) ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file for storing the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
+        //argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         
         rules_set = true;
     }
@@ -95,9 +109,9 @@ const ArgumentRules& Func_consensusTree::getArgumentRules( void ) const
 const std::string& Func_consensusTree::getClassType(void)
 {
     
-    static std::string revType = "Func_consensusTree";
+    static std::string rev_type = "Func_consensusTree";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -120,6 +134,19 @@ std::string Func_consensusTree::getFunctionName( void ) const
     std::string f_name = "consensusTree";
     
     return f_name;
+}
+
+/**
+ * Get the name for this procedure.
+ */
+std::vector<std::string> Func_consensusTree::getFunctionNameAliases( void ) const
+{
+    std::vector<std::string> aliases;
+
+    aliases.push_back("conTree");
+    aliases.push_back("sumt");
+
+    return aliases;
 }
 
 

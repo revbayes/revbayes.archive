@@ -51,9 +51,9 @@ void Move_GibbsPruneAndRegraft::constructInternalObject( void )
 /** Get Rev type of object */
 const std::string& Move_GibbsPruneAndRegraft::getClassType(void) {
     
-    static std::string revType = "Move_GibbsPruneAndRegraft";
+    static std::string rev_type = "Move_GibbsPruneAndRegraft";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

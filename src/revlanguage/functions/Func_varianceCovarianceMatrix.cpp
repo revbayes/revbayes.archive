@@ -79,8 +79,8 @@ const ArgumentRules& Func_varianceCovarianceMatrix::getArgumentRules( void ) con
 const std::string& Func_varianceCovarianceMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_varianceCovarianceMatrix";
-	return revType;
+    static std::string rev_type = "Func_varianceCovarianceMatrix";
+	return rev_type;
 }
 
 

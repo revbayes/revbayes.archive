@@ -84,9 +84,9 @@ const ArgumentRules& Func_computeWeightedNodeOrderConstraintsScore::getArgumentR
 const std::string& Func_computeWeightedNodeOrderConstraintsScore::getClassType(void)
 {
     
-    static std::string revType = "Func_computeWeightedNodeOrderConstraintsScore";
+    static std::string rev_type = "Func_computeWeightedNodeOrderConstraintsScore";
     
-    return revType;
+    return rev_type;
 }
 
 

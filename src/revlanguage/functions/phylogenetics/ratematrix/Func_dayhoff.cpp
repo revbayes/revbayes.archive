@@ -54,9 +54,9 @@ const ArgumentRules& Func_dayhoff::getArgumentRules( void ) const
 const std::string& Func_dayhoff::getClassType(void)
 {
     
-    static std::string revType = "Func_dayhoff";
+    static std::string rev_type = "Func_dayhoff";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

@@ -70,9 +70,9 @@ RevPtr<RevVariable> Monitor::executeMethod(const std::string& name, const std::v
 const std::string& Monitor::getClassType(void)
 {
     
-    static std::string revType = "Monitor";
+    static std::string rev_type = "Monitor";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

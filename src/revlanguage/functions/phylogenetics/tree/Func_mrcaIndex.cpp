@@ -73,9 +73,9 @@ const ArgumentRules& Func_mrcaIndex::getArgumentRules( void ) const
 const std::string& Func_mrcaIndex::getClassType(void)
 {
     
-    static std::string revType = "Func_mrcaIndex";
+    static std::string rev_type = "Func_mrcaIndex";
     
-	return revType;
+	return rev_type;
 }
 
 

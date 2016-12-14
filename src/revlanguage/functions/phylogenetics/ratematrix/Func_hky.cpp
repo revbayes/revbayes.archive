@@ -70,9 +70,9 @@ const ArgumentRules& Func_hky::getArgumentRules( void ) const
 const std::string& Func_hky::getClassType(void)
 {
     
-    static std::string revType = "Func_hky";
+    static std::string rev_type = "Func_hky";
     
-	return revType; 
+	return rev_type; 
 }
 
 

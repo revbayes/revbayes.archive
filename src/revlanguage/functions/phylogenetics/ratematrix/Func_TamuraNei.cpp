@@ -67,9 +67,9 @@ const ArgumentRules& Func_TamuraNei::getArgumentRules( void ) const
 const std::string& Func_TamuraNei::getClassType(void)
 {
     
-    static std::string revType = "Func_TamuraNei";
+    static std::string rev_type = "Func_TamuraNei";
     
-    return revType;
+    return rev_type;
 }
 
 

@@ -68,9 +68,9 @@ void Move_SingleElementScale::constructInternalObject( void )
 /** Get Rev type of object */
 const std::string& Move_SingleElementScale::getClassType(void) {
     
-    static std::string revType = "Move_SingleElementScale";
+    static std::string rev_type = "Move_SingleElementScale";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

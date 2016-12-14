@@ -109,9 +109,9 @@ const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( 
 const std::string& Func_constructRootedTripletDistribution::getClassType(void)
 {
     
-    static std::string revType = "Func_constructRootedTripletDistribution";
+    static std::string rev_type = "Func_constructRootedTripletDistribution";
     
-	return revType;
+	return rev_type;
 }
 
 

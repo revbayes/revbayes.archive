@@ -78,8 +78,8 @@ const ArgumentRules& Func_decomposedVarianceCovarianceMatrix::getArgumentRules( 
 const std::string& Func_decomposedVarianceCovarianceMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_decomposedVarianceCovarianceMatrix";
-	return revType;
+    static std::string rev_type = "Func_decomposedVarianceCovarianceMatrix";
+	return rev_type;
 }
 
 

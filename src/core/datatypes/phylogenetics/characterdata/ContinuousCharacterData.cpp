@@ -469,7 +469,7 @@ bool ContinuousCharacterData::isCharacterResolved(const std::string &tn, size_t 
  * Remove all the excluded character.
  *
  */
-void ContinuousCharacterData::removeExludedCharacters( void )
+void ContinuousCharacterData::removeExcludedCharacters( void )
 {
     
     for (std::map<std::string, AbstractTaxonData*>::iterator it = taxonMap.begin(); it != taxonMap.end(); ++it)

@@ -58,9 +58,9 @@ Probability* Dist_beta::createRandomVariable(void) const
 const std::string& Dist_beta::getClassType(void)
 {
     
-    static std::string revType = "Dist_beta";
+    static std::string rev_type = "Dist_beta";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

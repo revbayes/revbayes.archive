@@ -52,9 +52,9 @@ DnaState* DnaState::clone(void) const {
 /** Get Rev type of object */
 const std::string& DnaState::getClassType(void) { 
     
-    static std::string revType = "DNA";
+    static std::string rev_type = "DNA";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

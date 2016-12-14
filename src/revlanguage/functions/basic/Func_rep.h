@@ -126,9 +126,9 @@ template <typename valType>
 const std::string& RevLanguage::Func_rep<valType>::getClassType(void)
 {
     
-    static std::string revType = "Func_rep<" + valType::getClassType() + ">";
+    static std::string rev_type = "Func_rep<" + valType::getClassType() + ">";
     
-	return revType;
+	return rev_type;
 }
 
 

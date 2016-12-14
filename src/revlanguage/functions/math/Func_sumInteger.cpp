@@ -59,9 +59,9 @@ const ArgumentRules& Func_sumInteger::getArgumentRules( void ) const
 const std::string& Func_sumInteger::getClassType(void)
 {
     
-    static std::string revType = "Func_sumInteger";
+    static std::string rev_type = "Func_sumInteger";
     
-    return revType;
+    return rev_type;
 }
 
 

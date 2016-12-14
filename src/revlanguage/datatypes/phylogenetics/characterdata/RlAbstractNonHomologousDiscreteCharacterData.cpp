@@ -201,9 +201,9 @@ RevPtr<RevVariable> AbstractNonHomologousDiscreteCharacterData::executeMethod(st
 const std::string& AbstractNonHomologousDiscreteCharacterData::getClassType(void)
 {
     
-    static std::string revType = "AbstractNonHomologousDiscreteCharacterData";
+    static std::string rev_type = "AbstractNonHomologousDiscreteCharacterData";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

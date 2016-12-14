@@ -58,9 +58,9 @@ const ArgumentRules& Func_InfiniteSitesRateMatrix::getArgumentRules( void ) cons
 const std::string& Func_InfiniteSitesRateMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_InfiniteSitesRateMatrix";
+    static std::string rev_type = "Func_InfiniteSitesRateMatrix";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

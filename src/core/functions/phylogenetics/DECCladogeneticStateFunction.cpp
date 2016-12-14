@@ -30,7 +30,7 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< R
                                                            bool uv,
                                                            unsigned mrs):
 //    TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 0.0) ),
-    TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix( 0 )),
+    TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix( computeNumStates(nc, mrs) )),
     eventProbs( ep ),
     connectivityGraph( cg ),
     vicarianceGraph( vg ),
@@ -50,7 +50,7 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< R
     addParameter( vicarianceGraph );
     
     buildBits();
-    buildRanges(beforeRanges, connectivityGraph, true);
+    buildRanges(beforeRanges, connectivityGraph, false);
     buildRanges(afterRanges, vicarianceGraph, false);
     
     numRanges = (unsigned)beforeRanges.size();
@@ -181,7 +181,8 @@ void DECCladogeneticStateFunction::buildBits( void )
 
 void DECCladogeneticStateFunction::buildEventMap( void ) {
     
-    eventMapCounts.resize(numRanges, std::vector<unsigned>(numEventTypes, 0));
+//    eventMapCounts.resize(numRanges, std::vector<unsigned>(numEventTypes, 0));
+    eventMapCounts.clear();
     std::map<std::vector<unsigned>, double> eventMapProbs;
     
 //    statesToBitsByNumOn = bits;
@@ -189,13 +190,16 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
     
     // get L,R states per A state
     std::vector<unsigned> idx(3);
-    for (unsigned i = 0; i < numRanges; i++) {
-        
+//    for (unsigned i = 0; i < numRanges; i++) {
+    for (std::set<unsigned>::iterator its = beforeRanges.begin(); its != beforeRanges.end(); its++)
+    {
+        unsigned i = *its;
         idx[0] = i;
+        eventMapCounts[i] = std::vector<unsigned>(BiogeographicCladoEvent::NUM_STATES, 0);
         
         // only include supported ranges
-        if (beforeRanges.find(i) == beforeRanges.end())
-            continue;
+//        if (beforeRanges.find(i) == beforeRanges.end())
+//            continue;
    
 #ifdef DEBUG_DEC
         std::cout << "State " << i << "\n";
@@ -205,10 +209,13 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
         // get on bits for A
         const std::vector<unsigned>& ba = statesToBitsByNumOn[i];
         std::vector<unsigned> on;
+        std::vector<unsigned> off;
         for (unsigned j = 0; j < ba.size(); j++)
         {
             if (ba[j] == 1)
                 on.push_back(j);
+            else
+                off.push_back(j);
         }
         
         std::vector<unsigned> bl(numCharacters, 0);
@@ -406,6 +413,79 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
                 }
             }
         }
+        
+        // jump dispersal
+        if (eventStringToStateMap.find("j") != eventStringToStateMap.end()) {
+            
+#ifdef DEBUG_DEC
+            std::cout << "Jump dispersal (L-trunk, R-bud)\n";
+#endif
+            
+            // get set of possible jump dispersal events for L-trunk, R-bud
+            for (size_t j = 0; j < off.size(); j++)
+            {
+                br = std::vector<unsigned>(numCharacters, 0);
+                br[ off[j] ] = 1;
+                //                unsigned sr = bitsToState(br);
+                unsigned sr = bitsToStatesByNumOn[br];
+                idx[1] = i;
+                idx[2] = sr;
+                
+                if (beforeRanges.find(sr) == beforeRanges.end())
+                {
+                    br[ off[j] ] = 0;
+                    continue;
+                }
+                
+                
+                eventMapTypes[ idx ] = BiogeographicCladoEvent::JUMP_DISPERSAL;
+                eventMapCounts[ i ][  BiogeographicCladoEvent::JUMP_DISPERSAL ] += 1;
+                eventMapProbs[ idx ] = 0.0;
+                
+#ifdef DEBUG_DEC
+                std::cout << "A " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
+                std::cout << "L " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
+                std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n\n";
+#endif
+                
+                br[ off[j] ] = 0;
+            }
+            
+            
+#ifdef DEBUG_DEC
+            std::cout << "Jump dispersal (L-bud, R-trunk)\n";
+#endif
+            
+            // get set of possible jump dispersal events for R-trunk, L-bud
+            for (size_t j = 0; j < off.size(); j++)
+            {
+                bl = std::vector<unsigned>(numCharacters, 0);
+                
+                bl[ off[j] ] = 1;
+                //                unsigned sl = bitsToState(bl);
+                unsigned sl = bitsToStatesByNumOn[bl];
+                idx[1] = sl;
+                idx[2] = i;
+                
+                if (beforeRanges.find(sl) == beforeRanges.end())
+                {
+                    bl[ off[j] ] = 0;
+                    continue;
+                }
+                
+                eventMapTypes[ idx ] =  BiogeographicCladoEvent::JUMP_DISPERSAL;
+                eventMapCounts[ i ][  BiogeographicCladoEvent::JUMP_DISPERSAL ] += 1;
+                eventMapProbs[ idx ] = 0.0;
+                
+#ifdef DEBUG_DEC
+                std::cout << "A " << bitsToState(statesToBitsByNumOn[i]) << " "<< bitsToString(statesToBitsByNumOn[i]) << "\n";
+                std::cout << "L " << bitsToState(bl) << " "<< bitsToString(bl) << "\n";
+                std::cout << "R " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n\n";
+#endif
+                
+                bl[ off[j] ] = 0;
+            }
+        }
 #ifdef DEBUG_DEC
         std::cout << "\n\n";
 #endif
@@ -488,12 +568,8 @@ DECCladogeneticStateFunction* DECCladogeneticStateFunction::clone( void ) const
     return new DECCladogeneticStateFunction( *this );
 }
 
-size_t DECCladogeneticStateFunction::computeNumStates(size_t numAreas, size_t maxRangeSize, bool orderedStates)
+size_t DECCladogeneticStateFunction::computeNumStates(size_t numAreas, size_t maxRangeSize)
 {
-    if (!orderedStates || maxRangeSize < 1 || maxRangeSize > numAreas)
-    {
-        return (size_t)pow(2.0, numAreas);
-    }
     size_t numStates = 1;
     for (size_t i = 1; i <= maxRangeSize; i++)
     {
@@ -535,68 +611,52 @@ void DECCladogeneticStateFunction::update( void )
     // Z will then be used to normalize Prob(j,k|i)
     
     std::vector<double> z( eventMapTypes.size(), 0.0 );
-//    for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
-//    {
-//        const std::vector<unsigned>& idx = it->first;
-//        size_t i = idx[0];
-//        size_t k = eventMapTypes[idx];
-//        z[i] += probs[k];
-////        for (size_t j = 0; j < eventTypes.size(); j++)
-////        {
-////            
-//////            size_t k = eventStringToStateMap[eventTypes[i]];
-//            std::cout << i << " " << k << " " << eventMapCounts[i][k] << " " << probs[k] << "\n";
-////            size_t k = eventStringToStateMap[eventTypes[j]];
-////            z[i] += eventMapCounts[i][k] * probs[k];
-////            z[i] = 1.0;
-////        }
-//        
-//        std::cout << "weight-sum[" << bitsToString(statesToBitsByNumOn[i]) << "] = " << z[i] << "\n";
-//    }
-    
     
     for (size_t i = 0; i < eventTypes.size(); i++)
     {
         size_t k = eventStringToStateMap[ eventTypes[i] ];
-        for (size_t j = 0; j < numRanges; j++)
+//        for (size_t j = 0; j < numRanges; j++)
+        for (std::set<unsigned>::iterator its = beforeRanges.begin(); its != beforeRanges.end(); its++)
         {
+            size_t j = *its;
             z[j] += probs[k] * eventMapCounts[j][k];
-//            std::cout << i << " " << " " << j << " " << k << " " << eventMapCounts[j][k] << " " << probs[k] << "\n";
         }
     }
-//    for (size_t j = 0; j < numRanges; j++)
-//    {
-//        std::cout << "weight-sum[" << bitsToString(statesToBitsByNumOn[j]) << "] = " << z[j] << "\n";
-//    }
-    
-//    for (size_t i = 0; i < numRanges; i++)
-//    {
-//        for (size_t j = 0; j < eventTypes.size(); j++)
-//        {
-//
-//        }
-//    }
-    
-    
+    // for narrow events
+    for (size_t j = 1; j <= numCharacters; j++)
+    {
+        z[j] += 1.0;
+    }
+
     for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
     {
         const std::vector<unsigned>& idx = it->first;
-        double v = 1.0;
-        if (it->second != BiogeographicCladoEvent::SYMPATRY_NARROW) {
-            if (eventProbsAsWeightedAverages) {
-                v = probs[ it->second ] / z[ idx[0] ];
-//                std::cout << bitsToString(statesToBitsByNumOn[idx[0]]) << "->" << bitsToString(statesToBitsByNumOn[idx[1]]) << "," << bitsToString(statesToBitsByNumOn[idx[2]]) << "\t" << v << " = " << probs[it->second] << " / " << z[ idx[0] ] << "\n";
-            }
-            else {
-                v = probs[ it->second ] / eventMapCounts[ idx[0] ][ it->second ];
-//                std::cout << idx[0] << "->" << idx[1] << "," << idx[2] << "\t" << probs[it->second] << " " << eventMapCounts[ idx[0] ][ it->second ] << "\n";
-                
-            }
-            
+        double v = 0.0;
+        
+#ifdef DEBUG_DEC
+        std::cout << idx[0] << " -> " << idx[1] << " | " << idx[2] << " = " << it->second << "\n";
+#endif
+        
+        if (it->second == BiogeographicCladoEvent::SYMPATRY_NARROW) {
+            v = 1.0;
         }
+        else {
+            v = probs[ it->second ];
+        }
+      
+        if (eventProbsAsWeightedAverages) {
+            
+            v = v / z[ idx[0] ];
+        }
+        else {
+            
+            v = v / eventMapCounts[ idx[0] ][ it->second ];
+        }
+        
+#ifdef DEBUG_DEC
+        std::cout << idx[0] << " -> " << idx[1] << " | " << idx[2] << " = " << v << "\n";
+#endif
 
-// MJL: NEW VALUE
-//        (*value)[ idx[0] ][ numIntStates * idx[1] + idx[2] ] = v;
         eventMapProbs[ idx ] = v;
     }
     

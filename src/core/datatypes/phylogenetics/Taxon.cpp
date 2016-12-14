@@ -10,7 +10,7 @@ Taxon::Taxon( void ) :
     age( 0 ),
     date(  ),
     name( "" ),
-    speciesName( "" )
+    species_name( "" )
 {
     
 }
@@ -25,7 +25,7 @@ Taxon::Taxon(const std::string &n) :
     age( 0 ),
     date(  ),
     name( n ),
-    speciesName( n )
+    species_name( n )
 {
     
 }
@@ -38,7 +38,7 @@ Taxon::Taxon(const std::string &n) :
 bool Taxon::operator==(const RevBayesCore::Taxon &t) const
 {
     
-    if ( speciesName != t.speciesName )
+    if ( species_name != t.species_name )
     {
         return false;
     }
@@ -79,11 +79,11 @@ bool Taxon::operator!=(const RevBayesCore::Taxon &t) const
 bool Taxon::operator<(const RevBayesCore::Taxon &t) const
 {
     
-    if ( speciesName < t.speciesName)
+    if ( species_name < t.species_name)
     {
         return true;
     }
-    else if ( speciesName > t.speciesName )
+    else if ( species_name > t.species_name )
     {
         return false;
     }
@@ -175,7 +175,7 @@ const std::string& Taxon::getName( void ) const
  */
 const std::string& Taxon::getSpeciesName( void ) const
 {
-    return speciesName;
+    return species_name;
 }
 
 
@@ -219,7 +219,7 @@ void Taxon::setName( const std::string &n )
  */
 void Taxon::setSpeciesName( const std::string &sn )
 {
-    speciesName = sn;
+    species_name = sn;
 }
 
 
@@ -227,7 +227,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const Taxon& x)
 {
     // Sebastian: We will not write out the species name or date anymore
     // These info need to be queried specifically
-//    o << x.getName() << ":" << x.getSpeciesName() << ":" << x.getDate();
+//    o << x.getName() << ":" << x.getspecies_name() << ":" << x.getDate();
     o << x.getName();
     return o;
 }

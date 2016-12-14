@@ -1784,7 +1784,7 @@ void NxsCharactersBlock::HandleFormat(
 					datatype = nucleotide;
 				else if (wIt->Equals("PROTEIN"))
 					datatype = protein;
-				else if (wIt->Equals("RESTRICTION"))
+				else if (wIt->Equals("RESTRICTION") || wIt->Equals("BINARY"))
 					{
 					datatype = standard;
 					restrictionDataype = true;
@@ -1836,7 +1836,7 @@ void NxsCharactersBlock::HandleFormat(
 						{
 						NxsString name(pIt->first.c_str());
 						name.ToUpper();
-						if (name == "RESTRICTION")
+						if (name == "RESTRICTION" || name == "BINARY")
 							{
 							dtv.push_back(standard);
 							isR.push_back(true);

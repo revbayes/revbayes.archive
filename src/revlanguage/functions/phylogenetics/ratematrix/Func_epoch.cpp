@@ -78,9 +78,9 @@ const ArgumentRules& Func_epoch::getArgumentRules( void ) const
 const std::string& Func_epoch::getClassType(void)
 {
     
-    static std::string revType = "Func_epoch";
+    static std::string rev_type = "Func_epoch";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

@@ -64,9 +64,9 @@ const ArgumentRules& Func_t92::getArgumentRules( void ) const
 const std::string& Func_t92::getClassType(void)
 {
     
-    static std::string revType = "Func_t92";
+    static std::string rev_type = "Func_t92";
     
-	return revType; 
+	return rev_type; 
 }
 
 

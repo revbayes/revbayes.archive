@@ -75,9 +75,9 @@ void Move_SliceSampling::constructInternalObject( void )
 const std::string& Move_SliceSampling::getClassType(void) 
 { 
     
-    static std::string revType = "Move_SliceScampling";
+    static std::string rev_type = "Move_SliceScampling";
     
-	return revType; 
+	return rev_type; 
 }
 
 

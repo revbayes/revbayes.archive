@@ -60,9 +60,9 @@ const ArgumentRules& Func_variance::getArgumentRules( void ) const
 const std::string& Func_variance::getClassType(void)
 {
     
-    static std::string revType = "Func_variance";
+    static std::string rev_type = "Func_variance";
     
-    return revType;
+    return rev_type;
 }
 
 

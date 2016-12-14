@@ -62,9 +62,9 @@ const ArgumentRules& Func_f81::getArgumentRules( void ) const
 const std::string& Func_f81::getClassType(void)
 {
     
-    static std::string revType = "Func_f81";
+    static std::string rev_type = "Func_f81";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

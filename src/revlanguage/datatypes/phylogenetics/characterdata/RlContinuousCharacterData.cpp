@@ -267,9 +267,9 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
 const std::string& ContinuousCharacterData::getClassType(void)
 {
     
-    static std::string revType = "ContinuousCharacterData";
+    static std::string rev_type = "ContinuousCharacterData";
     
-	return revType;
+	return rev_type;
 }
 
 

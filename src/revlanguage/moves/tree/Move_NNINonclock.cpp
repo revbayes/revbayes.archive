@@ -51,9 +51,9 @@ void Move_NNINonclock::constructInternalObject( void )
 const std::string& Move_NNINonclock::getClassType(void)
 {
     
-    static std::string revType = "Move_NNI";
+    static std::string rev_type = "Move_NNI";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

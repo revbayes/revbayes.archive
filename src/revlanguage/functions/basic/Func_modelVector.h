@@ -117,9 +117,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_modelVector<valType>::getArg
 template <typename valType>
 const std::string& RevLanguage::Func_modelVector<valType>::getClassType( void )
 {
-    static std::string revType = "Func_modelVector<" + valType::getClassType() + ">";
+    static std::string rev_type = "Func_modelVector<" + valType::getClassType() + ">";
     
-	return revType;
+	return rev_type;
 }
 
 

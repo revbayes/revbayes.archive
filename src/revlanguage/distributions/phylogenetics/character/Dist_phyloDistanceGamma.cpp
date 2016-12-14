@@ -61,9 +61,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::DistanceMatrix >* Dist_phyloDista
 const std::string& Dist_phyloDistanceGamma::getClassType(void)
 {
     
-    static std::string revType = "Dist_phyloDistanceGamma";
+    static std::string rev_type = "Dist_phyloDistanceGamma";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

@@ -108,9 +108,9 @@ template <typename firstValType, typename secondValType, typename retType>
 const std::string& RevLanguage::Func__sub<firstValType, secondValType, retType>::getClassType(void)
 {
     
-    static std::string revType = "Func__sub<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
+    static std::string rev_type = "Func__sub<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

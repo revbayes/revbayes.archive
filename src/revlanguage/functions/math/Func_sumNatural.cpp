@@ -59,9 +59,9 @@ const ArgumentRules& Func_sumNatural::getArgumentRules( void ) const
 const std::string& Func_sumNatural::getClassType(void)
 {
     
-    static std::string revType = "Func_sumNatural";
+    static std::string rev_type = "Func_sumNatural";
     
-    return revType;
+    return rev_type;
 }
 
 

@@ -46,9 +46,9 @@ RevBayesCore::PhyloBrownianProcess* Dist_PhyloBrownian::createDistribution( void
 /* Get Rev type of object */
 const std::string& Dist_PhyloBrownian::getClassType(void) {
     
-    static std::string revType = "Dist_PhyloBrownian";
+    static std::string rev_type = "Dist_PhyloBrownian";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

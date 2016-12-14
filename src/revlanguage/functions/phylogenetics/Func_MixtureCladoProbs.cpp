@@ -103,9 +103,9 @@ const ArgumentRules& Func_MixtureCladoProbs::getArgumentRules( void ) const
 const std::string& Func_MixtureCladoProbs::getClassType(void)
 {
     
-    static std::string revType = "Func_MixtureCladoProbs";
+    static std::string rev_type = "Func_MixtureCladoProbs";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

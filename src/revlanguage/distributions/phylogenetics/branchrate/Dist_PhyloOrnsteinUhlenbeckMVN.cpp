@@ -131,9 +131,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
 const std::string& Dist_PhyloOrnsteinUhlenbeckMVN::getClassType(void)
 {
     
-    static std::string revType = "Dist_PhyloOrnsteinUhlenbeckMVN";
+    static std::string rev_type = "Dist_PhyloOrnsteinUhlenbeckMVN";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

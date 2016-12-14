@@ -59,9 +59,9 @@ const ArgumentRules& Func_logistic::getArgumentRules( void ) const
 const std::string& Func_logistic::getClassType(void)
 {
     
-    static std::string revType = "Func_logistic";
+    static std::string rev_type = "Func_logistic";
     
-    return revType;
+    return rev_type;
 }
 
 

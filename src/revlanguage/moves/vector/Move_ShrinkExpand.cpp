@@ -81,9 +81,9 @@ void Move_ShrinkExpand::constructInternalObject( void )
 const std::string& Move_ShrinkExpand::getClassType(void)
 {
     
-    static std::string revType = "Move_ShrinkExpand";
+    static std::string rev_type = "Move_ShrinkExpand";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

@@ -72,9 +72,9 @@ RevBayesCore::NodeOrderWeightedConstrainedTreeDistribution* Dist_WeightedConstra
 const std::string& Dist_WeightedConstrainedNodeOrder::getClassType( void )
 {
     
-    static std::string revType = "Dist_WeightedConstrainedNodeOrder";
+    static std::string rev_type = "Dist_WeightedConstrainedNodeOrder";
     
-    return revType;
+    return rev_type;
 }
 
 

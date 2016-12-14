@@ -80,9 +80,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
 const std::string& Dist_PhyloBrownianREML::getClassType(void)
 {
     
-    static std::string revType = "Dist_PhyloBrownianREML";
+    static std::string rev_type = "Dist_PhyloBrownianREML";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

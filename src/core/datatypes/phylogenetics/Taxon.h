@@ -49,7 +49,7 @@ namespace RevBayesCore {
         double                              age;
         TimeAndDate                         date;
         std::string                         name;
-        std::string                         speciesName;
+        std::string                         species_name;
     
     };
 	

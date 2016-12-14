@@ -72,9 +72,9 @@ const ArgumentRules& Func_readAtlas::getArgumentRules( void ) const
 const std::string& Func_readAtlas::getClassType(void)
 {
     
-    static std::string revType = "Func_readAtlas";
+    static std::string rev_type = "Func_readAtlas";
     
-	return revType;
+	return rev_type;
 }
 
 

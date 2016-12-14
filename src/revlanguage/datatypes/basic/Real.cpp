@@ -244,9 +244,9 @@ Real* Real::divide(const Integer &rhs) const
 /** Get Rev type of object */
 const std::string& Real::getClassType(void) { 
     
-    static std::string revType = "Real";
+    static std::string rev_type = "Real";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

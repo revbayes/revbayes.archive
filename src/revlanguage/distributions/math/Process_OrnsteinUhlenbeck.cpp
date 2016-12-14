@@ -67,9 +67,9 @@ OrnsteinUhlenbeckProcess* OrnsteinUhlenbeckProcess::clone( void ) const
 const std::string& OrnsteinUhlenbeckProcess::getClassType(void)
 {
     
-    static std::string revType = "OrnsteinUhlenbeckProcess";
+    static std::string rev_type = "OrnsteinUhlenbeckProcess";
     
-    return revType;
+    return rev_type;
 }
 
 

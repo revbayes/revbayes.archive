@@ -68,9 +68,9 @@ const ArgumentRules& Func_stitchTree::getArgumentRules( void ) const
 const std::string& Func_stitchTree::getClassType(void)
 {
     
-    static std::string revType = "Func_stitchTree";
+    static std::string rev_type = "Func_stitchTree";
     
-    return revType;
+    return rev_type;
 }
 
 

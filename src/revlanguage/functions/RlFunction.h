@@ -57,7 +57,7 @@ namespace RevLanguage {
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual std::string                             getConstructorFunctionName(void) const;
         virtual std::vector<std::string>                getConstructorFunctionAliases(void) const;
-        virtual std::string                             getFunctionName(void) const = 0;                                                                //!< Get the name of the function
+        virtual std::string                             getFunctionName(void) const = 0;                                                    //!< Get the name of the function
         virtual std::vector<std::string>                getFunctionNameAliases(void) const;                                                 //!< Get aliases for the Rev name of the function
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 

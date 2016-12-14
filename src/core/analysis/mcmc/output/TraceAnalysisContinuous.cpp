@@ -107,7 +107,7 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
 void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values, size_t b)
 {
     // if we have not yet calculated the mean, do this now
-    if ( RbMath::isAComputableNumber(mean) == false )
+    if ( mean == RbConstants::Double::max )
     {
         analyseMean(values,b);
     }
