@@ -152,14 +152,14 @@ const ArgumentRules& Func_DECCladoProbs::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "connectivityGraph",
                                                   ModelVector<ModelVector<RealPos> >::getClassTypeSpec(),
-                                                  "Connectivity graph of ranges.",
+                                                  "Connectivity graph of allowed ranges.",
                                                   ArgumentRule::BY_VALUE,
                                                   ArgumentRule::CONSTANT,
                                                   new ModelVector<ModelVector<RealPos> >() ));
         
         argumentRules.push_back( new ArgumentRule( "vicarianceGraph",
                                                   ModelVector<ModelVector<RealPos> >::getClassTypeSpec(),
-                                                  "Connectivity graph of ranges.",
+                                                  "Graph to model vicariance events.",
                                                   ArgumentRule::BY_VALUE,
                                                   ArgumentRule::CONSTANT,
                                                   new ModelVector<ModelVector<RealPos> >() ));
