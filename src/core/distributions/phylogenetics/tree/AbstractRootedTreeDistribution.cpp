@@ -781,7 +781,9 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
         {
             //            double factor = root_age->getValue() / value->getRoot().getAge();
             //            TreeUtilities::rescaleTree( value, &value->getRoot(), factor);
-            
+            if (root_age->getValue() != value->getRoot().getAge()) {
+                RbException("Tree height and root age values must match when root age is not a stochastic node.");
+            }
             value->getRoot().setAge( root_age->getValue() );
         }
         

@@ -92,10 +92,13 @@
 
 /* Distribution types (in folder "distributions") */
 
+#include "Dist_EmpiricalSample.h"
+
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
 #include "Dist_phyloCTMCClado.h"
+#include "Dist_phyloDolloCTMC.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 
@@ -157,6 +160,7 @@
 #include "Dist_normalTruncated.h"
 #include "Dist_normalTruncatedPositive.h"
 #include "Dist_softBoundUniformNormal.h"
+#include "Dist_studentT.h"
 #include "Dist_unif.h"
 #include "Dist_unifPositive.h"
 #include "Dist_unifProbability.h"
@@ -198,6 +202,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         /* Add distributions (in folder "distributions") */
         ///////////////////////////////////////////////////
         
+        
         /* Evolutionary processes (in folder "distributions/evolution") */
 
         /* Branch rate processes (in folder "distributions/evolution/branchrate") */
@@ -227,6 +232,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( new Dist_phyloCTMC() );
         addDistribution( new Dist_phyloDACTMC() );
         addDistribution( new Dist_phyloCTMCClado() );
+        //addDistribution( new Dist_phyloDolloCTMC() );
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
@@ -305,6 +311,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // chi-square distribution
         AddContinuousDistribution< RealPos          >( new Dist_chisq() );
+        
+        // Student's t distribution
+        AddContinuousDistribution< Real             >(new Dist_studentT() );
 
         // compound Poisson w/ normal kernel
         AddDistribution< Real                       >( new Dist_cppNormal() );
@@ -367,6 +376,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< MatrixReal                 >( new Dist_decomposedInverseWishart() );
         
         /* Mixture distributions (in folder "distributions/mixture") */
+        AddDistribution< ModelVector<TimeTree>      >( new Dist_EmpiricalSample<TimeTree>());
+
         
         // dirichlet process prior distribution
         AddDistribution< ModelVector<Real>          >( new Dist_dpp<Real>()         );

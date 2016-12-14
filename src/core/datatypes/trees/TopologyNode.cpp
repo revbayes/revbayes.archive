@@ -8,6 +8,7 @@
 #include "Taxon.h"
 #include "TopologyNode.h"
 #include "Tree.h"
+#include "TreeChangeEventMessage.h"
 
 #include <algorithm>
 #include <stdio.h>
@@ -134,6 +135,7 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n)
         tip_node                = n.tip_node;
         fossil                  = n.fossil;
         sampled_ancestor        = n.sampled_ancestor;
+        constrained             = n.constrained;
         root_node               = n.root_node;
         node_comments           = n.node_comments;
         branch_comments         = n.branch_comments;
@@ -234,7 +236,7 @@ void TopologyNode::addChild(TopologyNode* c)
     // fire tree change event
     if ( tree != NULL )
     {
-        tree->getTreeChangeEventHandler().fire( *c );
+        tree->getTreeChangeEventHandler().fire( *c, RevBayesCore::TreeChangeEventMessage::TOPOLOGY );
     }
     
     tip_node = false;
@@ -287,11 +289,16 @@ void TopologyNode::addNodeParameter(const std::string &n, const std::string &p)
 void TopologyNode::addNodeParameters(std::string const &n, const std::vector<double> &p, bool internalOnly)
 {
     
-    if ( !internalOnly || !isTip()  )
+    if ( internalOnly == false || isTip() == false  )
     {
         std::stringstream o;
         char s[32];
-        snprintf(s, sizeof(s), "%f",p[index]);
+        size_t num_tip_nodes = 0;
+        if ( internalOnly == true && tree != NULL )
+        {
+            num_tip_nodes = tree->getNumberOfTips();
+        }
+        snprintf(s, sizeof(s), "%f",p[index - num_tip_nodes]);
         o << n << "=" << s; //SK
         std::string comment = o.str();
         node_comments.push_back( comment );
@@ -648,6 +655,11 @@ double TopologyNode::getAge( void ) const
 double TopologyNode::getBranchLength( void ) const
 {
 
+    if (branch_length < 0)
+    {
+        
+        std::cout << "\n";
+    }
     return branch_length;
 }
 
@@ -723,7 +735,7 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
     
     // so the clade must be contained in my clade
     // just return my index
-    return index;
+    return c->getIndex();
 }
 
 
@@ -1004,6 +1016,12 @@ double TopologyNode::getTmrca(const std::vector<Taxon> &yourTaxa) const
     }
 }
 
+bool TopologyNode::isConstrained( void ) const
+{
+    
+    return constrained;
+}
+
 
 bool TopologyNode::isFossil( void ) const
 {
@@ -1158,8 +1176,8 @@ void TopologyNode::removeChild(TopologyNode* c)
     // fire tree change event
     if ( tree != NULL )
     {
-        tree->getTreeChangeEventHandler().fire( *c    );
-        tree->getTreeChangeEventHandler().fire( *this );
+        tree->getTreeChangeEventHandler().fire( *c, RevBayesCore::TreeChangeEventMessage::TOPOLOGY );
+        tree->getTreeChangeEventHandler().fire( *this, RevBayesCore::TreeChangeEventMessage::TOPOLOGY );
     }
     
     /*bool child_sampled_ancestor = false;
@@ -1223,7 +1241,7 @@ void TopologyNode::setAge(double a)
         // fire tree change event
         if ( tree != NULL )
         {
-            tree->getTreeChangeEventHandler().fire( *child );
+            tree->getTreeChangeEventHandler().fire( *child, RevBayesCore::TreeChangeEventMessage::BRANCH_LENGTH );
         }
     }
     
@@ -1241,9 +1259,14 @@ void TopologyNode::setBranchLength(double b)
     // fire tree change event
     if ( tree != NULL )
     {
-        tree->getTreeChangeEventHandler().fire( *this );
+        tree->getTreeChangeEventHandler().fire( *this, RevBayesCore::TreeChangeEventMessage::BRANCH_LENGTH );
     }
     
+}
+
+void TopologyNode::setConstrained(bool tf)
+{
+    constrained = tf;
 }
 
 
@@ -1332,7 +1355,7 @@ void TopologyNode::setParent(TopologyNode* p)
         // fire tree change event
         if ( tree != NULL )
         {
-            tree->getTreeChangeEventHandler().fire( *this );
+            tree->getTreeChangeEventHandler().fire( *this, RevBayesCore::TreeChangeEventMessage::DEFAULT );
         }
         
     }

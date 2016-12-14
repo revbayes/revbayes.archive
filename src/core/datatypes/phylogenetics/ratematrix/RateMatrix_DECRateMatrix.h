@@ -10,9 +10,11 @@
 #define __revbayes_proj__RateMatrix_DECRateMatrix__
 
 #include "GeneralRateMatrix.h"
+#include "TransitionProbabilityMatrix.h"
 #include <complex>
 #include <vector>
 #include <map>
+#include <list>
 
 
 namespace RevBayesCore {
@@ -22,7 +24,7 @@ namespace RevBayesCore {
     class RateMatrix_DECRateMatrix : public GeneralRateMatrix {
         
     public:
-        RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs, bool ex, bool os, bool uc, size_t mrs);                                                                                               //!< Construct rate matrix with n states
+        RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs, bool ex, bool uc, size_t mrs);                                                                                               //!< Construct rate matrix with n states
         RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatrix& m);                                                                                //!< Copy constructor
         virtual                         ~RateMatrix_DECRateMatrix(void);                                                              //!< Destructor
         
@@ -49,8 +51,8 @@ namespace RevBayesCore {
         
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
-        void                                computeExponentialMatrixByRepeatedSquaring(double t, TransitionProbabilityMatrix& P) const;                             //!< Calculate transition probabilities using exponential squaring (Poujol and Lartillot, 2014)
-        inline void                         squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
+        void                                exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
+        inline void                         multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
         void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case
         void                                tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
@@ -73,7 +75,7 @@ namespace RevBayesCore {
         bool                                                useSquaring;
         bool                                                conditionSurvival;
         bool                                                excludeNullRange;
-        bool                                                orderStatesByNum;
+//        bool                                                orderStatesByNum;
         
         EigenSystem*                                        theEigenSystem;                 //!< Holds the eigen system
         std::vector<double>                                 c_ijk;                          //!< Vector of precalculated product of eigenvectors and their inverse
@@ -84,10 +86,17 @@ namespace RevBayesCore {
         std::vector<double>                                 extirpationRates;
         std::vector<double>                                 rangeSize;
         MatrixReal                                          cladogeneticMatrix;
+        double                                              scalingFactor;
         double                                              birthRate;
         bool                                                useCladogenesis;
         bool                                                rescaleMatrix;
         size_t                                              maxRangeSize;
+        TransitionProbabilityMatrix                         stationaryMatrix;
+        
+        mutable std::map<double,TransitionProbabilityMatrix>  storedTransitionProbabilities;
+        mutable std::list<double>                             accessedTransitionProbabilities;
+        unsigned                                              maxSizeStoredTransitionProbabilites;
+        bool                                                  useStoredTransitionProbabilities;
     };
     
 }

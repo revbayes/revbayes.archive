@@ -40,9 +40,9 @@ namespace RevBayesCore {
         void                                            writeToFile(const std::string &dir, const std::string &fn) const;           //!< Write this object into a file in its default format.
 
         // CharacterData functions
-        ContinuousCharacterData&                        concatenate(const ContinuousCharacterData &d);                              //!< Concatenate data matrices
-        ContinuousCharacterData&                        concatenate(const HomologousCharacterData &d);                              //!< Concatenate data matrices
-        ContinuousCharacterData&                        concatenate(const AbstractCharacterData &d);                                //!< Concatenate data matrices
+        ContinuousCharacterData&                        concatenate(const ContinuousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
+        ContinuousCharacterData&                        concatenate(const HomologousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
+        ContinuousCharacterData&                        concatenate(const AbstractCharacterData &d, std::string type = "");                                //!< Concatenate data matrices
         void                                            excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                            excludeCharacter(size_t i);                                                 //!< Exclude character
         const double&                                   getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix

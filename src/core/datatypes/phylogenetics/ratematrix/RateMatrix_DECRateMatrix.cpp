@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
+//#define DEBUG_DEC
 
 #include "EigenSystem.h"
 #include "MatrixComplex.h"
@@ -19,24 +20,30 @@
 #include <cmath>
 #include <string>
 #include <iomanip>
+#include <list>
 
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs, bool ex, bool os, bool uc, size_t mrs) : GeneralRateMatrix( ns ),
+RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs, bool ex, bool uc, size_t mrs) : GeneralRateMatrix( ns ),
     num_states(ns),
     numCharacters(nc),
     dispersalRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 0.0) ) ),
     extirpationRates( std::vector<double>(numCharacters, 1.0/ns) ),
     rangeSize( std::vector<double>(numCharacters, 1.0/ns) ),
     birthRate(0.0),
-    useSquaring(!true),
+    useSquaring(true),
     excludeNullRange(ex),
     conditionSurvival(cs),
-    orderStatesByNum(os),
+//    orderStatesByNum(os),
     useCladogenesis(uc),
     maxRangeSize(mrs),
-    rescaleMatrix(!true)
+    rescaleMatrix(false),
+    scalingFactor(1.0),
+    stationaryMatrix( TransitionProbabilityMatrix(num_states) ),
+    maxSizeStoredTransitionProbabilites(1e3),
+    accessedTransitionProbabilities( std::list<double>() ),
+    useStoredTransitionProbabilities(true)
 {
 
     theEigenSystem = new EigenSystem(the_rate_matrix);
@@ -55,11 +62,14 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs
     }
     
     update();
+//    initializeStationaryMatrix();
 }
 
 
 /** Copy constructor */
-RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatrix& m) : GeneralRateMatrix( m ) {
+RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatrix& m) : GeneralRateMatrix( m ),
+    stationaryMatrix(m.stationaryMatrix)
+{
     
     bits                 = m.bits;
     inverseBits          = m.inverseBits;
@@ -73,8 +83,8 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     useSquaring          = m.useSquaring;
     conditionSurvival    = m.conditionSurvival;
     excludeNullRange     = m.excludeNullRange;
-    orderStatesByNum     = m.orderStatesByNum;
-    theEigenSystem       = new EigenSystem( *m.theEigenSystem );
+//    orderStatesByNum     = m.orderStatesByNum;
+    theEigenSystem       = new EigenSystem( *(m.theEigenSystem) );
     c_ijk                = m.c_ijk;
     cc_ijk               = m.cc_ijk;
     dispersalRates       = m.dispersalRates;
@@ -85,10 +95,17 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     useCladogenesis      = m.useCladogenesis;
     maxRangeSize         = m.maxRangeSize;
     rescaleMatrix        = m.rescaleMatrix;
+    scalingFactor        = m.scalingFactor;
+    storedTransitionProbabilities = m.storedTransitionProbabilities;
+    accessedTransitionProbabilities = m.accessedTransitionProbabilities;
+    maxSizeStoredTransitionProbabilites = m.maxSizeStoredTransitionProbabilites;
+    useStoredTransitionProbabilities = m.useStoredTransitionProbabilities;
+//    stationaryMatrix     = m.stationaryMatrix;
     
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+//    initializeStationaryMatrix();
     
-    update();
+//    update();
 
 }
 
@@ -120,8 +137,8 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         useSquaring          = r.useSquaring;
         conditionSurvival    = r.conditionSurvival;
         excludeNullRange     = r.excludeNullRange;
-        orderStatesByNum     = r.orderStatesByNum;
-        theEigenSystem       = new EigenSystem( *r.theEigenSystem );
+//        orderStatesByNum     = r.orderStatesByNum;
+        theEigenSystem       = new EigenSystem( *(r.theEigenSystem) );
         c_ijk                = r.c_ijk;
         cc_ijk               = r.cc_ijk;
         dispersalRates       = r.dispersalRates;
@@ -132,10 +149,17 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         useCladogenesis      = r.useCladogenesis;
         maxRangeSize         = r.maxRangeSize;
         rescaleMatrix        = r.rescaleMatrix;
+        scalingFactor        = r.scalingFactor;
+        storedTransitionProbabilities = r.storedTransitionProbabilities;
+        accessedTransitionProbabilities = r.accessedTransitionProbabilities;
+        maxSizeStoredTransitionProbabilites = r.maxSizeStoredTransitionProbabilites;
+        useStoredTransitionProbabilities = r.useStoredTransitionProbabilities;
+//        stationaryMatrix     = r.stationaryMatrix;
 
         theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+//        initializeStationaryMatrix();
         
-        update();
+//        update();
         
     }
     
@@ -229,6 +253,7 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
         m[i][i] = -sum;
 //        std::cout << "\n";
     }
+//    std::cout << m << "\n";
     
     // set flags
     needs_update = true;
@@ -278,81 +303,208 @@ void RateMatrix_DECRateMatrix::calculateCijk(void)
 /** Calculate the transition probabilities */
 void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
-    double t = rate * (startAge - endAge);
-    if (useSquaring) {
-        //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
-        computeExponentialMatrixByRepeatedSquaring(t, P);
-    }
-	else if ( theEigenSystem->isComplex() == false )
-    {
-		tiProbsEigens(t, P);
-    }
-	else
-    {
-		tiProbsComplexEigens(t, P);
+    double t = scalingFactor * rate * (startAge - endAge);
+    
+    if (t != 0.0) {
+        double digits = 8;
+        double factor = std::pow(10.0, digits - std::ceil(std::log10(std::fabs(t))));
+        
+//        std::cout << t << " -> ";
+        t = round(t * factor) / factor;
+//        std::cout << t << "\n";
     }
     
-    // condition P_ij on j!=0, P'_ij = P_ij / (1.0 - P_i0)
-    if (conditionSurvival)
-    {
-        for (size_t i = 0; i < num_states; i++) {
-            for (size_t j = 1; j < num_states; j++) {
-                P[i][j] = P[i][j] / (1.0 - P[i][0]);
-            }
-            P[i][0] = 0.0;
-        }
-        for (size_t i = 0; i < num_states; i++) {
-            P[0][i] = 0.0;
-        }
+    
+    // Do we already have P(t)?
+    std::map<double, TransitionProbabilityMatrix>::const_iterator it = storedTransitionProbabilities.find(t);
+    bool found = it != storedTransitionProbabilities.end();
+    
+//    TransitionProbabilityMatrix P2(P.getNumberOfStates());
+    if (found) {
         
+        
+//        P2 = it->second;
+        // update the transition probs
+        P = it->second;
+        
+        // this time was most recently accessed
+        accessedTransitionProbabilities.remove(it->first);
+        accessedTransitionProbabilities.push_front(it->first);
+
+        
+//        std::cout << "Found...\n";
+//        std::cout << "P(" << it->first << ")=\n" << P2 << "\n";
+//        std::cout << "t = " << it->first << "\n";
+//        
+//        std::cout << "----\n\n";
     }
-    // std::cout << P << "\n";
+
+    else {
+        if (useSquaring) {
+            //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+            exponentiateMatrixByScalingAndSquaring(t, P);
+        }
+        else if ( theEigenSystem->isComplex() == false )
+        {
+            tiProbsEigens(t, P);
+        }
+        else
+        {
+            tiProbsComplexEigens(t, P);
+        }
+    
+        // condition P_ij on j!=0, P'_ij = P_ij / (1.0 - P_i0)
+        if (conditionSurvival)
+        {
+            for (size_t i = 1; i < num_states; i++) {
+    //            std::cout << log(P[i][0]) << "\n";
+                double oneMinusPi0 = 1.0 - P[i][0];
+                
+                for (size_t j = 1; j < num_states; j++) {
+                    
+    //                if (P[i][j] / oneMinusPi0 > 1.0 + 1e-6)
+    //                {
+    //                    std::cout << "ERROR!\n";
+    //                    std::cout << i << " " << j << " " << oneMinusPi0 << "\t" << P[i][j] << "\n";
+    //                    for (size_t k = 0; k < num_states; k++) {
+    //                        std::cout << P[i][k] << "  ";
+    //                    }
+    //                    
+    //                    std::cout << "\n";
+    //                }
+                    P[i][j] = P[i][j] / oneMinusPi0;
+                }
+                
+                // zeroes out the first column
+                P[i][0] = 0.0;
+                
+                // zeroes out the first row
+                P[0][i] = 0.0;
+            }
+            P[0][0] = 1.0;
+            
+        }
+
+        if (useStoredTransitionProbabilities) {
+            storedTransitionProbabilities.insert( std::pair<double, TransitionProbabilityMatrix>(t, P) );
+            accessedTransitionProbabilities.push_front(t);
+        }
+        if (accessedTransitionProbabilities.size() > maxSizeStoredTransitionProbabilites)
+        {
+            double rem_time = accessedTransitionProbabilities.back();
+            storedTransitionProbabilities.erase(rem_time);
+            accessedTransitionProbabilities.pop_back();
+        }
+//        std::cout << storedTransitionProbabilities.size() << "\n";
+    }
+    
+
+    
+//    if (found) {
+//        double err = 0.0;
+//        for (size_t i = 0; i < P.getNumberOfStates(); i++) {
+//            for (size_t j = 0; j < P.getNumberOfStates(); j++) {
+//                err += pow(P[i][j] - P2[i][j], 2);
+//            }
+//        }
+//        
+//        if (err > 1e-10) {
+//            
+//
+//            std::cout << "error!\n";
+//            
+//            std::cout << "P-new\n";
+//            std::cout << P << "\n";
+//            
+//            std::cout << "----\n";
+//            std::cout << "P-stored\n";
+//            std::cout << P2 << "\n";
+//            std::cout << "\n";
+//            
+//            std::cout << storedTransitionProbabilities.size() << "\n";
+//        }
+//    }
     
     return;
 }
 
-void RateMatrix_DECRateMatrix::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const {
-    //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
-    //Ideally one should dynamically decide how many squarings are necessary.
-    //For the moment, we arbitrarily do 10 such squarings, as it seems to perform well in practice (N. Lartillot, personal communication).
-    //first, multiply the matrix by the right scalar
-    //2^10 = 1024
-    size_t num_squaring = 2*5;
-    size_t d_squaring = (size_t)pow(2,num_squaring);
-    double tOver2s = t/(d_squaring);
+
+void RateMatrix_DECRateMatrix::exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const {
     
-    for ( size_t i = 0; i < num_states; i++ ) {
-        for ( size_t j = 0; j < num_states; j++ ) {
-            P[i][j] = (*the_rate_matrix)[i][j] * tOver2s;
+    // Here we use the scaling and squaring method with a 4th order Taylor approximant as described in:
+    //
+    // Moler, C., & Van Loan, C. 2003. Nineteen dubious ways to compute the exponential of a
+    // matrix, twenty-five years later. SIAM review, 45(1), 3-49.
+    //
+    // I tested this implementation against the Eigen C++ package and a scaling parameter s = 6 had similar time
+    // efficiency and returned the same results with about 10^-9 accuracy. The scaling parameter could be
+    // increased for better accuracy.
+    // -- Will Freyman 11/27/16
+    size_t s = 6;
+    
+    // first scale the matrix
+    double scale = t / pow(2, s);
+    for ( size_t i = 0; i < num_states; i++ )
+    {
+        for ( size_t j = 0; j < num_states; j++ )
+        {
+            p[i][j] = (*the_rate_matrix)[i][j] * scale;
         }
     }
-    //Add the identity matrix:
-    for ( size_t i = 0; i < num_states; i++ ) {
-        P[i][i] += 1;
-    }
-    //Now we can do the multiplications
-    TransitionProbabilityMatrix P2 (num_states);
     
-    for (size_t i = 0; i < num_squaring; i += 2)
+    // compute the 4th order Taylor approximant
+    
+    // calculate the scaled matrix raised to powers 2, 3 and 4
+    TransitionProbabilityMatrix p_2(num_states);
+    multiplyMatrices(p, p, p_2);
+    
+    TransitionProbabilityMatrix p_3(num_states);
+    multiplyMatrices(p, p_2, p_3);
+    
+    TransitionProbabilityMatrix p_4(num_states);
+    multiplyMatrices(p, p_3, p_4);
+    
+    // add k=0 (the identity matrix) and k=1 terms
+    for ( size_t i = 0; i < num_states; i++ )
     {
-        squareMatrix (P, P2); //P2 at power 2^i
-        squareMatrix (P2, P); //P at power 2^i+1
+        p[i][i] += 1;
+    }
+
+    // add the k=2, k=3, k=4 terms of the Taylor series
+    for ( size_t i = 0; i < num_states; i++ )
+    {
+        for ( size_t j = 0; j < num_states; j++ )
+        {
+            p[i][j] += ( ( p_2[i][j] / 2 ) + ( p_3[i][j] / 6 ) + ( p_4[i][j] / 24 ) );
+        }
     }
     
-    if (false) {
-        squareMatrix (P, P2); //P2 at power 2
-        squareMatrix (P2, P); //P at power 4
-        squareMatrix (P, P2); //P2 at power 8
-        squareMatrix (P2, P); //P at power 16
-        squareMatrix (P, P2); //P2 at power 32
-        squareMatrix (P2, P); //P at power 64
-        squareMatrix (P, P2); //P2 at power 128
-        squareMatrix (P2, P); //P at power 256
-        squareMatrix (P, P2); //P2 at power 512
-        squareMatrix (P2, P); //P at power 1024
+    // now perform the repeated squaring
+    for (size_t i = 0; i < s; i++)
+    {
+        TransitionProbabilityMatrix r(num_states);
+        multiplyMatrices(p, p, r);
+        p = r;
+
     }
+}
+
+
+
+inline void RateMatrix_DECRateMatrix::multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const {
     
-    return;
+    // could probably use boost::ublas here, for the moment we do it ourselves.
+    for ( size_t i = 0; i < num_states; i++ )
+    {
+        for ( size_t j = 0; j < num_states; j++ )
+        {
+            r[i][j] = 0;
+            for ( size_t k = 0; k < num_states; k++ )
+            {
+                r[i][j] += p[i][k] * q[k][j];
+            }
+        }
+    }
 }
 
 
@@ -376,6 +528,79 @@ const std::vector<double>& RateMatrix_DECRateMatrix::getRangeSize(void) const
     return rangeSize;
 }
 
+/*
+void RateMatrix_DECRateMatrix::initializeStationaryMatrix(void)
+{
+    
+    size_t num_squaring = 2*5;
+    size_t d_squaring = (size_t)pow(2,num_squaring);
+    
+    double tol = 1e-6;
+    double t = 1e-2;
+    bool good = true;
+    
+    do {
+        // increase time to stationarity
+        t *= 2;
+        
+        // initialize workspace
+        TransitionProbabilityMatrix P(num_states);
+        TransitionProbabilityMatrix P2(num_states);
+        double tOver2s = t/(d_squaring);
+        
+        for ( size_t i = 0; i < num_states; i++ ) {
+            for ( size_t j = 0; j < num_states; j++ ) {
+                P[i][j] = (*the_rate_matrix)[i][j] * tOver2s;
+            }
+        }
+        //Add the identity matrix:
+        for ( size_t i = 0; i < num_states; i++ ) {
+            P[i][i] += 1;
+        }
+        
+        // square matrices until error is detectable
+        for (size_t i = 0; i < num_squaring; i += 2)
+        {
+            squareMatrix (P, P2); //P2 at power 2^i
+            for (size_t j = 1; j < num_states; j++)
+            {
+                if (P2[j][0] > 1.0 - tol)
+                {
+                    good = false;
+                }
+            }
+            
+            squareMatrix (P2, P); //P at power 2^i+1
+            for (size_t j = 1; j < num_states; j++)
+            {
+                if (P[j][0] > 1.0 - tol)
+                {
+                    good = false;
+                }
+            }
+        }
+    }while(good);
+    
+    // t/2 is the last working value of t
+    computeExponentialMatrixByRepeatedSquaring(t/2, stationaryMatrix);
+
+//    std::cout << stationaryMatrix << "\n";
+    
+//    std::cout << "stationaryMatrix\n";
+//    for (size_t i = 0; i < num_states; i++)
+//    {
+//        for (size_t j = 0; j < num_states; j++)
+//        {
+//            std::cout << std::setprecision(6) << stationaryMatrix.getElement(i, j) << "  ";
+//        }
+//        std::cout << "\n";
+//    }
+//    std::cout << "\n";
+//    
+    return;
+  
+}
+*/
 
 void RateMatrix_DECRateMatrix::makeBits(void)
 {
@@ -445,10 +670,10 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
 //        std::vector<unsigned> b = bits[i];
         
         std::vector<unsigned> b;
-        if (orderStatesByNum)
+//        if (orderStatesByNum)
             b = statesToBitsByNumOn[i];
-        else
-            b = bits[i];
+//        else
+//            b = bits[i];
         
         // each row has b.size() events (excluding i==0)
         for (size_t j = 0; j < b.size(); j++)
@@ -473,10 +698,10 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
             
             // store integer-valued event
 //            transitions[i].push_back(inverseBits[tmp]);
-            if (orderStatesByNum)
+//            if (orderStatesByNum)
                 transitions[i].push_back(bitsToStatesByNumOn[tmp]);
-            else
-                transitions[i].push_back(inverseBits[tmp]);
+//            else
+//            transitions[i].push_back(inverseBits[tmp]);
             
             // is event a gain or a loss?
             lossOrGain[i].push_back(tmp[j]);
@@ -533,18 +758,6 @@ void RateMatrix_DECRateMatrix::setBirthRate(const double &br)
 {
     birthRate = br;
     needs_update = true;
-}
-
-inline void RateMatrix_DECRateMatrix::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const {
-    //Could probably use boost::ublas here, for the moment we do it ourselves.
-    for ( size_t i = 0; i < num_states; i++ ) {
-        for ( size_t j = 0; j < num_states; j++ ) {
-            P2.getElement ( i, j ) = 0;
-            for ( size_t k = 0; k < num_states; k++ ) {
-                P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
-            }
-        }
-    }
 }
 
 
@@ -627,15 +840,18 @@ void RateMatrix_DECRateMatrix::update( void ) {
         fillRateMatrix();
         
         // rescale
+        scalingFactor = 1.0;
         if (rescaleMatrix)
-            rescaleToAverageRate( 1.0 );
+            rescaleToAverageRate(1.0);
         
-        // now update the eigensystem
         if (!useSquaring)
+            // get transition probs
             updateEigenSystem();
         
-
-//        std::cout << *the_rate_matrix << "\n";
+        // clear the stored transition probabilities
+//        std::cout << "Clearing " << storedTransitionProbabilities.size() << "\n";
+        storedTransitionProbabilities.clear();
+        accessedTransitionProbabilities = std::list<double>();
         
         // clean flags
         needs_update = false;

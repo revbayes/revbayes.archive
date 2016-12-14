@@ -225,6 +225,51 @@ void AbstractCharacterData::excludeTaxon(const std::string& s) {
 }
 
 
+
+/**
+ * Delete a taxon.
+ * Remove taxon object and free up its memory.
+ *
+ * \param[in]    i    The index of the taxon that will be excluded.
+ */
+void AbstractCharacterData::deleteTaxon(size_t i) {
+    
+    if (i >= taxonMap.size())
+    {
+        std::stringstream o;
+        o << "Only " << taxonMap.size() << " taxa in matrix";
+        throw RbException( o.str() );
+    }
+    std::string name = taxa[i].getName();
+    delete taxonMap[name];
+    taxonMap.erase(name);
+    taxa.erase(taxa.begin() + i);
+}
+
+
+/**
+ * Delete a taxon.
+ * Remove taxon object and free up its memory.
+ *
+ * \param[in]    i    The index of the taxon that will be excluded.
+ */
+void AbstractCharacterData::deleteTaxon(const std::string& s) {
+    
+    delete taxonMap[s];
+    taxonMap.erase(s);
+
+    std::vector<Taxon>::iterator it;
+    for (it = taxa.begin(); it != taxa.end(); it++)
+    {
+        if (it->getName() == s) {
+            break;
+        }
+    }
+    
+    taxa.erase(it);
+}
+
+
 /**
  * Get the file name from whcih the character data object was read in.
  *

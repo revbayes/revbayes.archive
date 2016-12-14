@@ -259,3 +259,21 @@ RealPos* RealPos::multiply(const RevLanguage::RealPos &rhs) const
     
     return n;
 }
+
+/** Is convertible to type? */
+double RealPos::isConvertibleTo(const TypeSpec& type, bool once) const {
+
+    if ( type == Real::getClassTypeSpec() )
+        return 0.4;
+
+    return Real::isConvertibleTo(type, once);
+}
+
+RevObject* RealPos::convertTo( const TypeSpec& type ) const
+{
+
+    if ( type == Real::getClassTypeSpec() )
+        return new Real(dagNode->getValue());
+
+    return Real::convertTo( type );
+}

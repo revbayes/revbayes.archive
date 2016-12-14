@@ -47,6 +47,7 @@ TreeSummary::TreeSummary( const TraceTree &t ) :
  */
 Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool verbose )
 {
+    
     // get the number of ancestral state samples and the number of tree samples
     size_t num_sampled_states = ancestralstate_traces[0].getValues().size();
     size_t num_sampled_trees;
@@ -73,7 +74,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
     }
     
     std::stringstream ss;
-    ss << "Compiling " << summary_stat << " ancestral states from " << num_sampled_states << " samples in ancestral state trace, using a burnin of " << burnin << " samples.\n";
+    ss << "Compiling " << summary_stat << " ancestral states from " << num_sampled_states << " samples in the ancestral state trace, using a burnin of " << burnin << " samples.\n";
     RBOUT(ss.str());
     
     RBOUT("Calculating ancestral state posteriors...\n");
@@ -83,8 +84,8 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
     
     // 2-d vectors to keep the data (posteriors and ancestral states) of the input_summary_tree nodes: [node][data]
     const std::vector<TopologyNode*> &summary_nodes = final_summary_tree->getNodes();
-    std::vector<std::vector<double> > pp( summary_nodes.size(),std::vector<double>() );
-    std::vector<std::vector<std::string> > states( summary_nodes.size(),std::vector<std::string>() );
+    std::vector<std::vector<double> > pp( summary_nodes.size(), std::vector<double>() );
+    std::vector<std::vector<std::string> > states( summary_nodes.size(), std::vector<std::string>() );
     
     double weight = 1.0 / ( num_sampled_states - burnin );
     
@@ -181,84 +182,6 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
             }
         }
     }
-    
-//    // loop through all the ancestral state samples
-//    for (size_t i = burnin; i < num_sampled_states; ++i)
-//    {
-//        
-//        if ( verbose == true && process_active == true )
-//        {
-//            progress.update( i );
-//        }
-//        
-//        // if necessary, get the sampled tree from the tree trace
-//        const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( i ) : *final_summary_tree;
-//        const TopologyNode& sample_root = sample_tree.getRoot();
-//
-//        // loop through all nodes in the summary tree
-//        for (size_t j = 0; j < summary_nodes.size(); ++j)
-//        {
-//            
-//            size_t sample_clade_index;
-//            if ( use_tree_trace == true )
-//            {
-//                // check if the clade in the summary tree is also in the sampled tree
-//                sample_clade_index = sample_root.getCladeIndex( summary_nodes[j] );
-//            }
-//            else
-//            {
-//                sample_clade_index = summary_nodes[j]->getIndex();
-//            }
-//            
-//            if ( RbMath::isFinite( sample_clade_index ) == true )
-//            {
-//                
-//                // get AncestralStateTrace for the sampled node
-//                AncestralStateTrace ancestralstate_trace;
-//                for (size_t k = 0; k < ancestralstate_traces.size(); ++k)
-//                {
-//                    // if we have an ancestral state trace from an anagenetic-only process
-//                    if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sample_clade_index + 1))
-//                    {
-//                        ancestralstate_trace = ancestralstate_traces[k];
-//                        break;
-//                    }
-//                    // if we have an ancestral state trace from a cladogenetic process
-//                    // if you need to annotate start states too, use cladoAncestralStateTree
-//                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sample_clade_index + 1))
-//                    {
-//                        ancestralstate_trace = ancestralstate_traces[k];
-//                        break;
-//                    }
-//                }
-//                
-//                // get ancestral state vector for this iteration
-//                const std::vector<std::string>& ancestralstate_vector = ancestralstate_trace.getValues();
-//                std::string ancestralstate = getSiteState( ancestralstate_vector[i], site );
-//                
-//                bool state_found = false;
-//                int k = 0;
-//                for (; k < pp[j].size(); k++)
-//                {
-//                    if (states[j][k] == ancestralstate)
-//                    {
-//                        state_found = true;
-//                        break;
-//                    }
-//                }
-//                // update the pp and states vectors
-//                if ( state_found == false )
-//                {
-//                    pp[j].push_back(weight);
-//                    states[j].push_back(ancestralstate);
-//                }
-//                else
-//                {
-//                    pp[j][k] += weight;
-//                }
-//            }
-//        }
-//    }
     
     if ( verbose == true && process_active == true )
     {
@@ -456,15 +379,40 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
 
 /*
  * This method calculates the MAP ancestral character states for the nodes on the input_tree. This method
- * differs from ancestralStateTree by calculating the MAP states resulting from a cladogenetic event,
- * so for each node the MAP state includes the end state and the starting states for the two daughter lineages.
+ * is identical to the ancestralStateTree function except that is calculates the MAP states resulting from 
+ * a cladogenetic event, so for each node the MAP state includes the end state and the starting states for 
+ * the two daughter lineages.
  */
 Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool verbose )
 {
+    
+    // get the number of ancestral state samples and the number of tree samples
+    size_t num_sampled_states = ancestralstate_traces[0].getValues().size();
+    size_t num_sampled_trees;
+    if (use_tree_trace == false)
+    {
+        // the ancestral states were sampled over the same tree
+        num_sampled_trees = 1;
+    }
+    else
+    {
+        // the ancestral states were sampled over different trees each iteration
+        num_sampled_trees = trace.size();
+    }
+    
     setBurnin(b);
+    if ( b >= num_sampled_states )
+    {
+        throw RbException("Burnin size is too large for the ancestral state trace.");
+    }
+    
+    if ( use_tree_trace == true &&  num_sampled_trees != num_sampled_states )
+    {
+        throw RbException("The tree trace and the ancestral state trace must contain the same number of samples.");
+    }
     
     std::stringstream ss;
-    ss << "Compiling " << summary_stat << " ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " samples.\n";
+    ss << "Compiling " << summary_stat << " ancestral states from " << num_sampled_states << " samples in the ancestral state trace, using a burnin of " << burnin << " samples.\n";
     RBOUT(ss.str());
     
     RBOUT("Calculating ancestral state posteriors...\n");
@@ -478,149 +426,164 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
     std::vector<std::vector<std::string> > end_states( summary_nodes.size(), std::vector<std::string>() );
     std::vector<std::vector<std::string> > start_states( summary_nodes.size(), std::vector<std::string>() );
     
-    double weight = 1.0 / (trace.size() - burnin);
+    double weight = 1.0 / ( num_sampled_states - burnin );
     
     bool process_active = true;
-    ProgressBar progress = ProgressBar(trace.size(), burnin);
+    ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, summary_nodes.size() * burnin );
     if ( verbose == true && process_active == true )
     {
         progress.start();
     }
     
-    // first gather all the samples from the traces
-    
-    // loop through all trees in tree trace
-    for (size_t i = burnin; i < trace.size(); i++)
+    // loop through all nodes in the summary tree
+    for (size_t i = 0; i < summary_nodes.size(); ++i)
     {
+        size_t sample_clade_index;
+        bool found_end_state = false;
+        bool found_start_1 = false;
+        bool found_start_2 = false;
+        AncestralStateTrace ancestralstate_trace_end;
+        AncestralStateTrace ancestralstate_trace_start_1;
+        AncestralStateTrace ancestralstate_trace_start_2;
         
-        if ( verbose == true && process_active == true)
+        // loop through all the ancestral state samples
+        for (size_t j = burnin; j < num_sampled_states; ++j)
         {
-            progress.update(i);
-        }
-        
-        const Tree &sample_tree = trace.objectAt( i );
-        const TopologyNode& sample_root = sample_tree.getRoot();
-        
-        // loop through all nodes in inputTree
-        for (size_t j = 0; j < summary_nodes.size(); j++)
-        {
-            // check if this node is in the sampled tree
-            size_t sample_clade_index = sample_root.getCladeIndex( summary_nodes[j] );
+            
+            if ( verbose == true && process_active == true )
+            {
+                progress.update( i * num_sampled_states + num_sampled_states * (j - burnin) / (num_sampled_states - burnin) );
+            }
+            
+            // if necessary, get the sampled tree from the tree trace
+            const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : *final_summary_tree;
+            const TopologyNode& sample_root = sample_tree.getRoot();
+            
+            if ( use_tree_trace == true )
+            {
+                // check if the clade in the summary tree is also in the sampled tree
+                sample_clade_index = sample_root.getCladeIndex( summary_nodes[i] );
                 
+                // and we must also find the trace sfor this node index
+                found_end_state = false;
+                found_start_1 = false;
+                found_start_2 = false;
+            }
+            else
+            {
+                sample_clade_index = summary_nodes[i]->getIndex();
+            }
+
             if ( RbMath::isFinite( sample_clade_index ) == true )
             {
                 
                 size_t sample_clade_index_child_1 = 0;
                 size_t sample_clade_index_child_2 = 0;
                 
-                if ( !summary_nodes[j]->isTip() )
+                if ( !summary_nodes[i]->isTip() )
                 {
-                    sample_clade_index_child_1 = sample_root.getCladeIndex( &summary_nodes[j]->getChild(0) );
-                    sample_clade_index_child_2 = sample_root.getCladeIndex( &summary_nodes[j]->getChild(1) );
+                    sample_clade_index_child_1 = sample_root.getCladeIndex( &summary_nodes[i]->getChild(0) );
+                    sample_clade_index_child_2 = sample_root.getCladeIndex( &summary_nodes[i]->getChild(1) );
                 }
                 
-                // get AncestralStateTrace for this node
-                AncestralStateTrace ancestralstate_trace_end;
-                AncestralStateTrace ancestralstate_trace_start_1;
-                AncestralStateTrace ancestralstate_trace_start_2;
                 
-                bool found_end = false;
-                bool found_start_1 = false;
-                bool found_start_2 = false;
-                
-                for (size_t k = 0; k < ancestralstate_traces.size(); k++)
+                // if necessary find the AncestralStateTraces for the sampled node
+                if ( found_end_state == false )
                 {
-                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sample_clade_index + 1))
+                    for (size_t k = 0; k < ancestralstate_traces.size(); k++)
                     {
-                        ancestralstate_trace_end = ancestralstate_traces[k];
-                        found_end = true;
-                    }
-                    
-                    if ( !summary_nodes[j]->isTip() )
-                    {
-                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sample_clade_index_child_1 + 1))
+                        if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sample_clade_index + 1))
                         {
-                            ancestralstate_trace_start_1 = ancestralstate_traces[k];
-                            found_start_1 = true;
+                            ancestralstate_trace_end = ancestralstate_traces[k];
+                            found_end_state = true;
                         }
                         
-                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sample_clade_index_child_2 + 1))
+                        if ( !summary_nodes[i]->isTip() )
                         {
-                            ancestralstate_trace_start_2 = ancestralstate_traces[k];
+                            if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sample_clade_index_child_1 + 1))
+                            {
+                                ancestralstate_trace_start_1 = ancestralstate_traces[k];
+                                found_start_1 = true;
+                            }
+                            
+                            if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sample_clade_index_child_2 + 1))
+                            {
+                                ancestralstate_trace_start_2 = ancestralstate_traces[k];
+                                found_start_2 = true;
+                            }
+                        }
+                        else
+                        {
+                            found_start_1 = true;
                             found_start_2 = true;
                         }
-                    }
-                    else
-                    {
-                        found_start_1 = true;
-                        found_start_2 = true;
-                    }
-                    
-                    if (found_end && found_start_1 && found_start_2)
-                    {
-                        break;
+                        
+                        if (found_end_state && found_start_1 && found_start_2)
+                        {
+                            break;
+                        }
                     }
                 }
                 
-                // get ancestral states for this iteration
+                // get the sampled ancestral states for this iteration
                 std::vector<std::string> ancestralstate_trace_end_vector = ancestralstate_trace_end.getValues();
-                std::string ancestralstate_end = getSiteState( ancestralstate_trace_end_vector[i], site );
+                std::string ancestralstate_end = getSiteState( ancestralstate_trace_end_vector[j], site );
                 
-                if ( !summary_nodes[j]->isTip() )
+                if ( !summary_nodes[i]->isTip() )
                 {
                     std::vector<std::string> ancestralstate_trace_start_1_vector = ancestralstate_trace_start_1.getValues();
-                    std::string ancestralstate_start_1 = getSiteState( ancestralstate_trace_start_1_vector[i], site );
+                    std::string ancestralstate_start_1 = getSiteState( ancestralstate_trace_start_1_vector[j], site );
                     
                     std::vector<std::string> ancestralstate_trace_start_2_vector = ancestralstate_trace_start_2.getValues();
-                    std::string ancestralstate_start_2 = getSiteState( ancestralstate_trace_start_2_vector[i], site );
+                    std::string ancestralstate_start_2 = getSiteState( ancestralstate_trace_start_2_vector[j], site );
                     
-                    size_t child1 = summary_nodes[j]->getChild(0).getIndex();
-                    size_t child2 = summary_nodes[j]->getChild(1).getIndex();
+                    size_t child1 = summary_nodes[i]->getChild(0).getIndex();
+                    size_t child2 = summary_nodes[i]->getChild(1).getIndex();
                     
                     bool state_found = false;
                     int k = 0;
-                    for (; k < pp[j].size(); k++)
+                    for (; k < pp[i].size(); k++)
                     {
-                        if (end_states[j][k] == ancestralstate_end && start_states[child1][k] == ancestralstate_start_1 && start_states[child2][k] == ancestralstate_start_2)
+                        if (end_states[i][k] == ancestralstate_end && start_states[child1][k] == ancestralstate_start_1 && start_states[child2][k] == ancestralstate_start_2)
                         {
                             state_found = true;
                             break;
                         }
                     }
                     // update the pp and states vectors
-                    if (!state_found)
+                    if ( state_found == false )
                     {
-                        pp[j].push_back(weight);
-                        end_states[j].push_back( ancestralstate_end );
+                        pp[i].push_back(weight);
+                        end_states[i].push_back( ancestralstate_end );
                         start_states[child1].push_back( ancestralstate_start_1 );
                         start_states[child2].push_back( ancestralstate_start_2 );
                     }
                     else
                     {
-                        pp[j][k] += weight;
+                        pp[i][k] += weight;
                     }
                 }
                 else
                 {
                     bool state_found = false;
                     int k = 0;
-                    for (; k < pp[j].size(); k++)
+                    for (; k < pp[i].size(); k++)
                     {
-                        if (end_states[j][k] == ancestralstate_end)
+                        if (end_states[i][k] == ancestralstate_end)
                         {
                             state_found = true;
                             break;
                         }
                     }
                     // update the pp and states vectors
-                    if (!state_found)
+                    if ( state_found == false )
                     {
-                        pp[j].push_back(weight);
-                        end_states[j].push_back( ancestralstate_end );
+                        pp[i].push_back(weight);
+                        end_states[i].push_back( ancestralstate_end );
                     }
                     else
                     {
-                        pp[j][k] += weight;
+                        pp[i][k] += weight;
                     }
                 }
             }

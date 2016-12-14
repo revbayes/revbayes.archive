@@ -131,7 +131,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
         
         /* Add base types (in folder "datatypes") */
-        addType( new RevAbstractType( RevObject::getClassTypeSpec(), new Integer( 0 ) ) );
+        addType( new RevAbstractType( RevObject::getClassTypeSpec(), &RevNullObject::getInstance() ) );
 
         /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
         AddWorkspaceVectorType<Integer,4>::addTypeToWorkspace( *this, new Integer() );
@@ -150,6 +150,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
         AddWorkspaceVectorType<CladogeneticProbabilityMatrix,3>::addTypeToWorkspace( *this, new CladogeneticProbabilityMatrix() );
         AddWorkspaceVectorType<MatrixReal,3>::addTypeToWorkspace( *this, new MatrixReal() );
+        AddWorkspaceVectorType<MatrixRealSymmetric,3>::addTypeToWorkspace( *this, new MatrixRealSymmetric() );
         AddWorkspaceVectorType<AbstractHomologousDiscreteCharacterData,3>::addTypeToWorkspace( *this, new AbstractHomologousDiscreteCharacterData() );
         
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
@@ -158,7 +159,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 		
         
         //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
-        addFunction( new Func_workspaceVector<AbstractModelObject>() );
+//        addFunction( new Func_workspaceVector<AbstractModelObject>() );
         
 		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
         

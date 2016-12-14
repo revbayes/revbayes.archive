@@ -2,6 +2,7 @@
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_concatenate.h"
+#include "OptionRule.h"
 #include "RbException.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlString.h"
@@ -34,16 +35,16 @@ Func_concatenate* Func_concatenate::clone( void ) const
 /** Execute function */
 RevPtr<RevVariable> Func_concatenate::execute( void )
 {
-    
     const AbstractHomologousDiscreteCharacterData& a = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[0].getVariable()->getRevObject() );
     const AbstractHomologousDiscreteCharacterData& b = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[1].getVariable()->getRevObject() );
-    
-    AbstractHomologousDiscreteCharacterData* d = a.concatenate( b );
-    for (size_t i = 2; i < args.size(); ++i)
+    const std::string& type = static_cast<const RlString &>( args[2].getVariable()->getRevObject() ).getValue();
+
+    AbstractHomologousDiscreteCharacterData* d = a.concatenate( b, type );
+    for (size_t i = 3; i < args.size(); ++i)
     {
         const AbstractHomologousDiscreteCharacterData& c = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[i].getVariable()->getRevObject() );
         
-        AbstractHomologousDiscreteCharacterData* tmp = d->concatenate( c );
+        AbstractHomologousDiscreteCharacterData* tmp = d->concatenate( c, type );
         delete d;
         
         d = tmp;
@@ -64,8 +65,15 @@ const ArgumentRules& Func_concatenate::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "a", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "First character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "v", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "Second character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "b", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "Second character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+
         argumentRules.push_back( new Ellipsis( "Additional character data objects.", AbstractHomologousDiscreteCharacterData::getClassTypeSpec() ) );
+
+        std::vector<std::string> optionsCondition;
+        optionsCondition.push_back( "union" );
+        optionsCondition.push_back( "intersection" );
+        argumentRules.push_back( new OptionRule( "merge", new RlString("Taxa must match"), optionsCondition, "How to merge differing taxa" ) );
+
         rules_set = true;
     }
     

@@ -51,7 +51,7 @@ namespace RevBayesCore {
         
         // non-virtual
         double                                                              computeLnProbability(void);
-        void                                                                fireTreeChangeEvent(const TopologyNode &n);                         //!< The tree has changed and we want to know which part.
+        void                                                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                         //!< The tree has changed and we want to know which part.
         BranchHistory&                                                      getHistory(const TopologyNode& nd);
         const BranchHistory&                                                getHistory(const TopologyNode& nd) const;
         std::vector<BranchHistory*>                                         getHistories(void);
@@ -260,7 +260,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType>::fillLikelihoodVector(const
 
 
 template<class charType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n ) {
+void RevBayesCore::AbstractTreeHistoryCtmc<charType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n, const unsigned& m ) {
     
     // call a recursive flagging of all node above (closer to the root) and including this node
     flagNodeDirty(n);
