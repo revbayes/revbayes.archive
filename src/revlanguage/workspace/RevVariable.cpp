@@ -1,10 +1,13 @@
+#include "Argument.h"
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
 #include "RevNullObject.h"
+#include "RlFunction.h"
 #include "TypeSpec.h"
 #include "RevVariable.h"
+#include "Workspace.h"
 
 #include <cassert>
 #include <string>
@@ -197,9 +200,48 @@ size_t RevVariable::getReferenceCount(void) const
 RevObject& RevVariable::getRevObject(void) const
 {
     
-    if ( is_reference_var )
+    if ( is_reference_var == true )
     {
         return referenced_variable->getRevObject();
+    }
+    
+    if ( is_vector_var == true )
+    {
+        //        const std::set<int>& indices = theVar->getElementIndices();
+        //        if ( indices.empty() )
+        //        {
+        //            throw RbException("Cannot create a vector variable with name '" + identifier + "' because it doesn't have elements.");
+        //        }
+        
+        // @TODO: We actually might need a different workspace here than the user workspace. (Sebastian)
+        Environment &env = Workspace::userWorkspace();
+        
+        size_t max_index = getMaxElementIndex();
+        std::vector<Argument> args;
+        for (size_t i = 1; i <= max_index; ++i)
+        {
+            std::string element_identifier = name + "[" + i + "]";
+            RevPtr<RevVariable>& element_var = env.getVariable( element_identifier );
+            // check that the element is not NULL
+            if ( element_var == NULL || element_var->getRevObject() == RevNullObject::getInstance() )
+            {
+                throw RbException("Cannot create vector variable with name '" + name + "' because element with name '" + element_identifier + "' is NULL." );
+            }
+            args.push_back( Argument( element_var ) );
+        }
+        // @TODO: We might need a to check if this should be dynamic or not. (Sebastian)
+        bool dynamic = true;
+        Function* func = Workspace::userWorkspace().getFunction("v",args,dynamic).clone();
+        func->processArguments(args,dynamic);
+        
+        // Evaluate the function (call the static evaluation function)
+        RevPtr<RevVariable> func_return_value = func->execute();
+        
+        // free the memory of our copy
+        delete func;
+        
+        const_cast<RevVariable*>(this)->replaceRevObject( func_return_value->getRevObject().clone() );
+        
     }
     
     if ( rev_object == NULL )
