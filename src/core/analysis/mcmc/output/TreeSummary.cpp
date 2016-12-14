@@ -1717,70 +1717,74 @@ const Sample<Clade>& TreeSummary::findCladeSample(const Clade &n) const
 }
 
 
-TopologyNode* TreeSummary::findParentNode(TopologyNode& node, const Clade& tmp_clade, std::vector<TopologyNode*>& children) const
+TopologyNode* TreeSummary::findParentNode(TopologyNode& n, const Clade& tmp, std::vector<TopologyNode*>& children, RbBitSet& child_b ) const
 {
-    Clade parentClade = node.getClade();
-    RbBitSet pb = parentClade.getBitRepresentation();
+    RbBitSet node = n.getClade().getBitRepresentation();
 
-    Clade clade = tmp_clade;
-    RbBitSet b  = clade.getBitRepresentation();
+    Clade c = tmp;
+    RbBitSet clade  = c.getBitRepresentation();
 
-    RbBitSet mb  = pb | b;
+    RbBitSet mask  = node | clade;
 
-    bool compatible = true;
+    bool compatible = (mask == node);
+    bool child      = (mask == clade);
 
-    if( !rooted )
+    // check if the flipped unrooted split is compatible
+    if( !rooted && !compatible && !child)
     {
-        RbBitSet nb = b; ~nb;
-        RbBitSet nmb = pb | nb;
+        RbBitSet clade_flip = clade; ~clade_flip;
+        mask  = node | clade_flip;
 
-        if( nmb == pb )
-        {
-            b  = nb;
-            mb = nmb;
-            clade.setBitRepresentation(nb);
-        }
-        else if( mb != pb )
-        {
-            compatible = false;
-        }
+        compatible = (mask == node);
 
-        if( mb == b )
+        if( compatible )
         {
-            children.push_back(&node);
+            c.setBitRepresentation(clade_flip);
         }
-    }
-    else if( mb == b )
-    {
-        compatible = false;
-        children.push_back(&node);
-    }
-    else if( mb != pb)
-    {
-        compatible = false;
     }
 
     TopologyNode* parent = NULL;
 
     if(compatible)
     {
-        std::vector<TopologyNode*> childs;
+        parent = &n;
 
-        parent = &node;
+        std::vector<TopologyNode*> x = n.getChildren();
 
-        std::vector<TopologyNode*> c = node.getChildren();
+        std::vector<TopologyNode*> new_children;
 
-        for(size_t i = 0; i < c.size(); i++)
+        // keep track of which taxa we found in the children
+        RbBitSet child_mask(clade.size());
+
+        for(size_t i = 0; i < x.size(); i++)
         {
-            TopologyNode* child = findParentNode(*c[i], clade, childs);
+            RbBitSet child_b(clade.size());
 
+            TopologyNode* child = findParentNode(*x[i], c, new_children, child_b );
+
+            // add this child to the mask
+            child_mask = (child_b | child_mask);
+
+            // check if child is a compatible parent
             if(child != NULL)
             {
                 parent = child;
+                break;
             }
         }
 
-        children = childs;
+        children = new_children;
+
+        // check that we found all the children
+        if( parent == &n && child_mask != clade)
+        {
+            parent = NULL;
+        }
+    }
+    else if(child)
+    {
+        child_b = node;
+        children.push_back(&n);
     }
 
     return parent;
@@ -2068,8 +2072,6 @@ Tree* TreeSummary::mrTree(double cutoff)
 
     size_t nIndex = tipNames.size();
 
-    CladeComparator comparator(rooted);
-
     for (size_t j = 0; j < cladeSamples.size(); j++)
     {
         size_t rIndex = cladeSamples.size() - 1 - j;    //reverse pass through because clades are sorted in ascending frequency
@@ -2083,12 +2085,13 @@ Tree* TreeSummary::mrTree(double cutoff)
 
         //find parent node
         std::vector<TopologyNode*> children;
-        TopologyNode* parentNode = findParentNode(*root, clade, children);
+        RbBitSet tmp;
+        TopologyNode* parentNode = findParentNode(*root, clade, children, tmp );
 
         if(parentNode != NULL )
         {
             // skip this node if we've already found a clade compatible with it
-            if( children.size() >= parentNode->getNumberOfChildren() || children.size() <= 1) continue;
+            if( children.size() == parentNode->getNumberOfChildren() ) continue;
 
             std::vector<TopologyNode*> mrca;
 
