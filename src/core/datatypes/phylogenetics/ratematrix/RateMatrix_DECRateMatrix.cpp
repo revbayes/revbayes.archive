@@ -284,7 +284,7 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
         // set diagonal
         m[startState][startState] = -sum;
     }
-    std::cout << m << "\n";
+//    std::cout << m << "\n";
     
     // set flags
     needs_update = true;
