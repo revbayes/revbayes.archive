@@ -1167,38 +1167,33 @@ void TopologyNode::makeBifurcating( void )
     if ( isTip() == false )
     {
         
-        // we only modify non root nodes
-        if ( isRoot() == false )
-        {
+        // we need to be able to bifurcate sampled ancestor root nodes
+        //if ( isRoot() == false )
+        //{
             
-            /*if ( getNumberOfChildren() > 2 )
-            {
-                throw RbException("Cannot make this node bifurcating because it has more than 2 children.");
-            }
-            else */
             if ( getNumberOfChildren() == 1 )
             {
-                
+
                 TopologyNode *new_fossil = new TopologyNode( getTaxon() );
                 taxon = Taxon("");
-                
+
                 // connect to the old fossil
                 addChild( new_fossil );
                 new_fossil->setParent( this );
-                
+
                 // set the fossil flags
                 setFossil( false );
                 setSampledAncestor( false );
                 new_fossil->setFossil( true );
                 new_fossil->setSampledAncestor( true );
-                
+
                 // set the age and branch-length of the fossil
                 new_fossil->setAge( age );
                 new_fossil->setBranchLength( 0.0 );
-                
+
             }
             
-        }
+        //}
         
         // call this function recursively for all its children
         for (size_t i=0; i<getNumberOfChildren(); ++i)

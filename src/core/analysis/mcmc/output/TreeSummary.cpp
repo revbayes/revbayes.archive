@@ -1508,7 +1508,7 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report )
         Clade c = n->getClade();
 
         // annotate clade posterior prob
-        if ( !n->isTip() && !n->isRoot() && report.posterior )
+        if ( ( !n->isTip() || ( n->isRoot() && c.getMrca().empty() ) ) && report.posterior )
         {
             double cladeFreq = findCladeSample( c ).getFrequency();
             double pp = cladeFreq / sampleSize;
@@ -2005,6 +2005,8 @@ Tree* TreeSummary::mccTree( void )
 
         if(cc > max_cc)
         {
+            max_cc = cc;
+
             delete best_tree;
 
             NewickConverter converter;
@@ -2086,7 +2088,7 @@ Tree* TreeSummary::mrTree(double cutoff)
         if(parentNode != NULL )
         {
             // skip this node if we've already found a clade compatible with it
-            if( children.size() >= parentNode->getNumberOfChildren() ) continue;
+            if( children.size() >= parentNode->getNumberOfChildren() || children.size() <= 1) continue;
 
             std::vector<TopologyNode*> mrca;
 
@@ -2121,6 +2123,7 @@ Tree* TreeSummary::mrTree(double cutoff)
             intNode->setNodeType(false, false, true);
 
 
+            // move the children to a new internal node
             for (size_t i = 0; i < children.size(); i++)
             {
                 parentNode->removeChild(children[i]);

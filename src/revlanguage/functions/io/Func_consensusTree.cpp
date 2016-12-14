@@ -41,8 +41,8 @@ RevPtr<RevVariable> Func_consensusTree::execute(void)
 {
     
     TraceTree& tt = static_cast<TraceTree&>( args[0].getVariable()->getRevObject() );
-    const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-    double cutoff = static_cast<const RealPos &>(args[2].getVariable()->getRevObject()).getValue();
+    double cutoff = static_cast<const Probability &>(args[1].getVariable()->getRevObject()).getValue();
+    const std::string& filename = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
 
     //int burnin = static_cast<const Integer &>(args[3].getVariable()->getRevObject()).getValue();
     //tt.getTreeSummary().setBurnin( burnin );
@@ -92,8 +92,8 @@ const ArgumentRules& Func_consensusTree::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file for storing the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
         argumentRules.push_back( new ArgumentRule( "cutoff"   , Probability::getClassTypeSpec()  , "The minimum threshold for clade probabilities.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.5) ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file for storing the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
         //argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         
         rules_set = true;
