@@ -312,7 +312,7 @@ void DiscreteCharacterState::setState(const std::string &s)
 
 const std::vector<double> DiscreteCharacterState::getWeights() const {
     
-    // @Bastien: Change this function as needed!
+    // @Bastien: Change this function as needed!beta
     return std::vector<double>(num_observed_states, 1.0);
 }
 

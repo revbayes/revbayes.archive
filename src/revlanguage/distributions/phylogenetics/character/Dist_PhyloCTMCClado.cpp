@@ -58,7 +58,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
     const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
-    if ( root_frequencies->getRevObject() != RevNullObject::getInstance() )
+    if ( root_frequencies != NULL && root_frequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     }
@@ -95,18 +95,21 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         
         // state space size checks
         
-        size_t rf_size = rf->getValue().size();
-        if (nChars != rf_size) {
-            throw RbException("The root frequencies vector and rate matrix do not have the same number of states.\n");
+        if (rf != NULL) {
+            size_t rf_size = rf->getValue().size();
+            if (nChars != rf_size) {
+                throw RbException("The root frequencies vector and rate matrix do not have the same number of states.\n");
+            }
+            if (nCharsClado != rf_size) {
+                throw RbException("The root frequencies vector and cladogenetic probabilities do not have the same number of states.\n");
+            }
+            
         }
         
         if (nChars != nCharsClado) {
             throw RbException("The cladogenetic probabilities and rate matrix do not have the same number of states.\n");
         }
         
-        if (nCharsClado != rf_size) {
-            throw RbException("The root frequencies vector and cladogenetic probabilities do not have the same number of states.\n");
-        }
         
         RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState>(tau, nChars, true, n, ambig);
         

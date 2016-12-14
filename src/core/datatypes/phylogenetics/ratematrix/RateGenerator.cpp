@@ -9,6 +9,9 @@
 #include "RateGenerator.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
+#include "TransitionProbabilityMatrix.h"
+#include "TypedDagNode.h"
+
 
 #include <fstream>
 #include <sstream>
@@ -55,7 +58,31 @@ size_t RateGenerator::getNumberOfStates( void ) const
     return num_states;
 }
 
+void RateGenerator::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<RbVector<double> >& rv) const
+{
 
+    // clear old values
+    rv.clear();
+    
+    TransitionProbabilityMatrix P(num_states);
+    
+    double rate = static_cast<const TypedDagNode<double> *>( args[0] )->getValue();
+    double start_age = static_cast<const TypedDagNode<double> *>( args[1] )->getValue();
+    double end_age = static_cast<const TypedDagNode<double> *>( args[2] )->getValue();
+    
+    calculateTransitionProbabilities( start_age, end_age, rate, P);
+    
+    for (size_t i = 0; i < num_states; i++)
+    {
+        RbVector<double> v;
+        for (size_t j =0; j < num_states; j++)
+        {
+            v.push_back(P[i][j]);
+        }
+        rv.push_back(v);
+    }
+    
+}
 
 size_t RateGenerator::size( void ) const
 {

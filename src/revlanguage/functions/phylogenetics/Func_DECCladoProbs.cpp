@@ -48,6 +48,7 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ep = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     unsigned nc = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
     unsigned mrs = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
+    if (mrs <= 1) mrs = nc;
     std::string pt = static_cast<const RlString &> ( this->args[3].getVariable()->getRevObject() ).getValue();
     bool ept = (pt == "pattern");
     bool wa = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
@@ -134,7 +135,7 @@ const ArgumentRules& Func_DECCladoProbs::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "eventProbs", Simplex::getClassTypeSpec(), "The probabilities of the different event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "numCharacters", Natural::getClassTypeSpec(), "The number of characters.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), "The number of characters.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ) );
+        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), "The maximum range size.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ) );
 
         std::vector<std::string> options;
         options.push_back( "pattern" );
