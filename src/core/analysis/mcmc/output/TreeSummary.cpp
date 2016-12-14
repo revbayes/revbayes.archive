@@ -1508,7 +1508,7 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report )
         Clade c = n->getClade();
 
         // annotate clade posterior prob
-        if ( ( !n->isTip() || ( n->isRoot() && c.getMrca().empty() ) ) && report.posterior )
+        if ( ( !n->isTip() || ( n->isRoot() && !c.getMrca().empty() ) ) && report.posterior )
         {
             double cladeFreq = findCladeSample( c ).getFrequency();
             double pp = cladeFreq / sampleSize;
