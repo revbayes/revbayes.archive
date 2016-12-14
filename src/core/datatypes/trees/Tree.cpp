@@ -20,8 +20,7 @@ Tree::Tree(void) :
     binary( true ),
     rooted( false ),
     numTips( 0 ),
-    num_nodes( 0 ),
-    expand( false )
+    num_nodes( 0 )
 {
     
 }
@@ -35,8 +34,7 @@ Tree::Tree(const Tree& t) :
     rooted( t.rooted ),
     numTips( t.numTips ),
     num_nodes( t.num_nodes ),
-    taxon_bitset_map( t.taxon_bitset_map ),
-    expand( t.expand )
+    taxon_bitset_map( t.taxon_bitset_map )
 {
         
     // need to perform a deep copy of the BranchLengthTree nodes
@@ -400,7 +398,7 @@ const TopologyNode& Tree::getInteriorNode( size_t indx ) const
 std::string Tree::getNewickRepresentation() const
 {
     
-    return root->computeNewick(expand);
+    return root->computeNewick();
 }
 
 
@@ -479,7 +477,7 @@ size_t Tree::getNumberOfTips( void ) const
 std::string Tree::getPlainNewickRepresentation() const
 {
     
-    return root->computePlainNewick(expand);
+    return root->computePlainNewick();
 }
 
 
@@ -926,13 +924,6 @@ TopologyNode& Tree::reverseParentChild(TopologyNode &n)
     }
 
     return *ret;
-}
-
-
-void Tree::setExpand(bool ex)
-{
-
-    expand = ex;
 }
 
 

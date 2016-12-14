@@ -65,13 +65,13 @@ Tree* NewickConverter::convertFromNewick(std::string const &n, bool reindex)
         t->getNode( nodes[i]->getIndex() ).setBranchLength( brlens[i] );
     }
 
-    // trees with 2-degree root nodes should not be rerooted
-    t->setRooted( root->getNumberOfChildren() == 2 );
-
     // make all internal nodes bifurcating
     // this is important for fossil trees which have sampled ancestors
     t->makeInternalNodesBifurcating();
     
+    // trees with 2-degree root nodes should not be rerooted
+    t->setRooted( root->getNumberOfChildren() == 2 );
+
     // return the tree, the caller is responsible for destruction
     return t;
 }

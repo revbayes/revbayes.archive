@@ -335,7 +335,7 @@ void TopologyNode::addNodeParameters(std::string const &n, const std::vector<std
 
 
 /* Build newick string */
-std::string TopologyNode::buildNewickString( bool expand )
+std::string TopologyNode::buildNewickString( void )
 {
     
     // create the newick string
@@ -361,7 +361,9 @@ std::string TopologyNode::buildNewickString( bool expand )
         size_t j = 0;
         for (size_t i=0; i< children.size(); i++)
         {
-            if( !expand && children[i]->isSampledAncestor() && (children[i]->getName() < fossil_name || fossil_name == "" ) )
+            if( RbSettings::userSettings().getCollapseSampledAncestors()
+                    && children[i]->isSampledAncestor()
+                    && (children[i]->getName() < fossil_name || fossil_name == "" ) )
             {
                 fossil_name = children[i]->getName();
                 fossil_comments = children[i]->getNodeParameters();
@@ -373,7 +375,7 @@ std::string TopologyNode::buildNewickString( bool expand )
                     o << ",";
                 }
                 j++;
-                o << children[i]->computeNewick(expand);
+                o << children[i]->computeNewick();
             }
         }
         
@@ -496,15 +498,15 @@ TopologyNode* TopologyNode::clone(void) const
 
 
 
-std::string TopologyNode::computeNewick( bool expand )
+std::string TopologyNode::computeNewick( void )
 {
     
-    return buildNewickString(expand);
+    return buildNewickString();
 }
 
 
 /* Build newick string */
-std::string TopologyNode::computePlainNewick( bool expand ) const
+std::string TopologyNode::computePlainNewick( void ) const
 {
     
     // test whether this is a internal or external node
@@ -521,13 +523,15 @@ std::string TopologyNode::computePlainNewick( bool expand ) const
         for (size_t i = 0; i < getNumberOfChildren(); ++i)
         {
             const TopologyNode& child = getChild( i );
-            if( !expand && child.isSampledAncestor() && (child.getName() < fossil || fossil == "") )
+            if( RbSettings::userSettings().getCollapseSampledAncestors()
+                    && child.isSampledAncestor()
+                    && (child.getName() < fossil || fossil == "") )
             {
                 fossil = child.getName();
             }
             else
             {
-                child_newick.push_back( child.computePlainNewick(expand) );
+                child_newick.push_back( child.computePlainNewick() );
             }
         }
         sort(child_newick.begin(), child_newick.end());
@@ -1163,38 +1167,33 @@ void TopologyNode::makeBifurcating( void )
     if ( isTip() == false )
     {
         
-        // we only modify non root nodes
-        if ( isRoot() == false )
-        {
+        // we need to be able to bifurcate sampled ancestor root nodes
+        //if ( isRoot() == false )
+        //{
             
-            /*if ( getNumberOfChildren() > 2 )
-            {
-                throw RbException("Cannot make this node bifurcating because it has more than 2 children.");
-            }
-            else */
             if ( getNumberOfChildren() == 1 )
             {
-                
+
                 TopologyNode *new_fossil = new TopologyNode( getTaxon() );
                 taxon = Taxon("");
-                
+
                 // connect to the old fossil
                 addChild( new_fossil );
                 new_fossil->setParent( this );
-                
+
                 // set the fossil flags
                 setFossil( false );
                 setSampledAncestor( false );
                 new_fossil->setFossil( true );
                 new_fossil->setSampledAncestor( true );
-                
+
                 // set the age and branch-length of the fossil
                 new_fossil->setAge( age );
                 new_fossil->setBranchLength( 0.0 );
-                
+
             }
             
-        }
+        //}
         
         // call this function recursively for all its children
         for (size_t i=0; i<getNumberOfChildren(); ++i)

@@ -50,10 +50,11 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r) : GeneralRateMatrix( n ),
 RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m )
 {
     
+    rescale              = m.rescale;
     theEigenSystem       = new EigenSystem( *m.theEigenSystem );
     c_ijk                = m.c_ijk;
     cc_ijk               = m.cc_ijk;
-    
+
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 }
 
@@ -367,7 +368,7 @@ void RateMatrix_FreeK::update( void )
     {
         // assign all rate matrix elements
         fillRateMatrix();
-
+        
         // rescale
         if ( rescale == true )
         {
