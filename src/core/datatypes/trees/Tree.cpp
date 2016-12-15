@@ -933,7 +933,7 @@ void Tree::setRooted(bool tf)
 }
 
 
-void Tree::setRoot( TopologyNode* r, bool resetIndex )
+void Tree::setRoot( TopologyNode* r, bool reindex )
 {
 
     // delete the old root if it's not in this tree
@@ -949,7 +949,7 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
     // bootstrap all nodes from the root and add the in a pre-order traversal
     fillNodesByPhylogeneticTraversal(r);
 
-    if ( resetIndex == true )
+    if ( reindex == true )
     {
         for (unsigned int i = 0; i < nodes.size(); ++i)
         {

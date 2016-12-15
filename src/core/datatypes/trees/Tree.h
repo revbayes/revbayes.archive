@@ -101,9 +101,9 @@ namespace RevBayesCore {
         bool                                                isUltrametric(void) const;                                                                          //!< Is this tree ultrametric?
         void                                                makeInternalNodesBifurcating(bool reindex);                                                                 //!< Make all the internal nodes bifurcating.
         void                                                orderNodesByIndex();
-        void                                                reroot(const std::string &outgroup, bool reset);                                                                //!< Re-root the tree with the given outgroup
-        void                                                reroot(TopologyNode &n, bool reset);
-        void                                                setRoot(TopologyNode* r, bool resetIndex);                                                     //!< Set the root and bootstrap the Tree from it
+        void                                                reroot(const std::string &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
+        void                                                reroot(TopologyNode &n, bool reindex);
+        void                                                setRoot(TopologyNode* r, bool reindex);                                                     //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
         void                                                setTaxonIndices(const TaxonMap &tm);                                                                //!< Set the indices of the taxa from the taxon map
         TopologyNode&                                       reverseParentChild(TopologyNode &n);                                    //!< Reverse the parent child relationship.
