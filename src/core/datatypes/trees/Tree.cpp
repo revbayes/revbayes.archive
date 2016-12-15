@@ -499,8 +499,7 @@ const TopologyNode& Tree::getRoot(void) const
  */
 std::string Tree::getSimmapNewickRepresentation() const
 {
-    
-//    return root->computeSimmapNewick();
+    return root->computeSimmapNewick();
 }
 
 

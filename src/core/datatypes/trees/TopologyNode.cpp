@@ -334,8 +334,11 @@ void TopologyNode::addNodeParameters(std::string const &n, const std::vector<std
 }
 
 
-/* Build newick string */
-std::string TopologyNode::buildNewickString( void )
+/* 
+ * Build newick string.
+ * If simmap = true build a newick string compatible with SIMMAP and phytools.
+ */
+std::string TopologyNode::buildNewickString( bool simmap = false )
 {
     
     // create the newick string
@@ -375,7 +378,7 @@ std::string TopologyNode::buildNewickString( void )
                     o << ",";
                 }
                 j++;
-                o << children[i]->computeNewick();
+                o << children[i]->buildNewickString( simmap );
             }
         }
         
@@ -383,7 +386,7 @@ std::string TopologyNode::buildNewickString( void )
 
     }
     
-    if ( node_comments.size() + fossil_comments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true )
+    if ( ( node_comments.size() + fossil_comments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true ) && simmap == false )
     {
         o << "[&";
         
@@ -425,10 +428,24 @@ std::string TopologyNode::buildNewickString( void )
         
         o << "]";
     }
-        
-    o << ":" << getBranchLength();
     
-    if ( branch_comments.size() > 0 )
+    if ( simmap == false )
+    {
+        o << ":" << getBranchLength();
+    }
+    else
+    {
+        for (size_t i = 0; i < node_comments.size(); ++i)
+        {
+            if ( node_comments[i].substr(0, 17) == "character_history=" )
+            {
+                o << ":" << node_comments[i].substr(18, node_comments[i].length());
+                break;
+            }
+        }
+    }
+    
+    if ( branch_comments.size() > 0 && simmap == false )
     {
         o << "[&";
         for (size_t i = 0; i < branch_comments.size(); ++i)
@@ -549,6 +566,12 @@ std::string TopologyNode::computePlainNewick( void ) const
         return newick;
     }
     
+}
+
+
+std::string TopologyNode::computeSimmapNewick( void )
+{
+    return buildNewickString( true );
 }
 
 
