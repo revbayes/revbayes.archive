@@ -3,6 +3,7 @@
 #include "TopologyNode.h"
 #include "Tree.h"
 
+#include <stdio.h>
 #include <sstream>
 #include <vector>
 
