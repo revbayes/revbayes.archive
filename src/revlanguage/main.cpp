@@ -15,7 +15,6 @@
 
 int main(int argc, char* argv[]) {
     
-    //int processId = 0;
 #   ifdef RB_MPI
     int num_processes = 0;
     try
@@ -42,6 +41,8 @@ int main(int argc, char* argv[]) {
     {
         return -1;
     }
+#   else
+    int processId = 0;
 #   endif
     
     /* seek out files from command line */
