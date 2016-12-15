@@ -839,13 +839,13 @@ bool Tree::isUltrametric( void ) const
 }
 
 
-void Tree::makeInternalNodesBifurcating(void)
+void Tree::makeInternalNodesBifurcating(bool reindex)
 {
     
     getRoot().makeBifurcating();
     
     // we need to reset the root so that the vector of nodes get filled again with the new number of nodes
-    setRoot( &getRoot() );
+    setRoot( &getRoot(), reindex );
 
 }
 
@@ -875,7 +875,7 @@ void Tree::orderNodesByIndex( void )
 }
 
 
-void Tree::reroot(const std::string &outgroup)
+void Tree::reroot(const std::string &outgroup, bool reindex)
 {
     std::vector<std::string> tipnames = getTipNames();
     size_t outgroupIndex = tipnames.size();
@@ -899,18 +899,18 @@ void Tree::reroot(const std::string &outgroup)
     outgroupNode.getParent().setParent( NULL );
 
 	// set the new root
-	setRoot( &outgroupNode.getParent() );
+	setRoot( &outgroupNode.getParent(), reindex );
 
 }
 
-void Tree::reroot(TopologyNode &n)
+void Tree::reroot(TopologyNode &n, bool reindex)
 {
 	// reset parent/child relationships
 	reverseParentChild( n.getParent() );
     n.getParent().setParent( NULL );
 
 	// set the new root
-	setRoot( &n.getParent() );
+	setRoot( &n.getParent(), reindex );
 
 }
 
@@ -944,7 +944,7 @@ void Tree::setRooted(bool tf)
 }
 
 
-void Tree::setRoot( TopologyNode* r, bool resetIndex )
+void Tree::setRoot( TopologyNode* r, bool reindex )
 {
 
     // delete the old root if it's not in this tree
@@ -960,7 +960,7 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
     // bootstrap all nodes from the root and add the in a pre-order traversal
     fillNodesByPhylogeneticTraversal(r);
 
-    if ( resetIndex == true )
+    if ( reindex == true )
     {
         for (unsigned int i = 0; i < nodes.size(); ++i)
         {

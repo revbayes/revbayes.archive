@@ -515,7 +515,7 @@ void MultispeciesCoalescent::simulateTree( void )
     psi->setRooted( true );
     
     // initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
     
     for ( std::map<TopologyNode*, double>::iterator it = nodes_2_ages.begin(); it != nodes_2_ages.end(); ++it)
     {

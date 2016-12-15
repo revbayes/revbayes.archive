@@ -62,7 +62,7 @@ RevPtr<RevVariable> Func_simTree::execute( void )
     }
     
     // initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
     
     // set the ages recursively
     setAges(psi, *root);

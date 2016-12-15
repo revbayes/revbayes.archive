@@ -620,7 +620,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
     TopologyNode *root = nodes[0];
     
     // initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
     
     return psi;
 }

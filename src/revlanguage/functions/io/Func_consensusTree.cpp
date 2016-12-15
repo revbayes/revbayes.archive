@@ -39,15 +39,23 @@ Func_consensusTree* Func_consensusTree::clone(void) const
 /** Execute function */
 RevPtr<RevVariable> Func_consensusTree::execute(void)
 {
+    size_t arg_index = 0;
+
+    TraceTree& tt = static_cast<TraceTree&>( args[arg_index++].getVariable()->getRevObject() );
     
-    TraceTree& tt = static_cast<TraceTree&>( args[0].getVariable()->getRevObject() );
-    double cutoff = static_cast<const Probability &>(args[1].getVariable()->getRevObject()).getValue();
-    const std::string& filename = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
+    double cutoff = static_cast<const Probability &>(args[arg_index++].getVariable()->getRevObject()).getValue();
 
-    //int burnin = static_cast<const Integer &>(args[3].getVariable()->getRevObject()).getValue();
-    //tt.getTreeSummary().setBurnin( burnin );
+    const std::string& filename = static_cast<const RlString&>( args[arg_index++].getVariable()->getRevObject() ).getValue();
 
-    RevBayesCore::Tree* tree = tt.getValue().mrTree(cutoff);
+
+    RevBayesCore::AnnotationReport report;
+
+    report.hpd       = static_cast<const Probability &>(args[arg_index++].getVariable()->getRevObject()).getValue();
+    report.mean      = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
+    report.sa        = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
+
+    bool verbose = true;
+    RevBayesCore::Tree* tree = tt.getValue().mrTree(report, cutoff, verbose);
     
     if ( filename != "" )
     {
@@ -94,8 +102,11 @@ const ArgumentRules& Func_consensusTree::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "cutoff"   , Probability::getClassTypeSpec()  , "The minimum threshold for clade probabilities.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.5) ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file for storing the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
-        //argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         
+        argumentRules.push_back( new ArgumentRule( "hpd"   ,    Probability::getClassTypeSpec() , "The probability mass of the highest posterior density age interval.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95) ) );
+        argumentRules.push_back( new ArgumentRule( "mean" , RlBoolean::getClassTypeSpec() , "Annotate node ages using the mean age instead of the median?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "sampledAncestors" , RlBoolean::getClassTypeSpec() , "Annotate sampled ancestor probs?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+
         rules_set = true;
     }
     

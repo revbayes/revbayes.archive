@@ -49,9 +49,9 @@ namespace RevLanguage {
         RevVariable&            operator=(const RevVariable &v);                        //!< Assignment operator
 
         // Regular functions
-        void                    addIndex(int idx);                                      //!< Resize the vector to include this index.
+        void                    addIndex(size_t idx);                                      //!< Resize the vector to include this index.
         RevVariable*            clone(void) const;                                      //!< Clone variable
-        const std::set<int>&    getElementIndices(void) const;                          //!< Get the set of element indices for this vector variable.
+        size_t                  getMaxElementIndex(void) const;                        //!< Get the set of element indices for this vector variable.
         const std::string&      getName(void) const;                                    //!< Get the name of the variable
         RevObject&              getRevObject(void) const;                               //!< Get the value of the variable (non-const to return non-const value)
         const TypeSpec&         getRequiredTypeSpec(void) const;                        //!< Get the required Rev object type spec
@@ -79,17 +79,19 @@ namespace RevLanguage {
     private:
         
         // Member variables
+        size_t                  element_index_max;                                      //!< The maximum element index
+        mutable size_t          last_max_index;
+//        std::set<int>           element_indices;                                        //!< The indices of the elements if this is a vector variable.
+        bool                    is_element_var;                                         //!< Is this variable an element of a vector?
+        bool                    is_hidden_var;                                          //!< Is this a hidden variable?
+        bool                    is_reference_var;                                       //!< Is this a reference variable?
+        bool                    is_vector_var;                                          //!< Is this a vector variable?
+        bool                    is_workspace_var;                                       //!< Is this a workspace variable?
         std::string             name;                                                   //!< Name of variable
-        mutable size_t          refCount;                                               //!< Reference count used by RevPtr
-        RevObject*              revObject;                                              //!< Pointer to the Rev object inside the variable
-        TypeSpec                requiredTypeSpec;                                       //!< Required type of the object
-        bool                    isElementVar;                                           //!< Is this variable an element of a vector?
-        bool                    isHiddenVar;                                            //!< Is this a hidden variable?
-        bool                    isReferenceVar;                                         //!< Is this a reference variable?
-        bool                    isVectorVar;                                            //!< Is this a vector variable?
-        bool                    isWorkspaceVar;                                         //!< Is this a workspace variable?
-        std::set<int>           elementIndices;                                         //!< The indices of the elements if this is a vector variable.
-        RevPtr<RevVariable>     referencedVariable;                                     //!< Smart pointer to referenced variable
+        mutable size_t          ref_count;                                              //!< Reference count used by RevPtr
+        RevPtr<RevVariable>     referenced_variable;                                    //!< Smart pointer to referenced variable
+        RevObject*              rev_object;                                             //!< Pointer to the Rev object inside the variable
+        TypeSpec                required_type_spec;                                     //!< Required type of the object
     };
     
 }

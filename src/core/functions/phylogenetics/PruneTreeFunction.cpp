@@ -161,7 +161,7 @@ int PruneTreeFunction::recursivelyRetainTaxa(RevBayesCore::TopologyNode *node)
             throw RbException("");
         }
 
-        value->setRoot( root );
+        value->setRoot( root, true );
         std::vector<TopologyNode*> nodes = value->getNodes();
         
         // update tip nodes with stored taxon-index

@@ -370,7 +370,7 @@ void UniformTopologyDistribution::simulateTree( void )
     }
     
     // initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
 
     // re-couple tip node names with tip indices
     // this is necessary because otherwise tip names get scrambled across replicates

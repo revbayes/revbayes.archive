@@ -582,7 +582,7 @@ void SampledSpeciationBirthDeathProcess::simulateTree( void )
         
         // Create the root node and a vector of nodes
         TopologyNode* root = new TopologyNode();
-        psi->setRoot(root);
+        psi->setRoot(root, true);
         root->setAge(rootAge);
         std::set<TopologyNode* > nodes;
         std::vector<double> unsampledLineageAges;
@@ -590,7 +590,7 @@ void SampledSpeciationBirthDeathProcess::simulateTree( void )
         
         // Simulate a tree
         simulateEvent(root, nodes, unsampledLineageAges, 0.0, rootAge);
-        psi->setRoot(root);
+        psi->setRoot(root, true);
         
 //        std::cout << psi->getNumberOfTips() << "\n";
         // redo if the wrong number of taxa were sampled

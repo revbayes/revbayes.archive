@@ -52,11 +52,6 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
         throw RbException("cladogeneticProbabilities and times must be of equal size.");
     }
     
-    //    size_t nc = cp->getValue()[0].size();
-    for (size_t i = 0; i < et->getValue().size(); i++)
-    {
-        std::cout << et->getValue()[i] << "\n";
-    }
     // create P matrix
     RevBayesCore::EpochCladogeneticStateFunction* f = new RevBayesCore::EpochCladogeneticStateFunction( et, cp, 0, 0 );
     
