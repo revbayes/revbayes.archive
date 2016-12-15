@@ -87,7 +87,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         std::vector<RevBayesCore::Taxon> t = this->dagNode->getValue().getFossilTaxa();
         return new RevVariable( new ModelVector<Taxon>( t ) );
     }
-    else if (name == "nSampledAncestors")
+    else if (name == "numSampledAncestors")
     {
         found = true;
 
@@ -145,7 +145,7 @@ void TimeTree::initMethods( void )
     methods.addFunction( new MemberProcedure( "getFossils", ModelVector<Taxon>::getClassTypeSpec(), getFossilsArgRules ) );
 
     ArgumentRules* nSampledAncestorsArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "nSampledAncestors", Natural::getClassTypeSpec(), nSampledAncestorsArgRules ) );
+    methods.addFunction( new MemberFunction<TimeTree, Natural>( "numSampledAncestors", this, nSampledAncestorsArgRules ) );
 
     // member functions
     ArgumentRules* heightArgRules = new ArgumentRules();
