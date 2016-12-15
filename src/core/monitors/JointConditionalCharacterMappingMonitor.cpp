@@ -19,12 +19,13 @@ using namespace RevBayesCore;
 
 
 /* Constructor */
-JointConditionalCharacterMappingMonitor::JointConditionalCharacterMappingMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del) : Monitor(g),
+JointConditionalCharacterMappingMonitor::JointConditionalCharacterMappingMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, bool is, const std::string &del) : Monitor(g),
 outStream(),
 filename( fname ),
 separator( del ),
 append( false ),
-cdbdp( ch )
+cdbdp( ch ),
+include_simmaps( is )
 {
     
     // the cdbdp is both the tree and character evolution model
@@ -113,7 +114,7 @@ void JointConditionalCharacterMappingMonitor::monitor(unsigned long gen)
         num_nodes = tree->getValue().getNumberOfNodes();
         
         // draw character map from the joint distribution
-        std::vector<std::string> character_histories(num_nodes);
+        std::vector<std::string*> character_histories(num_nodes);
 //        sse_process->drawJointConditionalCharacterMap(character_histories);
         
         const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
@@ -130,6 +131,15 @@ void JointConditionalCharacterMappingMonitor::monitor(unsigned long gen)
             outStream << character_histories[ node_index ];
             
         }
+        
+        if ( include_simmaps = true )
+        {
+            // print out the SIMMAP/phytools compatible newick string in the last column of the log file
+            outStream << separator;
+            tree->getValue().addNodeParameter("character_history", character_histories, false);
+            outStream << tree->getValue().getSimmapNewickRepresentation();
+        }
+        
         outStream << std::endl;
     }
 }
@@ -177,6 +187,13 @@ void JointConditionalCharacterMappingMonitor::printHeader()
         outStream << node_index + 1;
         
     }
+    
+    if ( include_simmaps = true )
+    {
+        outStream << separator;
+        outStream << "simmap";
+    }
+    
     outStream << std::endl;
 }
 

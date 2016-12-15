@@ -39,7 +39,7 @@ namespace RevBayesCore {
     public:
         
         // Constructors and Destructors
-        JointConditionalCharacterMappingMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del);
+        JointConditionalCharacterMappingMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, bool is, const std::string &del);
         JointConditionalCharacterMappingMonitor(const JointConditionalCharacterMappingMonitor &m);
         virtual ~JointConditionalCharacterMappingMonitor(void);
         
@@ -61,6 +61,7 @@ namespace RevBayesCore {
         std::fstream                                    outStream;
         
         // parameters
+        bool                                            include_simmaps;                                                    //!< Should we print out SIMMAP/phytools compatible character histories?
         std::string                                     filename;                                                           //!< Filename to which we print the values
         std::string                                     separator;                                                          //!< Seperator between monitored values (between columns)
         bool                                            append;                                                             //!< Flag if to append to existing file
