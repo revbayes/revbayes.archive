@@ -34,15 +34,27 @@ namespace RevBayesCore {
     
     struct AnnotationReport
     {
-        bool ages             = true;
-        bool cc_ages          = false;
-        bool ccp              = true;
-        bool tree_ages        = false;
-        double hpd            = 0.95;
-        bool map_parameters   = false;
-        bool mean             = true;
-        bool posterior        = true;
-        bool sa               = true;
+        
+        AnnotationReport() :
+            ages(true),
+            cc_ages(false),
+            ccp(true),
+            tree_ages(false),
+            hpd(0.95),
+            map_parameters(false),
+            mean(true),
+            posterior(true),
+            sa(true) {}
+        
+        bool ages;
+        bool cc_ages;
+        bool ccp;
+        bool tree_ages;
+        double hpd;
+        bool map_parameters;
+        bool mean;
+        bool posterior;
+        bool sa;
     };
 
     class TreeSummary : public Cloneable {
