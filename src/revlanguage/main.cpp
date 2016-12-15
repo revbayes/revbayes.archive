@@ -16,6 +16,7 @@
 int main(int argc, char* argv[]) {
     
 #   ifdef RB_MPI
+    int processId = 0;
     int num_processes = 0;
     try
     {
@@ -41,9 +42,7 @@ int main(int argc, char* argv[]) {
     {
         return -1;
     }
-#   else
-    int processId = 0;
-#   endif
+#endif
     
     /* seek out files from command line */
     std::vector<std::string> sourceFiles;
@@ -58,6 +57,10 @@ int main(int argc, char* argv[]) {
     rl.startRevLanguageEnvironment(sourceFiles);
     
 #   ifdef RB_XCODE
+
+#   ifndef RB_MPI
+    int processId = 0;
+#   endif
     /* Declare things we need */
     int result = 0;
     std::string commandLine = "";
