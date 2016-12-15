@@ -1,4 +1,4 @@
-#include "AbstractHomologousDiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "PomoCountFileReader.h"
@@ -45,9 +45,11 @@ RevPtr<RevVariable> Func_readPomoCountFile::execute( void )
 
 	RevBayesCore::PomoCountFileReader* pcfr = new RevBayesCore::PomoCountFileReader( fn.getValue(), virtualPopulationSize->getValue(), ' ' );
 
-	AbstractHomologousDiscreteCharacterData pomoAln = pcfr->getMatrix();
+	RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::PomoState> *pomoAln = new RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::PomoState>( *(pcfr->getMatrix() ) );
 
-	return new RevVariable( new AbstractHomologousDiscreteCharacterData(pomoAln) );
+	AbstractHomologousDiscreteCharacterData *rlPomoAln = new AbstractHomologousDiscreteCharacterData( pomoAln );
+
+	return new RevVariable( rlPomoAln );
 }
 
 
