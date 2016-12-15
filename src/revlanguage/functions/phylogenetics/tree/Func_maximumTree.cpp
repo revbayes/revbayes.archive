@@ -61,9 +61,9 @@ const ArgumentRules& Func_maximumTree::getArgumentRules( void ) const
 const std::string& Func_maximumTree::getClassType(void)
 {
     
-    static std::string revType = "Func_maximumTree";
+    static std::string rev_type = "Func_maximumTree";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

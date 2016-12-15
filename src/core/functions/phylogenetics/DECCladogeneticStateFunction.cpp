@@ -34,12 +34,12 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< R
     eventProbs( ep ),
     connectivityGraph( cg ),
     vicarianceGraph( vg ),
-    eventTypes( et ),
     numCharacters(nc),
     num_states(2),
     numIntStates(pow(num_states,nc)),
-    maxRangeSize( (mrs < 1 || mrs > nc ? nc : mrs)),
     numEventTypes( BiogeographicCladoEvent::NUM_STATES ),
+    maxRangeSize( (mrs < 1 || mrs > nc ? nc : mrs)),
+    eventTypes( et ),
     eventProbsAsWeightedAverages(epawa),
     wideAllopatry(wa),
     useVicariance(uv)
@@ -50,7 +50,7 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< R
     addParameter( vicarianceGraph );
     
     buildBits();
-    buildRanges(beforeRanges, connectivityGraph, true);
+    buildRanges(beforeRanges, connectivityGraph, false);
     buildRanges(afterRanges, vicarianceGraph, false);
     
     numRanges = (unsigned)beforeRanges.size();
@@ -181,7 +181,8 @@ void DECCladogeneticStateFunction::buildBits( void )
 
 void DECCladogeneticStateFunction::buildEventMap( void ) {
     
-    eventMapCounts.resize(numRanges, std::vector<unsigned>(numEventTypes, 0));
+//    eventMapCounts.resize(numRanges, std::vector<unsigned>(numEventTypes, 0));
+    eventMapCounts.clear();
     std::map<std::vector<unsigned>, double> eventMapProbs;
     
 //    statesToBitsByNumOn = bits;
@@ -189,13 +190,16 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
     
     // get L,R states per A state
     std::vector<unsigned> idx(3);
-    for (unsigned i = 0; i < numRanges; i++) {
-        
+//    for (unsigned i = 0; i < numRanges; i++) {
+    for (std::set<unsigned>::iterator its = beforeRanges.begin(); its != beforeRanges.end(); its++)
+    {
+        unsigned i = *its;
         idx[0] = i;
+        eventMapCounts[i] = std::vector<unsigned>(BiogeographicCladoEvent::NUM_STATES, 0);
         
         // only include supported ranges
-        if (beforeRanges.find(i) == beforeRanges.end())
-            continue;
+//        if (beforeRanges.find(i) == beforeRanges.end())
+//            continue;
    
 #ifdef DEBUG_DEC
         std::cout << "State " << i << "\n";
@@ -611,8 +615,10 @@ void DECCladogeneticStateFunction::update( void )
     for (size_t i = 0; i < eventTypes.size(); i++)
     {
         size_t k = eventStringToStateMap[ eventTypes[i] ];
-        for (size_t j = 0; j < numRanges; j++)
+//        for (size_t j = 0; j < numRanges; j++)
+        for (std::set<unsigned>::iterator its = beforeRanges.begin(); its != beforeRanges.end(); its++)
         {
+            size_t j = *its;
             z[j] += probs[k] * eventMapCounts[j][k];
         }
     }

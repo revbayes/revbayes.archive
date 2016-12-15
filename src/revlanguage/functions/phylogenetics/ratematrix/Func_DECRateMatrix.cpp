@@ -160,9 +160,9 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
 const std::string& Func_DECRateMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_DECRateMatrix";
+    static std::string rev_type = "Func_DECRateMatrix";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

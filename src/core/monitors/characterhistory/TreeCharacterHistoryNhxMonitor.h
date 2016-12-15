@@ -42,7 +42,7 @@ namespace RevBayesCore {
         
         // FileMonitor functions
         void                                    closeStream(void);                                                  //!< Close stream after finish writing
-        void                                    openStream(void);                                                   //!< Open the stream for writing
+        void                                    openStream(bool reopen);                                            //!< Open the stream for writing
         void                                    printHeader(void);                                                  //!< Print header
         std::vector<unsigned int>               getChildCharacterCounts(int idx);
         std::vector<unsigned int>               getParentCharacterCounts(int idx);
@@ -401,7 +401,7 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::buildNhxStri
 
 /** open the file stream for printing */
 template<class charType>
-void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::openStream(void) {
+void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::openStream(bool reopen) {
     
     // open the stream to the file
     if (append)

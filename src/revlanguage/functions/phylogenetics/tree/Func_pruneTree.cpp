@@ -76,9 +76,9 @@ const ArgumentRules& Func_pruneTree::getArgumentRules( void ) const
 const std::string& Func_pruneTree::getClassType(void)
 {
     
-    static std::string revType = "Func_pruneTree";
+    static std::string rev_type = "Func_pruneTree";
     
-    return revType;
+    return rev_type;
 }
 
 

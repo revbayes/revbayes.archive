@@ -95,9 +95,9 @@ template <typename valType>
 const std::string& RevLanguage::Dist_EmpiricalSample<valType>::getClassType(void)
 {
     
-    static std::string revType = "Dist_EmpiricalSample";
+    static std::string rev_type = "Dist_EmpiricalSample";
     
-    return revType;
+    return rev_type;
 }
 
 

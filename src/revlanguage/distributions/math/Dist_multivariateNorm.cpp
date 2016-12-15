@@ -94,9 +94,9 @@ Dist_multivariateNorm* Dist_multivariateNorm::clone( void ) const
 const std::string& Dist_multivariateNorm::getClassType(void)
 { 
     
-    static std::string revType = "Dist_multivariateNorm";
+    static std::string rev_type = "Dist_multivariateNorm";
     
-	return revType; 
+	return rev_type; 
 }
 
 

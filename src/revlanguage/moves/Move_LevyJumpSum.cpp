@@ -66,9 +66,9 @@ void Move_LevyJumpSum::constructInternalObject( void )
 const std::string& Move_LevyJumpSum::getClassType(void)
 {
     
-    static std::string revType = "Move_LevyJumpSum";
+    static std::string rev_type = "Move_LevyJumpSum";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */

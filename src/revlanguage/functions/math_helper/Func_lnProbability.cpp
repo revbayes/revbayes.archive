@@ -67,9 +67,9 @@ const ArgumentRules& Func_lnProbability::getArgumentRules( void ) const
 const std::string& Func_lnProbability::getClassType(void)
 {
     
-    static std::string revType = "Func_lnProbability";
+    static std::string rev_type = "Func_lnProbability";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

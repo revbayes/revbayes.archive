@@ -111,9 +111,9 @@ const ArgumentRules& ConstructorFunction::getArgumentRules(void) const
 const std::string& ConstructorFunction::getClassType(void)
 {
     
-    static std::string revType = "ConstructorFunction";
+    static std::string rev_type = "ConstructorFunction";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

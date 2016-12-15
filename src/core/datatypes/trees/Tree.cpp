@@ -828,13 +828,13 @@ bool Tree::isUltrametric( void ) const
 }
 
 
-void Tree::makeInternalNodesBifurcating(void)
+void Tree::makeInternalNodesBifurcating(bool reindex)
 {
     
     getRoot().makeBifurcating();
     
     // we need to reset the root so that the vector of nodes get filled again with the new number of nodes
-    setRoot( &getRoot() );
+    setRoot( &getRoot(), reindex );
 
 }
 
@@ -864,7 +864,7 @@ void Tree::orderNodesByIndex( void )
 }
 
 
-void Tree::reroot(const std::string &outgroup)
+void Tree::reroot(const std::string &outgroup, bool reindex)
 {
     std::vector<std::string> tipnames = getTipNames();
     size_t outgroupIndex = tipnames.size();
@@ -888,18 +888,18 @@ void Tree::reroot(const std::string &outgroup)
     outgroupNode.getParent().setParent( NULL );
 
 	// set the new root
-	setRoot( &outgroupNode.getParent() );
+	setRoot( &outgroupNode.getParent(), reindex );
 
 }
 
-void Tree::reroot(TopologyNode &n)
+void Tree::reroot(TopologyNode &n, bool reindex)
 {
 	// reset parent/child relationships
 	reverseParentChild( n.getParent() );
     n.getParent().setParent( NULL );
 
 	// set the new root
-	setRoot( &n.getParent() );
+	setRoot( &n.getParent(), reindex );
 
 }
 
@@ -927,8 +927,6 @@ TopologyNode& Tree::reverseParentChild(TopologyNode &n)
 }
 
 
-
-
 void Tree::setRooted(bool tf)
 {
     rooted = tf;
@@ -938,11 +936,10 @@ void Tree::setRooted(bool tf)
 void Tree::setRoot( TopologyNode* r, bool resetIndex )
 {
 
-    // delete the old root
-    if ( r != root )
-    {
-        //delete root;
-    }
+    // delete the old root if it's not in this tree
+    bool found = false;
+
+    TopologyNode* old_root = root;
     
     // set the root
     root = r;
@@ -976,11 +973,20 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
             std::cerr << i << " - " << nodes[i] << std::endl;
             throw RbException("Problem while reading in tree.");
         }
+        if( nodes[i] == old_root)
+        {
+            found = true;
+        }
         numTips += ( nodes[i]->isTip() ? 1 : 0);
     }
     
     
     root->setTree( this );
+
+    if( found == false )
+    {
+        delete old_root;
+    }
 
 }
 

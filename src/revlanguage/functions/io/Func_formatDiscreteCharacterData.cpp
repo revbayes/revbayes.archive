@@ -120,9 +120,9 @@ const ArgumentRules& Func_formatDiscreteCharacterData::getArgumentRules( void ) 
 const std::string& Func_formatDiscreteCharacterData::getClassType(void)
 {
     
-    static std::string revType = "Func_formatDiscreteCharacterData";
+    static std::string rev_type = "Func_formatDiscreteCharacterData";
     
-    return revType;
+    return rev_type;
 }
 
 

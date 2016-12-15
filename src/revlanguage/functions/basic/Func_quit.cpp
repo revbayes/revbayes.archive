@@ -53,9 +53,9 @@ const ArgumentRules& Func_quit::getArgumentRules( void ) const
 const std::string& Func_quit::getClassType(void)
 {
     
-    static std::string revType = "Func_quit";
+    static std::string rev_type = "Func_quit";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

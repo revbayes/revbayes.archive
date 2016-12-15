@@ -41,6 +41,7 @@ namespace RevLanguage {
         rbType&                                             getValue(void) const;                                           //!< Get value
         void                                                setValue(const rbType& x);                                      //!< Set value
         virtual void                                        printValue(std::ostream& o, bool user) const;                                                      //!< Print value (for user)
+        virtual void                                        printValue(std::ostream& o) const { printValue(o, true); };
 
     protected:
         WorkspaceToCoreWrapperObject(void);
@@ -119,9 +120,9 @@ RevLanguage::WorkspaceToCoreWrapperObject<rbType>& RevLanguage::WorkspaceToCoreW
 template <typename rbType>
 const std::string& RevLanguage::WorkspaceToCoreWrapperObject<rbType>::getClassType(void) {
     
-    static std::string revType = "WorkspaceToCoreWrapperObject";
+    static std::string rev_type = "WorkspaceToCoreWrapperObject";
     
-    return revType;
+    return rev_type;
 }
 
 

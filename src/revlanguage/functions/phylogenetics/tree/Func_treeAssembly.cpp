@@ -87,9 +87,9 @@ const ArgumentRules& Func_treeAssembly::getArgumentRules( void ) const
 const std::string& Func_treeAssembly::getClassType(void)
 {
     
-    static std::string revType = "Func_treeAssembly";
+    static std::string rev_type = "Func_treeAssembly";
     
-	return revType; 
+	return rev_type; 
 }
 
 

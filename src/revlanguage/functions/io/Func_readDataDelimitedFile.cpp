@@ -6,14 +6,12 @@
 #include "Func_readDataDelimitedFile.h"
 #include "ModelObject.h"
 #include "ModelVector.h"
-#include "NaturalNumbersState.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "Natural.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
-#include "RlNaturalNumbersState.h"
 #include "RlMatrixReal.h"
 #include "RlStandardState.h"
 #include "RlString.h"
@@ -267,9 +265,9 @@ const ArgumentRules& Func_readDataDelimitedFile::getArgumentRules( void ) const
 const std::string& Func_readDataDelimitedFile::getClassType(void)
 {
     
-    static std::string revType = "Func_readDataDelimitedFile";
+    static std::string rev_type = "Func_readDataDelimitedFile";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -309,7 +307,7 @@ const TypeSpec& Func_readDataDelimitedFile::getTypeSpec( void ) const
 const TypeSpec& Func_readDataDelimitedFile::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = NaturalNumbersState::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = WorkspaceVector<WorkspaceVector<AbstractModelObject> >::getClassTypeSpec();
     return returnTypeSpec;
 }
 

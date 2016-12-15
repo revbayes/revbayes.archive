@@ -15,7 +15,7 @@
 
 int main(int argc, char* argv[]) {
     
-    int processId = 0;
+    //int processId = 0;
 #   ifdef RB_MPI
     int num_processes = 0;
     try

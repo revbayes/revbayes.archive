@@ -67,9 +67,9 @@ void Mntr_Model::constructInternalObject( void )
 const std::string& Mntr_Model::getClassType(void) 
 { 
     
-    static std::string revType = "Mntr_Model";
+    static std::string rev_type = "Mntr_Model";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

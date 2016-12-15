@@ -73,9 +73,9 @@ void Move_RandomIntegerWalk::constructInternalObject( void )
 const std::string& Move_RandomIntegerWalk::getClassType(void) 
 { 
     
-    static std::string revType = "Move_RandomIntegerWalk";
+    static std::string rev_type = "Move_RandomIntegerWalk";
     
-	return revType; 
+	return rev_type; 
 }
 
 

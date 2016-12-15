@@ -83,9 +83,9 @@ void Move_LevyJump::constructInternalObject( void )
 const std::string& Move_LevyJump::getClassType(void)
 {
     
-    static std::string revType = "Move_LevyJump";
+    static std::string rev_type = "Move_LevyJump";
     
-	return revType;
+	return rev_type;
 }
 
 

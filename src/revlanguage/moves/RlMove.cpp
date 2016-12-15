@@ -24,9 +24,9 @@ Move::Move(void) : WorkspaceToCoreWrapperObject<RevBayesCore::Move>()
 const std::string& Move::getClassType(void)
 {
     
-    static std::string revType = "Move";
+    static std::string rev_type = "Move";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

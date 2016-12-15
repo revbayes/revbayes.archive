@@ -72,9 +72,9 @@ const ArgumentRules& Func_empiricalQuantile::getArgumentRules( void ) const
 const std::string& Func_empiricalQuantile::getClassType(void)
 {
     
-    static std::string revType = "Func_empiricalQuantile";
+    static std::string rev_type = "Func_empiricalQuantile";
     
-    return revType;
+    return rev_type;
 }
 
 

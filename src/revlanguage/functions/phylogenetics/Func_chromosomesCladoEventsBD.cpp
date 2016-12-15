@@ -65,9 +65,9 @@ const ArgumentRules& Func_chromosomesCladoEventsBD::getArgumentRules( void ) con
 const std::string& Func_chromosomesCladoEventsBD::getClassType(void)
 {
     
-    static std::string revType = "Func_chromosomesCladoEventsBD";
+    static std::string rev_type = "Func_chromosomesCladoEventsBD";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

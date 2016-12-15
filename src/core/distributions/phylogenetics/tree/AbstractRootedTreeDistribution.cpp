@@ -729,7 +729,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
     TopologyNode *root = nodes[0];
 
     // initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
 
     // finally store the new value
     delete value;

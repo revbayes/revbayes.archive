@@ -77,9 +77,9 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void )
 const std::string& Mntr_ExtendedNewickFile::getClassType(void)
 {
     
-    static std::string revType = "Mntr_ExtendedNewickFile";
+    static std::string rev_type = "Mntr_ExtendedNewickFile";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
@@ -121,7 +121,7 @@ const MemberRules& Mntr_ExtendedNewickFile::getParameterRules(void) const
         memberRules.push_back( new Ellipsis( "Variables at nodes or branches.", RevObject::getClassTypeSpec() ) );
         memberRules.push_back( new ArgumentRule("isNodeParameter" , RlBoolean::getClassTypeSpec(), "Is this a node or branch parameter?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         memberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , "How frequently do we print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        memberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , "The separator between variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString(" ") ) );
+        memberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , "The separator between variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         memberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), "Should we print the posterior probability as well.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         memberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), "Should we print the likelihood as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         memberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), "Should we print the prior probability as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );

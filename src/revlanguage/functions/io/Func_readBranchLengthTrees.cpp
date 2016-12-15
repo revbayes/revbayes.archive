@@ -77,9 +77,9 @@ const ArgumentRules& Func_readBranchLengthTrees::getArgumentRules( void ) const
 const std::string& Func_readBranchLengthTrees::getClassType(void)
 {
     
-    static std::string revType = "Func_readBranchLengthTrees";
+    static std::string rev_type = "Func_readBranchLengthTrees";
     
-	return revType; 
+	return rev_type; 
 }
 
 

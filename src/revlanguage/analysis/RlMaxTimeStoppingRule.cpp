@@ -57,9 +57,9 @@ void MaxTimeStoppingRule::constructInternalObject( void )
 const std::string& MaxTimeStoppingRule::getClassType(void)
 {
     
-    static std::string revType = "MaxTimeStoppingRule";
+    static std::string rev_type = "MaxTimeStoppingRule";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

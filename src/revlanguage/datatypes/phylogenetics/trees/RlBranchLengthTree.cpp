@@ -80,7 +80,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> BranchLengthTree::executeMethod(st
         if ( st.isType( RlString::getClassTypeSpec() ) )
         {
             std::string n = std::string( static_cast<const RlString&>( st ).getValue() );
-            this->dagNode->getValue().reroot(n);
+            this->dagNode->getValue().reroot(n, true);
         }
         return NULL;
         
@@ -94,9 +94,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> BranchLengthTree::executeMethod(st
 const std::string& BranchLengthTree::getClassType(void)
 {
     
-    static std::string revType = "BranchLengthTree";
+    static std::string rev_type = "BranchLengthTree";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

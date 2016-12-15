@@ -33,7 +33,7 @@ void NexusWriter::closeStream( void )
 /**
  * Open the file stream to a file with the name used in the constructor.
  */
-void NexusWriter::openStream( void ) 
+void NexusWriter::openStream(bool reopen) 
 {
     RbFileManager f = RbFileManager(fileName);
     f.createDirectoryForFile();
@@ -190,7 +190,7 @@ void NexusWriter::writeNexusBlock(const Tree &tree)
     
     outStream << std::endl; 
     outStream << "Begin trees;" << std::endl;
-    outStream << "tree TREE1 = [&R]" << tree << std::endl;
+    outStream << "tree TREE1 = " << (tree.isRooted() ? "[&R]" : "[&U]") << tree << std::endl;
     outStream << "End;" << std::endl;
     
     
@@ -209,7 +209,7 @@ void NexusWriter::writeNexusBlock(const std::vector<Tree> &trees)
     outStream << "Begin trees;" << std::endl;
     for (size_t i = 0; i < trees.size(); ++i)
     {
-        outStream << "tree TREE" << (i+1) << " = [&R]" << trees[i] << ";" << std::endl;
+        outStream << "tree TREE" << (i+1) << " = " << (trees[i].isRooted() ? "[&R]" : "[&U]") << trees[i] << ";" << std::endl;
     }
     outStream << "End;" << std::endl;
 

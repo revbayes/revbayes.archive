@@ -68,9 +68,9 @@ const ArgumentRules& Func_PattersonsD::getArgumentRules( void ) const
 const std::string& Func_PattersonsD::getClassType(void)
 {
     
-    static std::string revType = "Func_PattersonsD";
+    static std::string rev_type = "Func_PattersonsD";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

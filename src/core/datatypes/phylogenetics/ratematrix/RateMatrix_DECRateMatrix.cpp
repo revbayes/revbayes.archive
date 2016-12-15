@@ -26,23 +26,23 @@ using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
 RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs, bool ex, bool uc, size_t mrs) : GeneralRateMatrix( ns ),
-    num_states(ns),
     numCharacters(nc),
+    num_states(ns),
+    useSquaring(ns > 32),
+    conditionSurvival(cs),
+    excludeNullRange(ex),
     dispersalRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 1.0) ) ),
     extirpationRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 1.0) ) ),
     rangeSize( std::vector<double>(numCharacters, 1.0/ns) ),
+    scalingFactor(1.0),
     birthRate(0.0),
-    useSquaring(ns > 32),
-    excludeNullRange(ex),
-    conditionSurvival(cs),
 //    orderStatesByNum(os),
     useCladogenesis(uc),
-    maxRangeSize(mrs),
     rescaleMatrix(false),
-    scalingFactor(1.0),
+    maxRangeSize(mrs),
     stationaryMatrix( TransitionProbabilityMatrix(num_states) ),
-    maxSizeStoredTransitionProbabilites(1e3),
     accessedTransitionProbabilities( std::list<double>() ),
+    maxSizeStoredTransitionProbabilites(1e3),
     useStoredTransitionProbabilities(true)
 {
 
@@ -238,21 +238,23 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
             // extinction
             if (lossOrGain[i][j] == 0)
             {
-                if (!excludeNullRange || j > 0) {
+                if (excludeNullRange && endState==0)
+                {
+                    v = 0;
+                }
+                else
+                {
                     unsigned changed_area = changedAreas[i][j];
                     std::vector<unsigned> affecting_areas = affectingAreas[i][j];
                     
                     for (size_t k = 0; k < affecting_areas.size(); k++)
                     {
                         double vt = extirpationRates[ affecting_areas[k] ][changed_area];
-//                        std::cout << "\t" << vt << "dr[ " <<  affecting_areas[k] << " ][ " << changed_area << "]\n";
+    //                        std::cout << "\t" << vt << "dr[ " <<  affecting_areas[k] << " ][ " << changed_area << "]\n";
                         v += vt;
                     }
                 }
-                else if (excludeNullRange && j == 0)
-                {
-                    v  = 1e-100;
-                }
+                
             }
             // dispersal
             else if (lossOrGain[i][j] == 1)
@@ -270,38 +272,6 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
 //            std::cout << "\tsum = " << sum << "\n";
             
             v *= p;
-            
-//            for (size_t k = 0; k < transitionAreas[i][j].size(); k++)
-//            {
-//                std::cout << "\t i:" << i << " j:" << j << " k:" << k << "\n";
-//                std::cout << "\t ta_ijk:" << transitionAreas[i][j][k] << "\n";
-////                std::cout << "\t ta_ikj:" << transitionAreas[i][k][j] << "\n";
-//            
-//                // extinction
-//                if (lossOrGain[i][j] == 0)
-//                {
-//                    if (!excludeNullRange || j > 0) {
-////                        double vt = extirpationRates[ transitionAreas[i][j][k] ][ transitionAreas[i][k][j] ];
-//                        double vt = extirpationRates[ transitionAreas[i][j][k] ][ j ];
-//                        std::cout << "\te[ " << transitionAreas[i][j][k] << " ][ " << j << " ] = " << vt << "\n";
-//                        v += vt;
-//                    }
-//                    else if (excludeNullRange && j == 0)
-//                    {
-//                        v  = 1e-100;
-//                    }
-//                }
-//        
-//                // dispersal
-//                else if (lossOrGain[i][j] == 1) // && !maxSize)
-//                {
-//                    double vt = dispersalRates[ transitionAreas[i][j][k] ][ j ];
-//                    std::cout << "\td[ " << transitionAreas[i][j][k] << " ][ " << j << " ] = " << vt << "\n";
-//
-//                    v += dispersalRates[ transitionAreas[i][j][k] ][ j ];
-//                }
-//                v *= p;
-//            }
             
             // store value
             m[ startState ][ endState ] = v;
@@ -595,6 +565,16 @@ std::string RateMatrix_DECRateMatrix::getRangeStr(const std::vector<unsigned>& v
     for (size_t j = 0; j < v.size(); j++)
         ss << v[j];
     return ss.str();
+}
+
+std::vector<double> RateMatrix_DECRateMatrix::getStationaryFrequencies(void) const
+{
+    // MJL: The initial DEC model uses flat stationary frequencies.
+    //      Two alternative solutions in RevBayes (not yet exposed in RevLanguage):
+    //          1) DEC conditioned on survival without cladogenesis
+    //          2) DEC conditioned on survival with cladogensis
+    std::vector<double> f(num_states, 1.0/num_states);
+    return(f);
 }
 
 /*

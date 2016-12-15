@@ -68,9 +68,9 @@ const ArgumentRules& Func_readRelativeNodeAgeConstraints::getArgumentRules( void
 const std::string& Func_readRelativeNodeAgeConstraints::getClassType(void)
 {
     
-    static std::string revType = "Func_readRelativeNodeAgeConstraints";
+    static std::string rev_type = "Func_readRelativeNodeAgeConstraints";
     
-    return revType;
+    return rev_type;
 }
 
 

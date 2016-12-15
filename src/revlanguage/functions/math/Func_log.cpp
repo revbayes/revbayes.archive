@@ -59,9 +59,9 @@ const ArgumentRules& Func_log::getArgumentRules( void ) const
 const std::string& Func_log::getClassType(void)
 {
     
-    static std::string revType = "Func_log";
+    static std::string rev_type = "Func_log";
     
-	return revType; 
+	return rev_type; 
 }
 
 

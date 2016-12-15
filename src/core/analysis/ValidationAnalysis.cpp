@@ -409,7 +409,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
             if ( trace_map.find( parameter_name ) != trace_map.end() )
             {
                 // create a trace
-                bool cov = trace_map[parameter_name]->isCoveredInInterval(the_node->getValueAsString(), credible_interval_size);
+                bool cov = trace_map[parameter_name]->isCoveredInInterval(the_node->getValueAsString(), credible_interval_size, false);
                 
                 if ( coverage_count.find(parameter_name) == coverage_count.end() )
                 {

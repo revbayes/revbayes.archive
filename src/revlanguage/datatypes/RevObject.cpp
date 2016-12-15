@@ -138,8 +138,8 @@ RevPtr<RevVariable> RevObject::executeMethod(std::string const &name, const std:
 const std::string& RevObject::getClassType(void)
 {
     
-    static std::string revType = "RevObject";
-	return revType; 
+    static std::string rev_type = "RevObject";
+	return rev_type; 
 }
 
 

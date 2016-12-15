@@ -60,9 +60,9 @@ const ArgumentRules& Func_diagonalMatrix::getArgumentRules( void ) const
 const std::string& Func_diagonalMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_diag";
+    static std::string rev_type = "Func_diag";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

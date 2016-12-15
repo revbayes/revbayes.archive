@@ -77,9 +77,9 @@ const ArgumentRules& Func_pomo::getArgumentRules( void ) const
 const std::string& Func_pomo::getClassType(void)
 {
     
-    static std::string revType = "Func_pomo";
+    static std::string rev_type = "Func_pomo";
     
-	return revType;
+	return rev_type;
 }
 
 

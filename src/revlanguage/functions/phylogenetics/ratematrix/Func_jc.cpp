@@ -58,9 +58,9 @@ const ArgumentRules& Func_jc::getArgumentRules( void ) const
 const std::string& Func_jc::getClassType(void)
 {
     
-    static std::string revType = "Func_jc";
+    static std::string rev_type = "Func_jc";
     
-	return revType; 
+	return rev_type; 
 }
 
 

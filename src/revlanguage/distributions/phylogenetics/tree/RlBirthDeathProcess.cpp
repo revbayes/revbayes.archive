@@ -35,9 +35,9 @@ BirthDeathProcess::BirthDeathProcess() : TypedDistribution<TimeTree>()
 const std::string& BirthDeathProcess::getClassType(void) 
 { 
     
-    static std::string revType = "BirthDeathProcess";
+    static std::string rev_type = "BirthDeathProcess";
     
-	return revType; 
+	return rev_type; 
 }
 
 

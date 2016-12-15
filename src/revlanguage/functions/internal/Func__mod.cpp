@@ -58,9 +58,9 @@ const ArgumentRules& Func__mod::getArgumentRules( void ) const
 const std::string& Func__mod::getClassType(void)
 {
     
-    static std::string revType = "Func__mod";
+    static std::string rev_type = "Func__mod";
     
-	return revType;
+	return rev_type;
 }
 
 

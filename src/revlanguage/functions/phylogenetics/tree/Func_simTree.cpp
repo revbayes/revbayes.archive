@@ -62,7 +62,7 @@ RevPtr<RevVariable> Func_simTree::execute( void )
     }
     
     // initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
     
     // set the ages recursively
     setAges(psi, *root);
@@ -100,9 +100,9 @@ const ArgumentRules& Func_simTree::getArgumentRules( void ) const
 const std::string& Func_simTree::getClassType(void)
 {
     
-    static std::string revType = "Func_simTree";
+    static std::string rev_type = "Func_simTree";
     
-    return revType;
+    return rev_type;
 }
 
 

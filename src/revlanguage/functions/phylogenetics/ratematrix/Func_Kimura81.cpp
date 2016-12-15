@@ -67,9 +67,9 @@ const ArgumentRules& Func_Kimura81::getArgumentRules( void ) const
 const std::string& Func_Kimura81::getClassType(void)
 {
     
-    static std::string revType = "Func_Kimura81";
+    static std::string rev_type = "Func_Kimura81";
     
-    return revType;
+    return rev_type;
 }
 
 

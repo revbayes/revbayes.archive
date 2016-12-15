@@ -80,9 +80,9 @@ const ArgumentRules& Func_readStochasticVariableTrace::getArgumentRules( void ) 
 const std::string& Func_readStochasticVariableTrace::getClassType(void)
 {
     
-    static std::string revType = "Func_readStochasticVariableTrace";
+    static std::string rev_type = "Func_readStochasticVariableTrace";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

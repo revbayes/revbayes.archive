@@ -11,8 +11,8 @@ SSE_ODE::SSE_ODE( const std::vector<double> &m, const RateGenerator* q, double r
     num_states( q->getNumberOfStates() ),
     Q( q ),
     rate( r ),
-    backward_time( backward_time ),
-    extinction_only( extinction_only )
+    extinction_only( extinction_only ),
+    backward_time( backward_time )
 {
     
 }

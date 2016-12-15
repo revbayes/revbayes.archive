@@ -67,9 +67,9 @@ const ArgumentRules& Func_max::getArgumentRules( void ) const
 const std::string& Func_max::getClassType(void)
 {
     
-    static std::string revType = "Func_max";
+    static std::string rev_type = "Func_max";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

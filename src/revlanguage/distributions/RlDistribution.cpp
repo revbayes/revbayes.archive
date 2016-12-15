@@ -41,9 +41,9 @@ Distribution::~Distribution()
 const std::string& Distribution::getClassType(void) 
 { 
     
-    static std::string revType = "Distribution";
+    static std::string rev_type = "Distribution";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -225,7 +225,7 @@ MethodTable Distribution::getDistributionMethods( void ) const
  *
  * \param[in]    the stream to which to print.
  */
-void Distribution::printValue(std::ostream &o) const 
+/*void Distribution::printValue(std::ostream &o) const
 {
     o << getClassType() << "(...)" << std::endl;
-}
+}*/

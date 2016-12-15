@@ -19,7 +19,7 @@ namespace RevBayesCore {
         
     public:
         RbBitSet(void);                                                                                         //!< Constructor requires character type
-        RbBitSet(size_t n);                                                                                         //!< Constructor requires character type
+        RbBitSet(size_t n, bool def = false);                                                                   //!< Constructor requires character type
         virtual                        ~RbBitSet(void) {}
         
         bool                            operator[](size_t i) const;
@@ -28,11 +28,20 @@ namespace RevBayesCore {
         bool                            operator!=(const RbBitSet &bs) const;
         bool                            operator<(const RbBitSet &bs) const;
         
+        RbBitSet                        operator&(const RbBitSet &bs) const;
+        RbBitSet                        operator|(const RbBitSet &bs) const;
+        RbBitSet                        operator^(const RbBitSet &bs) const;
+        RbBitSet&                       operator~();
+        RbBitSet&                       operator&=(const RbBitSet &bs);
+        RbBitSet&                       operator|=(const RbBitSet &bs);
+
 
         void                            clear(void);
+        bool                            empty(void) const;
         void                            flip(size_t i);
         size_t                          getNumberSetBits(void) const;                   //!< Get the number of bits set.
         bool                            isSet(size_t i) const;
+        void                            resize(size_t size);
         void                            set(size_t i);
         size_t                          size(void) const;
         void                            unset(size_t i);

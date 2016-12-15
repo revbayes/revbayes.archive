@@ -58,9 +58,9 @@ void Move_BetaSimplex::constructInternalObject( void )
 const std::string& Move_BetaSimplex::getClassType(void)
 {
     
-    static std::string revType = "Move_BetaSimplex";
+    static std::string rev_type = "Move_BetaSimplex";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

@@ -82,9 +82,9 @@ RevPtr<RevVariable> Model::executeMethod(std::string const &name, const std::vec
 const std::string& Model::getClassType(void)
 {
     
-    static std::string revType = "Model";
+    static std::string rev_type = "Model";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

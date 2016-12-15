@@ -139,9 +139,9 @@ RevPtr<RevVariable> RlString::executeMethod( std::string const &name, const std:
 const std::string& RlString::getClassType(void)
 {
     
-    static std::string revType = "String";
+    static std::string rev_type = "String";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

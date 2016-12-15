@@ -99,7 +99,7 @@ void TreeDiscreteCharacterData::writeToFile(const std::string &dir, const std::s
     fm.createDirectoryForFile();
     
     NexusWriter nw( fm.getFullFileName() );
-    nw.openStream();
+    nw.openStream(false);
     
     nw.writeNexusBlock( *this );
     nw.writeNexusBlock( *character_data );

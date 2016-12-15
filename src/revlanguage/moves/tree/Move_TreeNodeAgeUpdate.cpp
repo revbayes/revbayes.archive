@@ -76,9 +76,9 @@ void Move_TreeNodeAgeUpdate::constructInternalObject( void )
 const std::string& Move_TreeNodeAgeUpdate::getClassType(void)
 {
     
-    static std::string revType = "Move_TreeNodeAgeUpdate";
+    static std::string rev_type = "Move_TreeNodeAgeUpdate";
     
-    return revType;
+    return rev_type;
 }
 
 

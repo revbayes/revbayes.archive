@@ -326,7 +326,7 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
     //In principle we have just built a proper ultrametric tree.
     //Now we make a tree of it.
     Tree* tree = new Tree();
-    tree->setRoot ( Root );
+    tree->setRoot ( Root, true );
     
     // set the branch lengths
     std::map < TopologyNode*, double >::iterator jt;

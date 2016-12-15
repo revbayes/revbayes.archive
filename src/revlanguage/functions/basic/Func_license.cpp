@@ -67,9 +67,9 @@ const ArgumentRules& Func_license::getArgumentRules( void ) const
 const std::string& Func_license::getClassType(void)
 {
     
-    static std::string revType = "Func_license";
+    static std::string rev_type = "Func_license";
     
-	return revType;
+	return rev_type;
 }
 
 

@@ -102,9 +102,9 @@ RevPtr<RevVariable> MaximumLikelihoodAnalysis::executeMethod(std::string const &
 const std::string& MaximumLikelihoodAnalysis::getClassType(void)
 {
     
-    static std::string revType = "MaximumLikelihoodAnalysis";
+    static std::string rev_type = "MaximumLikelihoodAnalysis";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

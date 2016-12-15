@@ -44,8 +44,8 @@ RevBayesCore::BinomialDistribution* Dist_binomial::createDistribution( void ) co
 const std::string& Dist_binomial::getClassType(void)
 {
     
-    static std::string revType = "Dist_binomial";
-	return revType;
+    static std::string rev_type = "Dist_binomial";
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

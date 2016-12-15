@@ -181,7 +181,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
     theParentVar->addIndex( idx );
 
 
-    if ( !env.existsVariable( identifier ) )
+    if ( env.existsVariable( identifier ) == false )
     {
         // create a new slot
         RevPtr<RevVariable> theVar = RevPtr<RevVariable>( new RevVariable( NULL ) );
@@ -315,20 +315,21 @@ void SyntaxIndexOperation::updateVariable( Environment& env, const std::string &
         {
             RevPtr<RevVariable> &parentVariable = env.getVariable(parentName);
             
-            const std::set<int>& indices = parentVariable->getElementIndices();
-            if ( indices.empty() )
-            {
-                throw RbException("Cannot create a vector variable with name '" + parentName + "' because it doesn't have elements.");
-            }
+//            const std::set<int>& indices = parentVariable->getElementIndices();
+//            if ( indices.empty() )
+//            {
+//                throw RbException("Cannot create a vector variable with name '" + parentName + "' because it doesn't have elements.");
+//            }
+            size_t max_index = parentVariable->getMaxElementIndex();
             std::vector<Argument> args;
-            for (std::set<int>::const_iterator it = indices.begin(); it != indices.end(); ++it)
+            for (size_t i = 1; i <= max_index; ++i)
             {
-                std::string elementIdentifier = parentName + "[" + *it + "]";
-                RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
+                std::string element_identifier = parentName + "[" + i + "]";
+                RevPtr<RevVariable>& elementVar = env.getVariable( element_identifier );
                 // check that the element is not NULL
                 if ( elementVar == NULL || elementVar->getRevObject() == RevNullObject::getInstance() )
                 {
-                    throw RbException("Cannot create vector variable with name '" + parentName + "' because element with name '" + elementIdentifier + "' is NULL." );
+                    throw RbException("Cannot create vector variable with name '" + parentName + "' because element with name '" + element_identifier + "' is NULL." );
                 }
                 args.push_back( Argument( elementVar ) );
             }
@@ -348,9 +349,10 @@ void SyntaxIndexOperation::updateVariable( Environment& env, const std::string &
             {
                 parentExpression->updateVariable(env, parentName);
             }
+            
         }
+        
     }
     
-
 }
 

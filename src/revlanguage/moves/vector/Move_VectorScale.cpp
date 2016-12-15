@@ -58,9 +58,9 @@ void Move_VectorScale::constructInternalObject( void )
 const std::string& Move_VectorScale::getClassType(void)
 {
     
-    static std::string revType = "Move_VectorScale";
+    static std::string rev_type = "Move_VectorScale";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

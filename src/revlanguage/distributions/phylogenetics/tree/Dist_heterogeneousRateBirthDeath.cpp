@@ -62,9 +62,9 @@ RevBayesCore::HeterogeneousRateBirthDeath* Dist_heterogeneousRateBirthDeath::cre
 const std::string& Dist_heterogeneousRateBirthDeath::getClassType(void)
 {
     
-    static std::string revType = "Dist_heterogeneousRateBirthDeath";
+    static std::string rev_type = "Dist_heterogeneousRateBirthDeath";
     
-    return revType;
+    return rev_type;
 }
 
 

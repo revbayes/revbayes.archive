@@ -132,7 +132,7 @@ void AdmixtureResidualsMonitor::monitor(unsigned long gen) {
 
 
 /** open the file stream for printing */
-void AdmixtureResidualsMonitor::openStream(void) {
+void AdmixtureResidualsMonitor::openStream(bool reopen) {
     
     // open the stream to the file
     if (append)

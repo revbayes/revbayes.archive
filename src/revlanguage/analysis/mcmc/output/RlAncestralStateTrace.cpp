@@ -80,9 +80,9 @@ RevPtr<RevVariable> AncestralStateTrace::executeMethod(std::string const &name, 
 
 const std::string& AncestralStateTrace::getClassType(void) { 
     
-    static std::string revType = "AncestralStateTrace";
+    static std::string rev_type = "AncestralStateTrace";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

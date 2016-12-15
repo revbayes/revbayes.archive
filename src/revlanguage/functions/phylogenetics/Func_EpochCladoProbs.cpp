@@ -52,11 +52,6 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
         throw RbException("cladogeneticProbabilities and times must be of equal size.");
     }
     
-    //    size_t nc = cp->getValue()[0].size();
-    for (size_t i = 0; i < et->getValue().size(); i++)
-    {
-        std::cout << et->getValue()[i] << "\n";
-    }
     // create P matrix
     RevBayesCore::EpochCladogeneticStateFunction* f = new RevBayesCore::EpochCladogeneticStateFunction( et, cp, 0, 0 );
     
@@ -93,9 +88,9 @@ const ArgumentRules& Func_EpochCladoProbs::getArgumentRules( void ) const
 const std::string& Func_EpochCladoProbs::getClassType(void)
 {
     
-    static std::string revType = "Func_EpochCladoProbs";
+    static std::string rev_type = "Func_EpochCladoProbs";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

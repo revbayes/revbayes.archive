@@ -69,9 +69,9 @@ const ArgumentRules& Func_branchScoreDistance::getArgumentRules( void ) const
 const std::string& Func_branchScoreDistance::getClassType(void)
 {
     
-    static std::string revType = "Func_branchScoreDistance";
+    static std::string rev_type = "Func_branchScoreDistance";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

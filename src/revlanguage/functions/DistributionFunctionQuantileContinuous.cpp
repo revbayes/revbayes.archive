@@ -134,9 +134,9 @@ const ArgumentRules& DistributionFunctionQuantileContinuous::getArgumentRules(vo
 const std::string& DistributionFunctionQuantileContinuous::getClassType(void)
 {
     
-    static std::string revType = "DistributionFunctionQuantileContinuous";
+    static std::string rev_type = "DistributionFunctionQuantileContinuous";
     
-	return revType; 
+	return rev_type; 
 }
 
 

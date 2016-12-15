@@ -109,9 +109,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
 const std::string& TimeTree::getClassType(void)
 {
     
-    static std::string revType = "TimeTree";
+    static std::string rev_type = "TimeTree";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

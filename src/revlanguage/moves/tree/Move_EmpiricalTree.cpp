@@ -53,9 +53,9 @@ void Move_EmpiricalTree::constructInternalObject( void )
 /** Get Rev type of object */
 const std::string& Move_EmpiricalTree::getClassType(void)
 {
-    static std::string revType = "Move_EmpiricalTree";
+    static std::string rev_type = "Move_EmpiricalTree";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

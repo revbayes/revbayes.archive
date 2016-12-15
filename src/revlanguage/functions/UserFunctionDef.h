@@ -41,8 +41,8 @@ namespace RevLanguage {
         const ArgumentRules*                        argumentRules;                                          //!< The argument rules
         std::list<SyntaxElement*>*                  code;                                                   //!< The code
         std::string                                 name;                                                   //!< The function name
-        const TypeSpec                              returnType;                                             //!< The return type (complete specification)
         int                                         referenceCount;                                         //!< Reference count
+        const TypeSpec                              returnType;                                             //!< The return type (complete specification)
     };
     
 }

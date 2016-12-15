@@ -18,6 +18,7 @@ namespace RevLanguage {
     public:
         DiscreteTaxonData(void);                                                                                        //!< Constructor requires character type
         DiscreteTaxonData(RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> *v);                          //!< Constructor requires character type
+        virtual ~DiscreteTaxonData(){};
         
         typedef RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> valueType;
         
@@ -100,9 +101,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::DiscreteTaxonData<rlT
 template <typename rlType>
 const std::string& RevLanguage::DiscreteTaxonData<rlType>::getClassType(void) { 
     
-    static std::string revType = "DiscreteTaxonData";
+    static std::string rev_type = "DiscreteTaxonData";
     
-	return revType; 
+	return rev_type; 
 }
 
 

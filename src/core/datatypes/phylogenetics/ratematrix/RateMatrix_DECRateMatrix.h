@@ -40,6 +40,7 @@ namespace RevBayesCore {
         const RbVector<RbVector<double> >&  getDispersalRates(void) const;
         const RbVector<RbVector<double> >&  getExtirpationRates(void) const;                                                   //!< Return the extirpation rates
         const std::vector<double>&          getRangeSize(void) const;                                                          //!< Return the range size simplex
+        virtual std::vector<double>         getStationaryFrequencies(void) const;                                              //!< Return the stationary frequencies
 
         void                                setDispersalRates(const RbVector<RbVector<double> >& dr);                          //!< Directly set dispersal rates
         void                                setExtirpationRates(const RbVector<RbVector<double> >& er);                        //!< Directly set extirpation rates

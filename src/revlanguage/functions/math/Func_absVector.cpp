@@ -59,9 +59,9 @@ const ArgumentRules& Func_absVector::getArgumentRules( void ) const
 const std::string& Func_absVector::getClassType(void)
 {
     
-    static std::string revType = "Func_absVector";
+    static std::string rev_type = "Func_absVector";
     
-    return revType;
+    return rev_type;
 }
 
 
