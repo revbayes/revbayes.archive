@@ -14,15 +14,14 @@
 #define YY_INPUT rrinput
 
 #include <cstring>
-#include <stdio.h>
 
 /* Hack for Windows */
-#ifdef RB_WIN
+#ifdef WIN32
 #define strdup(a) _strdup(a)
 #define fileno _fileno
 #define YY_SKIP_YYWRAP
 #define yywrap() 1
-//int isatty(int) { return 0; }
+int isatty(int) { return 0; }
 #else
 extern "C" { 
    char *strdup(const char *s);
@@ -32,7 +31,7 @@ extern "C" {
 #endif
     
     
-#ifndef RB_WIN
+#ifndef WIN32
 #include <unistd.h> // for isatty()
 #endif
 
