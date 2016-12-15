@@ -249,6 +249,7 @@ const TypeTable& Workspace::getTypeTable( void ) const
 void Workspace::initializeGlobalWorkspace( void )
 {
     
+    initializeBasicTypeGlobalWorkspace();
     initializeTypeGlobalWorkspace();
     initializeMonitorGlobalWorkspace();
     initializeMoveGlobalWorkspace();
