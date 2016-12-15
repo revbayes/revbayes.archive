@@ -435,13 +435,19 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
     }
     else
     {
+        bool found = false;
         for (size_t i = 0; i < node_comments.size(); ++i)
         {
             if ( node_comments[i].substr(0, 17) == "character_history=" )
             {
                 o << ":" << node_comments[i].substr(18, node_comments[i].length());
+                found = true;
                 break;
             }
+        }
+        if ( found == false )
+        {
+            throw RbException("Error while writing SIMMAP newick string: no character history found for node.");
         }
     }
     
