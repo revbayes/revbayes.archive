@@ -2,7 +2,6 @@
 #include "PhyloBrownianProcessMVN.h"
 #include "OptionRule.h"
 #include "RevNullObject.h"
-#include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTree.h"
 
@@ -35,54 +34,56 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
-    size_t nNodes = tau->getValue().getNumberOfNodes();
+    size_t n_nodes = tau->getValue().getNumberOfNodes();
     
+    RevBayesCore::PhyloBrownianProcessMVN *dist = new RevBayesCore::PhyloBrownianProcessMVN(tau, n);
+
     
-    RevBayesCore::TypedDagNode< double >*                           homBranchRatesNode = NULL;
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >*   hetBranchRatesNode = NULL;
     // set the clock rates
     if ( branchRates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        hetBranchRatesNode = static_cast<const ModelVector<RealPos> &>( branchRates->getRevObject() ).getDagNode();
+         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* br = static_cast<const ModelVector<RealPos> &>( branchRates->getRevObject() ).getDagNode();
         
         // sanity check
-        size_t nRates = hetBranchRatesNode->getValue().size();
-        if ( (nNodes-1) != nRates )
+        size_t n_rates = br->getValue().size();
+        if ( (n_nodes-1) != n_rates )
         {
             throw RbException( "The number of clock rates does not match the number of branches" );
         }
         
+        dist->setBranchRate( br );
+        
     }
     else
     {
-        homBranchRatesNode = static_cast<const RealPos &>( branchRates->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< double >* br = static_cast<const RealPos &>( branchRates->getRevObject() ).getDagNode();
+        
+        dist->setBranchRate( br );
     }
     
-    RevBayesCore::TypedDagNode< double >*                           homSiteRatesNode = NULL;
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >*   hetSiteRatesNode = NULL;
     // set the clock rates
-    if ( siteRates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( site_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        hetSiteRatesNode = static_cast<const ModelVector<RealPos> &>( siteRates->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sr = static_cast<const ModelVector<RealPos> &>( site_rates->getRevObject() ).getDagNode();
+        dist->setSiteRate( sr );
     }
     else
     {
-        homSiteRatesNode = static_cast<const RealPos &>( siteRates->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< double >* sr = static_cast<const RealPos &>( site_rates->getRevObject() ).getDagNode();
+        dist->setSiteRate( sr );
     }
     
-    RevBayesCore::TypedDagNode< double >*                           homRootStatesNode = NULL;
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >*   hetRootStatesNode = NULL;
     // set the clock rates
     if ( rootStates->getRevObject().isType( ModelVector<Real>::getClassTypeSpec() ) )
     {
-        hetRootStatesNode = static_cast<const ModelVector<Real> &>( rootStates->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rs = static_cast<const ModelVector<Real> &>( rootStates->getRevObject() ).getDagNode();
+        dist->setRootState( rs );
     }
     else
     {
-        homRootStatesNode = static_cast<const Real &>( rootStates->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< double >* rs = static_cast<const Real &>( rootStates->getRevObject() ).getDagNode();
+        dist->setRootState( rs );
     }
-    
-    RevBayesCore::PhyloBrownianProcessMVN *dist = new RevBayesCore::PhyloBrownianProcessMVN(tau, homBranchRatesNode, hetBranchRatesNode, homSiteRatesNode, hetSiteRatesNode, homRootStatesNode, hetRootStatesNode, n);
     
     return dist;
 }
@@ -93,18 +94,18 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
 const std::string& Dist_PhyloBrownianMVN::getClassType(void)
 {
     
-    static std::string revType = "Dist_PhyloBrownianMVN";
+    static std::string rev_type = "Dist_PhyloBrownianMVN";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_PhyloBrownianMVN::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -128,36 +129,36 @@ std::string Dist_PhyloBrownianMVN::getDistributionFunctionName( void ) const
 const MemberRules& Dist_PhyloBrownianMVN::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static MemberRules dist_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
-        distMemberRules.push_back( new ArgumentRule( "tree" , Tree::getClassTypeSpec(), "The tree along which the character evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "tree" , Tree::getClassTypeSpec(), "The tree along which the character evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<TypeSpec> branchRateTypes;
         branchRateTypes.push_back( RealPos::getClassTypeSpec() );
         branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "branchRates" , branchRateTypes, "The rate of evolution along a branch.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "branchRates" , branchRateTypes, "The rate of evolution along a branch.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
         std::vector<TypeSpec> siteRateTypes;
         siteRateTypes.push_back( RealPos::getClassTypeSpec() );
         siteRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         RealPos *defaultSiteRates = new RealPos(1.0);
-        distMemberRules.push_back( new ArgumentRule( "siteRates" , siteRateTypes, "The rate of evolution per site.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        dist_member_rules.push_back( new ArgumentRule( "siteRates" , siteRateTypes, "The rate of evolution per site.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         
         std::vector<TypeSpec> rootStateTypes;
         rootStateTypes.push_back( Real::getClassTypeSpec() );
         rootStateTypes.push_back( ModelVector<Real>::getClassTypeSpec() );
         Real *defaultRootStates = new Real(0.0);
-        distMemberRules.push_back( new ArgumentRule( "rootStates" , rootStateTypes, "The vector of root states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultRootStates ) );
+        dist_member_rules.push_back( new ArgumentRule( "rootStates" , rootStateTypes, "The vector of root states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultRootStates ) );
         
-        distMemberRules.push_back( new ArgumentRule( "nSites"         ,  Natural::getClassTypeSpec(), "The number of sites which is used for the initialized (random draw) from this distribution.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
+        dist_member_rules.push_back( new ArgumentRule( "nSites"         ,  Natural::getClassTypeSpec(), "The number of sites which is used for the initialized (random draw) from this distribution.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 
@@ -193,9 +194,9 @@ void Dist_PhyloBrownianMVN::printValue(std::ostream& o) const
         o << "?";
     }
     o << ", siteRates=";
-    if ( siteRates != NULL )
+    if ( site_rates != NULL )
     {
-        o << siteRates->getName();
+        o << site_rates->getName();
     }
     else
     {
@@ -238,7 +239,7 @@ void Dist_PhyloBrownianMVN::setConstParameter(const std::string& name, const Rev
     }
     else if ( name == "siteRates" )
     {
-        siteRates = var;
+        site_rates = var;
     }
     else if ( name == "rootStates" )
     {

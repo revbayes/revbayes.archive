@@ -159,20 +159,6 @@ MatrixReal MatrixReal::computeInverse( void ) const
     // update the eigensystem if necessary
     update();
     
-    /*
-    if (check)  
-    {
-        for (size_t i=0; i<getDim(); i++)   
-        {
-            if (std::fabs(eigenval[i] - bkeigenval[i]) > 1e-6)   
-            {
-                std::cerr << "error: diag flag up but eigen vals not correct\n";
-                exit(1);
-            }
-        }
-    }
-    */
-    
     
     const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
     

@@ -92,14 +92,14 @@ template <typename leftValType, typename rightValType>
 const RevLanguage::ArgumentRules& RevLanguage::Func__eq<leftValType,rightValType>::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "", leftValType::getClassTypeSpec() , "The left hand side of the expression.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "", rightValType::getClassTypeSpec(), "The right hand side of the expression.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -111,9 +111,9 @@ template <typename leftValType, typename rightValType>
 const std::string& RevLanguage::Func__eq<leftValType,rightValType>::getClassType(void)
 {
     
-    static std::string revType = "Func__eq<" + leftValType::getClassType() + "," + rightValType::getClassType() + ">";
+    static std::string rev_type = "Func__eq<" + leftValType::getClassType() + "," + rightValType::getClassType() + ">";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -122,9 +122,9 @@ template <typename leftValType, typename rightValType>
 const RevLanguage::TypeSpec& RevLanguage::Func__eq<leftValType,rightValType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -146,9 +146,9 @@ template <typename leftValType, typename rightValType>
 const RevLanguage::TypeSpec& RevLanguage::Func__eq<leftValType,rightValType>::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

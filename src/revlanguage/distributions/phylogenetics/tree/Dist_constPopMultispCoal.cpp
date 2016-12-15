@@ -57,31 +57,31 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
 {
     
     // Get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* st = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* st = static_cast<const TimeTree &>( species_tree->getRevObject() ).getDagNode();
     const std::vector<RevBayesCore::Taxon>      &t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     
     // get the number of nodes for the tree
-    size_t nNodes = st->getValue().getNumberOfNodes();
+    size_t n_nodes = st->getValue().getNumberOfNodes();
     
     
     RevBayesCore::MultispeciesCoalescent*   d = new RevBayesCore::MultispeciesCoalescent( st, t );
     
     if ( Ne->getRequiredTypeSpec().isDerivedOf( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* neNode = static_cast<const ModelVector<RealPos> &>( Ne->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* ne_node = static_cast<const ModelVector<RealPos> &>( Ne->getRevObject() ).getDagNode();
         
         // sanity check
-        if ( nNodes != neNode->getValue().size() )
+        if ( n_nodes != ne_node->getValue().size() )
         {
             throw RbException( "The number of effective population sizes does not match the number of branches." );
         }
         
-        d->setNes( neNode );
+        d->setNes( ne_node );
     }
     else
     {
-        RevBayesCore::TypedDagNode<double>* neNode = static_cast<const RealPos &>( Ne->getRevObject() ).getDagNode();
-        d->setNe( neNode );
+        RevBayesCore::TypedDagNode<double>* ne_node = static_cast<const RealPos &>( Ne->getRevObject() ).getDagNode();
+        d->setNe( ne_node );
     }
     d->redrawValue();
     
@@ -98,9 +98,9 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
 const std::string& Dist_constPopMultispCoal::getClassType(void) 
 { 
     
-    static std::string revType = "Dist_constPopMultispCoal";
+    static std::string rev_type = "Dist_constPopMultispCoal";
     
-	return revType; 
+	return rev_type;
 }
 
 
@@ -112,9 +112,9 @@ const std::string& Dist_constPopMultispCoal::getClassType(void)
 const TypeSpec& Dist_constPopMultispCoal::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -149,9 +149,9 @@ const MemberRules& Dist_constPopMultispCoal::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec(), "The species in which the gene trees evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> branchNeTypes;
@@ -160,7 +160,7 @@ const MemberRules& Dist_constPopMultispCoal::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule( "Ne"    , branchNeTypes, "The population sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -182,7 +182,7 @@ void Dist_constPopMultispCoal::setConstParameter(const std::string& name, const 
     
     if ( name == "speciesTree" ) 
     {
-        speciesTree = var;
+        species_tree = var;
     }
     else if ( name == "Ne" ) 
     {
@@ -204,9 +204,9 @@ void Dist_constPopMultispCoal::setConstParameter(const std::string& name, const 
 const TypeSpec& Dist_constPopMultispCoal::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

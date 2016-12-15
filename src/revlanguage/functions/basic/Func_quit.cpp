@@ -53,18 +53,18 @@ const ArgumentRules& Func_quit::getArgumentRules( void ) const
 const std::string& Func_quit::getClassType(void)
 {
     
-    static std::string revType = "Func_quit";
+    static std::string rev_type = "Func_quit";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_quit::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -194,9 +194,9 @@ std::string Func_quit::getHelpTitle(void) const
 const TypeSpec& Func_quit::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

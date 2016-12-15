@@ -90,18 +90,18 @@ void Mntr_AncestralState::constructInternalObject( void )
 const std::string& Mntr_AncestralState::getClassType(void)
 {
     
-    static std::string revType = "Mntr_AncestralState";
+    static std::string rev_type = "Mntr_AncestralState";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_AncestralState::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -124,9 +124,9 @@ const MemberRules& Mntr_AncestralState::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule("tree"          , Tree::getClassTypeSpec()     , "The tree which we monitor.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule("ctmc"          , RevObject::getClassTypeSpec(), "The CTMC process.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
@@ -136,7 +136,7 @@ const MemberRules& Mntr_AncestralState::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("separator"     , RlString::getClassTypeSpec() , "The separator between columns in the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         memberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), "Should we append or overwrite if the file exists?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -146,9 +146,9 @@ const MemberRules& Mntr_AncestralState::getParameterRules(void) const
 const TypeSpec& Mntr_AncestralState::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

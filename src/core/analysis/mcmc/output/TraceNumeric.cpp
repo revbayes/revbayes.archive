@@ -101,7 +101,7 @@ void TraceNumeric::invalidate() {
 }
 
 
-bool TraceNumeric::isCoveredInInterval(const std::string &v, double alpha) const
+bool TraceNumeric::isCoveredInInterval(const std::string &v, double alpha, bool verbose) const
 {
     
     double sample = atof( v.c_str() );

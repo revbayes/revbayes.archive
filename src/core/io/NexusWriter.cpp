@@ -33,7 +33,7 @@ void NexusWriter::closeStream( void )
 /**
  * Open the file stream to a file with the name used in the constructor.
  */
-void NexusWriter::openStream( void ) 
+void NexusWriter::openStream(bool reopen) 
 {
     RbFileManager f = RbFileManager(fileName);
     f.createDirectoryForFile();
@@ -66,8 +66,12 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
     outStream << "missing=? gap=-;" << std::endl;
     outStream << "Matrix" << std::endl;
 
+    // get the taxon vector
+    std::vector<Taxon> taxa = data.getTaxa();
     
-    const std::vector<Taxon> &taxa = data.getTaxa();
+    // sort the taxa (by name)
+    std::sort(taxa.begin(), taxa.end());
+    
     for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)
     {
         
@@ -118,12 +122,18 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
     outStream << "Matrix" << std::endl;
     
     
-    const std::vector<Taxon> &taxa = data.getTaxa();
+    
+    // get the taxon vector
+    std::vector<Taxon> taxa = data.getTaxa();
+    
+    // sort the taxa (by name)
+    std::sort(taxa.begin(), taxa.end());
+    
     for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)
     {
         if ( !data.isTaxonExcluded( it->getName() ) )
         {
-            outStream << *it << "   " << std::endl;
+            outStream << it->getName() << "   ";
             const ContinuousTaxonData &taxon = data.getTaxonData( it->getName() );
             size_t nChars = taxon.getNumberOfCharacters();
             for (size_t i = 0; i < nChars; ++i)
@@ -180,7 +190,7 @@ void NexusWriter::writeNexusBlock(const Tree &tree)
     
     outStream << std::endl; 
     outStream << "Begin trees;" << std::endl;
-    outStream << "tree TREE1 = [&R]" << tree << std::endl;
+    outStream << "tree TREE1 = " << (tree.isRooted() ? "[&R]" : "[&U]") << tree << std::endl;
     outStream << "End;" << std::endl;
     
     
@@ -199,7 +209,7 @@ void NexusWriter::writeNexusBlock(const std::vector<Tree> &trees)
     outStream << "Begin trees;" << std::endl;
     for (size_t i = 0; i < trees.size(); ++i)
     {
-        outStream << "tree TREE" << (i+1) << " = [&R]" << trees[i] << ";" << std::endl;
+        outStream << "tree TREE" << (i+1) << " = " << (trees[i].isRooted() ? "[&R]" : "[&U]") << trees[i] << ";" << std::endl;
     }
     outStream << "End;" << std::endl;
 

@@ -6,30 +6,31 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
+#include "RlMemberFunction.h"
 
 using namespace RevLanguage;
 
 RateMatrix::RateMatrix(void) : RateGenerator()
 {
-
+    initMethods();
 }
 
 
 RateMatrix::RateMatrix( const RevBayesCore::RateMatrix &v) : RateGenerator( v.clone() )
 {
-    
+    initMethods();
 }
 
 
 RateMatrix::RateMatrix( RevBayesCore::RateMatrix *v) : RateGenerator( v )
 {
-    
+    initMethods();
 }
 
 
 RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator> *m) : RateGenerator( m )
 {
-    
+    initMethods();
 }
 
 
@@ -43,28 +44,7 @@ RateMatrix* RateMatrix::clone() const
 RevPtr<RevVariable> RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-    if (name == "[]")
-    {
-        found = true;
-
-        
-        throw RbException("Currently deprecated. Blame Michael (or Sebastian)!");
-        // get the member with give index
-//        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
-//        
-//        if (this->dagNode->getValue().getNumberOfStates() < (size_t)(index.getValue()) ) {
-//            throw RbException("Index out of bounds in []");
-//        }
-//        
-//        const std::vector<double>& element = this->dagNode->getValue()[ size_t(index.getValue()) - 1];
-//        RevBayesCore::RbVector<double> elementVector;
-//        for (size_t i=0; i < this->dagNode->getValue().size(); ++i) {
-//            elementVector.push_back( element[i] );
-//        }
-//        
-//        return new RevVariable( new ModelVector<Real>( elementVector ) );
-    }
-    else if (name == "size")
+    if (name == "size")
     {
         found = true;
         
@@ -79,24 +59,42 @@ RevPtr<RevVariable> RateMatrix::executeMethod(std::string const &name, const std
 /* Get Rev type of object */
 const std::string& RateMatrix::getClassType(void) {
     
-    static std::string revType = "RateMatrix";
+    static std::string rev_type = "RateMatrix";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RateMatrix::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RateGenerator::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RateGenerator::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& RateMatrix::getTypeSpec(void) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }
 
+void RateMatrix::initMethods(void) {
+ 
+    // member procedures
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    // member functions
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<RateMatrix, ModelVector<Real> >( "[]", this, squareBracketArgRules   ) );
+    
+    // member functions
+    ArgumentRules* transitionProbabilityArgRules = new ArgumentRules();
+    transitionProbabilityArgRules->push_back( new ArgumentRule( "rate", RealPos::getClassTypeSpec(), "The rate of the process (or duration of the process assuming rate=1).", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    transitionProbabilityArgRules->push_back( new ArgumentRule( "startAge", RealPos::getClassTypeSpec(), "The start age of the process.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
+    transitionProbabilityArgRules->push_back( new ArgumentRule( "endAge", RealPos::getClassTypeSpec(), "The end age of the process.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.0) ) );
+    methods.addFunction( new MemberFunction<RateMatrix, ModelVector<ModelVector<RealPos> > >( "getTransitionProbabilities", this, transitionProbabilityArgRules   ) );
+}

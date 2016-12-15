@@ -21,12 +21,12 @@ namespace RevBayesCore {
     class RateMatrix_FreeBinary : public GeneralRateMatrix {
 
     public:
-        RateMatrix_FreeBinary(void);                                                                                               //!< Construct rate matrix with n states
+        RateMatrix_FreeBinary(bool rescale_to_one = true);                                                                                               //!< Construct rate matrix with n states
         virtual                         ~RateMatrix_FreeBinary(void);                                                              //!< Destructor
 
         // RateMatrix functions
         double                          averageRate(void) const;
-        void                            calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const;   //!< Calculate the transition matrix
+        void                            calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_FreeBinary*          clone(void) const;
         void                            fillRateMatrix(void);
         void                            update(void);

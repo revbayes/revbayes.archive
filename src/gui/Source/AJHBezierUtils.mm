@@ -93,7 +93,6 @@ static double distanceBetween(NSPoint a, NSPoint b) {
 
     float dx = a.x - b.x;
     float dy = a.y - b.y;
-
     return sqrt (dx * dx + dy * dy);
 }
 
@@ -123,7 +122,6 @@ static double lengthOfBezier(const NSPoint bez[4], double acceptableError) {
 // Split a Bézier curve at a specific length
 static double subdivideBezierAtLength (const NSPoint bez[4], NSPoint bez1[4], NSPoint bez2[4], double length, double acceptableError) {
                        
-
     float prevT = 0.5, t = 0.5;
     for (;;) 
         {
@@ -159,134 +157,115 @@ static double subdivideBezierAtLength (const NSPoint bez[4], NSPoint bez1[4], NS
 // Estimate the total length of a Bézier path
 - (double)lengthWithMaximumError:(double)maxError {
 
-  int     elements = (int)[self elementCount];
-  int     n;
-  double  length = 0.0;
-  NSPoint pointForClose = NSMakePoint (0.0, 0.0);
-  NSPoint lastPoint = NSMakePoint (0.0, 0.0);
-  
-  for (n = 0; n < elements; ++n) {
-    NSPoint		points[3];
-    NSBezierPathElement element = [self elementAtIndex:n
-				      associatedPoints:points];
-    
-    switch (element) {
-      case NSMoveToBezierPathElement:
-	pointForClose = lastPoint = points[0];
-	break;
-	
-      case NSLineToBezierPathElement:
-	length += distanceBetween (lastPoint, points[0]);
-	lastPoint = points[0];
-	break;
-	
-      case NSCurveToBezierPathElement: {
-	NSPoint bezier[4] = { lastPoint, points[0], points[1], points[2] };
-	length += lengthOfBezier (bezier, maxError);
-	lastPoint = points[2];
-	break;
-      }
-	
-      case NSClosePathBezierPathElement:
-	length += distanceBetween (lastPoint, pointForClose);
-	lastPoint = pointForClose;
-	break;
-    }
-  }
-  
-  return length;
+    int elements          = (int)[self elementCount];
+    double length         = 0.0;
+    NSPoint pointForClose = NSMakePoint(0.0, 0.0);
+    NSPoint lastPoint     = NSMakePoint(0.0, 0.0);
+
+    for (int n=0; n<elements; ++n)
+        {
+        NSPoint points[3];
+        NSBezierPathElement element = [self elementAtIndex:n associatedPoints:points];
+        switch (element)
+            {
+            case NSMoveToBezierPathElement:
+                pointForClose = lastPoint = points[0];
+                break;
+            case NSLineToBezierPathElement:
+                length += distanceBetween (lastPoint, points[0]);
+                lastPoint = points[0];
+                break;
+            case NSCurveToBezierPathElement:
+                {
+                NSPoint bezier[4] = { lastPoint, points[0], points[1], points[2] };
+                length += lengthOfBezier (bezier, maxError);
+                lastPoint = points[2];
+                break;
+                }
+            case NSClosePathBezierPathElement:
+                length += distanceBetween (lastPoint, pointForClose);
+                lastPoint = pointForClose;
+                break;
+            }
+        }
+
+    return length;
 }
 
 // Convenience method
 - (double)length {
 
-  return [self lengthWithMaximumError:0.1];
+    return [self lengthWithMaximumError:0.1];
 }
 
-/* Return an NSBezierPath corresponding to the first trimLength units
-   of this NSBezierPath. */
-- (NSBezierPath *)bezierPathByTrimmingToLength:(double)trimLength withMaximumError:(double)maxError {
+// Return an NSBezierPath corresponding to the first trimLength units of this NSBezierPath.
+- (NSBezierPath*)bezierPathByTrimmingToLength:(double)trimLength withMaximumError:(double)maxError {
 
-  NSBezierPath *newPath = [NSBezierPath bezierPath];
-  int	       elements = (int)[self elementCount];
-  int	       n;
-  double       length = 0.0;
-  NSPoint      pointForClose = NSMakePoint (0.0, 0.0);
-  NSPoint      lastPoint = NSMakePoint (0.0, 0.0);
+    NSBezierPath* newPath = [NSBezierPath bezierPath];
+    int elements          = (int)[self elementCount];
+    double length         = 0.0;
+    NSPoint pointForClose = NSMakePoint(0.0, 0.0);
+    NSPoint lastPoint     = NSMakePoint(0.0, 0.0);
 
-  for (n = 0; n < elements; ++n) {
-    NSPoint		points[3];
-    NSBezierPathElement element = [self elementAtIndex:n
-				      associatedPoints:points];
-    double		elementLength;
-    double		remainingLength = trimLength - length;
-    
-    switch (element) {
-      case NSMoveToBezierPathElement:
-	[newPath moveToPoint:points[0]];
-	pointForClose = lastPoint = points[0];
-	continue;
-	
-      case NSLineToBezierPathElement:
-	elementLength = distanceBetween (lastPoint, points[0]);
-	
-	if (length + elementLength <= trimLength)
-	  [newPath lineToPoint:points[0]];
-	else {
-	  double f = remainingLength / elementLength;
-	  [newPath lineToPoint:NSMakePoint (lastPoint.x
-					    + f * (points[0].x - lastPoint.x),
-					    lastPoint.y
-					    + f * (points[0].y - lastPoint.y))];
-	  return newPath;
-	}
-	
-	length += elementLength;
-	lastPoint = points[0];
-	break;
-	
-      case NSCurveToBezierPathElement: {
-	NSPoint bezier[4] = { lastPoint, points[0], points[1], points[2] };
-	elementLength = lengthOfBezier (bezier, maxError);
-	
-	if (length + elementLength <= trimLength)
-	  [newPath curveToPoint:points[2]
-		  controlPoint1:points[0]
-		  controlPoint2:points[1]];
-	else {
-	  NSPoint bez1[4], bez2[4];
-	  subdivideBezierAtLength (bezier, bez1, bez2,
-				   remainingLength, maxError);
-	  [newPath curveToPoint:bez1[3]
-		  controlPoint1:bez1[1]
-		  controlPoint2:bez1[2]];
-	  return newPath;
-	}
-	
-	length += elementLength;
-      	lastPoint = points[2];
-	break;
-      }
-	
-      case NSClosePathBezierPathElement:
-	elementLength = distanceBetween (lastPoint, pointForClose);
-	
-	if (length + elementLength <= trimLength)
-	  [newPath closePath];
-	else {
-	  double f = remainingLength / elementLength;
-	  [newPath lineToPoint:NSMakePoint (lastPoint.x
-					    + f * (points[0].x - lastPoint.x),
-					    lastPoint.y
-					    + f * (points[0].y - lastPoint.y))];
-	  return newPath;
-	}
-	
-	length += elementLength;
-	lastPoint = pointForClose;
-	break;
-    }
-  } 
+    for (int n=0; n<elements; ++n)
+        {
+        NSPoint		points[3];
+        NSBezierPathElement element = [self elementAtIndex:n
+                          associatedPoints:points];
+        double		elementLength;
+        double		remainingLength = trimLength - length;
+        
+        switch (element)
+            {
+            case NSMoveToBezierPathElement:
+                [newPath moveToPoint:points[0]];
+                pointForClose = lastPoint = points[0];
+                continue;
+            case NSLineToBezierPathElement:
+                elementLength = distanceBetween (lastPoint, points[0]);
+                if (length + elementLength <= trimLength)
+                    [newPath lineToPoint:points[0]];
+                else
+                    {
+                    double f = remainingLength / elementLength;
+                    [newPath lineToPoint:NSMakePoint(lastPoint.x + f * (points[0].x - lastPoint.x),lastPoint.y + f * (points[0].y - lastPoint.y))];
+                    return newPath;
+                    }
+                length += elementLength;
+                lastPoint = points[0];
+                break;
+            case NSCurveToBezierPathElement:
+                {
+                NSPoint bezier[4] = { lastPoint, points[0], points[1], points[2] };
+                elementLength = lengthOfBezier (bezier, maxError);
+                if (length + elementLength <= trimLength)
+                    [newPath curveToPoint:points[2] controlPoint1:points[0] controlPoint2:points[1]];
+                else
+                    {
+                    NSPoint bez1[4], bez2[4];
+                    subdivideBezierAtLength(bezier, bez1, bez2, remainingLength, maxError);
+                    [newPath curveToPoint:bez1[3] controlPoint1:bez1[1] controlPoint2:bez1[2]];
+                    return newPath;
+                    }
+                length += elementLength;
+                lastPoint = points[2];
+                break;
+                }
+            case NSClosePathBezierPathElement:
+                elementLength = distanceBetween (lastPoint, pointForClose);
+                if (length + elementLength <= trimLength)
+                    [newPath closePath];
+                else
+                    {
+                    double f = remainingLength / elementLength;
+                    [newPath lineToPoint:NSMakePoint(lastPoint.x + f * (points[0].x - lastPoint.x),lastPoint.y + f * (points[0].y - lastPoint.y))];
+                    return newPath;
+                    }
+                length += elementLength;
+                lastPoint = pointForClose;
+                break;
+            }
+        }
   
   return newPath;
 }
@@ -294,93 +273,79 @@ static double subdivideBezierAtLength (const NSPoint bez[4], NSPoint bez1[4], NS
 // Convenience method
 - (NSBezierPath *)bezierPathByTrimmingToLength:(double)trimLength {
 
-  return [self bezierPathByTrimmingToLength:trimLength withMaximumError:0.1];
+    return [self bezierPathByTrimmingToLength:trimLength withMaximumError:0.1];
 }
 
 /* Return an NSBezierPath corresponding to the part *after* the first
    trimLength units of this NSBezierPath. */
-- (NSBezierPath *)bezierPathByTrimmingFromLength:(double)trimLength withMaximumError:(double)maxError {
+- (NSBezierPath*)bezierPathByTrimmingFromLength:(double)trimLength withMaximumError:(double)maxError {
                 
-  NSBezierPath *newPath = [NSBezierPath bezierPath];
-  int	       elements = (int)[self elementCount];
-  int	       n;
-  double       length = 0.0;
-  NSPoint      pointForClose = NSMakePoint (0.0, 0.0);
-  NSPoint      lastPoint = NSMakePoint (0.0, 0.0);
+    NSBezierPath* newPath = [NSBezierPath bezierPath];
+    int elements          = (int)[self elementCount];
+    double length         = 0.0;
+    NSPoint pointForClose = NSMakePoint(0.0, 0.0);
+    NSPoint lastPoint     = NSMakePoint(0.0, 0.0);
   
-  for (n = 0; n < elements; ++n) {
-    NSPoint		points[3];
-    NSBezierPathElement element = [self elementAtIndex:n
-				      associatedPoints:points];
-    double		elementLength;
-    double		remainingLength = trimLength - length;
-    
-    switch (element) {
-      case NSMoveToBezierPathElement:
-	[newPath moveToPoint:points[0]];
-	pointForClose = lastPoint = points[0];
-	continue;
-	
-      case NSLineToBezierPathElement:
-	elementLength = distanceBetween (lastPoint, points[0]);
-	
-	if (length > trimLength)
-	  [newPath lineToPoint:points[0]];
-	else if (length + elementLength > trimLength) {
-	  double f = remainingLength / elementLength;
-	  [newPath moveToPoint:NSMakePoint (lastPoint.x
-					    + f * (points[0].x - lastPoint.x),
-					    lastPoint.y
-					    + f * (points[0].y - lastPoint.y))];
-	  [newPath lineToPoint:points[0]];
-	}
-	  
-	length += elementLength;
-	lastPoint = points[0];
-	break;
-	
-      case NSCurveToBezierPathElement: {
-	NSPoint bezier[4] = { lastPoint, points[0], points[1], points[2] };
-	elementLength = lengthOfBezier (bezier, maxError);
-	
-	if (length > trimLength)
-	  [newPath curveToPoint:points[2]
-		  controlPoint1:points[0]
-		  controlPoint2:points[1]];
-	else if (length + elementLength > trimLength) {
-	  NSPoint bez1[4], bez2[4];
-	  subdivideBezierAtLength (bezier, bez1, bez2,
-				   remainingLength, maxError);
-	  [newPath moveToPoint:bez2[0]];
-	  [newPath curveToPoint:bez2[3]
-		  controlPoint1:bez2[1]
-		  controlPoint2:bez2[2]];
-	}
-	
-	length += elementLength;
-      	lastPoint = points[2];
-	break;
-      }
-	
-      case NSClosePathBezierPathElement:
-	elementLength = distanceBetween (lastPoint, pointForClose);
-	
-	if (length > trimLength)
-	  [newPath closePath];
-	else if (length + elementLength > trimLength) {
-	  double f = remainingLength / elementLength;
-	  [newPath moveToPoint:NSMakePoint (lastPoint.x
-					    + f * (points[0].x - lastPoint.x),
-					    lastPoint.y
-					    + f * (points[0].y - lastPoint.y))];
-	  [newPath lineToPoint:points[0]];
-	}
-	  
-	length += elementLength;
-	lastPoint = pointForClose;
-	break;
-    }
-  } 
+    for (int n = 0; n < elements; ++n)
+        {
+        NSPoint points[3];
+        NSBezierPathElement element = [self elementAtIndex:n associatedPoints:points];
+        double elementLength;
+        double remainingLength = trimLength - length;
+
+        switch (element)
+            {
+            case NSMoveToBezierPathElement:
+                [newPath moveToPoint:points[0]];
+                pointForClose = lastPoint = points[0];
+                continue;
+            case NSLineToBezierPathElement:
+                elementLength = distanceBetween (lastPoint, points[0]);
+                if (length > trimLength)
+                    [newPath lineToPoint:points[0]];
+                else if (length + elementLength > trimLength)
+                    {
+                    double f = remainingLength / elementLength;
+                    [newPath moveToPoint:NSMakePoint(lastPoint.x + f * (points[0].x - lastPoint.x),lastPoint.y + f * (points[0].y - lastPoint.y))];
+                    [newPath lineToPoint:points[0]];
+                    }
+                length += elementLength;
+                lastPoint = points[0];
+                break;
+            case NSCurveToBezierPathElement:
+                {
+                NSPoint bezier[4] = { lastPoint, points[0], points[1], points[2] };
+                elementLength = lengthOfBezier (bezier, maxError);
+
+                if (length > trimLength)
+                    [newPath curveToPoint:points[2] controlPoint1:points[0] controlPoint2:points[1]];
+                else if (length + elementLength > trimLength)
+                    {
+                    NSPoint bez1[4], bez2[4];
+                    subdivideBezierAtLength(bezier, bez1, bez2, remainingLength, maxError);
+                    [newPath moveToPoint:bez2[0]];
+                    [newPath curveToPoint:bez2[3] controlPoint1:bez2[1] controlPoint2:bez2[2]];
+                    }
+                length += elementLength;
+                lastPoint = points[2];
+                break;
+                }
+
+            case NSClosePathBezierPathElement:
+                elementLength = distanceBetween(lastPoint, pointForClose);
+                if (length > trimLength)
+                    [newPath closePath];
+                else if (length + elementLength > trimLength)
+                    {
+                    double f = remainingLength / elementLength;
+                    [newPath moveToPoint:NSMakePoint (lastPoint.x + f * (points[0].x - lastPoint.x),lastPoint.y + f * (points[0].y - lastPoint.y))];
+                    [newPath lineToPoint:points[0]];
+                    }
+                length += elementLength;
+                lastPoint = pointForClose;
+                break;
+            }
+        }
   
   return newPath;
 }
@@ -388,91 +353,86 @@ static double subdivideBezierAtLength (const NSPoint bez[4], NSPoint bez1[4], NS
 // Convenience method
 - (NSBezierPath *)bezierPathByTrimmingFromLength:(double)trimLength {
 
-  return [self bezierPathByTrimmingFromLength:trimLength withMaximumError:0.1];
+    return [self bezierPathByTrimmingFromLength:trimLength withMaximumError:0.1];
 }
 
 // Find the first point in the path
 - (NSPoint)firstPoint {
 
-  NSPoint points[3];
-  NSBezierPathElement element = [self elementAtIndex:0
-				    associatedPoints:points];
+    NSPoint points[3];
+    NSBezierPathElement element = [self elementAtIndex:0 associatedPoints:points];
 
-  if (element == NSMoveToBezierPathElement)
-    return points[0];
-  else
-    return NSMakePoint (0.0, 0.0);
+    if (element == NSMoveToBezierPathElement)
+        return points[0];
+    else
+        return NSMakePoint(0.0, 0.0);
 }
 
 /* Append a Bezier path, but if it starts with a -moveToPoint, then remove
    it.  This is useful when manipulating trimmed path segments. */
-- (void)appendBezierPathRemovingInitialMoveToPoint:(NSBezierPath *)path {
+- (void)appendBezierPathRemovingInitialMoveToPoint:(NSBezierPath*)path {
 
-  int	       elements = (int)[path elementCount];
-  int	       n;
-  
-  for (n = 0; n < elements; ++n) {
-    NSPoint		points[3];
-    NSBezierPathElement element = [path elementAtIndex:n
-				        associatedPoints:points];
+    int elements = (int)[path elementCount];
 
-    switch (element) {
-      case NSMoveToBezierPathElement: {
-	if (n != 0)
-	  [self moveToPoint:points[0]];
-	break;
-      }
-	
-      case NSLineToBezierPathElement:
-	[self lineToPoint:points[0]];
-	break;
-	
-      case NSCurveToBezierPathElement:
-	[self curveToPoint:points[2]
-	     controlPoint1:points[0]
-	     controlPoint2:points[1]];
-	break;
-	
-      case NSClosePathBezierPathElement:
-	[self closePath];
-    }
-  }
+    for (int n=0; n<elements; ++n)
+        {
+        NSPoint points[3];
+        NSBezierPathElement element = [path elementAtIndex:n associatedPoints:points];
+
+        switch (element)
+            {
+            case NSMoveToBezierPathElement:
+                {
+                if (n != 0)
+                    [self moveToPoint:points[0]];
+                break;
+                }
+            case NSLineToBezierPathElement:
+                [self lineToPoint:points[0]];
+                break;
+            case NSCurveToBezierPathElement:
+                [self curveToPoint:points[2] controlPoint1:points[0] controlPoint2:points[1]];
+                break;
+            case NSClosePathBezierPathElement:
+                [self closePath];
+            }
+        }
 }
 
 // Create an NSBezierPath containing an arrowhead for the start of this path
-- (NSBezierPath *)bezierPathWithArrowHeadForStartOfLength:(double)length angle:(double)angle {
+- (NSBezierPath*)bezierPathWithArrowHeadForStartOfLength:(double)length angle:(double)angle {
 
-  NSBezierPath *rightSide = [self bezierPathByTrimmingToLength:length];
-  NSBezierPath *leftSide = [rightSide bezierPathByReversingPath];
-  NSAffineTransform *rightTransform = [NSAffineTransform transform];
-  NSAffineTransform *leftTransform = [NSAffineTransform transform];
-  NSPoint firstPoint = [self firstPoint];
-  
-  // Rotate about the point of the arrowhead
-  [rightTransform translateXBy:firstPoint.x yBy:firstPoint.y];
-  [rightTransform rotateByDegrees:angle];
-  [rightTransform translateXBy:-firstPoint.x yBy:-firstPoint.y];
-  
-  [rightSide transformUsingAffineTransform:rightTransform];
-  
-  // Same again, but for the left hand side of the arrowhead
-  [leftTransform translateXBy:firstPoint.x yBy:firstPoint.y];
-  [leftTransform rotateByDegrees:-angle];
-  [leftTransform translateXBy:-firstPoint.x yBy:-firstPoint.y];
-  
-  [leftSide transformUsingAffineTransform:leftTransform];
-  
-  /* Careful!  We don't want to append the -moveToPoint from the right hand
-     side, because then -closePath won't do what we would want it to. */
-  [leftSide appendBezierPathRemovingInitialMoveToPoint:rightSide];
-  
-  return leftSide;
+    NSBezierPath* rightSide           = [self bezierPathByTrimmingToLength:length];
+    NSBezierPath* leftSide            = [rightSide bezierPathByReversingPath];
+    NSAffineTransform* rightTransform = [NSAffineTransform transform];
+    NSAffineTransform* leftTransform  = [NSAffineTransform transform];
+    NSPoint firstPoint                = [self firstPoint];
+
+    // Rotate about the point of the arrowhead
+    [rightTransform translateXBy:firstPoint.x yBy:firstPoint.y];
+    [rightTransform rotateByDegrees:angle];
+    [rightTransform translateXBy:-firstPoint.x yBy:-firstPoint.y];
+
+    [rightSide transformUsingAffineTransform:rightTransform];
+
+    // Same again, but for the left hand side of the arrowhead
+    [leftTransform translateXBy:firstPoint.x yBy:firstPoint.y];
+    [leftTransform rotateByDegrees:-angle];
+    [leftTransform translateXBy:-firstPoint.x yBy:-firstPoint.y];
+
+    [leftSide transformUsingAffineTransform:leftTransform];
+
+    /* Careful!  We don't want to append the -moveToPoint from the right hand
+    side, because then -closePath won't do what we would want it to. */
+    [leftSide appendBezierPathRemovingInitialMoveToPoint:rightSide];
+
+    return leftSide;
 }
 
 // Convenience function for obtaining arrow for the other end
-- (NSBezierPath *)bezierPathWithArrowHeadForEndOfLength:(double)length angle:(double)angle {
+- (NSBezierPath*)bezierPathWithArrowHeadForEndOfLength:(double)length angle:(double)angle {
 
-  return [[self bezierPathByReversingPath] bezierPathWithArrowHeadForStartOfLength:length angle:angle];
+    return [[self bezierPathByReversingPath] bezierPathWithArrowHeadForStartOfLength:length angle:angle];
 }
 
 @end

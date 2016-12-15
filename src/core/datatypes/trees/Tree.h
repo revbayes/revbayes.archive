@@ -26,6 +26,7 @@
 #include "Cloneable.h"
 #include "MemberObject.h"
 #include "Serializable.h"
+#include "TaxonMap.h"
 #include "TreeChangeEventHandler.h"
 
 #include <vector>
@@ -62,6 +63,7 @@ namespace RevBayesCore {
         void                                                clearParameters(void);                                                                              //!< Clear both the current node and branch parameters
         void                                                clearBranchParameters(void);
 		void                                                clearNodeParameters(void);
+        void                                                dropTipNodeWithName(const std::string &n);                                                          //!< Get a pointer to tip node i
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;        //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Boolean &rv) const;    //!< Map the member methods to internal function calls
@@ -79,6 +81,7 @@ namespace RevBayesCore {
         const TopologyNode&                                 getRoot(void) const;                                                                                //!< Get a pointer to the root node of the Tree
         std::vector<std::string>                            getSpeciesNames() const;                                                                            //!< Get all the species represented in the tree
         std::vector<Taxon>                                  getTaxa() const;                                                                                    //!< Get all the taxa in the tree
+        std::map<std::string, size_t>                       getTaxonBitSetMap();                                                                                //!< Returns a map that holds the BitSet index for each taxon
         size_t                                              getTipIndex(const std::string &name) const;
         std::vector<std::string>                            getTipNames() const;
         TopologyNode&                                       getTipNode(size_t indx);                                                                            //!< Get a pointer to tip node i
@@ -96,13 +99,15 @@ namespace RevBayesCore {
         bool                                                isBroken(void) const;                                                                               //!< Is this tree ultrametric?
         bool                                                isRooted(void) const;                                                                               //!< Is the Tree rooted
         bool                                                isUltrametric(void) const;                                                                          //!< Is this tree ultrametric?
-        void                                                makeInternalNodesBifurcating(void);                                                                 //!< Make all the internal nodes bifurcating.
+        void                                                makeInternalNodesBifurcating(bool reindex);                                                                 //!< Make all the internal nodes bifurcating.
         void                                                orderNodesByIndex();
-        void                                                reroot(const std::string &outgroup);                                                                //!< Re-root the tree with the given outgroup
-        void                                                reroot(TopologyNode &n);
-        void                                                setRoot(TopologyNode* r, bool resetIndex=true);                                                     //!< Set the root and bootstrap the Tree from it
+        void                                                reroot(const std::string &outgroup, bool reset);                                                                //!< Re-root the tree with the given outgroup
+        void                                                reroot(TopologyNode &n, bool reset);
+        void                                                setRoot(TopologyNode* r, bool resetIndex);                                                     //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
-        
+        void                                                setTaxonIndices(const TaxonMap &tm);                                                                //!< Set the indices of the taxa from the taxon map
+        TopologyNode&                                       reverseParentChild(TopologyNode &n);                                    //!< Reverse the parent child relationship.
+
     protected:
         
 
@@ -112,16 +117,17 @@ namespace RevBayesCore {
 //    private:
         
         void                                                fillNodesByPhylogeneticTraversal(TopologyNode* node);               //!< fill the nodes vector by a preorder traversal recursively starting with this node.
-        void                                                reverseParentChild(TopologyNode &n);                                    //!< Reverse the parent child relationship.
         
         
+
         // private members
         TopologyNode*                                       root;
         std::vector<TopologyNode*>                          nodes;                                                                  //!< Vector of pointers to all nodes
         bool                                                binary;                                                                 //!< Is the BranchLengthTree binary?
         bool                                                rooted;
         size_t                                              numTips;
-        size_t                                              numNodes;
+        size_t                                              num_nodes;
+        std::map<std::string, size_t>                       taxon_bitset_map;
 
     };
 

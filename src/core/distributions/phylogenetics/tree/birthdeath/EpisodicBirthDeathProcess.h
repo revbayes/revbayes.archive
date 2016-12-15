@@ -29,10 +29,13 @@ namespace RevBayesCore {
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         void                                                prepareProbComputation(void) const;
         
+        void                                                prepareRateIntegral(double end) const;                        //!< Compute the rate integral.
+        void                                                prepareSurvivalProbability(double end, double r) const;                        //!< Compute the rate integral.
+
         // helper functions
         double                                              lnSpeciationRate(double t) const;
         double                                              rateIntegral(double t_low, double t_high) const;
-        double                                              pSurvival(double start, double end) const;
+        double                                              computeProbabilitySurvival(double start, double end) const;
         double                                              simulateDivergenceTime(double origin, double present, double rho) const;                //!< Simulate a speciation event.
 
     private:

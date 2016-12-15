@@ -8,13 +8,13 @@ using namespace RevBayesCore;
 
 
 PhyloDiversityFunction::PhyloDiversityFunction(const TypedDagNode<Tree> *t, const Clade &c, const bool i, const TypedDagNode< RbVector< double > > *w) : TypedFunction<double>( new double(0.0) ),
-    tau( t ),
-    sample( c ),
     includeRoot( i ),
+    sample( c ),
+    tau( t ),
     tipWeights( w )
 {
     addParameter( tau );
-    this->numTaxa = sample.size();
+    this->num_taxa = sample.size();
 }
 
 
@@ -65,11 +65,11 @@ void PhyloDiversityFunction::update( void )
             std::vector<Taxon> taxa;
             node->getTaxa( taxa );
             size_t cladeSize = taxa.size();
-            if ( cladeSize < minCladeSize && cladeSize >= numTaxa && node->containsClade( sample, false ) )
+            if ( cladeSize < minCladeSize && cladeSize >= num_taxa && node->containsClade( sample, false ) )
             {
                 stopIndex = node->getIndex();
                 minCladeSize = cladeSize;
-                if ( numTaxa == cladeSize )
+                if ( num_taxa == cladeSize )
                 {
                     break;
                 }
@@ -87,7 +87,7 @@ void PhyloDiversityFunction::update( void )
     std::vector<Taxon> taxa = sample.getTaxa();
     
     // loop through each of the sampled taxa
-    for (size_t i = 0; i < numTaxa; ++i)
+    for (size_t i = 0; i < num_taxa; ++i)
     {
         std::string taxon = taxa[i].getName();
         size_t j = tau->getValue().getTipIndex( taxon );
@@ -151,7 +151,7 @@ double  PhyloDiversityFunction::calculateBranchWeights(size_t j)
     if (n.isTip())
     {
         std::vector<Taxon> taxa = sample.getTaxa();
-        for (size_t i = 0; i < numTaxa; ++i)
+        for (size_t i = 0; i < num_taxa; ++i)
         {
             if ( n.getName() == taxa[i].getName() )
             {

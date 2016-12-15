@@ -49,7 +49,7 @@ namespace RevLanguage {
         // Basic utility functions you should not have to override
         std::string                                     getHelpUsage(void) const;
         std::string                                     getRevDeclaration(void) const;                                                      //!< Get Rev declaration of the function
-        void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
+        void                                            printValue(std::ostream& o, bool user) const;                                       //!< Print the general information on the function ('usage')
         void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was called.
     
         // Functions you have to override
@@ -57,7 +57,7 @@ namespace RevLanguage {
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual std::string                             getConstructorFunctionName(void) const;
         virtual std::vector<std::string>                getConstructorFunctionAliases(void) const;
-        virtual std::string                             getFunctionName(void) const = 0;                                                                //!< Get the name of the function
+        virtual std::string                             getFunctionName(void) const = 0;                                                    //!< Get the name of the function
         virtual std::vector<std::string>                getFunctionNameAliases(void) const;                                                 //!< Get aliases for the Rev name of the function
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 

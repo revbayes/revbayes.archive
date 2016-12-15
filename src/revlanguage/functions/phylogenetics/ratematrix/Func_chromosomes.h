@@ -24,7 +24,7 @@
 
 namespace RevLanguage {
     
-    class Func_chromosomes : public TypedFunction<RateGenerator> {
+    class Func_chromosomes : public TypedFunction<RateMatrix> {
         
     public:
         Func_chromosomes( void );

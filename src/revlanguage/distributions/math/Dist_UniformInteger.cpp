@@ -43,18 +43,18 @@ RevBayesCore::UniformIntegerDistribution* Dist_UniformInteger::createDistributio
 const std::string& Dist_UniformInteger::getClassType(void)
 {
     
-    static std::string revType = "Dist_UniformInteger";
+    static std::string rev_type = "Dist_UniformInteger";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_UniformInteger::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Integer>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Integer>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -94,15 +94,15 @@ const MemberRules& Dist_UniformInteger::getParameterRules(void) const
 {
     
     static MemberRules distUnifMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         distUnifMemberRules.push_back( new ArgumentRule( "lower", Integer::getClassTypeSpec(), "The lower bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distUnifMemberRules.push_back( new ArgumentRule( "upper", Integer::getClassTypeSpec(), "The upper bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distUnifMemberRules;

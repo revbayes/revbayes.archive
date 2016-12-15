@@ -76,9 +76,9 @@ void Move_SpeciesNodeTimeSlideUniform::constructInternalObject( void )
 const std::string& Move_SpeciesNodeTimeSlideUniform::getClassType(void)
 {
     
-    static std::string revType = "Move_SpeciesNodeTimeSlideUniform";
+    static std::string rev_type = "Move_SpeciesNodeTimeSlideUniform";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -90,9 +90,9 @@ const std::string& Move_SpeciesNodeTimeSlideUniform::getClassType(void)
 const TypeSpec& Move_SpeciesNodeTimeSlideUniform::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -122,9 +122,9 @@ const MemberRules& Move_SpeciesNodeTimeSlideUniform::getParameterRules(void) con
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec() , "The species tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
@@ -132,7 +132,7 @@ const MemberRules& Move_SpeciesNodeTimeSlideUniform::getParameterRules(void) con
         const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -147,9 +147,9 @@ const MemberRules& Move_SpeciesNodeTimeSlideUniform::getParameterRules(void) con
 const TypeSpec& Move_SpeciesNodeTimeSlideUniform::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

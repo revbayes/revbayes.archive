@@ -64,12 +64,12 @@ const ArgumentRules& Func_varianceCovarianceMatrix::getArgumentRules( void ) con
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
-    if ( !rulesSet )
+    static bool rules_set = false;
+    if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "standardDeviations"  , ModelVector<RealPos>::getClassTypeSpec(), "The vector of standard deviations.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "correlationCoefficients", ModelVector<Real>::getClassTypeSpec(), "The correlation coefficients.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -79,8 +79,8 @@ const ArgumentRules& Func_varianceCovarianceMatrix::getArgumentRules( void ) con
 const std::string& Func_varianceCovarianceMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_varianceCovarianceMatrix";
-	return revType;
+    static std::string rev_type = "Func_varianceCovarianceMatrix";
+	return rev_type;
 }
 
 
@@ -88,8 +88,8 @@ const std::string& Func_varianceCovarianceMatrix::getClassType(void)
 const TypeSpec& Func_varianceCovarianceMatrix::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
-	return revTypeSpec;
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+	return rev_type_spec;
 }
 
 
@@ -108,6 +108,6 @@ std::string Func_varianceCovarianceMatrix::getFunctionName( void ) const
 const TypeSpec& Func_varianceCovarianceMatrix::getTypeSpec(void) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }

@@ -80,7 +80,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> BranchLengthTree::executeMethod(st
         if ( st.isType( RlString::getClassTypeSpec() ) )
         {
             std::string n = std::string( static_cast<const RlString&>( st ).getValue() );
-            this->dagNode->getValue().reroot(n);
+            this->dagNode->getValue().reroot(n, true);
         }
         return NULL;
         
@@ -94,18 +94,18 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> BranchLengthTree::executeMethod(st
 const std::string& BranchLengthTree::getClassType(void)
 {
     
-    static std::string revType = "BranchLengthTree";
+    static std::string rev_type = "BranchLengthTree";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& BranchLengthTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Tree::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Tree::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -113,8 +113,8 @@ const TypeSpec& BranchLengthTree::getClassTypeSpec(void)
 const TypeSpec& BranchLengthTree::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 

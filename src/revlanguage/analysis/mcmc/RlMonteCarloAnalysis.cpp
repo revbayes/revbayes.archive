@@ -4,12 +4,14 @@
 #include "ConstantNode.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
+#include "ModelTrace.h"
 #include "Model.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "RbException.h"
 #include "RlMonteCarloAnalysis.h"
 #include "RlModel.h"
+#include "RlModelTrace.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
 #include "RlStoppingRule.h"
@@ -95,7 +97,11 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         }
         else
         {
+#ifdef RB_MPI
+            value->run( gen, rules, MPI_COMM_WORLD );
+#else
             value->run( gen, rules );
+#endif
         }
         
         return NULL;
@@ -121,6 +127,22 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         
         return NULL;
     }
+    else if ( name == "initializeFromTrace")
+    {
+        found = true;
+        
+        RevBayesCore::RbVector<RevBayesCore::ModelTrace> traces;
+        const WorkspaceVector<ModelTrace> & trace_vector = static_cast<const WorkspaceVector<ModelTrace> &>( args[0].getVariable()->getRevObject() );
+        for ( size_t i = 0; i < trace_vector.size(); ++i)
+        {
+            const RevBayesCore::ModelTrace &trace = trace_vector.getElement( i )->getValue();
+            traces.push_back( trace );
+        }
+        
+        value->initializeFromTrace( traces );
+        
+        return NULL;
+    }
     
     return RevObject::executeMethod( name, args, found );
 }
@@ -130,18 +152,18 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
 const std::string& MonteCarloAnalysis::getClassType(void)
 {
     
-    static std::string revType = "MonteCarloAnalysis";
+    static std::string rev_type = "MonteCarloAnalysis";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& MonteCarloAnalysis::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::MonteCarloAnalysis>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::MonteCarloAnalysis>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -150,9 +172,9 @@ const TypeSpec& MonteCarloAnalysis::getClassTypeSpec(void)
 const MemberRules& MonteCarloAnalysis::getParameterRules(void) const {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -167,7 +189,7 @@ const MemberRules& MonteCarloAnalysis::getParameterRules(void) const {
         memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options, "The strategy how the moves are used." ) );
         memberRules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec(), "The number of replicate analyses.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -177,9 +199,9 @@ const MemberRules& MonteCarloAnalysis::getParameterRules(void) const {
 const TypeSpec& MonteCarloAnalysis::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -201,6 +223,10 @@ void MonteCarloAnalysis::initializeMethods()
     
     ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "operatorSummary", RlUtils::Void, operatorSummaryArgRules) );
+    
+    ArgumentRules* initializeTraceArgRules = new ArgumentRules();
+    initializeTraceArgRules->push_back( new ArgumentRule("trace", WorkspaceVector<ModelTrace>::getClassTypeSpec(), "The sample trace object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "initializeFromTrace", RlUtils::Void, initializeTraceArgRules) );
     
 }
 

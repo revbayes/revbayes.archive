@@ -17,9 +17,9 @@ RateMatrix_FreeSymmetric::RateMatrix_FreeSymmetric(size_t n, bool r) : GeneralRa
     rescaled( r )
 {
     
-    theEigenSystem       = new EigenSystem(theRateMatrix);
-    c_ijk.resize(numStates * numStates * numStates);
-    cc_ijk.resize(numStates * numStates * numStates);
+    theEigenSystem       = new EigenSystem(the_rate_matrix);
+    c_ijk.resize(num_states * num_states * num_states);
+    cc_ijk.resize(num_states * num_states * num_states);
     
     update();
 }
@@ -33,7 +33,7 @@ RateMatrix_FreeSymmetric::RateMatrix_FreeSymmetric(const RateMatrix_FreeSymmetri
     c_ijk                = m.c_ijk;
     cc_ijk               = m.cc_ijk;
     
-    theEigenSystem->setRateMatrixPtr(theRateMatrix);
+    theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 }
 
 
@@ -58,7 +58,7 @@ RateMatrix_FreeSymmetric& RateMatrix_FreeSymmetric::operator=(const RateMatrix_F
         c_ijk                = r.c_ijk;
         cc_ijk               = r.cc_ijk;
         
-        theEigenSystem->setRateMatrixPtr(theRateMatrix);
+        theEigenSystem->setRateMatrixPtr(the_rate_matrix);
         
     }
     
@@ -75,16 +75,16 @@ RateMatrix_FreeSymmetric& RateMatrix_FreeSymmetric::operator=(const RateMatrix_F
 void RateMatrix_FreeSymmetric::fillRateMatrix( void )
 {
     
-    MatrixReal& m = *theRateMatrix;
+    MatrixReal& m = *the_rate_matrix;
     
     // fill the rate matrix
-    for (size_t i=0, k=0; i<numStates-1; ++i)
+    for (size_t i=0, k=0; i<num_states-1; ++i)
     {
         
         // off-diagonal
-        for (size_t j=i+1; j<numStates; ++j)
+        for (size_t j=i+1; j<num_states; ++j)
         {
-            double r = transitionRates[k];
+            double r = transition_rates[k];
             m[i][j] = r;
             m[j][i] = r;
             k++;
@@ -96,7 +96,7 @@ void RateMatrix_FreeSymmetric::fillRateMatrix( void )
     setDiagonal();
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
 }
 
 /** Do precalculations on eigenvectors */
@@ -109,13 +109,13 @@ void RateMatrix_FreeSymmetric::calculateCijk(void)
         const MatrixReal& ev  = theEigenSystem->getEigenvectors();
         const MatrixReal& iev = theEigenSystem->getInverseEigenvectors();
         double* pc = &c_ijk[0];
-        for (size_t i=0; i<numStates; i++)
+        for (size_t i=0; i<num_states; i++)
         {
             
-            for (size_t j=0; j<numStates; j++)
+            for (size_t j=0; j<num_states; j++)
             {
                 
-                for (size_t k=0; k<numStates; k++)
+                for (size_t k=0; k<num_states; k++)
                 {
                     *(pc++) = ev[i][k] * iev[k][j];
                 }
@@ -131,13 +131,13 @@ void RateMatrix_FreeSymmetric::calculateCijk(void)
         const MatrixComplex& cev  = theEigenSystem->getComplexEigenvectors();
         const MatrixComplex& ciev = theEigenSystem->getComplexInverseEigenvectors();
         std::complex<double>* pc = &cc_ijk[0];
-        for (size_t i=0; i<numStates; i++)
+        for (size_t i=0; i<num_states; i++)
         {
             
-            for (size_t j=0; j<numStates; j++)
+            for (size_t j=0; j<num_states; j++)
             {
                 
-                for (size_t k=0; k<numStates; k++)
+                for (size_t k=0; k<num_states; k++)
                 {
                     *(pc++) = cev[i][k] * ciev[k][j];
                 }
@@ -152,16 +152,11 @@ void RateMatrix_FreeSymmetric::calculateCijk(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_FreeSymmetric::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
+void RateMatrix_FreeSymmetric::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     
-    
-    //Now the instantaneous rate matrix has been filled up entirely.
-    //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
-    
-    // Mayrose et al. 2010 also used this method for chromosome evolution (named the squaring and scaling method in Moler and Van Loan 2003)
     double t = rate * (startAge - endAge);
-    computeExponentialMatrixByRepeatedSquaring(t, P);
+    exponentiateMatrixByScalingAndSquaring(t, P);
     
 //    double t = rate * (startAge - endAge);
 //    if ( theEigenSystem->isComplex() == false )
@@ -181,59 +176,82 @@ RateMatrix_FreeSymmetric* RateMatrix_FreeSymmetric::clone( void ) const
     return new RateMatrix_FreeSymmetric( *this );
 }
 
-void RateMatrix_FreeSymmetric::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const
-{
-    //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
-    //Ideally one should dynamically decide how many squarings are necessary.
-    //For the moment, we arbitrarily do 10 such squarings, as it seems to perform well in practice (N. Lartillot, personal communication).
-    //first, multiply the matrix by the right scalar
-    //2^10 = 1024
+
+void RateMatrix_FreeSymmetric::exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const {
     
-    // add three to s
-    size_t s = 10;
-    double test = 1024;
+    // Here we use the scaling and squaring method with a 4th order Taylor approximant as described in:
+    //
+    // Moler, C., & Van Loan, C. 2003. Nineteen dubious ways to compute the exponential of a
+    // matrix, twenty-five years later. SIAM review, 45(1), 3-49.
+    //
+    // I tested this implementation against the Eigen C++ package and a scaling parameter s = 6 had similar time
+    // efficiency and returned the same results with about 10^-9 accuracy. The scaling parameter could be
+    // increased for better accuracy.
+    // -- Will Freyman 11/27/16
+    size_t s = 6;
     
-    double tOver2s = t/test;
-    for ( size_t i = 0; i < numStates; i++ )
+    // first scale the matrix
+    double scale = t / pow(2, s);
+    for ( size_t i = 0; i < num_states; i++ )
     {
-        for ( size_t j = 0; j < numStates; j++ )
+        for ( size_t j = 0; j < num_states; j++ )
         {
-            P[i][j] = (*theRateMatrix)[i][j] * tOver2s;
+            p[i][j] = (*the_rate_matrix)[i][j] * scale;
         }
     }
-    //Add the identity matrix:
-    for ( size_t i = 0; i < numStates; i++ )
+    
+    // compute the 4th order Taylor approximant
+    
+    // calculate the scaled matrix raised to powers 2, 3 and 4
+    TransitionProbabilityMatrix p_2(num_states);
+    multiplyMatrices(p, p, p_2);
+    
+    TransitionProbabilityMatrix p_3(num_states);
+    multiplyMatrices(p, p_2, p_3);
+    
+    TransitionProbabilityMatrix p_4(num_states);
+    multiplyMatrices(p, p_3, p_4);
+    
+    // add k=0 (the identity matrix) and k=1 terms
+    for ( size_t i = 0; i < num_states; i++ )
     {
-        P[i][i] += 1;
-    }
-    //Now we can do the multiplications
-    TransitionProbabilityMatrix P2 (numStates);
-    for (size_t i=0; i<s; i+=2)
-    {
-        squareMatrix (P, P2); //P2 at power 2
-        squareMatrix (P2, P); //P at power 4
+        p[i][i] += 1;
     }
     
+    // add the k=2, k=3, k=4 terms of the Taylor series
+    for ( size_t i = 0; i < num_states; i++ )
+    {
+        for ( size_t j = 0; j < num_states; j++ )
+        {
+            p[i][j] += ( ( p_2[i][j] / 2 ) + ( p_3[i][j] / 6 ) + ( p_4[i][j] / 24 ) );
+        }
+    }
+    
+    // now perform the repeated squaring
+    for (size_t i = 0; i < s; i++)
+    {
+        TransitionProbabilityMatrix r(num_states);
+        multiplyMatrices(p, p, r);
+        p = r;
+    }
 }
 
-inline void RateMatrix_FreeSymmetric::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const
-{
+
+
+inline void RateMatrix_FreeSymmetric::multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const {
     
-    //Could probably use boost::ublas here, for the moment we do it ourselves.
-    for ( size_t i = 0; i < numStates; i++ )
+    // could probably use boost::ublas here, for the moment we do it ourselves.
+    for ( size_t i = 0; i < num_states; i++ )
     {
-        for ( size_t j = 0; j < numStates; j++ )
+        for ( size_t j = 0; j < num_states; j++ )
         {
-            P2.getElement ( i, j ) = 0;
-            for ( size_t k = 0; k < numStates; k++ )
+            r[i][j] = 0;
+            for ( size_t k = 0; k < num_states; k++ )
             {
-                P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
+                r[i][j] += p[i][k] * q[k][j];
             }
-            
         }
-        
     }
-    
 }
 
 
@@ -246,8 +264,8 @@ void RateMatrix_FreeSymmetric::tiProbsEigens(double t, TransitionProbabilityMatr
     const std::vector<double>& eigenValue = theEigenSystem->getRealEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
-    std::vector<double> eigValExp(numStates);
-    for (size_t s=0; s<numStates; s++)
+    std::vector<double> eigValExp(num_states);
+    for (size_t s=0; s<num_states; s++)
     {
         eigValExp[s] = exp(eigenValue[s] * t);
     }
@@ -255,12 +273,12 @@ void RateMatrix_FreeSymmetric::tiProbsEigens(double t, TransitionProbabilityMatr
     // calculate the transition probabilities
     const double* ptr = &c_ijk[0];
     double*         p = P.theMatrix;
-    for (size_t i=0; i<numStates; i++)
+    for (size_t i=0; i<num_states; i++)
     {
-        for (size_t j=0; j<numStates; j++, ++p)
+        for (size_t j=0; j<num_states; j++, ++p)
         {
             double sum = 0.0;
-            for(size_t s=0; s<numStates; s++)
+            for(size_t s=0; s<num_states; s++)
             {
                 sum += (*ptr++) * eigValExp[s];
             }
@@ -283,8 +301,8 @@ void RateMatrix_FreeSymmetric::tiProbsComplexEigens(double t, TransitionProbabil
     const std::vector<double>& eigenValueComp = theEigenSystem->getImagEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
-    std::vector<std::complex<double> > ceigValExp(numStates);
-    for (size_t s=0; s<numStates; s++)
+    std::vector<std::complex<double> > ceigValExp(num_states);
+    for (size_t s=0; s<num_states; s++)
     {
         std::complex<double> ev = std::complex<double>(eigenValueReal[s], eigenValueComp[s]);
         ceigValExp[s] = exp(ev * t);
@@ -292,12 +310,12 @@ void RateMatrix_FreeSymmetric::tiProbsComplexEigens(double t, TransitionProbabil
     
     // calculate the transition probabilities
     const std::complex<double>* ptr = &cc_ijk[0];
-    for (size_t i=0; i<numStates; i++)
+    for (size_t i=0; i<num_states; i++)
     {
-        for (size_t j=0; j<numStates; j++)
+        for (size_t j=0; j<num_states; j++)
         {
             std::complex<double> sum = std::complex<double>(0.0, 0.0);
-            for(size_t s=0; s<numStates; s++)
+            for(size_t s=0; s<num_states; s++)
             {
                 sum += (*ptr++) * ceigValExp[s];
             }
@@ -323,7 +341,7 @@ void RateMatrix_FreeSymmetric::updateEigenSystem(void)
 void RateMatrix_FreeSymmetric::update( void )
 {
     
-    if ( needsUpdate )
+    if ( needs_update )
     {
         // assign all rate matrix elements
         fillRateMatrix();
@@ -338,7 +356,7 @@ void RateMatrix_FreeSymmetric::update( void )
         updateEigenSystem();
         
         // clean flags
-        needsUpdate = false;
+        needs_update = false;
     }
     
 }

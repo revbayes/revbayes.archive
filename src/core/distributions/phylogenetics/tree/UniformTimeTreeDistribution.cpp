@@ -77,7 +77,7 @@ void UniformTimeTreeDistribution::attachTimes(Tree* psi, std::vector<TopologyNod
 }
 
 
-/** Build random binary tree to size numTaxa. The result is a draw from the uniform distribution on histories. */
+/** Build random binary tree to size num_taxa. The result is a draw from the uniform distribution on histories. */
 void UniformTimeTreeDistribution::buildRandomBinaryHistory(std::vector<TopologyNode*> &tips)
 {
     
@@ -233,7 +233,7 @@ void UniformTimeTreeDistribution::simulateTree( void )
     }
     
     // Initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
     
     // Now simulate the speciation times counted from originTime
     std::vector<double> intNodeTimes;
@@ -254,8 +254,9 @@ void UniformTimeTreeDistribution::simulateTree( void )
     attachTimes(psi, nodes, 0, intNodeTimes, t_or);
     for (size_t i = 0; i < num_taxa; ++i)
     {
-        TopologyNode& node = psi->getTipNode(i);
-        psi->getNode( node.getIndex() ).setAge( 0.0 );
+        TopologyNode& node = psi->getTipNodeWithName(taxa[i].getName());
+        node.setIndex(i);
+        node.setAge( 0.0 );
     }
     
     // Finally store the new value

@@ -29,7 +29,7 @@ using namespace RevBayesCore;
  */
 AbstractCoalescent::AbstractCoalescent(const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
     constraints( c ),
-    numTaxa( tn.size() ),
+    num_taxa( tn.size() ),
     taxa( tn )
 {
     
@@ -100,7 +100,7 @@ void AbstractCoalescent::attachAges(Tree *psi, std::vector<TopologyNode *> &tips
 void AbstractCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
 {
     
-    if (tips.size() < numTaxa)
+    if (tips.size() < num_taxa)
     {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -228,7 +228,7 @@ void AbstractCoalescent::simulateTree( void )
     buildRandomBinaryTree(nodes);
     
     // set tip names
-    for (size_t i=0; i<numTaxa; i++)
+    for (size_t i=0; i<num_taxa; ++i)
     {
         size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
         
@@ -245,17 +245,14 @@ void AbstractCoalescent::simulateTree( void )
     }
     
     // initialize the topology by setting the root
-    psi->setRoot(root);
-    
-    // now simulate the speciation times
-    size_t numInitialSpecies = 1;
+    psi->setRoot(root, true);
     
     nodes.clear();
     
-    if ( numInitialSpecies < numTaxa)
+    if ( 1 < num_taxa)
     {
         // draw a time for each speciation event condition on the time of the process
-        std::vector<double> ages = simulateCoalescentAges(numTaxa-numInitialSpecies);
+        std::vector<double> ages = simulateCoalescentAges(num_taxa-1);
         
         // add a left child
         TopologyNode* leftChild = &root->getChild(0);
@@ -278,7 +275,7 @@ void AbstractCoalescent::simulateTree( void )
     }
     
     // \todo Why are we doing this? (Sebastian)
-    for (size_t i = 0; i < numTaxa; ++i)
+    for (size_t i = 0; i < num_taxa; ++i)
     {
         TopologyNode& node = psi->getTipNode(i);
         psi->getNode( node.getIndex() ).setAge( 0.0 );

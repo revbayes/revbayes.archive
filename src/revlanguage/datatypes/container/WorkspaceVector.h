@@ -64,9 +64,7 @@ namespace RevLanguage {
         // WorkspaceVector functions
 //        vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
         
-    protected:
-        // Basic utility function provided here
-        void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
+        void                                        printValue(std::ostream& o, bool user) const;                                  //!< Print value for user
 
         
     private:
@@ -306,9 +304,9 @@ RevPtr<RevVariable> WorkspaceVector<rlType>::executeMethod( std::string const &n
 template <typename rlType>
 const std::string& WorkspaceVector<rlType>::getClassType(void)
 {
-    static std::string revType = rlType::getClassType() + "[]";
+    static std::string rev_type = rlType::getClassType() + "[]";
     
-	return revType;
+	return rev_type;
 }
 
 
@@ -321,9 +319,9 @@ const std::string& WorkspaceVector<rlType>::getClassType(void)
 template <typename rlType>
 const TypeSpec& WorkspaceVector<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<rlType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<rlType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -339,9 +337,9 @@ rlType* WorkspaceVector<rlType>::getElement(size_t idx) const
 template <typename rlType>
 const TypeSpec& WorkspaceVector<rlType>::getTypeSpec(void) const
 {
-    //    static TypeSpec typeSpec = getClassTypeSpec();
+    //    static TypeSpec type_spec = getClassTypeSpec();
     
-    //    return typeSpec;
+    //    return type_spec;
     
     return getClassTypeSpec();  // This should do the trick; there should be a separate version of the function for each template type
 }
@@ -449,7 +447,7 @@ void WorkspaceVector<rlType>::push_front( const rlType &x )
  * work well for such cases.
  */
 template<typename rlType>
-void WorkspaceVector<rlType>::printValue( std::ostream& o ) const
+void WorkspaceVector<rlType>::printValue( std::ostream& o, bool user ) const
 {
     o << std::endl;
 

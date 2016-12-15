@@ -35,9 +35,9 @@ BirthDeathProcess::BirthDeathProcess() : TypedDistribution<TimeTree>()
 const std::string& BirthDeathProcess::getClassType(void) 
 { 
     
-    static std::string revType = "BirthDeathProcess";
+    static std::string rev_type = "BirthDeathProcess";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -49,9 +49,9 @@ const std::string& BirthDeathProcess::getClassType(void)
 const TypeSpec& BirthDeathProcess::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -75,9 +75,9 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         memberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()    , "The time of the process starting at the root, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "rho"    , Probability::getClassTypeSpec(), "The taxon sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
@@ -93,7 +93,7 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "incompleteClades"  , ModelVector<Clade>::getClassTypeSpec(), "Vector of incompletely sampled clades with number of missing species.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;

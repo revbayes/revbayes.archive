@@ -44,16 +44,16 @@ RevBayesCore::BinomialDistribution* Dist_binomial::createDistribution( void ) co
 const std::string& Dist_binomial::getClassType(void)
 {
     
-    static std::string revType = "Dist_binomial";
-	return revType;
+    static std::string rev_type = "Dist_binomial";
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_binomial::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
-	return revTypeSpec;
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+	return rev_type_spec;
 }
 
 
@@ -186,17 +186,17 @@ std::string Dist_binomial::getHelpTitle(void) const
 const MemberRules& Dist_binomial::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static MemberRules dist_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
-        distMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "Probability of success.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec()    , "Number of trials.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        dist_member_rules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "Probability of success.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec()    , "Number of trials.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 

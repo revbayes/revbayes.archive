@@ -178,18 +178,18 @@ const ArgumentRules& DistributionFunctionCdf::getArgumentRules(void) const
 const std::string& DistributionFunctionCdf::getClassType(void)
 {
     
-    static std::string revType = "DistributionFunctionCdf";
+    static std::string rev_type = "DistributionFunctionCdf";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& DistributionFunctionCdf::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -237,7 +237,7 @@ std::string DistributionFunctionCdf::getFunctionName( void ) const
 const TypeSpec& DistributionFunctionCdf::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

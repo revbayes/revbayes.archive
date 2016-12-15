@@ -21,14 +21,14 @@
 //    homogeneousClockRate                = new ConstantNode<double>("clockRate", new double(1.0) );
 //    heterogeneousClockRates             = NULL;
 //    rootFrequencies                     = new ConstantNode<RbVector<double> >("rootFrequencies", new RbVector<double>(ns,1.0/ns));
-//    
+//
 //    branchHeterogeneousClockRates       = false;
 //    branchHeterogeneousRateMatrices    = false;
-//    
+//
 //    this->addParameter(homogeneousRateMatrix);
 //    this->addParameter(homogeneousClockRate);
 //    this->addParameter(rootFrequencies);
-//    
+//
 //    update();
 //}
 //
@@ -40,7 +40,7 @@
 //    homogeneousClockRate = n.homogeneousClockRate;
 //    heterogeneousClockRates = n.heterogeneousClockRates;
 //    rootFrequencies = n.rootFrequencies;
-//    
+//
 //    branchHeterogeneousClockRates = n.branchHeterogeneousClockRates;
 //    branchHeterogeneousRateMatrices = n.branchHeterogeneousRateMatrices;
 //}
@@ -60,7 +60,7 @@
 //
 //void GeneralRateGeneratorSequenceFunction::update( void )
 //{
-//    
+//
 //    // set the gainLossRate
 //    if (branchHeterogeneousRateMatrices)
 //    {
@@ -72,7 +72,7 @@
 //        const RateGenerator& rm = homogeneousRateMatrix->getValue();
 //        static_cast<RateGeneratorSequence*>(value)->setHomogeneousRateMatrix(&rm);
 //    }
-//    
+//
 //    if (branchHeterogeneousClockRates)
 //    {
 //        const std::vector<double>& r = heterogeneousClockRates->getValue();
@@ -83,7 +83,7 @@
 //        const double& r = homogeneousClockRate->getValue();
 //        static_cast< RateGeneratorSequence* >(value)->setHomogeneousClockRate(r);
 //    }
-//    
+//
 //    value->updateMap();
 //}
 //
@@ -100,17 +100,17 @@
 //        this->removeParameter( heterogeneousRateMatrices );
 //        heterogeneousRateMatrices = NULL;
 //    }
-//    
+//
 //    // set the value
 //    branchHeterogeneousRateMatrices = false;
 //    homogeneousRateMatrix = r;
-//    
+//
 //    // add the parameter
 //    this->addParameter( homogeneousRateMatrix );
 //}
 //
 //void GeneralRateGeneratorSequenceFunction::setClockRate(const TypedDagNode< double > *r) {
-//    
+//
 //    // remove the old parameter first
 //    if ( homogeneousClockRate != NULL )
 //    {
@@ -122,17 +122,17 @@
 //        this->removeParameter( heterogeneousClockRates );
 //        heterogeneousClockRates = NULL;
 //    }
-//    
+//
 //    // set the value
 //    branchHeterogeneousClockRates = false;
 //    homogeneousClockRate = r;
-//    
+//
 //    // add the parameter
 //    this->addParameter( homogeneousClockRate );
 //}
 //
 //void GeneralRateGeneratorSequenceFunction::setClockRate(const TypedDagNode< RbVector< double > > *r) {
-//    
+//
 //    // remove the old parameter first
 //    if ( homogeneousClockRate != NULL )
 //    {
@@ -144,14 +144,14 @@
 //        this->removeParameter( heterogeneousClockRates );
 //        heterogeneousClockRates = NULL;
 //    }
-//    
+//
 //    // set the value
 //    branchHeterogeneousClockRates = true;
 //    heterogeneousClockRates = r;
-//    
+//
 //    // add the parameter
 //    this->addParameter( heterogeneousClockRates );
-//    
+//
 //}
 //
 //void GeneralRateGeneratorSequenceFunction::setRootFrequencies(const TypedDagNode<RbVector<double> > *f)
@@ -161,7 +161,7 @@
 //        this->removeParameter(rootFrequencies);
 //        rootFrequencies = NULL;
 //    }
-//    
+//
 //    rootFrequencies = f;
 //    this->addParameter(rootFrequencies);
 //}

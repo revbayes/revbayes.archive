@@ -46,7 +46,7 @@ double ConstantRateBirthDeathMassExtinction::lnSpeciationRate(double t) const
 }
 
 
-double ConstantRateBirthDeathMassExtinction::pSurvival(double start, double end) const
+double ConstantRateBirthDeathMassExtinction::computeProbabilitySurvival(double start, double end) const
 {
     
     // compute the rate
@@ -89,7 +89,8 @@ double ConstantRateBirthDeathMassExtinction::pSurvival(double start, double end)
 }
 
 
-double ConstantRateBirthDeathMassExtinction::rateIntegral(double t_low, double t_high) const {
+double ConstantRateBirthDeathMassExtinction::rateIntegral(double t_low, double t_high) const
+{
     
     double b = (speciation->getValue() - extinction->getValue()) * (t_low - t_high);
     
@@ -136,7 +137,8 @@ double ConstantRateBirthDeathMassExtinction::simulateDivergenceTime(double origi
         t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(rho*b*exp((b-d)*age)+(b*(1-rho)-d) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
     }
     
-    return present - t;
+    //    return present - t;
+    return origin + t;
 }
 
 

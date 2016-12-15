@@ -68,18 +68,18 @@ RevObject* DiscreteCharacterState::convertTo( const TypeSpec& type ) const
 const std::string& DiscreteCharacterState::getClassType(void)
 {
     
-    static std::string revType = "DiscreteCharacter";
+    static std::string rev_type = "DiscreteCharacter";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& DiscreteCharacterState::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -87,9 +87,9 @@ const TypeSpec& DiscreteCharacterState::getClassTypeSpec(void)
 const TypeSpec& DiscreteCharacterState::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

@@ -11,6 +11,7 @@
 
 
 namespace RevLanguage {
+    
     /**
     * @file
     * This file contains the declaration of a Clade, which is
@@ -25,8 +26,6 @@ namespace RevLanguage {
     *
     * 
     */
-
-    
     class Clade : public ModelObject<RevBayesCore::Clade> {
         
     public:
@@ -51,6 +50,8 @@ namespace RevLanguage {
         void                                    setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         std::vector<RevPtr<const RevVariable> > names;
+        std::vector<RevPtr<const RevVariable> > names_vector;
+        std::vector<RevPtr<const RevVariable> > clades;
         RevPtr<const RevVariable>               age;
         RevPtr<const RevVariable>               missing;
 

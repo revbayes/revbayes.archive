@@ -12,6 +12,7 @@
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "ModelVector.h"
+#include "OptionRule.h"
 #include "RbException.h"
 #include "RlTree.h"
 #include "RlTraceTree.h"
@@ -34,18 +35,35 @@ Func_treeTrace* Func_treeTrace::clone( void ) const
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_treeTrace::execute( void ) {
+RevPtr<RevVariable> Func_treeTrace::execute( void )
+{
+    RevBayesCore::TraceTree t(false);
     
-    const ModelVector<RevLanguage::Tree>&  trees       = static_cast<const ModelVector<RevLanguage::Tree>&>( args[0].getVariable()->getRevObject() ).getDagNode();
-    
-    bool clock = true;
-    RevBayesCore::TraceTree t = RevBayesCore::TraceTree( clock );
-    
-    for (size_t i = 0; i < trees.size(); ++i)
+    if ( args[0].getVariable()->getRevObject().isType( ModelVector<TimeTree>::getClassTypeSpec() ) )
     {
-        t.addObject( new RevBayesCore::Tree( const_cast<RevBayesCore::Tree&>(trees[i]) ) );
-    }
+        const ModelVector<RevLanguage::TimeTree>& trees = static_cast<const ModelVector<RevLanguage::TimeTree>&>( args[0].getVariable()->getRevObject() );
     
+        t = RevBayesCore::TraceTree( true );
+
+        for (size_t i = 0; i < trees.size(); ++i)
+        {
+            t.addObject( new RevBayesCore::Tree( trees[i] ) );
+        }
+    }
+    else
+    {
+        const ModelVector<RevLanguage::BranchLengthTree>& trees = static_cast<const ModelVector<RevLanguage::BranchLengthTree>&>( args[0].getVariable()->getRevObject() );
+
+        for (size_t i = 0; i < trees.size(); ++i)
+        {
+            t.addObject( new RevBayesCore::Tree( trees[i] ) );
+        }
+    }
+
+    int burnin = static_cast<const Integer &>(args[1].getVariable()->getRevObject()).getValue();
+
+    t.setBurnin(burnin);
+
     return new RevVariable( new TraceTree( t ) );
 }
 
@@ -55,12 +73,17 @@ const ArgumentRules& Func_treeTrace::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet)
+    if (!rules_set)
     {
-        argumentRules.push_back( new ArgumentRule( "trees"     , ModelVector<TimeTree>::getClassTypeSpec(), "Vector of TimeTrees.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        std::vector<TypeSpec> treeTypes;
+        treeTypes.push_back( ModelVector<TimeTree>::getClassTypeSpec() );
+        treeTypes.push_back( ModelVector<BranchLengthTree>::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "trees", treeTypes, "Vector of trees.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()     , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        
+        rules_set = true;
     }
     
     return argumentRules;
@@ -71,9 +94,9 @@ const ArgumentRules& Func_treeTrace::getArgumentRules( void ) const
 const std::string& Func_treeTrace::getClassType(void)
 {
     
-    static std::string revType = "Func_treeTrace";
+    static std::string rev_type = "Func_treeTrace";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -81,9 +104,9 @@ const std::string& Func_treeTrace::getClassType(void)
 const TypeSpec& Func_treeTrace::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -103,9 +126,9 @@ std::string Func_treeTrace::getFunctionName( void ) const
 const TypeSpec& Func_treeTrace::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

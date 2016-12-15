@@ -12,11 +12,11 @@
 using namespace RevBayesCore;
 
 PruneTreeFunction::PruneTreeFunction(const TypedDagNode<Tree> *t,  std::set<Taxon> rt, std::set<Taxon> pt, bool pf) : TypedFunction<Tree>( new Tree() ),
-tau( t ),
-retainedTaxa( std::set<Taxon>() ),
-initRetainedTaxa( rt ),
-prunedTaxa( pt ),
-pruneFossils( pf )
+    pruneFossils( pf ),
+    prunedTaxa( pt ),
+    retainedTaxa( std::set<Taxon>() ),
+    initRetainedTaxa( rt ),
+    tau( t )
 {
     // add the lambda parameter as a parent
     addParameter( tau );
@@ -161,7 +161,7 @@ int PruneTreeFunction::recursivelyRetainTaxa(RevBayesCore::TopologyNode *node)
             throw RbException("");
         }
 
-        value->setRoot( root );
+        value->setRoot( root, true );
         std::vector<TopologyNode*> nodes = value->getNodes();
         
         // update tip nodes with stored taxon-index
@@ -169,7 +169,9 @@ int PruneTreeFunction::recursivelyRetainTaxa(RevBayesCore::TopologyNode *node)
         {
             nodes[i]->setIndex( retainedIndices[ nodes[i]->getTaxon() ] );
         }
-        value->setRoot( root, false );
+        
+//        value->setRoot( root, false );
+        value->setRoot(root, true);
     }
     else if (node->isInternal())
     {

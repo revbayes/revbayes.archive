@@ -61,14 +61,14 @@ const ArgumentRules& Func_epoch::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "Q"              , ModelVector<RateGenerator>::getClassTypeSpec(), "The per epoch rate matrices", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "times"          , ModelVector<RealPos>::getClassTypeSpec(),       "The times of the epochs.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "rates"          , ModelVector<RealPos>::getClassTypeSpec(),       "The rate multipliers per epoch.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        argumentRules.push_back( new ArgumentRule( "times"          , ModelVector<RealPos>::getClassTypeSpec(), "The times of the epochs.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rates"          , ModelVector<RealPos>::getClassTypeSpec(), "The rate multipliers per epoch.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        rules_set = true;
     }
     
     return argumentRules;
@@ -78,18 +78,18 @@ const ArgumentRules& Func_epoch::getArgumentRules( void ) const
 const std::string& Func_epoch::getClassType(void)
 {
     
-    static std::string revType = "Func_epoch";
+    static std::string rev_type = "Func_epoch";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_epoch::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -108,7 +108,7 @@ std::string Func_epoch::getFunctionName( void ) const
 const TypeSpec& Func_epoch::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

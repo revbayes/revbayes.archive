@@ -1,4 +1,4 @@
-#include "BiSSE.h"
+#include "CDSE.h"
 #include "Clade.h"
 #include "MultiRateBirthDeathProcess.h"
 #include "RandomNumberFactory.h"
@@ -45,8 +45,8 @@ MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double
     rate( r ),
     rho( rh ),
     activeLikelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
-    changedNodes( std::vector<bool>(2*tn.size()-1, false) ),
-    dirtyNodes( std::vector<bool>(2*tn.size()-1, true) ),
+    changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
+    dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
     nodeStates( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*lambda->getValue().size(),0))) ),
     numRateCategories( lambda->getValue().size() ),
     scalingFactors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
@@ -86,7 +86,7 @@ double MultiRateBirthDeathProcess::computeLnProbabilityTimes( void ) const
     
     // variable declarations and initialization
     double lnProbTimes = 0;
-        
+    
     // we started at the root and thus we square the survival prob
     lnProbTimes *= 2.0;
     
@@ -99,14 +99,14 @@ double MultiRateBirthDeathProcess::computeLnProbabilityTimes( void ) const
 }
 
 
-void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t nodeIndex) const
+void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index) const
 {
     
     // check for recomputation
-    if ( dirtyNodes[nodeIndex] || true )
+    if ( dirty_nodes[node_index] || true )
     {
         // mark as computed
-        dirtyNodes[nodeIndex] = false;
+        dirty_nodes[node_index] = false;
         
         state_type initialState = std::vector<double>(2*numRateCategories,0);
         if ( node.isTip() )
@@ -125,15 +125,15 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
         {
             // this is an internal node
             const TopologyNode &left = node.getChild(0);
-            size_t leftIndex = left.getIndex();
-            computeNodeProbability( left, leftIndex );
+            size_t left_index = left.getIndex();
+            computeNodeProbability( left, left_index );
             const TopologyNode &right = node.getChild(1);
-            size_t rightIndex = right.getIndex();
-            computeNodeProbability( right, rightIndex );
+            size_t right_index = right.getIndex();
+            computeNodeProbability( right, right_index );
             
             // now compute the likelihoods of this internal node
-            const state_type &leftStates = nodeStates[leftIndex][activeLikelihood[leftIndex]];
-            const state_type &rightStates = nodeStates[rightIndex][activeLikelihood[rightIndex]];
+            const state_type &leftStates = nodeStates[left_index][activeLikelihood[left_index]];
+            const state_type &rightStates = nodeStates[right_index][activeLikelihood[right_index]];
             const RbVector<double> &birthRate = lambda->getValue();
             for (size_t i=0; i<numRateCategories; ++i)
             {
@@ -143,7 +143,7 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
 
         }
         
-        BiSSE ode = BiSSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
+        CDSE ode = CDSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
         double dt = root_age->getValue() / NUM_TIME_SLICES;
@@ -164,11 +164,11 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
         {
             initialState[numRateCategories+i] /= max;
         }
-        scalingFactors[nodeIndex][activeLikelihood[nodeIndex]] = log(max);
-        totalScaling += scalingFactors[nodeIndex][activeLikelihood[nodeIndex]] - scalingFactors[nodeIndex][activeLikelihood[nodeIndex]^1];
+        scalingFactors[node_index][activeLikelihood[node_index]] = log(max);
+        totalScaling += scalingFactors[node_index][activeLikelihood[node_index]] - scalingFactors[node_index][activeLikelihood[node_index]^1];
         
         // store the states
-        nodeStates[nodeIndex][activeLikelihood[nodeIndex]] = initialState;
+        nodeStates[node_index][activeLikelihood[node_index]] = initialState;
     }
     
 }
@@ -181,16 +181,16 @@ double MultiRateBirthDeathProcess::computeRootLikelihood( void ) const
     
     // fill the like
     const TopologyNode &left = root.getChild(0);
-    size_t leftIndex = left.getIndex();
-    computeNodeProbability( left, leftIndex );
+    size_t left_index = left.getIndex();
+    computeNodeProbability( left, left_index );
     const TopologyNode &right = root.getChild(1);
-    size_t rightIndex = right.getIndex();
-    computeNodeProbability( right, rightIndex );
+    size_t right_index = right.getIndex();
+    computeNodeProbability( right, right_index );
     
     
     // now compute the likelihoods of this internal node
-    state_type leftStates = nodeStates[leftIndex][activeLikelihood[leftIndex]];
-    state_type rightStates = nodeStates[rightIndex][activeLikelihood[rightIndex]];
+    state_type leftStates = nodeStates[left_index][activeLikelihood[left_index]];
+    state_type rightStates = nodeStates[right_index][activeLikelihood[right_index]];
     const RbVector<double> &freqs = pi->getValue();
     double prob = 0.0;
     for (size_t i=0; i<numRateCategories; ++i)
@@ -215,7 +215,7 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
     }
     
     double dt = root_age->getValue() / NUM_TIME_SLICES;
-    BiSSE ode = BiSSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
+    CDSE ode = CDSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
     boost::numeric::odeint::integrate( ode , initialState , start , end , dt );
     
     
@@ -223,8 +223,6 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
     const RbVector<double> &freqs = pi->getValue();
     for (size_t i=0; i<numRateCategories; ++i)
     {
-        //        initialState[i] = leftStates[i];
-        //        initialState[numCats+i] = leftStates[numCats+i]*rightStates[numCats+i]*birthRate[i];
         prob += freqs[i]*initialState[i];
     }
     

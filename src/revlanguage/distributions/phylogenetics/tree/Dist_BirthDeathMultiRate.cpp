@@ -92,9 +92,9 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
 const std::string& Dist_BirthDeathMultiRate::getClassType( void )
 {
     
-    static std::string revType = "Dist_BirthDeathMultiRate";
+    static std::string rev_type = "Dist_BirthDeathMultiRate";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -106,9 +106,9 @@ const std::string& Dist_BirthDeathMultiRate::getClassType( void )
 const TypeSpec& Dist_BirthDeathMultiRate::getClassTypeSpec( void )
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -157,9 +157,9 @@ const MemberRules& Dist_BirthDeathMultiRate::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "rootAge" , RealPos::getClassTypeSpec(), "The root age.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "rho"     , Probability::getClassTypeSpec(), "The taxon-sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
@@ -180,7 +180,7 @@ const MemberRules& Dist_BirthDeathMultiRate::getParameterRules(void) const
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
         memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;

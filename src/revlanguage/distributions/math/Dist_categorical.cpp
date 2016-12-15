@@ -42,18 +42,18 @@ RevBayesCore::CategoricalDistribution* Dist_categorical::createDistribution( voi
 /* Get Rev type of class (static) */
 const std::string& Dist_categorical::getClassType( void )
 {
-    static std::string revType = "Dist_categorical";
+    static std::string rev_type = "Dist_categorical";
     
-    return revType;
+    return rev_type;
 }
 
 
 /* Get Rev type spec of class (static) */
 const TypeSpec& Dist_categorical::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -232,13 +232,13 @@ std::string Dist_categorical::getHelpTitle(void) const
 const MemberRules& Dist_categorical::getParameterRules(void) const
 {
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "p", Simplex::getClassTypeSpec(), "The probability for each category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;

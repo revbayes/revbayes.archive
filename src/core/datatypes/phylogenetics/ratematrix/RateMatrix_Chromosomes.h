@@ -1,5 +1,19 @@
-#ifndef RateMatrix_Chromosomes_H
-#define RateMatrix_Chromosomes_H
+/**
+ * @file
+ * This file contains the declaration of RateMatrix_Chromosomes, which is a
+ * class that holds a rate matrix for the chromosome number evolution model. 
+ *
+ * @brief Declaration of RateMatrix_Chromosomes
+ *
+ * (c) copyright 2014-
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ *
+ */
+
+
+#ifndef __RateMatrix_Chromosomes__
+#define __RateMatrix_Chromosomes__
 
 #include "AbstractRateMatrix.h"
 #include <complex>
@@ -18,7 +32,7 @@ namespace RevBayesCore {
         
         // RateMatrix functions
         double                          averageRate(void) const;
-        void                            calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const;   //!< Calculate the transition matrix
+        void                            calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_Chromosomes*         clone(void) const;
         std::vector<double>             getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in this model I don't know them
         void                            update(void);
@@ -38,12 +52,12 @@ namespace RevBayesCore {
         double                          lambda_l;
         double                          delta_l;
         size_t                          matrixSize;                         //!< Number of elements in a row or column of the rate matrix
-        double                          precision;                          //!< Precision for exponentiation through repeated squaring
-        std::vector<double>             stationaryFreqs;                    //!< Holds the stationary frequencies
+        std::vector<double>             stationary_freqs;                    //!< Holds the stationary frequencies
 
         void                            buildRateMatrix(void);
-        void                            computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const;
-        inline void                     squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
+        void                            exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
+        inline void                     multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
+
     };
     
 }

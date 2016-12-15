@@ -165,7 +165,7 @@ void ScreenMonitor::monitor(unsigned long gen)
                 DagNode *node = *i;
                 
                 // print the value
-                node->printValueElements(ss, prefixSeparator + suffixSeparator, int( columnWidth ), false);
+                node->printValue(ss, prefixSeparator + suffixSeparator, int( columnWidth ), false, false, true);
                 std::cout << prefixSeparator << ss.str() << suffixSeparator;
                 ss.str("");
             }
@@ -275,13 +275,13 @@ void ScreenMonitor::printHeader( void )
     
         for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++)
         {
-            const DagNode* theNode = *it;
+            const DagNode* the_node = *it;
 
             // print the header
-            if ( theNode->getName() != "" )
+            if ( the_node->getName() != "" )
             {
                 ss << prefixSeparator;
-                theNode->printName( ss, prefixSeparator + suffixSeparator, int( columnWidth ), false );
+                the_node->printName( ss, prefixSeparator + suffixSeparator, int( columnWidth ), false );
                 ss << suffixSeparator;
             }
             else

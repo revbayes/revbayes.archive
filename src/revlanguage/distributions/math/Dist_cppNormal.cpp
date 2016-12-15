@@ -73,9 +73,9 @@ RevBayesCore::CompoundPoissonNormalDistribution* Dist_cppNormal::createDistribut
 const std::string& Dist_cppNormal::getClassType(void)
 {
     
-    static std::string revType = "Dist_cppNormal";
+    static std::string rev_type = "Dist_cppNormal";
     
-	return revType;
+	return rev_type;
 }
 
 
@@ -87,9 +87,9 @@ const std::string& Dist_cppNormal::getClassType(void)
 const TypeSpec& Dist_cppNormal::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Real>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Real>::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -121,15 +121,15 @@ const MemberRules& Dist_cppNormal::getParameterRules(void) const
 {
     
     static MemberRules distPoisMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         distPoisMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The rate of the Poisson distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distPoisMemberRules.push_back( new ArgumentRule( "mu", Real::getClassTypeSpec(), "The mean of the normal distribution", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distPoisMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), "The standard deviation of the normal distribution", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distPoisMemberRules;

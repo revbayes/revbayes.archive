@@ -55,18 +55,18 @@ void Move_NodeTimeSlideBeta::constructInternalObject( void )
 /** Get Rev type of object */
 const std::string& Move_NodeTimeSlideBeta::getClassType(void) {
     
-    static std::string revType = "Move_NodeTimeSlideBeta";
+    static std::string rev_type = "Move_NodeTimeSlideBeta";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_NodeTimeSlideBeta::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -89,9 +89,9 @@ const MemberRules& Move_NodeTimeSlideBeta::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
@@ -104,7 +104,7 @@ const MemberRules& Move_NodeTimeSlideBeta::getParameterRules(void) const
         const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -113,9 +113,9 @@ const MemberRules& Move_NodeTimeSlideBeta::getParameterRules(void) const
 /** Get type spec */
 const TypeSpec& Move_NodeTimeSlideBeta::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

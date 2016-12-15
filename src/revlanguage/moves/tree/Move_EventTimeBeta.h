@@ -35,7 +35,6 @@ namespace RevLanguage {
         std::string                                 getMoveName(void) const;                                                                //!< Get the name used for the constructor function in Rev.
         const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
-        virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         
     protected:
         

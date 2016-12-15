@@ -42,11 +42,11 @@ RevPtr<RevVariable> MemberProcedure::execute( void )
     
     try
     {
-        RevBayesCore::DagNode* theNode = object->getRevObject().getDagNode();
+        RevBayesCore::DagNode* the_node = object->getRevObject().getDagNode();
         
-        if ( theNode != NULL )
+        if ( the_node != NULL )
         {
-            theNode->touch();
+            the_node->touch();
         }
     }
     catch (RbException e)
@@ -82,9 +82,9 @@ const TypeSpec& MemberProcedure::getClassTypeSpec(void)
 const TypeSpec& MemberProcedure::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

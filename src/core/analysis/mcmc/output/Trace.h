@@ -26,7 +26,7 @@ namespace RevBayesCore {
         virtual void                addValueFromString(const std::string &s) = 0;
         virtual Trace*              clone(void) const = 0;                                              //!< Clone object
 //        virtual double              quantile(void) const = 0;
-        virtual bool                isCoveredInInterval(const std::string &v, double i) const = 0;
+        virtual bool                isCoveredInInterval(const std::string &v, double i, bool verbose) const = 0;
         virtual size_t              size() const = 0;
         
         

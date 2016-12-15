@@ -17,12 +17,15 @@ RealPos::RealPos( void ) : Real( 1.0 ) {
 
 
 /** Construct from double */
-RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x ) {
+RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x )
+{
     
     setGuiVariableName("Positive Real Number");
     setGuiLatexSymbol("R+");
     if ( x->getValue() < 0.0 )
+    {
         throw RbException( "Nonpositive value for " + getClassType() );
+    }
 }
 
 
@@ -66,10 +69,14 @@ RevObject* RealPos::add( const RevObject& rhs ) const
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( RealPos::getClassTypeSpec() ) )
+    {
         return add( static_cast<const RealPos&>( rhs ) );
+    }
     
     if ( rhs.getTypeSpec().isDerivedOf( Natural::getClassTypeSpec() ) )
+    {
         return add( static_cast<const Natural&>( rhs ) );
+    }
     
     return Real::add( rhs );
 }
@@ -179,26 +186,26 @@ RealPos* RealPos::divide(const RevLanguage::RealPos &rhs) const
 /** Get Rev type of object */
 const std::string& RealPos::getClassType(void) { 
     
-    static std::string revType = "RealPos";
+    static std::string rev_type = "RealPos";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& RealPos::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Real::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Real::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
 /** Get type spec */
 const TypeSpec& RealPos::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -254,4 +261,22 @@ RealPos* RealPos::multiply(const RevLanguage::RealPos &rhs) const
     RealPos *n = new RealPos( dagNode->getValue() * rhs.getValue() );
     
     return n;
+}
+
+/** Is convertible to type? */
+double RealPos::isConvertibleTo(const TypeSpec& type, bool once) const {
+
+    if ( type == Real::getClassTypeSpec() )
+        return 0.4;
+
+    return Real::isConvertibleTo(type, once);
+}
+
+RevObject* RealPos::convertTo( const TypeSpec& type ) const
+{
+
+    if ( type == Real::getClassTypeSpec() )
+        return new Real(dagNode->getValue());
+
+    return Real::convertTo( type );
 }

@@ -14,6 +14,7 @@
 - (void)closeControlPanel;
 - (RbData*)dataMatrix;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
+- (BOOL)execute;
 - (void)initializeDataMatrix:(RbData*)dm;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

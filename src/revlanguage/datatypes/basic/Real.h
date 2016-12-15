@@ -52,8 +52,6 @@ namespace RevLanguage {
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual double                  isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         
-    protected:
-        void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
 
     };
     

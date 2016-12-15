@@ -18,9 +18,9 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateGeneratorSequenceUsingMatrix::RateGeneratorSequenceUsingMatrix(size_t ns, size_t nc) : RateGeneratorSequence(ns, nc)
 {
-    
+
     rateMatrix = new RateMatrix_JC(ns);
-    
+
 }
 
 
@@ -28,35 +28,35 @@ RateGeneratorSequenceUsingMatrix::RateGeneratorSequenceUsingMatrix(size_t ns, si
 /** Copy constructor */
 RateGeneratorSequenceUsingMatrix::RateGeneratorSequenceUsingMatrix(const RateGeneratorSequenceUsingMatrix& m) : RateGeneratorSequence( m )
 {
-    
+
     rateMatrix = m.rateMatrix->clone();
-    
+
 }
 
 
 /** Destructor */
 RateGeneratorSequenceUsingMatrix::~RateGeneratorSequenceUsingMatrix(void)
 {
-    
+
     delete rateMatrix;
-    
+
 }
 
 
 RateGeneratorSequenceUsingMatrix& RateGeneratorSequenceUsingMatrix::operator=(const RateGeneratorSequenceUsingMatrix &r)
 {
-    
+
     RateGeneratorSequence::operator=( r );
-    
+
     if (this != &r)
     {
-        
+
         delete rateMatrix;
-        
+
         rateMatrix = r.rateMatrix->clone();
-        
+
     }
-    
+
     return *this;
 }
 
@@ -66,10 +66,10 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGeneratorSeque
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
-    
+
     o.setf(previousFlags);
     o.precision(previousPrecision);
-    
+
     return o;
 }
 
@@ -77,8 +77,8 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGeneratorSeque
 void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
 {
     const RateGenerator* rm = rateMatrix;
-    
-    rm->calculateTransitionProbabilities(P, age, 0, 1.0);
+
+    rm->calculateTransitionProbabilities(age, 0, 1.0, P);
 }
 
 
@@ -86,8 +86,8 @@ void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(Transiti
 void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double startAge, double endAge, double rate) const
 {
     const RateGenerator* rm = rateMatrix;
-    
-    rm->calculateTransitionProbabilities(P, startAge, endAge, rate);
+
+    rm->calculateTransitionProbabilities(startAge, endAge, rate, P);
 }
 
 
@@ -99,13 +99,13 @@ RateGeneratorSequenceUsingMatrix* RateGeneratorSequenceUsingMatrix::clone(void) 
 
 double RateGeneratorSequenceUsingMatrix::getRate(size_t from, size_t to, double rate, double age) const
 {
-    
+
     const RateGenerator* rm = rateMatrix;
-    
-    double r = rm->getRate(from, to) * rate;
-    
+
+    double r = rm->getRate(from, to, age, rate);
+
     return r;
-    
+
 }
 
 
@@ -113,13 +113,13 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
 {
     size_t from_state = from[ to->getSiteIndex() ]->getState();
     size_t to_state = to->getState();
-    
+
     const RateGenerator* rm = rateMatrix;
-    
-    double r = rm->getRate(from_state, to_state) * rate;
-    
+
+    double r = rm->getRate(from_state, to_state, age, rate);
+
     return r;
-    
+
 }
 
 
@@ -128,44 +128,44 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
 {
     size_t from_state = from[ to->getSiteIndex() ]->getState();
     size_t to_state = to->getState();
-    
+
     const RateGenerator* rm = rateMatrix;
-    
-    double r = rm->getRate(from_state, to_state) * rate;
-    
+
+    double r = rm->getRate(from_state, to_state, age, rate);
+
     return r;
-    
+
 }
 
 double RateGeneratorSequenceUsingMatrix::getSiteRate(CharacterEvent* from, CharacterEvent* to, double r, double age) const
 {
-    
+
     double rate = 0.0;
     const RateGenerator* rm = rateMatrix;
-    
-    rate = rm->getRate(from->getState(), to->getState()) * r;
-    
+
+    rate = rm->getRate(from->getState(), to->getState(), age, r);
+
     return rate;
 }
 
 double RateGeneratorSequenceUsingMatrix::getSiteRate(size_t from, size_t to, size_t charIdx, double r, double age) const
 {
-    
+
     double rate = 0.0;
     const RateGenerator* rm = rateMatrix;
-    
-    rate = rm->getRate(from, to) * r;
-    
+
+    rate = rm->getRate(from, to, rate, r);
+
     return rate;
 }
 
 double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double rate, double age) const
 {
-    
+
     // get characters in each state
     if (counts == NULL)
     {
-        
+
         // need dynamic allocation
         unsigned tmpCounts[20] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
         counts = tmpCounts;
@@ -173,53 +173,53 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
         {
             counts[ from[i]->getState() ] += 1;
         }
-        
+
     }
-    
-    
+
+
     // get rate matrix
     const RateGenerator* rm = rateMatrix;
-    
+
     // get the rate of leaving the sequence-state
     double sum = 0.0;
     for (size_t i = 0; i < numStates; i++)
     {
-        sum += -rm->getRate(i, i) * counts[i];
+        sum += -rm->getRate(i, i, age, 1.0) * counts[i];
     }
-    
+
     // apply rate for branch
     sum *= rate;
-    
+
     return sum;
 }
 
 double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, double rate, double age) const
 {
-    
+
     // need dynamic allocation
     unsigned counts[20] = { 0,0,0,0,0,
         0,0,0,0,0,
         0,0,0,0,0,
         0,0,0,0,0  };
-    
+
     for (size_t i = 0; i < from.size(); i++)
     {
         counts[ from[i]->getState() ] += 1;
     }
-    
+
     return getSumOfRates( from, counts, rate, age);
 }
 
 
 void RateGeneratorSequenceUsingMatrix::setRateMatrix(const RateGenerator* r)
 {
-    
+
     if (r != rateMatrix)
     {
         delete rateMatrix;
         rateMatrix = r->clone();
     }
-    
+
 }
 
 
@@ -228,8 +228,7 @@ void RateGeneratorSequenceUsingMatrix::updateMap(void)
     if (needsUpdate)
     {
         ; // do nothing ...
-        
+
         needsUpdate = false;
     }
 }
-

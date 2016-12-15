@@ -3,6 +3,7 @@
 
 #include "RateGenerator.h"
 #include "MatrixReal.h"
+#include "MemberObject.h"
 #include <vector>
 
 
@@ -24,9 +25,10 @@ namespace RevBayesCore {
 
         // pure virtual methods you have to overwrite
         virtual double                      averageRate(void) const = 0;                                                                //!< Calculate the average rate
-        virtual void                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const = 0;   //!< Calculate the transition matrixrate matrix
+        virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixrate matrix
         virtual RateMatrix*                 clone(void) const = 0;
-        virtual double                      getRate(size_t from, size_t to) const = 0;                                                  //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
+        virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;                         //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
+        virtual double                      getRate(size_t from, size_t to, double rate=1.0) const = 0;
         virtual std::vector<double>         getStationaryFrequencies(void) const = 0;                                                   //!< Return the stationary frequencies
         virtual void                        rescaleToAverageRate(double r) = 0;                                                         //!< Rescale the rate matrix such that the average rate is "r"
         virtual void                        setDiagonal(void) = 0;                                                                      //!< Set the diagonal such that each row sums to zero
@@ -39,9 +41,6 @@ namespace RevBayesCore {
         RateMatrix(size_t n);                                                                                                           //!< Construct rate matrix with n states
 
     };
-
-    // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const RateMatrix& x);                                               //!< Overloaded output operator
 
 }
 

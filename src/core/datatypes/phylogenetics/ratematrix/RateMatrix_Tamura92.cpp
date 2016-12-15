@@ -48,8 +48,7 @@ RateMatrix_Tamura92& RateMatrix_Tamura92::assign(const Assignable &m)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Tamura92::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
-{
+void RateMatrix_Tamura92::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
     
     double t = rate * (startAge - endAge);
     // notation:
@@ -96,20 +95,18 @@ void RateMatrix_Tamura92::calculateTransitionProbabilities(TransitionProbability
 }
 
 
-RateMatrix_Tamura92* RateMatrix_Tamura92::clone( void ) const
-{
+RateMatrix_Tamura92* RateMatrix_Tamura92::clone( void ) const {
     
     return new RateMatrix_Tamura92( *this );
 }
 
 
-void RateMatrix_Tamura92::setKappa( double k )
-{
+void RateMatrix_Tamura92::setKappa( double k ) {
     
     kappa = k;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
     
 }
 
@@ -120,16 +117,16 @@ void RateMatrix_Tamura92::setGC(double f)
     gc = f;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
     
 }
 
 
 void RateMatrix_Tamura92::update( void ) {
     
-    if ( needsUpdate )
+    if ( needs_update )
     {
-        MatrixReal &m = *theRateMatrix;
+        MatrixReal &m = *the_rate_matrix;
         
         // @todo: This is only needed for printing the values of the rate matrix properly to the screen. We should do this more efficiently (Sebastian).
         // We could instead only update the matrix if a print call happened and the matrix was flagged as dirty.
@@ -158,7 +155,7 @@ void RateMatrix_Tamura92::update( void ) {
         rescaleToAverageRate( 1.0 );
         
         // clean flags
-        needsUpdate = false;
+        needs_update = false;
     }
 }
 

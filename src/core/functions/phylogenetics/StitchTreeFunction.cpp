@@ -106,6 +106,27 @@ void StitchTreeFunction::initTaxonGroups(void)
             allTaxa.insert(t[j]);
         }
     }
+    numTips = allTaxa.size();
+    num_nodes = 2 * numTips - 2;
+    
+    size_t tipIndex = 0;
+    for (it = allTaxa.begin(); it != allTaxa.end() ; it++)
+    {
+        stitchTipIndex[*it] = tipIndex++;
+    }
+    
+    // initialize stitchTreeIndex
+    for (size_t i = 0; i < numPatches + 1; i++)
+    {
+        
+        size_t n = 0;
+        if (i < numPatches)
+            n = patchClades->getValue()[i].getNumberOfNodes();
+        else
+            n = backboneTree->getValue().getNumberOfNodes();
+        
+        stitchTreeIndex[i] = std::vector<size_t>(n,0);
+    }
     
     return;
 }
@@ -117,7 +138,7 @@ void StitchTreeFunction::keep(DagNode *affecter)
     
 }
 
-void StitchTreeFunction::recursivelyCleanPatchClade(TopologyNode* node, TopologyNode*& newRoot, std::set<Taxon>& remainingTaxa)
+void StitchTreeFunction::recursivelyCleanPatchClade(TopologyNode* node, TopologyNode*& newRoot, std::set<Taxon>& remainingTaxa, size_t& index, size_t patchIndex)
 {
     
     // remove self if found in remainingTaxa
@@ -131,11 +152,17 @@ void StitchTreeFunction::recursivelyCleanPatchClade(TopologyNode* node, Topology
             std::vector<TopologyNode*> children = parent->getChildren();
             for (size_t i = 0; i < children.size(); i++)
             {
-                if (children[i] != node)
-                    newRoot = children[i];
                 children[i]->setParent(NULL);
                 parent->removeChild(children[i]);
+                
+                if (children[i] != node)
+                    newRoot = children[i];
+                else
+                    delete children[i];
             }
+            
+            // free old root node
+            delete parent;
         }
         return;
     }
@@ -144,21 +171,42 @@ void StitchTreeFunction::recursivelyCleanPatchClade(TopologyNode* node, Topology
     std::vector<TopologyNode*> children = node->getChildren();
     for (size_t i = 0; i < children.size(); i++)
     {
-        recursivelyCleanPatchClade(children[i], newRoot, remainingTaxa);
-        if (remainingTaxa.size() == 0)
-            break;
+        recursivelyCleanPatchClade(children[i], newRoot, remainingTaxa, index, patchIndex);
     }
     
     return;
 }
 
-void StitchTreeFunction::recursivelyStitchPatchClades(TopologyNode* node)
+void StitchTreeFunction::recursivelyIndexPatchClade(TopologyNode* node, size_t& index, size_t patchIndex)
 {
     
+    std::vector<TopologyNode*> children = node->getChildren();
+    for (size_t i = 0; i < children.size(); i++)
+    {
+        recursivelyIndexPatchClade(children[i], index, patchIndex);
+    }
+
+    size_t old_index = node->getIndex();
+    // assign index for first update only
     if (!haveIndex)
     {
-        stitchTreeIndex[ numPatches ][ node->getIndex() ] = 0;
+        if (node->isTip())
+        {
+            size_t tipIndex = stitchTipIndex[node->getTaxon()];
+            stitchTreeIndex[patchIndex][old_index] = tipIndex;
+        }
+        else
+        {
+            stitchTreeIndex[patchIndex][old_index] = index++;
+        }
     }
+    node->setIndex( stitchTreeIndex[patchIndex][old_index] );
+
+    return;
+}
+
+void StitchTreeFunction::recursivelyStitchPatchClades(TopologyNode* node, size_t& index)
+{
     
     // stich patch clade to matching tip taxon
     if (node->isTip())
@@ -171,24 +219,19 @@ void StitchTreeFunction::recursivelyStitchPatchClades(TopologyNode* node)
                 TopologyNode* parent = &node->getParent();
                 parent->removeChild(node);
                 node->setParent(NULL);
+                delete node;
                 
                 // add the patch clade
                 const Tree& t = patchClades->getValue()[i];
                 
-                if (!haveIndex)
-                {
-                    const std::vector<TopologyNode*>& nodes = t.getNodes();
-                    for (size_t j = 0; j < nodes.size(); j++) {
-                        stitchTreeIndex[i][ nodes[j]->getIndex() ] = 0;
-                    }
-                }
-                
+                // this memory is freed when the stitch tree is deleted in updateStitchTree()
                 TopologyNode* patchRoot = new TopologyNode( t.getRoot() );
                 
                 // prune out non-patch taxa
                 std::set<Taxon> remainingTaxa = prunedTaxa[i];
-                recursivelyCleanPatchClade(patchRoot, patchRoot, remainingTaxa);
-                
+                recursivelyCleanPatchClade(patchRoot, patchRoot, remainingTaxa, index, i);
+                recursivelyIndexPatchClade(patchRoot, index, i);
+
                 // add patch clade to base tree
                 parent->addChild(patchRoot);
                 patchRoot->setParent(parent);
@@ -201,8 +244,17 @@ void StitchTreeFunction::recursivelyStitchPatchClades(TopologyNode* node)
     std::vector<TopologyNode*> children = node->getChildren();
     for (size_t i = 0; i < children.size(); i++)
     {
-        recursivelyStitchPatchClades(children[i]);
+        recursivelyStitchPatchClades(children[i], index);
     }
+    
+    // assign index for first update only
+    if (!haveIndex) {
+        stitchTreeIndex[numPatches][node->getIndex()] = index++;
+    }
+    
+    // set index as needed
+    size_t old_index = node->getIndex();
+    node->setIndex( stitchTreeIndex[numPatches][old_index] );
     
     return;
 }
@@ -246,23 +298,14 @@ void StitchTreeFunction::updateStitchTree( void )
     
     // build out the tree
     TopologyNode* root = &value->getRoot();
-    recursivelyStitchPatchClades(root);
+    size_t index = numTips;
+    recursivelyStitchPatchClades(root, index);
     
-    // revise indexing
-    // ...
+    // fix indexing after first update
+    haveIndex = true;
     
     // set root
-    value->setRoot( root );
-    
-//    root = &value->getRoot();
-    
-//    std::vector<TopologyNode*> nodes = value->getNodes();
-//    
-//    // update tip nodes with stored taxon-index
-//    for (size_t i = 0; i < nodes.size(); i++)
-//        nodes[i]->setIndex( taxonToIndex[ nodes[i]->getTaxon() ] );
-//    
-//    value->setRoot( root, true, true );
+    value->setRoot( root, false );
     
 }
 

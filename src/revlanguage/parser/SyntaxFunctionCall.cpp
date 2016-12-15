@@ -119,9 +119,6 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
     std::vector<Argument> args;
     for ( std::list<SyntaxLabeledExpr*>::const_iterator it = arguments->begin(); it != arguments->end(); ++it )
     {
-#ifdef DEBUG_PARSER
-        printf( "Adding argument with label \"%s\".\n", (*i)->getLabel().c_str() );
-#endif
         
         const RlString& theLabel = (*it)->getLabel();
         RevPtr<RevVariable> theVar = (*it)->getExpression().evaluateContent(env,dynamic);

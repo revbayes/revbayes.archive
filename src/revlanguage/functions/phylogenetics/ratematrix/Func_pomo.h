@@ -26,7 +26,7 @@
 
 namespace RevLanguage {
     
-    class Func_pomo : public TypedFunction<RateGenerator> {
+    class Func_pomo : public TypedFunction<RateMatrix> {
         
     public:
         Func_pomo( void );

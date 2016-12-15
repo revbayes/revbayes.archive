@@ -29,9 +29,9 @@ RevBayesCore::PhylowoodConverter::PhylowoodConverter(const std::string &sfn, con
     treeFilename(tfn),
     geoFilename(gfn),
     phwFilename(pfn),
-    burn(b),
     chartype(ct),
-    bgtype(bt)
+    bgtype(bt),
+    burn(b)
 {
     
     convert();
@@ -51,11 +51,11 @@ void PhylowoodConverter::convert(void) {
     numAreas = atlas->getNumAreas();
     if (bgtype == "Range")
     {
-        numStates = std::pow(2, (double)atlas->getNumAreas());
+        num_states = std::pow(2, (double)atlas->getNumAreas());
         makeBits();
     }
     else if (bgtype == "Area") {
-        numStates = atlas->getNumAreas();
+        num_states = atlas->getNumAreas();
     }
 
     numEpochs = atlas->getNumEpochs();
@@ -66,7 +66,7 @@ void PhylowoodConverter::convert(void) {
     std::vector<Tree*> tmp = reader.readTimeTrees( treeFilename );
     if (tmp.size() > 0)
         tree = tmp[0];
-    numNodes = tree->getNumberOfNodes();
+    num_nodes = tree->getNumberOfNodes();
     
     // get state info
     dat = new DelimitedDataReader(stateFilename);
@@ -197,9 +197,9 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
     std::string standardStates = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
 
     // get state counts/node
-    marginalStartProbs.resize(numNodes);
-    marginalEndProbs.resize(numNodes);
-    for (size_t i = 0; i < numNodes; i++)
+    marginalStartProbs.resize(num_nodes);
+    marginalEndProbs.resize(num_nodes);
+    for (size_t i = 0; i < num_nodes; i++)
     {
         marginalStartProbs[i].resize(numAreas, 0.0);
         marginalEndProbs[i].resize(numAreas, 0.0);
@@ -317,8 +317,8 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
 
 void PhylowoodConverter::makeBits(void)
 {
-    bits = std::vector<std::vector<unsigned> >(numStates, std::vector<unsigned>(numAreas, 0));
-    for (size_t i = 1; i < numStates; i++)
+    bits = std::vector<std::vector<unsigned> >(num_states, std::vector<unsigned>(numAreas, 0));
+    for (size_t i = 1; i < num_states; i++)
     {
         size_t n = i;
         for (size_t j = 0; j < numAreas; j++)

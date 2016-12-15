@@ -38,6 +38,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   likelihood;
         RevPtr<const RevVariable>                   append;
         RevPtr<const RevVariable>                   stochOnly;
+        RevPtr<const RevVariable>                   version;
         
     };
     

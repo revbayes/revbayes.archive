@@ -19,6 +19,7 @@
 @synthesize depthFromTip;
 @synthesize viewCoordinates;
 @synthesize state;
+@synthesize support;
 
 - (void)addDescendant:(Node*)des {
 
@@ -51,6 +52,7 @@
 	[aCoder encodeObject:name         forKey:@"name"];
     [aCoder encodeObject:ancestor     forKey:@"ancestor"];
     [aCoder encodeObject:descendants  forKey:@"descendants"];
+    [aCoder encodeFloat:support       forKey:@"support"];
 }
 
 - (id)init {
@@ -69,6 +71,7 @@
         isBranchSelected = NO;
         isNodeSelected   = NO;
 		branchLength     = 0.0;
+        support          = 0.0;
 		}
     return self;
 }
@@ -84,11 +87,23 @@
 		name         = [aDecoder decodeObjectForKey:@"name"];
         ancestor     = [aDecoder decodeObjectForKey:@"ancestor"];
         descendants  = [aDecoder decodeObjectForKey:@"descendants"];
+        support      = [aDecoder decodeFloatForKey:@"support"];
 
         isBranchSelected = NO;
         isNodeSelected   = NO;
 		}
 	return self;
+}
+
+- (int)numberOfFlaggedChildren {
+
+    int cnt = 0;
+    for (int i=0; i<[descendants count]; i++)
+        {
+        if ([[descendants objectAtIndex:i] flag] == YES)
+            cnt++;
+        }
+    return cnt;
 }
 
 - (void)print {
@@ -111,6 +126,8 @@
         const char* myName = [name UTF8String];
         std::cout << myName;
         }
+    if (isRoot == YES)
+        std::cout << " <- Root";
     std::cout << std::endl;
 #   else
     NSString* s = [NSString stringWithFormat:@"%d (%p) %lf %p (", index, self, branchLength, ancestor];

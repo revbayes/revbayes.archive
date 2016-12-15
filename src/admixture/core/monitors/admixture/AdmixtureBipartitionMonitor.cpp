@@ -244,7 +244,7 @@ void AdmixtureBipartitionMonitor::monitor(unsigned long gen) {
 
 
 /** open the file stream for printing */
-void AdmixtureBipartitionMonitor::openStream(void) {
+void AdmixtureBipartitionMonitor::openStream(bool reopen) {
     
     // open the stream to the file
     if (append)

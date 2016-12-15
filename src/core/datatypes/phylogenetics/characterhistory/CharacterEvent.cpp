@@ -7,23 +7,23 @@ using namespace RevBayesCore;
 
 CharacterEvent::CharacterEvent(void)
 {
-    
+
 }
 
 CharacterEvent::CharacterEvent(size_t i, size_t s, double t) :
-    character_index(i),
+    site_index(i),
     state(s),
     time(t)
 {
-    
+
 }
 
 CharacterEvent::CharacterEvent(const CharacterEvent& c) :
-    character_index(c.character_index),
+    site_index(c.site_index),
     state(c.state),
     time(c.time)
 {
-    
+
 }
 
 CharacterEvent::~CharacterEvent(void)
@@ -48,7 +48,7 @@ double CharacterEvent::getTime(void) const
 
 size_t CharacterEvent::getSiteIndex(void) const
 {
-    return character_index;
+    return site_index;
 }
 
 size_t CharacterEvent::getState(void) const
@@ -65,9 +65,9 @@ std::string CharacterEvent::getStateStr(void) const
     return ss.str();
 }
 
-void CharacterEvent::setCharacterIndex(size_t i)
+void CharacterEvent::setSiteIndex(size_t i)
 {
-    character_index = i;
+    site_index = i;
 }
 
 void CharacterEvent::setState(size_t s)
@@ -82,5 +82,5 @@ void CharacterEvent::setTime(double t)
 
 void CharacterEvent::print(void) const
 {
-    std::cout << character_index << " " << state << " " << time << "\n";
+    std::cout << site_index << " " << state << " " << time << "\n";
 }

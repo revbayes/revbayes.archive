@@ -1,7 +1,7 @@
 #ifndef Func_variance_H
 #define Func_variance_H
 
-#include "Real.h"
+#include "RealPos.h"
 #include "RlTypedFunction.h"
 
 #include <string>
@@ -21,7 +21,7 @@ namespace RevLanguage {
      * @since 2014-07-27, version 1.0
      *
      */
-    class Func_variance :  public TypedFunction<Real> {
+    class Func_variance :  public TypedFunction<RealPos> {
         
     public:
         Func_variance( void );

@@ -34,7 +34,7 @@ namespace RevBayesCore {
         void                                                addMonitor(const Monitor &m);
         void                                                disableScreenMonitor(bool all, size_t rep);                                             //!< Disable/remove all screen monitors
         Mcmc*                                               clone(void) const;
-        void                                                finishMonitors(size_t n);                                                                   //!< Finish the monitors
+        void                                                finishMonitors(size_t n);                                                               //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain
@@ -51,6 +51,7 @@ namespace RevBayesCore {
         void                                                nextCycle(bool advanceCycle);
         bool                                                isChainActive(void);
         void                                                printOperatorSummary(void) const;
+        void                                                redrawStartingValues(void);                                                             //!< Redraw the starting values.
         void                                                removeMonitors(void);
         void                                                reset(void);                                                                            //!< Reset the sampler and set all the counters back to 0.
         void                                                setChainActive(bool tf);
@@ -60,14 +61,15 @@ namespace RevBayesCore {
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
         void                                                setModel(Model *m);
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
-        void                                                startMonitors(size_t numCycles);                                                        //!< Start the monitors
+        void                                                startMonitors(size_t numCycles, bool reopen);                                           //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
+        void                                                writeMonitorHeaders(void);                                                              //!< Write the headers of the monitors
+        
         
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
-        void                                                setActivePIDSpecialized(size_t i);                                                      //!< Set the number of processes for this class.
-        void                                                setNumberOfProcessesSpecialized(size_t i);                                              //!< Set the number of processes for this class.
+        void                                                setActivePIDSpecialized(size_t i, size_t n);                                                      //!< Set the number of processes for this class.
 
         
         bool                                                chain_active;

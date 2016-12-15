@@ -1,32 +1,37 @@
-/**
- * @file
- * This file contains the declaration of RateMatrix_GTR, which is
- * class that holds a rate matrix for a continuous-time Markov model.
- *
- * @brief Declaration of RateMatrix_GTR
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-12-05 12:20:37 -0800 (Wed, 05 Dec 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: RateMatrix.h 1901 2012-12-05 20:20:37Z boussau $
- */
-
 #ifndef RateMatrix_GTR_H
 #define RateMatrix_GTR_H
 
 #include "TimeReversibleRateMatrix.h"
+#include "EigenSystem.h"
 #include <complex>
 #include <vector>
 
 
 namespace RevBayesCore {
     
-    class EigenSystem;
+//    class EigenSystem;
     class TransitionProbabilityMatrix;
     
-    
+    /**
+     * @brief HKY (Hasegawa, Kishino and Yano 1985) rate matrix class.
+     *
+     * This class implements the special HKY rate matrix with the known analytical solution for the transition probabilities.
+     * The HKY matrix has a transition-transversion rate kappa and the four base frequency parameters.
+     * The resulting rate matrix is computed by:
+     *
+     *      |     -       pi_C     k*pi_G      pi_T   |
+     *      |                                         |
+     *      |   pi_A        -       pi_G      k*pi_T  |
+     * Q =  |                                         |
+     *      |  k*pi_A     pi_C        -        pi_T   |
+     *      |                                         |
+     *      |   pi_A     k*pi_C     pi_G         -    |
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-07-04, version 1.0
+     */
     class RateMatrix_GTR : public TimeReversibleRateMatrix {
         
     public:
@@ -39,9 +44,10 @@ namespace RevBayesCore {
         
         // RateMatrix functions
         virtual RateMatrix_GTR&             assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
-        void                                calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const;    //!< Calculate the transition matrix
+        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
         RateMatrix_GTR*                     clone(void) const;
         void                                update(void);
+        virtual void                        initFromString( const std::string &s );                                             //!< Serialize (resurrect) the object from a string value
         
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse

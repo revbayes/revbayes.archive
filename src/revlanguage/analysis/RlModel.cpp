@@ -82,18 +82,18 @@ RevPtr<RevVariable> Model::executeMethod(std::string const &name, const std::vec
 const std::string& Model::getClassType(void)
 {
     
-    static std::string revType = "Model";
+    static std::string rev_type = "Model";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Model::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Model>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Model>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -116,15 +116,15 @@ const MemberRules& Model::getParameterRules(void) const
 {
     
     static MemberRules modelMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         modelMemberRules.push_back( new ArgumentRule("x", RevObject::getClassTypeSpec(), "Any variable that is connected in the model graph.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         modelMemberRules.push_back( new Ellipsis( "Additional variables.", RevObject::getClassTypeSpec() ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return modelMemberRules;
@@ -134,14 +134,15 @@ const MemberRules& Model::getParameterRules(void) const
 /** Get type spec */
 const TypeSpec& Model::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
 /** Print a simplified representation of the model for the user. */
-void Model::printValue(std::ostream &o) const {
+void Model::printValue(std::ostream &o, bool user) const
+{
     
     const std::vector<RevBayesCore::DagNode*>& theNodes = value->getDagNodes();
     std::vector<RevBayesCore::DagNode*>::const_iterator it;
@@ -150,18 +151,18 @@ void Model::printValue(std::ostream &o) const {
     std::stringstream s;
     
     // compute the number of nodes by only counting nodes that are not hidden
-    size_t numNodes = 0;
+    size_t num_nodes = 0;
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
     
         if ( (*it)->isHidden() == false )
         {
-            ++numNodes;
+            ++num_nodes;
         }
     
     }
     
-    s << "Model with " << numNodes << " nodes";
+    s << "Model with " << num_nodes << " nodes";
     o << s.str() << std::endl;
     for ( size_t i = 0; i < s.str().size(); ++i )
         o << "=";
@@ -169,28 +170,28 @@ void Model::printValue(std::ostream &o) const {
     
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
-        RevBayesCore::DagNode *theNode = *it;
+        RevBayesCore::DagNode *the_node = *it;
         // skip hidden nodes
-        if ( theNode->isHidden() == true )
+        if ( the_node->isHidden() == true )
         {
             continue;
         }
         
-        if ( theNode->getName() != "" )
+        if ( the_node->getName() != "" )
         {
-            o << theNode->getName() <<  " :" << std::endl;
+            o << the_node->getName() <<  " :" << std::endl;
         }
         else
         {
-            o << "<" << theNode << "> :" << std::endl;
+            o << "<" << the_node << "> :" << std::endl;
         }
         
         o << "_value        = ";
         std::ostringstream o1;
-        theNode->printValueElements( o1, ", " );
+        the_node->printValue( o1, ", ", true );
         o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 
-        theNode->printStructureInfo( o, false );
+        the_node->printStructureInfo( o, false );
 
         o << std::endl;
     }
@@ -198,15 +199,20 @@ void Model::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Model::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Model::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
 
-    if ( name == "" || name == "x") {
+    if ( name == "" || name == "x")
+    {
         sources.insert( var );
     }
-    else {
+    else
+    {
         RevObject::setConstParameter(name, var);
     }
+    
 }
+
 
 /* Write a file in DOT format for viewing the model DAG in graphviz */
 //   This requires the user to have graphviz installed, or they can paste the file contents
@@ -248,7 +254,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
             if((*it)->getDagNodeType() == RevBayesCore::DagNode::CONSTANT){
                 std::stringstream trl;
                 if((*it)->isSimpleNumeric())  
-                    (*it)->printValueElements(trl," ");
+                    (*it)->printValue(trl," ", true);
                 else 
                     trl << " ... ";
                 if(trl.str() != "" || vb){
@@ -277,12 +283,14 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                 (*it)->printStructureInfo(strss);
                 if(strss.str().find("function",0) < strss.str().npos){
                     std::string w;
+                    
                     while(strss >> w){
                         if(w == "_function"){
                             strss >> w;
                             strss >> w;
-                            strss >> w;
-                            rl << "\\n[ " << w << "( ) ]";
+//                            std::cout << w << std::endl;
+//                            strss >> w;
+                            rl << "\\n[ " << w << ") ]";
                         }
                     }
                 }
@@ -316,16 +324,23 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
             }
         }
     }
-    for ( it=theNodes.begin(); it!=theNodes.end(); ++it ){
-        if( !(*it)->isHidden() || vb){
+    for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
+    {
+        if( !(*it)->isHidden() || vb)
+        {
             std::stringstream trl;
-            (*it)->printValueElements(trl,",");
-            if(trl.str() != "" || vb){
+            (*it)->printValue(trl,",", true);
+            if(trl.str() != "" || vb)
+            {
                 std::stringstream nname;
                 if ( (*it)->getName() != "" )
+                {
                     nname << (*it)->getName() ;
+                }
                 else
+                {
                     nname << (*it);
+                }
                 std::string stname = nname.str();
                 std::replace( stname.begin(), stname.end(), '[', '_');
 				std::replace( stname.begin(), stname.end(), '.', '_');
@@ -359,12 +374,17 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                                 o << "[style=dashed]";
                             o << "\n";
                         }
-                        else{
+                        else
+                        {
                             std::stringstream cn;
                             if ( (*ci)->getName() != "" )
+                            {
                                 cn << (*ci)->getName();
+                            }
                             else
+                            {
                                 cn << (*ci);
+                            }
                             std::string stcn = cn.str();
                             std::replace( stcn.begin(), stcn.end(), '[', '_');
                             stcn.erase(std::remove(stcn.begin(), stcn.end(), ']'), stcn.end());  
@@ -375,14 +395,18 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                                 o << "[style=dashed]";
                             o << "\n";
                         }
+                        
                     }
                 
                 }
+                
             }
+            
         }
         
     }
-    if(nrank.size() > 13){
+    if (nrank.size() > 13)
+    {
         nrank += ";}\n";
         o << nrank;
     }

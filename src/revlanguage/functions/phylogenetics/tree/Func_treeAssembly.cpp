@@ -1,5 +1,6 @@
 #include "Func_treeAssembly.h"
 #include "ModelVector.h"
+#include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlTree.h"
@@ -33,7 +34,30 @@ RevBayesCore::TypedFunction<RevBayesCore::Tree>* Func_treeAssembly::createFuncti
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    
+    // TreeAssemblyFunction acts directly on the value of the topology node
+    // Current topology variable cannot already be parent of another TreeAssemblyFunction
+    bool topologyInUse = false;
+    const std::vector<RevBayesCore::DagNode*>& tauChildren = tau->getChildren();
+    for (size_t i = 0; i < tauChildren.size(); i++)
+    {
+        RevBayesCore::DeterministicNode<RevBayesCore::Tree>* tauChild = dynamic_cast<RevBayesCore::DeterministicNode<RevBayesCore::Tree>*>(tauChildren[i]);
+        if (tauChild != NULL)
+        {
+            RevBayesCore::TreeAssemblyFunction* tf = dynamic_cast<RevBayesCore::TreeAssemblyFunction*>(&tauChild->getFunction());
+            if (tf != NULL)
+            {
+                topologyInUse = true;
+            }
+        }
+    }
+    if (topologyInUse)
+    {
+        throw RbException("Variable \"" + tau->getName() + "\" cannot be used with more than one treeAssembly function.");
+    }
+    
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* brlens = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::RbVector<double> tmp = brlens->getValue();
     RevBayesCore::TreeAssemblyFunction* f = new RevBayesCore::TreeAssemblyFunction( tau, brlens );
     
     return f;
@@ -45,15 +69,15 @@ const ArgumentRules& Func_treeAssembly::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "topology", Tree::getClassTypeSpec(), "The tree topology variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "brlens",   ModelVector<RealPos>::getClassTypeSpec(), "The vector of branch lengths.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -63,9 +87,9 @@ const ArgumentRules& Func_treeAssembly::getArgumentRules( void ) const
 const std::string& Func_treeAssembly::getClassType(void)
 {
     
-    static std::string revType = "Func_treeAssembly";
+    static std::string rev_type = "Func_treeAssembly";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -73,9 +97,9 @@ const std::string& Func_treeAssembly::getClassType(void)
 const TypeSpec& Func_treeAssembly::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -109,7 +133,7 @@ std::string Func_treeAssembly::getFunctionName( void ) const
 const TypeSpec& Func_treeAssembly::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

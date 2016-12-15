@@ -76,18 +76,18 @@ RevPtr<RevVariable> UserProcedure::execute( void )
 /** Get Rev type (static) */
 const std::string& UserProcedure::getClassType(void)
 {
-    static std::string revType = "UserProcedure";
+    static std::string rev_type = "UserProcedure";
     
-	return revType;
+	return rev_type;
 }
 
 
 /** Get Rev type spec (static) */
 const TypeSpec& UserProcedure::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 

@@ -59,7 +59,7 @@ namespace RevBayesCore {
         const TypedDagNode< Tree >*                             tau;
         const TypedDagNode< MatrixReal >*                       sigma;
         
-        std::vector<bool>                                       dirtyNodes;
+        std::vector<bool>                                       dirty_nodes;
         std::vector<double>                                     nodeLogProbs;
     };
     

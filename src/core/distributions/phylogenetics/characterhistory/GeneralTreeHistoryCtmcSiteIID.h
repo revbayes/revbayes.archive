@@ -239,7 +239,7 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
         size_t s = char_event->getState();
 
         // lnL for stepwise events for p(x->y)
-        double tr = rm.getRate(curr_state[idx]->getState(), char_event->getState()) * branch_rate;
+        double tr = rm.getRate(curr_state[idx]->getState(), char_event->getState(), node.getAge(), branch_rate);
         double sr = rm.getSumOfRates(curr_state, counts) * branch_rate;
         lnL += log(tr) - (sr * dt);
 
@@ -381,7 +381,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::initializeTipValues(
                 DiscreteTaxonData<charType>& d = static_cast< DiscreteTaxonData<charType>& >( this->value->getTaxonData( node->getName() ) );
 
                 std::vector<CharacterEvent*> tipState;
-                for (size_t j = 0; j < d.size(); ++j)
+                for (size_t j = 0; j < d.getNumberOfCharacters(); ++j)
                 {
                     DiscreteCharacterState &state = d[j];
                     unsigned s = 0;
@@ -442,8 +442,8 @@ bool RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::samplePathEnd(const 
         double left_branch_rate  = getBranchRate( left_index );
         double right_branch_rate = getBranchRate( right_index );
 
-        rm.calculateTransitionProbabilities(leftTpMatrix, begin_age, node.getChild(0).getAge(), left_branch_rate);
-        rm.calculateTransitionProbabilities(rightTpMatrix, begin_age, node.getChild(0).getAge(), right_branch_rate);
+        rm.calculateTransitionProbabilities(begin_age, node.getChild(0).getAge(), left_branch_rate,  leftTpMatrix);
+        rm.calculateTransitionProbabilities(begin_age, node.getChild(0).getAge(), right_branch_rate, rightTpMatrix);
 
         // for sampling probs
         const std::vector<CharacterEvent*>& leftChildState  = this->histories[left_index]->getChildCharacters();
@@ -797,7 +797,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulateHistory(cons
             size_t i, s = 0;
             for (i = 0; !found && i < this->num_sites; ++i)
             {
-                evt->setCharacterIndex(i);
+                evt->setSiteIndex(i);
                 for (s = 0; !found && s < this->num_states; ++s)
                 {
                     // disregard virtual events (self-transitions)
@@ -805,7 +805,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulateHistory(cons
                     {
                         evt->setState(s);
                         //                        double r = rm.getRate(currState, evt, counts);
-                        double r = rm.getRate(currState[i]->getState(), evt->getState()) * branch_rate;
+                        double r = rm.getRate(currState[i]->getState(), evt->getState(), node.getAge(), branch_rate);
 
                         u -= r;
                         if (u <= 0.0)

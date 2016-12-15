@@ -91,9 +91,9 @@ const MemberRules& Move_DPPGibbsConcentration::getParameterRules(void) const
 {
     
     static MemberRules dppMove;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         dppMove.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
@@ -106,7 +106,7 @@ const MemberRules& Move_DPPGibbsConcentration::getParameterRules(void) const
         const MemberRules& inheritedRules = Move::getParameterRules();
         dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return dppMove;
@@ -115,9 +115,9 @@ const MemberRules& Move_DPPGibbsConcentration::getParameterRules(void) const
 /** Get type spec */
 const TypeSpec& Move_DPPGibbsConcentration::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

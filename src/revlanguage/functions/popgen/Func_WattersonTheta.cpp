@@ -32,7 +32,8 @@ RevBayesCore::TypedFunction< double >* Func_WattersonTheta::createFunction( void
     
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData >* d = static_cast<const AbstractHomologousDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::Boolean >* ps = static_cast<const RlBoolean &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::WattersonThetaFunction* f = new RevBayesCore::WattersonThetaFunction( d, ps->getValue() );
+    RevBayesCore::TypedDagNode<RevBayesCore::Boolean >* ex = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::WattersonThetaFunction* f = new RevBayesCore::WattersonThetaFunction( d, ps->getValue(), ex->getValue() );
     
     return f;
 }
@@ -43,15 +44,16 @@ const ArgumentRules& Func_WattersonTheta::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "data",    AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "perSite", RlBoolean::getClassTypeSpec(), "Should we normalize per site?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        
-        rulesSet = true;
+        argumentRules.push_back( new ArgumentRule( "excludeAmbiguous", RlBoolean::getClassTypeSpec(), "Should we exclude ambiguous or missing characters?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
+
+        rules_set = true;
     }
     
     return argumentRules;
@@ -61,9 +63,9 @@ const ArgumentRules& Func_WattersonTheta::getArgumentRules( void ) const
 const std::string& Func_WattersonTheta::getClassType(void)
 {
     
-    static std::string revType = "Func_WattersonTheta";
+    static std::string rev_type = "Func_WattersonTheta";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -71,9 +73,9 @@ const std::string& Func_WattersonTheta::getClassType(void)
 const TypeSpec& Func_WattersonTheta::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<RealPos>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<RealPos>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -92,7 +94,7 @@ std::string Func_WattersonTheta::getFunctionName( void ) const
 const TypeSpec& Func_WattersonTheta::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

@@ -20,9 +20,9 @@ WorkspaceObject::~WorkspaceObject()
 
 const std::string& WorkspaceObject::getClassType(void) {
     
-    static std::string revType = "WorkspaceObject";
+    static std::string rev_type = "WorkspaceObject";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -30,9 +30,9 @@ const std::string& WorkspaceObject::getClassType(void) {
 const TypeSpec& WorkspaceObject::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 

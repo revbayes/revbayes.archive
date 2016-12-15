@@ -12,6 +12,17 @@
 
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // TO DO
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -27,12 +38,10 @@
 
 - (BOOL)execute {
 
-    NSLog(@"Executing tool %@", self);
-    
-    [self startProgressIndicator];
-    
-    [self stopProgressIndicator];
-    return YES;
+    NSLog(@"Executing %@", [self className]);
+    usleep(2000000);
+
+    return [super execute];
 }
 
 - (id)init {
@@ -61,9 +70,6 @@
 		
 		// initialize the control window
 		controlWindow = [[WindowControllerMcmc alloc] initWithTool:self andSettings:settings];
-        
-        // note that the state of this tool is, by default, resolved
-        [self setIsResolved:YES];
 		}
     return self;
 }
@@ -101,13 +107,13 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" MCMC Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -158,6 +164,10 @@
 - (NSString*)toolName {
 
     return @"MCMC";
+}
+
+- (void)updateForChangeInParent {
+
 }
 
 @end

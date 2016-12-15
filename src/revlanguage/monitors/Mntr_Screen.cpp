@@ -60,18 +60,18 @@ void Mntr_Screen::constructInternalObject( void )
 const std::string& Mntr_Screen::getClassType(void)
 {
     
-    static std::string revType = "Mntr_Screen";
+    static std::string rev_type = "Mntr_Screen";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_Screen::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -94,9 +94,9 @@ const MemberRules& Mntr_Screen::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new Ellipsis( "Variables to monitor.", RevObject::getClassTypeSpec() ) );
@@ -105,7 +105,7 @@ const MemberRules& Mntr_Screen::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), "Monitor the joint likelihood.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         memberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), "Monitor the joint prior probability.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -115,9 +115,9 @@ const MemberRules& Mntr_Screen::getParameterRules(void) const
 const TypeSpec& Mntr_Screen::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

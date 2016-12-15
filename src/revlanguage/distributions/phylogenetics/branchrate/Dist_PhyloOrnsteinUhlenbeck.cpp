@@ -96,18 +96,18 @@ RevBayesCore::PhyloOrnsteinUhlenbeckProcess* Dist_PhyloOrnsteinUhlenbeck::create
 /* Get Rev type of object */
 const std::string& Dist_PhyloOrnsteinUhlenbeck::getClassType(void) {
     
-    static std::string revType = "Dist_PhyloOrnsteinUhlenbeck";
+    static std::string rev_type = "Dist_PhyloOrnsteinUhlenbeck";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_PhyloOrnsteinUhlenbeck::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -147,9 +147,9 @@ const MemberRules& Dist_PhyloOrnsteinUhlenbeck::getMemberRules(void) const
 {
     
     static MemberRules dist;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree along which the character evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -164,7 +164,7 @@ const MemberRules& Dist_PhyloOrnsteinUhlenbeck::getMemberRules(void) const
         types.push_back( ModelVector<Real>::getClassTypeSpec() );
         dist.push_back( new ArgumentRule( "mean" , types, "The location/mean of the process", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist.push_back( new ArgumentRule( "phi"  , posTypes, "The attraction (speed) to the mean.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return dist;

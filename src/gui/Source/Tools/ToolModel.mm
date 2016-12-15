@@ -68,6 +68,23 @@
 	return -1;
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // TO DO
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Model Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp endModalSession:mySession];
@@ -87,11 +104,10 @@
 
 - (BOOL)execute {
 
-    
-    [self startProgressIndicator];
-    
-    [self stopProgressIndicator];
-    return YES;
+    NSLog(@"Executing %@", [self className]);
+    usleep(2000000);
+
+    return [super execute];
 }
 
 - (void)exportModel {
@@ -131,7 +147,11 @@
         ServerComm* server = [[ServerComm alloc] init];
         if ([server connectToServer] == NO)
             {
-            NSRunAlertPanel(@"Connection Failure", @"The model could not be submitted for use by others because the RevBayes server could not be reached. The file was saved to this computer.", @"OK", nil, nil);
+            NSAlert* alert = [[NSAlert alloc] init];
+            [alert setMessageText:@"Connection Failure"];
+            [alert setInformativeText:@"The model could not be submitted for use by others because the RevBayes server could not be reached. The file was saved to this computer."];
+            [alert runModal];
+            //NSRunAlertPanel(@"Connection Failure", @"The model could not be submitted for use by others because the RevBayes server could not be reached. The file was saved to this computer.", @"OK", nil, nil);
             return;
             }
 
@@ -176,7 +196,11 @@
 		}
 	@catch (NSException* e) 
 		{
-        NSRunAlertPanel(@"Error", @"Problem reading the model", @"OK", nil, nil);
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Error"];
+        [alert setInformativeText:@"Problem reading the model."];
+        [alert runModal];
+        //NSRunAlertPanel(@"Error", @"Problem reading the model", @"OK", nil, nil);
         modelBrowser = nil;
         return;
 		}
@@ -441,13 +465,13 @@
 	return retArray;
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Model Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -496,13 +520,10 @@
     return @"Model Specification";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
     [self startProgressIndicator];
 
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
-    
 	// attempt to get a pointer to the parent tool
     Tool* t = nil;
     for (int i=0; i<[self numInlets]; i++)

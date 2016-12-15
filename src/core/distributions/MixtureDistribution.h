@@ -64,6 +64,8 @@ namespace RevBayesCore {
     
 }
 
+#include "Assign.h"
+#include "Assignable.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 
@@ -99,7 +101,7 @@ template <class mixtureType>
 double RevBayesCore::MixtureDistribution<mixtureType>::computeLnProbability( void )
 {
     
-    return probabilities->getValue()[index];
+    return log(probabilities->getValue()[index]);
 }
 
 

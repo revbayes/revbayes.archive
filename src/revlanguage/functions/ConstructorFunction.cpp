@@ -111,18 +111,18 @@ const ArgumentRules& ConstructorFunction::getArgumentRules(void) const
 const std::string& ConstructorFunction::getClassType(void)
 {
     
-    static std::string revType = "ConstructorFunction";
+    static std::string rev_type = "ConstructorFunction";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& ConstructorFunction::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -151,9 +151,9 @@ std::vector<std::string> ConstructorFunction::getFunctionNameAliases( void ) con
 const TypeSpec& ConstructorFunction::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

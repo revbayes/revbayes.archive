@@ -37,7 +37,7 @@ MonteCarloSampler::MonteCarloSampler(void) : Parallelizable(),
 /**
  *
  */
-MonteCarloSampler::MonteCarloSampler(const MonteCarloSampler &m) : Parallelizable(m), Cloneable(m),
+MonteCarloSampler::MonteCarloSampler(const MonteCarloSampler &m) : Cloneable(m), Parallelizable(m),
     generation( m.generation )
 {
     
@@ -60,6 +60,11 @@ size_t MonteCarloSampler::getCurrentGeneration( void ) const
     return generation;
 }
 
+
+void MonteCarloSampler::setCurrentGeneration( size_t g )
+{
+    generation = g;
+}
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const MonteCarloSampler& x)
 {

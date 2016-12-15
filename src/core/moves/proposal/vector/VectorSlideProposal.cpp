@@ -14,14 +14,22 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-VectorSlideProposal::VectorSlideProposal( StochasticNode< RbVector<double> > *n, double l) : Proposal(),
+VectorSlideProposal::VectorSlideProposal( StochasticNode< RbVector<double> > *n, const std::vector<int> &i, double l) : Proposal(),
     variable( n ),
+    indices( i ),
     lambda( l ),
-    length( variable->getValue().size() ),
+    length( indices.size() ),
     storedSlidingFactor( 0.0 )
 {
     // tell the base class to add the node
     addNode( variable );
+    
+    // if the length is 0 then we use all elements (no indices were provided)
+    if ( length == 0 )
+    {
+        length = variable->getValue().size();
+    }
+    
     
 }
 
@@ -56,7 +64,7 @@ VectorSlideProposal* VectorSlideProposal::clone( void ) const
  */
 const std::string& VectorSlideProposal::getProposalName( void ) const
 {
-    static std::string name = "VectorScaling";
+    static std::string name = "VectorSlide";
     
     return name;
 }
@@ -87,8 +95,12 @@ double VectorSlideProposal::doProposal( void )
     // copy value
     storedSlidingFactor = delta;
     
-    for (size_t index=0; index<length; ++index)
+    // how many elements did we specifically want to update?
+    size_t n_indices = indices.size();
+    
+    for (size_t i=0; i<length; ++i)
     {
+        size_t index = ( n_indices == 0 ? i : indices[i]);
         val[index] += delta;
     }
     
@@ -133,8 +145,12 @@ void VectorSlideProposal::undoProposal( void )
 {
     RbVector<double>& v = variable->getValue();
     
-    for (size_t index=0; index<length; ++index)
+    // how many elements did we specifically want to update?
+    size_t n_indices = indices.size();
+    
+    for (size_t i=0; i<length; ++i)
     {
+        size_t index = ( n_indices == 0 ? i : indices[i]);
         v[index] -= storedSlidingFactor;
     }
     

@@ -15,13 +15,13 @@ using namespace RevBayesCore;
 RateMatrix_InfiniteSites::RateMatrix_InfiniteSites(size_t n) : TimeReversibleRateMatrix( n )
 {
     
-    MatrixReal &m = *theRateMatrix;
+    MatrixReal &m = *the_rate_matrix;
     
     // compute the off-diagonal values
-    for (size_t i=1; i<numStates; i++)
+    for (size_t i=1; i<num_states; i++)
     {
         m[0][i] = 1.0;
-        for (size_t j=0; j<numStates; j++)
+        for (size_t j=0; j<num_states; j++)
         {
             m[i][j] = 0;
         }
@@ -65,17 +65,17 @@ RateMatrix_InfiniteSites& RateMatrix_InfiniteSites::assign(const Assignable &m)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_InfiniteSites::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
+void RateMatrix_InfiniteSites::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     
     double t = rate * (startAge - endAge);
     
     // calculate the transition probabilities
     P[0][0] = exp(-t);
-    for (size_t i=1; i<numStates; i++)
+    for (size_t i=1; i<num_states; i++)
     {
-        P[0][i] = (1 - exp(-t)) / (numStates - 1.0);
-        for (size_t j=0; j<numStates; j++)
+        P[0][i] = (1 - exp(-t)) / (num_states - 1.0);
+        for (size_t j=0; j<num_states; j++)
         {
             P[i][j] = 0;
         }

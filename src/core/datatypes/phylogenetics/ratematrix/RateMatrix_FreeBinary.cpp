@@ -17,7 +17,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_FreeBinary::RateMatrix_FreeBinary(void) : GeneralRateMatrix( 2 ) {
+RateMatrix_FreeBinary::RateMatrix_FreeBinary(bool rescale) : GeneralRateMatrix( 2 , rescale) {
 
     update();
 }
@@ -30,16 +30,15 @@ RateMatrix_FreeBinary::~RateMatrix_FreeBinary(void) {
 
 double RateMatrix_FreeBinary::averageRate(void) const
 {
-    return 1.0;
+    return 2.0 * transition_rates[0] * transition_rates[1] / (transition_rates[0] + transition_rates[1]);
 }
 
 /** Calculate the transition probabilities */
-void RateMatrix_FreeBinary::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
-{
+void RateMatrix_FreeBinary::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
 
-//    double expPart = exp( - (transitionRates[0] + transitionRates[1]) * t);
+//    double expPart = exp( - (transition_rates[0] + transition_rates[1]) * t);
     double t = rate * (startAge - endAge);
-    const MatrixReal& m = *theRateMatrix;
+    const MatrixReal& m = *the_rate_matrix;
     double expPart = exp( -(m[0][1] + m[1][0]) * t);
     double pi0 = m[1][0] / (m[0][1] + m[1][0]);
     double pi1 = 1.0 - pi0;
@@ -51,8 +50,7 @@ void RateMatrix_FreeBinary::calculateTransitionProbabilities(TransitionProbabili
 }
 
 
-RateMatrix_FreeBinary* RateMatrix_FreeBinary::clone( void ) const
-{
+RateMatrix_FreeBinary* RateMatrix_FreeBinary::clone( void ) const {
     return new RateMatrix_FreeBinary( *this );
 }
 
@@ -61,36 +59,35 @@ RateMatrix_FreeBinary* RateMatrix_FreeBinary::clone( void ) const
 void RateMatrix_FreeBinary::fillRateMatrix( void )
 {
 
-    MatrixReal& m = *theRateMatrix;
+    MatrixReal& m = *the_rate_matrix;
 
     // set the off-diagonal portions of the rate matrix
-    m[0][0] = -transitionRates[0];
-    m[0][1] = transitionRates[0];
-    m[1][0] = transitionRates[1];
-    m[1][1] = -transitionRates[1];
+    m[0][0] = -transition_rates[0];
+    m[0][1] = transition_rates[0];
+    m[1][0] = transition_rates[1];
+    m[1][1] = -transition_rates[1];
 
     // set flags
-    needsUpdate = true;
+    needs_update = true;
 }
 
 std::vector<double> RateMatrix_FreeBinary::getStationaryFrequencies( void ) const
 {
-    std::vector<double> stationaryFreqs;
+    std::vector<double> stationary_freqs;
 
-    stationaryFreqs.push_back( transitionRates[1]/(transitionRates[0] + transitionRates[1]) );
-    stationaryFreqs.push_back( transitionRates[0]/(transitionRates[0] + transitionRates[1]) );
+    stationary_freqs.push_back( transition_rates[1]/(transition_rates[0] + transition_rates[1]) );
+    stationary_freqs.push_back( transition_rates[0]/(transition_rates[0] + transition_rates[1]) );
 
-    return stationaryFreqs;
+    return stationary_freqs;
 }
 
 
 void RateMatrix_FreeBinary::update( void ) {
 
-    if ( needsUpdate )
+    if ( needs_update )
     {
         fillRateMatrix();
 
-        // clean flags
-        needsUpdate = false;
+        GeneralRateMatrix::update();
     }
 }

@@ -19,9 +19,9 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
     
     //Reading the header
     std::vector<std::string>& line = chars[0];
-    int columnTaxon = -1;
-    int columnAge = -1;
-    int columnSpecies = -1;
+    int column_taxon = -1;
+    int column_age = -1;
+    int column_species = -1;
     
     for (size_t i = 0 ; i < line.size() ; ++i)
     {
@@ -29,22 +29,23 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         StringUtilities::toLower( tmp );
         if ( tmp == "taxon" )
         {
-            columnTaxon = int(i);
+            column_taxon = int(i);
         }
         else if ( tmp == "age" )
         {
-            columnAge = int(i);
+            column_age = int(i);
         }
         else if ( tmp == "species" )
         {
-            columnSpecies = int(i);
+            column_species = int(i);
         }
         else
         {
             throw RbException("Wrong header in the taxa definition file. It can only contain 'taxon', 'species' and 'age' fields.");
         }
     }
-    if (columnTaxon == -1)
+    
+    if (column_taxon == -1)
     {
         throw RbException("Missing header in the taxa definition file. It has to contain 'taxon' field.");
     }
@@ -52,20 +53,20 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
     for (size_t i = 1; i < chars.size(); ++i) //going through all the lines
     {
         const std::vector<std::string>& line = chars[i];
-        Taxon t = Taxon( line[ columnTaxon ] );
+        Taxon t = Taxon( line[ column_taxon ] );
         
         double age = 0.0;
-        if ( columnAge >= 0 )
+        if ( column_age >= 0 )
         {
             std::stringstream ss;
-            ss.str( line[ columnAge ] );
+            ss.str( line[ column_age ] );
             ss >> age;
         }
         t.setAge( age );
         
-        if ( columnSpecies >= 0 )
+        if ( column_species >= 0 )
         {
-            t.setSpeciesName( line[ columnSpecies ] );
+            t.setSpeciesName( line[ column_species ] );
         }
         
         taxa.push_back( t );

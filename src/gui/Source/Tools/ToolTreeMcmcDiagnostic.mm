@@ -5,6 +5,16 @@
 
 @implementation ToolTreeMcmcDiagnostic
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
     //
@@ -13,11 +23,6 @@
 
 - (BOOL)execute {
 
-    NSLog(@"Executing tool %@", self);
-    
-    [self startProgressIndicator];
-    
-    [self stopProgressIndicator];
     return YES;
 }
 
@@ -36,11 +41,8 @@
         [self setImageWithSize:itemSize];
 		
 		// initialize the inlet/outlet information
-		[self addInletOfColor:[NSColor redColor]];
-		[self addInletOfColor:[NSColor redColor]];
-		//[self addOutletOfColor:[NSColor greenColor]];
+		[self addInletOfColor:[NSColor brownColor]];
         [self setInletLocations];
-        //[self setOutletLocations];
             
 		// initialize the control window
 		//controlWindow = [[WindowControllerAlign alloc] initWithTool:self];
@@ -78,13 +80,13 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Tree MCMC Diagnostic Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -102,6 +104,10 @@
 - (NSString*)toolName {
 
     return @"MCMC Tree Diagnostics";
+}
+
+- (void)updateForChangeInParent {
+
 }
 
 @end

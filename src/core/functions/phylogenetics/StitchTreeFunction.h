@@ -38,8 +38,9 @@ namespace RevBayesCore {
     private:
         void                                                updateStitchTree(void);
         void                                                initTaxonGroups(void);
-        void                                                recursivelyStitchPatchClades(TopologyNode* node);
-        void                                                recursivelyCleanPatchClade(TopologyNode* node, TopologyNode*& newRoot, std::set<Taxon>& remainingTaxa);
+        void                                                recursivelyStitchPatchClades(TopologyNode* node, size_t& index);
+        void                                                recursivelyCleanPatchClade(TopologyNode* node, TopologyNode*& newRoot, std::set<Taxon>& remainingTaxa, size_t& index, size_t patchIndex);
+        void                                                recursivelyIndexPatchClade(TopologyNode* patchRoot, size_t& index, size_t patchIndex);
 //        void                                                stitchPatchClade(TopologyNode* node, const Tree& patchClade);
         
         // parameters
@@ -50,7 +51,10 @@ namespace RevBayesCore {
         std::vector<std::set<Taxon> >                       prunedTaxa;
         size_t                                              numPatches;
         std::map<size_t, std::vector<size_t> >              stitchTreeIndex;
+        std::map<Taxon, size_t>                             stitchTipIndex;
         bool                                                haveIndex;
+        size_t                                              num_nodes;
+        size_t                                              numTips;
         
     };
     

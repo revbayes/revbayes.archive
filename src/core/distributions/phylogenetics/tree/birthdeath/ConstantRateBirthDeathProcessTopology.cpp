@@ -46,7 +46,7 @@ double ConstantRateBirthDeathProcessTopology::lnSpeciationRate(double t) const
 }
 
 
-double ConstantRateBirthDeathProcessTopology::pSurvival(double start, double end) const
+double ConstantRateBirthDeathProcessTopology::computeProbabilitySurvival(double start, double end) const
 {
 	
 	// compute the rate
@@ -86,7 +86,7 @@ double ConstantRateBirthDeathProcessTopology::logNumberRankings(Tree *tree) {
 }
 
 double ConstantRateBirthDeathProcessTopology::logProbTreeShape() {
-//Adding RbMath::lnFactorial(numTaxa-1) to do like they do in the non-topology prior.
+//Adding RbMath::lnFactorial(num_taxa-1) to do like they do in the non-topology prior.
 	return RbMath::lnFactorial(int(num_taxa)-1) + logProbSubTreeShape( value->getRoot() );
 }
 

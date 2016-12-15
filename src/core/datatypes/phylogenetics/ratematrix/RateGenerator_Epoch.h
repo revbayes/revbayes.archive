@@ -1,5 +1,13 @@
-#ifndef RateGenerator_Epoch_H
-#define RateGenerator_Epoch_H
+//
+//  RateGenerator_Epoch.h
+//  revbayes-proj
+//
+//  Created by Michael Landis on 3/17/15.
+//  Copyright (c) 2015 Michael Landis. All rights reserved.
+//
+
+#ifndef __revbayes_proj__RateGenerator_Epoch__
+#define __revbayes_proj__RateGenerator_Epoch__
 
 
 #include "RateGenerator.h"
@@ -15,17 +23,17 @@ namespace RevBayesCore {
         
     public:
         RateGenerator_Epoch(size_t n, size_t ne);                                                                                                                   //!< Construct rate matrix with n states
-        RateGenerator_Epoch(const RateGenerator_Epoch& m);                                                                                                          //!< Copy constructor
+//        RateGenerator_Epoch(const RateGenerator_Epoch& m);                                                                                                          //!< Copy constructor
         virtual                             ~RateGenerator_Epoch(void);                                                                                             //!< Destructor
         
         // overloaded operators
-        RateGenerator_Epoch&                operator=(const RateGenerator_Epoch& r);
+//        RateGenerator_Epoch&                operator=(const RateGenerator_Epoch& r);
         
         // RateMatrix functions
         RateGenerator_Epoch&                assign(const Assignable &m);
-        void                                calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const;   //!< Calculate the transition matrix
+        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateGenerator_Epoch*                clone(void) const;
-        double                              getRate(size_t from, size_t to) const;                                                     //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
+        double                              getRate(size_t from, size_t to, double age, double rate) const;                                    //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
         const RbVector<RateGenerator>&      getRateGenerators(void) const;                                                                                         //!< Return the epoch generators
         const RbVector<double>&             getEpochTimes(void) const;                                                                                             //!< Return the epoch times
         const RbVector<double>&             getEpochRates(void) const;                                                                                             //!< Return the epoch rates
@@ -44,7 +52,7 @@ namespace RevBayesCore {
 
         // helper variables
         size_t                              numEpochs;
-        bool                                needsUpdate;
+        bool                                needs_update;
 
 
     };

@@ -16,67 +16,67 @@ using namespace RevLanguage;
 
 Dist_phyloCTMCDASequence::Dist_phyloCTMCDASequence() : TypedDistribution< AbstractHomologousDiscreteCharacterData >()
 {
-    
+
 }
 
 
 Dist_phyloCTMCDASequence::~Dist_phyloCTMCDASequence()
 {
-    
+
 }
 
 Dist_phyloCTMCDASequence* Dist_phyloCTMCDASequence::clone( void ) const
 {
-    
+
     return new Dist_phyloCTMCDASequence(*this);
 }
 
 
 RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData >* Dist_phyloCTMCDASequence::createDistribution( void ) const {
-    
+
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
     size_t nStates = rm->getValue().getNumberOfStates();
     size_t nChars = rm->getValue().getNumberOfCharacters();
-    
+
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
-    
+
     if ( dt == "DNA" )
     {
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::DnaState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::DnaState>(tau, nStates, nChars);
-        
+
         RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
         dist->setRateGeneratorSequence( rm );
-        
+
         d = dist;
     }
     else if ( dt == "RNA" )
     {
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState>(tau, nStates, nChars);
-        
+
         RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
         dist->setRateGeneratorSequence( rm );
-        
+
         d = dist;
     }
     else if ( dt == "AA" || dt == "Protein" )
     {
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState>(tau, nStates, nChars);
-        
+
         RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
         dist->setRateGeneratorSequence( rm );
-        
+
         d = dist;
     }
     else if (dt == "Standard" )
     {
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState>(tau, nStates, nChars);
-        
+
         RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
         dist->setRateGeneratorSequence( rm );
-        
+
         d = dist;
     }
     else if ( dt == "Biogeo" )
@@ -84,22 +84,22 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         bool fe = static_cast<const RlBoolean&>(forbidExtinction->getRevObject()).getValue();
         bool uc = static_cast<const RlBoolean&>(useCladogenesis->getRevObject()).getValue();
         const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *csf = NULL;
-        
+
         if ( cladoStateFreqs->getRevObject() != RevNullObject::getInstance() )
         {
             csf = static_cast<const Simplex &>( cladoStateFreqs->getRevObject() ).getDagNode();
         }
-        
+
         // (const TypedDagNode< treeType > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool forbidExt=true, bool useClado=true)
         RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState> *dist = new RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState>(tau, nStates, nChars, false, fe, uc);
-        
+
         RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
         dist->setRateGeneratorSequence( rm );
         dist->setCladogenicStateFrequencies( csf );
-        
+
         d = dist;
     }
-    
+
     return d;
 }
 
@@ -107,18 +107,18 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 /* Get Rev type of object */
 const std::string& Dist_phyloCTMCDASequence::getClassType(void)
 {
-    
+
     static std::string revType = "Dist_phyloCTMCDASequence";
-    
+
     return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_phyloCTMCDASequence::getClassTypeSpec(void)
 {
-    
+
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
-    
+
     return revTypeSpec;
 }
 
@@ -134,7 +134,7 @@ std::string Dist_phyloCTMCDASequence::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "PhyloDACTMC";
-    
+
     return d_name;
 }
 
@@ -142,19 +142,19 @@ std::string Dist_phyloCTMCDASequence::getDistributionFunctionName( void ) const
 /** Return member rules (no members) */
 const MemberRules& Dist_phyloCTMCDASequence::getParameterRules(void) const
 {
-    
+
     static MemberRules distMemberRules;
     static bool rulesSet = false;
-    
+
     if ( !rulesSet )
     {
-        
+
         distMemberRules.push_back( new ArgumentRule( "tree"               , Tree::getClassTypeSpec() , "The along which the character(s) evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distMemberRules.push_back( new ArgumentRule( "Q"                  , RateGeneratorSequence::getClassTypeSpec()  , "The transition rate matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distMemberRules.push_back( new ArgumentRule( "cladoProbs"         , Simplex::getClassTypeSpec()  , "The cladogenetic probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         distMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , RlBoolean::getClassTypeSpec(), "Should we exclude complete extinction (zero areas occupied)?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
         distMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , RlBoolean::getClassTypeSpec(), "Should we use cladigenesis?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
-        
+
         std::vector<std::string> options;
         options.push_back( "Biogeo" );
         options.push_back( "DNA" );
@@ -166,16 +166,16 @@ const MemberRules& Dist_phyloCTMCDASequence::getParameterRules(void) const
 
         rulesSet = true;
     }
-    
+
     return distMemberRules;
 }
 
 
 const TypeSpec& Dist_phyloCTMCDASequence::getTypeSpec( void ) const
 {
-    
+
     static TypeSpec ts = getClassTypeSpec();
-    
+
     return ts;
 }
 
@@ -199,7 +199,7 @@ const TypeSpec& Dist_phyloCTMCDASequence::getTypeSpec( void ) const
 
 /** Print value for user */
 void Dist_phyloCTMCDASequence::printValue(std::ostream& o) const {
-    
+
     o << "Character-State-Evolution-Along-Tree-Using-Data-Augmentation Process(tree=";
     if ( tree != NULL ) {
         o << tree->getName();
@@ -218,7 +218,7 @@ void Dist_phyloCTMCDASequence::printValue(std::ostream& o) const {
 
 /** Set a member variable */
 void Dist_phyloCTMCDASequence::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
-    
+
     if ( name == "tree" )
     {
         tree = var;

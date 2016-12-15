@@ -80,7 +80,7 @@ double NearestNeighborInterchangeProposal::doProposal( void )
     
     Tree& tau = variable->getValue();
     
-    // pick a random node which is not the root and neithor the direct descendant of the root
+    // pick a random node which is not the root nor a direct descendant of the root
     TopologyNode* node;
     do {
         double u = rng->uniform01();
@@ -103,11 +103,13 @@ double NearestNeighborInterchangeProposal::doProposal( void )
     double my_age       = node->getAge();
     
     // now we store all necessary values
-    storedChoosenNode   = node;
+    storedChosenNode   = node;
     storedUncle         = uncle;
-    storedChoosenAge    = my_age;
-    storedUnclesAge     = uncles_age;
     
+    storedAges = std::vector<double>(tau.getNumberOfNodes(), 0.0);
+    TreeUtilities::getAges(&tau, storedChosenNode, storedAges);
+    TreeUtilities::getAges(&tau, storedUncle, storedAges);
+
     // now exchange the two nodes
     grandparent.removeChild( uncle );
     parent.removeChild( node );
@@ -118,8 +120,10 @@ double NearestNeighborInterchangeProposal::doProposal( void )
     
     // draw new ages and compute the hastings ratio at the same time
     // Note: the Hastings ratio needs to be there because one of the nodes might be a tip and hence not scaled!
+    double lnHastingsratio = 0.0;
+    
+    // node rescale and MH
     double my_new_age;
-    double lnHastingsratio;
     if ( node->isTip() )
     {
         my_new_age = my_age;
@@ -128,8 +132,18 @@ double NearestNeighborInterchangeProposal::doProposal( void )
     else
     {
         my_new_age = gparent_age * rng->uniform01();
-        lnHastingsratio = log( gparent_age / parent_age);
+
+        // rescale the subtrees
+        double scaling_factor = my_new_age / my_age;
+        TreeUtilities::rescaleSubtree(&tau, node, scaling_factor );
+        
+        // compute the Hastings ratio
+        size_t nNodes = node->getNumberOfNodesInSubtree(false);
+        lnHastingsratio = (nNodes > 1 ? log( scaling_factor ) * (nNodes-1) : 0.0 );
+
     }
+
+    // uncle rescale and MH
     double uncles_new_age;
     if ( uncle->isTip() )
     {
@@ -138,12 +152,14 @@ double NearestNeighborInterchangeProposal::doProposal( void )
     else
     {
         uncles_new_age = parent_age * rng->uniform01();
-        lnHastingsratio += log( parent_age / gparent_age);
+        
+        double scaling_factor = uncles_new_age / uncles_age;
+        TreeUtilities::rescaleSubtree(&tau, uncle, scaling_factor );
+
+        size_t nNodes = uncle->getNumberOfNodesInSubtree(false);
+        lnHastingsratio += (nNodes > 1 ? log( scaling_factor ) * (nNodes-1) : 0.0 );
+        
     }
-    
-    // rescale the subtrees
-    TreeUtilities::rescaleSubtree(&tau, node, my_new_age / my_age );
-    TreeUtilities::rescaleSubtree(&tau, uncle, uncles_new_age / uncles_age );
     
     return lnHastingsratio;
     
@@ -187,26 +203,19 @@ void NearestNeighborInterchangeProposal::undoProposal( void )
     
     // undo the proposal
     TopologyNode& parent = storedUncle->getParent();
-    TopologyNode& grandparent = storedChoosenNode->getParent();
+    TopologyNode& grandparent = storedChosenNode->getParent();
     
     // now exchange the two nodes
-    grandparent.removeChild( storedChoosenNode );
+    grandparent.removeChild( storedChosenNode );
     parent.removeChild( storedUncle );
     grandparent.addChild( storedUncle );
-    parent.addChild( storedChoosenNode );
+    parent.addChild( storedChosenNode );
     storedUncle->setParent( &grandparent );
-    storedChoosenNode->setParent( &parent );
+    storedChosenNode->setParent( &parent );
     
     // rescale to old ages
-    TreeUtilities::rescaleSubtree(&variable->getValue(), storedChoosenNode, storedChoosenAge / storedChoosenNode->getAge() );
-    TreeUtilities::rescaleSubtree(&variable->getValue(), storedUncle, storedUnclesAge / storedUncle->getAge() );
-    
-    
-#ifdef ASSERTIONS_TREE
-    if ( fabs(storedChoosenAge - storedChoosenNode->getAge()) > 1E-8 || fabs(storedUnclesAge - storedUncle->getAge()) > 1E-8 ) {
-        throw RbException("Error while rejecting NNI proposal: Node ages were not correctly restored!");
-    }
-#endif
+    TreeUtilities::setAges(&variable->getValue(), storedChosenNode, storedAges);
+    TreeUtilities::setAges(&variable->getValue(), storedUncle, storedAges);
     
 }
 

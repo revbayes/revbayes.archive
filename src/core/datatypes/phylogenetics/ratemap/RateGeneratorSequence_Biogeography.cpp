@@ -15,8 +15,8 @@ RateGeneratorSequence_Biogeography::RateGeneratorSequence_Biogeography(size_t nc
     if (mrs == 0 || mrs > nc)
         mrs = (unsigned)nc;
 //    rootFrequencies = std::vector<double>(2,0.5);
-    
-    
+
+
     epochs = std::vector<double>(1,0.0);
     numEpochs = epochs.size();
     epochOffset = numEpochs * numCharacters;
@@ -31,10 +31,10 @@ RateGeneratorSequence_Biogeography::RateGeneratorSequence_Biogeography(size_t nc
     useDistanceDependence = false;
     useUnnormalizedRates = false;
 //    useRootFrequencies = true;
-    
+
     branchOffset=1;
     epochOffset=1;
-    
+
 }
 
 RateGeneratorSequence_Biogeography::RateGeneratorSequence_Biogeography(const RateGeneratorSequence_Biogeography& m) : RateGeneratorSequenceUsingMatrix( m )
@@ -47,26 +47,26 @@ RateGeneratorSequence_Biogeography::RateGeneratorSequence_Biogeography(const Rat
     epochOffset = m.epochOffset;
     adjacentAreaVector = m.adjacentAreaVector;
     availableAreaVector = m.availableAreaVector;
-    
+
     useAreaAvailable = m.useAreaAvailable;
     useAreaAdjacency = m.useAreaAdjacency;
     useDistanceDependence = m.useDistanceDependence;
     useRootFrequencies = m.useRootFrequencies;
     useUnnormalizedRates = m.useUnnormalizedRates;
-    
+
     geographyRateModifier = m.geographyRateModifier;
     useGeographyRateModifier = m.useGeographyRateModifier;
-    
+
 
     forbidExtinction = m.forbidExtinction;
-    
+
     branchOffset = m.branchOffset;
     epochOffset = m.epochOffset;
 }
 
 RateGeneratorSequence_Biogeography::~RateGeneratorSequence_Biogeography(void)
 {
-    
+
 }
 
 RateGeneratorSequence_Biogeography& RateGeneratorSequence_Biogeography::operator=(const RateGeneratorSequence_Biogeography& r)
@@ -74,7 +74,7 @@ RateGeneratorSequence_Biogeography& RateGeneratorSequence_Biogeography::operator
     if (this != &r)
     {
         RateGeneratorSequence::operator=( r );
-        
+
         distancePower = r.distancePower;
         maxRangeSize = r.maxRangeSize;
 
@@ -83,17 +83,17 @@ RateGeneratorSequence_Biogeography& RateGeneratorSequence_Biogeography::operator
         epochOffset = r.epochOffset;
         adjacentAreaVector = r.adjacentAreaVector;
         availableAreaVector = r.availableAreaVector;
-        
+
         geographyRateModifier = r.geographyRateModifier;
         useGeographyRateModifier = r.useGeographyRateModifier;
-        
+
         useAreaAdjacency = r.useAreaAdjacency;
         useAreaAvailable = r.useAreaAvailable;
         useDistanceDependence = r.useDistanceDependence;
         useUnnormalizedRates = r.useUnnormalizedRates;
 
         forbidExtinction = r.forbidExtinction;
-        
+
         branchOffset = r.branchOffset;
         epochOffset = r.epochOffset;
     }
@@ -102,19 +102,19 @@ RateGeneratorSequence_Biogeography& RateGeneratorSequence_Biogeography::operator
 
 void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double r) const
 {
-   
+
     double branchLength = startAge - endAge;
-    
+
     const RateGenerator* rm = rateMatrix;
-    
+
 //  @Michael: Please look at this again!!!
 //    if (node.isRoot())
 //        branchLength = node.getAge() * 5;
 
-    double expPart = exp( -( rm->getRate(1,0) + rm->getRate(0,1) ) * r * branchLength);
-    double p = rm->getRate(1,0) / (rm->getRate(1,0) + rm->getRate(0,1));
+    double expPart = exp( -( rm->getRate(1,0, startAge, r) + rm->getRate(0,1, startAge, r) ) * branchLength);
+    double p = rm->getRate(1,0, startAge, r) / (rm->getRate(1,0, startAge, r) + rm->getRate(0,1, startAge, r));
     double q = 1.0 - p;
-    
+
     P[0][0] = p + q * expPart;
     P[0][1] = q - q * expPart;
     P[1][0] = p - p * expPart;
@@ -125,55 +125,55 @@ void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(Transi
 {
 
     double currAge = startAge;
-    
+
     const RateGenerator* rm = rateMatrix;
-    
+
     // start at earliest epoch
     int epochIdx = getEpochIndex(startAge);
-    
+
 
     // initialize P = I
     P[0][0] = 1.0;
     P[0][1] = 0.0;
     P[1][0] = 0.0;
     P[1][1] = 1.0;
-    
 
-    
+
+
     bool stop = false;
     while (!stop)
     {
         // get dispersal and extinction rates for site
         size_t idx = this->numCharacters * epochIdx + charIdx;
-        
+
         double dispersalRate  = ( (availableAreaVector[ idx ] > 0) ? 1.0 : 0.0);
         double extinctionRate = ( (availableAreaVector[ idx ] > 0) ? 1.0 : 1e10);
-        
+
         // get age of start of next oldest epoch
         double epochAge = epochs[ epochIdx ];
-        
+
         // get next oldest age boundary (node or epoch)
         double incrAge = epochAge;
-        
+
         // no more epochs, exit loop after computation
         if (endAge >= epochAge)
         {
             incrAge = endAge;
             stop = true;
         }
-        
+
         // get branch length
         double diffAge = currAge - incrAge;
-        
+
         // transition probabilities w/ sum-product
-        double glr0 = rm->getRate(1,0);
-        double glr1 = rm->getRate(0,1);
+        double glr0 = rm->getRate(1,0, startAge, 1.0);
+        double glr1 = rm->getRate(0,1, startAge, 1.0);
 //        double glr0 = rm->getRate(1,0,currAge,extinctionRate);
 //        double glr1 = rm->getRate(0,1,currAge,dispersalRate);
         double expPart = exp( -(glr0 + glr1) * r * diffAge);
         double p = glr0 / (glr0 + glr1);
         double q = 1.0 - p;
-        
+
         double p00 = (p + q * expPart);
         double p01 = (q - q * expPart);
         double p10 = (p - p * expPart);
@@ -183,16 +183,16 @@ void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(Transi
         double q01 = P[0][1];
         double q10 = P[1][0];
         double q11 = P[1][1];
-        
+
         P[0][0] = p00 * q00 + p01 * q10;
         P[0][1] = p00 * q01 + p01 * q11;
         P[1][0] = p10 * q00 + p11 * q10;
         P[1][1] = p10 * q01 + p11 * q11;
-        
+
 //        std::cout << P[0][0] << "," << P[0][1] << ";" << P[1][0] << "," << P[1][1] << "\n";
-        
-        
-        
+
+
+
         if (!stop)
         {
             epochIdx += 1;
@@ -210,43 +210,43 @@ RateGeneratorSequence_Biogeography* RateGeneratorSequence_Biogeography::clone(vo
 void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
 {
     const RateGenerator* rm = rateMatrix;
-    
-    rm->calculateTransitionProbabilities(P, age, 0, 1.0);
+
+    rm->calculateTransitionProbabilities(age, 0, 1.0, P);
 }
 
 
 double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* count, double r, double age) const
 {
     size_t s = to->getState();
-    
+
     if (from[ to->getSiteIndex() ]->getState() == to->getState())
     {
         std::cout << count[0] << " " << count[1] << "\n";
 //        std::cout << node.getIndex() << " problem...\n";
         ;
     }
-    
+
     // rate to extinction cfg is 0
     if (count[1] == 1 && s == 0 && forbidExtinction)
         return 0.0;
-    
+
     // @Michael: Please look at this again too!!
     // rate for dispersal to exceed max range size is 0
 //    if (!node.isRoot() && count[1] >= maxRangeSize && s == 1)
     if ( count[1] >= maxRangeSize && s == 1)
     {
-        
+
         return 0.0;
     }
-    
+
     // rate according to binary rate matrix Q(node)
 //    double rate = rateMatrix->getRate(!s,s,age,r);
-    double rate = rateMatrix->getRate(!s,s) * r;
+    double rate = rateMatrix->getRate(!s,s,age,r);
 
     // apply rate modifiers
     if (useGeographyRateModifier) // want this to take in age as an argument...
         rate *= geographyRateModifier->computeRateModifier(from, to, age);
-    
+
 //    // root freqs
 //    if (useRootFrequencies)
 //    {
@@ -257,7 +257,7 @@ double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> 
 ////        double rfr = ( s == 0 ? rootFrequencies[0] : rootFrequencies[1] );
 //        rate *= rfr;
 //    }
-    
+
     return rate;
 
 }
@@ -275,9 +275,9 @@ double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> 
 
 double RateGeneratorSequence_Biogeography::getRate(size_t from, size_t to, double r, double age) const
 {
-    
+
     throw RbException("Missing implementation in RateGeneratorSequence_Biogeography (Sebastian)");
-    
+
     return 0.0;
 }
 
@@ -287,16 +287,16 @@ double RateGeneratorSequence_Biogeography::getSiteRate(CharacterEvent* from, Cha
     size_t s = to->getState();
 //    int charIdx = to->getIndex();
 //    int epochIdx = getEpochIndex(age);
-    
+
     // rate according to binary rate matrix Q(node)
-    rate = rateMatrix->getRate(!s,s) * r;
+    rate = rateMatrix->getRate(!s,s,age,r);
 //    rate = rateMatrix->getRate(!s,s,age,r);
-    
+
     // area effects
     if (useGeographyRateModifier)
         rate *= geographyRateModifier->computeSiteRateModifier(from,to,age);
 
-    
+
     return rate;
 }
 
@@ -304,14 +304,14 @@ double RateGeneratorSequence_Biogeography::getSiteRate( size_t from, size_t to, 
 {
     double rate = 0.0;
     size_t s = to;
-    
+
 //    int pres = !s;
 //    int epochIdx = getEpochIndex(age);
-    
+
     // rate according to binary rate matrix Q(node)
-    rate = rateMatrix->getRate(!s,s) * r;
-    
-    
+    rate = rateMatrix->getRate(!s,s,age,r);
+
+
     // area effects
     if (useGeographyRateModifier)
     {
@@ -321,16 +321,16 @@ double RateGeneratorSequence_Biogeography::getSiteRate( size_t from, size_t to, 
     }
 //        rate *= geographyRateModifier->computeSiteRateModifier(node,from,to,charIdx,age);
 
-    
+
     return rate;
 }
 
 double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterEvent*> from, unsigned* counts, double r, double age) const
 {
-    
+
     if (useUnnormalizedRates)
         return getUnnormalizedSumOfRates( from, counts, age);
-    
+
     // get rate away away from currState
     unsigned n0 = counts[0];
 //    if (useGeographyRateModifier)
@@ -344,16 +344,16 @@ double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterE
     {
         return 0.0;
     }
-    
+
     // do not allow dispersal events if range size is at max
 //    if (!node.isRoot() && counts[1] >= maxRangeSize)
     if ( counts[1] >= maxRangeSize)
     {
-        
+
         n0 = 0;
     }
 
-    
+
     // get (effective) num characters in each state
     double r0 = n1;
     double r1 = n0;
@@ -363,16 +363,16 @@ double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterE
 //        r0 = geographyRateModifier->getNumAvailableAreas(node,from,age);
         r0 = geographyRateModifier->getNumEmigratableAreas(from,age);
     }
-    
+
 //    if (useAreaAdjacency || useAreaAvailable)
 //        r0 = geographyRateModifier->getNumAvailableAreas(node,from,age);
-//    
+//
     // apply ctmc for branch
-    r0 *= rateMatrix->getRate(1,0) * r;
-    r1 *= rateMatrix->getRate(0,1) * r;
-    
-    
-    
+    r0 *= rateMatrix->getRate(1,0,age,r);
+    r1 *= rateMatrix->getRate(0,1,age,r);
+
+
+
 //    if (useRootFrequencies)
 //    {
 //        // root freqs
@@ -384,10 +384,10 @@ double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterE
 //        r0 *= rfr0;
 //        r1 *= rfr1;
 //    }
-    
+
     // apply rate for branch.
     double sum = r0 + r1;
-        
+
     return sum;
 }
 
@@ -396,7 +396,7 @@ double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterE
     unsigned n1 = (unsigned)numOn(from);
     unsigned n0 = (unsigned)(numCharacters - n1);
     unsigned counts[2] = {n0,n1};
-    
+
     return RateGeneratorSequence_Biogeography::getSumOfRates( from, counts, r, age);
 }
 
@@ -404,30 +404,30 @@ double RateGeneratorSequence_Biogeography::getUnnormalizedSumOfRates( std::vecto
 {
 
     size_t epochIdx = getEpochIndex(age);
-    
+
     // apply ctmc for branch
     const RateGenerator* rm = rateMatrix;
-    
+
     // get sum of rates
     double sum = 0.0;
     for (size_t i = 0; i < from.size(); i++)
     {
         size_t s = from[i]->getState();
         double v = availableAreaVector[ epochIdx * this->numCharacters + i ];
-        
+
         if (forbidExtinction && s == 1 && counts[1] == 0)
             sum += 0.0;
         else if (s == 1 && v > 0)
-            sum += rm->getRate(1,0);
+            sum += rm->getRate(1,0,age,1.0);
         else if (s == 1 && v == 0)
             sum += 1e10;
-        else  if (s == 0)
-            sum += rm->getRate(0,1) * v;
+        else if (s == 0)
+            sum += rm->getRate(0,1,age,1.0) * v;
     }
-    
+
     // apply rate for branch
     sum *= r;
-    
+
     return sum;
 }
 
@@ -438,7 +438,7 @@ void RateGeneratorSequence_Biogeography::updateMap(void)
     if (needsUpdate)
     {
         ; // do nothing ...
-        
+
         needsUpdate = false;
     }
 }
@@ -456,7 +456,7 @@ void RateGeneratorSequence_Biogeography::setDistancePower(double d)
 void RateGeneratorSequence_Biogeography::setGeographyRateModifier(const GeographyRateModifier& gdrm)
 {
     useGeographyRateModifier = true;
-    
+
     // ugly hack, prob better way to handle constness...
     geographyRateModifier = &const_cast<GeographyRateModifier&>(gdrm);
 
@@ -499,7 +499,7 @@ const std::set<size_t> RateGeneratorSequence_Biogeography::getRangeAndFrontierSe
 //    const std::vector<CharacterEvent*>& to = bh->getParentCharacters();
     size_t epochIdx = getEpochIndex(age);
     const std::vector<std::set<size_t> >& adjacentAreaSet = geographyRateModifier->getAdjacentAreaSet();
-    
+
 //    std::set<size_t>
     for (size_t i = 0; i < from.size(); i++)
     {
@@ -517,7 +517,7 @@ const std::set<size_t> RateGeneratorSequence_Biogeography::getRangeAndFrontierSe
             }
         }
     }
-    
+
     return ret;
 }
 

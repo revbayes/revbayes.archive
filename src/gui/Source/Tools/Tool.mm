@@ -11,6 +11,7 @@
 
 @implementation Tool
 
+@synthesize analysisView;
 @synthesize flagCount;
 @synthesize touchOnRevival;
 @synthesize isCurrentlyExecuting;
@@ -18,6 +19,8 @@
 @synthesize isVisited;
 @synthesize isDirty;
 @synthesize workspaceName;
+@synthesize loopMembership;
+@synthesize executeOrder;
 
 - (void)addInletOfColor:(NSColor*)c {
 
@@ -33,6 +36,12 @@
 	[ol setToolColor:c];
 	[outlets addObject:ol];
 	[self setOutletLocations];
+}
+
+- (void)addToolToLoop:(ToolLoop*)loop {
+
+    if ( [loopMembership containsObject:loop] == NO )
+        [loopMembership addObject:loop];
 }
 
 - (BOOL)areAnyParentsDirty {
@@ -51,6 +60,16 @@
 
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (NSColor*)colorOfInletIndexed:(int)idx {
 
 	return [[inlets objectAtIndex:idx] toolColor];
@@ -63,20 +82,21 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
-	[aCoder encodeObject:inlets        forKey:@"inlets"];
-	[aCoder encodeObject:outlets       forKey:@"outlets"];
-	[aCoder encodeInt:flagCount        forKey:@"flagCount"];
-	[aCoder encodeBool:touchOnRevival  forKey:@"touchOnRevival"];
-    [aCoder encodeBool:isLoop          forKey:@"isLoop"];
-    [aCoder encodeObject:workspaceName forKey:@"workspaceName"];
+	[aCoder encodeObject:inlets         forKey:@"inlets"];
+	[aCoder encodeObject:outlets        forKey:@"outlets"];
+	[aCoder encodeInt:flagCount         forKey:@"flagCount"];
+	[aCoder encodeBool:touchOnRevival   forKey:@"touchOnRevival"];
+    [aCoder encodeBool:isLoop           forKey:@"isLoop"];
+    [aCoder encodeObject:workspaceName  forKey:@"workspaceName"];
+    [aCoder encodeObject:loopMembership forKey:@"loopMembership"];
 	
     [super encodeWithCoder:aCoder];
 }
 
 - (BOOL)execute {
     
-    [self startProgressIndicator];
-    [self stopProgressIndicator];
+    // deal with loops here
+    
     return YES;
 }
 
@@ -98,6 +118,42 @@
 		}
 		
 	return nil;
+}
+
+- (NSMutableArray*)getChildrenTools {
+
+    NSMutableArray* children = [[NSMutableArray alloc] init];
+    for (Outlet* ol in outlets)
+        {
+        for (int i=0; i<[ol numberOfConnections]; i++)
+            {
+            Connection* c = [ol connectionWithIndex:i];
+            Inlet* il = [c inlet];
+            Tool* t = [il toolOwner];
+            [children addObject:t];
+            }
+        }
+    return children;
+}
+
+- (NSMutableArray*)getParentTools {
+
+    NSMutableArray* parents = [[NSMutableArray alloc] init];
+    for (Inlet* il in inlets)
+        {
+        for (int j=0; j<[il numberOfConnections]; j++)
+            {
+            Connection* c = [il connectionWithIndex:j];
+            Tool* t = [[c outlet] toolOwner];
+            [parents addObject:t];
+            }
+        }
+    return parents;
+}
+
+- (Tool*)getChildToolOfOutletIndexed:(int)idx {
+
+    return nil;
 }
 
 - (Tool*)getParentToolOfInlet:(Inlet*)inlt {
@@ -147,6 +203,7 @@
         progressIndicator = nil;
         inlets            = [[NSMutableArray alloc] init];
         outlets           = [[NSMutableArray alloc] init];
+        loopMembership    = [[NSMutableArray alloc] init];
         workspaceName     = @"";
 		flagCount         = 0;
 		touchOnRevival    = NO;
@@ -163,6 +220,7 @@
         progressIndicator = nil;
         inlets            = [[NSMutableArray alloc] init];
         outlets           = [[NSMutableArray alloc] init];
+        loopMembership    = [[NSMutableArray alloc] init];
         workspaceName     = @"";
 		flagCount         = 0;
 		touchOnRevival    = NO;
@@ -179,6 +237,7 @@
         progressIndicator = nil;
 		inlets            = [aDecoder decodeObjectForKey:@"inlets"];
 		outlets           = [aDecoder decodeObjectForKey:@"outlets"];
+        loopMembership    = [aDecoder decodeObjectForKey:@"loopMembership"];
 		flagCount         = [aDecoder decodeIntForKey:@"flagCount"];
 		touchOnRevival    = [aDecoder decodeBoolForKey:@"touchOnRevival"];
         isLoop            = [aDecoder decodeBoolForKey:@"isLoop"];
@@ -220,6 +279,13 @@
     return YES;
 }
 
+- (BOOL)isOnLoop {
+
+    if ([loopMembership count] > 0)
+        return YES;
+    return NO;
+}
+
 - (BOOL)isSomeParentVisited {
 
 	NSEnumerator* enumerator = [inlets objectEnumerator];
@@ -235,6 +301,11 @@
             }
         }
     return NO;
+}
+
+- (void)lockView {
+
+    [analysisView setIsLocked:YES];
 }
 
 - (int)numInlets {
@@ -294,9 +365,50 @@
     return p;
 }
 
+- (void)orderLoops {
+
+#   if 0
+    if ( [loopInfo count] == 0 )
+        {
+        currentLoop = nil;
+        }
+    else if ([loopInfo count] == 1)
+        {
+        currentLoop = [loopInfo objectAtIndex:0];
+        }
+    else
+        {
+        for(int i=0; i<(int)[loopInfo count]; i++)
+            {
+            for(int j=(int)[loopInfo count]-1; j>i; j--)
+                {
+                LoopInfo* ob1 = [loopInfo objectAtIndex:j];
+                LoopInfo* ob2 = [loopInfo objectAtIndex:(j-1)];
+                if ( [[ob1 returnTool] executeOrder] > [[ob2 returnTool] executeOrder] )
+                    {
+                    [loopInfo exchangeObjectAtIndex:j withObjectAtIndex:(j-1)];
+                    }
+                }
+            }
+        currentLoop = [loopInfo objectAtIndex:0];
+        }
+#   endif
+}
+
 - (Outlet*)outletIndexed:(int)idx {
 
 	return [outlets objectAtIndex:idx];
+}
+
+- (BOOL)performToolTask {
+
+    [self startProgressIndicator];
+    [self stopProgressIndicator];
+    return YES;
+}
+
+- (void)prepareForExecution {
+
 }
 
 - (void)removeAllConnections {
@@ -475,6 +587,16 @@
 #   endif
 }
 
+- (void)removeToolFromLoop:(ToolLoop*)loop {
+
+    [loopMembership removeObject:loop];
+}
+
+- (void)removeAllLoops {
+
+    [loopMembership removeAllObjects];
+}
+
 - (BOOL)resolveStateOnWindowOK {
 
     return YES;
@@ -491,11 +613,6 @@
     NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:myTip attributes:attr];
 
     return attrString;
-}
-
-- (void)setAnalysisView:(AnalysisView*)av {
-
-    myAnalysisView = av;
 }
 
 - (void)setImageWithSize:(NSSize)s {
@@ -525,6 +642,12 @@
         }
 }
 
+- (void)setStatusMessage:(NSString*)msg {
+
+    NSDictionary* info = [NSDictionary dictionaryWithObject:msg forKey:@"statusMessage"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"RbStatusBarMessage" object:self userInfo:info];
+}
+
 - (void)showControlPanel {
 
 }
@@ -536,15 +659,15 @@
 - (void)startProgressIndicator {
 
     // get the size and position of the frame to hold the progress indicator
-    float scaleFactor = [myAnalysisView scaleFactor];
+    float scaleFactor = [analysisView scaleFactor];
     NSRect tRect;
     tRect.origin = [self itemLocation];
     tRect.size   = NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor, ITEM_IMAGE_SIZE*scaleFactor);
-    [myAnalysisView transformToBottomLeftCoordinates:(&tRect.origin)];  
+    [analysisView transformToBottomLeftCoordinates:(&tRect.origin)];
     float margine = tRect.size.width * 0.10;          
     
     // instantiate the progress indicator and set the views correctly
-    NSView* superView = myAnalysisView;
+    NSView* superView = analysisView;
     NSRect frame = NSMakeRect(tRect.origin.x + margine, tRect.origin.y + margine, tRect.size.width - 2.0*margine, tRect.size.height - 2.0*margine);
     progressIndicator = [[YRKSpinningProgressIndicator alloc] initWithFrame:frame];
     [superView addSubview:progressIndicator];
@@ -568,12 +691,23 @@
     return @"Unnamed tool";
 }
 
-- (void)updateDownstreamTools {
+- (void)unlockView {
 
-    [myAnalysisView updateToolsDownstreamFromTool:self];
+    [analysisView setIsLocked:NO];
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateChildrenTools {
+
+
+    [analysisView updateToolsDownstreamFromTool:self];
+}
+
+- (void)updateDisplay {
+
+    [analysisView setNeedsDisplay:YES];
+}
+
+- (void)updateForChangeInParent {
 
 }
 

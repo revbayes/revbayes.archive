@@ -48,13 +48,13 @@ const ArgumentRules& Func_system::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "command", RlString::getClassTypeSpec(), "The system command to execute.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -65,9 +65,9 @@ const ArgumentRules& Func_system::getArgumentRules( void ) const
 const std::string& Func_system::getClassType(void)
 {
     
-    static std::string revType = "Func_system";
+    static std::string rev_type = "Func_system";
     
-	return revType;
+	return rev_type;
 }
 
 
@@ -75,9 +75,9 @@ const std::string& Func_system::getClassType(void)
 const TypeSpec& Func_system::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -192,9 +192,9 @@ std::string Func_system::getHelpTitle(void) const
 const TypeSpec& Func_system::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

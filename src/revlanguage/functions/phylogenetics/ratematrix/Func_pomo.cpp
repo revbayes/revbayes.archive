@@ -21,7 +21,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_pomo::Func_pomo( void ) : TypedFunction<RateGenerator>( ) {
+Func_pomo::Func_pomo( void ) : TypedFunction<RateMatrix>( ) {
     
 }
 
@@ -58,16 +58,16 @@ const ArgumentRules& Func_pomo::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "mutationRates", RateGenerator::getClassTypeSpec()    , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "fitness"      , ModelVector<Real>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "virtualNe"    , Natural::getClassTypeSpec()          , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -77,9 +77,9 @@ const ArgumentRules& Func_pomo::getArgumentRules( void ) const
 const std::string& Func_pomo::getClassType(void)
 {
     
-    static std::string revType = "Func_pomo";
+    static std::string rev_type = "Func_pomo";
     
-	return revType;
+	return rev_type;
 }
 
 
@@ -87,9 +87,9 @@ const std::string& Func_pomo::getClassType(void)
 const TypeSpec& Func_pomo::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -108,7 +108,7 @@ std::string Func_pomo::getFunctionName( void ) const
 const TypeSpec& Func_pomo::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

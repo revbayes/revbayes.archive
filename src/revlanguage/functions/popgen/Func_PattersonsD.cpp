@@ -48,9 +48,9 @@ const ArgumentRules& Func_PattersonsD::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "p1"      , RlString::getClassTypeSpec(), "",                                ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "p2"      , RlString::getClassTypeSpec(), "",                                ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -58,7 +58,7 @@ const ArgumentRules& Func_PattersonsD::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "outgroup", RlString::getClassTypeSpec(), "",                                ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "data"    , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -68,18 +68,18 @@ const ArgumentRules& Func_PattersonsD::getArgumentRules( void ) const
 const std::string& Func_PattersonsD::getClassType(void)
 {
     
-    static std::string revType = "Func_PattersonsD";
+    static std::string rev_type = "Func_PattersonsD";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_PattersonsD::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<Real>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<Real>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -98,7 +98,7 @@ std::string Func_PattersonsD::getFunctionName( void ) const
 const TypeSpec& Func_PattersonsD::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

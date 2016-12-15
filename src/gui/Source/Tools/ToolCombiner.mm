@@ -12,6 +12,42 @@
 @synthesize numberOfInlets;
 @synthesize startingNumberOfInlets;
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // find the parent tool
+    NSMutableArray* parents = [self getParentTools];
+    if ([parents count] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Matrix Combiner Tool does not have a parent" forKey:obId];
+        return NO;
+        }
+    for (Tool* t in parents)
+        {
+        if ( [t isKindOfClass:[ToolData class]] == NO )
+            {
+            NSString* obId = [NSString stringWithFormat:@"%p", self];
+            [errors setObject:@"At least one parent of Matrix Combiner Tool is not a data tool" forKey:obId];
+            return NO;
+            }
+            
+        // check the data matrices in the parent tool
+        if ( [(ToolData*)t numAligned] == 0)
+            {
+            NSString* obId = [NSString stringWithFormat:@"%p", self];
+            [errors setObject:@"The parent of the Matrix Combiner Tool does not have any data" forKey:obId];
+            return NO;
+            }
+        }
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -21,6 +57,11 @@
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
 	[super encodeWithCoder:aCoder];
+}
+
+- (BOOL)execute {
+
+    return [super execute];
 }
 
 - (id)init {
@@ -81,6 +122,10 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (BOOL)resolveStateOnWindowOK {
 
     return YES;
@@ -89,10 +134,6 @@
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Character Matrix Combiner Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -133,12 +174,9 @@
     return @"Data Combiner";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
     [self startProgressIndicator];
-    
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
     
     // set up an array of outlets from parent tools
     NSMutableArray* dataOutlets = [NSMutableArray arrayWithCapacity:1];
@@ -160,6 +198,7 @@
 		{
 		// we don't have a parent tool that contains data
 		[self removeAllDataMatrices];
+        //[self updateChildrenTools];
         isDirty = YES;
 		}
 	else 
@@ -214,9 +253,9 @@
             
         if ( [dataMatrices count] > 0 )
             {
-            [self setIsResolved:YES];
             [self makeDataInspector];
             }
+        //[self updateChildrenTools];
 		}
                 
     [self stopProgressIndicator];

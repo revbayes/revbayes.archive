@@ -40,13 +40,14 @@ namespace RevBayesCore {
 //        std::vector<std::vector<double> >::iterator             end(void);
         
         // public methods
-        double                              getRate(size_t from, size_t to) const;
+        double                              getRate(size_t from, size_t to, double rate=1.0) const;
+        double                              getRate(size_t from, size_t to, double age, double rate) const;         //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
         void                                rescaleToAverageRate(double r);                                                             //!< Rescale the rate matrix such that the average rate is "r"
         void                                setDiagonal(void);                                                                          //!< Set the diagonal such that each row sums to zero
         
         // pure virtual methods you have to overwrite
         virtual double                      averageRate(void) const = 0;                                                                //!< Calculate the average rate
-        virtual void                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const = 0;   //!< Calculate the transition matrix
+        virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrix
         virtual AbstractRateMatrix*         clone(void) const = 0;
         virtual std::vector<double>         getStationaryFrequencies(void) const = 0;                                                   //!< Return the stationary frequencies
         virtual void                        update(void) = 0;                                                                           //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
@@ -59,11 +60,12 @@ namespace RevBayesCore {
         AbstractRateMatrix&                 operator=(const AbstractRateMatrix& r);                                                     //!< Assignment operator
         
         // protected methods available for derived classes
+        std::vector<double>                 calculateStationaryFrequencies(void) const;                                                  //!< Calculate the stationary frequencies for the rate matrix
         bool                                checkTimeReversibity(double tolerance);
         
         // protected members available for derived classes
-        MatrixReal*                         theRateMatrix;                                                                              //!< Holds the rate matrix
-        bool                                needsUpdate;
+        MatrixReal*                         the_rate_matrix;                                                                              //!< Holds the rate matrix
+        bool                                needs_update;
         
     };
     

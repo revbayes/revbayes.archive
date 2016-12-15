@@ -283,7 +283,7 @@ std::string PhylowoodNhxMonitor::buildNhxString(void)
 
 
 /** open the file stream for printing */
-void PhylowoodNhxMonitor::openStream(void) {
+void PhylowoodNhxMonitor::openStream(bool reopen) {
     
     // open the stream to the file
     if (append)

@@ -57,8 +57,7 @@ namespace RevBayesCore {
         // pure virtual protected method that need to be implemented in derived classes
         virtual void                                            swapNodeInternal(DagNode *oldN, DagNode *newN) = 0;                                     //!< Swap the pointers to the variable on which the move works on.
         
-    private:
-        
+        // members
         std::vector<DagNode*>                                   nodes;
         Move*                                                   move;
 

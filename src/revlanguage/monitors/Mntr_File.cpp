@@ -57,26 +57,27 @@ void Mntr_File::constructInternalObject( void )
     bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
     bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
     bool app = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
+    bool wv = static_cast<const RlBoolean &>( version->getRevObject() ).getValue();
     
-    value = new RevBayesCore::FileMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app);
+    value = new RevBayesCore::FileMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app, wv);
 }
 
 /** Get Rev type of object */
 const std::string& Mntr_File::getClassType(void)
 {
     
-    static std::string revType = "Mntr_File";
+    static std::string rev_type = "Mntr_File";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_File::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -99,9 +100,9 @@ const MemberRules& Mntr_File::getParameterRules(void) const
 {
     
     static MemberRules filemonitorMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         filemonitorMemberRules.push_back( new Ellipsis( "Variables to monitor", RevObject::getClassTypeSpec() ) );
@@ -112,8 +113,10 @@ const MemberRules& Mntr_File::getParameterRules(void) const
         filemonitorMemberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), "Should we print the likelihood as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), "Should we print the prior probability as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("append"    , RlBoolean::getClassTypeSpec(), "Should we append or overwrite if the file exists?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("version", RlBoolean::getClassTypeSpec(), "Should we record the software version?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
 
-        rulesSet = true;
+
+        rules_set = true;
     }
     
     return filemonitorMemberRules;
@@ -123,9 +126,9 @@ const MemberRules& Mntr_File::getParameterRules(void) const
 const TypeSpec& Mntr_File::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -170,6 +173,10 @@ void Mntr_File::setConstParameter(const std::string& name, const RevPtr<const Re
     else if (name == "append")
     {
         append = var;
+    }
+    else if (name == "version")
+    {
+        version = var;
     }
     else
     {

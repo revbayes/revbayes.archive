@@ -41,6 +41,7 @@ void Move_VectorSlide::constructInternalObject( void )
     delete value;
     
     // now allocate a new vector-slide move
+    const RevBayesCore::RbVector<int> &e = static_cast<const ModelVector<Natural> &>( inidices->getRevObject() ).getValue();
     double l = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
@@ -48,7 +49,7 @@ void Move_VectorSlide::constructInternalObject( void )
     
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *prop = new RevBayesCore::VectorSlideProposal(n,l);
+    RevBayesCore::Proposal *prop = new RevBayesCore::VectorSlideProposal(n,e,l);
     value = new RevBayesCore::MetropolisHastingsMove(prop,w,t);
 }
 
@@ -57,17 +58,18 @@ void Move_VectorSlide::constructInternalObject( void )
 const std::string& Move_VectorSlide::getClassType(void)
 {
     
-    static std::string revType = "Move_VectorSlide";
+    static std::string rev_type = "Move_VectorSlide";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_VectorSlide::getClassTypeSpec(void) {
+const TypeSpec& Move_VectorSlide::getClassTypeSpec(void)
+{
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -89,33 +91,34 @@ std::string Move_VectorSlide::getMoveName( void ) const
 const MemberRules& Move_VectorSlide::getParameterRules(void) const
 {
     
-    static MemberRules moveMemberRules;
-    static bool rulesSet = false;
+    static MemberRules move_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
-        moveMemberRules.push_back( new ArgumentRule( "x"     , ModelVector<Real>::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()             , "The window size parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , "Should we tune the window size during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+        move_member_rules.push_back( new ArgumentRule( "x"        , ModelVector<Real>::getClassTypeSpec()   , "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        move_member_rules.push_back( new ArgumentRule( "elements" , ModelVector<Natural>::getClassTypeSpec(), "The indices of elements. All are used if this is empty.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, new ModelVector<Natural>() ) );
+        move_member_rules.push_back( new ArgumentRule( "delta"    , RealPos::getClassTypeSpec()             , "The window size parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
+        move_member_rules.push_back( new ArgumentRule( "tune"     , RlBoolean::getClassTypeSpec()           , "Should we tune the window size during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
-        moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
+        move_member_rules.insert( move_member_rules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return moveMemberRules;
+    return move_member_rules;
 }
 
 /** Get type spec */
 const TypeSpec& Move_VectorSlide::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -142,6 +145,10 @@ void Move_VectorSlide::setConstParameter(const std::string& name, const RevPtr<c
     if ( name == "x" )
     {
         x = var;
+    }
+    else if ( name == "elements" )
+    {
+        inidices = var;
     }
     else if ( name == "delta" )
     {

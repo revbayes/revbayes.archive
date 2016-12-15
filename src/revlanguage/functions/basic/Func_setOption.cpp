@@ -50,14 +50,14 @@ const ArgumentRules& Func_setOption::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "key", RlString::getClassTypeSpec(),   "The key-identifier for which to set a new value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "value", RlString::getClassTypeSpec(), "The new value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -68,18 +68,18 @@ const ArgumentRules& Func_setOption::getArgumentRules( void ) const
 const std::string& Func_setOption::getClassType(void)
 {
     
-    static std::string revType = "Func_setOption";
+    static std::string rev_type = "Func_setOption";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_setOption::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -200,9 +200,9 @@ std::string Func_setOption::getHelpTitle(void) const
 const TypeSpec& Func_setOption::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

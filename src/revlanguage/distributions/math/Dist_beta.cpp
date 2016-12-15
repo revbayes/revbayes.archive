@@ -58,18 +58,18 @@ Probability* Dist_beta::createRandomVariable(void) const
 const std::string& Dist_beta::getClassType(void)
 {
     
-    static std::string revType = "Dist_beta";
+    static std::string rev_type = "Dist_beta";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_beta::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Probability>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Probability>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -197,14 +197,14 @@ const MemberRules& Dist_beta::getParameterRules(void) const
 {
     
     static MemberRules distUnifMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         distUnifMemberRules.push_back( new ArgumentRule( "alpha", RealPos::getClassTypeSpec(), "The alpha shape parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distUnifMemberRules.push_back( new ArgumentRule( "beta" , RealPos::getClassTypeSpec(), "The beta shape parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distUnifMemberRules;

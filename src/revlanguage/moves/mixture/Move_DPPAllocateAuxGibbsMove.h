@@ -105,9 +105,9 @@ template <class valType>
 const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassType(void)
 {
     
-    static std::string revType = "Move_DPPAllocateAuxGibbsMove";
+    static std::string rev_type = "Move_DPPAllocateAuxGibbsMove";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -131,9 +131,9 @@ template <class valType>
 const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -144,9 +144,9 @@ const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getParameterRules(void
 {
     
     static MemberRules dppMove;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         dppMove.push_back( new ArgumentRule( "x"     , ModelVector<valType>::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
@@ -156,7 +156,7 @@ const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getParameterRules(void
         const MemberRules& inheritedRules = Move::getParameterRules();
         dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return dppMove;
@@ -166,9 +166,9 @@ const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getParameterRules(void
 template <class valType>
 const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

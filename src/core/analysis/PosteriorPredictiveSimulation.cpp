@@ -47,10 +47,10 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
     
     size_t sim_pid_start = size_t(floor( (double(pid) / num_processes * (n_samples/double(thinning) ) ) ) );
     size_t sim_pid_end   = std::max( int(sim_pid_start), int(floor( (double(pid+1) / num_processes * (n_samples/double(thinning) ) ) ) - 1) );
-
+    
     for (size_t i=sim_pid_start; i<=sim_pid_end; ++i)
     {
-
+        
         // create a new directory name for this simulation
         std::stringstream s;
         s << directory << path_separator << "posterior_predictive_sim_" << (i+1);
@@ -75,14 +75,14 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
             }
         
         }
-        
+
         // next we need to simulate the data and store it
         // iterate over all DAG nodes (variables)
         for ( std::vector<DagNode*>::iterator it = nodes.begin(); it!=nodes.end(); ++it )
         {
             DagNode *the_node = *it;
             
-            if ( the_node->isClamped() )
+            if ( the_node->isClamped() == true )
             {
                 // redraw new values
                 the_node->redraw();

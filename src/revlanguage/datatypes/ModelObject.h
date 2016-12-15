@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the Rev language ModelObject, which is
- * the Rev abstract base class for all language objects wrapping core datatypes
- * that can be stored inside DAG nodes and hence used in model graphs.
- *
- * @brief Declaration of ModelObject
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-08-03 17:51:49 +0200 (Fri, 03 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2012-08-06
- *
- * $Id: RevObject.h 1734 2012-08-03 15:51:49Z hoehna $
- */
-
 #ifndef ModelObject_H
 #define ModelObject_H
 
@@ -62,14 +45,15 @@ namespace RevLanguage {
         virtual const rbType&                   getValue(void) const;                                                       //!< Get the value (const)
         virtual rbType&                         getValue(void);                                                             //!< Get the value (non-const)
         void                                    setValue(rbType *x);                                                        //!< Set new constant value
-        
+        virtual void                            printValue(std::ostream& o, bool user) const;                                          //!< Print value
+        virtual void                            printValue(std::ostream& o) const { printValue(o, true); };                 //!< Print value overload
+
     protected:
         ModelObject(void);
         ModelObject(rbType *v);
         ModelObject(RevBayesCore::TypedDagNode<rbType> *v);
         ModelObject(const ModelObject &v);
         
-        void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         
         RevBayesCore::TypedDagNode<rbType>*     dagNode;
 
@@ -227,9 +211,9 @@ template <typename rbType>
 const std::string& RevLanguage::ModelObject<rbType>::getClassType(void)
 {
     
-    static std::string revType = "ModelObject";
+    static std::string rev_type = "ModelObject";
     
-	return revType;
+	return rev_type;
 }
 
 
@@ -238,9 +222,9 @@ template <typename rbType>
 const RevLanguage::TypeSpec& RevLanguage::ModelObject<rbType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -384,7 +368,7 @@ void RevLanguage::ModelObject<rbType>::makeUserFunctionValue( UserFunction* fxn 
  * case we print "NA".
  */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const
+void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o, bool user) const
 {
     if ( dagNode == NULL )
     {
@@ -392,7 +376,7 @@ void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const
     }
     else
     {
-        dagNode->printValue( o );
+        dagNode->printValue( o, "", -1, true, user, true );
     }
     
 }

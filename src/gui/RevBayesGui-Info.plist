@@ -30,7 +30,7 @@
 	<key>CFBundleHelpBookFolder</key>
 	<string>RevBayesHelp.help</string>
 	<key>CFBundleHelpBookName</key>
-	<string>com.berkeley.revbayes.help</string>
+	<string>RevBayes Help</string>
 	<key>CFBundleIconFile</key>
 	<string>aquabayes.icns</string>
 	<key>CFBundleIdentifier</key>

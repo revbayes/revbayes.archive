@@ -117,7 +117,9 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
             if ( progress > numStars )
             {
                 for ( ;  numStars < progress; ++numStars )
+                {
                     std::cout << "*";
+                }
                 
                 std::cout.flush();
             }
@@ -157,8 +159,7 @@ void PowerPosteriorAnalysis::initMPI( void )
     
     
     size_t active_proc = size_t( floor( pid   / double(processors_per_likelihood)) ) * processors_per_likelihood;
-    sampler->setActivePID( active_proc );
-    sampler->setNumberOfProcesses( processors_per_likelihood );
+    sampler->setActivePID( active_proc, processors_per_likelihood );
     
     
 #ifdef RB_MPI
@@ -258,11 +259,12 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     
     
     // Monitor
-    sampler->startMonitors(gen);
+    sampler->startMonitors(gen, false);
+    sampler->writeMonitorHeaders();
     sampler->monitor(0);
     
     double p = powers[idx];
-    for (size_t k=1; k<=gen; k++)
+    for (size_t k=1; k<=gen; ++k)
     {
         
         if ( process_active == true )

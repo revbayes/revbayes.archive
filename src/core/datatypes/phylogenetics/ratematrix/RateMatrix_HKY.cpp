@@ -48,16 +48,16 @@ RateMatrix_HKY& RateMatrix_HKY::assign(const Assignable &m)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_HKY::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
+void RateMatrix_HKY::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     
     double t = rate * (startAge - endAge);
     
     // notation:
-    double pi_A = stationaryFreqs[0];
-    double pi_C = stationaryFreqs[1];
-    double pi_G = stationaryFreqs[2];
-    double pi_T = stationaryFreqs[3];
+    double pi_A = stationary_freqs[0];
+    double pi_C = stationary_freqs[1];
+    double pi_G = stationary_freqs[2];
+    double pi_T = stationary_freqs[3];
     
     // compute auxilliary variables
     double pi_AG = pi_A + pi_G;
@@ -110,7 +110,7 @@ void RateMatrix_HKY::setKappa( double k )
     kappa = k;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
     
 }
 
@@ -118,29 +118,29 @@ void RateMatrix_HKY::setKappa( double k )
 void RateMatrix_HKY::update( void )
 {
     
-    if ( needsUpdate ) 
+    if ( needs_update ) 
     {
-        MatrixReal &m = *theRateMatrix;
+        MatrixReal &m = *the_rate_matrix;
         
         // @todo: This is only needed for printing the values of the rate matrix properly to the screen. We should do this more efficiently (Sebastian).
         // We could instead only update the matrix if a print call happened and the matrix was flagged as dirty.
         
         // compute the off-diagonal values
-        m[0][1] = stationaryFreqs[1];
-        m[0][2] = kappa*stationaryFreqs[2];
-        m[0][3] = stationaryFreqs[3];
+        m[0][1] = stationary_freqs[1];
+        m[0][2] = kappa*stationary_freqs[2];
+        m[0][3] = stationary_freqs[3];
         
-        m[1][0] = stationaryFreqs[0];
-        m[1][2] = stationaryFreqs[2];
-        m[1][3] = kappa*stationaryFreqs[3];
+        m[1][0] = stationary_freqs[0];
+        m[1][2] = stationary_freqs[2];
+        m[1][3] = kappa*stationary_freqs[3];
         
-        m[2][0] = kappa*stationaryFreqs[0];
-        m[2][1] = stationaryFreqs[2];
-        m[2][3] = stationaryFreqs[3];
+        m[2][0] = kappa*stationary_freqs[0];
+        m[2][1] = stationary_freqs[1];
+        m[2][3] = stationary_freqs[3];
         
-        m[3][0] = stationaryFreqs[0];
-        m[3][1] = kappa*stationaryFreqs[2];
-        m[3][2] = stationaryFreqs[3];
+        m[3][0] = stationary_freqs[0];
+        m[3][1] = kappa*stationary_freqs[1];
+        m[3][2] = stationary_freqs[2];
         
         // set the diagonal values
         setDiagonal();
@@ -149,8 +149,9 @@ void RateMatrix_HKY::update( void )
         rescaleToAverageRate( 1.0 );
         
         // clean flags
-        needsUpdate = false;
+        needs_update = false;
     }
+    
 }
 
 

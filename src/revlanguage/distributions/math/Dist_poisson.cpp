@@ -62,9 +62,9 @@ RevBayesCore::PoissonDistribution* Dist_poisson::createDistribution( void ) cons
 const std::string& Dist_poisson::getClassType(void) 
 { 
     
-    static std::string revType = "Dist_poisson";
+    static std::string rev_type = "Dist_poisson";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -76,9 +76,9 @@ const std::string& Dist_poisson::getClassType(void)
 const TypeSpec& Dist_poisson::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -212,13 +212,13 @@ const MemberRules& Dist_poisson::getParameterRules(void) const
 {
     
     static MemberRules distPoisMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         distPoisMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The rate (rate = 1/mean) parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distPoisMemberRules;

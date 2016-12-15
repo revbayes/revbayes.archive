@@ -62,9 +62,9 @@ RevBayesCore::GeometricDistribution* Dist_geom::createDistribution( void ) const
 const std::string& Dist_geom::getClassType(void) 
 { 
     
-    static std::string revType = "Dist_geom";
+    static std::string rev_type = "Dist_geom";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -76,9 +76,9 @@ const std::string& Dist_geom::getClassType(void)
 const TypeSpec& Dist_geom::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -227,17 +227,17 @@ std::string Dist_geom::getHelpTitle(void) const
 const MemberRules& Dist_geom::getParameterRules(void) const 
 {
     
-    static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static MemberRules dist_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
-        distMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "The probability of success.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "The probability of success.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 

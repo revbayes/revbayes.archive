@@ -5,6 +5,7 @@
 #include "Dist_constFBDP.h"
 #include "ModelVector.h"
 #include "Natural.h"
+#include "OptionRule.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -52,10 +53,9 @@ RevBayesCore::ConstantRateFossilizedBirthDeathProcess* Dist_constFBDP::createDis
 {
     
     // get the parameters
-
-    // the root age
-    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
     
+    // the start age
+    RevBayesCore::TypedDagNode<double>* sa       = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
@@ -64,14 +64,17 @@ RevBayesCore::ConstantRateFossilizedBirthDeathProcess* Dist_constFBDP::createDis
     RevBayesCore::TypedDagNode<double>* p       = static_cast<const RealPos &>( psi->getRevObject() ).getDagNode();
     // sampling probability
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
-    // condition
+    // the start condition
+    bool uo = ( startCondition == "originTime" ? true : false );
+    
+    // sampling condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
     std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
     // create the internal distribution object
-    RevBayesCore::ConstantRateFossilizedBirthDeathProcess* d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(ra, s, e, p, r, cond, t);
+    RevBayesCore::ConstantRateFossilizedBirthDeathProcess* d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(sa, s, e, p, r, uo, cond, t);
     
     return d;
 }
@@ -85,9 +88,9 @@ RevBayesCore::ConstantRateFossilizedBirthDeathProcess* Dist_constFBDP::createDis
 const std::string& Dist_constFBDP::getClassType( void )
 {
     
-    static std::string revType = "Dist_constFBDP";
+    static std::string rev_type = "Dist_constFBDP";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -99,9 +102,9 @@ const std::string& Dist_constFBDP::getClassType( void )
 const TypeSpec& Dist_constFBDP::getClassTypeSpec( void )
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -149,24 +152,42 @@ std::string Dist_constFBDP::getDistributionFunctionName( void ) const
 const MemberRules& Dist_constFBDP::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static MemberRules dist_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
-        
-        distMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        distMemberRules.push_back( new ArgumentRule( "psi"   , RealPos::getClassTypeSpec(), "The constant fossilization rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+
+        std::vector<std::string> aliases;
+        aliases.push_back("rootAge");
+        aliases.push_back("originTime");
+        dist_member_rules.push_back( new ArgumentRule( aliases,   RealPos::getClassTypeSpec(), "The start age of the process, either the root age or the origin time.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "lambda",  RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "mu",      RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "psi",     RealPos::getClassTypeSpec(), "The constant fossilization rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
-        distMemberRules.insert(distMemberRules.end(), parentRules.begin(), parentRules.end());
+        for (size_t i = 0; i < parentRules.size(); i++)
+        {
+            if ( parentRules[i].getArgumentLabel() == "rho" )
+            {
+                ArgumentRule* tmp = parentRules[i].clone();
+                dist_member_rules.push_back( tmp );
+                std::vector<std::string> optionsCondition;
+
+            }
+            else if ( parentRules[i].getArgumentLabel() != "rootAge" )
+            {
+                ArgumentRule* tmp = parentRules[i].clone();
+                dist_member_rules.push_back( tmp );
+            }
+        }
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 
@@ -196,8 +217,12 @@ const TypeSpec& Dist_constFBDP::getTypeSpec( void ) const
  */
 void Dist_constFBDP::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
-    
-    if ( name == "lambda" )
+    if (name == "rootAge" || name == "originTime")
+    {
+        startCondition = name;
+        startAge = var;
+    }
+    else if ( name == "lambda" )
     {
         lambda = var;
     }

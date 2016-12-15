@@ -77,18 +77,18 @@ RevPtr<RevVariable> Trace::executeMethod(std::string const &name, const std::vec
 /** Get Rev type of object */
 const std::string& Trace::getClassType(void) { 
     
-    static std::string revType = "Trace";
+    static std::string rev_type = "Trace";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Trace::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -98,12 +98,12 @@ const MemberRules& Trace::getParameterRules(void) const
 {
     
     static MemberRules modelMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return modelMemberRules;
@@ -114,9 +114,9 @@ const MemberRules& Trace::getParameterRules(void) const
 const TypeSpec& Trace::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

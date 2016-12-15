@@ -55,24 +55,24 @@ void ModelMonitor::resetDagNodes( void )
     {
         // we only want to have each nodes once
         // this should by default happen by here we check again
-        std::set<std::string> varNames;
+        std::set<std::string> var_names;
         
         const std::vector<DagNode*> &n = model->getDagNodes();
         for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
         {
             
-            DagNode *theNode = *it;
+            DagNode *the_node = *it;
             
             // only simple numeric variable can be monitored (i.e. only integer and real numbers)
-            if ( theNode->isSimpleNumeric() && !theNode->isClamped())
+            if ( the_node->isSimpleNumeric() && !the_node->isClamped())
             {
-                if ( (!stochasticNodesOnly && !theNode->isConstant() && theNode->getName() != "" && !theNode->isHidden() && !theNode->isElementVariable() ) || ( theNode->isStochastic() && !theNode->isClamped() && theNode->isHidden() == false  && theNode->isElementVariable() == false ) )
+                if ( (!stochasticNodesOnly && !the_node->isConstant() && the_node->getName() != "" && !the_node->isHidden() && !the_node->isElementVariable() ) || ( the_node->isStochastic() && !the_node->isClamped() && the_node->isHidden() == false  && the_node->isElementVariable() == false ) )
                 {
-                    const std::string &name = theNode->getName();
-                    if ( varNames.find( name ) == varNames.end() )
+                    const std::string &name = the_node->getName();
+                    if ( var_names.find( name ) == var_names.end() )
                     {
-                        addVariable( theNode );
-                        varNames.insert( name );
+                        addVariable( the_node );
+                        var_names.insert( name );
                     }
                     else
                     {

@@ -71,7 +71,11 @@
     folder = [folder stringByExpandingTildeInPath];
     if ([fileManager fileExistsAtPath:folder] == NO)
         {
-        NSRunAlertPanel(@"Error", @"Cannot find model folder", @"OK", nil, nil);
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Error"];
+        [alert setInformativeText:@"Cannot find model folder."];
+        [alert runModal];
+        //NSRunAlertPanel(@"Error", @"Cannot find model folder", @"OK", nil, nil);
         return;
         }
 
@@ -110,7 +114,11 @@
     folder = [folder stringByExpandingTildeInPath];
     if ([fileManager fileExistsAtPath:folder] == NO)
         {
-        NSRunAlertPanel(@"Error", @"Cannot find user model folder", @"OK", nil, nil);
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Error"];
+        [alert setInformativeText:@"Cannot find user model folder."];
+        [alert runModal];
+        //NSRunAlertPanel(@"Error", @"Cannot find user model folder", @"OK", nil, nil);
         return;
         }
 
@@ -157,7 +165,11 @@
     [fm removeItemAtPath:selectedModelName error:&error];
     if (error != nil)
         {
-        NSRunAlertPanel(@"Error", @"Could not remove user model", @"OK", nil, nil);
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Error"];
+        [alert setInformativeText:@"Could not remove user model."];
+        [alert runModal];
+        //NSRunAlertPanel(@"Error", @"Could not remove user model", @"OK", nil, nil);
         return;
         }
 

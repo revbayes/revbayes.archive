@@ -369,7 +369,7 @@ void HillClimber::initializeSampler( void )
             {
                 std::stringstream ss;
                 ss << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
-                node->printValue( ss );
+                node->printValue( ss, "," );
                 ss << std::endl;
                 RBOUT( ss.str() );
                 
@@ -510,28 +510,18 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
-            RevBayesCore::DagNode *theNode = *j;
+            RevBayesCore::DagNode *the_node = *j;
             
             // error checking
-            if ( theNode->getName() == "" )
+            if ( the_node->getName() == "" )
             {
-                std::cerr << "The move has the following nodes:\n";
-                for (std::vector<DagNode*>::const_iterator k = nodes.begin(); k != nodes.end(); ++k)
-                {
-                    std::cerr << (*k)->getName() << std::endl;
-                }
-                std::cerr << "The model has the following nodes:\n";
-                for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
-                {
-                    std::cerr << (*k)->getName() << std::endl;
-                }
                 throw RbException( "Unable to connect move '" + theMove->getMoveName() + "' to DAG copy because variable name was lost");
             }
             
             DagNode* theNewNode = NULL;
             for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
             {
-                if ( (*k)->getName() == theNode->getName() )
+                if ( (*k)->getName() == the_node->getName() )
                 {
                     theNewNode = *k;
                     break;
@@ -540,7 +530,7 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
             // error checking
             if ( theNewNode == NULL )
             {
-                throw RbException("Cannot find node with name '" + theNode->getName() + "' in the model but received a move working on it.");
+                throw RbException("Cannot find node with name '" + the_node->getName() + "' in the model but received a move working on it.");
             }
             
             // now swap the node
@@ -557,10 +547,10 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
-            RevBayesCore::DagNode *theNode = (*j);
+            RevBayesCore::DagNode *the_node = (*j);
             
             // error checking
-            if ( theNode->getName() == "" )
+            if ( the_node->getName() == "" )
             {
                 throw RbException( "Unable to connect monitor to DAG copy because variable name was lost");
             }
@@ -568,7 +558,7 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
             DagNode* theNewNode = NULL;
             for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
             {
-                if ( (*k)->getName() == theNode->getName() )
+                if ( (*k)->getName() == the_node->getName() )
                 {
                     theNewNode = *k;
                     break;
@@ -577,7 +567,7 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
             // error checking
             if ( theNewNode == NULL )
             {
-                throw RbException("Cannot find node with name '" + theNode->getName() + "' in the model but received a monitor working on it.");
+                throw RbException("Cannot find node with name '" + the_node->getName() + "' in the model but received a monitor working on it.");
             }
             
             // now swap the node
@@ -622,24 +612,11 @@ void HillClimber::reset( void )
 /**
  * Set the active PID of this specific HillClimber simulation.
  */
-void HillClimber::setActivePIDSpecialized(size_t n)
+void HillClimber::setActivePIDSpecialized(size_t a, size_t n)
 {
     
     // delegate the call to the model
-    model->setActivePID(n);
-}
-
-
-/**
- * Set the number of processes available to this specific HillClimber simulation.
- * If there is more than one process available, then we can use these
- * to compute the likelihood in parallel. Yeah!
- */
-void HillClimber::setNumberOfProcessesSpecialized(size_t n)
-{
-    
-    // delegate the call to the model
-    model->setNumberOfProcesses(n);
+    model->setActivePID(a,n);
 }
 
 
@@ -650,6 +627,10 @@ void HillClimber::setModel( Model *m )
 {
     
     model = m;
+    
+    // we need to set the new model in the monitors as well
+    // which is done in initializeMonitors
+    initializeMonitors();
     
 }
 
@@ -664,22 +645,20 @@ void HillClimber::setScheduleType(const std::string &s)
 /**
  * Start the monitors which will open the output streams.
  */
-void HillClimber::startMonitors( size_t numCycles )
+void HillClimber::startMonitors( size_t num_cycles, bool reopen )
 {
     
     // Open the output file and print headers
-    for (size_t i=0; i<monitors.size(); i++)
+    for (size_t i=0; i<monitors.size(); ++i)
     {
         
         // reset the monitor
-        monitors[i].reset( numCycles );
+        monitors[i].reset( num_cycles );
         
         // if this chain is active, print the header
         if ( process_active == true )
         {
-            monitors[i].openStream();
-            monitors[i].printHeader();
-            
+            monitors[i].openStream( reopen );
         }
         
     }
@@ -703,3 +682,25 @@ void HillClimber::tune( void )
     
 }
 
+
+/**
+ * Start the monitors which will open the output streams.
+ */
+void HillClimber::writeMonitorHeaders( void )
+{
+    
+    // Open the output file and print headers
+    for (size_t i=0; i<monitors.size(); ++i)
+    {
+        
+        // if this chain is active, print the header
+        if ( process_active == true )
+        {
+            
+            monitors[i].printHeader();
+            
+        }
+        
+    }
+    
+}

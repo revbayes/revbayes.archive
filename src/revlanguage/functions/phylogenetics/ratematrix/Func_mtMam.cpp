@@ -54,18 +54,18 @@ const ArgumentRules& Func_mtMam::getArgumentRules( void ) const
 const std::string& Func_mtMam::getClassType(void)
 {
     
-    static std::string revType = "Func_mtMam";
+    static std::string rev_type = "Func_mtMam";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_mtMam::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -94,7 +94,7 @@ const TypeSpec& Func_mtMam::getReturnType( void ) const
 const TypeSpec& Func_mtMam::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

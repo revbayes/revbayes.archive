@@ -41,9 +41,6 @@ SyntaxWorkspaceVariableAssignment* SyntaxWorkspaceVariableAssignment::clone () c
  */
 void SyntaxWorkspaceVariableAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
-#ifdef DEBUG_PARSER
-    printf( "Evaluating WorkspaceVariable assignment\n" );
-#endif
     
     // Get a reference to the Rev object value
     const RevObject& value = rhs->getRevObject();
@@ -77,10 +74,6 @@ void SyntaxWorkspaceVariableAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<
     // be used in further assignments.
     lhs->replaceRevObject( newValue );
     lhs->setWorkspaceVariableState( true );
-    
-#ifdef DEBUG_PARSER
-    env.printValue(std::cerr);
-#endif
     
 }
 

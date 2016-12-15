@@ -71,18 +71,18 @@ RevPtr<RevVariable> SteppingStoneSampler::executeMethod(std::string const &name,
 const std::string& SteppingStoneSampler::getClassType(void)
 {
     
-    static std::string revType = "SteppingStoneSampler";
+    static std::string rev_type = "SteppingStoneSampler";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& SteppingStoneSampler::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::SteppingStoneSampler>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::SteppingStoneSampler>::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -105,16 +105,16 @@ const MemberRules& SteppingStoneSampler::getParameterRules(void) const
 {
     
     static MemberRules samplerMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         samplerMemberRules.push_back( new ArgumentRule("filename"            , RlString::getClassTypeSpec(), "The name of the file where the likelhood samples are stored.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         samplerMemberRules.push_back( new ArgumentRule("powerColumnName"     , RlString::getClassTypeSpec(), "The name of the column of the powers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", RlString::getClassTypeSpec(), "The name of the column of the likelihood samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         samplerMemberRules.push_back( new ArgumentRule("delimiter"           , RlString::getClassTypeSpec(), "The column delimiter.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return samplerMemberRules;
@@ -124,9 +124,9 @@ const MemberRules& SteppingStoneSampler::getParameterRules(void) const
 const TypeSpec& SteppingStoneSampler::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

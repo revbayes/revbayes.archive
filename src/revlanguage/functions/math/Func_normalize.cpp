@@ -49,14 +49,14 @@ const ArgumentRules& Func_normalize::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "x", ModelVector<RealPos>::getClassTypeSpec(), "The vector of numbers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "sum", RealPos::getClassTypeSpec(), "The sum the vector will have after normalization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -67,9 +67,9 @@ const ArgumentRules& Func_normalize::getArgumentRules( void ) const
 const std::string& Func_normalize::getClassType(void)
 {
     
-    static std::string revType = "Func_normalize";
+    static std::string rev_type = "Func_normalize";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -77,9 +77,9 @@ const std::string& Func_normalize::getClassType(void)
 const TypeSpec& Func_normalize::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -99,7 +99,7 @@ std::string Func_normalize::getFunctionName( void ) const
 const TypeSpec& Func_normalize::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

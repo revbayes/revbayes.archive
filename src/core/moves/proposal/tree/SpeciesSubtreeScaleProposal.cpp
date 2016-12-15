@@ -124,7 +124,8 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
     
     // now we store all necessary values
     storedNode = node;
-    storedAge = my_age;
+    storedSpeciesTreeAges = std::vector<double>(tau.getNumberOfNodes(), 0.0);
+    TreeUtilities::getAges(&tau, node, storedSpeciesTreeAges);
     
     // lower bound
     double min_age = 0.0;
@@ -140,6 +141,8 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
     
     size_t num_nodes = node->getNumberOfNodesInSubtree( false );
     
+    storedGeneTreeAges = std::vector<std::vector<double> >(geneTrees.size(), std::vector<double>());
+
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
@@ -147,29 +150,19 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
         
         std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(gene_tree, *node );
         
+        storedGeneTreeAges[i] = std::vector<double>(gene_tree.getNumberOfNodes(), 0.0);
+        TreeUtilities::getAges(&gene_tree, &gene_tree.getRoot(), storedGeneTreeAges[i]);
+
         for (size_t j=0; j<nodes.size(); ++j)
         {
             // add the number of nodes that we are going to scale in the subtree
             num_nodes += nodes[j]->getNumberOfNodesInSubtree( false );
             
-            if ( nodes[j]->isTip() == true )
-            {
-                std::cerr << "Trying to scale a tip\n";
-            }
-            
-            if ( nodes[j]->isRoot() == true )
-            {
-                std::cerr << "Trying to scale the root\n";
-            }
-            
             // rescale the subtree of this gene tree
             TreeUtilities::rescaleSubtree(&gene_tree, nodes[j], scaling_factor );
             
         }
-        
-        // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
-//        geneTrees[i]->touch( true );
-        
+                
     }
     
     // Sebastian: We need to work on a mechanism to make these proposal safe for non-ultrametric trees!
@@ -321,36 +314,15 @@ void SpeciesSubtreeScaleProposal::removeGeneTree(StochasticNode<Tree> *gt)
 void SpeciesSubtreeScaleProposal::undoProposal( void )
 {
     // undo the proposal
-    double sf = storedAge / storedNode->getAge();
-    
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
         Tree& geneTree = geneTrees[i]->getValue();
         
-        std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(geneTree, *storedNode );
-        
-        for (size_t j=0; j<nodes.size(); ++j)
-        {
-            
-            if ( nodes[j]->isTip() == true )
-            {
-                std::cerr << "Trying to scale a tip\n";
-            }
-            
-            if ( nodes[j]->isRoot() == true )
-            {
-                std::cerr << "Trying to scale the root\n";
-            }
-            
-            // rescale the subtree of this gene tree
-            TreeUtilities::rescaleSubtree(&geneTree, nodes[j], sf );
-            
-        }
+        TreeUtilities::setAges(&geneTree, &geneTree.getRoot(), storedGeneTreeAges[i]);
         
     }
-    
-    TreeUtilities::rescaleSubtree(&speciesTree->getValue(), storedNode, sf );
+    TreeUtilities::setAges(&speciesTree->getValue(), &speciesTree->getValue().getRoot(), storedSpeciesTreeAges);
     
 }
 

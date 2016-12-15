@@ -92,19 +92,19 @@ RevPtr<RevLanguage::RevVariable> RevLanguage::PosteriorPredictiveSimulation::exe
 const std::string& RevLanguage::PosteriorPredictiveSimulation::getClassType(void)
 {
     
-    //    static std::string revType = "PosteriorPredictiveSimulation<" + treeType::getClassType() + ">";
-    static std::string revType = "PosteriorPredictiveSimulation";
+    //    static std::string rev_type = "PosteriorPredictiveSimulation<" + treeType::getClassType() + ">";
+    static std::string rev_type = "PosteriorPredictiveSimulation";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const RevLanguage::TypeSpec& RevLanguage::PosteriorPredictiveSimulation::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::PosteriorPredictiveSimulation>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::PosteriorPredictiveSimulation>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -127,16 +127,16 @@ const MemberRules& PosteriorPredictiveSimulation::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule("model", Model::getClassTypeSpec(), "The reference model instance.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule("directory", RlString::getClassTypeSpec(), "The name of the directory where we store the simulations.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule("trace", WorkspaceVector<ModelTrace>::getClassTypeSpec(), "The sample trace object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -147,9 +147,9 @@ const MemberRules& PosteriorPredictiveSimulation::getParameterRules(void) const
 const TypeSpec& PosteriorPredictiveSimulation::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

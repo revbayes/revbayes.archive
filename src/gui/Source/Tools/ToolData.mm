@@ -88,14 +88,9 @@
 
 - (BOOL)execute {
 
-    if (isResolved == NO)
-        return NO;
-    
-    //[self startProgressIndicator];
-    [self instantiateDataInCore];
-    //[self stopProgressIndicator];
-    
-    return YES;
+    // instantiate data in core
+
+    return [super execute];
 }
 
 - (id)init {
@@ -146,6 +141,9 @@
 }
 
 - (void)instantiateDataInCore {
+
+    // TEMP: JUST RETURN FOR NOW
+    return;
 
     // check that we have data to instantiate in the core
     if ( [self numDataMatrices] == 0 )
@@ -212,9 +210,27 @@
 
 - (void)makeDataInspector {
 
+    // make certain all of the files in the data tool have unique names
+    for (size_t i=0; i<[dataMatrices count]; i++)
+        {
+        RbData* di = [dataMatrices objectAtIndex:i];
+        NSString* diName = [di name];
+        for (size_t j=0; j<i; j++)
+            {
+            RbData* dj = [dataMatrices objectAtIndex:j];
+            NSString* djName = [dj name];
+            if ( [diName isEqualToString:djName] == YES )
+                {
+                NSString* newName = [NSString stringWithString:diName];
+                newName = [newName stringByAppendingString:@"*"];
+                [di setName:newName];
+                }
+            }
+        }
+
     [self removeDataInspector];
     dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
-    [dataInspector window];
+    //[dataInspector window];
 }
 
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd andDataType:(const std::string&)dt {
@@ -256,7 +272,6 @@
     std::string stateLabels = cd.getStateLabels();
     NSString* sl = [NSString stringWithCString:(stateLabels.c_str()) encoding:NSUTF8StringEncoding];
     [m setStateLabels:sl];
-    NSLog(@"state labels = %@", [m stateLabels]);
     
     [m setName:nsfn];
     if ( dt == "DNA" )
@@ -360,7 +375,11 @@
 
 - (void)readDataError:(NSString*)eName forVariableNamed:(NSString*)vName {
 
-    NSRunAlertPanel(@"Problem Reading Data", eName, @"OK", nil, nil);
+    NSAlert* alert = [[NSAlert alloc] init];
+    [alert setMessageText:@"Problem Reading Data"];
+    [alert setInformativeText:eName];
+    [alert runModal];
+
     std::string tempName = [vName UTF8String];
     if ( RevLanguage::Workspace::userWorkspace().existsVariable(tempName) )
         RevLanguage::Workspace::userWorkspace().eraseVariable(tempName);
@@ -373,7 +392,6 @@
     numAligned = 0;
     numUnaligned = 0;
     hasInspectorInfo = NO;
-    isResolved = NO;
     [self removeDataInspector];
 }
 
@@ -390,7 +408,7 @@
     [dataInspector showWindow:self];
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
 }
 

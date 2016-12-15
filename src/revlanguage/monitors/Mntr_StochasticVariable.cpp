@@ -55,18 +55,18 @@ void Mntr_StochasticVariable::constructInternalObject( void )
 const std::string& Mntr_StochasticVariable::getClassType(void)
 {
     
-    static std::string revType = "Mntr_StochasticVariable";
+    static std::string rev_type = "Mntr_StochasticVariable";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_StochasticVariable::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -76,9 +76,9 @@ const MemberRules& Mntr_StochasticVariable::getParameterRules(void) const
 {
     
     static MemberRules StochasticVariableMonitorMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -87,7 +87,7 @@ const MemberRules& Mntr_StochasticVariable::getParameterRules(void) const
         StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), "Should we append or overwrite if the file exists?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return StochasticVariableMonitorMemberRules;
@@ -112,9 +112,9 @@ std::string Mntr_StochasticVariable::getMonitorName( void ) const
 const TypeSpec& Mntr_StochasticVariable::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

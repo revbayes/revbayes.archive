@@ -88,7 +88,31 @@ RevPtr<RevVariable> UserFunction::executeCode( void )
             break;
         }
     }
-    
+
+    // non-void return type?
+    if(getReturnType() != RevObject::getClassTypeSpec())
+    {
+        // void return value?
+        if(retVar == NULL)
+        {
+            throw(RbException("No return value in function '"+this->getFunctionName()+"' returning non-void type "+getReturnType().getType()));
+        }
+        // incompatible return value?
+        else if(retVar->getRevObject().getTypeSpec() != getReturnType())
+        {
+            if(retVar->getRevObject().isConvertibleTo(getReturnType(),true) == -1)
+            {
+                throw(RbException("Returning "+retVar->getRevObject().getTypeSpec().getType()+" in function '"+this->getFunctionName()+"' with incompatible return type "+getReturnType().getType()));
+            }
+            // compatible but differing return value
+            else
+            {
+                //convert the return value
+                retVar = new RevVariable( retVar->getRevObject().convertTo(getReturnType()) );
+            }
+        }
+    }
+
     // Return the return value
     return retVar;
 }
@@ -97,18 +121,18 @@ RevPtr<RevVariable> UserFunction::executeCode( void )
 /** Get Rev type (static) */
 const std::string& UserFunction::getClassType(void)
 {
-    static std::string revType = "UserFunction";
+    static std::string rev_type = "UserFunction";
     
-	return revType; 
+	return rev_type; 
 }
 
 
 /** Get Rev type spec (static) */
 const TypeSpec& UserFunction::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -133,7 +157,7 @@ std::vector<const RevBayesCore::DagNode*> UserFunction::getParameters(void) cons
 std::string UserFunction::getFunctionName( void ) const
 {
     // create a name variable that is NOT the same for all instance of this class
-    std::string f_name = "UserFunction";
+    std::string f_name = functionDef->getName();
     
     return f_name;
 }

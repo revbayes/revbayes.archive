@@ -1,13 +1,14 @@
 #include "DelimitedCharacterDataReader.h"
 #include "RbFileManager.h"
-
 #include "RbConstants.h"
+
+#include <boost/algorithm/string/trim_all.hpp>
 
 
 using namespace RevBayesCore;
 
 
-DelimitedCharacterDataReader::DelimitedCharacterDataReader(const std::string &fn, char d, size_t numSkipped) : DelimitedDataReader(fn, d, numSkipped)
+DelimitedCharacterDataReader::DelimitedCharacterDataReader(const std::string &fn, char d, size_t num_skipped) : DelimitedDataReader(fn, d, num_skipped)
 {
     
     filename = fn;
@@ -23,10 +24,13 @@ DelimitedCharacterDataReader::DelimitedCharacterDataReader(const std::string &fn
         std::vector<std::string>& characters = data[i];
         for (size_t j = 1; j < chars[i].size(); ++j)
         {
-            characters.push_back( chars[i][j] );
+            std::string s = chars[i][j];
+            boost::trim( s );
+            characters.push_back( s );
         }
         
     }
+    
 }
 
 

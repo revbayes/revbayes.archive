@@ -87,6 +87,19 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         std::vector<RevBayesCore::Taxon> t = this->dagNode->getValue().getFossilTaxa();
         return new RevVariable( new ModelVector<Taxon>( t ) );
     }
+    else if (name == "numSampledAncestors")
+    {
+        found = true;
+
+        size_t n = this->dagNode->getValue().getNumberOfTips();
+
+        size_t num = 0;
+        for(size_t i=0; i<n; i++){
+            RevBayesCore::TopologyNode &node = this->dagNode->getValue().getNode(i);
+            num += node.isSampledAncestor();
+        }
+        return new RevVariable( new Natural( num ) );
+    }
     
     return Tree::executeMethod( name, args, found );
 }
@@ -96,18 +109,18 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
 const std::string& TimeTree::getClassType(void)
 {
     
-    static std::string revType = "TimeTree";
+    static std::string rev_type = "TimeTree";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& TimeTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Tree::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Tree::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -115,9 +128,9 @@ const TypeSpec& TimeTree::getClassTypeSpec(void)
 const TypeSpec& TimeTree::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -131,7 +144,9 @@ void TimeTree::initMethods( void )
     ArgumentRules* getFossilsArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "getFossils", ModelVector<Taxon>::getClassTypeSpec(), getFossilsArgRules ) );
 
-    
+    ArgumentRules* nSampledAncestorsArgRules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<TimeTree, Natural>( "numSampledAncestors", this, nSampledAncestorsArgRules ) );
+
     // member functions
     ArgumentRules* heightArgRules = new ArgumentRules();
     methods.addFunction( new MemberFunction<TimeTree,RealPos>( "rootAge", this, heightArgRules   ) );

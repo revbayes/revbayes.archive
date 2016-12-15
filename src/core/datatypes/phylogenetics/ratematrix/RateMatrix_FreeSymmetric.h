@@ -1,5 +1,5 @@
-#ifndef __rb_mlandis__RateMatrix_FreeSymmetric__
-#define __rb_mlandis__RateMatrix_FreeSymmetric__
+#ifndef RateMatrix_FreeSymmetric_H
+#define RateMatrix_FreeSymmetric_H
 
 #include "GeneralRateMatrix.h"
 #include <complex>
@@ -42,7 +42,7 @@ namespace RevBayesCore {
         
         // RateMatrix functions
 //        double                              averageRate(void) const;
-        void                                calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const;   //!< Calculate the transition matrix
+        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_FreeSymmetric*           clone(void) const;
         void                                fillRateMatrix(void);
         void                                update(void);
@@ -52,10 +52,9 @@ namespace RevBayesCore {
         void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case
         void                                tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
-        
-        void                                computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const;
-        inline void                         squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
 
+        void                                exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
+        inline void                         multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
         
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
@@ -66,4 +65,4 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__rb_mlandis__RateMatrix_FreeSymmetric__) */
+#endif

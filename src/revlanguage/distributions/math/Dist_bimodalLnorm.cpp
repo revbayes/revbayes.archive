@@ -69,9 +69,9 @@ Dist_bimodalLnorm* Dist_bimodalLnorm::clone( void ) const
 const std::string& Dist_bimodalLnorm::getClassType(void) 
 { 
     
-    static std::string revType = "Dist_bimodalLnorm";
+    static std::string rev_type = "Dist_bimodalLnorm";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -83,9 +83,9 @@ const std::string& Dist_bimodalLnorm::getClassType(void)
 const TypeSpec& Dist_bimodalLnorm::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -224,9 +224,9 @@ const MemberRules& Dist_bimodalLnorm::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         
         memberRules.push_back( new ArgumentRule( "mean1", Real::getClassTypeSpec()       , "The mean (in log-space) of the first lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -235,7 +235,7 @@ const MemberRules& Dist_bimodalLnorm::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule( "sd2"  , RealPos::getClassTypeSpec()    , "The standard deviation of the secind lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "p"    , Probability::getClassTypeSpec(), "The probability to belong to the first distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;

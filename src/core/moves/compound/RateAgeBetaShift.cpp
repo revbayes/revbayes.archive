@@ -24,9 +24,9 @@ RateAgeBetaShift::RateAgeBetaShift(StochasticNode<Tree> *tr, std::vector<Stochas
     for (std::vector<StochasticNode<double>* >::iterator it = rates.begin(); it != rates.end(); ++it)
     {
         // get the pointer to the current node
-        DagNode* theNode = *it;
+        DagNode* the_node = *it;
         
-        addNode( theNode );
+        addNode( the_node );
     }
 
     
@@ -183,15 +183,25 @@ void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
     
         if ( fabs(lnProbRatio) > 1E-8 )
         {
+            double lnProbRatio2 = 0;
+            double newLnLike2 = 0;
+            for (RbOrderedSet<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+            {
+                
+                double tmp2 = (*it)->getLnProbabilityRatio();
+                lnProbRatio2 += tmp2;
+                newLnLike2 += (*it)->getLnProbability();
+            }
+            
             throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
         }
         
     }
     
     double hastingsRatio = backward - forward;
-    double lnAcceptanceRatio = lHeat * pHeat * (treeProbRatio + ratesProbRatio) + hastingsRatio;
+    double ln_acceptance_ratio = lHeat * pHeat * (treeProbRatio + ratesProbRatio) + hastingsRatio;
     
-    if (lnAcceptanceRatio >= 0.0)
+    if (ln_acceptance_ratio >= 0.0)
     {
         numAccepted++;
         
@@ -203,7 +213,7 @@ void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
             rates[childIdx]->keep();
         }
     }
-    else if (lnAcceptanceRatio < -300.0)
+    else if (ln_acceptance_ratio < -300.0)
     {
         reject();
         tree->restore();
@@ -216,7 +226,7 @@ void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
     }
     else
     {
-        double r = exp(lnAcceptanceRatio);
+        double r = exp(ln_acceptance_ratio);
         // Accept or reject the move
         double u = GLOBAL_RNG->uniform01();
         if (u < r)
@@ -260,7 +270,8 @@ void RateAgeBetaShift::printSummary(std::ostream &o) const
     const std::string &n = getMoveName();
     size_t spaces = 40 - (n.length() > 40 ? 40 : n.length());
     o << n;
-    for (size_t i = 0; i < spaces; ++i) {
+    for (size_t i = 0; i < spaces; ++i)
+    {
         o << " ";
     }
     o << " ";
@@ -269,43 +280,48 @@ void RateAgeBetaShift::printSummary(std::ostream &o) const
     const std::string &dn_name = (*nodes.begin())->getName();
     spaces = 20 - (dn_name.length() > 20 ? 20 : dn_name.length());
     o << dn_name;
-    for (size_t i = 0; i < spaces; ++i) {
+    for (size_t i = 0; i < spaces; ++i)
+    {
         o << " ";
     }
     o << " ";
     
     // print the weight
     int w_length = 4 - (int)log10(weight);
-    for (int i = 0; i < w_length; ++i) {
+    for (int i = 0; i < w_length; ++i)
+    {
         o << " ";
     }
     o << weight;
     o << " ";
     
     // print the number of tries
-    int t_length = 9 - (int)log10(numTried);
-    for (int i = 0; i < t_length; ++i) {
+    int t_length = 9 - (int)log10(num_tried);
+    for (int i = 0; i < t_length; ++i)
+    {
         o << " ";
     }
-    o << numTried;
+    o << num_tried;
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
     if (numAccepted > 0) a_length -= (int)log10(numAccepted);
     
-    for (int i = 0; i < a_length; ++i) {
+    for (int i = 0; i < a_length; ++i)
+    {
         o << " ";
     }
     o << numAccepted;
     o << " ";
     
     // print the acceptance ratio
-    double ratio = numAccepted / (double)numTried;
-    if (numTried == 0) ratio = 0;
+    double ratio = numAccepted / (double)num_tried;
+    if (num_tried == 0) ratio = 0;
     int r_length = 5;
     
-    for (int i = 0; i < r_length; ++i) {
+    for (int i = 0; i < r_length; ++i)
+    {
         o << " ";
     }
     o << ratio;
@@ -339,7 +355,8 @@ void RateAgeBetaShift::reject( void )
 
     
 #ifdef ASSERTIONS_TREE
-    if ( fabs(storedAge - storedNode->getAge()) > 1E-8 ) {
+    if ( fabs(storedAge - storedNode->getAge()) > 1E-8 )
+    {
         throw RbException("Error while rejecting RateAgeBetaShift proposal: Node ages were not correctly restored!");
     }
 #endif
@@ -379,7 +396,7 @@ void RateAgeBetaShift::swapNodeInternal(DagNode *oldN, DagNode *newN)
 
 void RateAgeBetaShift::tune( void )
 {
-    double rate = numAccepted / double(numTried);
+    double rate = numAccepted / double(num_tried);
     
     if ( rate > 0.44 )
     {

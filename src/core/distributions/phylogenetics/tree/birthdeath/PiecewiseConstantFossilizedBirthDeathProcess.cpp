@@ -85,7 +85,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     std::vector<double>* agesInts  = getAgesOfInternalNodesFromMostRecentSample();
     std::vector<double>* agesTips  = getAgesOfTipsFromMostRecentSample();
     
-    // numTaxa == tips.size() + ancs.size()
+    // num_taxa == tips.size() + ancs.size()
     // for the tip ages
     for (size_t i = 0; i < (*agesTips).size(); ++i)
     {
@@ -251,7 +251,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::p( size_t i, double t ) con
  *
  *
  */
-void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void )
+void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void ) const
 {
     // clean all the sets
     rateChangeTimes.clear();

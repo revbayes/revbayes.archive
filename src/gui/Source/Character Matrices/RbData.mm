@@ -37,6 +37,7 @@
 
 - (char)stateWithRow:(size_t)r andColumn:(int)c {
 
+    
     // get the data cell
     RbDataCell* dc = nil;
     if (r >= [data count])
@@ -138,6 +139,16 @@
             return td;
         }
     return nil;
+}
+
+- (NSArray*)getExcludedTaxa {
+
+    return [excludedTaxa allObjects];
+}
+
+- (NSArray*)getExcludedCharacters {
+
+    return [excludedCharacters allObjects];
 }
 
 - (void)includeAllCharacters {
@@ -244,7 +255,6 @@
                 copiedFrom = [d copiedFrom];
 			for (int i=0; i<[d numTaxa]; i++)
 				{
-				//NSString* tn = [NSString stringWithString:[d taxonWithIndex:i]];
 				NSString* tn = [[NSString alloc] initWithString:[d taxonWithIndex:i]];
                 [self cleanName:tn];
 				[taxonNames addObject:tn];
@@ -369,6 +379,36 @@
 		}
 }
 
+- (void)removeObervationFromEnd {
+
+    for (RbTaxonData* td in data)
+        {
+        [td removeObervationFromEnd];
+        }
+    numCharacters--;
+}
+
+- (void)removeTaxonNamed:(NSString*)taxonName {
+
+    RbTaxonData* td = [self getDataForTaxonWithName:taxonName];
+    if (td != nil)
+        {
+        [data removeObject:td];
+        NSString* taxonToRemove = nil;
+        for (NSString* s in taxonNames)
+            {
+            if ( [s isEqualToString:taxonName] == YES )
+                {
+                taxonToRemove = s;
+                break;
+                }
+            }
+        if ( taxonToRemove != nil )
+            [taxonNames removeObject:taxonToRemove];
+        numTaxa--;
+        }
+}
+
 - (void)restoreTaxonIndexed:(int)idx {
 
 	NSString* tn = [self taxonWithIndex:idx];
@@ -450,7 +490,6 @@
         // write out as NEXUS file
         if ( dataType == STANDARD || dataType == MIXED )
             {
-            NSLog(@"Writing file to temporary directory %@", fn); // JPH
             // write a morphological data file
             NSMutableString* outStr = [NSMutableString stringWithCapacity:100];
             [outStr appendString:@"#NEXUS\n\n"];
@@ -484,7 +523,6 @@
             }
         else
             {
-            NSLog(@"Writing file to temporary directory %@", fn); // JPH
             // write a non-morphological data file
             NSMutableString* outStr = [NSMutableString stringWithCapacity:100];
             [outStr appendString:@"#NEXUS\n\n"];
@@ -517,7 +555,6 @@
 
             NSError* myError;
             [outStr writeToFile:fn atomically:YES encoding:NSUTF8StringEncoding error:&myError];
-            NSLog(@"Finished writing file to temporary directory %@", fn); // JPH
             }
         }
     else

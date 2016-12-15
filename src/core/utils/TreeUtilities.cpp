@@ -15,6 +15,9 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
     // set the name
     tn->setName( n.getName() );
     
+    // copy the index
+    tn->setIndex( n.getIndex() );
+    
     // copy the branch "comments"
     const std::vector<std::string> &branchComments = n.getBranchParameters();
     for (size_t i = 0; i < branchComments.size(); ++i)
@@ -74,12 +77,13 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
     if ( tn->getNumberOfChildren() == 1 )
     {
         tn->setFossil( true );
+        tn->setSampledAncestor( true );
     }
     
 }
 
 
-RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
+RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t, bool resetIndex)
 {
     // create time tree object (topology + times)
     Tree *tt = new Tree();
@@ -92,6 +96,9 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
     
     TopologyNode* root = new TopologyNode();
     
+    // copy the root index
+    root->setIndex( bln.getIndex() );
+    
     std::vector<double> ages;
     std::vector<TopologyNode*> nodes;
     
@@ -101,13 +108,14 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
     constructTimeTreeRecursively(root, bln, nodes, ages, maxDepth);
     
     // add the root which creates the topology
-    tt->setRoot( root );
+    tt->setRoot( root, resetIndex );
     
     // set the ages
     for (size_t i = 0; i < nodes.size(); ++i) 
     {
         nodes[i]->setAge( ages[i] );
-        if ( nodes[i]->isTip() && ages[i] > 0.05)
+
+        if ( nodes[i]->isTip() && ages[i] > 0.0)
         {
             nodes[i]->setFossil( true );
         }
@@ -222,6 +230,37 @@ void RevBayesCore::TreeUtilities::rescaleSubtree(Tree *t, TopologyNode *n, doubl
     
 }
 
+void RevBayesCore::TreeUtilities::setAges(Tree *t, TopologyNode *n, std::vector<double>& ages)
+{
+    // we only rescale internal nodes
+    if ( n->isTip() == false )
+    {
+        // rescale the age of the node
+        t->getNode( n->getIndex() ).setAge( ages[n->getIndex()] );
+
+        // rescale both children
+        std::vector<TopologyNode*> children = n->getChildren();
+        for(size_t i = 0; i < children.size(); i++)
+            setAges( t, children[i], ages);
+    }
+
+}
+
+void RevBayesCore::TreeUtilities::getAges(Tree *t, TopologyNode *n, std::vector<double>& ages)
+{
+    // we only rescale internal nodes
+    if ( n->isTip() == false )
+    {
+        // rescale the age of the node
+        ages[n->getIndex()] = n->getAge();
+
+        // rescale both children
+        std::vector<TopologyNode*> children = n->getChildren();
+        for(size_t i = 0; i < children.size(); i++)
+            getAges( t, children[i], ages);
+    }
+
+}
 
 void RevBayesCore::TreeUtilities::rescaleTree(Tree *t, TopologyNode *n, double factor)
 {
@@ -265,23 +304,32 @@ std::string RevBayesCore::TreeUtilities::uniqueNewickTopologyRecursive(const Top
     } 
     else 
     {
+        std::string fossil = "";
         std::string newick = "(";
-        std::vector<std::string> children;
+        std::vector<std::string> child_newick;
         for (size_t i = 0; i < n.getNumberOfChildren(); ++i) 
         {
-            children.push_back( uniqueNewickTopologyRecursive(n.getChild( i ) ) );
+            const TopologyNode& child = n.getChild( i );
+            if( child.isSampledAncestor() && (child.getName() < fossil || fossil == "") )
+            {
+                fossil = child.getName();
+            }
+            else
+            {
+                child_newick.push_back( uniqueNewickTopologyRecursive( child ) );
+            }
         }
-        sort(children.begin(), children.end());
-        for (std::vector<std::string>::iterator it = children.begin(); it != children.end(); ++it) 
+        sort(child_newick.begin(), child_newick.end());
+        for (std::vector<std::string>::iterator it = child_newick.begin(); it != child_newick.end(); ++it)
         {
-            if ( it != children.begin() ) 
+            if ( it != child_newick.begin() )
             {
                 newick += ",";
             }
             newick += *it;
         }
         newick += ")";
-        newick += n.getName();
+        newick += fossil;
         
         return newick;
     }

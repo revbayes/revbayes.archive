@@ -38,8 +38,8 @@ Func_branchScoreDistance* Func_branchScoreDistance::clone( void ) const {
 RevBayesCore::TypedFunction< double >* Func_branchScoreDistance::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau2 = static_cast<const TimeTree&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau2 = static_cast<const Tree&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::BranchScoreDistanceStatistic* f = new RevBayesCore::BranchScoreDistanceStatistic( tau, tau2 );
     
     return f;
@@ -51,15 +51,15 @@ const ArgumentRules& Func_branchScoreDistance::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
-        argumentRules.push_back( new ArgumentRule( "tree1", TimeTree::getClassTypeSpec(), "The first tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "tree2", TimeTree::getClassTypeSpec(), "The second tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "tree1", Tree::getClassTypeSpec(), "The first tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "tree2", Tree::getClassTypeSpec(), "The second tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -69,18 +69,18 @@ const ArgumentRules& Func_branchScoreDistance::getArgumentRules( void ) const
 const std::string& Func_branchScoreDistance::getClassType(void)
 {
     
-    static std::string revType = "Func_branchScoreDistance";
+    static std::string rev_type = "Func_branchScoreDistance";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_branchScoreDistance::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -99,7 +99,7 @@ std::string Func_branchScoreDistance::getFunctionName( void ) const
 const TypeSpec& Func_branchScoreDistance::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

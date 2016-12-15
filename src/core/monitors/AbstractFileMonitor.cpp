@@ -4,11 +4,12 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "RbFileManager.h"
+#include "RbVersion.h"
 
 using namespace RevBayesCore;
 
 /* Constructor */
-AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
+AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool wv) : Monitor(g,n),
     out_stream(),
     filename( fname ),
     working_file_name( fname ),
@@ -17,13 +18,14 @@ AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std:
     prior( pr ),
     likelihood( l ),
     append(ap),
-    flatten( true )
+    flatten( true ),
+    writeVersion( wv )
 {
     
 }
 
 
-AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
+AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool wv) : Monitor(g,n),
     out_stream(),
     filename( fname ),
     working_file_name( fname ),
@@ -32,7 +34,8 @@ AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsign
     prior( pr ),
     likelihood( l ),
     append(ap),
-    flatten( true )
+    flatten( true ),
+    writeVersion( wv )
 {
     
 }
@@ -50,10 +53,11 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
     likelihood          = f.likelihood;
     append              = f.append;
     flatten             = f.flatten;
+    writeVersion        = f.writeVersion;
     
-    if (f.out_stream.is_open())
+    if ( f.out_stream.is_open() == true )
     {
-        openStream();
+        openStream( true );
     }
     
 }
@@ -135,7 +139,7 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps )
             
             std::string read_line = "";
             size_t lines_skipped = 0;
-            size_t lines_to_skip = 1;
+            size_t lines_to_skip = 3;
             while (std::getline(current_input_stream,read_line))
             {
                 ++lines_skipped;
@@ -182,6 +186,12 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps )
 }
 
 
+bool AbstractFileMonitor::isFileMonitor( void ) const
+{
+    return true;
+}
+
+
 /** 
  * Monitor value at generation gen 
  */
@@ -197,7 +207,7 @@ void AbstractFileMonitor::monitorVariables(unsigned long gen)
         DagNode *node = *i;
             
         // print the value
-        node->printValueElements(out_stream, separator, -1, true, flatten);
+        node->printValue(out_stream, separator, -1, false, false, flatten);
     }
     
 }
@@ -283,14 +293,14 @@ void AbstractFileMonitor::monitor(unsigned long gen)
 
 
 /** open the file stream for printing */
-void AbstractFileMonitor::openStream(void)
+void AbstractFileMonitor::openStream( bool reopen )
 {
     
     RbFileManager f = RbFileManager(working_file_name);
     f.createDirectoryForFile();
         
     // open the stream to the file
-    if ( append == true )
+    if ( append == true || reopen == true )
     {
         out_stream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
     }
@@ -316,6 +326,12 @@ void AbstractFileMonitor::printHeader( void )
     
 //    out_stream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
         out_stream.seekg(0, std::ios::end);
+        
+        if (writeVersion) {
+            RbVersion version;
+            out_stream << "#RevBayes version (" + version.getVersion() + ")\n";
+            out_stream << "#Build from " + version.getGitBranch() + " (" + version.getGitCommit() + ") on " + version.getDate() + "\n";
+        }
     
         // print one column for the iteration number
         out_stream << "Iteration";
@@ -360,17 +376,17 @@ void AbstractFileMonitor::printHeader( void )
 void AbstractFileMonitor::printFileHeader( void )
 {
     
-    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++)
+    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); ++it)
     {
         // add a separator before every new element
         out_stream << separator;
         
-        const DagNode* theNode = *it;
+        const DagNode* the_node = *it;
         
         // print the header
-        if (theNode->getName() != "")
+        if (the_node->getName() != "")
         {
-            theNode->printName(out_stream,separator, -1, true, flatten);
+            the_node->printName(out_stream,separator, -1, true, flatten);
         }
         else
         {
@@ -433,4 +449,14 @@ void AbstractFileMonitor::setPrintPrior(bool tf)
     
 }
 
-
+/**
+ * Set flag about whether to print the software version.
+ *
+ * \param[in]   tf   Flag if the version should be printed.
+ */
+void AbstractFileMonitor::setPrintVersion(bool tf)
+{
+    
+    writeVersion = tf;
+    
+}

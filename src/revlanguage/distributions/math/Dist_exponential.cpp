@@ -62,9 +62,9 @@ RevBayesCore::ExponentialDistribution* Dist_exponential::createDistribution( voi
 const std::string& Dist_exponential::getClassType(void) 
 { 
     
-    static std::string revType = "Dist_exponential";
+    static std::string rev_type = "Dist_exponential";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -76,9 +76,9 @@ const std::string& Dist_exponential::getClassType(void)
 const TypeSpec& Dist_exponential::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -124,17 +124,17 @@ std::string Dist_exponential::getDistributionFunctionName( void ) const
 const MemberRules& Dist_exponential::getParameterRules(void) const 
 {
     
-    static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static MemberRules dist_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
-        distMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The rate ( rate==1/mean) parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The rate ( rate==1/mean) parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1.0) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 

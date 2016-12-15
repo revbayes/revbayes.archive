@@ -25,6 +25,7 @@ namespace RevBayesCore {
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<int> &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
         CharacterHistory&                                   getCharacterHistory(void);                                  //!< Get the character histories
+        CharacterHistory                                    getCharacterHistory(void) const;                                  //!< Get the character histories
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
         void                                                setValue(Tree *v, bool force);
         
@@ -67,8 +68,8 @@ namespace RevBayesCore {
     
     
         std::vector<size_t>                                 activeLikelihood;
-        mutable std::vector<bool>                           changedNodes;
-        mutable std::vector<bool>                           dirtyNodes;
+        mutable std::vector<bool>                           changed_nodes;
+        mutable std::vector<bool>                           dirty_nodes;
         mutable std::vector<std::vector<std::vector<double> > >       nodeStates;
         mutable std::vector<std::vector<double> >           scalingFactors;
         mutable double                                      totalScaling;
@@ -76,6 +77,8 @@ namespace RevBayesCore {
         double                                              logTreeTopologyProb;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
 
         const double                                        NUM_TIME_SLICES;
+
+        bool                                                shift_same_category;
 
     };
     

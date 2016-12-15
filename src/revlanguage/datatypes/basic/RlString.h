@@ -23,15 +23,16 @@ namespace RevLanguage {
 
             // Basic utility functions
             RlString*                       clone(void) const;                                      //!< Copy
+            RevPtr<RevVariable>             executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found );
             static const std::string&       getClassType(void);                                     //!< Get Rev type
             static const TypeSpec&          getClassTypeSpec(void);                                 //!< Get class type spec
             const TypeSpec&                 getTypeSpec(void) const;                                //!< Get language type of the object
-            void                            printValue(std::ostream& o, bool toScreen) const;       //!< Print value (for user)
         
         protected:
-        void                                printValue(std::ostream& o) const;                      //!< Print value for user
 
         private:
+        
+            void                            initMethods(void);
             void                            parseValue(void);
     };
     

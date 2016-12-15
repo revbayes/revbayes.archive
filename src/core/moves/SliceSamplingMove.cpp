@@ -177,7 +177,6 @@ find_slice_boundaries_stepping_out(double x0,slice_function& g,double logy, doub
   // Expand the interval until its ends are outside the slice, or until
   // the limit on steps is reached.
 
-  //  std::cerr<<"!!    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
   if (m>1) {
     int J = uniform()*m;
     int K = (m-1)-J;
@@ -185,15 +184,11 @@ find_slice_boundaries_stepping_out(double x0,slice_function& g,double logy, doub
     while (J>0 and (not g.below_lower_bound(L)) and g(L)>logy) {
       L -= w;
       J--;
-      //      std::cerr<<" g("<<L<<") = "<<g()<<" > "<<logy<<"\n";
-      //      std::cerr<<"<-    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
     }
 
     while (K>0 and (not g.above_upper_bound(R)) and g(R)>logy) {
       R += w;
       K--;
-      //      std::cerr<<" g("<<R<<") = "<<g()<<" > "<<logy<<"\n";
-      //      std::cerr<<"->    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
     }
   }
   else {
@@ -211,8 +206,6 @@ find_slice_boundaries_stepping_out(double x0,slice_function& g,double logy, doub
 
   assert(L < R);
 
-  //  std::cerr<<"[]    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
-
   return std::pair<double,double>(L,R);
 }
 
@@ -223,15 +216,12 @@ double search_interval(double x0,double& L, double& R, slice_function& g,double 
   assert(L < R);
   assert(L <= x0 and x0 <= R);
 
-  double L0 = L, R0 = R;
+  //double L0 = L, R0 = R;
 
-  // std::cerr<<"**    L0 = "<<L0<<"   x0 = "<<x0<<"   R0 = "<<R0<<std::endl;
   for(int i=0;i<200;i++)
   {
     double x1 = L + uniform()*(R-L);
     double gx1 = g(x1);
-    //   std::cerr<<"    L  = "<<L <<"   x = "<<g.current_value()<<"   R  = "<<R<<std::endl;
-    //   std::cerr<<"    logy  = "<<logy<<"\n"; //  logy_x0 = "<<logy_x0<<" logy_current = "<<g()<<std::endl;
 
     if (gx1 >= logy) return x1;
 
@@ -240,11 +230,6 @@ double search_interval(double x0,double& L, double& R, slice_function& g,double 
     else
       L = x1;
   }
-  std::cerr<<"Warning!  Is size of the interval really ZERO?"<<std::endl;
-  double logy_x0 = g(x0);  
-  std::cerr<<"    L0 = "<<L0<<"   x0 = "<<x0<<"   R0 = "<<R0<<std::endl;
-  std::cerr<<"    L  = "<<L <<"   x = "<<g.current_value()<<"   R  = "<<R<<std::endl;
-  std::cerr<<"    logy  = "<<logy<<"  logy_x0 = "<<logy_x0<<"  logy_current = "<<g()<<std::endl;
 
   std::abort();
 
@@ -289,9 +274,9 @@ void SliceSamplingMove::performMcmcMove( double lHeat, double pHeat )
 
   numPr += g.get_num_evals();
 
-  if (autoTuning and numTried > 3)
+  if (auto_tuning and num_tried > 3)
   {
-    double predicted_window = 4.0*total_movement/numTried;
+    double predicted_window = 4.0*total_movement/num_tried;
     window = 0.95*window + 0.05*predicted_window;
   }
     
@@ -341,24 +326,24 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
     o << " ";
     
     // print the number of tries
-    int t_length = 9 - (int)log10(numTried);
+    int t_length = 9 - (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i) {
         o << " ";
     }
-    o << numTried;
+    o << num_tried;
     o << " ";
     
     // print the average distance moved
     o<<"\n";
-    if (numTried > 0)
+    if (num_tried > 0)
     {
-      o<<"  Ave. |x2-x1| = "<<total_movement/numTried<<std::endl;
+      o<<"  Ave. |x2-x1| = "<<total_movement/num_tried<<std::endl;
     }
 
     // print the average distance moved
-    if (numTried > 0)
+    if (num_tried > 0)
     {
-      o<<"  Ave. # of Pr evals = "<<double(numPr)/numTried<<std::endl;
+      o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried<<std::endl;
     }
 
     //    proposal->printParameterSummary( o );
@@ -379,7 +364,7 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
 void SliceSamplingMove::resetMoveCounters( void )
 {
     total_movement = 0.0;
-    numTried = 0;
+    num_tried = 0;
     numPr = 0;
 }
 
@@ -403,9 +388,9 @@ void SliceSamplingMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
  */
 void SliceSamplingMove::tune( void ) 
 {
-  double predicted_window = 4.0*total_movement/numTried;
+  double predicted_window = 4.0*total_movement/num_tried;
 
-  double p = exp(-double(numTried)*0.5);
+  double p = exp(-double(num_tried)*0.5);
   window = p*window + (1.0-p)*predicted_window;
 }
 

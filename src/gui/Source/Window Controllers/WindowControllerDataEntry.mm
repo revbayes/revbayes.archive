@@ -90,7 +90,6 @@
 - (BOOL)checkValidityOfCharacterState:(id)cs {
 
     NSString* newCharVal = [NSString stringWithString:cs];
-    NSLog(@"newCharVal = %@", newCharVal);
     if ( [newCharVal length] != 1 )
         return NO;
     char v = [newCharVal characterAtIndex:0];
@@ -159,6 +158,8 @@
 
 - (IBAction)helpButtonAction:(id)sender {
 
+    NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"DataEntryTool_Anchor" inBook:locBookName];
 }
 
 - (id)init {
@@ -197,6 +198,9 @@
 
     [self saveMatrixToTool];
     [myTool closeControlPanel];
+    
+    [myTool removeDataInspector];
+    [myTool makeDataInspector];
 }
 
 - (int)numberOfColumns {
@@ -247,12 +251,10 @@
         isValidCharacterEntry = [self checkValidityOfCharacterState:object];
     if ( isValidCharacterEntry == NO )
         {
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Invalid character state" 
-                                         defaultButton:@"OK" 
-                                       alternateButton:nil 
-                                           otherButton:nil 
-                             informativeTextWithFormat:@"Valid character states are the integers from 0 to 9 and \"?\""];
-        [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Warning: Invalid character state"];
+        [alert setInformativeText:@"Valid character states are the integers from 0 to 9 and \"?\""];
+        [alert runModal];
         }
     else 
         {

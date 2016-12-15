@@ -45,7 +45,7 @@ namespace RevBayesCore {
         const std::string&                                  getScheduleType(void) const;
         std::string                                         getStrategyDescription(void) const;                                                     //!< Get the description of the strategy used here.
         bool                                                hasConverged(double m);
-        void                                                initializeSampler(void);                                                //!< Initialize objects for HillClimber sampling
+        void                                                initializeSampler(void);                                                                //!< Initialize objects for HillClimber sampling
         void                                                monitor(unsigned long g);
         void                                                nextCycle(void);
         void                                                removeMonitors(void);
@@ -53,14 +53,14 @@ namespace RevBayesCore {
         void                                                setModel(Model *m);
         void                                                setNumberOfProcesses(size_t i);                                                         //!< Set the number of processes for this HillClimber simulation.
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
-        void                                                startMonitors(size_t numCycles);                                                        //!< Start the monitors
+        void                                                startMonitors(size_t num_cycles, bool reopen);                                          //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
-        
+        void                                                writeMonitorHeaders(void);                                                              //!< Write the headers of the monitors
+
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and HillClimber ptrs to monitors
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
-        void                                                setActivePIDSpecialized(size_t i);                                                      //!< Set the number of processes for this class.
-        void                                                setNumberOfProcessesSpecialized(size_t i);                                              //!< Set the number of processes for this class.
+        void                                                setActivePIDSpecialized(size_t i, size_t n);                                                      //!< Set the number of processes for this class.
         
         
         Model*                                              model;

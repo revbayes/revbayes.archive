@@ -74,9 +74,9 @@ void Move_EventTimeBeta::constructInternalObject( void )
 const std::string& Move_EventTimeBeta::getClassType(void)
 {
     
-    static std::string revType = "Move_EventTimeBeta";
+    static std::string rev_type = "Move_EventTimeBeta";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -88,9 +88,9 @@ const std::string& Move_EventTimeBeta::getClassType(void)
 const TypeSpec& Move_EventTimeBeta::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -120,9 +120,9 @@ const MemberRules& Move_EventTimeBeta::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The time-tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "delta"  , RealPos::getClassTypeSpec()  , "The concentration parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 1.0 ) ) );
@@ -134,7 +134,7 @@ const MemberRules& Move_EventTimeBeta::getParameterRules(void) const
         const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -149,29 +149,9 @@ const MemberRules& Move_EventTimeBeta::getParameterRules(void) const
 const TypeSpec& Move_EventTimeBeta::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
-}
-
-
-/**
- * Print the value for the user.
- */
-void Move_EventTimeBeta::printValue(std::ostream &o) const
-{
-    
-    o << "EventTimeBeta(";
-    if (tree != NULL)
-    {
-        o << tree->getName();
-    }
-    else
-    {
-        o << "?";
-    }
-    o << ")";
-    
+    return type_spec;
 }
 
 

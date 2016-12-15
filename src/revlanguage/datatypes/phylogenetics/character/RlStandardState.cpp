@@ -55,18 +55,18 @@ StandardState* StandardState::clone(void) const
 const std::string& StandardState::getClassType(void)
 {
     
-    static std::string revType = "Standard";
+    static std::string rev_type = "Standard";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& StandardState::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -74,8 +74,8 @@ const TypeSpec& StandardState::getClassTypeSpec(void)
 const TypeSpec& StandardState::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 

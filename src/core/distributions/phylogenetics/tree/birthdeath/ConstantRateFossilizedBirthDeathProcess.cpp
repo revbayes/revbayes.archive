@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "StochasticNode.h"
 
 #include <cmath>
 
@@ -24,13 +25,19 @@ using namespace RevBayesCore;
  * \param[in]    tn             Taxa.
  * \param[in]    c              Clades conditioned to be present.
  */
-ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess( const TypedDagNode<double> *ra,const TypedDagNode<double> *s,
-												const TypedDagNode<double> *e,const TypedDagNode<double> *p,
-												const TypedDagNode<double> *r,const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
-    lambda( s ), 
+ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess( const TypedDagNode<double> *o,
+                                                                                  const TypedDagNode<double> *s,
+                                                                                  const TypedDagNode<double> *e,
+                                                                                  const TypedDagNode<double> *p,
+                                                                                  const TypedDagNode<double> *r,
+                                                                                  const bool& uo,
+                                                                                  const std::string& cdt,
+                                                                                  const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, cdt, tn ),
+    lambda( s ),
     mu( e ), 
     psi( p ), 
-    rho( r )
+    rho( r ),
+    useOrigin( uo )
 {
     addParameter( lambda );
     addParameter( mu );
@@ -54,6 +61,27 @@ ConstantRateFossilizedBirthDeathProcess* ConstantRateFossilizedBirthDeathProcess
 }
 
 /**
+ * If conditioning on the origin, then return the age of the root node
+ * or zero if the tree is empty
+ */
+double ConstantRateFossilizedBirthDeathProcess::getRootAge( void ) const
+{
+    if(useOrigin)
+    {
+        if(value->getNumberOfNodes() > 0)
+        {
+            return value->getRoot().getAge();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+        return getOriginTime();
+}
+
+/**
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  * \return    The log-probability density.
@@ -61,78 +89,110 @@ ConstantRateFossilizedBirthDeathProcess* ConstantRateFossilizedBirthDeathProcess
 double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
     
-    // variable declarations and initialization
     double lnProbTimes = 0.0;
+    double process_time = getOriginTime();
+    size_t num_initial_lineages = 0;
+    TopologyNode* root = &value->getRoot();
+    
+    if (useOrigin) {
+        // If we are conditioning on survival from the origin,
+        // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
+        // TODO: Generalize AbstractBirthDeathProcess to allow conditioning on the origin
+        if ( condition == "survival" )
+        {
+            lnProbTimes += log( pSurvival(0,process_time) );
+        }
+        num_initial_lineages = 1;
+
+    }
+    
+    // if conditioning on root, root node must be a "true" bifurcation event
+    else
+    {
+        if (root->getChild(0).isSampledAncestor() || root->getChild(1).isSampledAncestor())
+            return RbConstants::Double::neginf;
+        num_initial_lineages = 2;
+    }
+
+    // variable declarations and initialization
 	double birth_rate = lambda->getValue();
+    double death_rate = mu->getValue();
     double fossil_rate = psi->getValue();
     double sampling_prob = rho->getValue();
     
-    double process_time = value->getRoot().getAge();
+    // get helper variables
+    double a = birth_rate - death_rate - fossil_rate;
+    double c1 = std::fabs(sqrt(a * a + 4 * birth_rate * fossil_rate));
+    double c2 = -(a - 2 * birth_rate * sampling_prob) / c1;
+ 
+    // get node/time variables
     size_t num_nodes = value->getNumberOfNodes();
-    size_t num_initial_lineages = 2;
 
-	int num_fossils = 0;
-	int num_extant = 0;
-	for (size_t i = 0; i < num_nodes; ++i)
+    // classify nodes
+    int num_sampled_ancestors = 0;
+    int num_fossil_taxa = 0;
+    int num_extant_taxa = 0;
+    int num_internal_nodes = 0;
+
+    std::vector<double> fossil_tip_ages = std::vector<double>();
+    std::vector<double> internal_node_ages = std::vector<double>();
+	for (size_t i = 0; i < num_nodes; i++)
     {
 		const TopologyNode& n = value->getNode( i );
-		if( n.isFossil() == true )
-        {
-			++num_fossils;
-        }
-        else if ( n.isTip() == true )
-        {
-			++num_extant;
-        }
         
+        if ( n.isTip() && n.isFossil() && n.isSampledAncestor() )
+        {
+            // node is sampled ancestor
+            num_sampled_ancestors++;
+        }
+        else if ( n.isTip() && n.isFossil() && !n.isSampledAncestor() )
+        {
+            // node is fossil leaf
+            num_fossil_taxa++;
+            fossil_tip_ages.push_back( n.getAge() );
+        }
+        else if ( n.isTip() && !n.isFossil() )
+        {
+            // node is extant leaf
+            num_extant_taxa++;
+        }
+        else if ( n.isInternal() && !n.getChild(0).isSampledAncestor() && !n.getChild(1).isSampledAncestor() )
+        {
+            // node is bifurcation event (a "true" node)
+            internal_node_ages.push_back( n.getAge() );
+            num_internal_nodes++;
+        }
 	}
-	
-	std::vector<double> fossil_tip_ages = std::vector<double>();
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-        const TopologyNode& n = value->getNode( i );
-		if( n.isFossil() == true && n.isSampledAncestor() == false )
-        {
-			double t = n.getAge();
-			fossil_tip_ages.push_back(t);
-		}
-        
-    }
-	
-	std::vector<double> internal_node_ages = std::vector<double>();
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-        
-        const TopologyNode& n = value->getNode( i );
-		if( n.isInternal() == true && n.getChild(0).isSampledAncestor() == false && n.getChild(1).isSampledAncestor() == false)
-        {
-			double t = n.getAge();
-			internal_node_ages.push_back(t);
-		}
-        
-    }
-	
+    
     // add the log probability for the fossilization events
-    lnProbTimes += num_fossils * log( fossil_rate );
+    if (fossil_rate == 0.0 && num_fossil_taxa + num_sampled_ancestors > 0)
+    {
+        throw RbException("The sampling rate is zero, but the tree has sampled fossils.");
+    }
+    else if (fossil_rate > 0.0)
+    {
+        lnProbTimes += (num_fossil_taxa + num_sampled_ancestors) * log( fossil_rate );
+    }
+    
     // add the log probability for sampling the extant taxa
-    lnProbTimes += num_extant * log( sampling_prob );
-    // compute the probability of the initial sequences
-    lnProbTimes +=  lnQ(process_time) - num_initial_lineages * log(1.0 - pHatZero(process_time));
+    lnProbTimes += num_extant_taxa * log( sampling_prob );
+    
+    // add the log probability of the initial sequences
+    lnProbTimes += lnQ(process_time, c1, c2) - num_initial_lineages * log(1.0 - pHatZero(process_time)) - log(birth_rate);
+
 	
 	for(size_t i=0; i<internal_node_ages.size(); i++)
     {
 		double t = internal_node_ages[i];
-        // probabilities of the observed branches and the speciation events leading to them
-		lnProbTimes += log(2.0*birth_rate) + lnQ(t);
+		lnProbTimes += log(2.0 * birth_rate) + lnQ(t, c1, c2);
 	}
-	
-    // What is this doing? (Sebastian)
+
 	for(size_t f=0; f < fossil_tip_ages.size(); f++)
     {
 		double t = fossil_tip_ages[f];
-		lnProbTimes += log(pZero(t)) - lnQ(t);
+		lnProbTimes += log(pZero(t, c1, c2)) - lnQ(t, c1, c2);
 	}
-	
+
     return lnProbTimes;
     
 }
@@ -149,9 +209,18 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
  */
 double ConstantRateFossilizedBirthDeathProcess::pSurvival(double start, double end) const
 {
+    // variable declarations and initialization
+    double birth_rate = lambda->getValue();
+    double death_rate = mu->getValue();
+    double fossil_rate = psi->getValue();
+    double sampling_prob = rho->getValue();
     
+    // get helper variables
+    double a = birth_rate - death_rate - fossil_rate;
+    double c1 = sqrt(a * a + 4 * birth_rate * fossil_rate);
+    double c2 = -(a - 2 * birth_rate * sampling_prob) / c1;
 	
-    double p0 = pZero(end);
+    double p0 = pZero(end, c1, c2);
     
     return 1.0 - p0;
 }
@@ -161,7 +230,7 @@ double ConstantRateFossilizedBirthDeathProcess::pSurvival(double start, double e
 /**
  * Simulate new speciation times.
  */
-double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
+double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double orig, double present) const
 {
 
     // incorrect placeholder for constant FBDP
@@ -172,7 +241,7 @@ double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double or
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
-    double age = present - origin;
+    double age = present - orig;
     double b = lambda->getValue();
     double d = mu->getValue();
     double r = rho->getValue();
@@ -192,7 +261,8 @@ double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double or
         t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
     }    
     
-    return present - t;
+    //    return present - t;
+    return orig + t;
 }
 
 
@@ -205,8 +275,7 @@ double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double or
  */
 void ConstantRateFossilizedBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
-    
-    if (oldP == lambda) 
+    if (oldP == lambda)
     {
         lambda = static_cast<const TypedDagNode<double>* >( newP );
     }
@@ -230,69 +299,92 @@ void ConstantRateFossilizedBirthDeathProcess::swapParameterInternal(const DagNod
     
 }
 
-double ConstantRateFossilizedBirthDeathProcess::pZero(double t) const
+double ConstantRateFossilizedBirthDeathProcess::pZero(double t, double c1, double c2) const
 {
-	
 	double b = lambda->getValue();
     double d = mu->getValue();
     double f = psi->getValue();
-    double r = rho->getValue();
-	double bdp = b-d-f;
-	double cOne = std::abs(sqrt((bdp*bdp) + 4.0*b*f));
-	double cTwo = -((b-d-(2.0*b*r)-f) / cOne);
-	double v1 = b+d+f;
-	double v2 = (exp(-cOne*t)*(1.0-cTwo)) - (1.0+cTwo);
-	double v3 = (exp(-cOne*t)*(1.0-cTwo)) + (1.0+cTwo);
-	double v = v1 + (cOne * (v2 / v3));
-    
-	return v / (2.0*b);
+	double v1 = exp(-c1*t) * (1.0-c2) - (1.0+c2);
+	double v2 = exp(-c1*t) * (1.0-c2) + (1.0+c2);
+	double v = (b + d + f + c1 * (v1 / v2)) / (2.0 * b);
+    return v;
 }
 
 
-double ConstantRateFossilizedBirthDeathProcess::lnQ(double t) const
+double ConstantRateFossilizedBirthDeathProcess::lnQ(double t, double c1, double c2) const
 {
-    
-    // get the parameters
-    double birth_rate       = lambda->getValue();
-    double death_rate       = mu->getValue();
-    double fossil_rate      = psi->getValue();
-    double sampling_prob    = rho->getValue();
-    
-    double a = (birth_rate - death_rate - fossil_rate);
-    double c1 = sqrt( a*a + 4*birth_rate*fossil_rate );
-    double c2 = - (a-2.0*birth_rate*sampling_prob)/c1;
-    
-    double oneMinusC2 = 1.0-c2;
-    double onePlusC2  = 1.0+c2;
-    
-    // original code
-//    double b1 = 2.0*(1.0-c2*c2);
-//    double b2 = exp(-c1*t)*oneMinusC2*oneMinusC2;
-//    double b3 = exp(c1*t)*onePlusC2*onePlusC2;
-//    
-//    double lnQt = log( 4.0 ) - log( b1 + b2 + b3 );
-    
     // numerically safe code
-    double b1 = exp(-c1*t)*2.0*(1.0-c2*c2);
-    double b2 = exp(-c1*t*2)*oneMinusC2*oneMinusC2;
-    double b3 = onePlusC2*onePlusC2;
-    
-    double lnQt = log( 4.0 ) - log( b1 + b2 + b3 ) - c1*t;
-    
+    double lnQt = log(4.0) - c1*t - 2 * log( exp(-c1*t) * (1-c2) + (1+c2));
 	return lnQt;
 }
 
 
 double ConstantRateFossilizedBirthDeathProcess::pHatZero(double t) const
 {
-	
 	double b = lambda->getValue();
     double d = mu->getValue();
     double r = rho->getValue();
-	double val = (r * (b-d)) / ((b*r) + ((b*(1-r))-d)*exp(-(b-d)*t));
+	double val = r * (b-d) / (b*r + (b*(1-r)-d)*exp(-(b-d)*t));
 	return 1.0 - val;
 }
 
+/**
+ * Restore the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void ConstantRateFossilizedBirthDeathProcess::restoreSpecialization(DagNode *affecter)
+{
 
+    if ( affecter == root_age && !useOrigin )
+    {
+        AbstractRootedTreeDistribution::restoreSpecialization(affecter);
+
+    }
+
+}
+
+
+/**
+ * Set the current value.
+ */
+void ConstantRateFossilizedBirthDeathProcess::setValue(Tree *v, bool f )
+{
+
+    // delegate to super class
+    TypedDistribution<Tree>::setValue(v, f);
+
+
+    if ( root_age != NULL && !useOrigin )
+    {
+        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);
+        if ( stoch_root_age != NULL )
+        {
+            const_cast<StochasticNode<double> *>(stoch_root_age)->setValue( new double( value->getRoot().getAge() ), f);
+        }
+        else
+        {
+            value->getRoot().setAge( root_age->getValue() );
+        }
+
+    }
+
+}
+
+
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void ConstantRateFossilizedBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
+{
+
+    if ( affecter == root_age && !useOrigin )
+    {
+        AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
+
+    }
+
+}
 
 

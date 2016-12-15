@@ -38,9 +38,9 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       cladoProbs;
         RevPtr<const RevVariable>                       cladoTimes;
         RevPtr<const RevVariable>                       rate;
-        RevPtr<const RevVariable>                       siteRates;
-        RevPtr<const RevVariable>                       rootFrequencies;
-        RevPtr<const RevVariable>                       pInv;
+        RevPtr<const RevVariable>                       site_rates;
+        RevPtr<const RevVariable>                       root_frequencies;
+        RevPtr<const RevVariable>                       p_inv;
         RevPtr<const RevVariable>                       nSites;
         RevPtr<const RevVariable>                       nStates;
         RevPtr<const RevVariable>                       type;

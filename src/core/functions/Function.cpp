@@ -7,14 +7,16 @@ using namespace RevBayesCore;
 
 
 Function::Function(void)  :
-    parameters()
+    parameters(),
+    force_update( false )
 {
     
 }
 
 
 Function::Function(const Function &f)  :
-    parameters( f.parameters )
+    parameters( f.parameters ),
+    force_update( f.force_update )
 {
     
     for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
@@ -30,10 +32,10 @@ Function::~Function( void )
     
     for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
     {
-        const DagNode *theNode = *it;
-        if ( theNode->decrementReferenceCount() == 0 )
+        const DagNode *the_node = *it;
+        if ( the_node->decrementReferenceCount() == 0 )
         {
-            delete theNode;
+            delete the_node;
         }
         
     }
@@ -50,10 +52,10 @@ Function& Function::operator=(const Function &f)
         
         for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
         {
-            const DagNode *theNode = *it;
-            if ( theNode->decrementReferenceCount() == 0 )
+            const DagNode *the_node = *it;
+            if ( the_node->decrementReferenceCount() == 0 )
             {
-                delete theNode;
+                delete the_node;
             }
         }
         parameters.clear();
@@ -93,6 +95,16 @@ void Function::addParameter(const DagNode *p)
         
     }
 
+}
+
+
+
+/**
+ * Does this method forces the DAG node to always call update even if not touched?
+ */
+bool Function::forceUpdates(void) const
+{
+    return force_update;
 }
 
 
@@ -161,6 +173,15 @@ void Function::restore( DagNode *restorer )
     
     // nothing to change here in the base class
     
+}
+
+
+/**
+ * Set if this method forces the DAG node to always call update even if not touched?
+ */
+void Function::setForceUpdates( bool tf )
+{
+    force_update = tf;
 }
 
 /**

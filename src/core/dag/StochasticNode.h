@@ -51,14 +51,12 @@ namespace RevBayesCore {
         std::vector<const DagNode*>                         getParents(void) const;                                                     //!< Get the set of parents
         void                                                swapParent(const DagNode *oldP, const DagNode *newP);                       //!< Exchange the parent (distribution parameter)
         
-        
     protected:
         
         virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);          //!< Mark and get affected nodes
         virtual void                                        keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         virtual void                                        restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
-        virtual void                                        setActivePIDSpecialized(size_t i);                                          //!< Set the number of processes for this class.
-        virtual void                                        setNumberOfProcessesSpecialized(size_t i);                                  //!< Set the number of processes for this class.
+        virtual void                                        setActivePIDSpecialized(size_t i, size_t n);                                          //!< Set the number of processes for this class.
         virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                   //!< Tell affected nodes value is reset
         
         // protected members
@@ -109,7 +107,7 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) : DynamicNode<valueType>( n ),
     clamped( n.clamped ),
-    ignore_redraw(n.ignore_redraw),
+    ignore_redraw( n.ignore_redraw ),
     needs_probability_recalculation( true ),
     distribution( n.distribution->clone() )
 {
@@ -196,6 +194,10 @@ RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>
         
         // Set us as the DAG node of the new distribution
         distribution->setStochasticNode( this );
+        
+        clamped                             = n.clamped;
+        ignore_redraw                       = n.ignore_redraw;
+        needs_probability_recalculation     = true;
     }
     
     return *this;
@@ -479,12 +481,12 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer)
  * Set the active PID of this specific DAG node object.
  */
 template <class valueType>
-void RevBayesCore::StochasticNode<valueType>::setActivePIDSpecialized(size_t n)
+void RevBayesCore::StochasticNode<valueType>::setActivePIDSpecialized(size_t a, size_t n)
 {
     
     if ( distribution != NULL )
     {
-        distribution->setActivePID( n );
+        distribution->setActivePID( a, n );
     }
     
 }
@@ -511,23 +513,6 @@ void RevBayesCore::StochasticNode<valueType>::setMcmcMode(bool tf)
 {
     
     distribution->setMcmcMode( tf );
-    
-}
-
-
-/**
- * Set the number of processes available to this specific DAG node object.
- * If there is more than one process available, then we can use these
- * to compute the likelihood in parallel. Yeah!
- */
-template <class valueType>
-void RevBayesCore::StochasticNode<valueType>::setNumberOfProcessesSpecialized(size_t n)
-{
-
-    if ( distribution != NULL )
-    {
-        distribution->setNumberOfProcesses( n );
-    }
     
 }
 
@@ -579,6 +564,7 @@ template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw( bool tf )
 {
     ignore_redraw = tf;
+
 }
 
 

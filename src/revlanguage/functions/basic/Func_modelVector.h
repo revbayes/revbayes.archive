@@ -99,17 +99,17 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector< typename valType::valueType
 template <typename valType>
 const RevLanguage::ArgumentRules& RevLanguage::Func_modelVector<valType>::getArgumentRules( void ) const
 {
-    static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static ArgumentRules argument_rules = ArgumentRules();
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( rules_set == false )
     {
-        argumentRules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), "first value", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new Ellipsis ( "more values", valType::getClassTypeSpec() ) );
-        rulesSet = true;
+        argument_rules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), "First value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new Ellipsis ( "More values ...", valType::getClassTypeSpec() ) );
+        rules_set = true;
     }
     
-    return argumentRules;
+    return argument_rules;
 }
 
 
@@ -117,9 +117,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_modelVector<valType>::getArg
 template <typename valType>
 const std::string& RevLanguage::Func_modelVector<valType>::getClassType( void )
 {
-    static std::string revType = "Func_modelVector<" + valType::getClassType() + ">";
+    static std::string rev_type = "Func_modelVector<" + valType::getClassType() + ">";
     
-	return revType;
+	return rev_type;
 }
 
 
@@ -127,9 +127,9 @@ const std::string& RevLanguage::Func_modelVector<valType>::getClassType( void )
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_modelVector<valType>::getClassTypeSpec( void )
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 

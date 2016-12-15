@@ -102,14 +102,18 @@
 /* Functions related to evolution (in folder "functions/phylogenetics") */
 #include "Func_branchScoreDistance.h"
 #include "Func_checkNodeOrderConstraints.h"
-#include "Func_clade.h"
+#include "Func_computeWeightedNodeOrderConstraintsScore.h"
 #include "Func_concatenate.h"
 #include "Func_constructRootedTripletDistribution.h"
+#include "Func_extantTree.h"
+#include "Func_formatDiscreteCharacterData.h"
 #include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
 #include "Func_nodeAgeByID.h"
+#include "Func_phyloDiversity.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
+#include "Func_readPomoCountFile.h"
 #include "Func_pruneTree.h"
 #include "Func_simTree.h"
 #include "Func_stitchTree.h"
@@ -133,16 +137,23 @@
 #include "Func_freeSymmetricRateMatrix.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
+#include "Func_hiddenStateRateMatrix.h"
 #include "Func_InfiniteSitesRateMatrix.h"
 #include "Func_jc.h"
 #include "Func_jones.h"
 #include "Func_k80.h"
+#include "Func_Kimura81.h"
+#include "Func_lg.h"
 #include "Func_mtRev.h"
 #include "Func_mtMam.h"
+#include "Func_orderedRateMatrix.h"
 #include "Func_pomo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_t92.h"
+#include "Func_TamuraNei.h"
+#include "Func_TIM.h"
+#include "Func_TVM.h"
 #include "Func_wag.h"
 
 /* Functions related to evolution (in folder "functions/popgen") */
@@ -159,10 +170,14 @@
 
 
 /* Cladogeneic state prob function */
-#include "Func_cladoProbs.h"
+#include "Func_DECCladoProbs.h"
 #include "Func_DECRates.h"
 #include "Func_DECRoot.h"
+#include "Func_EpochCladoProbs.h"
 #include "Func_chromosomesCladoProbs.h"
+#include "Func_chromosomesCladoEventsBD.h"
+#include "Func_MixtureCladoProbs.h"
+#include "Func_SampledCladogenesisRootFrequencies.h"
 
 
 /* Input/output functions (in folder "functions/io") */
@@ -170,7 +185,7 @@
 #include "Func_ancestralStateTree.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
-#include "Func_mapTree.h"
+#include "Func_formatDiscreteCharacterData.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
 #include "Func_readCharacterDataDelimited.h"
@@ -188,6 +203,7 @@
 #include "Func_TaxonReader.h"
 #include "Func_treeTrace.h"
 #include "Func_write.h"
+#include "Func_writeCharacterDataDelimited.h"
 #include "Func_writeFasta.h"
 #include "Func_writeNexus.h"
 
@@ -196,12 +212,16 @@
 #include "Func_abs.h"
 #include "Func_absVector.h"
 #include "Func_ceil.h"
+#include "Func_choose.h"
 #include "Func_coala.h"
 #include "Func_diagonalMatrix.h"
+#include "Func_empiricalQuantile.h"
 #include "Func_exp.h"
 #include "Func_floor.h"
+#include "Func_gamma.h"
 #include "Func_lnProbability.h"
 #include "Func_hyperbolicTangent.h"
+#include "Func_hyperbolicSine.h"
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_logistic.h"
@@ -228,6 +248,7 @@
 
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
+#include "Func_discretizeBeta.h"
 #include "Func_discretizeGamma.h"
 #include "Func_discretizeDistribution.h"
 #include "Func_discretizePositiveDistribution.h"
@@ -265,15 +286,22 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_freeSymmetricRateMatrix()  );
         addFunction( new Func_gtr()                      );
         addFunction( new Func_hky()                      );
+        addFunction( new Func_hiddenStateRateMatrix()    );
         addFunction( new Func_InfiniteSitesRateMatrix()  );
         addFunction( new Func_jc()                       );
         addFunction( new Func_jones()                    );
         addFunction( new Func_k80()                      );
+        addFunction( new Func_Kimura81()                 );
+        addFunction( new Func_lg()                       );
         addFunction( new Func_mtMam()                    );
         addFunction( new Func_mtRev()                    );
+        addFunction( new Func_orderedRateMatrix()        );
         addFunction( new Func_pomo()                     );
         addFunction( new Func_rtRev()                    );
         addFunction( new Func_t92()                      );
+        addFunction( new Func_TamuraNei()                );
+        addFunction( new Func_TIM()                      );
+        addFunction( new Func_TVM()                      );
         addFunction( new Func_vt()                       );
         addFunction( new Func_wag()                      );
 
@@ -282,24 +310,32 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_biogeo_grm() );
 
         /* cladogenic probs used for e.g. DEC models (in folder "functions/phylogenetics") */
-        addFunction( new Func_cladoProbs() );
+        addFunction( new Func_DECCladoProbs() );
         addFunction( new Func_DECRates() );
         addFunction( new Func_DECRoot() );
+        addFunction( new Func_EpochCladoProbs() );
         addFunction( new Func_chromosomesCladoProbs() );
+        addFunction( new Func_chromosomesCladoEventsBD() );
+        addFunction( new Func_MixtureCladoProbs() );
+        addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
-        addFunction( new Func_phyloDiversity() );
         addFunction( new Func_branchScoreDistance()      );
         addFunction( new Func_checkNodeOrderConstraints());
-        addFunction( new Func_clade()                    );
+//        addFunction( new Func_clade()                    );
+        addFunction( new Func_computeWeightedNodeOrderConstraintsScore());
         addFunction( new Func_concatenate()              );
         addFunction( new Func_constructRootedTripletDistribution()            );
+        addFunction( new Func_formatDiscreteCharacterData() );
+        addFunction( new Func_extantTree()                );
         addFunction( new Func_maximumTree()              );
         addFunction( new Func_mrcaIndex()                );
         addFunction( new Func_nodeAgeByID()              );
+        addFunction( new Func_phyloDiversity() );
         addFunction( new Func_pomoStateConverter()       );
         addFunction( new Func_pomoRootFrequencies()      );
         addFunction( new Func_pruneTree()                );
+        addFunction( new Func_readPomoCountFile()       );
         addFunction( new Func_simTree()                  );
         addFunction( new Func_stitchTree()               );
         addFunction( new Func_symmetricDifference()      );
@@ -325,12 +361,18 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 		// ceil function
         addFunction( new Func_ceil<Real,Integer>()  );
         addFunction( new Func_ceil<RealPos,Natural>()  );
-        
+
+        // choose function
+        addFunction( new Func_choose() );
+
         // coala function
         addFunction( new Func_coala()        );
 
         // diagonal matrix
         addFunction( new Func_diagonalMatrix() );
+
+        // empirical quantile function
+        addFunction( new Func_empiricalQuantile()  );
 
         // exponential function
         addFunction( new Func_exp() );
@@ -338,6 +380,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 		// floor function
         addFunction( new Func_floor<Real,Integer>()  );
         addFunction( new Func_floor<RealPos,Natural>()  );
+
+        // gamma function
+        addFunction( new Func_gamma() );
 
         // logistic function
         addFunction( new Func_logistic() );
@@ -388,6 +433,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // hyperbolic tangent function
         addFunction( new Func_hyperbolicTangent() );
 
+        // hyperbolic sine function
+        addFunction( new Func_hyperbolicSine() );
+
 		// truncate function
         addFunction( new Func_trunc<Real,Integer>()  );
         addFunction( new Func_trunc<RealPos,Natural>()  );
@@ -425,6 +473,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_discretizePositiveDistribution( ) );
 
         // return a discretized gamma distribution (for gamma-dist rates)
+        addFunction( new Func_discretizeBeta( )   );
         addFunction( new Func_discretizeGamma( )   );
 
         addFunction( new Func_varianceCovarianceMatrix( )   );
@@ -447,7 +496,5 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         getchar();
         exit(1);
     }
-    
+
 }
-
-

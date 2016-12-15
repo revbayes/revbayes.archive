@@ -16,8 +16,8 @@
 #include "RlString.h"
 #include "RlTaxon.h"
 #include "RlTimeTree.h"
+#include "StateDependentSpeciationExtinctionProcess.h"
 #include "StochasticNode.h"
-#include "CharacterDependentBirthDeathProcess.h"
 
 using namespace RevLanguage;
 
@@ -42,16 +42,14 @@ Dist_CharacterDependentBirthDeathProcess* Dist_CharacterDependentBirthDeathProce
 }
 
 
-RevBayesCore::CharacterDependentBirthDeathProcess* Dist_CharacterDependentBirthDeathProcess::createDistribution( void ) const
+RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirthDeathProcess::createDistribution( void ) const
 {
     
     // Get the parameters
     RevBayesCore::TypedDagNode<double>* ra   = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
 //    RevBayesCore::TypedDagNode<int>*    rs   = static_cast<const Natural &>( root_state->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* hsp  = static_cast<const ModelVector<Real> &>( hidden_speciation_rates->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* osp  = static_cast<const ModelVector<Real> &>( observed_speciation_rates->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* hex  = static_cast<const ModelVector<Real> &>( hidden_extinction_rates->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* oex  = static_cast<const ModelVector<Real> &>( observed_extinction_rates->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sp  = static_cast<const ModelVector<RealPos> &>( speciation_rates->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ex  = static_cast<const ModelVector<RealPos> &>( extinction_rates->getRevObject() ).getDagNode();
     // rate matrix
     RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* q      = static_cast<const RateGenerator &>( event_rate_matrix->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>*                      r      = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
@@ -62,8 +60,12 @@ RevBayesCore::CharacterDependentBirthDeathProcess* Dist_CharacterDependentBirthD
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     
     
+    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, t );
+    d->setSpeciationRates( sp );
     
-    RevBayesCore::CharacterDependentBirthDeathProcess*   d = new RevBayesCore::CharacterDependentBirthDeathProcess( ra, osp, hsp, oex, hex, q, r, bf, rh, cond, t );
+    // set the number of time slices for the numeric ODE
+    double n = static_cast<const RealPos &>( num_time_slices->getRevObject() ).getValue();
+    d->setNumberOfTimeSlices( n );
     
     return d;
 }
@@ -74,9 +76,9 @@ RevBayesCore::CharacterDependentBirthDeathProcess* Dist_CharacterDependentBirthD
 const std::string& Dist_CharacterDependentBirthDeathProcess::getClassType(void)
 {
     
-    static std::string revType = "Dist_CharacterDependentBirthDeathProcess";
+    static std::string rev_type = "Dist_CharacterDependentBirthDeathProcess";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -84,9 +86,9 @@ const std::string& Dist_CharacterDependentBirthDeathProcess::getClassType(void)
 const TypeSpec& Dist_CharacterDependentBirthDeathProcess::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -128,16 +130,14 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule( "rootAge"   , RealPos::getClassTypeSpec()              , "The age of the root."                        , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "hiddenSpeciationRates"     , ModelVector<Real>::getClassTypeSpec() , "The vector of speciation rates for the hidden states."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "observedSpeciationRates"   , ModelVector<Real>::getClassTypeSpec() , "The vector of speciation rates for the observed states."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "hiddenExtinctionRates"     , ModelVector<Real>::getClassTypeSpec() , "The vector of extinction rates for the hidden states."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "observedExtinctionRates"   , ModelVector<Real>::getClassTypeSpec() , "The vector of extinction rates for the observed states."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "speciationRates", ModelVector<RealPos>::getClassTypeSpec() , "The vector of speciation rates."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "extinctionRates", ModelVector<RealPos>::getClassTypeSpec() , "The vector of extinction rates."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "Q"         , RateGenerator::getClassTypeSpec()        , "The rate matrix of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "delta"     , RealPos::getClassTypeSpec()              , "The rate-factor of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "pi"        , Simplex::getClassTypeSpec(), "State frequencies at the root.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -149,8 +149,9 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
         memberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition, "The condition of the birth-death process." ) );
         
         memberRules.push_back( new ArgumentRule( "taxa"      , ModelVector<Taxon>::getClassTypeSpec()   , "The taxa used for simulation."               , ArgumentRule::BY_VALUE                , ArgumentRule::ANY ) );
-        
-        rulesSet = true;
+        memberRules.push_back( new ArgumentRule( "nTimeSlices",       RealPos::getClassTypeSpec(),              "The number of time slices for the numeric ODE.",           ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RealPos(500.0) ) );
+
+        rules_set = true;
     }
     
     return memberRules;
@@ -178,21 +179,13 @@ void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::stri
     {
         root_frequencies = var;
     }
-    else if ( name == "hiddenSpeciationRates" )
+    else if ( name == "speciationRates" )
     {
-        hidden_speciation_rates = var;
+        speciation_rates = var;
     }
-    else if ( name == "observedSpeciationRates" )
+    else if ( name == "extinctionRates" )
     {
-        observed_speciation_rates = var;
-    }
-    else if ( name == "hiddenExtinctionRates" )
-    {
-        hidden_extinction_rates = var;
-    }
-    else if ( name == "observedExtinctionRates" )
-    {
-        observed_extinction_rates = var;
+        extinction_rates = var;
     }
     else if ( name == "Q" )
     {
@@ -213,6 +206,10 @@ void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::stri
     else if ( name == "taxa" )
     {
         taxa = var;
+    }
+    else if ( name == "nTimeSlices" )
+    {
+        num_time_slices = var;
     }
     else
     {

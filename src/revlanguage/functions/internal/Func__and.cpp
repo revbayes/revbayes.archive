@@ -48,14 +48,14 @@ const ArgumentRules& Func__and::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), "The left hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), "The right hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
         
     }
     
@@ -67,9 +67,9 @@ const ArgumentRules& Func__and::getArgumentRules( void ) const
 const std::string& Func__and::getClassType(void)
 {
     
-    static std::string revType = "Func__and";
+    static std::string rev_type = "Func__and";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -77,9 +77,9 @@ const std::string& Func__and::getClassType(void)
 const TypeSpec& Func__and::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -99,8 +99,8 @@ std::string Func__and::getFunctionName( void ) const
 const TypeSpec& Func__and::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 

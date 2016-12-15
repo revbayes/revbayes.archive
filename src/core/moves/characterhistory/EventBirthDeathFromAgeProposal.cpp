@@ -132,7 +132,6 @@ double EventBirthDeathFromAgeProposal::doBirthProposal( void )
     
     // draw an event time, which is simply uniform between 0 and 1
     double event_time = rng->uniform01() * branch_length;
-//    double age = distribution->getValue().getNode(branch_index).getParent().getAge() - event_time;
     
     CharacterEvent *new_event = new CharacterEvent(0, new_state, event_time);
     history.addEvent( new_event, branch_index );
@@ -146,7 +145,6 @@ double EventBirthDeathFromAgeProposal::doBirthProposal( void )
     double p_forward  = log_birth_move_prob - log(num_branches) - log(num_states) - log(branch_length);
     double p_backward = log_death_move_prob - log(num_events_before+1);
     double proposal_ratio = p_backward - p_forward;
-//    std::cout << "B\ta:" << age << "\tl:" << branch_length << "\t(" << num_events_before << "->" << num_events_before+1 << ")" << "\n";
     
     return proposal_ratio;
 }

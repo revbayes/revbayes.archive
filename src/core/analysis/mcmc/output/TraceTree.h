@@ -26,27 +26,27 @@ namespace RevBayesCore {
 		
         void                        addObject(Tree *d);
         void                        addValueFromString(const std::string &s);
-        bool                        isCoveredInInterval(const std::string &v, double i) const;
-        const Tree&                 objectAt(size_t index)                          { return values.at(index); }
+        bool                        isCoveredInInterval(const std::string &v, double i, bool verbose) const;
+        const Tree&                 objectAt(size_t index) const                   { return values.at(index); }
         void                        removeLastObject();
         void                        removeObjectAtIndex(int index);
         size_t                      size() const { return values.size(); }
     
         // getters and setters
-        int                         getBurnin()                                     { return burnin; }
-        double                      getEss()                                        { return ess; }
-        std::string                 getFileName()                                   { return fileName; }
-        std::string                 getParameterName()                              { return parmName; }
-        int                         getSamples()                                    { return (int)values.size(); }
-        int                         getStepSize()                                   { return stepSize; }		
-        std::vector<Tree>           getValues()                                     { return values; }
-        int                         hasConverged()                                  { return converged; }
-        int                         hasPassedEssThreshold()                         { return passedEssThreshold; }
-        int                         hasPassedGelmanRubinTest()                      { return passedGelmanRubinTest; }
-        int                         hasPassedGewekeTest()                           { return passedGewekeTest; }
-        int                         hasPassedIidBetweenChainsStatistic()            { return passedIidBetweenChainsStatistic; }
-        int                         hasPassedSemThreshold()                         { return passedSemThreshold; }
-        int                         hasPassedStationarityTest()                     { return passedStationarityTest; }
+        int                         getBurnin() const                               { return burnin; }
+        double                      getEss() const                                  { return ess; }
+        std::string                 getFileName() const                             { return fileName; }
+        std::string                 getParameterName() const                        { return parmName; }
+        int                         getSamples() const                              { return (int)values.size(); }
+        int                         getStepSize() const                             { return stepSize; }
+        std::vector<Tree>           getValues() const                               { return values; }
+        int                         hasConverged() const                            { return converged; }
+        int                         hasPassedEssThreshold() const                   { return passedEssThreshold; }
+        int                         hasPassedGelmanRubinTest() const                { return passedGelmanRubinTest; }
+        int                         hasPassedGewekeTest() const                     { return passedGewekeTest; }
+        int                         hasPassedIidBetweenChainsStatistic() const      { return passedIidBetweenChainsStatistic; }
+        int                         hasPassedSemThreshold() const                   { return passedSemThreshold; }
+        int                         hasPassedStationarityTest() const               { return passedStationarityTest; }
         bool                        isClock(void) const                             { return clock; }
         
         void                        setBurnin(int b)                                { burnin = b; }

@@ -46,7 +46,7 @@ namespace RevBayesCore {
         // members
         std::vector<double>                                 branchWeights;
         bool                                                includeRoot;
-        size_t                                              numTaxa;
+        size_t                                              num_taxa;
         const Clade                                         sample;
         const TypedDagNode<Tree>*                           tau;
         const TypedDagNode< RbVector< double > >*           tipWeights;

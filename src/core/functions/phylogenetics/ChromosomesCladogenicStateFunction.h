@@ -8,8 +8,8 @@
 #ifndef ChromosomesCladogenicStateFunction__
 #define ChromosomesCladogenicStateFunction__
 
+#include "AbstractCladogenicStateFunction.h"
 #include "RbVector.h"
-#include "MatrixReal.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -19,39 +19,43 @@
 
 namespace RevBayesCore {
 
-    class ChromosomesCladogenicStateFunction : public TypedFunction<MatrixReal> {
+    class ChromosomesCladogenicStateFunction : public AbstractCladogenicStateFunction, public TypedFunction<MatrixReal> {
         
     public:
-        ChromosomesCladogenicStateFunction( const TypedDagNode< RbVector< double > >* ep, size_t mc );
+        
+        ChromosomesCladogenicStateFunction( const TypedDagNode< RbVector< double > >* ep, unsigned mc );
         virtual                                            ~ChromosomesCladogenicStateFunction(void);               
         
-        const static size_t NO_CHANGE                       = 0;         // N -> N
-        const static size_t FISSION                         = 1;         // N -> N + 1
-        const static size_t FUSION                          = 2;         // N -> N - 1
-        const static size_t POLYPLOIDIZATION                = 3;         // N -> N * 2
-        const static size_t DEMIPOLYPLOIDIZATION            = 4;         // N -> N * 1.5
+        const static unsigned NO_CHANGE                             = 0;         // N -> N
+        const static unsigned FISSION                               = 1;         // N -> N + 1
+        const static unsigned FUSION                                = 2;         // N -> N - 1
+        const static unsigned POLYPLOIDIZATION                      = 3;         // N -> N * 2
+        const static unsigned DEMIPOLYPLOIDIZATION                  = 4;         // N -> N * 1.5
         
         // public member functions
-        ChromosomesCladogenicStateFunction*                 clone(void) const;                                                              
-        const std::map< std::vector<size_t>, double >&      getEventMapProbs(void) const;
-        void                                                update(void);
+        ChromosomesCladogenicStateFunction*                         clone(void) const;
+        std::map< std::vector<unsigned>, double >                      getEventMap(double t=0.0);
+        const std::map< std::vector<unsigned>, double >&                getEventMap(double t=0.0) const;
+        
+        void                                                        update(void);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        
+        
+        void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);
         
     private:
         
-        void                                                buildEventMap(void);
-        void                                                updateProbs(void);
+        void                                                        buildEventMap(void);
+        void                                                        updateProbs(void);
         
         // members
-        const TypedDagNode< RbVector<double> >*             eventProbs;
-        size_t                                              maxChromo;
-        size_t                                              numEventTypes;
-        std::map< std::vector<size_t>, size_t >             eventMapTypes;
-        std::map< std::vector<size_t>, double >             eventMapProbs;
-        std::vector< std::vector<size_t> >                  eventMapCounts;
-        
+        const TypedDagNode< RbVector<double> >*                     eventProbs;
+        unsigned                                                    maxChromo;
+        unsigned                                                    numEventTypes;
+        std::map< std::vector<unsigned>, std::vector<unsigned> >    eventMapTypes;
+        std::map< std::vector<unsigned>, double >                   eventMapProbs;
+        std::vector< std::vector<unsigned> >                        eventMapCounts;
+
     };
     
 }

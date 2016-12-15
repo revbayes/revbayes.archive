@@ -39,7 +39,7 @@ Func_simTree* Func_simTree::clone( void ) const
 RevPtr<RevVariable> Func_simTree::execute( void )
 {
     
-    int numTaxa             = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+    int num_taxa             = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
     const std::string& type = static_cast<const RlString &>( args[1].getVariable()->getRevObject() ).getValue();
     
     // the time tree object (topology + times)
@@ -54,15 +54,15 @@ RevPtr<RevVariable> Func_simTree::execute( void )
     
     if ( type == "balanced" )
     {
-        simulateBalancedTree(numTaxa, nodes);
+        simulateBalancedTree(num_taxa, nodes);
     }
     else if ( type == "caterpillar" )
     {
-        simulateCaterpillarTree(numTaxa, root);
+        simulateCaterpillarTree(num_taxa, root);
     }
     
     // initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
     
     // set the ages recursively
     setAges(psi, *root);
@@ -76,12 +76,12 @@ const ArgumentRules& Func_simTree::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
-        argumentRules.push_back( new ArgumentRule( "numTaxa", Natural::getClassTypeSpec(), "How many taxa this tree has.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "num_taxa", Natural::getClassTypeSpec(), "How many taxa this tree has.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "balanced" );
@@ -89,7 +89,7 @@ const ArgumentRules& Func_simTree::getArgumentRules( void ) const
 //        optionsCondition.push_back( "random" );
         argumentRules.push_back( new OptionRule( "type"    , new RlString("balanced"), optionsCondition, "The type of the shape of the topology." ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -100,9 +100,9 @@ const ArgumentRules& Func_simTree::getArgumentRules( void ) const
 const std::string& Func_simTree::getClassType(void)
 {
     
-    static std::string revType = "Func_simTree";
+    static std::string rev_type = "Func_simTree";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -110,9 +110,9 @@ const std::string& Func_simTree::getClassType(void)
 const TypeSpec& Func_simTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -132,9 +132,9 @@ std::string Func_simTree::getFunctionName( void ) const
 const TypeSpec& Func_simTree::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

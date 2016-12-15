@@ -85,9 +85,9 @@ const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( 
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         std::vector<TypeSpec> treeTypes;
@@ -99,7 +99,7 @@ const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( 
         argumentRules.push_back( new ArgumentRule( "speciesNames",      ModelVector< RlString >::getClassTypeSpec(),    "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "keepBranchLengths", RlBoolean::getClassTypeSpec(),                  "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -109,9 +109,9 @@ const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( 
 const std::string& Func_constructRootedTripletDistribution::getClassType(void)
 {
     
-    static std::string revType = "Func_constructRootedTripletDistribution";
+    static std::string rev_type = "Func_constructRootedTripletDistribution";
     
-	return revType;
+	return rev_type;
 }
 
 
@@ -119,9 +119,9 @@ const std::string& Func_constructRootedTripletDistribution::getClassType(void)
 const TypeSpec& Func_constructRootedTripletDistribution::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -140,7 +140,7 @@ std::string Func_constructRootedTripletDistribution::getFunctionName( void ) con
 const TypeSpec& Func_constructRootedTripletDistribution::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

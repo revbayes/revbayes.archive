@@ -2,41 +2,33 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en-us</string>
+	<key>CFBundleDevelopment-Region</key>
+	<string>en_US</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.berkeley.revbayes.help</string>
-	<key>CFBundleInfoDictionaryVersion</key>
+	<key>CFBundleInfo-DictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>RevBayesHelp</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
-	<key>CFBundleShortVersionString</key>
+	<key>CFBundleShortVersion-String</key>
 	<string>1</string>
 	<key>CFBundleSignature</key>
 	<string>hbwr</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>HPDBookAccessPath</key>
-	<string>RevBayesHelp.html</string>
+	<string>index.html</string>
 	<key>HPDBookIconPath</key>
-	<string>Shared/bayesmodel.png</string>
-	<key>HPDBookIndexPath</key>
-	<string>RevBayes.helpindex</string>
+	<string>shrd/bookIcon.png</string>
 	<key>HPDBookKBProduct</key>
-	<string>revbayes</string>
-	<key>HPDBookKBURL</key>
-	<string>http://fisher.berkeley.edu/cteg/huelsenbeck.html</string>
-	<key>HPDBookRemoteURL</key>
-	<string>http://fisher.berkeley.edu/cteg/huelsenbeck.html</string>
+	<string>RevBayesHelp</string>
 	<key>HPDBookTitle</key>
-	<string>RevBayes Help</string>
+	<string>RevBayesHelp</string>
+	<key>HPDBookTopic-ListCSSPath</key>
+	<string>sty/topiclist.css</string>
 	<key>HPDBookType</key>
 	<string>3</string>
-	<key>HPDBookTopicListCSSPath</key>
-	<string>helpstyles1.css</string>
-	<key>HPDBookTopicListTemplatePath</key>
-	<string></string>
 </dict>
 </plist>

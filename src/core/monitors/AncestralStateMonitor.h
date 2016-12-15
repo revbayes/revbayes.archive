@@ -46,7 +46,7 @@ namespace RevBayesCore {
         // Monitor functions
         void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
         void                                closeStream(void);                                                  //!< Close stream after finish writing
-        void                                openStream(void);                                                   //!< Open the stream for writing
+        void                                openStream(bool reopen);                                            //!< Open the stream for writing
         void                                printHeader(void);                                                  //!< Print header
         
         // getters and setters
@@ -121,9 +121,9 @@ AncestralStateMonitor<characterType>::AncestralStateMonitor( const AncestralStat
     ctmc( m.ctmc ),
     stochasticNodesOnly( m.stochasticNodesOnly )
 {
-    if (m.outStream.is_open())
+    if ( m.outStream.is_open() == true )
     {
-        openStream();
+        openStream( true );
     }
     
 }
@@ -244,14 +244,14 @@ void AncestralStateMonitor<characterType>::monitor(unsigned long gen)
  * Open the AncestralState stream for printing.
  */
 template<class characterType>
-void AncestralStateMonitor<characterType>::openStream(void) 
+void AncestralStateMonitor<characterType>::openStream( bool reopen )
 {
     
     RbFileManager f = RbFileManager(filename);
     f.createDirectoryForFile();
     
     // open the stream to the AncestralState
-    if ( append )
+    if ( append == true || reopen == true )
     {
         outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
     }
@@ -283,8 +283,8 @@ void AncestralStateMonitor<characterType>::printHeader()
 			// add a separator before every new element
 			outStream << separator;
 			
-			// print the node index
-			outStream << the_node->getIndex();
+			// print the node index + 1 to be consistent with Rev language one-based indexes
+			outStream << the_node->getIndex() + 1;
 		}
     }
     outStream << std::endl;

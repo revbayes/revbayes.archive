@@ -24,9 +24,11 @@ namespace RevLanguage {
         enum DagNodeType { STOCHASTIC, DETERMINISTIC, ANY, DYNAMIC, CONSTANT };
         
         ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt);                                                                               //!< Constructor of rule without default value
-        ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt, RevObject *defVal);                                                                               //!< Constructor of rule without default value
         ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt);                                                                               //!< Constructor of rule without default value
+        ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt, RevObject *defVal);                                                                               //!< Constructor of rule without default value
         ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt, RevObject *defVal);                                                                               //!< Constructor of rule without default value
+        ArgumentRule(const std::vector<std::string>& argNames, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt);                                                                               //!< Constructor of rule without default value
+        ArgumentRule(const std::vector<std::string>& argNames, const std::vector<TypeSpec>& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt);                                                                               //!< Constructor of rule without default value
         virtual                            ~ArgumentRule(void) {}
         
         // Basic utility functions
@@ -35,11 +37,12 @@ namespace RevLanguage {
 
         // ArgumentRule functions
         Argument                            fitArgument( Argument& arg, bool once ) const;                                  //!< Fit a passed argument into a slot using the rule
+        const std::vector<std::string>&     getArgumentAliases(void) const;                                                 //!< Get aliases of argument
         DagNodeType                         getArgumentDagNodeType(void) const;                                             //!< Get the DAG node type
         const std::string&                  getArgumentLabel(void) const;                                                   //!< Get label of argument
         const std::vector<TypeSpec>&        getArgumentTypeSpec(void) const;                                                //!< Get argument type spec
         virtual const RevVariable&          getDefaultVariable(void) const;                                                 //!< Get default argument
-        const std::string&                  getArgumentDescription(void) const;                                                   //!< Get label of argument
+        const std::string&                  getArgumentDescription(void) const;                                             //!< Get label of argument
         EvaluationType                      getEvaluationType(void) const;                                                  //!< Get the evaluation type
         bool                                hasDefault(void) const;                                                         //!< Does the rule have a default value?
         virtual double                      isArgumentValid(Argument &arg, bool once) const;                                //!< Is var a valid argument?
@@ -52,8 +55,9 @@ namespace RevLanguage {
         RevPtr<RevVariable>                 defaultVar;                                                                     //!< Default value
         EvaluationType                      evalType;                                                                       //!< Is rule const?
         DagNodeType                         nodeType;
-        std::string                         label;                                                                          //!< Label of argument
-        std::string                         description;                                                                          //!< Label of argument
+        std::vector<std::string>            aliases;                                                                        //!< Aliases of argument
+        std::string                         label;                                                                          //!< Selected label of argument
+        std::string                         description;                                                                    //!< Description of argument
         bool                                hasDefaultVal;                                                                  //!< Has default
 
     };

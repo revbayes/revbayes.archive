@@ -54,18 +54,14 @@ double AbstractBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) co
     // variable declarations and initialization
     double lnProbTimes = 0;
     
-    
-    
     // present time
-    double ra = value->getRoot().getAge();
-    double present_time = ra;
-    
+    double present_time = value->getRoot().getAge();
     
     // what do we condition on?
     // did we condition on survival?
     if ( condition == "survival" )
     {
-        lnProbTimes = - log( pSurvival(0,present_time) );
+        lnProbTimes = - log( pSurvival(0, present_time) );
         
         // we started at the root thus we square the survival prob
         lnProbTimes *= 2.0;

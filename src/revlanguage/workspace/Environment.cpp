@@ -368,9 +368,6 @@ FunctionTable& Environment::getFunctionTable(void)
 /** Return the object inside a specific variable */
 RevObject& Environment::getRevObject(const std::string& name)
 {
-#ifdef DEBUG_WORKSPACE
-    printf("Retrieving \"%s\" object from frame\n", name.c_str());
-#endif
     
     return getVariable( name )->getRevObject();
 }
@@ -379,9 +376,6 @@ RevObject& Environment::getRevObject(const std::string& name)
 /** Return a specific variable (const version) */
 const RevObject& Environment::getRevObject(const std::string& name) const
 {
-#ifdef DEBUG_WORKSPACE
-    printf("Retrieving \"%s\" object from frame\n", name.c_str());
-#endif
     
     return getVariable( name )->getRevObject();
 }
@@ -405,10 +399,6 @@ RevPtr<RevVariable>& Environment::getVariable(const std::string& name)
         }
         
     }
-    
-#ifdef DEBUG_WORKSPACE
-    printf("Retrieving \"%s\" from frame\n", name.c_str());
-#endif
     
     return it->second;
 }

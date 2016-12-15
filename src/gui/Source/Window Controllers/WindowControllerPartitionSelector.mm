@@ -37,12 +37,11 @@
     if ( [myParm isBipartitionNameTaken:bpName] == YES )
         {
         NSString* alertMsg = [NSString stringWithFormat:@"The name \"%@\" has already been used", bpName];
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Bipartition name already taken" 
-                                         defaultButton:@"OK" 
-                                       alternateButton:nil 
-                                           otherButton:nil 
-                             informativeTextWithFormat:alertMsg];
-        [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Warning: Bipartition name already taken"];
+        [alert setInformativeText:alertMsg];
+        [alert beginSheetModalForWindow:[self window] completionHandler:nil];
 
         [self setBpName:[myParm getNextDefaultPartitionName]];
         }
@@ -266,12 +265,10 @@
     // check that the bipartition the user selected is not trivial
     if ( [firstTaxonList count] == 0 || [secondTaxonList count] == 0 )
         {
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Bipartition mis-specification" 
-                                         defaultButton:@"OK" 
-                                       alternateButton:nil 
-                                           otherButton:nil 
-                             informativeTextWithFormat:@"This bipartition does not specify a branch on a tree"];
-        [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Warning: Bipartition mis-specification"];
+        [alert setInformativeText:@"This bipartition does not specify a branch on a tree"];
+        [alert beginSheetModalForWindow:[self window] completionHandler:nil];
         }
     else 
         {

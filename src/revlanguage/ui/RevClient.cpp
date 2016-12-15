@@ -26,6 +26,8 @@ extern "C" {
 #include <boost/lexical_cast.hpp>
 #include <boost/assign/std/vector.hpp>
 
+#include <iostream>
+#include <sstream>
 //#define ctrl(C) ((C) - '@')
 
 const char* default_prompt = (char*) "> ";
@@ -52,21 +54,27 @@ std::vector<std::string> getFileList(const std::string &path)
 std::vector<std::string> getDefaultCompletions( void )
 {
     std::set<std::string> c;
-
-    const FunctionTable& ft = Workspace::userWorkspace().getFunctionTable();
     
+    const FunctionTable& ft = RevLanguage::Workspace::userWorkspace().getFunctionTable();
     for (std::multimap<std::string, Function*>::const_iterator it = ft.begin(); it != ft.end(); ++it)
     {
         c.insert(it->first);
     }
     
-    VariableTable v = Workspace::userWorkspace().getVariableTable();
+    std::vector<std::string> functionTableNames;
+    ft.getFunctionNames(functionTableNames);
+    for (size_t i = 0; i < functionTableNames.size(); i++)
+    {
+//        std::cout << functionTableNames[i] << "\n";
+        c.insert(functionTableNames[i]);
+    }
+    
+    VariableTable v = RevLanguage::Workspace::userWorkspace().getVariableTable();
     
     for (VariableTable::iterator it = v.begin(); it != v.end(); ++it)
     {
         c.insert(it->first);
     }
-    
     
     v = RevLanguage::Workspace::globalWorkspace().getVariableTable();
         
@@ -108,8 +116,7 @@ std::vector<std::string> getDefaultCompletions( void )
  */
 void completeOnTab(const char *buf, linenoiseCompletions *lc)
 {
-    //bool debug = true;
-
+    bool debug = false;
     std::string cmd = buf;
     std::vector<std::string> completions;
 
@@ -118,6 +125,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
 
     if (pi.inComment)
     {
+        if (debug) { std::cout << "linenoise-debug: pi.inComment==TRUE\n"; }
         // no completions available in comments
         return;
     }
@@ -126,6 +134,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
     size_t commandPos = 0;
     if (pi.inQuote)
     {
+        if (debug) { std::cout << "linenoise-debug: pi.inQuote==TRUE\n"; }
         // ---------- in quote ------------
         // search for files with portion after the opening quote                
         commandPos = cmd.rfind("\"") + 1;
@@ -133,7 +142,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
     }
     else
     {
-
+        if (debug) { std::cout << "linenoise-debug: pi.inComment==FALSE\n"; }
         std::vector<std::string> expressionSeparator;
         
         expressionSeparator.push_back(" ");
@@ -162,8 +171,13 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
 
         BOOST_FOREACH(std::string s, expressionSeparator)
         {
-            commandPos = std::max(commandPos, cmd.rfind(s));
+            if (debug) { std::cout << "linenoise-debug: rfind(\"" << s << "\",\"" << cmd << "\")=" << cmd.rfind(s) << "\n"; }
+            size_t find_idx = cmd.rfind(s);
+            if (find_idx < cmd.size())
+                commandPos = std::max(commandPos, cmd.rfind(s));
         }
+        if (debug) { std::cout << "linenoise-debug: cmd.size()=" << cmd.size() << "\n"; }
+        if (debug) { std::cout << "linenoise-debug: commandPos=" << commandPos << "\n"; }
 
         // special hack: for some reason, baseVariable is only set by the parser when there is no trailing characters after the dot
         // find position of right most dot
@@ -172,9 +186,11 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
 
         if (pi.functionName != "")
         {
+            if (debug) { std::cout << "linenoise-debug: pi.functionName!=\"\"\n"; }
             // ---------- function defined ------------
             if (pi.argumentLabel != "") // assigning an argument label
             {
+                if (debug) { std::cout << "linenoise-debug: pi.argumentLabel!=\"\"\n"; }
                 commandPos = cmd.rfind("=") + 1;
                 // not sure exactly what should be here... setting completions to everything
                 completions = getDefaultCompletions();
@@ -182,6 +198,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
             }
             else // break on either '(' or ','
             {
+                if (debug) { std::cout << "linenoise-debug: pi.argumentLabel==\"\"\n"; }
                 commandPos = std::max(cmd.rfind("("), cmd.rfind(",")) + 1;
                 
                 std::vector<Function *> v = Workspace::globalWorkspace().getFunctionTable().findFunctions(pi.functionName);
@@ -198,6 +215,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
         }
         else
         {
+            if (debug) { std::cout << "linenoise-debug: pi.functionName==\"\"\n"; }
             // ---------- default -----------            
             if (commandPos > 0)
             {
@@ -225,7 +243,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
     std::string compMatch(buf + commandPos);
 
     // populate linenoise completions
-
+    
     BOOST_FOREACH(std::string m, completions)
     {
         if (boost::starts_with(m, compMatch))
@@ -234,7 +252,6 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
             linenoiseAddCompletion(lc, c.c_str());
         }
     }
-    
 }
 
 /**

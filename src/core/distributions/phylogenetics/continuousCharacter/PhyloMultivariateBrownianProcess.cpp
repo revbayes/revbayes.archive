@@ -27,7 +27,7 @@ using namespace RevBayesCore;
 PhyloMultivariateBrownianProcess::PhyloMultivariateBrownianProcess(const TypedDagNode< Tree > *intau, const TypedDagNode< MatrixReal >* insigma) : TypedDistribution< RbVector< RbVector<double> > >( new RbVector< RbVector<double> >(0,insigma->getValue().getDim())),
     tau( intau ),
     sigma( insigma ),
-    dirtyNodes(intau->getValue().getNumberOfNodes(),true),
+    dirty_nodes(intau->getValue().getNumberOfNodes(),true),
     nodeLogProbs(intau->getValue().getNumberOfNodes(),0)
 {
     // add the parameters to our set (in the base class)
@@ -46,19 +46,19 @@ PhyloMultivariateBrownianProcess* PhyloMultivariateBrownianProcess::clone(void) 
 
 
 
-double PhyloMultivariateBrownianProcess::computeLnProbability(void) {
+double PhyloMultivariateBrownianProcess::computeLnProbability(void)
+{
     
     double lnProb = 0;
-    if (sigma->getValue().isPositive()) {
+    if (sigma->getValue().isPositive())
+    {
         lnProb = recursiveLnProb(tau->getValue().getRoot());
     }
-    else{
+    else
+    {
         lnProb = RbConstants::Double::neginf;
     }
 
-    // std::cerr << "brownian log prob  :" << lnProb - bklnProb << '\n';
-    // bklnProb = lnProb;
-    
     return lnProb;
 }
 
@@ -73,7 +73,7 @@ double PhyloMultivariateBrownianProcess::recursiveLnProb( const TopologyNode& fr
     {
         
 //        if (1)  {
-        if (dirtyNodes[index])
+        if (dirty_nodes[index])
         {
 
             // x ~ normal(x_up, sigma^2 * branchLength)
@@ -98,7 +98,7 @@ double PhyloMultivariateBrownianProcess::recursiveLnProb( const TopologyNode& fr
             logprob -= 0.5 * s2 / from.getBranchLength();
             logprob -= 0.5 * (sigma->getValue().getLogDet() + sigma->getValue().getDim() * log(from.getBranchLength()));
             nodeLogProbs[index] = logprob;
-            dirtyNodes[index] = false;
+            dirty_nodes[index] = false;
         }
         lnProb += nodeLogProbs[index];
     }
@@ -186,7 +186,7 @@ void PhyloMultivariateBrownianProcess::corruptAll()
 void PhyloMultivariateBrownianProcess::recursiveCorruptAll(const TopologyNode& from)
 {
     
-    dirtyNodes[from.getIndex()] = true;
+    dirty_nodes[from.getIndex()] = true;
     for (size_t i = 0; i < from.getNumberOfChildren(); ++i)
     {
         recursiveCorruptAll(from.getChild(i));
@@ -204,11 +204,11 @@ void PhyloMultivariateBrownianProcess::flagNodes()
 
     // flag recomputation only for the nodes
     for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) {
-        dirtyNodes[*it] = true;
+        dirty_nodes[*it] = true;
         const Tree& tau = *getTimeTree();
         const TopologyNode& from = tau.getNode(*it);
         for (size_t i = 0; i < from.getNumberOfChildren(); ++i) {
-            dirtyNodes[from.getChild(i).getIndex()] = true;
+            dirty_nodes[from.getChild(i).getIndex()] = true;
         }
     }
 }

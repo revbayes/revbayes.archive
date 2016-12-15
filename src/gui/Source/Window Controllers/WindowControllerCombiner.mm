@@ -12,6 +12,12 @@
     [myTool closeControlPanel];
 }
 
+- (IBAction)helpButtonAction:(id)sender {
+
+    NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"CombinerTool_Anchor" inBook:locBookName];
+}
+
 - (id)init {
 
     return [self initWithTool:nil];
@@ -22,7 +28,7 @@
 	if ( (self = [super initWithWindowNibName:@"ControlWindowCombiner"]) )
         {
         myTool = t;
-		[self setNumberOfInlets:2];
+		[self setNumberOfInlets:[myTool numberOfInlets]];
         }
 	return self;
 }

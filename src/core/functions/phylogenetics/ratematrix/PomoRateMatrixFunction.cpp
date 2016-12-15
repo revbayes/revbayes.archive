@@ -84,22 +84,23 @@ void PomoRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const Da
 }
 
 
-std::vector<double> PomoRateMatrixFunction::setMutationRates(const RateGenerator& mm)
-{
+std::vector<double> PomoRateMatrixFunction::setMutationRates(const RateGenerator& mm) {
     
+    double age = 0.0;
+    double rate = 1.0;
     std::vector<double> r;
-    r.push_back( mm.getRate(0,1) );
-    r.push_back( mm.getRate(0,2) );
-    r.push_back( mm.getRate(0,3) );
-    r.push_back( mm.getRate(1,0) );
-    r.push_back( mm.getRate(1,2) );
-    r.push_back( mm.getRate(1,3) );
-    r.push_back( mm.getRate(2,0) );
-    r.push_back( mm.getRate(2,1) );
-    r.push_back( mm.getRate(2,3) );
-    r.push_back( mm.getRate(3,0) );
-    r.push_back( mm.getRate(3,1) );
-    r.push_back( mm.getRate(3,2) );
+    r.push_back( mm.getRate(0,1,age,rate) );
+    r.push_back( mm.getRate(0,2,age,rate) );
+    r.push_back( mm.getRate(0,3,age,rate) );
+    r.push_back( mm.getRate(1,0,age,rate) );
+    r.push_back( mm.getRate(1,2,age,rate) );
+    r.push_back( mm.getRate(1,3,age,rate) );
+    r.push_back( mm.getRate(2,0,age,rate) );
+    r.push_back( mm.getRate(2,1,age,rate) );
+    r.push_back( mm.getRate(2,3,age,rate) );
+    r.push_back( mm.getRate(3,0,age,rate) );
+    r.push_back( mm.getRate(3,1,age,rate) );
+    r.push_back( mm.getRate(3,2,age,rate) );
     return r;
 }
 

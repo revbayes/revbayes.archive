@@ -16,36 +16,42 @@ UniformDistribution::UniformDistribution(const TypedDagNode<double> *mi, const T
 }
 
 
-UniformDistribution::~UniformDistribution( void ) {
+UniformDistribution::~UniformDistribution( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
-double UniformDistribution::cdf( void ) const {
+double UniformDistribution::cdf( void ) const
+{
     
     return RbStatistics::Uniform::cdf( min->getValue(), max->getValue(), *value);
 }
 
 
-UniformDistribution* UniformDistribution::clone( void ) const {
+UniformDistribution* UniformDistribution::clone( void ) const
+{
     
     return new UniformDistribution( *this );
 }
 
 
-double UniformDistribution::computeLnProbability( void ) {
+double UniformDistribution::computeLnProbability( void )
+{
     
     return RbStatistics::Uniform::lnPdf(min->getValue(), max->getValue(), *value);
 }
 
 
-double UniformDistribution::getMax( void ) const {
+double UniformDistribution::getMax( void ) const
+{
     
     return max->getValue();
 }
 
 
-double UniformDistribution::getMin( void ) const {
+double UniformDistribution::getMin( void ) const
+{
     
     return min->getValue();
 }

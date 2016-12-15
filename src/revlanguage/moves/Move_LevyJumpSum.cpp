@@ -66,18 +66,18 @@ void Move_LevyJumpSum::constructInternalObject( void )
 const std::string& Move_LevyJumpSum::getClassType(void)
 {
     
-    static std::string revType = "Move_LevyJumpSum";
+    static std::string rev_type = "Move_LevyJumpSum";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_LevyJumpSum::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -100,9 +100,9 @@ const MemberRules& Move_LevyJumpSum::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "value_1", Real::getClassTypeSpec()     , "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "value_2", Real::getClassTypeSpec()     , "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
@@ -113,7 +113,7 @@ const MemberRules& Move_LevyJumpSum::getParameterRules(void) const
         const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -123,9 +123,9 @@ const MemberRules& Move_LevyJumpSum::getParameterRules(void) const
 const TypeSpec& Move_LevyJumpSum::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

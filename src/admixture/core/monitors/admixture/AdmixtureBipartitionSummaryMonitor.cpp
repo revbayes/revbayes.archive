@@ -439,7 +439,7 @@ void AdmixtureBipartitionSummaryMonitor::monitor(unsigned long gen) {
 
 
 /** open the file stream for printing */
-void AdmixtureBipartitionSummaryMonitor::openStream(void) {
+void AdmixtureBipartitionSummaryMonitor::openStream(bool reopen) {
     
     // open the stream to the file
     if (append)

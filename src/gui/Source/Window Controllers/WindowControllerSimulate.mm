@@ -52,12 +52,10 @@
 
     if (piA + piC + piG > 1.0)
         {
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Incorrect Base Frequencies" 
-                                         defaultButton:@"OK" 
-                                       alternateButton:nil 
-                                           otherButton:nil 
-                             informativeTextWithFormat:@"The four base frequencies must sum to one."];
-        [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Warning: Incorrect Base Frequencies"];
+        [alert setInformativeText:@"The four base frequencies must sum to one."];
+        [alert beginSheetModalForWindow:[self window] completionHandler:nil];
 
         [self setPiA:oldPiA];
         [self setPiC:oldPiC];
@@ -130,7 +128,7 @@
         piG            = [myTool piG];
         piT            = [myTool piT];
         sequenceLength = [myTool sequenceLength];
-        myRemoteTree   = [myTool exposeTreePtr];
+        myRemoteTree   = [myTool simTree];
         
         oldPiA         = piA;
         oldPiC         = piC;

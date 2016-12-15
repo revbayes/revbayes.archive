@@ -52,21 +52,20 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
 {
     
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
-    std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
+    std::vector<RevBayesCore::Taxon> t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
+    RevBayesCore::Clade og;
+    if ( outgroup != NULL && outgroup->getRevObject() != RevNullObject::getInstance())
+    	og = static_cast<const Clade &>( outgroup->getRevObject() ).getValue();
 
-	if ( constraints != NULL && constraints->getRevObject() != RevNullObject::getInstance())
-    {
-		const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
-		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution( t, c);
+    std::vector<RevBayesCore::Clade> c;
+    if ( constraints != NULL && constraints->getRevObject() != RevNullObject::getInstance())
+    	c = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
+
+    bool r = static_cast<const RlBoolean &>( rooted->getRevObject() ).getValue();
+
+	RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution( t, og, c, r);
 		return d;
-	}
-    else
-    {
-        std::vector<RevBayesCore::Clade> c;
-		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution( t, c);
-		return d;
-	}    
 }
 
 
@@ -78,9 +77,9 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
 const std::string& Dist_uniformTopology::getClassType(void) 
 { 
     
-    static std::string revType = "Dist_uniformTopology";
+    static std::string rev_type = "Dist_uniformTopology";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -92,9 +91,9 @@ const std::string& Dist_uniformTopology::getClassType(void)
 const TypeSpec& Dist_uniformTopology::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<BranchLengthTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<BranchLengthTree>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -127,14 +126,16 @@ const MemberRules& Dist_uniformTopology::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
-        memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa that will be used for the tips.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "taxa"       , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa that will be used for the tips.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "outgroup"   , Clade::getClassTypeSpec(), "The clade (consisting of one or more taxa) used as an outgroup.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), "The topological constraints that will be enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "rooted", 		RlBoolean::getClassTypeSpec(), "Is the distribution over rooted topologies?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
 		
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -173,10 +174,18 @@ void Dist_uniformTopology::setConstParameter(const std::string& name, const RevP
     {
         taxa = var;
     }
+    else if ( name == "outgroup" )
+    {
+        outgroup = var;
+    }
 	else if ( name == "constraints" ) 
     {
         constraints = var;
     }
+	else if ( name == "rooted" )
+	{
+		rooted = var;
+	}
     else {
         Distribution::setConstParameter(name, var);
     }

@@ -16,6 +16,7 @@
 @property (nonatomic) int    numberOfInlets;
 
 - (IBAction)cancelButtonAction:(id)sender;
+- (IBAction)helpButtonAction:(id)sender;
 - (id)initWithTool:(ToolCombiner*)t;
 - (IBAction)okButtonAction:(id)sender;
 

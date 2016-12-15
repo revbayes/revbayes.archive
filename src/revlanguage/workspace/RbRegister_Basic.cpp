@@ -11,7 +11,7 @@
  * This is the central registry of Rev objects. It is a large file and needs
  * to be properly organized to facilitate maintenance. Follow these simple
  * guidelines to ensure that your additions follow the existing structure.
- * 
+ *
  * 1. All headers are added in groups corresponding to directories in the
  *    revlanguage code base.
  * 2. All objects (types, distributions, and functions) are registered in
@@ -66,7 +66,6 @@
 
 /* Character data types (in folder "datatypes/evolution/datamatrix") */
 #include "RlAbstractCharacterData.h"
-#include "RlHomologousDiscreteCharacterData.h"
 
 /* Tree types (in folder "datatypes/evolution/trees") */
 #include "RlClade.h"
@@ -91,8 +90,8 @@
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloCTMCDASequence.h"
+#include "Dist_phyloCTMCDASiteIID.h"
 #include "Dist_phyloCTMCClado.h"
-
 
 /* Argument rules (in folder "functions/argumentrules") */
 #include "ArgumentRule.h"
@@ -103,6 +102,7 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
+#include "Func_append.h"
 #include "Func_clear.h"
 #include "Func_exists.h"
 #include "Func_getOption.h"
@@ -130,11 +130,11 @@
 /* These are functions that are typically not called explicitly but implicitly
    through parsing of a Rev statement. Examples include a statement like '1 + 2',
    which results in the builtin '_add' function being called.
- 
+
    Exceptions include Func_range and Func_vector, which are both used for implicit
    and explicit calls. They are therefore considered basic functions instead of
    internal functions.
- 
+
    All internal functions have function calls that start with an underscore character,
    and therefore their class names have two underscore characters. They are typically
    templated. */
@@ -165,11 +165,12 @@
 
 /* Input/output functions (in folder "functions/io") */
 #include "Func_ancestralStateTree.h"
-#include "Func_annotateHPDAges.h"
 #include "Func_annotateTree.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
+#include "Func_listFiles.h"
 #include "Func_mapTree.h"
+#include "Func_mccTree.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
 #include "Func_readCharacterDataDelimited.h"
@@ -179,6 +180,7 @@
 #include "Func_readDiscreteCharacterData.h"
 #include "Func_readDistanceMatrix.h"
 #include "Func_readRelativeNodeAgeConstraints.h"
+#include "Func_readRelativeNodeAgeWeightedConstraints.h"
 #include "Func_readStochasticVariableTrace.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
@@ -190,6 +192,7 @@
 #include "Func_TaxonReader.h"
 #include "Func_treeTrace.h"
 #include "Func_write.h"
+#include "Func_writeCharacterDataDelimited.h"
 #include "Func_writeFasta.h"
 #include "Func_writeNexus.h"
 
@@ -224,6 +227,7 @@
 
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
+#include "Func_discretizeBeta.h"
 #include "Func_discretizeGamma.h"
 #include "Func_discretizeDistribution.h"
 #include "Func_discretizePositiveDistribution.h"
@@ -239,16 +243,22 @@
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
 {
-    
+
     try
     {
         ///////////////////////////////////////////
         /* Add functions (in "functions" folder) */
         ///////////////////////////////////////////
-        
+
         /* Basic functions (in folder "functions/basic") */
-        
+
         // regular functions
+        addFunction( new Func_append<Integer>()          );
+        addFunction( new Func_append<Real>()             );
+        addFunction( new Func_append<Natural>()          );
+        addFunction( new Func_append<RealPos>()          );
+        addFunction( new Func_append<RlString>()         );
+        addFunction( new Func_append<RlBoolean>()        );
         addFunction( new Func_clear()                    );
         addFunction( new Func_exists()                   );
         addFunction( new Func_getwd()                    );
@@ -263,6 +273,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_rep<Real>()                );
         addFunction( new Func_rep<Natural>()             );
         addFunction( new Func_rep<RealPos>()             );
+        addFunction( new Func_rep<RlString>()            );
+        addFunction( new Func_rep<RlBoolean>()           );
         addFunction( new Func_seed()                     );
         addFunction( new Func_seq<Integer>()             );
         addFunction( new Func_seq<Real>()                );
@@ -275,15 +287,15 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         /* Internal functions (in folder "functions/internal") */
         /* Note: These are functions that are called implicitly, and the name of which, if
          called explicitly, starts with an underscore character. */
-        
+
         // not templated logical functions
         addFunction( new Func__and()   );
         addFunction( new Func__or()    );
         addFunction( new Func__unot()  );
-        
+
         // range function (x:y)
         addFunction( new Func_range()  );
-        
+
         // logical templated functions
         addFunction( new Func__eq<             Integer,          Integer >()             );
         addFunction( new Func__eq<                Real,             Real >()             );
@@ -321,13 +333,13 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__ne<             Simplex,          Simplex >()             );
         addFunction( new Func__ne<            TimeTree,         TimeTree >()             );
         addFunction( new Func__ne<    BranchLengthTree, BranchLengthTree >()             );
-        
+
         // unary minus (e.g. -a)
         addFunction( new Func__uminus<Integer, Integer>()  );
         addFunction( new Func__uminus<Natural, Integer>()  );
         addFunction( new Func__uminus<Real, Real>()        );
         addFunction( new Func__uminus<RealPos, Real>()     );
-        
+
         // addition (e.g. a+b )
         addFunction( new Func__add< Natural                , Natural               , Natural               >(  )   );
         addFunction( new Func__add< Integer                , Integer               , Integer               >(  )   );
@@ -344,7 +356,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__scalarVectorAdd<Integer     , ModelVector<Integer>  , ModelVector<Integer>       >(  )   );
         addFunction( new Func__scalarVectorAdd<Real        , ModelVector<Real>     , ModelVector<Real>          >(  )   );
         addFunction( new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
-        
+
         // division
         addFunction( new Func__div< Natural                            , RealPos               , RealPos                   >(  )  );
         addFunction( new Func__div< RealPos                            , Natural               , RealPos                   >(  )  );
@@ -370,7 +382,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__scalarVectorDiv<Integer                 , Real                  , Real                      >(  )   );
         addFunction( new Func__scalarVectorDiv<Real                    , Real                  , Real                      >(  )   );
         addFunction( new Func__scalarVectorDiv<RealPos                 , RealPos               , RealPos                   >(  )   );
-        
+
         // multiplication
         addFunction( new Func__mult< Natural               , Natural               , Natural               >(  )  );
         addFunction( new Func__mult< Integer               , Integer               , Integer               >(  )  );
@@ -384,7 +396,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__scalarVectorMult<Integer    , ModelVector<Integer>  , ModelVector<Integer>  >(  )   );
         addFunction( new Func__scalarVectorMult<Real       , ModelVector<Real>     , ModelVector<Real>     >(  )   );
         addFunction( new Func__scalarVectorMult<RealPos    , ModelVector<RealPos>  , ModelVector<RealPos>  >(  )   );
-        
+
         // subtraction
         addFunction( new Func__sub< Integer                            , Integer               , Integer               >(  )  );
         addFunction( new Func__sub< Real                               , Real                  , Real                  >(  )  );
@@ -394,10 +406,10 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__vectorScalarSub<Real                    , Real                  , Real                      >(  )   );
         addFunction( new Func__scalarVectorSub<Integer                 , Integer               , Integer                   >(  )   );
         addFunction( new Func__scalarVectorSub<Real                    , Real                  , Real                      >(  )   );
-        
+
         // modulo
         addFunction( new Func__mod() );
-        
+
         // exponentiation
         addFunction( new Func_power() );
         addFunction( new Func_powerVector() );
@@ -411,8 +423,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
 //        addFunction( "_Probability2RealPos",        new Func__conversion<Probability, RealPos>()    );
 //        addFunction( "_Probability2Real",           new Func__conversion<Probability, Real>()       );
 //        addFunction( "_RealPos2Real",               new Func__conversion<RealPos, Real>()           );
-        
-        
+
+
         addFunction( new Func__conversion<ModelVector<Natural>, ModelVector<Integer> >()         );
         addFunction( new Func__conversion<ModelVector<Natural>, ModelVector<Real> >()            );
         addFunction( new Func__conversion<ModelVector<Natural>, ModelVector<RealPos> >()         );
@@ -420,57 +432,58 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__conversion<ModelVector<RealPos>, ModelVector<Real> >()            );
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()     );
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()        );
-        addFunction( new Func__conversion<Simplex, ModelVector<Real> >()        );
-        
-        
+        addFunction( new Func__conversion<Simplex, ModelVector<Real> >()                         );
+
+
 
         /* Input/output functions (in folder "functions/io") */
-        addFunction( new Func_ancestralStateTree() );
-		addFunction( new Func_annotateHPDAges()    );
-        addFunction( new Func_annotateTree()    );
-		addFunction( new Func_consensusTree() );
-        addFunction( new Func_convertToPhylowood() );
-        addFunction( new Func_mapTree()    );
-        addFunction( new Func_module()                       );
-        addFunction( new Func_readAncestralStateTreeTrace()  );
-		addFunction( new Func_readAncestralStateTrace()	    );
-        addFunction( new Func_readAtlas()                    );
-		addFunction( new Func_readBranchLengthTrees()        );
-        addFunction( new Func_readContinuousCharacterData()  );
-        addFunction( new Func_readDiscreteCharacterData()    );
-		addFunction( new Func_readDistanceMatrix()    );
-        addFunction( new Func_readCharacterDataUniversal()   );
-        addFunction( new Func_readRelativeNodeAgeConstraints());
-        addFunction( new Func_TaxonReader()                  );
-        addFunction( new Func_readStochasticVariableTrace()  );
-        addFunction( new Func_readTrace()                    );
-        addFunction( new Func_readTrees()                    );
-        addFunction( new Func_readTreeTrace()                );
-		addFunction( new Func_readCharacterDataDelimited()   );
-        addFunction( new Func_readDataDelimitedFile()        );
-        addFunction( new Func_source()                       );
-        addFunction( new Func_treeTrace()                    );
-        addFunction( new Func_write()                        );
-        addFunction( new Func_writeFasta()                   );
-        addFunction( new Func_writeNexus()                   );
-        
+        addFunction( new Func_ancestralStateTree()                      );
+        addFunction( new Func_annotateTree()                            );
+		addFunction( new Func_consensusTree()                           );
+        addFunction( new Func_convertToPhylowood()                      );
+        addFunction( new Func_listFiles()                               );
+        addFunction( new Func_mapTree()                                 );
+        addFunction( new Func_mccTree()                                 );
+        addFunction( new Func_module()                                  );
+        addFunction( new Func_readAncestralStateTreeTrace()             );
+		addFunction( new Func_readAncestralStateTrace()                 );
+        addFunction( new Func_readAtlas()                               );
+		addFunction( new Func_readBranchLengthTrees()                   );
+        addFunction( new Func_readContinuousCharacterData()             );
+        addFunction( new Func_readDiscreteCharacterData()               );
+		addFunction( new Func_readDistanceMatrix()                      );
+        addFunction( new Func_readCharacterDataUniversal()              );
+        addFunction( new Func_readRelativeNodeAgeConstraints()          );
+        addFunction( new Func_readRelativeNodeAgeWeightedConstraints()  );
+        addFunction( new Func_TaxonReader()                             );
+        addFunction( new Func_readStochasticVariableTrace()             );
+        addFunction( new Func_readTrace()                               );
+        addFunction( new Func_readTrees()                               );
+        addFunction( new Func_readTreeTrace()                           );
+		addFunction( new Func_readCharacterDataDelimited()              );
+        addFunction( new Func_readDataDelimitedFile()                   );
+        addFunction( new Func_source()                                  );
+        addFunction( new Func_treeTrace()                               );
+        addFunction( new Func_write()                                   );
+        addFunction( new Func_writeCharacterDataDelimited()             );
+        addFunction( new Func_writeFasta()                              );
+        addFunction( new Func_writeNexus()                              );
+
     }
     catch(RbException& rbException)
     {
-        
+
         RBOUT("Caught an exception while initializing the workspace\n");
         std::ostringstream msg;
         rbException.print(msg);
         msg << std::endl;
         RBOUT(msg.str());
-        
+
         RBOUT("Please report this bug to the RevBayes Development Core Team");
-        
+
         RBOUT("Press any character to exit the program.");
         getchar();
         exit(1);
     }
-    
+
 }
-
-

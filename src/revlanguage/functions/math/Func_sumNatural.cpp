@@ -42,14 +42,14 @@ const ArgumentRules& Func_sumNatural::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "x", ModelVector<Natural>::getClassTypeSpec(), "A vector of numbers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -59,9 +59,9 @@ const ArgumentRules& Func_sumNatural::getArgumentRules( void ) const
 const std::string& Func_sumNatural::getClassType(void)
 {
     
-    static std::string revType = "Func_sumNatural";
+    static std::string rev_type = "Func_sumNatural";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -69,9 +69,9 @@ const std::string& Func_sumNatural::getClassType(void)
 const TypeSpec& Func_sumNatural::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<Natural>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<Natural>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -90,7 +90,7 @@ std::string Func_sumNatural::getFunctionName( void ) const
 const TypeSpec& Func_sumNatural::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
