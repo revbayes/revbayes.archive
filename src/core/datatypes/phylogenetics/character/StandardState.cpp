@@ -44,7 +44,7 @@ StandardState* StandardState::clone( void ) const
 }
 
 
-const std::string& StandardState::getStateLabels( void ) const
+std::string StandardState::getStateLabels( void ) const
 {
     
     return labels;

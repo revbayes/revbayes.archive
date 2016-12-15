@@ -502,7 +502,7 @@ void ContinuousCharacterData::writeToFile(const std::string &dir, const std::str
     fm.createDirectoryForFile();
     
     NexusWriter nw( fm.getFullFileName() );
-    nw.openStream();
+    nw.openStream(false);
     
     nw.writeNexusBlock( *this );
     

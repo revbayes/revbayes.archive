@@ -18,6 +18,7 @@ namespace RevLanguage {
     public:
         DiscreteTaxonData(void);                                                                                        //!< Constructor requires character type
         DiscreteTaxonData(RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> *v);                          //!< Constructor requires character type
+        virtual ~DiscreteTaxonData(){};
         
         typedef RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> valueType;
         

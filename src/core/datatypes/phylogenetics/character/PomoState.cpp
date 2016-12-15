@@ -290,7 +290,7 @@ std::string PomoState::getDataType( void ) const
 }
 
 
-const std::string& PomoState::getStateLabels( void ) const
+std::string PomoState::getStateLabels( void ) const
 {
 
     static std::string labels = "A C G T ";

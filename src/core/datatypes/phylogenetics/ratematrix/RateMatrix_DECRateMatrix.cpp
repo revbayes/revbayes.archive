@@ -26,23 +26,23 @@ using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
 RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs, bool ex, bool uc, size_t mrs) : GeneralRateMatrix( ns ),
-    num_states(ns),
     numCharacters(nc),
+    num_states(ns),
+    useSquaring(ns > 32),
+    conditionSurvival(cs),
+    excludeNullRange(ex),
     dispersalRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 1.0) ) ),
     extirpationRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 1.0) ) ),
     rangeSize( std::vector<double>(numCharacters, 1.0/ns) ),
+    scalingFactor(1.0),
     birthRate(0.0),
-    useSquaring(ns > 32),
-    excludeNullRange(ex),
-    conditionSurvival(cs),
 //    orderStatesByNum(os),
     useCladogenesis(uc),
-    maxRangeSize(mrs),
     rescaleMatrix(false),
-    scalingFactor(1.0),
+    maxRangeSize(mrs),
     stationaryMatrix( TransitionProbabilityMatrix(num_states) ),
-    maxSizeStoredTransitionProbabilites(1e3),
     accessedTransitionProbabilities( std::list<double>() ),
+    maxSizeStoredTransitionProbabilites(1e3),
     useStoredTransitionProbabilities(true)
 {
 

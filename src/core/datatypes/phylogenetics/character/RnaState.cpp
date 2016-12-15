@@ -31,7 +31,7 @@ RnaState* RnaState::clone( void ) const
 }
 
 
-const std::string& RnaState::getStateLabels( void ) const
+std::string RnaState::getStateLabels( void ) const
 {
     
     static std::string labels = "ACGU";

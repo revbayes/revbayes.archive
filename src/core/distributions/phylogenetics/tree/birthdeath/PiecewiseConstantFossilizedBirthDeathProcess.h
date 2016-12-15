@@ -56,7 +56,7 @@ namespace RevBayesCore {
         double                                          lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         double                                          pSurvival(double start, double end) const;                 //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                          p(size_t i, double t) const;
-        void                                            prepareProbComputation(void);
+        void                                            prepareProbComputation(void) const;
         double                                          q(size_t i, double t) const;
         double                                          simulateDivergenceTime(double origin, double present) const;    //!< Simulate a speciation event.
         int                                             survivors(double t) const;                                 //!< Number of species alive at time t.

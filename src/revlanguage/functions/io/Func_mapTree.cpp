@@ -63,7 +63,7 @@ RevPtr<RevVariable> Func_mapTree::execute( void )
     {
         
         RevBayesCore::NexusWriter writer(filename);
-        writer.openStream();
+        writer.openStream(false);
         
         std::vector<RevBayesCore::Taxon> taxa;
         tree->getRoot().getTaxa(taxa);

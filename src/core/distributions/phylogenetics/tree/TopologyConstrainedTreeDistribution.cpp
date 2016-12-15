@@ -324,7 +324,7 @@ bool TopologyConstrainedTreeDistribution::matchesBackbone(void)
     std::map<const TopologyNode*, Clade>::iterator it;
     
   
-    size_t n_clades = backbone_clades.size();
+//    size_t n_clades = backbone_clades.size();
     
 //    std::cout << n_clades << "\n";
     

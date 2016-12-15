@@ -37,7 +37,7 @@ MonteCarloSampler::MonteCarloSampler(void) : Parallelizable(),
 /**
  *
  */
-MonteCarloSampler::MonteCarloSampler(const MonteCarloSampler &m) : Parallelizable(m), Cloneable(m),
+MonteCarloSampler::MonteCarloSampler(const MonteCarloSampler &m) : Cloneable(m), Parallelizable(m),
     generation( m.generation )
 {
     
