@@ -197,14 +197,6 @@ RevBayesCore::TreeHistoryCtmc<charType>::~TreeHistoryCtmc( void )
 }
 
 
-template<class charType>
-RevBayesCore::TreeHistoryCtmc<charType>* RevBayesCore::TreeHistoryCtmc<charType>::clone( void ) const
-{
-
-    return new TreeHistoryCtmc<charType>( *this );
-}
-
-
 
 template<class charType>
 double RevBayesCore::TreeHistoryCtmc<charType>::computeBranchRate(size_t index)
