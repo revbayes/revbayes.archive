@@ -132,7 +132,7 @@ void JointConditionalCharacterMappingMonitor::monitor(unsigned long gen)
             
         }
         
-        if ( include_simmaps = true )
+        if ( include_simmaps == true )
         {
             // print out the SIMMAP/phytools compatible newick string in the last column of the log file
             outStream << separator;
