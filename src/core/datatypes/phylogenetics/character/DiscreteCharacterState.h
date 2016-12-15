@@ -39,6 +39,7 @@ namespace RevBayesCore {
         void                                    setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
         void                                    setStateByIndex(size_t index);                      //!< Set the discrete observation
         virtual void                            setState(const std::string &symbol);                //!< Set the discrete observation
+        virtual void                            setState(const RbBitSet &s);                        //!< Set the discrete observation
 
 //        virtual unsigned long                   getState(void) const = 0;                           //!< Get the discrete observation
 

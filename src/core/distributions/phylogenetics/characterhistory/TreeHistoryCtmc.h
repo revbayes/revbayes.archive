@@ -110,6 +110,8 @@ namespace RevBayesCore {
         bool                                                                treatAmbiguousAsGaps;
         bool                                                                tipsInitialized;
 
+        charType                                                            template_state;                                 //!< Template state used for ancestral state estimation. This makes sure that the state labels are preserved.
+
     private:
         // private methods
         void                                                                fillLikelihoodVector(const TopologyNode &n);
@@ -135,7 +137,8 @@ RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TypedDagNode<Tree
     usingAmbiguousCharacters( useAmbigChar ),
     treatUnknownAsGap( true ),
     treatAmbiguousAsGaps( true ),
-    tipsInitialized( false )
+    tipsInitialized( false ),
+    template_state()
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -168,7 +171,8 @@ RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TreeHistoryCtmc &
     usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
     treatUnknownAsGap( n.treatUnknownAsGap ),
     treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
-    tipsInitialized( n.tipsInitialized )
+    tipsInitialized( n.tipsInitialized ),
+    template_state( n.template_state )
 {
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -599,6 +603,13 @@ void RevBayesCore::TreeHistoryCtmc<charType>::setValue(AbstractHomologousDiscret
     // delegate to the parent class
     TypedDistribution< AbstractHomologousDiscreteCharacterData >::setValue(v, force);
 
+    
+    // now we also set the template state
+    template_state = charType( static_cast<const charType&>( this->value->getTaxonData(0).getCharacter(0) ) );
+    template_state.setToFirstState();
+    template_state.setGapState( false );
+    template_state.setMissingState( false );
+    
 
     tipsInitialized = false;
     this->num_sites = v->getNumberOfCharacters();

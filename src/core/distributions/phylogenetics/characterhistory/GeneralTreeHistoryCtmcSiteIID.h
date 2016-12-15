@@ -882,7 +882,6 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulate(const Topol
         bh->setChildCharacters(childState);
 
     }
-
     else
     {
         // simulate anagenic changes
@@ -893,8 +892,8 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulate(const Topol
     for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // create the character
-        charType c;
-        c.setState( std::string(1, childState[i]->getState() ) );
+        charType c = charType( this->template_state );
+        c.setStateByIndex( childState[i]->getState() );
         taxa[nodeIndex].addCharacter( c );
     }
 
