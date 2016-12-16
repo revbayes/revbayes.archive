@@ -104,8 +104,8 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
         double last_event = divergence_times[divergence_times.size()-1];
 
-        double p_0_T   = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
-        double p_0_t   = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
+        double p_0_T   = 1.0 - pSurvival(0,presentTime,sampling_probability_uniform) * exp( rateIntegral(0,presentTime) - log(sampling_probability_uniform) );
+        double p_0_t   = 1.0 - pSurvival(last_event,presentTime,sampling_probability_uniform) * exp( rateIntegral(last_event,presentTime) - log(sampling_probability_uniform) );
         double log_F_t = log(p_0_t) - log(p_0_T);
 
         ln_prob_times = ln_prob_times_uniform + (m - num_taxa) * log_F_t + log(RbMath::choose(m, num_taxa));
