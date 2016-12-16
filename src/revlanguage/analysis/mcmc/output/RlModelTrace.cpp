@@ -58,17 +58,17 @@ RevPtr<RevVariable> ModelTrace::executeMethod(std::string const &name, const std
 /** Get Rev type of object */
 const std::string& ModelTrace::getClassType(void) {
     
-    static std::string revType = "ModelTrace";
+    static std::string rev_type = "ModelTrace";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& ModelTrace::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::ModelTrace>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::ModelTrace>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -77,12 +77,12 @@ const TypeSpec& ModelTrace::getClassTypeSpec(void) {
 const MemberRules& ModelTrace::getParameterRules(void) const {
     
     static MemberRules modelMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return modelMemberRules;
@@ -92,9 +92,9 @@ const MemberRules& ModelTrace::getParameterRules(void) const {
 /** Get type spec */
 const TypeSpec& ModelTrace::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

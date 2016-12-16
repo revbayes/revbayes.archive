@@ -23,11 +23,11 @@ RateMap::RateMap(size_t ns, size_t nc)
     numCharacters        = nc;
     
     homogeneous_clock_rate = 1.0;
-    homogeneousRateMatrix = new RateMatrix_JC(ns);
-    rootFrequencies = std::vector<double>(ns,1.0/ns);
+    homogeneous_rate_matrix = new RateMatrix_JC(ns);
+    root_frequencies = std::vector<double>(ns,1.0/ns);
     
     needs_update          = true;
-    branchHeterogeneousClockRates = false;
+    branch_heterogeneous_clock_rates = false;
     branchHeterogeneousRateMatrices = false;
     
 }
@@ -40,15 +40,15 @@ RateMap::RateMap(const RateMap& m)
     
     homogeneous_clock_rate            = m.homogeneous_clock_rate;
     heterogeneous_clock_rates         = m.heterogeneous_clock_rates;
-    homogeneousRateMatrix           = m.homogeneousRateMatrix->clone();
-    heterogeneousRateMatrices       = m.heterogeneousRateMatrices;
-    rootFrequencies                 = m.rootFrequencies;
+    homogeneous_rate_matrix           = m.homogeneous_rate_matrix->clone();
+    heterogeneous_rate_matrices       = m.heterogeneous_rate_matrices;
+    root_frequencies                 = m.root_frequencies;
     
     num_states                       = m.num_states;
     numCharacters                   = m.numCharacters;
     needs_update                     = m.needs_update;
     branchHeterogeneousRateMatrices = m.branchHeterogeneousRateMatrices;
-    branchHeterogeneousClockRates   = m.branchHeterogeneousClockRates;
+    branch_heterogeneous_clock_rates   = m.branch_heterogeneous_clock_rates;
     
 }
 
@@ -56,7 +56,7 @@ RateMap::RateMap(const RateMap& m)
 /** Destructor */
 RateMap::~RateMap(void) {
     
-    delete homogeneousRateMatrix;
+    delete homogeneous_rate_matrix;
     
 }
 
@@ -70,9 +70,9 @@ RateMap& RateMap::operator=(const RateMap &r)
         numCharacters       = r.numCharacters;
         needs_update         = true;
         
-        delete homogeneousRateMatrix;
+        delete homogeneous_rate_matrix;
         
-        homogeneousRateMatrix = r.homogeneousRateMatrix->clone();
+        homogeneous_rate_matrix = r.homogeneous_rate_matrix->clone();
         
     }
     
@@ -102,28 +102,28 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMap& x)
 
 const RateGenerator* RateMap::getHomogeneousRateMatrix(void) const
 {
-    return homogeneousRateMatrix;
+    return homogeneous_rate_matrix;
 }
 
 void RateMap::setHomogeneousRateMatrix(const RateGenerator* r)
 {
     branchHeterogeneousRateMatrices = false;
     
-    if (r != homogeneousRateMatrix)
-        delete homogeneousRateMatrix;
+    if (r != homogeneous_rate_matrix)
+        delete homogeneous_rate_matrix;
     
-    homogeneousRateMatrix = r->clone();
+    homogeneous_rate_matrix = r->clone();
 }
 
 const RbVector<RateGenerator>& RateMap::getHeterogeneousRateMatrices(void) const
 {
-    return heterogeneousRateMatrices;
+    return heterogeneous_rate_matrices;
 }
 
 void RateMap::setHeterogeneousRateMatrices(const RbVector<RateGenerator>& r)
 {
     branchHeterogeneousRateMatrices = true;
-    heterogeneousRateMatrices = r;
+    heterogeneous_rate_matrices = r;
 }
 
 double RateMap::getHomogeneousClockRate(void) const
@@ -133,18 +133,18 @@ double RateMap::getHomogeneousClockRate(void) const
 
 void RateMap::setHomogeneousClockRate(double r)
 {
-    branchHeterogeneousClockRates = false;
+    branch_heterogeneous_clock_rates = false;
     homogeneous_clock_rate = r;
 }
 
 void RateMap::setRootFrequencies(const RevBayesCore::RbVector<double>& r)
 {
-    rootFrequencies = r;
+    root_frequencies = r;
 }
 
 const std::vector<double>& RateMap::getRootFrequencies(void) const
 {
-    return rootFrequencies;
+    return root_frequencies;
 }
 
 const std::vector<double>& RateMap::getHeterogeneousClockRates(void) const
@@ -154,7 +154,7 @@ const std::vector<double>& RateMap::getHeterogeneousClockRates(void) const
 
 void RateMap::setHeterogeneousClockRates(const std::vector<double> &r)
 {
-    branchHeterogeneousClockRates = true;
+    branch_heterogeneous_clock_rates = true;
     heterogeneous_clock_rates = r;
 }
 
@@ -163,12 +163,12 @@ void RateMap::calculateTransitionProbabilities(const TopologyNode& node, Transit
 {
     const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
-        rm = &heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneous_rate_matrices[node.getIndex()];
     else
-        rm = homogeneousRateMatrix;
+        rm = homogeneous_rate_matrix;
     
     double t = node.getBranchLength();
-    if (branchHeterogeneousClockRates)
+    if (branch_heterogeneous_clock_rates)
         t *= heterogeneous_clock_rates[node.getIndex()];
     else
         t *= homogeneous_clock_rate;
@@ -180,12 +180,12 @@ void RateMap::calculateTransitionProbabilities(const TopologyNode& node, Transit
 {
     const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
-        rm = &heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneous_rate_matrices[node.getIndex()];
     else
-        rm = homogeneousRateMatrix;
+        rm = homogeneous_rate_matrix;
     
     double t = node.getBranchLength();
-    if (branchHeterogeneousClockRates)
+    if (branch_heterogeneous_clock_rates)
         t *= heterogeneous_clock_rates[node.getIndex()];
     else
         t *= homogeneous_clock_rate;
@@ -207,16 +207,16 @@ double RateMap::getRate(const TopologyNode& node, std::vector<CharacterEvent*> f
     const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
     {
-        rm = &heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneous_rate_matrices[node.getIndex()];
     }
     else
     {
-        rm = homogeneousRateMatrix;
+        rm = homogeneous_rate_matrix;
     }
     
     rate = rm->getRate(fromState, toState, age, 1.0);
     
-    if (branchHeterogeneousClockRates)
+    if (branch_heterogeneous_clock_rates)
     {
         rate *= heterogeneous_clock_rates[node.getIndex()];
     }
@@ -236,16 +236,16 @@ double RateMap::getSiteRate(const TopologyNode& node, CharacterEvent* from, Char
     const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
     {
-        rm = &heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneous_rate_matrices[node.getIndex()];
     }
     else
     {
-        rm = homogeneousRateMatrix;
+        rm = homogeneous_rate_matrix;
     }
     
     rate = rm->getRate(from->getState(), to->getState(), age, 1.0);
     
-    if (branchHeterogeneousClockRates)
+    if (branch_heterogeneous_clock_rates)
     {
         rate *= heterogeneous_clock_rates[node.getIndex()];
     }
@@ -264,16 +264,16 @@ double RateMap::getSiteRate(const TopologyNode& node, size_t from, size_t to, si
     const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
     {
-        rm = &heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneous_rate_matrices[node.getIndex()];
     }
     else
     {
-        rm = homogeneousRateMatrix;
+        rm = homogeneous_rate_matrix;
     }
     
     rate = rm->getRate(from, to, age, 1.0);
     
-    if (branchHeterogeneousClockRates)
+    if (branch_heterogeneous_clock_rates)
     {
         rate *= heterogeneous_clock_rates[node.getIndex()];
     }
@@ -306,9 +306,9 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
     // get rate matrix
     const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
-        rm = &heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneous_rate_matrices[node.getIndex()];
     else
-        rm = homogeneousRateMatrix;
+        rm = homogeneous_rate_matrix;
     
     // get the rate of leaving the sequence-state
     double sum = 0.0;
@@ -319,7 +319,7 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
     }
     
     // apply rate for branch
-    if (branchHeterogeneousClockRates)
+    if (branch_heterogeneous_clock_rates)
     {
         sum *= heterogeneous_clock_rates[node.getIndex()];
     }

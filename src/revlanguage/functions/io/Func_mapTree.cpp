@@ -3,6 +3,7 @@
 #include "Func_mapTree.h"
 #include "ModelVector.h"
 #include "NexusWriter.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "RevNullObject.h"
 #include "RlBranchLengthTree.h"
@@ -38,33 +39,31 @@ Func_mapTree* Func_mapTree::clone( void ) const
 /** Execute function */
 RevPtr<RevVariable> Func_mapTree::execute( void )
 {
+    size_t arg_index = 0;
     
-    // get the x% hpd
-    double x = 0.95;
-    
-    const TraceTree& tt = static_cast<const TraceTree&>( args[0].getVariable()->getRevObject() );
-    const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-    int burnin = static_cast<const Integer &>(args[2].getVariable()->getRevObject()).getValue();
-    
-    RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
+    TraceTree& tt = static_cast<TraceTree&>( args[arg_index++].getVariable()->getRevObject() );
 
-    // set the burnin
-    summary.setBurnin( burnin );
+    const std::string& filename = static_cast<const RlString&>( args[arg_index++].getVariable()->getRevObject() ).getValue();
+
     
-    RevBayesCore::Tree* tree = summary.map( tt.getValue().isClock() );
+    RevBayesCore::AnnotationReport report;
+
+    report.cc_ages   = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
+    report.ccp       = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
+    report.tree_ages = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
+    report.hpd       = static_cast<const Probability &>(args[arg_index++].getVariable()->getRevObject()).getValue();
+    report.mean      = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
+    report.sa        = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
     
-    // get the tree with x% HPD node ages
-    summary.annotateHPDAges(*tree, x );
-    
-    // get the tree with x% HPD node ages
-    summary.annotate(*tree);
+    bool verbose = true;
+    RevBayesCore::Tree* tree = tt.getValue().mapTree(report, verbose);
     
     
     if ( filename != "" )
     {
         
         RevBayesCore::NexusWriter writer(filename);
-        writer.openStream();
+        writer.openStream(false);
         
         std::vector<RevBayesCore::Taxon> taxa;
         tree->getRoot().getTaxa(taxa);
@@ -77,7 +76,17 @@ RevPtr<RevVariable> Func_mapTree::execute( void )
         
     }
     
-    return new RevVariable( new Tree( tree ) );
+    Tree* t;
+    if( tt.getValue().getTreeTrace().isClock() )
+    {
+        t = new TimeTree( tree );
+    }
+    else
+    {
+        t = new BranchLengthTree( tree );
+    }
+
+    return new RevVariable( t );
 }
 
 
@@ -87,16 +96,23 @@ const ArgumentRules& Func_mapTree::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet)
+    if (!rules_set)
     {
         
-        argumentRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec(), "The samples of trees from the posterior.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec(), "The number of trees to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        argumentRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The samples of trees from the posterior.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
+
+        argumentRules.push_back( new ArgumentRule( "ccAges" , RlBoolean::getClassTypeSpec() , "Annotate conditional clade ages?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "ccp" , RlBoolean::getClassTypeSpec() , "Annotate conditional clade probabilities?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "conditionalAges" , RlBoolean::getClassTypeSpec() , "Annotate node ages conditional on the topology?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        argumentRules.push_back( new ArgumentRule( "hpd"   ,    Probability::getClassTypeSpec() , "The probability mass of the highest posterior density age interval.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95) ) );
+        argumentRules.push_back( new ArgumentRule( "mean" , RlBoolean::getClassTypeSpec() , "Annotate node ages using the mean age instead of the median?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        argumentRules.push_back( new ArgumentRule( "sampledAncestors" , RlBoolean::getClassTypeSpec() , "Annotate sampled ancestor probs?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        //argumentRules.push_back( new ArgumentRule( "verbose"  , RlBoolean::getClassTypeSpec(), "Printing verbose output.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -107,18 +123,18 @@ const ArgumentRules& Func_mapTree::getArgumentRules( void ) const
 const std::string& Func_mapTree::getClassType(void)
 {
     
-    static std::string revType = "Func_mapTree";
+    static std::string rev_type = "Func_mapTree";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_mapTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -138,9 +154,9 @@ std::string Func_mapTree::getFunctionName( void ) const
 const TypeSpec& Func_mapTree::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

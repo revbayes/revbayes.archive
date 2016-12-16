@@ -52,21 +52,22 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
     dr = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     // extirpation rates
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er;
-    er = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* er;
+    er = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
     size_t num_statesEr = er->getValue().size();
     std::vector<size_t> num_statesDr;
-    for (size_t i = 0; i < dr->getValue().size(); i++)
+    RevBayesCore::RbVector<RevBayesCore::RbVector<double> > dr_tmp = dr->getValue();
+    for (size_t i = 0; i < dr_tmp.size(); i++)
     {
-        num_statesDr.push_back( dr->getValue()[i].size() );
+        num_statesDr.push_back( dr_tmp[i].size() );
         if (num_statesDr[i] != num_statesEr)
         {
             throw RbException("The dimension between dispersal and extirpation rates does not match.");
         }
-        for (size_t j = 0; j < i; j++)
+        if (i > 0)
         {
-            if (num_statesDr[i] != num_statesDr[j])
+            if (num_statesDr[i] != num_statesDr[i-1])
             {
                 throw RbException("The dispersal matrix is not square.");
             }
@@ -102,7 +103,23 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
     bool ex = nullRangeStr=="Exclude";
 //    std::cout << nullRangeStr << " " << cs << " " << ex << "\n";
     
-    RevBayesCore::DECRateMatrixFunction* f = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs, ex );
+//    bool os = static_cast<const RlBoolean&>(this->args[4].getVariable()->getRevObject() ).getValue();
+//    bool order_states_by_size = !os;
+    size_t mrs = static_cast<const Natural&>(this->args[4].getVariable()->getRevObject() ).getValue();
+    
+    if (mrs < 1 || mrs > er->getValue().size())
+    {
+        mrs = er->getValue().size();
+    }
+    bool uc = false;
+    RevBayesCore::DECRateMatrixFunction* f = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs, ex,uc, mrs );
+    
+//    RevBayesCore::TransitionProbabilityMatrix P(f->getValue().getNumberOfStates());
+    
+//    f->getValue().calculateTransitionProbabilities(5.111, 0.92, 0.02, P);
+//    
+//    std::cout << P << "\n";
+////    rm->calculateTransitionProbabilities( start_age, end_age,  rate, this->transition_prob_matrices[0] );
     
     return f;
 }
@@ -113,13 +130,13 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "dispersalRates"  , ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "Matrix of dispersal rates between areas.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "extirpationRates", ModelVector<RealPos>::getClassTypeSpec(), "The per area extinction rates.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "extirpationRates", ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "Matrix of extirpation rates.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "rangeSize",        Simplex::getClassTypeSpec(), "Relative proportions of range sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( RevBayesCore::RbVector<double>() ) ) );
         
         std::vector<std::string> options;
@@ -127,8 +144,13 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
         options.push_back( "Exclude" );
         options.push_back( "Include" );
         argumentRules.push_back( new OptionRule( "nullRange", new RlString("CondSurv"), options, "How should DEC handle the null range?" ) );
+        
+//        argumentRules.push_back( new ArgumentRule( "orderStatesByBinary", RlBoolean::getClassTypeSpec(), "Order states by binary value?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
+//        
+        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), "Maximum range size.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ));
+        
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -138,18 +160,18 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
 const std::string& Func_DECRateMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_DECRateMatrix";
+    static std::string rev_type = "Func_DECRateMatrix";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_DECRateMatrix::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -168,7 +190,7 @@ std::string Func_DECRateMatrix::getFunctionName( void ) const
 const TypeSpec& Func_DECRateMatrix::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

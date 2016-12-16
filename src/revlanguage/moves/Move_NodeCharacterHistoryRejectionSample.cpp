@@ -111,9 +111,9 @@ void Move_NodeCharacterHistoryRejectionSample::constructInternalObject( void )
 const std::string& Move_NodeCharacterHistoryRejectionSample::getClassType(void)
 {
     
-    static std::string revType = "Move_NodeCharacterHistoryRejectionSample";
+    static std::string rev_type = "Move_NodeCharacterHistoryRejectionSample";
     
-	return revType;
+	return rev_type;
 }
 
 
@@ -125,9 +125,9 @@ const std::string& Move_NodeCharacterHistoryRejectionSample::getClassType(void)
 const TypeSpec& Move_NodeCharacterHistoryRejectionSample::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -158,30 +158,30 @@ std::string Move_NodeCharacterHistoryRejectionSample::getMoveName( void ) const
 const MemberRules& Move_NodeCharacterHistoryRejectionSample::getParameterRules(void) const
 {
     
-    static MemberRules nodeChrsMoveMemberRules;
-    static bool rulesSet = false;
+    static MemberRules nodeChrsmove_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec()                      , "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec()                     , "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , "", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
-//        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "type", true, RlString::getClassTypeSpec(), new RlString("std") ) );
+        nodeChrsmove_member_rules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        nodeChrsmove_member_rules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec()                      , "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        nodeChrsmove_member_rules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec()                     , "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        nodeChrsmove_member_rules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , "", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
+//        nodeChrsmove_member_rules.push_back( new ArgumentRule( "type", true, RlString::getClassTypeSpec(), new RlString("std") ) );
         std::vector<std::string> options;
         options.push_back( "std" );
         options.push_back( "biogeo" );
-        nodeChrsMoveMemberRules.push_back( new OptionRule( "type", new RlString("std"), options, "" ) );
+        nodeChrsmove_member_rules.push_back( new OptionRule( "type", new RlString("std"), options, "" ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
-        nodeChrsMoveMemberRules.insert( nodeChrsMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
+        nodeChrsmove_member_rules.insert( nodeChrsmove_member_rules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return nodeChrsMoveMemberRules;
+    return nodeChrsmove_member_rules;
 }
 
 
@@ -193,9 +193,9 @@ const MemberRules& Move_NodeCharacterHistoryRejectionSample::getParameterRules(v
 const TypeSpec& Move_NodeCharacterHistoryRejectionSample::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

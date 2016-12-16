@@ -212,7 +212,7 @@ void CharacterHistoryPosteriorPredictiveMonitor::monitor(unsigned long gen) {
 
 
 /** open the file stream for printing */
-void CharacterHistoryPosteriorPredictiveMonitor::openStream(void) {
+void CharacterHistoryPosteriorPredictiveMonitor::openStream(bool reopen) {
     
     // open the stream to the file
     if (append)

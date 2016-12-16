@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the implementation of UserInterface, which is
- * the base class for different user interfaces.
- *
- * @brief Declaration of UserInterface
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @extends Frame
- * @package parser
- * @version 1.0
- * @since version 1.0 2009-09-02
- *
- * $Id$
- */
-
 #include "RbSettings.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"

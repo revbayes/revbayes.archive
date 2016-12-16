@@ -74,10 +74,12 @@
 /* Moves on simplices */
 #include "Move_DirichletSimplex.h"
 #include "Move_BetaSimplex.h"
+#include "Move_ElementSwapSimplex.h"
 
 /* Moves on real valued vectors */
 #include "Move_ElementScale.h"
 #include "Move_ElementSlide.h"
+#include "Move_ShrinkExpand.h"
 #include "Move_SingleElementScale.h"
 #include "Move_SingleElementSlide.h"
 #include "Move_SynchronizedVectorFixedSingleElementSlide.h"
@@ -125,9 +127,11 @@
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+#include "Move_AddRemoveFossil.h"
 #include "Move_CollapseExpandFossilBranch.h"
 #include "Move_EmpiricalTree.h"
 #include "Move_FNPR.h"
+#include "Move_FossilTimeSlideUniform.h"
 #include "Move_GibbsPruneAndRegraft.h"
 #include "Move_NarrowExchange.h"
 #include "Move_NNIClock.h"
@@ -136,6 +140,7 @@
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideBeta.h"
 #include "Move_RateAgeBetaShift.h"
+#include "Move_RootTimeSlideUniform.h"
 #include "Move_SpeciesNarrowExchange.h"
 #include "Move_SpeciesNodeTimeSlideUniform.h"
 #include "Move_SpeciesSubtreeScale.h"
@@ -187,10 +192,12 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on simplices */
         addTypeWithConstructor( new Move_DirichletSimplex() );
         addTypeWithConstructor( new Move_BetaSimplex() );
-
+        addTypeWithConstructor( new Move_ElementSwapSimplex() );
+        
         /* Moves on vectors of real values */
         addTypeWithConstructor( new Move_SingleElementSlide() );
         addTypeWithConstructor( new Move_SingleElementScale() );
+        addTypeWithConstructor( new Move_ShrinkExpand() );
         addTypeWithConstructor( new Move_VectorScale() );
         addTypeWithConstructor( new Move_VectorSlide() );
         addTypeWithConstructor( new Move_ElementScale() );
@@ -249,13 +256,15 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BirthDeathEvent()                      );
         addTypeWithConstructor( new Move_DiscreteEventCategoryRandomWalk()      );
         addTypeWithConstructor( new Move_EventTimeBeta()                        );
-        addTypeWithConstructor( new Move_EventTimeSlide()                       );
+//        addTypeWithConstructor( new Move_EventTimeSlide()                       );
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+        //addTypeWithConstructor( new Move_AddRemoveFossil()     );
         addTypeWithConstructor( new Move_CollapseExpandFossilBranch()     );
 		addTypeWithConstructor( new Move_EmpiricalTree()                  );
         addTypeWithConstructor( new Move_FNPR()                           );
+        addTypeWithConstructor( new Move_FossilTimeSlideUniform()           );
         addTypeWithConstructor( new Move_GibbsPruneAndRegraft()           );
         addTypeWithConstructor( new Move_NarrowExchange()                 );
         addTypeWithConstructor( new Move_NNIClock()                       );
@@ -264,6 +273,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_NodeTimeSlideUniform()           );
         addTypeWithConstructor( new Move_NodeTimeSlideBeta()              );
         addTypeWithConstructor( new Move_RateAgeBetaShift()               );
+        addTypeWithConstructor( new Move_RootTimeSlideUniform()           );
         addTypeWithConstructor( new Move_SubtreeScale()                   );
         addTypeWithConstructor( new Move_SPRNonclock()                    );
         addTypeWithConstructor( new Move_SpeciesNarrowExchange()          );

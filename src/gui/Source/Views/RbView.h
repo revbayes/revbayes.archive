@@ -45,6 +45,7 @@ extern NSString* const ToolDataPboardType;
 	NSPoint                       iOffset[8];
 	NSPoint                       rOffset[8];
 	NSPoint                       mOffset[8];
+    NSPoint                       lOffset[8];
 	NSAttributedString*           selectedAttributedString[8];
 	NSAttributedString*           unselectedAttributedString[8];
 

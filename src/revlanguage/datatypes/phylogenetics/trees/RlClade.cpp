@@ -75,6 +75,19 @@ void Clade::constructInternalObject( void )
         n.push_back( t );
     }
     
+    // now add names to new clade
+    for (std::vector<RevPtr<const RevVariable> >::iterator it = names_vector.begin(); it != names_vector.end(); ++it)
+    {
+        const ModelVector<RlString> &tmp = static_cast<const ModelVector<RlString> &>( (*it)->getRevObject() );
+        
+        for(size_t i=0; i<tmp.size(); ++i)
+        {
+            RevBayesCore::Taxon t = RevBayesCore::Taxon( tmp.getElement(i)->getValue() );
+            n.push_back( t );
+        }
+        
+    }
+    
     // now allocate a new Clade
     for (std::vector<RevPtr<const RevVariable> >::iterator it = clades.begin(); it != clades.end(); ++it)
     {
@@ -130,17 +143,17 @@ const MemberRules& Clade::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
-//        memberRules.push_back( new ArgumentRule("taxonName", RlString::getClassTypeSpec(), "A first taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new Ellipsis( "Taxon names as string values.", RlString::getClassTypeSpec() ) );
+        memberRules.push_back( new Ellipsis("Taxon names as a vector of string values.", ModelVector<RlString>::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis( "Taxa as clade objects.", Clade::getClassTypeSpec() ) );
         memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule("missing", Natural::getClassTypeSpec(), "Number of missing taxa in the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -151,18 +164,18 @@ const MemberRules& Clade::getParameterRules(void) const
 const std::string& Clade::getClassType(void)
 {
     
-    static std::string revType = "Clade";
+    static std::string rev_type = "Clade";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Clade::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::Clade>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::Clade>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -170,9 +183,9 @@ const TypeSpec& Clade::getClassTypeSpec(void)
 const TypeSpec& Clade::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -187,6 +200,10 @@ void Clade::setConstParameter(const std::string& name, const RevPtr<const RevVar
     else if ( name == "" && var->getRevObject().getTypeSpec() == Clade::getClassTypeSpec() )
     {
         clades.push_back( var );
+    }
+    else if ( name == "" && var->getRevObject().getTypeSpec() == ModelVector<RlString>::getClassTypeSpec() )
+    {
+        names_vector.push_back( var );
     }
 
     else if ( name == "age")

@@ -21,7 +21,8 @@ namespace RevLanguage {
         virtual const TypeSpec&                         getVariableTypeSpec(void) const;                                                    //!< Get the variable type spec of this distribution
         virtual rlType*                                 createRandomVariable(void) const;                                                   //!< Create a random variable from this distribution
         void                                            setVariable(rlType* v);
-        void                                            printValue(std::ostream& o, bool user) const;                                                      //!< Print the general information on the function ('usage')
+        virtual void                                    printValue(std::ostream& o, bool user) const;                                                      //!< Print the general information on the function ('usage')
+        virtual void                                    printValue(std::ostream& o) const { printValue(o, true); };
 
         // Basic utility functions you have to override
         virtual TypedDistribution<rlType>*              clone(void) const = 0;                                                              //!< Clone object
@@ -92,10 +93,10 @@ template <typename rlType>
 const std::string& RevLanguage::TypedDistribution<rlType>::getClassType(void)
 {
     
-//    static std::string revType = "Distribution<"+ rlType::getClassType() +">";
-    static std::string revType = "Distribution__"+ rlType::getClassType();
+//    static std::string rev_type = "Distribution<"+ rlType::getClassType() +">";
+    static std::string rev_type = "Distribution__"+ rlType::getClassType();
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -104,9 +105,9 @@ template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::TypedDistribution<rlType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 

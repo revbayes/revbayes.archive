@@ -61,18 +61,18 @@ void Mntr_Probability::constructInternalObject( void )
 const std::string& Mntr_Probability::getClassType(void)
 {
     
-    static std::string revType = "Mntr_Probability";
+    static std::string rev_type = "Mntr_Probability";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_Probability::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -95,9 +95,9 @@ const MemberRules& Mntr_Probability::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , "The name of the file where to store the values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -107,9 +107,10 @@ const MemberRules& Mntr_Probability::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("likelihood"    , RlBoolean::getClassTypeSpec(), "Should we print the likelihood?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         memberRules.push_back( new ArgumentRule("prior"         , RlBoolean::getClassTypeSpec(), "Should we print the joint prior probability?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         memberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), "Should we append to an existing file?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+         memberRules.push_back( new ArgumentRule("version", RlBoolean::getClassTypeSpec(), "Should we record the software version?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -119,9 +120,9 @@ const MemberRules& Mntr_Probability::getParameterRules(void) const
 const TypeSpec& Mntr_Probability::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -156,6 +157,10 @@ void Mntr_Probability::setConstParameter(const std::string& name, const RevPtr<c
     else if ( name == "append" )
     {
         append = var;
+    }
+    else if ( name == "version" )
+    {
+        version = var;
     }
     else
     {

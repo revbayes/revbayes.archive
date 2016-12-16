@@ -50,13 +50,13 @@ const ArgumentRules& Func_freeSymmetricRateMatrix::getArgumentRules( void ) cons
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "transition_rates",   ModelVector<RealPos>::getClassTypeSpec(),   "The transition rates between states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "rescaled",          RlBoolean::getClassTypeSpec(),              "Should the matrix be normalized?", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -66,18 +66,18 @@ const ArgumentRules& Func_freeSymmetricRateMatrix::getArgumentRules( void ) cons
 const std::string& Func_freeSymmetricRateMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_freeSymmetricRateMatrix";
+    static std::string rev_type = "Func_freeSymmetricRateMatrix";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_freeSymmetricRateMatrix::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -96,7 +96,7 @@ std::string Func_freeSymmetricRateMatrix::getFunctionName( void ) const
 const TypeSpec& Func_freeSymmetricRateMatrix::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

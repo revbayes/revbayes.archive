@@ -56,7 +56,7 @@ namespace RevBayesCore {
 #endif
         void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
         void                                                setModel(Model *m);
-
+        
     protected:
         void                                                setActivePIDSpecialized(size_t i, size_t n);                    //!< Set the number of processes for this class.
         void                                                resetReplicates(void);

@@ -175,6 +175,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
         // get the DAG nodes of the model
         std::vector<DagNode*> &current_nodes = current_model->getDagNodes();
         
+        // initialize values from files
         for (size_t j = 0; j < current_nodes.size(); ++j)
         {
             DagNode *the_node = current_nodes[j];

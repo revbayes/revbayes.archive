@@ -1252,7 +1252,8 @@ int EigenSystem::luDecompose(MatrixReal& a, double* vv, int* indx, double* pd) {
  * \parameter m Matrix for which we should calculate eigensystem
  * \return MbError(MbError::ERROR)
  */
-void EigenSystem::update(void) {
+void EigenSystem::update(void)
+{
 	
     // copy the rate matrix into A because we don't want to destroy
     // the rate matrix
@@ -1280,7 +1281,9 @@ void EigenSystem::update(void) {
     for (std::vector<double>::iterator it = realEigenvalues.begin(); it != realEigenvalues.end(); ++it)
     {
         if ( *it > 0.0 )
+        {
             *it = 0.0;
+        }
     }
 	
 	// reverse balancing to obtain eigenvectors

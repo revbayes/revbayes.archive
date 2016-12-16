@@ -23,11 +23,11 @@ namespace RevBayesCore {
         
     public:
         RateGenerator_Epoch(size_t n, size_t ne);                                                                                                                   //!< Construct rate matrix with n states
-        RateGenerator_Epoch(const RateGenerator_Epoch& m);                                                                                                          //!< Copy constructor
+//        RateGenerator_Epoch(const RateGenerator_Epoch& m);                                                                                                          //!< Copy constructor
         virtual                             ~RateGenerator_Epoch(void);                                                                                             //!< Destructor
         
         // overloaded operators
-        RateGenerator_Epoch&                operator=(const RateGenerator_Epoch& r);
+//        RateGenerator_Epoch&                operator=(const RateGenerator_Epoch& r);
         
         // RateMatrix functions
         RateGenerator_Epoch&                assign(const Assignable &m);

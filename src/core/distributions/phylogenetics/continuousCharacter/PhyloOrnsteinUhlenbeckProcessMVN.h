@@ -60,7 +60,7 @@ namespace RevBayesCore {
         double                                                              computeBranchSigma(size_t siteIdx) const;
         double                                                              computeBranchTheta(size_t siteIdx) const;
         void                                                                recursiveComputeRootToTipDistance( std::vector<double> &m, double v, const TopologyNode &n, size_t ni );
-        std::set<size_t>                                                    recursiveComputeDistanceMatrix( MatrixReal &m, const TopologyNode &node, size_t nodeIndex );
+        std::set<size_t>                                                    recursiveComputeDistanceMatrix( MatrixReal &m, const TopologyNode &node, size_t node_index );
         
         const TypedDagNode< double >*                                       homogeneous_alpha;
         const TypedDagNode< double >*                                       homogeneous_root_state;

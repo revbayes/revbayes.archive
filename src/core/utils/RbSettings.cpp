@@ -41,6 +41,17 @@ size_t RbSettings::getScalingDensity( void ) const
     return scalingDensity;
 }
 
+bool RbSettings::getUseScaling( void ) const
+{
+    // return the internal value
+    return useScaling;
+}
+
+bool RbSettings::getCollapseSampledAncestors( void ) const
+{
+    // return the internal value
+    return collapseSampledAncestors;
+}
 
 std::string RbSettings::getOption(const std::string &key) const
 {
@@ -63,6 +74,14 @@ std::string RbSettings::getOption(const std::string &key) const
     else if ( key == "scalingDensity" )
     {
         return StringUtilities::to_string(scalingDensity);
+    }
+    else if ( key == "useScaling" )
+    {
+        return useScaling ? "TRUE" : "FALSE";
+    }
+    else if ( key == "collapseSampledAncestors" )
+    {
+        return collapseSampledAncestors ? "TRUE" : "FALSE";
     }
     else
     {
@@ -99,10 +118,12 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 void RbSettings::initializeUserSettings(void)
 {
     moduleDir = "modules";      // the default module directory
+    useScaling = false;          // the default useScaling
     scalingDensity = 4;         // the default scaling density
     lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
     printNodeIndex = true;      // print node indices of tree nodes as comments
+    collapseSampledAncestors = true;
     
     std::string user_dir = RevBayesCore::RbFileManager::expandUserDir("~");
     
@@ -185,11 +206,17 @@ void RbSettings::setLineWidth(size_t w)
     writeUserSettings();
 }
 
+void RbSettings::setUseScaling(bool w)
+{
+    // replace the internal value with this new value
+    useScaling = w;
+
+    // save the current settings for the future.
+    writeUserSettings();
+}
+
 void RbSettings::setScalingDensity(size_t w)
 {
-    if(w < 1)
-        throw(RbException("scalingDensity must be an integer greater than 0"));
-    
     // replace the internal value with this new value
     scalingDensity = w;
     
@@ -198,9 +225,19 @@ void RbSettings::setScalingDensity(size_t w)
 }
 
 
+void RbSettings::setCollapseSampledAncestors(bool w)
+{
+    // replace the internal value with this new value
+    collapseSampledAncestors = w;
+
+    // save the current settings for the future.
+    writeUserSettings();
+}
+
+
 void RbSettings::setOption(const std::string &key, const std::string &value, bool write)
 {
-    
+
     if ( key == "moduledir" )
     {
         moduleDir = value;
@@ -221,6 +258,10 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
         //lineWidth = std::stoi (value,&sz);
         lineWidth = atoi(value.c_str());
     }
+    else if ( key == "useScaling" )
+    {
+        useScaling = value == "TRUE";
+    }
     else if ( key == "scalingDensity" )
     {
         size_t w = atoi(value.c_str());
@@ -228,6 +269,10 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
             throw(RbException("scalingDensity must be an integer greater than 0"));
         
         scalingDensity = atoi(value.c_str());
+    }
+    else if ( key == "collapseSampledAncestors" )
+    {
+        collapseSampledAncestors = value == "TRUE";
     }
     else
     {
@@ -290,7 +335,9 @@ void RbSettings::writeUserSettings( void )
     writeStream << "printNodeIndex=" << (printNodeIndex ? "TRUE" : "FALSE") << std::endl;
     writeStream << "tolerance=" << tolerance << std::endl;
     writeStream << "linewidth=" << lineWidth << std::endl;
+    writeStream << "useScaling=" << useScaling << std::endl;
     writeStream << "scalingDensity=" << scalingDensity << std::endl;
+    writeStream << "collapseSampledAncestors=" << (collapseSampledAncestors ? "TRUE" : "FALSE") << std::endl;
     fm.closeFile( writeStream );
 
 }

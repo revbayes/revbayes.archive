@@ -102,7 +102,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         sampling_probability = 1.0;
 
         // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
-        double last_event = divergence_times[divergence_times.size()-2];
+        double last_event = divergence_times[divergence_times.size()-1];
 
         double p_0_T   = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
         double p_0_t   = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
@@ -137,7 +137,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     if ( sampling_strategy == "diversified" )
     {
         // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
-        double last_event = divergence_times[divergence_times.size()-2];
+        double last_event = divergence_times[divergence_times.size()-1];
 
         double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
         double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));

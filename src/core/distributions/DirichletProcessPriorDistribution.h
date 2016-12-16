@@ -43,7 +43,7 @@ namespace RevBayesCore {
         void                                                createRestaurantVectors(void);
         std::vector<int>                                    getNumElemPerTable(void);
         double                                              getConcentrationParam(void);
-        TypedDistribution<valueType>*                        getBaseDistribution(void);
+        TypedDistribution<valueType>*                       getBaseDistribution(void);
 
         
     protected:

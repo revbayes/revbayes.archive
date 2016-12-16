@@ -58,25 +58,25 @@ RevPtr<RevVariable> RateGenerator::executeMethod(std::string const &name, const 
 /* Get Rev type of object */
 const std::string& RateGenerator::getClassType(void) {
     
-    static std::string revType = "RateGenerator";
+    static std::string rev_type = "RateGenerator";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RateGenerator::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& RateGenerator::getTypeSpec(void) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }
 
 void RateGenerator::initMethods(void) {

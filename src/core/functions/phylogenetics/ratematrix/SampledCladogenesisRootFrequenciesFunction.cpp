@@ -135,11 +135,14 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
     if (isSampledSpeciationTree)
     {
         // get cladogenetic probabilities
-        cladogenesisProbabilities->getValue();
-        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesisProbabilities );
-        const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+        //cladogenesisProbabilities->getValue();
+        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesisProbabilities );
+        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+        
+        // TODO: MJL fix this later, use new CladogeneticProbabilityMatrix setup
+        std::map<std::vector<unsigned>, double> eventMapProbs;
+        // eventMapProbs = csf->getEventMap();
         
         // get root history information
         const AbstractCharacterHistoryBirthDeathProcess* dist = dynamic_cast<const AbstractCharacterHistoryBirthDeathProcess* >( &tree->getDistribution() );

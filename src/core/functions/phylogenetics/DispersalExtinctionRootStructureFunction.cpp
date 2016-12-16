@@ -16,14 +16,14 @@
 using namespace RevBayesCore;
 
 DispersalExtinctionRootStructureFunction::DispersalExtinctionRootStructureFunction(TypedDagNode<RbVector<double> >* rf, TypedDagNode<RbVector<double> >* rs) : TypedFunction<RbVector<double> >( new RbVector<double>() ),
-rootFrequencies( rf ),
+root_frequencies( rf ),
 rangeSize(rs)
 {
     // add the lambda parameter as a parent
-    addParameter( rootFrequencies );
+    addParameter( root_frequencies );
     addParameter( rangeSize );
 
-    num_states = rootFrequencies->getValue().size();
+    num_states = root_frequencies->getValue().size();
     numCharacters = 0;
     size_t n = num_states;
     
@@ -118,7 +118,7 @@ void DispersalExtinctionRootStructureFunction::touch(DagNode *toucher)
 
 void DispersalExtinctionRootStructureFunction::update( void )
 {
-    const RbVector<double>& rf = rootFrequencies->getValue();
+    const RbVector<double>& rf = root_frequencies->getValue();
     size_t minRangeSize = 1;
     
     // get normalized range sizes, s.t. largest range size value = 1
@@ -126,9 +126,9 @@ void DispersalExtinctionRootStructureFunction::update( void )
     double largestRangeSize = rs[0];
     for (size_t i = minRangeSize; i <= numCharacters; i++)
     {
-        if (rs[i] > largestRangeSize)
+        if (rs[i-1] > largestRangeSize)
         {
-            largestRangeSize = rs[i];
+            largestRangeSize = rs[i-1];
         }
     }
     std::vector<double> normalizedRangeSize = rs;
@@ -148,7 +148,7 @@ void DispersalExtinctionRootStructureFunction::update( void )
     {
         for (std::vector<unsigned>::iterator it = idxByRangeSize[i].begin(); it != idxByRangeSize[i].end(); it++)
         {
-            (*value)[ *it ] = rf[ *it ] * normalizedRangeSize[i];
+            (*value)[ *it ] = rf[ *it ] * normalizedRangeSize[i-1];
             sum += rf[ *it ];
         }
     }
@@ -165,9 +165,9 @@ void DispersalExtinctionRootStructureFunction::update( void )
 
 void DispersalExtinctionRootStructureFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
-    if (oldP == rootFrequencies)
+    if (oldP == root_frequencies)
     {
-        rootFrequencies = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+        root_frequencies = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
     }
     else if (oldP == rangeSize)
     {

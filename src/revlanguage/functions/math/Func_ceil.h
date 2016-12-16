@@ -97,14 +97,14 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_ceil<valType, retType>::getA
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         
         argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), "The value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -115,9 +115,9 @@ template <typename valType, typename retType>
 const std::string& RevLanguage::Func_ceil<valType, retType>::getClassType(void)
 {
     
-    static std::string revType = "Func_ceil";
+    static std::string rev_type = "Func_ceil";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */
@@ -125,9 +125,9 @@ template <typename valType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func_ceil<valType, retType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( valType::getClassTypeSpec() ), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( valType::getClassTypeSpec() ), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -258,9 +258,9 @@ template <typename valType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func_ceil<valType, retType>::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

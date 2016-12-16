@@ -136,8 +136,6 @@
 - (IBAction)settingChangedAction:(id)sender;
 - (void)showControlPanel;
 - (void)showInspectorPanel;
-- (void)updateForChangeInUpstreamState;
-
 
 @end
 

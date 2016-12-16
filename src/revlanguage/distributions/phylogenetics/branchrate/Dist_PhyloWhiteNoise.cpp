@@ -50,18 +50,18 @@ RevBayesCore::PhyloWhiteNoiseProcess* Dist_PhyloWhiteNoise::createDistribution( 
 const std::string& Dist_PhyloWhiteNoise::getClassType(void)
 {
     
-    static std::string revType = "Dist_PhyloWhiteNoise";
+    static std::string rev_type = "Dist_PhyloWhiteNoise";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_PhyloWhiteNoise::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -86,13 +86,13 @@ const MemberRules& Dist_PhyloWhiteNoise::getParameterRules(void) const
 {
     
     static MemberRules dist;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree along which the process evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec() , "The standard deviation.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return dist;

@@ -72,9 +72,9 @@ RevBayesCore::NodeOrderWeightedConstrainedTreeDistribution* Dist_WeightedConstra
 const std::string& Dist_WeightedConstrainedNodeOrder::getClassType( void )
 {
     
-    static std::string revType = "Dist_WeightedConstrainedNodeOrder";
+    static std::string rev_type = "Dist_WeightedConstrainedNodeOrder";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -86,9 +86,9 @@ const std::string& Dist_WeightedConstrainedNodeOrder::getClassType( void )
 const TypeSpec& Dist_WeightedConstrainedNodeOrder::getClassTypeSpec( void )
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -132,16 +132,16 @@ const MemberRules& Dist_WeightedConstrainedNodeOrder::getParameterRules(void) co
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule( "treeDistribution", TypedDistribution<TimeTree>::getClassTypeSpec(), "The base distribution for the tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "constraints", RlRelativeNodeAgeWeightedConstraints::getClassTypeSpec(), "The node order constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "beta", RealPos::getClassTypeSpec(), "The beta weight for the constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;

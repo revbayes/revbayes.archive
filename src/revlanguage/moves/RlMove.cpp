@@ -24,18 +24,18 @@ Move::Move(void) : WorkspaceToCoreWrapperObject<RevBayesCore::Move>()
 const std::string& Move::getClassType(void)
 {
     
-    static std::string revType = "Move";
+    static std::string rev_type = "Move";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Move>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Move>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -206,21 +206,21 @@ RevBayesCore::RbHelpMove* Move::getHelpEntry( void ) const
 const MemberRules& Move::getParameterRules(void) const
 {
     
-    static MemberRules moveMemberRules;
-    static bool rulesSet = false;
+    static MemberRules move_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
-        moveMemberRules.push_back( new ArgumentRule( "weight", RealPos::getClassTypeSpec(), "The weight how often on average this move will be used per iteration.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 1.0 ) ) );
+        move_member_rules.push_back( new ArgumentRule( "weight", RealPos::getClassTypeSpec(), "The weight how often on average this move will be used per iteration.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 1.0 ) ) );
         
         /* Inherit variables from WorkspaceObject, put them last */
         const MemberRules& inheritedRules = WorkspaceObject::getParameterRules();
-        moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        move_member_rules.insert( move_member_rules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return moveMemberRules;
+    return move_member_rules;
 }
 
 

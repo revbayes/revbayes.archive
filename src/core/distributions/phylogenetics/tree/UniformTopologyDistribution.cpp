@@ -177,6 +177,11 @@ void UniformTopologyDistribution::simulateTree( void )
         
     }
     
+    if ( outgroup.size() != outgroup_nodes.size() )
+    {
+        throw RbException("Problem with the outgroup nodes. The names do not match.");
+    }
+    
     // we need a sorted vector of constraints, starting with the smallest
     std::vector<Clade> sorted_clades = constraints;
     
@@ -365,7 +370,7 @@ void UniformTopologyDistribution::simulateTree( void )
     }
     
     // initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
 
     // re-couple tip node names with tip indices
     // this is necessary because otherwise tip names get scrambled across replicates

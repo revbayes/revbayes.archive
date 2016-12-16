@@ -82,10 +82,15 @@
             [self removeFilesFromTemporaryDirectory];
             }
         [self stopProgressIndicator];
+        [self setStatusMessage:@""];
+        [self unlockView];
+        [self updateChildrenTools];
         }
     else
         {
         [self stopProgressIndicator];
+        [self setStatusMessage:@""];
+        [self unlockView];
         NSAlert* alert = [[NSAlert alloc] init];
         [alert setMessageText:@"Error Aligning Sequences"];
         [alert setInformativeText:@"One or more errors occurred while aligning sequences."];
@@ -109,6 +114,37 @@
 
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    /* For this tool to work in a analysis, it should have aligned data. We
+       won't worry about whether or not this tool has parents or children. If it
+       doesn't, then other tools downstream will fail on checkForExecute(). */
+    if ([self numDataMatrices] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Alignment Tool contains no alignments" forKey:obId];
+        return NO;
+        }
+    if ([self numUnaligned] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Alignment Tool contains unaligned data" forKey:obId];
+        return NO;
+        }
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Alignment Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanelWithCancel {
 
     [NSApp stopModal];
@@ -123,9 +159,19 @@
     if ( [self findDataParent] == nil )
         return;
 
+    [self lockView];
     [self startProgressIndicator];
 
-    [NSThread detachNewThreadSelector:@selector(performToolTask)
+    if (alignmentMethod == ALN_CLUSTAL)
+        [self setStatusMessage:@"Aligning sequences using Clustal"];
+    else if (alignmentMethod == ALN_MUSCLE)
+        [self setStatusMessage:@"Aligning sequences using MUSCLE"];
+    else if (alignmentMethod == ALN_PROBCONS)
+        [self setStatusMessage:@"Aligning sequences using Probcons"];
+    else if (alignmentMethod == ALN_TCOFFEE)
+        [self setStatusMessage:@"Aligning sequences using T-Coffee"];
+
+    [NSThread detachNewThreadSelector:@selector(alignSequences)
                        toTarget:self
                      withObject:nil];
 }
@@ -184,14 +230,8 @@
 }
 
 - (BOOL)execute {
-
-    if ( [self numDataMatrices] == 0 )
-        {
-        BOOL isSuccessful = [self helperRunClustal:self];
-        if (isSuccessful == NO)
-            return NO;
-        }
-    return [super execute]; // instantiate data in the core
+    
+    return [super execute];
 }
 
 - (ToolReadData*)findDataParent {
@@ -213,8 +253,6 @@
 }
 
 - (BOOL)helperRunClustal:(id)sender {
-
-    [self setIsResolved:NO];
     
     // find the parent of this tool, which should be an instance of ToolReadData
     ToolReadData* dataTool = [self findDataParent];
@@ -300,8 +338,6 @@
 }
 
 - (BOOL)helperRunMuscle:(id)sender {
-
-    [self setIsResolved:NO];
     
     // find the parent of this tool, which should be an instance of ToolReadData
     ToolReadData* dataTool = [self findDataParent];
@@ -388,8 +424,6 @@
 }
 
 - (BOOL)helperRunProbcons:(id)sender {
-
-    [self setIsResolved:NO];
     
     // find the parent of this tool, which should be an instance of ToolReadData
     ToolReadData* dataTool = [self findDataParent];
@@ -476,8 +510,6 @@
 }
 
 - (BOOL)helperRunTcoffee:(id)sender {
-
-    [self setIsResolved:NO];
     
     // find the parent of this tool, which should be an instance of ToolReadData
     ToolReadData* dataTool = [self findDataParent];
@@ -731,19 +763,13 @@
     OSAtomicIncrement32(&numberErrors);
 }
 
-- (BOOL)performToolTask {
+- (void)prepareForExecution {
 
-    [self alignSequences];
-    return YES;
 }
 
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Sequence Alignment Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -886,7 +912,6 @@
     
     // set up the data inspector
     [self makeDataInspector];
-    [self setIsResolved:YES];
 
     // clean up
     [self removeFilesFromTemporaryDirectory];
@@ -912,7 +937,7 @@
     return @"Alignment";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
     
     // find the parent of this tool, which should be an instance of ToolReadData
     ToolReadData* dataTool = nil;

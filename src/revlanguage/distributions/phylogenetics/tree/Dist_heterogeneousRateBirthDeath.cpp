@@ -62,9 +62,9 @@ RevBayesCore::HeterogeneousRateBirthDeath* Dist_heterogeneousRateBirthDeath::cre
 const std::string& Dist_heterogeneousRateBirthDeath::getClassType(void)
 {
     
-    static std::string revType = "Dist_heterogeneousRateBirthDeath";
+    static std::string rev_type = "Dist_heterogeneousRateBirthDeath";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -72,9 +72,9 @@ const std::string& Dist_heterogeneousRateBirthDeath::getClassType(void)
 const TypeSpec& Dist_heterogeneousRateBirthDeath::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -120,9 +120,9 @@ const MemberRules& Dist_heterogeneousRateBirthDeath::getParameterRules(void) con
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule( "rootAge"   , RealPos::getClassTypeSpec()              , "The age of the root."                        , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
@@ -133,7 +133,7 @@ const MemberRules& Dist_heterogeneousRateBirthDeath::getParameterRules(void) con
         memberRules.push_back( new ArgumentRule( "rho"       , Probability::getClassTypeSpec()          , "The taxon sampling probability."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "taxa"      , ModelVector<Taxon>::getClassTypeSpec()   , "The taxa used for simulation."               , ArgumentRule::BY_VALUE                , ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;

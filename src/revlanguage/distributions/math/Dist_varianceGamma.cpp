@@ -73,9 +73,9 @@ Dist_varianceGamma* Dist_varianceGamma::clone( void ) const
 const std::string& Dist_varianceGamma::getClassType(void)
 {
     
-    static std::string revType = "Dist_varianceGamma";
+    static std::string rev_type = "Dist_varianceGamma";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -87,9 +87,9 @@ const std::string& Dist_varianceGamma::getClassType(void)
 const TypeSpec& Dist_varianceGamma::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -254,9 +254,9 @@ const MemberRules& Dist_varianceGamma::getParameterRules(void) const
 {
     
     static MemberRules distVarianceGammaMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         distVarianceGammaMemberRules.push_back( new ArgumentRule( "mu", Real::getClassTypeSpec()   , "The mean parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         distVarianceGammaMemberRules.push_back( new ArgumentRule( "kappa"  , RealPos::getClassTypeSpec(), "The standard deviation parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
@@ -264,7 +264,7 @@ const MemberRules& Dist_varianceGamma::getParameterRules(void) const
         distVarianceGammaMemberRules.push_back( new ArgumentRule( "time"  , RealPos::getClassTypeSpec(), "The duration of time for the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distVarianceGammaMemberRules;

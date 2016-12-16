@@ -10,7 +10,7 @@
 
     WindowControllerSimulateQuery*  queryWindow;
     WindowControllerSimulate*       controlWindow;
-    GuiTree*                        myTree;
+    GuiTree*                        simTree;
     double                          treeLength;
     double                          alpha;
     double                          rAC;
@@ -26,19 +26,20 @@
     int                             sequenceLength;
 }
 
-@property (nonatomic) double        treeLength;
-@property (nonatomic) double        alpha;
-@property (nonatomic) double        rAC;
-@property (nonatomic) double        rAG;
-@property (nonatomic) double        rAT;
-@property (nonatomic) double        rCG;
-@property (nonatomic) double        rCT;
-@property (nonatomic) double        rGT;
-@property (nonatomic) double        piA;
-@property (nonatomic) double        piC;
-@property (nonatomic) double        piG;
-@property (nonatomic) double        piT;
-@property (nonatomic) int           sequenceLength;
+@property (nonatomic,strong) GuiTree*      simTree;
+@property (nonatomic)        double        treeLength;
+@property (nonatomic)        double        alpha;
+@property (nonatomic)        double        rAC;
+@property (nonatomic)        double        rAG;
+@property (nonatomic)        double        rAT;
+@property (nonatomic)        double        rCG;
+@property (nonatomic)        double        rCT;
+@property (nonatomic)        double        rGT;
+@property (nonatomic)        double        piA;
+@property (nonatomic)        double        piC;
+@property (nonatomic)        double        piG;
+@property (nonatomic)        double        piT;
+@property (nonatomic)        int           sequenceLength;
 
 - (char)charState:(int)x;
 - (void)closeControlPanel;

@@ -1784,7 +1784,7 @@ void NxsCharactersBlock::HandleFormat(
 					datatype = nucleotide;
 				else if (wIt->Equals("PROTEIN"))
 					datatype = protein;
-				else if (wIt->Equals("RESTRICTION"))
+				else if (wIt->Equals("RESTRICTION") || wIt->Equals("BINARY"))
 					{
 					datatype = standard;
 					restrictionDataype = true;
@@ -1836,7 +1836,7 @@ void NxsCharactersBlock::HandleFormat(
 						{
 						NxsString name(pIt->first.c_str());
 						name.ToUpper();
-						if (name == "RESTRICTION")
+						if (name == "RESTRICTION" || name == "BINARY")
 							{
 							dtv.push_back(standard);
 							isR.push_back(true);
@@ -4118,7 +4118,7 @@ void NxsCharactersBlock::HandleStdMatrix(
 		{
 		for (indOfTaxInCommand = 0; indOfTaxInCommand < nTaxWithData ; indOfTaxInCommand++)
 			{
-			unsigned numCharsSinceLastSignalCheck = 0;
+			unsigned num_charsSinceLastSignalCheck = 0;
 			if (checkingSignals && NxsReader::getNumSignalIntsCaught() != numSigInts)
 				{
 				if (datatype == NxsCharactersBlock::continuous)
@@ -4233,7 +4233,7 @@ void NxsCharactersBlock::HandleStdMatrix(
 				{
 				if (checkingSignals)
 					{
-					if (numCharsSinceLastSignalCheck >= MAX_NUM_CHARS_BETWEEN_SIGNAL_CHECKS)
+					if (num_charsSinceLastSignalCheck >= MAX_NUM_CHARS_BETWEEN_SIGNAL_CHECKS)
 						{
 						if (NxsReader::getNumSignalIntsCaught() != numSigInts)
 							{
@@ -4243,10 +4243,10 @@ void NxsCharactersBlock::HandleStdMatrix(
 								discreteMatrix.clear();
 							throw NxsSignalCanceledParseException("Reading Characters Block");
 							}
-						numCharsSinceLastSignalCheck = 0;
+						num_charsSinceLastSignalCheck = 0;
 						}
 					else
-						numCharsSinceLastSignalCheck++;
+						num_charsSinceLastSignalCheck++;
 					}
 
 				NxsDiscreteDatatypeMapper * currMapper =  GetMutableDatatypeMapperForChar(currChar);

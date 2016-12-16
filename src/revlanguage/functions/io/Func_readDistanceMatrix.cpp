@@ -55,13 +55,13 @@ const ArgumentRules& Func_readDistanceMatrix::getArgumentRules( void ) const
 {
 	
 	static ArgumentRules argumentRules = ArgumentRules();
-	static bool rulesSet = false;
+	static bool rules_set = false;
 	
-	if (!rulesSet)
+	if (!rules_set)
 	{
 		
 		argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "Relative or absolute name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-		rulesSet = true;
+		rules_set = true;
 		
 	}
 	
@@ -73,9 +73,9 @@ const ArgumentRules& Func_readDistanceMatrix::getArgumentRules( void ) const
 const std::string& Func_readDistanceMatrix::getClassType(void)
 {
 	
-	static std::string revType = "Func_readDistanceMatrix";
+	static std::string rev_type = "Func_readDistanceMatrix";
 	
-	return revType;
+	return rev_type;
 }
 
 
@@ -83,9 +83,9 @@ const std::string& Func_readDistanceMatrix::getClassType(void)
 const TypeSpec& Func_readDistanceMatrix::getClassTypeSpec(void)
 {
 	
-	static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+	static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
 	
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -105,9 +105,9 @@ std::string Func_readDistanceMatrix::getFunctionName( void ) const
 const TypeSpec& Func_readDistanceMatrix::getTypeSpec( void ) const
 {
 	
-	static TypeSpec typeSpec = getClassTypeSpec();
+	static TypeSpec type_spec = getClassTypeSpec();
 	
-	return typeSpec;
+	return type_spec;
 }
 
 

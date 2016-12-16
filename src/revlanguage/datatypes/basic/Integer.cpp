@@ -14,14 +14,16 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-Integer::Integer(void) : ModelObject<int>() {
+Integer::Integer(void) : ModelObject<int>()
+{
     
     setGuiVariableName("Integer");
     setGuiLatexSymbol("Z");
 }
 
 
-Integer::Integer( RevBayesCore::TypedDagNode<int> *v ) : ModelObject<int>( v ) {
+Integer::Integer( RevBayesCore::TypedDagNode<int> *v ) : ModelObject<int>( v )
+{
     
     setGuiVariableName("Integer");
     setGuiLatexSymbol("Z");
@@ -30,7 +32,8 @@ Integer::Integer( RevBayesCore::TypedDagNode<int> *v ) : ModelObject<int>( v ) {
 
 
 /* Construct from int */
-Integer::Integer(int v) : ModelObject<int>( new int(v) ) {
+Integer::Integer(int v) : ModelObject<int>( new int(v) )
+{
 
     setGuiVariableName("Integer");
     setGuiLatexSymbol("Z");
@@ -38,7 +41,8 @@ Integer::Integer(int v) : ModelObject<int>( new int(v) ) {
 
 
 /* Construct from unsigned int (ambiguous between int and bool otherwise) */
-Integer::Integer(unsigned int v) : ModelObject<int>( new int( int(v) ) ) {
+Integer::Integer(unsigned int v) : ModelObject<int>( new int( int(v) ) )
+{
     
     setGuiVariableName("Integer");
     setGuiLatexSymbol("Z");
@@ -224,9 +228,9 @@ Real* Integer::divide(const Integer &rhs) const
 const std::string& Integer::getClassType(void)
 {
     
-    static std::string revType = "Integer";
+    static std::string rev_type = "Integer";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** 
@@ -235,9 +239,9 @@ const std::string& Integer::getClassType(void)
 const TypeSpec& Integer::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -247,9 +251,9 @@ const TypeSpec& Integer::getClassTypeSpec(void)
 const TypeSpec& Integer::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

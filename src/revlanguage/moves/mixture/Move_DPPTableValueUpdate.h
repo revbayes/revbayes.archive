@@ -109,9 +109,9 @@ template <class valType>
 const std::string& Move_DPPTableValueUpdate<valType>::getClassType(void)
 {
     
-    static std::string revType = "Move_DPPTableValueUpdate";
+    static std::string rev_type = "Move_DPPTableValueUpdate";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -137,9 +137,9 @@ template <class valType>
 const RevLanguage::TypeSpec& Move_DPPTableValueUpdate<valType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -152,9 +152,9 @@ const MemberRules& Move_DPPTableValueUpdate<valType>::getParameterRules(void) co
 {
     
     static MemberRules rules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         rules.push_back( new ArgumentRule( "x"     , ModelVector<valType>::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
@@ -163,7 +163,7 @@ const MemberRules& Move_DPPTableValueUpdate<valType>::getParameterRules(void) co
         const MemberRules& inheritedRules = Move::getParameterRules();
         rules.insert( rules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return rules;
@@ -174,9 +174,9 @@ template <class valType>
 const RevLanguage::TypeSpec& Move_DPPTableValueUpdate<valType>::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

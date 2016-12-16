@@ -71,9 +71,9 @@ RevBayesCore::NodeOrderConstrainedTreeDistribution* Dist_ConstrainedNodeOrder::c
 const std::string& Dist_ConstrainedNodeOrder::getClassType( void )
 {
     
-    static std::string revType = "Dist_ConstrainedNodeOrder";
+    static std::string rev_type = "Dist_ConstrainedNodeOrder";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -85,9 +85,9 @@ const std::string& Dist_ConstrainedNodeOrder::getClassType( void )
 const TypeSpec& Dist_ConstrainedNodeOrder::getClassTypeSpec( void )
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -131,15 +131,15 @@ const MemberRules& Dist_ConstrainedNodeOrder::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule( "treeDistribution", TypedDistribution<TimeTree>::getClassTypeSpec(), "The base distribution for the tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "constraints", RlRelativeNodeAgeConstraints::getClassTypeSpec(), "The node order constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;

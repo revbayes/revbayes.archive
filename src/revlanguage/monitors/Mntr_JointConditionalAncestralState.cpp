@@ -1,4 +1,6 @@
 #include "Mntr_JointConditionalAncestralState.h"
+
+#include "BinaryState.h"
 #include "AbstractCharacterData.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
@@ -22,7 +24,6 @@
 #include "RnaState.h"
 #include "AminoAcidState.h"
 #include "PomoState.h"
-#include "RestrictionState.h"
 
 using namespace RevLanguage;
 
@@ -52,11 +53,11 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
     int                                 g       = static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* t = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn;
-    RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn;
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn = NULL;
+    RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn = NULL;
     
-    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* cdbdp_tdn;
-    RevBayesCore::StochasticNode<RevBayesCore::Tree>* cdbdp_sn;
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* cdbdp_tdn = NULL;
+    RevBayesCore::StochasticNode<RevBayesCore::Tree>* cdbdp_sn = NULL;
     
     if ( static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).isModelObject() )
     {
@@ -124,20 +125,27 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
     else if (character == "Standard")
     {
         RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState> *m;
-        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+        if ( static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).isModelObject() )
+        {
+            m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+        }
+        else
+        {
+            m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState>(cdbdp_sn, (unsigned long)g, fn, sep, wt, wss);
+        }
         m->setAppend( ap );
         value = m;
     }
-    else if (character == "Restriction")
+    else if (character == "Binary" || character == "Restriction")
     {
-        RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::RestrictionState> *m;
-        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::RestrictionState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+        RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::BinaryState> *m;
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::BinaryState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         value = m;
     }
     else
     {
-        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard, Restriction" );
+        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard, Binary/Restriction" );
     }
     
 }
@@ -147,9 +155,9 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
 const std::string& Mntr_JointConditionalAncestralState::getClassType(void)
 {
     
-    static std::string revType = "Mntr_JointConditionalAncestralState";
+    static std::string rev_type = "Mntr_JointConditionalAncestralState";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -157,9 +165,9 @@ const std::string& Mntr_JointConditionalAncestralState::getClassType(void)
 const TypeSpec& Mntr_JointConditionalAncestralState::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -182,9 +190,9 @@ const MemberRules& Mntr_JointConditionalAncestralState::getParameterRules(void) 
 {
     
     static MemberRules asMonitorMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         asMonitorMemberRules.push_back( new ArgumentRule("tree"           , Tree::getClassTypeSpec() , "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         asMonitorMemberRules.push_back( new ArgumentRule("ctmc"           , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
@@ -197,7 +205,7 @@ const MemberRules& Mntr_JointConditionalAncestralState::getParameterRules(void) 
         asMonitorMemberRules.push_back( new ArgumentRule("withTips"       , RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         asMonitorMemberRules.push_back( new ArgumentRule("withStartStates", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return asMonitorMemberRules;
@@ -207,9 +215,9 @@ const MemberRules& Mntr_JointConditionalAncestralState::getParameterRules(void) 
 const TypeSpec& Mntr_JointConditionalAncestralState::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

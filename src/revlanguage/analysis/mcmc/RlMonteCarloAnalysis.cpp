@@ -152,18 +152,18 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
 const std::string& MonteCarloAnalysis::getClassType(void)
 {
     
-    static std::string revType = "MonteCarloAnalysis";
+    static std::string rev_type = "MonteCarloAnalysis";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& MonteCarloAnalysis::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::MonteCarloAnalysis>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::MonteCarloAnalysis>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -172,9 +172,9 @@ const TypeSpec& MonteCarloAnalysis::getClassTypeSpec(void)
 const MemberRules& MonteCarloAnalysis::getParameterRules(void) const {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -189,7 +189,7 @@ const MemberRules& MonteCarloAnalysis::getParameterRules(void) const {
         memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options, "The strategy how the moves are used." ) );
         memberRules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec(), "The number of replicate analyses.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -199,9 +199,9 @@ const MemberRules& MonteCarloAnalysis::getParameterRules(void) const {
 const TypeSpec& MonteCarloAnalysis::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

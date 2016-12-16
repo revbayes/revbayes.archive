@@ -25,8 +25,6 @@
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-
-    NSLog(@"in drawRect of TreePeekView");
     
     [super drawRect:dirtyRect];
 
@@ -131,7 +129,8 @@
                 drawPt.x += heightOfHighestName * 0.5;
 
                 [NSGraphicsContext saveGraphicsState];
-                NSString* taxonName = [p name];
+                NSString* taxonNameInit = [p name];
+                NSString* taxonName = [taxonNameInit stringByReplacingOccurrencesOfString:@"_" withString:@" "];
                 NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:fs], nil]
                                                                   forKeys:[NSArray arrayWithObjects:NSFontAttributeName, nil]];
                 NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:taxonName attributes:attrs];

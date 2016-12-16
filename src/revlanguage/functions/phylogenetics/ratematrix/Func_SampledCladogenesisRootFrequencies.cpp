@@ -88,16 +88,16 @@ const ArgumentRules& Func_SampledCladogenesisRootFrequencies::getArgumentRules( 
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "Q", RateGenerator::getClassTypeSpec(), "The anagenetic event rate matrix", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "cladogeneticProbabilities", MatrixReal::getClassTypeSpec(), "The cladogenetic event probabilities", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::DETERMINISTIC ) );
         argumentRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The time-tree variable containtain the sampled speciation events", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         argumentRules.push_back( new ArgumentRule( "clock", RealPos::getClassTypeSpec(), "The anagenetic clock rate", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -107,18 +107,18 @@ const ArgumentRules& Func_SampledCladogenesisRootFrequencies::getArgumentRules( 
 const std::string& Func_SampledCladogenesisRootFrequencies::getClassType(void)
 {
     
-    static std::string revType = "Func_SampledCladogenesisRootFrequencies";
+    static std::string rev_type = "Func_SampledCladogenesisRootFrequencies";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_SampledCladogenesisRootFrequencies::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -137,7 +137,7 @@ std::string Func_SampledCladogenesisRootFrequencies::getFunctionName( void ) con
 const TypeSpec& Func_SampledCladogenesisRootFrequencies::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

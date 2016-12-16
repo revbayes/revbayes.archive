@@ -104,27 +104,27 @@ RevPtr<RevVariable> MatrixRealSymmetric::executeMethod(std::string const &name, 
 const std::string& MatrixRealSymmetric::getClassType(void)
 {
     
-    static std::string revType = "MatrixRealSymmetric";
+    static std::string rev_type = "MatrixRealSymmetric";
     
-	return revType;
+	return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& MatrixRealSymmetric::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( MatrixReal::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( MatrixReal::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 /** Get type spec */
 const TypeSpec& MatrixRealSymmetric::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

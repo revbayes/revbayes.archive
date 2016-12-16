@@ -161,35 +161,40 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
         /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
         for (size_t j=0; j<nRules; j++) 
         {
-            
-            if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) 
-            {
-                
-                if ( filled[j] )
-                    return false;
+            std::vector<std::string> aliases = theRules[j].getArgumentAliases();
 
-                Argument &arg = const_cast<Argument&>(passedArgs[i]);
-                double penalty = theRules[j].isArgumentValid( arg, once );
-                if ( penalty != -1 )
+            for(size_t k=0; k < aliases.size(); k++)
+            {
+                if ( passedArgs[i].getLabel() == aliases[k] )
                 {
-                    taken[i]          = true;
-                    filled[j]         = true;
                     
-                    if ( matchScore != NULL) 
+                    if ( filled[j] )
+                        return false;
+
+                    Argument &arg = const_cast<Argument&>(passedArgs[i]);
+                    double penalty = theRules[j].isArgumentValid( arg, once );
+                    if ( penalty != -1 )
                     {
-                        double score = computeMatchScore(passedArgs[i].getVariable(), theRules[j]);
-                        score += abs(int(i)-int(j)) / MAX_ARGS;
-                        score += penalty*100.0;
-                        matchScore->push_back(score);
+                        taken[i]          = true;
+                        filled[j]         = true;
+
+                        if ( matchScore != NULL)
+                        {
+                            double score = computeMatchScore(passedArgs[i].getVariable(), theRules[j]);
+                            score += abs(int(i)-int(j)) / MAX_ARGS;
+                            score += penalty*100.0;
+                            matchScore->push_back(score);
+                        }
                     }
+                    else
+                    {
+                        return false;
+                    }
+
+                    // We got an exact match -> we can skip the other labels for checking
+                    j = nRules;
+                    break;
                 }
-                else
-                {
-                    return false;
-                }
-                
-                // We got an exact match -> we can skip the other labels for checking
-                break;
             }
         }
     }
@@ -220,11 +225,15 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
         /* Try all rules */
         for (size_t j=0; j<nRules; j++) 
         {
-            
-            if ( !filled[j] && theRules[j].getArgumentLabel().compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 ) 
+            std::vector<std::string> aliases = theRules[j].getArgumentAliases();
+
+            for(size_t k=0; k < aliases.size(); k++)
             {
-                ++nMatches;
-                matchRule = static_cast<int>( j );
+                if ( !filled[j] && aliases[k].compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 )
+                {
+                    ++nMatches;
+                    matchRule = static_cast<int>( j );
+                }
             }
         }
         
@@ -397,18 +406,18 @@ std::vector<Argument>& Function::getArguments(void)
 const std::string& Function::getClassType(void)
 {
     
-    static std::string revType = "Function";
+    static std::string rev_type = "Function";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Function::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -713,23 +722,29 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         }
         
         /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
-        for (size_t j=0; j<nRules; j++) {
+        for (size_t j=0; j<nRules; j++)
+        {
+            std::vector<std::string> aliases = theRules[j].getArgumentAliases();
 
-            if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() )
+            for(size_t k=0; k < aliases.size(); k++)
             {
-
-                if ( filled[j] )
+                if ( passedArgs[i].getLabel() == aliases[k] )
                 {
-                    throw RbException( "Duplicate argument labels '" + passedArgs[i].getLabel() );
+
+                    if ( filled[j] )
+                    {
+                        throw RbException( "Duplicate argument labels '" + passedArgs[i].getLabel() );
+                    }
+
+                    pArgs[i]            = theRules[j].fitArgument( pArgs[i], once );
+                    taken[i]            = true;
+                    filled[j]           = true;
+                    passedArgIndex[j]   = static_cast<int>( i );
+
+                    // We got an exact match -> we can skip the other labels for checking
+                    j = nRules;
+                    break;
                 }
-                
-                pArgs[i]            = theRules[j].fitArgument( pArgs[i], once );
-                taken[i]            = true;
-                filled[j]           = true;
-                passedArgIndex[j]   = static_cast<int>( i );
-                
-                // We got an exact match -> we can skip the other labels for checking
-                break;
             }
         }
     }
@@ -756,15 +771,21 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         /* Initialize match index and number of matches */
         int nMatches = 0;
         int matchRule = -1;
+        std::string label;
 
         /* Try all rules */
         for (size_t j=0; j<nRules; j++) 
         {
+            std::vector<std::string> aliases = theRules[j].getArgumentAliases();
 
-            if ( !filled[j] && theRules[j].getArgumentLabel().compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 ) 
+            for(size_t k=0; k < aliases.size(); k++)
             {
-                ++nMatches;
-                matchRule = static_cast<int>( j );
+                if ( !filled[j] && aliases[k].compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 )
+                {
+                    ++nMatches;
+                    matchRule = static_cast<int>( j );
+                    label = aliases[k];
+                }
             }
         }
 
@@ -779,6 +800,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         
         if ( nMatches == 1)
         {
+            pArgs[i].setLabel(label);
             pArgs[i]                    = theRules[matchRule].fitArgument( pArgs[i], once );
             taken[i]                    = true;
             filled[matchRule]           = true;
@@ -812,6 +834,11 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
                 double penalty = theRules[j].isArgumentValid( arg, once );
                 if ( penalty != -1 )
                 {
+                    if(theRules[j].getArgumentAliases().size() > 1)
+                    {
+                        throw RbException("Could not determine argument label for parameter '" + theRules[j].getArgumentLabel() + "'.");
+                    }
+                    pArgs[i].setLabel( theRules[j].getArgumentLabel() );
                     pArgs[i]          = theRules[j].fitArgument( pArgs[i], once );
                     taken[i]          = true;
                     if ( !theRules[j].isEllipsis() ) 

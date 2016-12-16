@@ -82,9 +82,9 @@ RevBayesCore::ConstantPopulationCoalescent* Dist_Coalescent::createDistribution(
 const std::string& Dist_Coalescent::getClassType( void )
 {
     
-    static std::string revType = "Dist_Coalescent";
+    static std::string rev_type = "Dist_Coalescent";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -96,9 +96,9 @@ const std::string& Dist_Coalescent::getClassType( void )
 const TypeSpec& Dist_Coalescent::getClassTypeSpec( void )
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -131,23 +131,23 @@ std::string Dist_Coalescent::getDistributionFunctionName( void ) const
 const MemberRules& Dist_Coalescent::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static MemberRules dist_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
-        distMemberRules.push_back( new ArgumentRule( "theta"      , RealPos::getClassTypeSpec(), "The constant population size.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The taxon names used when drawing a random tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , "The topological constraints strictly enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "theta"      , RealPos::getClassTypeSpec(), "The constant population size.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The taxon names used when drawing a random tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , "The topological constraints strictly enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
-        distMemberRules.insert(distMemberRules.end(), parentRules.begin(), parentRules.end());
+        dist_member_rules.insert(dist_member_rules.end(), parentRules.begin(), parentRules.end());
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 

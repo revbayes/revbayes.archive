@@ -51,12 +51,12 @@ const ArgumentRules& Func_license::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -67,9 +67,9 @@ const ArgumentRules& Func_license::getArgumentRules( void ) const
 const std::string& Func_license::getClassType(void)
 {
     
-    static std::string revType = "Func_license";
+    static std::string rev_type = "Func_license";
     
-	return revType;
+	return rev_type;
 }
 
 
@@ -77,9 +77,9 @@ const std::string& Func_license::getClassType(void)
 const TypeSpec& Func_license::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -192,9 +192,9 @@ std::string Func_license::getHelpTitle(void) const
 const TypeSpec& Func_license::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

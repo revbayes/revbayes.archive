@@ -29,8 +29,8 @@ branch_histories( NULL, 1, 1, true ),
 taxa( n ),
 activeLikelihood( std::vector<size_t>(2*n.size()-1, 0) ),
 storedLikelihood( std::vector<std::vector<double> >(2*n.size()-1, std::vector<double>(2, 0.0))),
-changedNodes( std::vector<bool>(2*n.size()-1, false) ),
-dirtyNodes( std::vector<bool>(2*n.size()-1, true) ),
+changed_nodes( std::vector<bool>(2*n.size()-1, false) ),
+dirty_nodes( std::vector<bool>(2*n.size()-1, true) ),
 scalingFactors( std::vector<std::vector<double> >(2*n.size()-1, std::vector<double>(2,0.0) ) ),
 totalScaling( 0.0 )
 {
@@ -239,17 +239,17 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
     {
         // this is an internal node
         const TopologyNode &left = node.getChild(0);
-        size_t leftIndex = left.getIndex();
-        computeNodeProbability( left, leftIndex );
+        size_t left_index = left.getIndex();
+        computeNodeProbability( left, left_index );
         const TopologyNode &right = node.getChild(1);
-        size_t rightIndex = right.getIndex();
-        computeNodeProbability( right, rightIndex );
+        size_t right_index = right.getIndex();
+        computeNodeProbability( right, right_index );
     }
     
     // check for recomputation
     bool bypassDirtyFlag = !false;
     
-    if ( dirtyNodes[node_index] || bypassDirtyFlag )
+    if ( dirty_nodes[node_index] || bypassDirtyFlag )
     {
         
         double lnProb = 0.0;
@@ -267,13 +267,14 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         double branch_length = 0.0;
         double prev_age = 0.0;
         if (node.isRoot()) {
-            prev_age = 2 * node.getAge();
             branch_length = node.getAge();
+            prev_age = 2 * node.getAge();
         }
         else {
             branch_length = node.getBranchLength();
             prev_age = node.getParent().getAge();
         }
+        
         
         double end_age       = node.getAge();
         double sample_age    = 0.0; // NB: assumes the process ends at the present, T==0
@@ -288,14 +289,23 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
             double curr_age = prev_age - time_interval;
 
             
-            // compute the probability that the next event was a birth event
-            double v = log(birth) - (birth + death) * time_interval;
-            lnProb += v ; // log(birth) - (birth + death) * time_interval;
-//            std::cout << "\t\t\tlnProb\t" << lnProb << "\n";
    
             // compute probability one lineage goes extinct by the present
-            double p = computeLineageUnsampledByPresentProbability(-curr_age, sample_age);
-            lnProb += log(p);
+            if (!node.isRoot()) {
+                
+                // compute the probability that the next event was a birth event
+                //            std::cout << "\t\t\tlnProb\t" << lnProb << "\n";
+                double v = log(birth) - (birth + death) * time_interval;
+                lnProb += v ; // log(birth) - (birth + death) * time_interval;
+
+                double p = computeLineageUnsampledByPresentProbability(-curr_age, sample_age);
+                lnProb += log(p);
+            }
+            else
+            {
+                double v = log(birth) - (birth + death) * time_interval;
+                lnProb += v ; // log(birth) - (birth + death) * time_interval;
+            }
             
             // for survive,extinct and extinct,survive
             lnProb += 1.00 * log(2);
@@ -328,7 +338,7 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         storedLikelihood[node_index][ activeLikelihood[node_index] ] = lnProb;
 
         // mark as computed
-        dirtyNodes[node_index] = false;
+        dirty_nodes[node_index] = false;
     }
 }
 
@@ -338,14 +348,17 @@ double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
     const TopologyNode &root = value->getRoot();
     
     // fill the likelihoods
-//    const TopologyNode &left = root.getChild(0);
-//    size_t leftIndex = left.getIndex();
-//    computeNodeProbability( left, leftIndex );
-//    const TopologyNode &right = root.getChild(1);
-//    size_t rightIndex = right.getIndex();
-//    computeNodeProbability( right, rightIndex );
-    
-    computeNodeProbability(root, root.getIndex() );
+    if (!true) {
+        computeNodeProbability(root, root.getIndex() );
+    }
+    else {
+        const TopologyNode &left = root.getChild(0);
+        size_t left_index = left.getIndex();
+        computeNodeProbability( left, left_index );
+        const TopologyNode &right = root.getChild(1);
+        size_t right_index = right.getIndex();
+        computeNodeProbability( right, right_index );
+    }
     
     // sum lnProbs across all nodes
     double lnProb = 0.0;
@@ -569,7 +582,7 @@ void SampledSpeciationBirthDeathProcess::simulateTree( void )
         
         // Create the root node and a vector of nodes
         TopologyNode* root = new TopologyNode();
-        psi->setRoot(root);
+        psi->setRoot(root, true);
         root->setAge(rootAge);
         std::set<TopologyNode* > nodes;
         std::vector<double> unsampledLineageAges;
@@ -577,7 +590,7 @@ void SampledSpeciationBirthDeathProcess::simulateTree( void )
         
         // Simulate a tree
         simulateEvent(root, nodes, unsampledLineageAges, 0.0, rootAge);
-        psi->setRoot(root);
+        psi->setRoot(root, true);
         
 //        std::cout << psi->getNumberOfTips() << "\n";
         // redo if the wrong number of taxa were sampled
@@ -774,14 +787,14 @@ void SampledSpeciationBirthDeathProcess::simulateUnsampledLineages(Tree* t, std:
         
         // sample a random lineage
         size_t u = (size_t)(GLOBAL_RNG->uniform01() * nodes.size());
-        size_t nodeIndex = nodes[u]->getIndex();
+        size_t node_index = nodes[u]->getIndex();
         double time = nodes[u]->getAge() + nodes[u]->getBranchLength() - ages[i];
 //        std::cout << nodes[u]->getIndex() << " " <<  nodes[u]->getBranchLength() << " " << nodes[u]->getAge() << " " << time << "\n";
 //        std::cout << nodes[u]->getParent().getIndex() << " " << nodes[u]->getParent().getAge() <<  " -> " << nodes[u]->getIndex() << " " << nodes[u]->getAge() <<"\n";
 //        std::cout << "\n";
         
         CharacterEvent* evt = new CharacterEvent(0, 0, time);
-        branch_histories.addEvent(evt, nodeIndex);
+        branch_histories.addEvent(evt, node_index);
     }
     
     

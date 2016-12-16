@@ -22,21 +22,7 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateGenerator_Epoch::RateGenerator_Epoch(size_t n, size_t ne) : RateGenerator( n ), numEpochs( ne ), needs_update(true)
 {
-    
     update();
-}
-
-RateGenerator_Epoch::RateGenerator_Epoch(const RateGenerator_Epoch& m) : RateGenerator( m ),
-    epochRateGenerators( m.epochRateGenerators )
-{
-    
-    numEpochs = m.numEpochs;
-    needs_update = m.needs_update;
-    
-//    epochRateGenerators = m.epochRateGenerators;
-    epochTimes = m.epochTimes;
-    epochRates = m.epochRates;
-    
 }
 
 /** Destructor */
@@ -44,25 +30,6 @@ RateGenerator_Epoch::~RateGenerator_Epoch(void)
 {
 
 }
-
-
-RateGenerator_Epoch& RateGenerator_Epoch::operator=(const RateGenerator_Epoch &r)
-{
-    
-    if (this != &r)
-    {
-        RateGenerator::operator=( r );
-        numEpochs           = r.numEpochs;
-        needs_update         = r.needs_update;
-        epochRateGenerators = r.epochRateGenerators;
-        epochTimes          = r.epochTimes;
-        epochRates          = r.epochRates;
-        
-    }
-    
-    return *this;
-}
-
 
 RateGenerator_Epoch& RateGenerator_Epoch::assign(const Assignable &m)
 {
@@ -83,7 +50,7 @@ RateGenerator_Epoch& RateGenerator_Epoch::assign(const Assignable &m)
 void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     // what amount of tole
-    double precisionError = 1E-9;
+    double precisionError = 1E-6;
     double diffAge = startAge - endAge;
     
     if (diffAge + precisionError < 0)
@@ -123,8 +90,49 @@ void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, doub
             
             rg.calculateTransitionProbabilities( currAge, nextAge, r * rate, P );
             
+            double eps = 1e-4;
+
+            for (size_t i = 0; i < P.getNumberOfStates(); i++)
+            {
+                for (size_t j = 0; j < P.getNumberOfStates(); j++)
+                {
+                    if (P[i][j] > 1.0 + eps)
+                    {
+                        ;
+//                        std::cout << "error!\n";
+//                        std::cout << i << " " << j << " " << P[i][j] << "\n";
+//                        
+//                        std::cout << P << "\n";
+//                        
+//                        
+//                        // A = make_matrix_from_pointer(initialValues);
+//                        boost::numeric::ublas::matrix<double> input;
+//                        typedef boost::numeric::ublas::permutation_matrix<std::size_t> pmatrix;
+//                        boost::numeric::ublas::matrix<double> A(input);
+//                        
+//                        // create a permutation matrix for the LU-factorization
+//                        pmatrix pm(A.size1());
+//                        
+//                        // perform LU-factorization
+//                        int res = (unsigned)boost::numeric::ublas::lu_factorize(A, pm);
+//                        if (res != 0)
+//                            std::cout << "Error!\n";
+//                        
+//                        
+//                        
+//                        rg.calculateTransitionProbabilities( currAge, nextAge, r * rate, P );
+//
+//                        std::cout << "\n";
+                    }
+                }
+            }
+            
             // epochs construct DTMC
             tp *= P;
+            
+//            std::cout << P << "\n\n";
+//            std::cout << tp << "\n";
+//            std::cout << "-------\n";
             
             // advance increment
             currAge = nextAge;
@@ -137,7 +145,7 @@ void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, doub
     }
     
     P = TransitionProbabilityMatrix(tp);
-    
+//    std::cout << P << "\n";
 }
 
 
@@ -210,6 +218,10 @@ void RateGenerator_Epoch::update( void ) {
     
     if ( needs_update )
     {
+//        for (size_t i = 0; i < epochRateGenerators.size(); i++)
+//        {
+//            epochRateGenerators[i].update();
+//        }
 //        // compute the off-diagonal values
 //        computeOffDiagonal();
 //        
@@ -221,7 +233,7 @@ void RateGenerator_Epoch::update( void ) {
 //        
 //        // now update the eigensystem
 //        updateEigenSystem();
-//        
+//
         // clean flags
         needs_update = false;
     }

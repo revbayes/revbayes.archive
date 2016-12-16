@@ -57,18 +57,18 @@ void MaxTimeStoppingRule::constructInternalObject( void )
 const std::string& MaxTimeStoppingRule::getClassType(void)
 {
     
-    static std::string revType = "MaxTimeStoppingRule";
+    static std::string rev_type = "MaxTimeStoppingRule";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& MaxTimeStoppingRule::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( StoppingRule::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( StoppingRule::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -91,9 +91,9 @@ const MemberRules& MaxTimeStoppingRule::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule("maxTime" , RealPos::getClassTypeSpec(), "The maximum time to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -104,7 +104,7 @@ const MemberRules& MaxTimeStoppingRule::getParameterRules(void) const
         optionsUnits.push_back( "hours" );
         memberRules.push_back( new OptionRule( "unit", new RlString("seconds"), optionsUnits, "The unit in which we measure the maximum time." ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -114,9 +114,9 @@ const MemberRules& MaxTimeStoppingRule::getParameterRules(void) const
 const TypeSpec& MaxTimeStoppingRule::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

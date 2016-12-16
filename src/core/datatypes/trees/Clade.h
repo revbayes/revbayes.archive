@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include "RbBitSet.h"
+#include "RbException.h"
 #include "Taxon.h"
 
 namespace RevBayesCore {
@@ -22,9 +24,9 @@ namespace RevBayesCore {
     class Clade  {
         
     public:
-                                                    Clade(void);                                                //! Default constructor: empty clade of age 0.0
-                                                    Clade(const Taxon &t);                                      //!< Default constructor with optional index
-                                                    Clade(const std::vector<Taxon> &n);                         //!< Default constructor with optional index
+                                                    Clade(void);                                                            //! Default constructor: empty clade of age 0.0
+                                                    Clade(const Taxon &t, const RbBitSet &b = RbBitSet() );                 //!< Default constructor with optional index
+                                                    Clade(const std::vector<Taxon> &n, const RbBitSet &b = RbBitSet() );    //!< Default constructor with optional index
         
         virtual                                    ~Clade() {}
         
@@ -47,12 +49,17 @@ namespace RevBayesCore {
         // public methods
         void                                        addTaxon(const Taxon &t);                                   //!< Add a taxon to our list.
         double                                      getAge(void) const;                                         //!< Get the age of this clade.
+        const RbBitSet&                             getBitRepresentation(void) const;                           //!< Get the clade as a bit representation.
+        void                                        setBitRepresentation(RbBitSet);
+        const std::vector<Taxon>&                   getMrca(void) const;                                        //!< Get the mrca taxon.
         int                                         getNumberMissingTaxa(void) const;                           //!< Get the number of missing taxa.
+        size_t                                      getNumberOfTaxa(void) const;                                //!< Get the number of taxa.
         std::vector<Taxon>&                         getTaxa(void);                                              //!< Get the taxon names.
         const std::vector<Taxon>&                   getTaxa(void) const;                                        //!< Get the taxon names.
         const Taxon&                                getTaxon(size_t i) const;                                   //!< Get a single taxon name.
         const std::string&                          getTaxonName(size_t i) const;                               //!< Get a single taxon name.
         void                                        setAge(double a);                                           //!< Set the age of the clade.
+        void                                        setMrca(const std::vector<Taxon>&);                         //!< Set the mrca taxon, if applicable.
         void                                        setNumberMissingTaxa(int n);                                //!< Set the number of missing taxa in this clade.
         void                                        setTaxonAge(size_t i, double age);                          //!< Set a single taxon's age.
         size_t                                      size(void) const;                                           //!< Get the number of taxa.
@@ -64,14 +71,16 @@ namespace RevBayesCore {
         
         // members
         double                                      age;
+        RbBitSet                                    bitset;
         int                                         num_missing;
+        std::vector<Taxon>                          mrca;
         std::vector<Taxon>                          taxa;
+        
     };
     
     // Global functions using the class
     std::ostream&                       operator<<(std::ostream& o, const Clade& x);                                         //!< Overloaded output operator
 
-    
 }
 
 #endif

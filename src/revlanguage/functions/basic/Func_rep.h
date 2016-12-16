@@ -107,14 +107,14 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_rep<valType>::getArgumentRul
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), "The value that we replicate.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec(), "How often we replicate the value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -126,9 +126,9 @@ template <typename valType>
 const std::string& RevLanguage::Func_rep<valType>::getClassType(void)
 {
     
-    static std::string revType = "Func_rep<" + valType::getClassType() + ">";
+    static std::string rev_type = "Func_rep<" + valType::getClassType() + ">";
     
-	return revType;
+	return rev_type;
 }
 
 
@@ -137,9 +137,9 @@ template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_rep<valType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -262,9 +262,9 @@ template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_rep<valType>::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

@@ -108,9 +108,9 @@ template <typename valType>
 const std::string& RevLanguage::Dist_mixture<valType>::getClassType(void)
 {
     
-    static std::string revType = "Dist_mixture";
+    static std::string rev_type = "Dist_mixture";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
@@ -118,9 +118,9 @@ template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< valType >::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< valType >::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -146,18 +146,18 @@ template <typename valType>
 const RevLanguage::MemberRules& RevLanguage::Dist_mixture<valType>::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static MemberRules dist_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
-        distMemberRules.push_back( new ArgumentRule( "values"       , ModelVector<valType>::getClassTypeSpec(), "The potential values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "probabilities", Simplex::getClassTypeSpec()             , "The probabilitoes for each value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "values"       , ModelVector<valType>::getClassTypeSpec(), "The potential values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "probabilities", Simplex::getClassTypeSpec()             , "The probabilitoes for each value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 

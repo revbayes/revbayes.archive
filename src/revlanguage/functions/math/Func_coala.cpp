@@ -51,15 +51,15 @@ const ArgumentRules& Func_coala::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "coordinates",   ModelVector<Real>::getClassTypeSpec(),    "A vector of coordinates.",  ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "corAnalysis",   MatrixReal::getClassTypeSpec(),           "A correspondence analysis object.",  ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "weights",       ModelVector<RealPos>::getClassTypeSpec(), "A vector of weight for the coordinates.",  ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -69,18 +69,18 @@ const ArgumentRules& Func_coala::getArgumentRules( void ) const
 /** Get Rev type of object (static) */
 const std::string& Func_coala::getClassType( void )
 {
-    static std::string revType = "Func_coala";
+    static std::string rev_type = "Func_coala";
     
-    return revType;
+    return rev_type;
 }
 
 
 /** Get Rev type spec of object (static) */
 const TypeSpec& Func_coala::getClassTypeSpec( void )
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 

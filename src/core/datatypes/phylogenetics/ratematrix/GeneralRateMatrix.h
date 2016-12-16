@@ -33,6 +33,7 @@ namespace RevBayesCore {
         // public methods
         
         // pure virtual methods you have to overwrite
+        virtual GeneralRateMatrix&          assign(const Assignable &m);
         virtual double                      averageRate(void) const;                                                                    //!< Calculate the average rate
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrix
         virtual GeneralRateMatrix*          clone(void) const = 0;
@@ -42,9 +43,9 @@ namespace RevBayesCore {
         void                                setTransitionRates(const std::vector<double> &tr);
 //        void                                setStationaryFrequencies(const std::vector<double>& f);                                     //!< Directly set the stationary frequencies
         virtual void                        update(void);                                                                               //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
-        
+
     protected:
-                
+
         // members
 //        std::vector<double>                 stationary_freqs;
         std::vector<double>                 transition_rates;

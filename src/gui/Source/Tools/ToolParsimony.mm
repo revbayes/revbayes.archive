@@ -6,9 +6,11 @@
 #import "Outlet.h"
 #import "RbData.h"
 #import "RbDataCell.h"
+#import "RbGuiHelper.h"
 #import "RbTaxonData.h"
 #import "RevBayes.h"
 #import "ToolData.h"
+#import "ToolLoop.h"
 #import "ToolParsimony.h"
 #import "ToolTreeSet.h"
 #import "GuiTree.h"
@@ -51,6 +53,70 @@
 @synthesize bbAddSeq;
 @synthesize exKeep;
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // find the parent tool
+    NSMutableArray* parents = [self getParentTools];
+    if ([parents count] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Parsimony Tool does not have a parent" forKey:obId];
+        return NO;
+        }
+    else if ([parents count] > 1)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Parsimony Tool has too many parents" forKey:obId];
+        return NO;
+        }
+    if ( [[parents objectAtIndex:0] isKindOfClass:[ToolData class]] == NO )
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Parsimony Tool does not have a data tool as a parent" forKey:obId];
+        return NO;
+        }
+    ToolData* dataTool = (ToolData*)[parents objectAtIndex:0];
+    
+    // check the data matrices in the parent tool
+    if ( [dataTool numAligned] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Parsimony Tool does not have any data" forKey:obId];
+        return NO;
+        }
+    if ( [dataTool numUnaligned] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Parsimony Tool does has too many data matrices" forKey:obId];
+        return NO;
+        }
+    if ( [dataTool numUnaligned] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Parsimony Tool contains unaligned data" forKey:obId];
+        return NO;
+        }
+    if ( [[dataTool dataMatrixIndexed:0] numTaxa] - [[dataTool dataMatrixIndexed:0] numExcludedTaxa] > 11 && searchMethod == EXHAUSTIVE )
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Too many taxa for an exhaustive search for the Parsimony Tool" forKey:obId];
+        return NO;
+        }
+    if ( [[dataTool dataMatrixIndexed:0] numTaxa] - [[dataTool dataMatrixIndexed:0] numExcludedTaxa] < 4 )
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Too few taxa for the Parsimony Tool" forKey:obId];
+        return NO;
+        }
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanelWithCancel {
 
     [NSApp stopModal];
@@ -64,23 +130,56 @@
 
     if ( [self hasParents] == NO )
         return;
-
+#   if 0
     [self startProgressIndicator];
+    [self setStatusMessage:@"Performing parsimony analysis"];
 
     [NSThread detachNewThreadSelector:@selector(performToolTask)
                        toTarget:self
                      withObject:nil];
+#   endif
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
+
+    [aCoder encodeObject:treeSetContainers forKey:@"treeSetContainers"];
+    [aCoder encodeInt:treeLength           forKey:@"treeLength"];
+    [aCoder encodeInt:searchMethod         forKey:@"searchMethod"];
+    [aCoder encodeObject:hsSwap            forKey:@"hsSwap"];
+    [aCoder encodeObject:hsKeep            forKey:@"hsKeep"];
+    [aCoder encodeObject:hsMulTrees        forKey:@"hsMulTrees"];
+    [aCoder encodeObject:hsRearrLimit      forKey:@"hsRearrLimit"];
+    [aCoder encodeObject:hsReconLimit      forKey:@"hsReconLimit"];
+    [aCoder encodeObject:hsNBest           forKey:@"hsNBest"];
+    [aCoder encodeObject:hsRetain          forKey:@"hsRetain"];
+    [aCoder encodeObject:hsAllSwap         forKey:@"hsAllSwap"];
+    [aCoder encodeObject:hsUseNonMin       forKey:@"hsUseNonMin"];
+    [aCoder encodeObject:hsSteepest        forKey:@"hsSteepest"];
+    [aCoder encodeInt:hsNChuck             forKey:@"hsNChuck"];
+    [aCoder encodeObject:hsChuckScore      forKey:@"hsChuckScore"];
+    [aCoder encodeObject:hsAbortRep        forKey:@"hsAbortRep"];
+    [aCoder encodeObject:hsRandomize       forKey:@"hsRandomize"];
+    [aCoder encodeObject:hsAddSeq          forKey:@"hsAddSeq"];
+    [aCoder encodeInt:hsNReps              forKey:@"hsNReps"];
+    [aCoder encodeObject:hsHold            forKey:@"hsHold"];
+    [aCoder encodeObject:bbKeep            forKey:@"bbKeep"];
+    [aCoder encodeObject:bbMulTrees        forKey:@"bbMulTrees"];
+    [aCoder encodeDouble:bbUpBound         forKey:@"bbUpBound"];
+    [aCoder encodeObject:bbAddSeq          forKey:@"bbAddSeq"];
+    [aCoder encodeObject:exKeep            forKey:@"exKeep"];
     
 	[super encodeWithCoder:aCoder];
 }
 
 - (BOOL)execute {
 
-    BOOL isSuccessful = [self paupSearch];
-    return isSuccessful;
+    [self startProgressIndicator];
+    [self setStatusMessage:@"Performing parsimony analysis"];
+    BOOL errors = [self performToolTask];
+    [self setStatusMessage:@""];
+    [self stopProgressIndicator];
+
+    return [super execute];
 }
 
 - (id)init {
@@ -94,6 +193,7 @@
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
         // initialize values
+        treeLength = -1;
         [self setSearchMethod:HEURISTIC];
         [self setHsSwap:@"TBR"];
         [self setHsKeep:@"No"];
@@ -121,7 +221,7 @@
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
-        bestTrees = [[NSMutableArray alloc] init];
+        treeSetContainers = [[NSMutableArray alloc] init];
 		
 		// initialize the inlet/outlet information
 		[self addInletOfColor:[NSColor greenColor]];
@@ -142,7 +242,33 @@
         // initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
-        bestTrees = [[NSMutableArray alloc] init];
+        
+        treeSetContainers = [aDecoder decodeObjectForKey:@"treeSetContainers"];
+        treeLength        = [aDecoder decodeIntForKey:@"treeLength"];
+        searchMethod      = [aDecoder decodeIntForKey:@"searchMethod"];
+        hsSwap            = [aDecoder decodeObjectForKey:@"hsSwap"];
+        hsKeep            = [aDecoder decodeObjectForKey:@"hsKeep"];
+        hsMulTrees        = [aDecoder decodeObjectForKey:@"hsMulTrees"];
+        hsRearrLimit      = [aDecoder decodeObjectForKey:@"hsRearrLimit"];
+        hsReconLimit      = [aDecoder decodeObjectForKey:@"hsReconLimit"];
+        hsNBest           = [aDecoder decodeObjectForKey:@"hsNBest"];
+        hsRetain          = [aDecoder decodeObjectForKey:@"hsRetain"];
+        hsAllSwap         = [aDecoder decodeObjectForKey:@"hsAllSwap"];
+        hsUseNonMin       = [aDecoder decodeObjectForKey:@"hsUseNonMin"];
+        hsSteepest        = [aDecoder decodeObjectForKey:@"hsSteepest"];
+        hsNChuck          = [aDecoder decodeIntForKey:@"hsNChuck"];
+        hsChuckScore      = [aDecoder decodeObjectForKey:@"hsChuckScore"];
+        hsAbortRep        = [aDecoder decodeObjectForKey:@"hsAbortRep"];
+        hsRandomize       = [aDecoder decodeObjectForKey:@"hsRandomize"];
+        hsAddSeq          = [aDecoder decodeObjectForKey:@"hsAddSeq"];
+        hsNChuck          = [aDecoder decodeIntForKey:@"hsNChuck"];
+        hsNReps           = [aDecoder decodeIntForKey:@"hsNReps"];
+        hsHold            = [aDecoder decodeObjectForKey:@"hsHold"];
+        bbKeep            = [aDecoder decodeObjectForKey:@"bbKeep"];
+        bbMulTrees        = [aDecoder decodeObjectForKey:@"bbMulTrees"];
+        bbUpBound         = [aDecoder decodeDoubleForKey:@"bbUpBound"];
+        bbAddSeq          = [aDecoder decodeObjectForKey:@"bbAddSeq"];
+        exKeep            = [aDecoder decodeObjectForKey:@"exKeep"];
             
         // initialize the control window
 		controlWindow = [[WindowControllerParsimony alloc] initWithTool:self];
@@ -171,16 +297,57 @@
     if (numberErrors == 0)
         {
         // read trees
-        [self readTreesInFile:paupDirectory];
+        RbGuiHelper* helper = [[RbGuiHelper alloc] init];
+        NSMutableArray* myTrees = [helper readTreesFromFile:paupDirectory];
+        float treeWeight = 1.0;
+        if ([myTrees count] > 1)
+            treeWeight = (float)1.0 / [myTrees count];
+        for (unsigned i=0; i<[myTrees count]; i++)
+            {
+            // TO DO: We should pass a copy of the tree to the Tree set in case there are multiple treesets downstream of this tool
+            for (size_t ts=0; ts<[treeSetContainers count]; ts++)
+                {
+                ToolTreeSet* treeSet = [treeSetContainers objectAtIndex:ts];
+                GuiTree* t = [myTrees objectAtIndex:i];
+                [t setWeight:treeWeight];
+                if (treeLength != -1)
+                    {
+                    if ( [loopMembership count] > 0)
+                        {
+                        NSString* infoStr = @"Parsimony length (";
+                        for (ToolLoop* loop in loopMembership)
+                            {
+                            if ([loop isExecuting] == YES)
+                                infoStr = [infoStr stringByAppendingFormat:@"%c:%d, ", [loop indexLetter], [loop currentIndex]];
+                            }
+                        infoStr = [infoStr stringByAppendingFormat:@"%d/%d) = %d", i+1, (int)[myTrees count], treeLength];
+                        [t setInfo:infoStr];
+                        }
+                    else
+                        {
+                        NSString* infoStr = [NSString stringWithFormat:@"Parsimony length (%d/%d) = %d", i+1, (int)[myTrees count], treeLength];
+                        [t setInfo:infoStr];
+                        }
+                    }
+                [self sendTree:t toTreeSet:treeSet];
+                }
+            if (i == 0)
+                {
+                for (size_t ts=0; ts<[treeSetContainers count]; ts++)
+                    {
+                    ToolTreeSet* treeSet = [treeSetContainers objectAtIndex:ts];
+                    [treeSet setOutgroupName:[(GuiTree*)[myTrees objectAtIndex:i] outgroupName]];
+                    }
+                }
+            }
+
         [self removeFilesFromTemporaryDirectory];
-        [self stopProgressIndicator];
         }
     else
         {
-        [self stopProgressIndicator];
         NSAlert* alert = [[NSAlert alloc] init];
-        [alert setMessageText:@"Error Aligning Sequences"];
-        [alert setInformativeText:@"One or more errors occurred while aligning sequences."];
+        [alert setMessageText:@"Error in Parsimony Analysis"];
+        [alert setInformativeText:@"One or more errors occurred during parsimony search."];
         [alert runModal];
         }
 }
@@ -228,8 +395,8 @@
         return NO;
         }
         
-    // check to see if a tree container is downstream of this tool. If so, then purge it of trees
-    treeContainer = nil;
+    // check to see if a tree container is downstream of this tool
+    [treeSetContainers removeAllObjects];
     for (size_t i=0; i<[outlets count]; i++)
         {
         Outlet* theOutlet = [outlets objectAtIndex:i];
@@ -239,9 +406,7 @@
             Tool* t = [[c inlet] toolOwner];
             if ( [t isKindOfClass:[ToolTreeSet class]] == YES )
                 {
-                treeContainer = (ToolTreeSet*)t;
-                if ( [(ToolTreeSet*)t numberOfTreesInSet] > 0 )
-                    [(ToolTreeSet*)t removeAllTreesFromSet];
+                [treeSetContainers addObject:t];
                 }
             }
         }
@@ -253,8 +418,10 @@
     NSString* temporaryDirectory = NSTemporaryDirectory();
 
     // write the data to the temporary directory
+    NSString* modifiedFileName = [NSString stringWithString:[d name]];
+    modifiedFileName = [modifiedFileName stringByReplacingOccurrencesOfString:@" " withString:@"_"];
     NSString* dFilePath = [NSString stringWithString:temporaryDirectory];
-              dFilePath = [dFilePath stringByAppendingString:[d name]];
+              dFilePath = [dFilePath stringByAppendingString:modifiedFileName];
               dFilePath = [dFilePath stringByAppendingString:@".nex"];
     [d writeToFile:dFilePath];
     
@@ -268,7 +435,24 @@
     cmds = [cmds stringByAppendingString:@"begin paup;\n"];
     cmds = [cmds stringByAppendingString:@"set AutoClose=yes WarnReset=no Increase=auto Criterion=parsimony NotifyBeep=no ErrorBeep=no WarnTSave=no;\n"];
     cmds = [cmds stringByAppendingFormat:@"execute %@;", dFilePath];
-    //cmds = [cmds stringByAppendingString:@"pset Collapse=no;\n"];
+    
+    NSArray* deletedChars = [d getExcludedCharacters];
+    NSArray* deletedTaxa  = [d getExcludedTaxa];
+    if ( [deletedChars count] > 0 )
+        {
+        cmds = [cmds stringByAppendingString:@"exclude"];
+        for (NSNumber* n in deletedChars)
+            cmds = [cmds stringByAppendingFormat:@" %@", n];
+        cmds = [cmds stringByAppendingString:@";"];
+        }
+    if ( [deletedTaxa count] > 0 )
+        {
+        cmds = [cmds stringByAppendingString:@"delete"];
+        for (NSString* s in deletedTaxa)
+            cmds = [cmds stringByAppendingFormat:@" %@", s];
+        cmds = [cmds stringByAppendingString:@";"];
+        }
+    
     if (searchMethod == EXHAUSTIVE)
         {
         cmds = [cmds stringByAppendingFormat:@"alltrees keep=%@;\n", exKeep];
@@ -281,14 +465,11 @@
         {
         cmds = [cmds stringByAppendingFormat:@"hsearch keep=%@ swap=%@ multrees=%@ RearrLimit=%@ ReconLimit=%@ NBest=%@ Retain=%@ AllSwap=%@ UseNonMin=%@ Steepest=%@ NChuck=%d ChuckScore=%@ AbortRep=%@ Randomize=%@ AddSeq=%@ NReps=%d Hold=%@;\n",
                 hsKeep, hsSwap, hsMulTrees, hsRearrLimit, hsReconLimit, hsNBest, hsRetain, hsAllSwap, hsUseNonMin, hsSteepest, hsNChuck, hsChuckScore, hsAbortRep, hsRandomize, hsAddSeq, hsNReps, hsHold];
-        //cmds = [cmds stringByAppendingString:@"hsearch;"];
         }
-    //cmds = [cmds stringByAppendingString:@"deroottrees;\n"];
     cmds = [cmds stringByAppendingFormat:@"savetrees file=%@ format=nexus replace=yes;\n", tFilePath];
     cmds = [cmds stringByAppendingString:@"quit;\n"];
     cmds = [cmds stringByAppendingString:@"end;\n"];
     [cmds writeToFile:nFilePath atomically:YES encoding:NSASCIIStringEncoding error:nil];
-    NSLog(@"cmds=%@", cmds);
     
     // get the path to the paup binary
     NSString* paupPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"paup"];
@@ -312,12 +493,33 @@
 
     [outputFileHandle waitForDataInBackgroundAndNotify];
 
-    // read the fasta file output
+    // read the output
     NSData* inData = nil;
+    treeLength = -1;
     while ( (inData = [outputFileHandle availableData]) && [inData length] )
         {
         NSString* msg = [[NSString alloc] initWithData:inData encoding:NSASCIIStringEncoding];
-        NSLog(@"%@", msg);
+        NSRange r = [msg rangeOfString:@"Score of best tree(s) found = "];
+        if (r.location == NSNotFound)
+            r = [msg rangeOfString:@"Score of best tree found = "];
+        std::string s = "";
+        if (r.location != NSNotFound)
+            {
+            for (int i=0; i<10; i++)
+                {
+                char c = [msg characterAtIndex:(r.location + r.length + i)];
+                if (c == ' ')
+                    break;
+                else
+                    s += c;
+                }
+            int x = 0;
+            std::stringstream sStrm;
+            sStrm << s;
+            sStrm >> x;
+            treeLength = x;
+            }
+        //NSLog(@"msg => \"%@\"", msg);
         }
 
     [paupTask waitUntilExit];
@@ -326,9 +528,13 @@
         numberErrors++;
 
     // read the alignments on the main thread to prevent errors on graphics.
+#   if 1
+    [self paupFinished:tFilePath];
+#   else
     [self performSelectorOnMainThread:@selector(paupFinished:)
                          withObject:tFilePath
                       waitUntilDone:NO];
+#   endif
 
     return YES;
 }
@@ -338,193 +544,13 @@
     return [self paupSearch];
 }
 
-- (BOOL)readTreesInFile:(NSString*)fd {
+- (void)prepareForExecution {
 
-	// open the file
-    std::string fname = [fd cStringUsingEncoding:NSASCIIStringEncoding];
-	std::ifstream fileStream(fname.c_str());
-	if (!fileStream) 
-		{
-		std::cerr << "Cannot open file \"" + fname + "\"" << std::endl;
-		return NO;
-		}
-
-    // make a vector of tokens and token delimiters, excluding whitespace
-    bool inComment = false;
-    std::string delimiters = " >][;,()=\t";
-	std::string lineStr = "";
-    std::vector<std::string> tokens;
-	while( getline(fileStream, lineStr).good() )
-		{
-        //std::cout << lineStr << std::endl;
-        std::string word = "";
-        for (size_t i=0; i<lineStr.length(); i++)
-            {
-            char c = lineStr[i];
-            std::size_t found = delimiters.find(c);
-            if (found != std::string::npos)
-                {
-                // found token delimiter
-                if (word != "" && inComment == false)
-                    {
-                    tokens.push_back(word);
-                    word = "";
-                    }
-                std::string d = "";
-                d += c;
-                if (d == "[")
-                    inComment = true;
-                else if (d == "]")
-                    inComment = false;
-                if (d != " " && d != "\t" && d != "[" && d != "]" && inComment == false)
-                    {
-                    tokens.push_back(d);
-                    }
-                }
-            else
-                {
-                if (inComment == false)
-                    word += c;
-                }
-            }
-        if (word != "" && inComment == false)
-            {
-            tokens.push_back(word);
-            word = "";
-            }
-		}
-    
-    // interpret vector of tokens
-    bool readingTranslateCmd = false, readingTreeCmd = false, readKey = true, readTree = false;
-    std::string strKey = "", strVal = "";
-    std::map<std::string,std::string> translateTable;
-    Node* p = nil;
-    int intNodeIdx = 0;
-    GuiTree* newTree = nil;
-    for (size_t i=0; i<tokens.size(); i++)
-        {
-        std::string tok = tokens[i];
-        if (tok == "Translate")
-            {
-            readingTranslateCmd = true;
-            }
-        else if (tok == "tree")
-            {
-            readingTreeCmd = true;
-            }
-            
-        if (readingTranslateCmd == true)
-            {
-            if (tok == "," || tok == ";")
-                {
-                readKey = true;
-                translateTable.insert(make_pair(strKey,strVal));
-                }
-            else if (tok == "Translate")
-                {
-                readKey = true;
-                }
-            else
-                {
-                if (readKey == true)
-                    {
-                    strKey = tok;
-                    readKey = false;
-                    }
-                else
-                    strVal = tok;
-                }
-            }
-        else if (readingTreeCmd == true)
-            {
-            if (tok == "=")
-                {
-                readTree = true;
-                intNodeIdx = (int)translateTable.size();
-                newTree = [[GuiTree alloc] init];
-                p = nil;
-                }
-                
-            if (readTree == true && tok != "=")
-                {
-                if (tok == "(")
-                    {
-                    // add node
-                    Node* newNode = [newTree addNode];
-                    [newNode setIndex:intNodeIdx++];
-                    [newNode setIsLeaf:NO];
-                    if (p != nil)
-                        {
-                        [p addDescendant:newNode];
-                        [newNode setAncestor:p];
-                        p = newNode;
-                        }
-                    else
-                        {
-                        [newTree setRoot:newNode];
-                        [newNode setIsRoot:YES];
-                        p = newNode;
-                        }
-                    }
-                else if (tok == ")" || tok == ",")
-                    {
-                    // go to ancestor
-                    if ([p ancestor] != nil)
-                        p = [p ancestor];
-                    }
-                else if (tok == ";")
-                    {
-                    readTree = false;
-                    [newTree initializeDownPassSequence];
-                    [newTree setNumberOfTaxa:(int)translateTable.size()];
-                    [newTree deroot];
-                    [self sendTreeToTreeSet:newTree];
-                    p = nil;
-                    //[newTree print];
-                    }
-                else
-                    {
-                    // add a node/taxon
-                    Node* newNode = [newTree addNode];
-                    [newNode setIsLeaf:YES];
-                    std::map<std::string,std::string>::iterator it = translateTable.find(tok);
-                    if (it != translateTable.end())
-                        {
-                        NSString* name = [[NSString alloc] initWithCString:(it->second).c_str() encoding:NSASCIIStringEncoding];
-                        NSString* num  = [[NSString alloc] initWithCString:(it->first).c_str() encoding:NSASCIIStringEncoding];
-                        [newNode setName:name];
-                        [newNode setIndex:([num intValue]-1)];
-                        }
-                    if (p != nil)
-                        {
-                        [p addDescendant:newNode];
-                        [newNode setAncestor:p];
-                        p = newNode;
-                        }
-                    }
-                }
-            
-            }
-            
-        if (tok == ";")
-            {
-            readingTranslateCmd = readingTreeCmd = readTree = false;
-            }
-        }
-
-	/* close the file */
-	fileStream.close();
-
-    return YES;
 }
 
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Parsimony Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -539,11 +565,11 @@
     return attrString;
 }
 
-- (BOOL)sendTreeToTreeSet:(GuiTree*)t {
-
-    if (treeContainer != nil)
+- (BOOL)sendTree:(GuiTree*)t toTreeSet:(ToolTreeSet*)treeSet {
+    
+    if (treeSet != nil)
         {
-        [treeContainer addTreeToSet:t];
+        [treeSet addTreeToSet:t];
         return YES;
         }
     return NO;
@@ -563,9 +589,9 @@
     return @"Parsimony";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
-    isResolved = YES;
+    
     // find the parent of this tool, which should be an instance of ToolData
     ToolData* dataTool = nil;
     for (int i=0; i<[inlets count]; i++)
@@ -579,8 +605,11 @@
                 dataTool = (ToolData*)t;
             }
         }
-    if ( dataTool == nil )
-        isResolved = NO;
+    
+    if ( [[dataTool className] isEqualToString:@"ToolSimulate"] == YES )
+        {
+        return;
+        }
 
     // calculate how many aligned data matrices exist
     NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
@@ -589,8 +618,6 @@
         if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
             [alignedData addObject:[dataTool dataMatrixIndexed:i]];
         }
-    if ( [alignedData count] != 1 )
-        isResolved = NO;
 }
 
 @end

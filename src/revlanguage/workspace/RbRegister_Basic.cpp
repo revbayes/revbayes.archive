@@ -102,6 +102,7 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
+#include "Func_append.h"
 #include "Func_clear.h"
 #include "Func_exists.h"
 #include "Func_getOption.h"
@@ -164,11 +165,12 @@
 
 /* Input/output functions (in folder "functions/io") */
 #include "Func_ancestralStateTree.h"
-#include "Func_annotateHPDAges.h"
 #include "Func_annotateTree.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
+#include "Func_listFiles.h"
 #include "Func_mapTree.h"
+#include "Func_mccTree.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
 #include "Func_readCharacterDataDelimited.h"
@@ -225,6 +227,7 @@
 
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
+#include "Func_discretizeBeta.h"
 #include "Func_discretizeGamma.h"
 #include "Func_discretizeDistribution.h"
 #include "Func_discretizePositiveDistribution.h"
@@ -250,6 +253,12 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         /* Basic functions (in folder "functions/basic") */
         
         // regular functions
+        addFunction( new Func_append<Integer>()          );
+        addFunction( new Func_append<Real>()             );
+        addFunction( new Func_append<Natural>()          );
+        addFunction( new Func_append<RealPos>()          );
+        addFunction( new Func_append<RlString>()         );
+        addFunction( new Func_append<RlBoolean>()        );
         addFunction( new Func_clear()                    );
         addFunction( new Func_exists()                   );
         addFunction( new Func_getwd()                    );
@@ -264,6 +273,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_rep<Real>()                );
         addFunction( new Func_rep<Natural>()             );
         addFunction( new Func_rep<RealPos>()             );
+        addFunction( new Func_rep<RlString>()            );
+        addFunction( new Func_rep<RlBoolean>()           );
         addFunction( new Func_seed()                     );
         addFunction( new Func_seq<Integer>()             );
         addFunction( new Func_seq<Real>()                );
@@ -426,36 +437,37 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         
 
         /* Input/output functions (in folder "functions/io") */
-        addFunction( new Func_ancestralStateTree()                     );
-		addFunction( new Func_annotateHPDAges()                        );
-        addFunction( new Func_annotateTree()                           );
-		addFunction( new Func_consensusTree()                          );
-        addFunction( new Func_convertToPhylowood()                     );
-        addFunction( new Func_mapTree()                                );
-        addFunction( new Func_module()                                 );
-        addFunction( new Func_readAncestralStateTreeTrace()            );
-		addFunction( new Func_readAncestralStateTrace()	               );
-        addFunction( new Func_readAtlas()                              );
-		addFunction( new Func_readBranchLengthTrees()                  );
-        addFunction( new Func_readContinuousCharacterData()            );
-        addFunction( new Func_readDiscreteCharacterData()              );
-		addFunction( new Func_readDistanceMatrix()                     );
-        addFunction( new Func_readCharacterDataUniversal()             );
-        addFunction( new Func_readRelativeNodeAgeConstraints()         );
-        addFunction( new Func_readRelativeNodeAgeWeightedConstraints() );
-        addFunction( new Func_TaxonReader()                            );
-        addFunction( new Func_readStochasticVariableTrace()            );
-        addFunction( new Func_readTrace()                              );
-        addFunction( new Func_readTrees()                              );
-        addFunction( new Func_readTreeTrace()                          );
-		addFunction( new Func_readCharacterDataDelimited()             );
-        addFunction( new Func_readDataDelimitedFile()                  );
-        addFunction( new Func_source()                                 );
-        addFunction( new Func_treeTrace()                              );
-        addFunction( new Func_write()                                  );
-        addFunction( new Func_writeCharacterDataDelimited()            );
-        addFunction( new Func_writeFasta()                             );
-        addFunction( new Func_writeNexus()                             );
+        addFunction( new Func_ancestralStateTree()                      );
+        addFunction( new Func_annotateTree()                            );
+		addFunction( new Func_consensusTree()                           );
+        addFunction( new Func_convertToPhylowood()                      );
+        addFunction( new Func_listFiles()                               );
+        addFunction( new Func_mapTree()                                 );
+        addFunction( new Func_mccTree()                                 );
+        addFunction( new Func_module()                                  );
+        addFunction( new Func_readAncestralStateTreeTrace()             );
+		addFunction( new Func_readAncestralStateTrace()                 );
+        addFunction( new Func_readAtlas()                               );
+		addFunction( new Func_readBranchLengthTrees()                   );
+        addFunction( new Func_readContinuousCharacterData()             );
+        addFunction( new Func_readDiscreteCharacterData()               );
+		addFunction( new Func_readDistanceMatrix()                      );
+        addFunction( new Func_readCharacterDataUniversal()              );
+        addFunction( new Func_readRelativeNodeAgeConstraints()          );
+        addFunction( new Func_readRelativeNodeAgeWeightedConstraints()  );
+        addFunction( new Func_TaxonReader()                             );
+        addFunction( new Func_readStochasticVariableTrace()             );
+        addFunction( new Func_readTrace()                               );
+        addFunction( new Func_readTrees()                               );
+        addFunction( new Func_readTreeTrace()                           );
+		addFunction( new Func_readCharacterDataDelimited()              );
+        addFunction( new Func_readDataDelimitedFile()                   );
+        addFunction( new Func_source()                                  );
+        addFunction( new Func_treeTrace()                               );
+        addFunction( new Func_write()                                   );
+        addFunction( new Func_writeCharacterDataDelimited()             );
+        addFunction( new Func_writeFasta()                              );
+        addFunction( new Func_writeNexus()                              );
         
     }
     catch(RbException& rbException)

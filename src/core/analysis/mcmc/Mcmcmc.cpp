@@ -452,11 +452,18 @@ void Mcmcmc::setModel( Model *m )
     // set the models of the chains
     for (size_t i = 0; i < num_chains; ++i)
     {
-        if (chains[i] != NULL)
+        if ( chains[i] != NULL )
         {
-            chains[i]->setModel( m->clone() );
+            Model *m_clone = m->clone();
+            chains[i]->setModel( m_clone );
         }
         
+    }
+    
+    if ( base_chain != NULL )
+    {
+        Model *m_clone = m->clone();
+        base_chain->setModel( m_clone );
     }
     
     delete m;

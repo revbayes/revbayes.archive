@@ -34,7 +34,7 @@ namespace RevBayesCore {
         void                                                addMonitor(const Monitor &m);
         void                                                disableScreenMonitor(bool all, size_t rep);                                             //!< Disable/remove all screen monitors
         Mcmc*                                               clone(void) const;
-        void                                                finishMonitors(size_t n);                                                                   //!< Finish the monitors
+        void                                                finishMonitors(size_t n);                                                               //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain
@@ -64,6 +64,7 @@ namespace RevBayesCore {
         void                                                startMonitors(size_t numCycles, bool reopen);                                           //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
         void                                                writeMonitorHeaders(void);                                                              //!< Write the headers of the monitors
+        
         
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors

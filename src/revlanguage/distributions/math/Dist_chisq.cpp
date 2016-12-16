@@ -45,16 +45,16 @@ RevBayesCore::ChisqDistribution* Dist_chisq::createDistribution( void ) const
 const std::string& Dist_chisq::getClassType(void)
 {
     
-    static std::string revType = "Dist_chisq";
-    return revType;
+    static std::string rev_type = "Dist_chisq";
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_chisq::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
-    return revTypeSpec;
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    return rev_type_spec;
 }
 
 
@@ -176,16 +176,16 @@ std::string Dist_chisq::getHelpTitle(void) const
 const MemberRules& Dist_chisq::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static MemberRules dist_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
-        distMemberRules.push_back( new ArgumentRule( "df", Natural::getClassTypeSpec(), "The degrees of freedom.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        dist_member_rules.push_back( new ArgumentRule( "df", Natural::getClassTypeSpec(), "The degrees of freedom.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 

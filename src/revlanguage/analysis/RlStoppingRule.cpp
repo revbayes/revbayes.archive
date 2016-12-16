@@ -15,17 +15,17 @@ StoppingRule::StoppingRule(void) : WorkspaceToCoreWrapperObject<RevBayesCore::St
 const std::string& StoppingRule::getClassType(void)
 {
     
-    static std::string revType = "StoppingRule";
+    static std::string rev_type = "StoppingRule";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& StoppingRule::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::StoppingRule>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::StoppingRule>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 

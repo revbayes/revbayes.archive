@@ -54,18 +54,18 @@ const ArgumentRules& Func_cpRev::getArgumentRules( void ) const
 const std::string& Func_cpRev::getClassType(void)
 {
     
-    static std::string revType = "Func_cpRev";
+    static std::string rev_type = "Func_cpRev";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_cpRev::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -94,7 +94,7 @@ std::string Func_cpRev::getFunctionName( void ) const
 const TypeSpec& Func_cpRev::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

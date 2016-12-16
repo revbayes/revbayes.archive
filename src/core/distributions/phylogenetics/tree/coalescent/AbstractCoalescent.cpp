@@ -245,7 +245,7 @@ void AbstractCoalescent::simulateTree( void )
     }
     
     // initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
     
     nodes.clear();
     

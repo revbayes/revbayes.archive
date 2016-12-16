@@ -77,9 +77,9 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
 const std::string& Dist_uniformTopology::getClassType(void) 
 { 
     
-    static std::string revType = "Dist_uniformTopology";
+    static std::string rev_type = "Dist_uniformTopology";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -91,9 +91,9 @@ const std::string& Dist_uniformTopology::getClassType(void)
 const TypeSpec& Dist_uniformTopology::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<BranchLengthTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<BranchLengthTree>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -126,16 +126,16 @@ const MemberRules& Dist_uniformTopology::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         memberRules.push_back( new ArgumentRule( "taxa"       , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa that will be used for the tips.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "outgroup"   , Clade::getClassTypeSpec(), "The clade (consisting of one or more taxa) used as an outgroup.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), "The topological constraints that will be enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "rooted", 		RlBoolean::getClassTypeSpec(), "Is the distribution over rooted topologies?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
 		
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;

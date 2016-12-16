@@ -68,18 +68,18 @@ Simplex* Simplex::clone( void ) const
 /** Get Rev type of object */
 const std::string& Simplex::getClassType(void) { 
     
-    static std::string revType = "Simplex";
+    static std::string rev_type = "Simplex";
     
-	return revType; 
+	return rev_type; 
 }
 
 
 /** Get class type spec describing type of object */
 const TypeSpec& Simplex::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &ModelVector<RealPos>::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &ModelVector<RealPos>::getClassTypeSpec() );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 

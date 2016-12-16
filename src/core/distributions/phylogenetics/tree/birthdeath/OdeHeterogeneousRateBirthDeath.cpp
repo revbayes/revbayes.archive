@@ -6,9 +6,10 @@ using namespace RevBayesCore;
 OdeHeterogeneousRateBirthDeath::OdeHeterogeneousRateBirthDeath( const RbVector<double> &l, const RbVector<double> &m, double r ) :
     lambda( l ),
     mu( m ),
-    num_categories( l.size() ),
     switch_rate( r ),
-    current_rate_category( 0 )
+    num_categories( l.size() ),
+    current_rate_category( 0 ),
+    allow_same_category( false )
 {
     
 }
@@ -35,10 +36,10 @@ void OdeHeterogeneousRateBirthDeath::operator()(const state_type &x, state_type 
         // rate-shift event
         for (size_t j=0; j<num_categories; ++j)
         {
-//            if ( i != j )
-//            {
+            if ( i != j || allow_same_category == true )
+            {
                 dxdt[i] += switch_rate*x[j] / num_categories;
-//            }
+            }
         }
         
     }

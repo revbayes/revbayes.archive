@@ -74,9 +74,9 @@ void HillClimber::constructInternalObject( void )
 const std::string& HillClimber::getClassType(void)
 {
     
-    static std::string revType = "HillClimber";
+    static std::string rev_type = "HillClimber";
     
-    return revType;
+    return rev_type;
 }
 
 /**
@@ -85,9 +85,9 @@ const std::string& HillClimber::getClassType(void)
 const TypeSpec& HillClimber::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( MaximumLikelihoodAnalysis::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( MaximumLikelihoodAnalysis::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -238,16 +238,16 @@ const MemberRules& HillClimber::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         // add the rules from the base class
         const MemberRules &parentRules = MaximumLikelihoodAnalysis::getParameterRules();
         memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -258,9 +258,9 @@ const MemberRules& HillClimber::getParameterRules(void) const
 const TypeSpec& HillClimber::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

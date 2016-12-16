@@ -45,15 +45,6 @@
 #include "RevObject.h"
 #include "AbstractModelObject.h"
 
-/* Primitive types (in folder "datatypes/basic") */
-#include "Integer.h"
-#include "Natural.h"
-#include "Probability.h"
-#include "RlBoolean.h"
-#include "RlString.h"
-#include "Real.h"
-#include "RealPos.h"
-
 /* Container types (in folder "datatypes/container") */
 #include "RlCorrespondenceAnalysis.h"
 #include "RlMatrixReal.h"
@@ -117,6 +108,7 @@
 #include "RlMonitor.h"
 #include "RlMove.h"
 #include "RlRateGenerator.h"
+#include "RlCladogeneticProbabilityMatrix.h"
 #include "RlTimeTree.h"
 
 
@@ -127,35 +119,22 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
     
     try
     {
-        /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
-        
-        /* Add base types (in folder "datatypes") */
-        addType( new RevAbstractType( RevObject::getClassTypeSpec(), new Integer( 0 ) ) );
 
-        /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
-        AddWorkspaceVectorType<Integer,4>::addTypeToWorkspace( *this, new Integer() );
-        AddWorkspaceVectorType<Natural,4>::addTypeToWorkspace( *this, new Natural() );
-        AddWorkspaceVectorType<Probability,4>::addTypeToWorkspace( *this, new Probability() );
-        AddWorkspaceVectorType<Real,4>::addTypeToWorkspace( *this, new Real() );
-        AddWorkspaceVectorType<RealPos,4>::addTypeToWorkspace( *this, new RealPos() );
-        AddWorkspaceVectorType<RlBoolean,4>::addTypeToWorkspace( *this, new RlBoolean() );
-        AddWorkspaceVectorType<RlString,4>::addTypeToWorkspace( *this, new RlString() );
-        AddWorkspaceVectorType<Simplex,4>::addTypeToWorkspace( *this, new Simplex() );
         AddWorkspaceVectorType<Taxon,4>::addTypeToWorkspace( *this, new Taxon() );
-        
-        
-        
-        
         AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
+        AddWorkspaceVectorType<CladogeneticProbabilityMatrix,3>::addTypeToWorkspace( *this, new CladogeneticProbabilityMatrix() );
+        AddWorkspaceVectorType<MatrixReal,3>::addTypeToWorkspace( *this, new MatrixReal() );
+        AddWorkspaceVectorType<MatrixRealSymmetric,3>::addTypeToWorkspace( *this, new MatrixRealSymmetric() );
         AddWorkspaceVectorType<AbstractHomologousDiscreteCharacterData,3>::addTypeToWorkspace( *this, new AbstractHomologousDiscreteCharacterData() );
         
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
+        AddWorkspaceVectorType<Tree,3>::addTypeToWorkspace( *this, new Tree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
 		
         
         //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
-        addFunction( new Func_workspaceVector<AbstractModelObject>() );
+//        addFunction( new Func_workspaceVector<AbstractModelObject>() );
         
 		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
         
@@ -184,7 +163,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         /* Add math types (in folder "datatypes/math") */
         addTypeWithConstructor( new CorrespondenceAnalysis()                    );
         addType( new RateMap()                                                  );
-        addType( new MatrixReal()                                               );
+//        addType( new MatrixReal()                                               );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
         addTypeWithConstructor( new BootstrapAnalysis()                             );

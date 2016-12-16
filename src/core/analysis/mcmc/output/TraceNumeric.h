@@ -30,7 +30,7 @@ namespace RevBayesCore {
         void                        addValueFromString(const std::string &s);
         void                        addObject(double d);
         void                        computeStatistics(void);
-        bool                        isCoveredInInterval(const std::string &v, double i) const;
+        bool                        isCoveredInInterval(const std::string &v, double i, bool verbose) const;
         double                      objectAt(size_t index)                          { return values.at(index); }
         void                        removeLastObject();
         void                        removeObjectAtIndex(int index);

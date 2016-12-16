@@ -102,18 +102,18 @@ RevPtr<RevVariable> MaximumLikelihoodAnalysis::executeMethod(std::string const &
 const std::string& MaximumLikelihoodAnalysis::getClassType(void)
 {
     
-    static std::string revType = "MaximumLikelihoodAnalysis";
+    static std::string rev_type = "MaximumLikelihoodAnalysis";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& MaximumLikelihoodAnalysis::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::MaximumLikelihoodAnalysis>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::MaximumLikelihoodAnalysis>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -123,9 +123,9 @@ const MemberRules& MaximumLikelihoodAnalysis::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -139,7 +139,7 @@ const MemberRules& MaximumLikelihoodAnalysis::getParameterRules(void) const
         
         memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options, "The strategy how the moves are used." ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -149,9 +149,9 @@ const MemberRules& MaximumLikelihoodAnalysis::getParameterRules(void) const
 const TypeSpec& MaximumLikelihoodAnalysis::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

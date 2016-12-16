@@ -83,18 +83,18 @@ double ElementScaleProposal::doProposal( void )
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
-    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
+    double scaling_factor = std::exp( lambda * ( u - 0.5 ) );
     
     // copy value
-    storedScalingFactor = scalingFactor;
+    storedScalingFactor = scaling_factor;
     
     for (size_t index=0; index<length; ++index)
     {
-        variables[index]->getValue() *= scalingFactor;
+        variables[index]->getValue() *= scaling_factor;
     }
     
     // compute the Hastings ratio
-    double lnHastingsratio = length * log( scalingFactor );
+    double lnHastingsratio = length * log( scaling_factor );
     
     return lnHastingsratio;
 }
@@ -174,13 +174,13 @@ void ElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void ElementScaleProposal::tune( double rate )
 {
     
-    if ( rate > 0.44 )
+    if ( rate > 0.23 )
     {
-        lambda *= (1.0 + ((rate-0.44)/0.56) );
+        lambda *= (1.0 + ((rate-0.23)/0.77) );
     }
     else
     {
-        lambda /= (2.0 - rate/0.44 );
+        lambda /= (2.0 - rate/0.23 );
     }
     
 }

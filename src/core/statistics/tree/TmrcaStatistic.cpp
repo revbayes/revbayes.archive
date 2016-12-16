@@ -8,8 +8,39 @@ TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, cons
     tree( t ),
     clade( c ),
     stemAge( s ),
-    index( RbConstants::Size_t::nan )
+    index( -RbConstants::Integer::max )
 {
+
+    RbBitSet bitset( tree->getValue().getNumberOfTips() );
+
+    // initialize bitset for clade
+    std::map<std::string, size_t> taxon_bitset_map; // = tree->getValue().getTaxonBitSetMap();
+    
+    // get all taxon names
+    std::vector<Taxon> unordered_taxa = tree->getValue().getTaxa();
+    std::vector<std::string> ordered_taxa;
+    for (size_t i = 0; i < unordered_taxa.size(); ++i)
+    {
+        ordered_taxa.push_back(unordered_taxa[i].getName());
+    }
+    
+    // order taxon names
+    std::sort(ordered_taxa.begin(), ordered_taxa.end());
+    
+    // add taxa to bitset map
+    for (size_t i = 0; i < ordered_taxa.size(); ++i)
+    {
+        taxon_bitset_map[ordered_taxa[i]] = i;
+    }
+    
+    for(size_t i=0; i < clade.size(); i++)
+    {
+        const TopologyNode& node = tree->getValue().getTipNodeWithName(clade.getTaxonName(i));
+//        bitset.set(node.getIndex());
+        bitset.set(taxon_bitset_map[node.getName()]);
+    }
+
+    clade.setBitRepresentation(bitset);
 
     // add the tree parameter as a parent
     addParameter( tree );
@@ -17,6 +48,7 @@ TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, cons
     initialize();
     update();
 }
+
 
 
 TmrcaStatistic::~TmrcaStatistic( void )
@@ -36,10 +68,45 @@ TmrcaStatistic* TmrcaStatistic::clone( void ) const
 
 void TmrcaStatistic::initialize( void )
 {
-    
+    initializeBitSet();
     taxaCount = clade.size();
-    index = RbConstants::Size_t::nan;
+    index = -RbConstants::Integer::max;
     
+}
+
+
+void TmrcaStatistic::initializeBitSet(void) {
+    
+    RbBitSet bitset( tree->getValue().getNumberOfTips() );
+    
+    // initialize bitset for clade
+    std::map<std::string, size_t> taxon_bitset_map;
+    
+    // get all taxon names
+    std::vector<Taxon> unordered_taxa = tree->getValue().getTaxa();
+    std::vector<std::string> ordered_taxa;
+    for (size_t i = 0; i < unordered_taxa.size(); ++i)
+    {
+        ordered_taxa.push_back(unordered_taxa[i].getName());
+    }
+    
+    // order taxon names
+    std::sort(ordered_taxa.begin(), ordered_taxa.end());
+    
+    // add taxa to bitset map
+    for (size_t i = 0; i < ordered_taxa.size(); ++i)
+    {
+        taxon_bitset_map[ordered_taxa[i]] = i;
+    }
+    
+    for(size_t i=0; i < clade.size(); i++)
+    {
+        const TopologyNode& node = tree->getValue().getTipNodeWithName(clade.getTaxonName(i));
+        bitset.set(taxon_bitset_map[node.getName()]);
+        // bitset.set(node.getIndex());
+    }
+    
+    clade.setBitRepresentation(bitset);
 }
 
 
@@ -50,10 +117,11 @@ void TmrcaStatistic::update( void )
     size_t minCladeSize = n.size() + 2;
 
     bool found = false;
-    if ( index != RbConstants::Size_t::nan )
+    if ( index != -RbConstants::Integer::max )
     {
         TopologyNode *node = n[index];
         size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+        
         if ( node->containsClade( clade, false ) == true )
         {
             
@@ -73,8 +141,8 @@ void TmrcaStatistic::update( void )
     
     if ( found == false )
     {
-        
-        for (size_t i = tree->getValue().getNumberOfTips(); i < n.size(); ++i)
+        // for each node
+        for (size_t i = 0; i < n.size(); ++i)
         {
             
             TopologyNode *node = n[i];
@@ -95,7 +163,7 @@ void TmrcaStatistic::update( void )
         
     }
 
-    if ( index == RbConstants::Size_t::nan )
+    if ( index == -RbConstants::Integer::max )
     {
         throw RbException("TMRCA-Statistics can only be applied if clade is present.");
     }
@@ -122,7 +190,7 @@ void TmrcaStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *n
     if (oldP == tree) 
     {
         tree = static_cast<const TypedDagNode<Tree>* >( newP );
-        index = RbConstants::Size_t::nan;
+        index = -RbConstants::Integer::max;
     }
     
 }

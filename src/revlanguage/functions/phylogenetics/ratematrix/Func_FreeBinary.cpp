@@ -8,6 +8,7 @@
 #include "RlDeterministicNode.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
+#include "RlBoolean.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -36,7 +37,9 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_FreeBinary::cre
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* glr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::FreeBinaryRateMatrixFunction* f = new RevBayesCore::FreeBinaryRateMatrixFunction( glr );
+    bool r = static_cast<const RlBoolean &>( this->args[1].getVariable()->getRevObject() ).getDagNode()->getValue();
+
+    RevBayesCore::FreeBinaryRateMatrixFunction* f = new RevBayesCore::FreeBinaryRateMatrixFunction( glr, r );
     
     return f;
 }
@@ -47,12 +50,13 @@ const ArgumentRules& Func_FreeBinary::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
-        argumentRules.push_back( new ArgumentRule( "transition_rates", ModelVector<RealPos>::getClassTypeSpec(), "The transition rates between the two states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        argumentRules.push_back( new ArgumentRule( "transition_rates", ModelVector<Real>::getClassTypeSpec(), "The transition rates between the two states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rescaled",          RlBoolean::getClassTypeSpec(),              "Should the matrix be normalized?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        rules_set = true;
     }
     
     return argumentRules;
@@ -62,18 +66,18 @@ const ArgumentRules& Func_FreeBinary::getArgumentRules( void ) const
 const std::string& Func_FreeBinary::getClassType(void)
 {
     
-    static std::string revType = "Func_FreeBinary";
+    static std::string rev_type = "Func_FreeBinary";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_FreeBinary::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -92,7 +96,7 @@ std::string Func_FreeBinary::getFunctionName( void ) const
 const TypeSpec& Func_FreeBinary::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

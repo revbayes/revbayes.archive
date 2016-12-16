@@ -19,6 +19,7 @@
     NSPoint           viewCoordinates;
     int               state;
     BOOL              flag;
+    float             support;
 }
 
 @property (nonatomic)        BOOL      flag;
@@ -35,11 +36,13 @@
 @property (nonatomic)        NSPoint   viewCoordinates;
 @property (nonatomic)        int       state;
 @property (nonatomic,strong) Node*     ancestor;
+@property (nonatomic)        float     support;
 
 - (void)addDescendant:(Node*)des;
 - (void)addDescendantAtLeftMostPosition:(Node*)des;
 - (int)numberOfDescendants;
 - (Node*)descendantIndexed:(size_t)idx;
+- (int)numberOfFlaggedChildren;
 - (void)print;
 - (void)removeDescendant:(Node*)des;
 - (void)removeAllDescendants;

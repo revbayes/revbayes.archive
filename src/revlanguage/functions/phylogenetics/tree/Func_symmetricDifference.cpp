@@ -51,15 +51,15 @@ const ArgumentRules& Func_symmetricDifference::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "tree1", Tree::getClassTypeSpec(), "The first tree." , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "tree2", Tree::getClassTypeSpec(), "The second tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -69,18 +69,33 @@ const ArgumentRules& Func_symmetricDifference::getArgumentRules( void ) const
 const std::string& Func_symmetricDifference::getClassType(void)
 {
     
-    static std::string revType = "Func_symmetricDifference";
+    static std::string rev_type = "Func_symmetricDifference";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_symmetricDifference::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
+}
+
+
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Func_symmetricDifference::getFunctionNameAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "symDiff" );
+    
+    return a_names;
 }
 
 
@@ -90,7 +105,7 @@ const TypeSpec& Func_symmetricDifference::getClassTypeSpec(void)
 std::string Func_symmetricDifference::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "symDiff";
+    std::string f_name = "symmetricDifference";
     
     return f_name;
 }
@@ -99,7 +114,7 @@ std::string Func_symmetricDifference::getFunctionName( void ) const
 const TypeSpec& Func_symmetricDifference::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

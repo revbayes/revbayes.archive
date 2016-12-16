@@ -1,4 +1,7 @@
+#include "HomologousDiscreteCharacterData.h"
+#include "NclReader.h"
 #include "NexusWriter.h"
+#include "StandardState.h"
 #include "TreeDiscreteCharacterData.h"
 
 
@@ -18,18 +21,18 @@ TreeDiscreteCharacterData* TreeDiscreteCharacterData::clone( void ) const
 
 
 
-HomologousDiscreteCharacterData<StandardState>& TreeDiscreteCharacterData::getCharacterData( void )
+AbstractHomologousDiscreteCharacterData& TreeDiscreteCharacterData::getCharacterData( void )
 {
     
-    return character_data;
+    return *character_data;
 }
 
 
 
-const HomologousDiscreteCharacterData<StandardState>& TreeDiscreteCharacterData::getCharacterData( void ) const
+const AbstractHomologousDiscreteCharacterData& TreeDiscreteCharacterData::getCharacterData( void ) const
 {
     
-    return character_data;
+    return *character_data;
 }
 
 
@@ -46,7 +49,7 @@ void TreeDiscreteCharacterData::initFromFile(const std::string &dir, const std::
     NclReader reader = NclReader();
     
     std::string myFileType = "nexus";
-    std::string dType = character_data.getDataType();
+    std::string dType = character_data->getDataType();
     
     std::string suffix = "|" + dType;
     suffix += "|noninterleaved";
@@ -67,9 +70,7 @@ void TreeDiscreteCharacterData::initFromFile(const std::string &dir, const std::
     
     HomologousDiscreteCharacterData<StandardState> *coreM = static_cast<HomologousDiscreteCharacterData<StandardState> *>( m_i[0] );
     
-    character_data = *coreM;
-    
-    delete coreM;
+    character_data = coreM;
     
 }
 
@@ -85,7 +86,7 @@ void TreeDiscreteCharacterData::initFromString(const std::string &s)
 }
 
 
-void TreeDiscreteCharacterData::setCharacterData( const HomologousDiscreteCharacterData<StandardState> &d )
+void TreeDiscreteCharacterData::setCharacterData( AbstractHomologousDiscreteCharacterData *d )
 {
     
     character_data = d;
@@ -98,10 +99,10 @@ void TreeDiscreteCharacterData::writeToFile(const std::string &dir, const std::s
     fm.createDirectoryForFile();
     
     NexusWriter nw( fm.getFullFileName() );
-    nw.openStream();
+    nw.openStream(false);
     
     nw.writeNexusBlock( *this );
-    nw.writeNexusBlock( character_data );
+    nw.writeNexusBlock( *character_data );
     
     nw.closeStream();
     

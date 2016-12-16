@@ -100,9 +100,9 @@ template <typename valueType>
 const std::string& RevLanguage::TypedFunction<valueType>::getClassType(void)
 {
     
-    static std::string revType = "Function<"+ valueType::getClassType() +">";
+    static std::string rev_type = "Function<"+ valueType::getClassType() +">";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -111,9 +111,9 @@ template <typename valueType>
 const RevLanguage::TypeSpec& RevLanguage::TypedFunction<valueType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 

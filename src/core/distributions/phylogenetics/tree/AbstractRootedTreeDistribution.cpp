@@ -112,11 +112,13 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
         if ( the_node.isRoot() == false )
         {
 
-            if ( (the_node.getAge() - (*it)->getParent().getAge()) > 0 && the_node.isSampledAncestor() == false )
+            double age_diff = the_node.getAge() - the_node.getParent().getAge();
+
+            if ( age_diff > 0 && the_node.isSampledAncestor() == false )
             {
                 return RbConstants::Double::neginf;
             }
-            else if ( (the_node.getAge() - (*it)->getParent().getAge()) > 1E-6 && the_node.isSampledAncestor() == true )
+            else if ( age_diff != 0 && the_node.isSampledAncestor() == true )
             {
                 return RbConstants::Double::neginf;
             }
@@ -137,19 +139,24 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
             {
                 return RbConstants::Double::neginf;
             }
-            else if ( the_node.getBranchLength() > 1E-6 )
+            else if ( the_node.getBranchLength() != 0 )
             {
                 return RbConstants::Double::neginf;
             }
 
+        }
+        
+        if ( the_node.getBranchLength() < 0 )
+        {
+            return RbConstants::Double::neginf;
         }
 
     }
 
     // present time
     double ra = value->getRoot().getAge();
-
-    if ( ra > getOriginTime() )
+    
+    if ( ra > getOriginTime() || ra != getRootAge() )
     {
         return RbConstants::Double::neginf;
     }
@@ -160,7 +167,6 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
     {
         if ( ra < (*it)->getAge() )
         {
-
             return RbConstants::Double::neginf;
         }
     }
@@ -575,9 +581,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 
 
     double ra = getRootAge();
-    double present = getOriginTime();
-
-    double max_age = (ra > 0 ? ra : present);
+    double max_age = getOriginTime();
 
     // we need a sorted vector of constraints, starting with the smallest
     std::vector<Clade> sorted_clades;
@@ -726,7 +730,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
     TopologyNode *root = nodes[0];
 
     // initialize the topology by setting the root
-    psi->setRoot(root);
+    psi->setRoot(root, true);
 
     // finally store the new value
     delete value;
@@ -778,8 +782,12 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
         {
             //            double factor = root_age->getValue() / value->getRoot().getAge();
             //            TreeUtilities::rescaleTree( value, &value->getRoot(), factor);
-
+            if (root_age->getValue() != value->getRoot().getAge())
+            {
+                RbException("Tree height and root age values must match when root age is not a stochastic node.");
+            }
             value->getRoot().setAge( root_age->getValue() );
+            
         }
 
     }

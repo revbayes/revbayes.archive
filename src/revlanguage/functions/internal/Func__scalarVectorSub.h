@@ -93,14 +93,14 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__scalarVectorSub<firstValTyp
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "first" , firstValType::getClassTypeSpec() , "The left hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "second", ModelVector<secondValType>::getClassTypeSpec(), "The right hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -110,9 +110,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__scalarVectorSub<firstValTyp
 template <typename firstValType, typename secondValType, typename retType>
 const std::string& RevLanguage::Func__scalarVectorSub<firstValType, secondValType, retType>::getClassType(void)
 {
-    static std::string revType = "Func__scalarVectorSub<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
+    static std::string rev_type = "Func__scalarVectorSub<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
@@ -120,9 +120,9 @@ template <typename firstValType, typename secondValType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func__scalarVectorSub<firstValType, secondValType, retType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( Func__scalarVectorSub<firstValType, secondValType, retType>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( Func__scalarVectorSub<firstValType, secondValType, retType>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -143,9 +143,9 @@ template <typename firstValType, typename secondValType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func__scalarVectorSub<firstValType, secondValType, retType>::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 #endif

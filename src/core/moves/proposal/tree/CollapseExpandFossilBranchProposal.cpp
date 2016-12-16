@@ -85,40 +85,36 @@ double CollapseExpandFossilBranchProposal::doProposal( void )
     
     Tree &t = tau->getValue();
     
-    size_t num_fossils = 0;
+    std::vector<TopologyNode*> fossils;
     for (size_t i = 0; i < t.getNumberOfNodes(); ++i)
     {
-        if ( t.getNode(i).isFossil() == true )
+        TopologyNode* node = &t.getNode(i);
+
+        if ( node->isFossil() == true )
         {
-            ++num_fossils;
+            fossils.push_back(node);
         }
-        
+
     }
-    
-    if ( num_fossils == 0)
+
+    if ( fossils.empty() )
     {
-        throw RbException("Cannot perform collapse-expand-branch move on tree without fossils.");
+        return 0;
+        //throw RbException("Cannot perform collapse-expand-branch move on tree without fossils.");
     }
-    
-    // pick a random node which is not the root and neithor the direct descendant of the root
-    TopologyNode* node;
-    do {
-        double u = rng->uniform01();
-        size_t index = size_t( std::floor(t.getNumberOfNodes() * u) );
-        node = &t.getNode(index);
-    } while ( node->isFossil() == false );
-    
-    // store the node which we selected
-    storedNode = node;
+
+    // pick a random fossil node
+    double u = rng->uniform01();
+    storedNode = fossils[ size_t(u*fossils.size()) ];
     
     double hr = 0;
-    if ( node->isSampledAncestor() == true )
+    if ( storedNode->isSampledAncestor() == true )
     {
-        hr += expandBranch( *node );
+        hr += expandBranch( *storedNode );
     }
     else
     {
-        hr += collapseBranch( *node );
+        hr += collapseBranch( *storedNode );
     }
     
     return hr;
@@ -136,7 +132,7 @@ double CollapseExpandFossilBranchProposal::doProposal( void )
       |   |p            q|___p
      r|                 r|
  
- 1. Pich a fossil among those with brl > 0 (prob = 1/m)
+ 1. Pick a fossil among those with brl > 0 (prob = 1/m)
  2. Set brl = 0
  */
 double CollapseExpandFossilBranchProposal::collapseBranch(TopologyNode &n)
@@ -151,7 +147,7 @@ double CollapseExpandFossilBranchProposal::collapseBranch(TopologyNode &n)
     }
     
     // determine lower and upper bound of backward move
-    double min_age = ( n.getAge() > sibling->getAge() ? n.getAge() : sibling->getAge() );
+    double min_age = std::max( n.getAge(), sibling->getAge() );
     double max_age = parent.getAge();
     if ( parent.isRoot() )
     {
@@ -166,7 +162,7 @@ double CollapseExpandFossilBranchProposal::collapseBranch(TopologyNode &n)
     }
     
     // test that the max age is larger than the min age
-    if ( max_age <= min_age && n.getAge() <= min_age )
+    if ( max_age <= min_age || n.getAge() < min_age )
     {
         failed = true;
         return RbConstants::Double::neginf;
@@ -214,7 +210,7 @@ double CollapseExpandFossilBranchProposal::expandBranch(TopologyNode &n)
     }
     
     // determine lower and upper bound of backward move
-    double min_age = ( n.getAge() > sibling->getAge() ? n.getAge() : sibling->getAge() );
+    double min_age = std::max( n.getAge(), sibling->getAge() );
     double max_age = parent.getAge();
     if ( parent.isRoot() )
     {
@@ -234,7 +230,7 @@ double CollapseExpandFossilBranchProposal::expandBranch(TopologyNode &n)
         failed = true;
         return RbConstants::Double::neginf;
     }
-    
+
     // store the old age of the parent
     storedAge = parent.getAge();
     

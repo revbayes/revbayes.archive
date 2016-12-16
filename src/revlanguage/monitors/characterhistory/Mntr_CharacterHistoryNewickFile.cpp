@@ -117,9 +117,9 @@ const MemberRules& Mntr_CharacterHistoryNewickFile::getParameterRules(void) cons
 {
     
     static MemberRules Mntr_CharacterHistoryNewickFileMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
     
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("filename"  , RlString::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -148,7 +148,7 @@ const MemberRules& Mntr_CharacterHistoryNewickFile::getParameterRules(void) cons
 
         
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return Mntr_CharacterHistoryNewickFileMemberRules;
@@ -157,9 +157,9 @@ const MemberRules& Mntr_CharacterHistoryNewickFile::getParameterRules(void) cons
 /** Get type spec */
 const TypeSpec& Mntr_CharacterHistoryNewickFile::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

@@ -80,6 +80,7 @@ namespace RevLanguage {
 #include "RevPtr.h"
 #include "TypeSpec.h"
 #include "RevVariable.h"
+#include "RlBoolean.h"
 #include "Workspace.h"
 #include "WorkspaceVector.h"
 
@@ -266,7 +267,25 @@ template <typename rlType>
 RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
 {
     
-    if ( name == "size" )
+    if ( name == "contains" )
+    {
+        found = true;
+        
+        const rlType &rl_x = static_cast<const rlType&>( args[0].getVariable()->getRevObject() );
+        const typename rlType::valueType &x = rl_x.getValue();
+        const RevBayesCore::RbVector<typename rlType::valueType> &v = this->dagNode->getValue();
+        for (size_t i = 0; i < v.size(); ++i )
+        {
+            if ( v[i] == x )
+            {
+                return RevPtr<RevVariable>( new RevVariable( new RlBoolean( true ), "" ) );
+            }
+        }
+        
+        // return a new RevVariable with the size of this container
+        return RevPtr<RevVariable>( new RevVariable( new RlBoolean( false ), "" ) );
+    }
+    else if ( name == "size" )
     {
         found = true;
         
@@ -278,7 +297,7 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
         found = true;
         
         // Check whether the DAG node is actually a constant node
-        if ( !this->dagNode->isConstant() )
+        if ( this->dagNode->isConstant() == false )
         {
             throw RbException( "Only constant variables can be sorted." );
         }
@@ -291,13 +310,20 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
         found = true;
         
         // Check whether the DAG node is actually a constant node
-        if ( !this->dagNode->isConstant() )
+        if ( this->dagNode->isConstant() == false )
         {
             throw RbException( "Only constant variables can be made unique." );
         }
         unique();
         
         return NULL;
+    }
+    else if ( name == "[]" )
+    {
+        found = true;
+        
+        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        return RevPtr<RevVariable>( new RevVariable( getElement( index ) ) );
     }
     
     return ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::executeMethod( name, args, found );
@@ -312,9 +338,9 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
 template <typename rlType>
 const std::string& ModelVector<rlType>::getClassType(void)
 {
-    static std::string revType = rlType::getClassType() + "[]";
+    static std::string rev_type = rlType::getClassType() + "[]";
     
-	return revType;
+	return rev_type;
 }
 
 
@@ -327,9 +353,9 @@ const std::string& ModelVector<rlType>::getClassType(void)
 template <typename rlType>
 const RevLanguage::TypeSpec& ModelVector<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
 
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -355,6 +381,11 @@ template <typename rlType>
 void ModelVector<rlType>::initMethods( void )
 {
 
+    ArgumentRules* contains_arg_rules = new ArgumentRules();
+    contains_arg_rules->push_back( new ArgumentRule( "x", rlType::getClassTypeSpec(), "The element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "contains", RlBoolean::getClassTypeSpec(), contains_arg_rules ) );
+
+    
     ArgumentRules* sizeArgRules = new ArgumentRules();
     this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
     
@@ -363,7 +394,11 @@ void ModelVector<rlType>::initMethods( void )
     
     ArgumentRules* uniqueArgRules = new ArgumentRules();
     this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, uniqueArgRules) );
-
+    
+    ArgumentRules* elementArgRules = new ArgumentRules();
+    elementArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", rlType::getClassTypeSpec(), elementArgRules ) );
+    
 }
 
 

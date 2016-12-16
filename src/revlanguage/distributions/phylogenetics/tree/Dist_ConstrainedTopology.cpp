@@ -55,9 +55,15 @@ RevBayesCore::TopologyConstrainedTreeDistribution* Dist_ConstrainedTopology::cre
     const RevBayesCore::RbVector<RevBayesCore::Clade>& c = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     const Distribution&                                     rlDistribution  = static_cast<const Distribution &>( baseDistribution->getRevObject() );
     RevBayesCore::TypedDistribution<RevBayesCore::Tree>*    base            = static_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rlDistribution.createDistribution() );
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* bb = NULL;
+    if ( backbone != NULL && backbone->getRevObject() != RevNullObject::getInstance() )
+    {
+        bb = static_cast<const TimeTree &>( backbone->getRevObject() ).getDagNode();
+    }
+    
     
     // create the internal distribution object
-    RevBayesCore::TopologyConstrainedTreeDistribution* d = new RevBayesCore::TopologyConstrainedTreeDistribution(base, c);
+    RevBayesCore::TopologyConstrainedTreeDistribution* d = new RevBayesCore::TopologyConstrainedTreeDistribution(base, c, bb);
     
     return d;
 }
@@ -71,9 +77,9 @@ RevBayesCore::TopologyConstrainedTreeDistribution* Dist_ConstrainedTopology::cre
 const std::string& Dist_ConstrainedTopology::getClassType( void )
 {
     
-    static std::string revType = "Dist_ConstrainedTopology";
+    static std::string rev_type = "Dist_ConstrainedTopology";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -85,9 +91,9 @@ const std::string& Dist_ConstrainedTopology::getClassType( void )
 const TypeSpec& Dist_ConstrainedTopology::getClassTypeSpec( void )
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -135,15 +141,20 @@ const MemberRules& Dist_ConstrainedTopology::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
 
         memberRules.push_back( new ArgumentRule( "treeDistribution", TypedDistribution<TimeTree>::getClassTypeSpec(), "The base distribution for the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), "The topological constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), "The topological constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
-        rulesSet = true;
+//        RevBayesCore::Tree* backbonePtr = NULL;
+//        AbstractModelObject* nullPtr;
+//        memberRules.push_back( new ArgumentRule( "backbone", TimeTree::getClassTypeSpec(), "The backbone topology.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new TimeTree(nullPtr) ) );
+        memberRules.push_back( new ArgumentRule( "backbone", TimeTree::getClassTypeSpec(), "The backbone topology.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+        
+        rules_set = true;
     }
     
     return memberRules;
@@ -184,6 +195,10 @@ void Dist_ConstrainedTopology::setConstParameter(const std::string& name, const 
     else if ( name == "treeDistribution" )
     {
         baseDistribution = var;
+    }
+    else if ( name == "backbone" )
+    {
+        backbone = var;
     }
     else
     {

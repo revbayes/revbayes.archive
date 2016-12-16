@@ -138,8 +138,8 @@ RevPtr<RevVariable> RevObject::executeMethod(std::string const &name, const std:
 const std::string& RevObject::getClassType(void)
 {
     
-    static std::string revType = "RevObject";
-	return revType; 
+    static std::string rev_type = "RevObject";
+	return rev_type; 
 }
 
 
@@ -150,9 +150,9 @@ const std::string& RevObject::getClassType(void)
 const TypeSpec& RevObject::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), NULL );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), NULL );
 	
-    return revTypeSpec; 
+    return rev_type_spec; 
 }
 
 

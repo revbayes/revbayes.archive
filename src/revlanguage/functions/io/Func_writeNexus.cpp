@@ -41,7 +41,7 @@ RevPtr<RevVariable> Func_writeNexus::execute( void )
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     RevBayesCore::NexusWriter fw( fn.getValue() );
-    fw.openStream();
+    fw.openStream(false);
 
     
 //    const AbstractCharacterData& ac = static_cast<const AbstractCharacterData&>( args[1].getVariable()->getRevObject() );
@@ -86,9 +86,9 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet) 
+    if (!rules_set) 
     {
         argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> dataTypes;
@@ -97,7 +97,7 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
         dataTypes.push_back( Tree::getClassTypeSpec() );
 
         argumentRules.push_back( new ArgumentRule( "data", dataTypes, "The character data matrix to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -112,9 +112,9 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
 const std::string& Func_writeNexus::getClassType(void) 
 { 
     
-    static std::string revType = "Func_writeNexus";
+    static std::string rev_type = "Func_writeNexus";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -126,9 +126,9 @@ const std::string& Func_writeNexus::getClassType(void)
 const TypeSpec& Func_writeNexus::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -152,9 +152,9 @@ std::string Func_writeNexus::getFunctionName( void ) const
 const TypeSpec& Func_writeNexus::getTypeSpec( void ) const 
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

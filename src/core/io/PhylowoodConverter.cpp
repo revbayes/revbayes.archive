@@ -29,9 +29,9 @@ RevBayesCore::PhylowoodConverter::PhylowoodConverter(const std::string &sfn, con
     treeFilename(tfn),
     geoFilename(gfn),
     phwFilename(pfn),
-    burn(b),
     chartype(ct),
-    bgtype(bt)
+    bgtype(bt),
+    burn(b)
 {
     
     convert();

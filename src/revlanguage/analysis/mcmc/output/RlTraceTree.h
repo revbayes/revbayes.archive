@@ -4,17 +4,18 @@
 #include "TraceTree.h"
 #include "TypedDagNode.h"
 #include "WorkspaceToCoreWrapperObject.h"
+#include "TreeSummary.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class TraceTree : public WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree> {
+    class TraceTree : public WorkspaceToCoreWrapperObject<RevBayesCore::TreeSummary> {
         
     public:
         
-        TraceTree(void);                                                                                                                    //!< Default constructor
+//        TraceTree(void);                                                                                                                    //!< Default constructor
         TraceTree(const RevBayesCore::TraceTree& x);                                                                                              //!< Copy constructor
         
         // Basic utility functions
@@ -27,12 +28,13 @@ namespace RevLanguage {
         
         // Member method inits
         virtual RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
-        
+
     protected:
         
+        
+        void                                        initMethods(void);
         virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);          //!< Set member variable
-                
     };
     
 }

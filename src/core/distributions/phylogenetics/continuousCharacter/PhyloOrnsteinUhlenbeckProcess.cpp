@@ -90,11 +90,11 @@ double PhyloOrnsteinUhlenbeckProcess::recursiveLnProb( const TopologyNode& from 
         }
         else //heterogeneous
         {
-            size_t nodeIndex = from.getIndex();
-            double e = exp(-heterogeneousPhi->getValue()[nodeIndex] * t);
-            double e2 = exp(-2 * heterogeneousPhi->getValue()[nodeIndex] * t);
-            double m = e * upval + (1 - e) * heterogeneousMean->getValue()[nodeIndex];
-            double standDev = heterogeneousSigma->getValue()[nodeIndex] * sqrt((1 - e2) / 2 / heterogeneousPhi->getValue()[nodeIndex]);
+            size_t node_index = from.getIndex();
+            double e = exp(-heterogeneousPhi->getValue()[node_index] * t);
+            double e2 = exp(-2 * heterogeneousPhi->getValue()[node_index] * t);
+            double m = e * upval + (1 - e) * heterogeneousMean->getValue()[node_index];
+            double standDev = heterogeneousSigma->getValue()[node_index] * sqrt((1 - e2) / 2 / heterogeneousPhi->getValue()[node_index]);
             
             lnProb += RbStatistics::Normal::lnPdf(val, standDev, m);
 
@@ -154,11 +154,11 @@ void PhyloOrnsteinUhlenbeckProcess::recursiveSimulate(const TopologyNode& from) 
         }
         else // heterogeneous
         {
-            size_t nodeIndex = from.getIndex();
-            double e = exp(-heterogeneousPhi->getValue()[nodeIndex] * t);
-            double e2 = exp(-2 * heterogeneousPhi->getValue()[nodeIndex] * t);
-            m = e * upval + (1 - e) * heterogeneousMean->getValue()[nodeIndex];
-            standDev = heterogeneousSigma->getValue()[nodeIndex] * sqrt((1 - e2) / 2 / heterogeneousPhi->getValue()[nodeIndex]);
+            size_t node_index = from.getIndex();
+            double e = exp(-heterogeneousPhi->getValue()[node_index] * t);
+            double e2 = exp(-2 * heterogeneousPhi->getValue()[node_index] * t);
+            m = e * upval + (1 - e) * heterogeneousMean->getValue()[node_index];
+            standDev = heterogeneousSigma->getValue()[node_index] * sqrt((1 - e2) / 2 / heterogeneousPhi->getValue()[node_index]);
         }
         // simulate the new Val
         RandomNumberGenerator* rng = GLOBAL_RNG;

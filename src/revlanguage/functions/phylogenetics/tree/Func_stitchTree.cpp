@@ -50,15 +50,15 @@ const ArgumentRules& Func_stitchTree::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "backboneTree",              Tree::getClassTypeSpec(), "The backbone tree variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
         argumentRules.push_back( new ArgumentRule( "patchClades" , ModelVector<TimeTree>::getClassTypeSpec(), "The patch clade variables.",  ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
         argumentRules.push_back( new ArgumentRule( "patchTaxa"  , ModelVector<ModelVector<Taxon> >::getClassTypeSpec(), "The taxa per patch clade to be stitched on to the backbone tree. Shares order with patchClades.",  ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -68,9 +68,9 @@ const ArgumentRules& Func_stitchTree::getArgumentRules( void ) const
 const std::string& Func_stitchTree::getClassType(void)
 {
     
-    static std::string revType = "Func_stitchTree";
+    static std::string rev_type = "Func_stitchTree";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -78,9 +78,9 @@ const std::string& Func_stitchTree::getClassType(void)
 const TypeSpec& Func_stitchTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -100,7 +100,7 @@ std::string Func_stitchTree::getFunctionName( void ) const
 const TypeSpec& Func_stitchTree::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

@@ -12,6 +12,7 @@ namespace RevLanguage {
         
     public:
         MemberFunction(const std::string &name, const memberObjectType* o, ArgumentRules* argRules);                                             //!< Constructor
+        virtual ~MemberFunction(){};
         
         // Basic utility functions
         MemberFunction*                                                 clone(void) const;                              //!< Clone the object
@@ -135,9 +136,9 @@ template <typename memberObjectType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::MemberFunction<memberObjectType, retType>::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

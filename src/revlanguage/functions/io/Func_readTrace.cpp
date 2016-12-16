@@ -156,14 +156,14 @@ const ArgumentRules& Func_readTrace::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet)
+    if (!rules_set)
     {
         
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "Name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns (e.g., the iteration number and the trees).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -174,9 +174,9 @@ const ArgumentRules& Func_readTrace::getArgumentRules( void ) const
 const std::string& Func_readTrace::getClassType(void)
 {
     
-    static std::string revType = "Func_readTrace";
+    static std::string rev_type = "Func_readTrace";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -184,9 +184,9 @@ const std::string& Func_readTrace::getClassType(void)
 const TypeSpec& Func_readTrace::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -206,9 +206,9 @@ std::string Func_readTrace::getFunctionName( void ) const
 const TypeSpec& Func_readTrace::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

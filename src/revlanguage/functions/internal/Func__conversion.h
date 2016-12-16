@@ -74,13 +74,13 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__conversion<rlTypeFrom, rlTy
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "arg" , rlTypeFrom::getClassTypeSpec() , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -90,9 +90,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__conversion<rlTypeFrom, rlTy
 template <typename rlTypeFrom, typename rlTypeTo>
 const std::string& RevLanguage::Func__conversion<rlTypeFrom, rlTypeTo>::getClassType(void)
 {
-    static std::string revType = "Func__conversion<" + rlTypeFrom::getClassType() + "," + rlTypeTo::getClassType() + ">";
+    static std::string rev_type = "Func__conversion<" + rlTypeFrom::getClassType() + "," + rlTypeTo::getClassType() + ">";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
@@ -100,9 +100,9 @@ template <typename rlTypeFrom, typename rlTypeTo>
 const RevLanguage::TypeSpec& RevLanguage::Func__conversion<rlTypeFrom, rlTypeTo>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( Func__conversion<rlTypeFrom, rlTypeTo>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( Func__conversion<rlTypeFrom, rlTypeTo>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -123,9 +123,9 @@ template <typename rlTypeFrom, typename rlTypeTo>
 const RevLanguage::TypeSpec& RevLanguage::Func__conversion<rlTypeFrom, rlTypeTo>::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 #endif

@@ -4,18 +4,19 @@
 #include "HomologousDiscreteCharacterData.h"
 #include "Ellipsis.h"
 #include "Func_readDataDelimitedFile.h"
+#include "ModelObject.h"
 #include "ModelVector.h"
-#include "NaturalNumbersState.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "Natural.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
-#include "RlNaturalNumbersState.h"
 #include "RlMatrixReal.h"
 #include "RlStandardState.h"
 #include "RlString.h"
 #include "StringUtilities.h"
+#include "WorkspaceVector.h"
 
 
 using namespace RevLanguage;
@@ -62,66 +63,180 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
     
     // get the information from the arguments for reading the file
     const std::string& fn  = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
-    const std::string& dt  = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
+    bool header            = static_cast<const RlBoolean&>( args[1].getVariable()->getRevObject() ).getValue();
     const std::string& del = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
     
-    if (dt == "Continuous")
+    // get data from file
+    RevBayesCore::DelimitedDataReader* tsv_data = new RevBayesCore::DelimitedDataReader(fn, del[0], header);
+    const std::vector<std::vector<std::string> >&data = tsv_data->getChars();
+
+    WorkspaceVector<WorkspaceVector<AbstractModelObject> > matrix;
+
+    enum Datatype { UNBOUNDED   = 0b0001,
+                    UNCOUNTABLE = 0b0010,
+                    NUMERIC     = 0b0100,
+                    ALPHA       = 0b1000,
+
+                    NATURAL     = 0x4,
+                    INTEGER     = 0x5,
+                    REALPOS     = 0x6,
+                    REAL        = 0x7,
+                    STRING      = 0x8
+                  };
+
+    int matrix_type = 0;
+
+    for (size_t i = 0; i < data.size(); ++i)
     {
-        
-        // get data from file
-        RevBayesCore::DelimitedDataReader* tsv_data = new RevBayesCore::DelimitedDataReader(fn, del[0]);
-        const std::vector<std::vector<std::string> >&data = tsv_data->getChars();
-        
-        bool isRealPos = true;
-        
-        // loop through data and get each Continuous value
-        ModelVector<ModelVector<Real> > mReal;
-        for (size_t i = 0; i < data.size(); ++i)
+        WorkspaceVector<AbstractModelObject> row;
+
+        // make row
+        for (size_t j= 0; j < data[i].size(); ++j)
         {
-            // make row
-            ModelVector<Real> mRealRow;
-            
-            for (size_t j= 0; j < data[i].size(); ++j)
+            int elemtype = 0;
+
+            if( StringUtilities::isNumber(data[i][j]) )
             {
-                double v = atof( data[i][j].c_str() );
-                if (v < 0)
-                    isRealPos = false;
-                
-                // add value to row
-                mRealRow.push_back(atof( data[i][j].c_str() ));
-            }
-            
-            // add row to matrix
-            mReal.push_back(mRealRow);
-        }
-        
-        if (isRealPos)
-        {
-            ModelVector<ModelVector<RealPos> > mRealPos;
-            for (size_t i = 0; i < mReal.size(); ++i)
-            {
-                ModelVector<RealPos> mRealPosRow;
-                for (size_t j = 0; j < mReal[i].size(); ++j) {
-//                    std::cout << mReal[i][j] << " ";
-                    mRealPosRow.push_back( mReal[i][j] );
+                elemtype |= NUMERIC;
+
+                // integer
+                if( StringUtilities::isIntegerNumber(data[i][j]) )
+                {
+                    int val = atoi(data[i][j].c_str() );
+
+                    // negative integer
+                    if( val < 0)
+                    {
+                        elemtype |= UNBOUNDED;
+                        row.push_back( Integer( val ) );
+                    }
+                    // positive integer
+                    else
+                    {
+                        row.push_back( Natural( val ) );
+                    }
                 }
-//                std::cout << "\n";
-                mRealPos.push_back(mRealPosRow);
+                // real
+                else
+                {
+                    elemtype |= UNCOUNTABLE;
+                    double val = atof(data[i][j].c_str() );
+
+                    // negative real
+                    if( val < 0)
+                    {
+                        elemtype |= UNBOUNDED;
+                        row.push_back( Real( val ) );
+                    }
+                    // positive real
+                    else
+                    {
+                        row.push_back( RealPos( val ) );
+                    }
+                }
             }
-//            std::cout << "\n";
-            return new RevVariable( new ModelVector<ModelVector<RealPos> >(mRealPos) );
+            // string
+            else
+            {
+                elemtype = STRING;
+                row.push_back( RlString( data[i][j]) );
+            }
+
+            matrix_type = matrix_type | elemtype;
         }
-        else
-        {
-            return new RevVariable( new ModelVector<ModelVector<Real> >(mReal) );
-        }
+
+        matrix.push_back(row);
     }
-    else
+
+    if(matrix_type <= STRING)
     {
-        
-        throw RbException( "Invalid data type. Valid data types are: NaturalNumbers" );
-        
+        if(matrix_type == REALPOS)
+        {
+            ModelVector<ModelVector<RealPos> > m;
+            for(size_t i = 0; i<matrix.size(); i++)
+            {
+                ModelVector<RealPos> r;
+                for(size_t j = 0; j < matrix[i].size(); j++)
+                {
+                    if( !matrix[i][j].isType(RealPos::getClassTypeSpec()) )
+                    {
+                        r.push_back( *(RealPos*)(matrix[i][j].convertTo(RealPos::getClassTypeSpec())) );
+                    }
+                    else
+                    {
+                        r.push_back(matrix[i][j]);
+                    }
+                }
+                m.push_back(r);
+            }
+            return new RevVariable( new ModelVector<ModelVector<RealPos> >(m) );
+        }
+        else if(matrix_type == REAL)
+        {
+            ModelVector<ModelVector<Real> > m;
+            for(size_t i = 0; i<matrix.size(); i++)
+            {
+                ModelVector<Real> r;
+                for(size_t j = 0; j < matrix[i].size(); j++)
+                {
+                    if( !matrix[i][j].isType(Real::getClassTypeSpec()) )
+                    {
+                        r.push_back( *(Real*)(matrix[i][j].convertTo(Real::getClassTypeSpec())) );
+                    }
+                    else
+                    {
+                        r.push_back(matrix[i][j]);
+                    }
+                }
+                m.push_back(r);
+            }
+            return new RevVariable( new ModelVector<ModelVector<Real> >(m) );
+        }
+        else if(matrix_type == NATURAL)
+        {
+            ModelVector<ModelVector<Natural> > m;
+            for(size_t i = 0; i<matrix.size(); i++)
+            {
+                ModelVector<Natural> r;
+                for(size_t j = 0; j < matrix[i].size(); j++)
+                {
+                    r.push_back(matrix[i][j]);
+                }
+                m.push_back(r);
+            }
+            return new RevVariable( new ModelVector<ModelVector<Natural> >(m) );
+        }
+        else if(matrix_type == INTEGER)
+        {
+            ModelVector<ModelVector<Integer> > m;
+            for(size_t i = 0; i<matrix.size(); i++)
+            {
+                ModelVector<Integer> r;
+                for(size_t j = 0; j < matrix[i].size(); j++)
+                {
+                    r.push_back(matrix[i][j]);
+                }
+                m.push_back(r);
+            }
+            return new RevVariable( new ModelVector<ModelVector<Integer> >(m) );
+        }
+        else if(matrix_type == STRING)
+        {
+            ModelVector<ModelVector<RlString> > m;
+            for(size_t i = 0; i<matrix.size(); i++)
+            {
+                ModelVector<RlString> r;
+                for(size_t j = 0; j < matrix[i].size(); j++)
+                {
+                    r.push_back(matrix[i][j]);
+                }
+                m.push_back(r);
+            }
+            return new RevVariable( new ModelVector<ModelVector<RlString> >(m) );
+        }
     }
+
+    return new RevVariable( new WorkspaceVector<WorkspaceVector<AbstractModelObject> >(matrix) );
 }
 
 
@@ -130,15 +245,15 @@ const ArgumentRules& Func_readDataDelimitedFile::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet)
+    if (!rules_set)
     {
         
         argumentRules.push_back( new ArgumentRule( "file",      RlString::getClassTypeSpec(), "The name of the file to read in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "type",      RlString::getClassTypeSpec(), "The type of data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "header", RlBoolean::getClassTypeSpec(), "Skip first line?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
         argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
-        rulesSet = true;
+        rules_set = true;
         
     }
     
@@ -150,9 +265,9 @@ const ArgumentRules& Func_readDataDelimitedFile::getArgumentRules( void ) const
 const std::string& Func_readDataDelimitedFile::getClassType(void)
 {
     
-    static std::string revType = "Func_readDataDelimitedFile";
+    static std::string rev_type = "Func_readDataDelimitedFile";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -160,9 +275,9 @@ const std::string& Func_readDataDelimitedFile::getClassType(void)
 const TypeSpec& Func_readDataDelimitedFile::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -182,9 +297,9 @@ std::string Func_readDataDelimitedFile::getFunctionName( void ) const
 const TypeSpec& Func_readDataDelimitedFile::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -192,7 +307,7 @@ const TypeSpec& Func_readDataDelimitedFile::getTypeSpec( void ) const
 const TypeSpec& Func_readDataDelimitedFile::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = NaturalNumbersState::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = WorkspaceVector<WorkspaceVector<AbstractModelObject> >::getClassTypeSpec();
     return returnTypeSpec;
 }
 

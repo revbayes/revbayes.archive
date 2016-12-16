@@ -103,28 +103,28 @@ void AbstractGibbsMove::printSummary(std::ostream &o) const
     o << " ";
     
     // print the number of tries
-    int t_length = 9 - (int)log10(numTried);
+    int t_length = 9 - (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << numTried;
+    o << num_tried;
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
-    if (numTried > 0) a_length -= (int)log10(numTried);
+    if (num_tried > 0) a_length -= (int)log10(num_tried);
     
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << numTried;
+    o << num_tried;
     o << " ";
     
     // print the acceptance ratio
     double ratio = 1.0;
-    if (numTried == 0) ratio = 0;
+    if (num_tried == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)

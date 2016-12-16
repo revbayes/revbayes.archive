@@ -44,7 +44,7 @@ namespace RevBayesCore {
         
         // FileMonitor functions
         void                                closeStream(void);                                                  //!< Close stream after finish writing
-        void                                openStream(void);                                                   //!< Open the stream for writing
+        void                                openStream(bool reopen);                                            //!< Open the stream for writing
         void                                printHeader(void);                                                  //!< Print header
         
     private:
@@ -552,7 +552,7 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::monitor(unsigned l
 
 /** open the file stream for printing */
 template<class charType>
-void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::openStream(void) {
+void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::openStream(bool reopen) {
     
     // open the stream to the file
     if (append)

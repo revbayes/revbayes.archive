@@ -50,15 +50,15 @@ const ArgumentRules& Func_readRelativeNodeAgeWeightedConstraints::getArgumentRul
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet)
+    if (!rules_set)
     {
         
         argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "Relative or absolute name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "threshold", Real::getClassTypeSpec(), "weight threshold below which constraints are ignored.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
         
     }
     
@@ -70,9 +70,9 @@ const ArgumentRules& Func_readRelativeNodeAgeWeightedConstraints::getArgumentRul
 const std::string& Func_readRelativeNodeAgeWeightedConstraints::getClassType(void)
 {
     
-    static std::string revType = "Func_readRelativeNodeAgeWeightedConstraints";
+    static std::string rev_type = "Func_readRelativeNodeAgeWeightedConstraints";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -80,9 +80,9 @@ const std::string& Func_readRelativeNodeAgeWeightedConstraints::getClassType(voi
 const TypeSpec& Func_readRelativeNodeAgeWeightedConstraints::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -102,9 +102,9 @@ std::string Func_readRelativeNodeAgeWeightedConstraints::getFunctionName( void )
 const TypeSpec& Func_readRelativeNodeAgeWeightedConstraints::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

@@ -42,14 +42,14 @@ const ArgumentRules& Func_hyperbolicTangent::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "x", Real::getClassTypeSpec(), "The value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -59,18 +59,18 @@ const ArgumentRules& Func_hyperbolicTangent::getArgumentRules( void ) const
 const std::string& Func_hyperbolicTangent::getClassType(void)
 {
     
-    static std::string revType = "Func_hyperbolicTangent";
+    static std::string rev_type = "Func_hyperbolicTangent";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_hyperbolicTangent::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -89,7 +89,7 @@ std::string Func_hyperbolicTangent::getFunctionName( void ) const
 const TypeSpec& Func_hyperbolicTangent::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

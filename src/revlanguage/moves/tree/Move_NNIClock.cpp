@@ -52,17 +52,17 @@ void Move_NNIClock::constructInternalObject( void )
 /** Get Rev type of object */
 const std::string& Move_NNIClock::getClassType(void) { 
     
-    static std::string revType = "Move_NNI";
+    static std::string rev_type = "Move_NNI";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_NNIClock::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -85,9 +85,9 @@ const MemberRules& Move_NNIClock::getParameterRules(void) const
 {
     
     static MemberRules nniMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         nniMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
@@ -96,7 +96,7 @@ const MemberRules& Move_NNIClock::getParameterRules(void) const
         const MemberRules& inheritedRules = Move::getParameterRules();
         nniMemberRules.insert( nniMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return nniMemberRules;
@@ -105,9 +105,9 @@ const MemberRules& Move_NNIClock::getParameterRules(void) const
 /** Get type spec */
 const TypeSpec& Move_NNIClock::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

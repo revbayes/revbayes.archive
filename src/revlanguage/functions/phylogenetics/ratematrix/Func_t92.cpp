@@ -46,15 +46,15 @@ const ArgumentRules& Func_t92::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "kappa" , RealPos::getClassTypeSpec(), "The transition-tranversion rate ratio.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "gc",     Probability::getClassTypeSpec(), "The frequency of GC.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -64,9 +64,9 @@ const ArgumentRules& Func_t92::getArgumentRules( void ) const
 const std::string& Func_t92::getClassType(void)
 {
     
-    static std::string revType = "Func_t92";
+    static std::string rev_type = "Func_t92";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -74,9 +74,9 @@ const std::string& Func_t92::getClassType(void)
 const TypeSpec& Func_t92::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -95,7 +95,7 @@ std::string Func_t92::getFunctionName( void ) const
 const TypeSpec& Func_t92::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

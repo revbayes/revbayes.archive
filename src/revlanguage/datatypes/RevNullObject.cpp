@@ -54,9 +54,9 @@ RevPtr<RevVariable> RevNullObject::executeMethod(const std::string &name, const 
 const std::string& RevNullObject::getClassType(void)
 {
     
-    static std::string revType = "NULL";
+    static std::string rev_type = "NULL";
     
-	return revType; 
+	return rev_type; 
 }
 
 
@@ -64,9 +64,9 @@ const std::string& RevNullObject::getClassType(void)
 const TypeSpec& RevNullObject::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceObject::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &WorkspaceObject::getClassTypeSpec() );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 

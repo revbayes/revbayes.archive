@@ -84,6 +84,8 @@ namespace RevBayesCore {
      // std::vector<AdmixtureTree* >                            readAdmixtureTrees(const std::string &treeFileName);
         
     private:
+        
+        void                                                    checkTreeTaxonIndices( std::vector<Tree* >* trees );                            //!< Check and change the indices of the trees to match
         HomologousDiscreteCharacterData<AminoAcidState>*        createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
         ContinuousCharacterData*                                createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data
         HomologousDiscreteCharacterData<DnaState>*              createDnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold DNA data
@@ -107,7 +109,7 @@ namespace RevBayesCore {
         std::vector<Tree* >*                                    readBranchLengthTrees(const std::string &fn, const std::string &fileFormat);     //!< Read trees
      // void                                                    readBranchLengthTrees(const char* fileName, const std::string fileFormat);       //!< Reads trees contained in a file
         std::vector<Tree* >*                                    convertTreesFromNcl(void);                                                       //!< Converts trees stored by NCL into RevBayes formatted trees
-        Tree*                                                   translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree &nTree,const NxsTaxaBlock *tb);  //!< Translate a single NCL tree into a RevBayes tree
+        Tree*                                                   translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree &nTree,const NxsTaxaBlock *tb, bool rooted);  //!< Translate a single NCL tree into a RevBayes tree
         
         MultiFormatReader                                       nexusReader;                                                                     //!< The NCL object that reads the files
         std::set<std::string>                                   warningsSummary;                                                                 //!< A vector that contains the warnings that acumulate

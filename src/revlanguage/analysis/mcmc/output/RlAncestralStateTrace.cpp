@@ -80,18 +80,18 @@ RevPtr<RevVariable> AncestralStateTrace::executeMethod(std::string const &name, 
 
 const std::string& AncestralStateTrace::getClassType(void) { 
     
-    static std::string revType = "AncestralStateTrace";
+    static std::string rev_type = "AncestralStateTrace";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
 
 const TypeSpec& AncestralStateTrace::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::AncestralStateTrace>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::AncestralStateTrace>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -101,10 +101,10 @@ const TypeSpec& AncestralStateTrace::getClassTypeSpec(void) {
 const MemberRules& AncestralStateTrace::getParameterRules(void) const {
     
     static MemberRules modelMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) {        
-        rulesSet = true;
+    if ( !rules_set ) {        
+        rules_set = true;
     }
     
     return modelMemberRules;
@@ -115,9 +115,9 @@ const MemberRules& AncestralStateTrace::getParameterRules(void) const {
 
 const TypeSpec& AncestralStateTrace::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

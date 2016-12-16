@@ -66,9 +66,9 @@ Dist_SoftBoundUniformNormal* Dist_SoftBoundUniformNormal::clone( void ) const
 const std::string& Dist_SoftBoundUniformNormal::getClassType(void)
 {
     
-    static std::string revType = "Dist_SoftBoundUniformNormal";
+    static std::string rev_type = "Dist_SoftBoundUniformNormal";
     
-    return revType;
+    return rev_type;
 }
 
 
@@ -80,9 +80,9 @@ const std::string& Dist_SoftBoundUniformNormal::getClassType(void)
 const TypeSpec& Dist_SoftBoundUniformNormal::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -226,16 +226,16 @@ const MemberRules& Dist_SoftBoundUniformNormal::getParameterRules(void) const
 {
     
     static MemberRules distNormMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         distNormMemberRules.push_back( new ArgumentRule( "min", Real::getClassTypeSpec()       , "The min value of the uniform distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
         distNormMemberRules.push_back( new ArgumentRule( "max", Real::getClassTypeSpec()       , "The max value of the uniform distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
         distNormMemberRules.push_back( new ArgumentRule( "sd" , RealPos::getClassTypeSpec()    , "The standard deviation of the normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
         distNormMemberRules.push_back( new ArgumentRule( "p"  , Probability::getClassTypeSpec(), "The probability of being within the uniform distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distNormMemberRules;

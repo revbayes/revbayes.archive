@@ -90,7 +90,6 @@
 - (BOOL)checkValidityOfCharacterState:(id)cs {
 
     NSString* newCharVal = [NSString stringWithString:cs];
-    NSLog(@"newCharVal = %@", newCharVal);
     if ( [newCharVal length] != 1 )
         return NO;
     char v = [newCharVal characterAtIndex:0];
@@ -159,6 +158,8 @@
 
 - (IBAction)helpButtonAction:(id)sender {
 
+    NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"DataEntryTool_Anchor" inBook:locBookName];
 }
 
 - (id)init {
@@ -197,6 +198,9 @@
 
     [self saveMatrixToTool];
     [myTool closeControlPanel];
+    
+    [myTool removeDataInspector];
+    [myTool makeDataInspector];
 }
 
 - (int)numberOfColumns {
