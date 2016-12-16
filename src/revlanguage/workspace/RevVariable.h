@@ -80,7 +80,7 @@ namespace RevLanguage {
         
         // Member variables
         size_t                  element_index_max;                                      //!< The maximum element index
-        mutable size_t          last_max_index;
+        mutable bool            needs_building;
 //        std::set<int>           element_indices;                                        //!< The indices of the elements if this is a vector variable.
         bool                    is_element_var;                                         //!< Is this variable an element of a vector?
         bool                    is_hidden_var;                                          //!< Is this a hidden variable?
