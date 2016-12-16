@@ -217,24 +217,23 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
     BranchHistory* bh = this->histories[node_index];
     std::vector<CharacterEvent*> curr_state = bh->getParentCharacters();
 
+    // TODO: check that node ages are consistent with character histories
+
     // check parent and child states to make sure they match with the
     // ancestral and descendant branches; otherwise, return -Inf
-    // bh->getChildCharacters()
-    // for each child,
-    // get index, get branch history, then get parent states
     std::vector<CharacterEvent*> end_state = bh->getChildCharacters();
     for(size_t i = 0; i < node.getNumberOfChildren(); ++i)
     {
         const TopologyNode &child = node.getChild(i);
         size_t child_index = child.getIndex();
         BranchHistory* child_bh = this->histories[child_index];
-        std::vector<CharacterEvent*> child_state = bh->getParentCharacters();
+        std::vector<CharacterEvent*> child_state = child_bh->getParentCharacters();
         for(size_t j = 0; j < this->num_sites; ++j)
         {
             if(end_state[j]->getState() != child_state[j]->getState())
             {
-                std::cerr << "Oh oh Mike!!!" << std::endl;
-                std::cerr << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
+                // std::cerr << "Oh oh Mike!!!" << std::endl;
+                // std::cerr << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
                 return RbConstants::Double::neginf;
             }
         }

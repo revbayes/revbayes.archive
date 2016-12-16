@@ -192,6 +192,26 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     unsigned counts[this->numChars];
     computeCounts(currState, counts);
 
+    // check parent and child states to make sure they match with the
+    // ancestral and descendant branches; otherwise, return -Inf
+    std::vector<CharacterEvent*> end_state = bh->getChildCharacters();
+    for(size_t i = 0; i < node.getNumberOfChildren(); ++i)
+    {
+        const TopologyNode &child = node.getChild(i);
+        size_t child_index = child.getIndex();
+        BranchHistory* child_bh = this->histories[child_index];
+        std::vector<CharacterEvent*> child_state = child_bh->getParentCharacters();
+        for(size_t j = 0; j < this->numSites; ++j)
+        {
+            if(end_state[j]->getState() != child_state[j]->getState())
+            {
+                // std::cerr << "Oh oh Mike!!!" << std::endl;
+                // std::cerr << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
+                return RbConstants::Double::neginf;
+            }
+        }
+    }
+
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
 

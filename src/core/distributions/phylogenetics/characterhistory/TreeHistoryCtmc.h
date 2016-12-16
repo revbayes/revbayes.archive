@@ -310,7 +310,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n
         double branch_length = tau->getValue().getNode(node_index).getBranchLength();
 
         size_t current_state = states[site_index]->getState();
-        double previous_time = 0.0;
+        double previous_age = tau->getValue().getNode(node_index).getParent().getAge();
         const std::multiset<CharacterEvent*,CharacterEventCompare> &events = this->histories[node_index]->getHistory();
         std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
         for (it = events.begin(); it != events.end(); ++it)
@@ -319,14 +319,13 @@ void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n
             size_t s = event->getSiteIndex();
             if ( s == site_index )
             {
-                double t = event->getTime();
-                rv[current_state] += ((t-previous_time)/branch_length);
+                double a = event->getAge();
+                rv[current_state] += ((previous_age-a)/branch_length);
                 current_state = event->getState();
-                previous_time = t;
+                previous_age = a;
             }
         }
-        rv[current_state] += ((branch_length-previous_time)/branch_length);
-
+        rv[current_state] += ((previous_age-tau->getValue().getNode(node_index).getAge())/branch_length);
     }
     else
     {
@@ -603,13 +602,13 @@ void RevBayesCore::TreeHistoryCtmc<charType>::setValue(AbstractHomologousDiscret
     // delegate to the parent class
     TypedDistribution< AbstractHomologousDiscreteCharacterData >::setValue(v, force);
 
-    
+
     // now we also set the template state
     template_state = charType( static_cast<const charType&>( this->value->getTaxonData(0).getCharacter(0) ) );
     template_state.setToFirstState();
     template_state.setGapState( false );
     template_state.setMissingState( false );
-    
+
 
     tipsInitialized = false;
     this->num_sites = v->getNumberOfCharacters();

@@ -326,7 +326,7 @@ void BranchHistory::print(void) const
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         std::cout << *it_h << "   ";
-        std::cout << std::setw(12) << std::setprecision(6) << (*it_h)->getTime() << " : ";
+        std::cout << std::setw(12) << std::setprecision(6) << (*it_h)->getAge() << " : ";
         tmp[ (*it_h)->getSiteIndex() ] = *it_h;
         for (size_t i = 0; i < n_characters; i++)
         {

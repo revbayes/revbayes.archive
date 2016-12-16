@@ -10,10 +10,10 @@ CharacterEvent::CharacterEvent(void)
 
 }
 
-CharacterEvent::CharacterEvent(size_t i, size_t s, double t) :
+CharacterEvent::CharacterEvent(size_t i, size_t s, double a) :
     site_index(i),
     state(s),
-    time(t)
+    age(a)
 {
 
 }
@@ -21,7 +21,7 @@ CharacterEvent::CharacterEvent(size_t i, size_t s, double t) :
 CharacterEvent::CharacterEvent(const CharacterEvent& c) :
     site_index(c.site_index),
     state(c.state),
-    time(c.time)
+    age(c.age)
 {
 
 }
@@ -38,12 +38,17 @@ CharacterEvent* CharacterEvent::clone( void ) const
 
 bool CharacterEvent::operator<(const CharacterEvent& rhs) const
 {
-    return time < rhs.time;
+    return age < rhs.age;
 }
 
-double CharacterEvent::getTime(void) const
+bool CharacterEvent::operator>(const CharacterEvent& rhs) const
 {
-    return time;
+    return age > rhs.age;
+}
+
+double CharacterEvent::getAge(void) const
+{
+    return age;
 }
 
 size_t CharacterEvent::getSiteIndex(void) const
@@ -75,12 +80,12 @@ void CharacterEvent::setState(size_t s)
     state = s;
 }
 
-void CharacterEvent::setTime(double t)
+void CharacterEvent::setAge(double a)
 {
-    time = t;
+    age = a;
 }
 
 void CharacterEvent::print(void) const
 {
-    std::cout << site_index << " " << state << " " << time << "\n";
+    std::cout << site_index << " " << state << " " << age << "\n";
 }

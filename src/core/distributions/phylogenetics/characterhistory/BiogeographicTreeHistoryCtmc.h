@@ -246,16 +246,18 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
         double epochEndAge = epochs[epochIdx];
 
         // stepwise events
-        double t = 0.0;
-        double dt = 0.0;
-        double da = 0.0;
+        double begin_age = startAge;
+        double event_age = endAge;
+        // double t = 0.0;
+        // double dt = 0.0;
+        // double da = 0.0;
 
         bool useEpoch = true;
         for (it_h = history.begin(); it_h != history.end(); it_h++)
         {
             // next event time
             double idx = (*it_h)->getSiteIndex();
-            dt = (*it_h)->getTime() - t;
+            dt = (*it_h)->getAge();
             da = dt * branchLength;
 
             // reject extinction
