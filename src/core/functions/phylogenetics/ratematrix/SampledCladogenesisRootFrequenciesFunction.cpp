@@ -162,7 +162,7 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         for (it = events.begin(); it != events.end(); it++)
         {
             
-            dt = (*it)->getTime() - t;
+            dt = (*it)->getAge() - t; // CHECK THIS AGE
             event_age = startAge - t;
             
             // anagenetic changes occurring between (event_age, event_age-dt)

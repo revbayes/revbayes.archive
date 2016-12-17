@@ -272,8 +272,8 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
                 ss << ",";
 
             ss << "{";
-            ss << "t:" << (*it)->getTime() << ",";
-            ss << "a:" << ndAge - brLen * (*it)->getTime() << ",";
+            ss << "t:" << (*it)->getAge() << ",";
+            ss << "a:" << ndAge - brLen * (*it)->getAge() << ",";
             ss << "s:" << (*it)->getState() << ",";
             ss << "i:" << (*it)->getSiteIndex() << "";
             ss << "}";

@@ -99,11 +99,10 @@ double EventTimeSlideProposal::doProposal( void )
         // always remove event because we need to re-order the times
         history.removeEvent(event, branch_index);
 
-        
         // store the event
         stored_value = event;
         // store the current time
-        stored_time = event->getTime();
+        stored_age = event->getAge();
         // store the current branch
         stored_branch_index = branch_index;
         
@@ -113,7 +112,7 @@ double EventTimeSlideProposal::doProposal( void )
         double remaining_branch_length = 0.0;
         double used_time = 0.0;
         double branch_length = tree.getNode( branch_index ).getBranchLength();
-        double current_absolute_time = event->getTime();
+        double current_absolute_time = event->getAge(); // CHECK THIS AGE
         if ( t > 0 )
         {
             remaining_branch_length = branch_length - current_absolute_time;
@@ -193,7 +192,7 @@ double EventTimeSlideProposal::doProposal( void )
         assert( new_absolute_time >= 0 && new_absolute_time <= new_branch_length );
         
         // set the time
-        event->setTime(new_absolute_time);
+        event->setAge(new_absolute_time); // CHECK THIS AGE
         history.addEvent( event, branch_index );
         proposed_branch_index = branch_index;
         
@@ -250,7 +249,7 @@ void EventTimeSlideProposal::undoProposal( void )
         CharacterHistory &history = distribution->getCharacterHistory();
         history.removeEvent( stored_value, proposed_branch_index);
         
-        stored_value->setTime( stored_time );
+        stored_value->setAge( stored_age ); // CHECK THIS AGE
         
         history.addEvent( stored_value, stored_branch_index );
         

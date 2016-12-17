@@ -302,7 +302,7 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
         for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
         {
             CharacterEvent* event = *it;
-            double end_time = event->getTime();
+            double end_time = event->getAge(); // CHECK THIS AGE
             double time_interval = end_time - begin_time;
             
             // we need to set the current rate category
@@ -448,7 +448,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
                 CharacterEvent* event = *it;
-                double end_time = event->getTime();
+                double end_time = event->getAge();  // CHECK THIS AGE
                 double time_interval = (end_time - begin_time) / branch_length;
                 
                 // we need to set the current rate caterogy
@@ -485,7 +485,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
                 CharacterEvent* event = *it;
-                double end_time = event->getTime();
+                double end_time = event->getAge(); // CHECK THIS AGE
                 double time_interval = (end_time - begin_time) / branch_length;
                 
                 // we need to set the current rate caterogy

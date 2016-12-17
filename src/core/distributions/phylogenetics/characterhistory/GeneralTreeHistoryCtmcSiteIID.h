@@ -261,7 +261,7 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
 
         // next event time
         double idx = char_event->getSiteIndex();
-        dt = char_event->getTime() - t;
+        dt = char_event->getAge() - t; // CHECK THIS AGE
         size_t s = char_event->getState();
 
         // lnL for stepwise events for p(x->y)

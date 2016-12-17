@@ -200,7 +200,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     {
         // next event time
         double idx = (*it_h)->getSiteIndex();
-        dt = (*it_h)->getTime() - t;
+        dt = (*it_h)->getAge() - t; // CHECK THIS AGE
 
         double tr = rm.getRate( currState[ (*it_h)->getSiteIndex() ]->getState(), (*it_h)->getState(), currAge, getBranchRate(nd.getIndex()));
         double sr = rm.getSumOfRates(currState, counts) * getBranchRate(nd.getIndex());
