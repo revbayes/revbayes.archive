@@ -297,43 +297,47 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
         }
         else
         {
-//            // calculate the conditional likelihoods for each time slice moving
-//            // along this branch backwards in time from the tip towards the root
-//            //
-//            //   tip  current_dt = 0
-//            //    |   current_dt = 1
-//            //    |   current_dt = 2
-//            //    -----internal node   current_dt = 0
-//            //               |         current_dt = 1
-//            //               |         current_dt = 2
-//            //               |         current_dt = 3
-//            std::vector<std::vector<double> > branch_likelihoods;
-//            size_t current_dt = 0;
-//            
-//            // numerically integrate each time slice copying likelihoods to branch_likelihoods
-//            while ( (current_dt * dt) + begin_age <= end_age || current_dt < 2)
-//            {
-//                
-//                std::vector<double> dt_likelihood;
-//                if ( current_dt == 0 )
-//                {
-//                    dt_likelihood = node_likelihood;
-//                }
-//                else
-//                {
-//                    double current_dt_start = (current_dt * dt) + begin_age;
-//                    double current_dt_end = (current_dt * (dt + 1)) + begin_age;
-//                    numericallyIntegrateProcess(node_likelihood, current_dt_start, current_dt_end, true, false);
-//                    dt_likelihood = node_likelihood;
-//                }
-//                
-//                branch_likelihoods.push_back(dt_likelihood);
-//                current_dt++;
-//
-//            }
-//            
-//            // save the branch conditional likelihoods
-//            branch_partial_likelihoods[node_index] = branch_likelihoods;
+            // calculate the conditional likelihoods for each time slice moving
+            // along this branch backwards in time from the tip towards the root
+            //
+            //   tip  current_dt = 0
+            //    |   current_dt = 1
+            //    |   current_dt = 2
+            //    -----internal node   current_dt = 0
+            //               |         current_dt = 1
+            //               |         current_dt = 2
+            //               |         current_dt = 3
+            std::vector<std::vector<double> > branch_likelihoods;
+            size_t current_dt = 0;
+            
+            // numerically integrate each time slice copying likelihoods to branch_likelihoods
+            while ( (current_dt * dt) + begin_age < end_age || current_dt < 2)
+            {
+                
+                std::vector<double> dt_likelihood;
+                if ( current_dt == 0 )
+                {
+                    dt_likelihood = node_likelihood;
+                }
+                else
+                {
+                    double current_dt_start = (current_dt * dt) + begin_age;
+                    double current_dt_end = ((current_dt + 1) * dt) + begin_age;
+                    if (current_dt_end > end_age)
+                    {
+                        current_dt_end = end_age;
+                    }
+                    numericallyIntegrateProcess(node_likelihood, current_dt_start, current_dt_end, true, false);
+                    dt_likelihood = node_likelihood;
+                }
+                
+                branch_likelihoods.push_back(dt_likelihood);
+                current_dt++;
+
+            }
+            
+            // save the branch conditional likelihoods
+            branch_partial_likelihoods[node_index] = branch_likelihoods;
         }
         
         // rescale the conditional likelihoods at the "end" of the branch
@@ -895,6 +899,8 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
     std::vector<double> transition_times;
     transition_states.push_back(current_state);
     
+    size_t downpass_dt = branch_partial_likelihoods[node_index].size() - 1;
+    
     // loop over every time slice, stopping before the last time slice
     while ( (current_dt * (dt + 1)) < branch_length) // || current_dt < 1)
     {
@@ -908,7 +914,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
         double probs_sum = 0.0;
         for (size_t i = 0; i < num_states; i++)
         {
-            probs_sum += branch_conditional_probs[i + num_states];
+            probs_sum += branch_conditional_probs[i + num_states] * branch_partial_likelihoods[node_index][downpass_dt][i + num_states];
         }
         
         RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -916,7 +922,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
 
         for (size_t i = 0; i < num_states; i++)
         {
-            u -= branch_conditional_probs[i + num_states];
+            u -= branch_conditional_probs[i + num_states] * branch_partial_likelihoods[node_index][downpass_dt][i + num_states];
             if (u < 0.0)
             {
                 new_state = i;
@@ -927,21 +933,21 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
         // check if there was a character state transition
         if (new_state != current_state)
         {
-            double time_since_last_transition = 0;
-            if (transition_times.size() == 0)
+            double time_since_last_transition = 0.0;
+            double transition_times_sum = 0.0;
+            for (size_t j = 0; j < transition_times.size(); j++)
             {
-                time_since_last_transition = current_dt_end;
+                transition_times_sum += transition_times[j];
             }
-            else
-            {
-                time_since_last_transition = current_dt_end - transition_times[transition_times.size() - 1];
-            }
+            time_since_last_transition = current_dt_end - transition_times_sum;
+
             transition_times.push_back(time_since_last_transition);
             transition_states.push_back(new_state);
             current_state = new_state;
         }
         
         current_dt++;
+        downpass_dt--;
     }
     
     if ( node.isTip() == true )
@@ -964,40 +970,37 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
             new_state = current_state;
         }
         
-//        // check if there was a character state transition
-//        if (new_state != current_state)
-//        {
-//            double time_since_last_transition = 0;
-//            if (transition_times.size() == 0)
-//            {
-//                time_since_last_transition = current_dt_end;
-//            }
-//            else
-//            {
-//                time_since_last_transition = current_dt_end - transition_times[transition_times.size() - 1];
-//            }
-//            transition_times.push_back(time_since_last_transition);
-//            transition_states.push_back(new_state);
-//        }
+        // check if there was a character state transition
+        if (new_state != current_state)
+        {
+            double time_since_last_transition = 0.0;
+            double transition_times_sum = 0.0;
+            for (size_t j = 0; j < transition_times.size(); j++)
+            {
+                transition_times_sum += transition_times[j];
+            }
+            time_since_last_transition = current_dt_end - transition_times_sum;
+            
+            transition_times.push_back(time_since_last_transition);
+            transition_states.push_back(new_state);
+        }
         
         // add the length of the final character state
-        double time_since_last_transition = 0;
-        if (transition_times.size() == 0)
+        double time_since_last_transition = 0.0;
+        double transition_times_sum = 0.0;
+        for (size_t j = 0; j < transition_times.size(); j++)
         {
-            time_since_last_transition = branch_length;
+            transition_times_sum += transition_times[j];
         }
-        else
-        {
-            time_since_last_transition = branch_length - transition_times[transition_times.size() - 1];
-        }
+        time_since_last_transition = branch_length - transition_times_sum;
         transition_times.push_back(time_since_last_transition);
         
         // make SIMMAP string
         std::string simmap_string = "{";
-        for (size_t i = 0; i < transition_times.size(); i++)
+        for (size_t i = transition_times.size(); i > 0; i--)
         {
-            simmap_string = simmap_string + StringUtilities::toString(transition_states[i]) + "," + StringUtilities::toString(transition_times[i]);
-            if (i + 1 < transition_times.size())
+            simmap_string = simmap_string + StringUtilities::toString(transition_states[i - 1]) + "," + StringUtilities::toString(transition_times[i - 1]);
+            if (i != 1)
             {
                 simmap_string = simmap_string + ":";
             }
@@ -1112,40 +1115,38 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
             }
         }
         
-//        // check if there was a character state transition
-//        if (a != current_state)
-//        {
-//            double time_since_last_transition = 0;
-//            if (transition_times.size() == 0)
-//            {
-//                time_since_last_transition = current_dt_end;
-//            }
-//            else
-//            {
-//                time_since_last_transition = current_dt_end - transition_times[transition_times.size() - 1];
-//            }
-//            transition_times.push_back(time_since_last_transition);
-//            transition_states.push_back(a);
-//        }
+        // check if there was a character state transition
+        if (a != current_state)
+        {
+            double time_since_last_transition = 0.0;
+            double transition_times_sum = 0.0;
+            for (size_t j = 0; j < transition_times.size(); j++)
+            {
+                transition_times_sum += transition_times[j];
+            }
+            time_since_last_transition = current_dt_end - transition_times_sum;
+
+            transition_times.push_back(time_since_last_transition);
+            transition_states.push_back(a);
+        }
         
         // add the length of the final character state
-        double time_since_last_transition = 0;
-        if (transition_times.size() == 0)
+        double time_since_last_transition = 0.0;
+        double transition_times_sum = 0.0;
+        for (size_t j = 0; j < transition_times.size(); j++)
         {
-            time_since_last_transition = branch_length;
+            transition_times_sum += transition_times[j];
         }
-        else
-        {
-            time_since_last_transition = branch_length - transition_times[transition_times.size() - 1];
-        }
+        time_since_last_transition = branch_length - transition_times_sum;
+
         transition_times.push_back(time_since_last_transition);
         
         // make SIMMAP string
         std::string simmap_string = "{";
-        for (size_t i = 0; i < transition_times.size(); i++)
+        for (size_t i = transition_times.size(); i > 0; i--)
         {
-            simmap_string = simmap_string + StringUtilities::toString(transition_states[i]) + "," + StringUtilities::toString(transition_times[i]);
-            if (i + 1 < transition_times.size())
+            simmap_string = simmap_string + StringUtilities::toString(transition_states[i - 1]) + "," + StringUtilities::toString(transition_times[i - 1]);
+            if (i != 1)
             {
                 simmap_string = simmap_string + ":";
             }

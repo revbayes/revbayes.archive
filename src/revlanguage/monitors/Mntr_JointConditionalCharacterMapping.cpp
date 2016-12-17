@@ -60,9 +60,9 @@ void Mntr_JointConditionalCharacterMapping::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>*   cdbdp_tdn = static_cast<const RevLanguage::Tree&>( cdbdp->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree>* cdbdp_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree>* >( cdbdp_tdn );
     
-//    RevBayesCore::StateDependentSpeciationExtinctionProcess *sse_process = NULL;
-//    sse_process = dynamic_cast<RevBayesCore::StateDependentSpeciationExtinctionProcess*>( &cdbdp_sn->getFirstChild()->getDistribution() );
-//    sse_process->setSampleCharacterHistory( true );
+    RevBayesCore::StateDependentSpeciationExtinctionProcess *sse_process = NULL;
+    sse_process = dynamic_cast<RevBayesCore::StateDependentSpeciationExtinctionProcess*>( &cdbdp_sn->getDistribution() );
+    sse_process->setSampleCharacterHistory( true );
     
     RevBayesCore::JointConditionalCharacterMappingMonitor *m = new RevBayesCore::JointConditionalCharacterMappingMonitor( cdbdp_sn, (unsigned long)print_gen, file_name, is, sep );
     m->setAppend( app );
