@@ -317,7 +317,9 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                 std::vector<double> dt_likelihood;
                 if ( current_dt == 0 )
                 {
-                    dt_likelihood = node_likelihood;
+                    std::vector<double>::const_iterator first = node_likelihood.begin() + num_states;
+                    std::vector<double>::const_iterator last = node_likelihood.begin() + (num_states * 2);
+                    dt_likelihood = std::vector<double>(first, last);
                 }
                 else
                 {
@@ -328,7 +330,10 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                         current_dt_end = end_age;
                     }
                     numericallyIntegrateProcess(node_likelihood, current_dt_start, current_dt_end, true, false);
-                    dt_likelihood = node_likelihood;
+
+                    std::vector<double>::const_iterator first = node_likelihood.begin() + num_states;
+                    std::vector<double>::const_iterator last = node_likelihood.begin() + (num_states * 2);
+                    dt_likelihood = std::vector<double>(first, last);
                 }
                 
                 branch_likelihoods.push_back(dt_likelihood);
@@ -914,7 +919,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
         double probs_sum = 0.0;
         for (size_t i = 0; i < num_states; i++)
         {
-            probs_sum += branch_conditional_probs[i + num_states] * branch_partial_likelihoods[node_index][downpass_dt][i + num_states];
+            probs_sum += branch_conditional_probs[i + num_states] * branch_partial_likelihoods[node_index][downpass_dt][i];
         }
         
         RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -922,7 +927,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
 
         for (size_t i = 0; i < num_states; i++)
         {
-            u -= branch_conditional_probs[i + num_states] * branch_partial_likelihoods[node_index][downpass_dt][i + num_states];
+            u -= branch_conditional_probs[i + num_states] * branch_partial_likelihoods[node_index][downpass_dt][i];
             if (u < 0.0)
             {
                 new_state = i;
