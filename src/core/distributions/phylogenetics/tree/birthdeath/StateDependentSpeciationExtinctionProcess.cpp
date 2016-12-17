@@ -951,6 +951,19 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
             current_state = new_state;
         }
         
+        // condition branch_conditional_probs on the sampled state
+        for (size_t i = 0; i < num_states; i++)
+        {
+            if (i == current_state)
+            {
+                branch_conditional_probs[ num_states + i ] = 1.0;
+            }
+            else
+            {
+                branch_conditional_probs[ num_states + i ] = 0.0;
+            }
+        }
+        
         current_dt++;
         downpass_dt--;
     }
