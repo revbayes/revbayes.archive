@@ -44,7 +44,8 @@ filename( m.filename ),
 separator( m.separator ),
 append( m.append ),
 cdbdp( m.cdbdp ),
-tree( m.tree )
+tree( m.tree ),
+include_simmaps( m.include_simmaps )
 {
     
     if (m.outStream.is_open() == true )
@@ -114,8 +115,8 @@ void JointConditionalCharacterMappingMonitor::monitor(unsigned long gen)
         num_nodes = tree->getValue().getNumberOfNodes();
         
         // draw character map from the joint distribution
-        std::vector<std::string*> character_histories(num_nodes);
-//        sse_process->drawJointConditionalCharacterMap(character_histories);
+        std::vector<std::string*> character_histories( num_nodes );
+        sse_process->drawJointConditionalCharacterMap( character_histories );
         
         const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
         for (int i = 0; i < nds.size(); i++)
@@ -128,7 +129,7 @@ void JointConditionalCharacterMappingMonitor::monitor(unsigned long gen)
             
             // print out this branch's character history in the format
             // used by SIMMAP and phytools
-            outStream << character_histories[ node_index ];
+            outStream << *character_histories[ node_index ];
             
         }
         
@@ -136,7 +137,8 @@ void JointConditionalCharacterMappingMonitor::monitor(unsigned long gen)
         {
             // print out the SIMMAP/phytools compatible newick string in the last column of the log file
             outStream << separator;
-            tree->getValue().addNodeParameter("character_history", character_histories, false);
+            tree->getValue().clearNodeParameters();
+            tree->getValue().addNodeParameter( "character_history", character_histories, false );
             outStream << tree->getValue().getSimmapNewickRepresentation();
         }
         
@@ -187,8 +189,8 @@ void JointConditionalCharacterMappingMonitor::printHeader()
         outStream << node_index + 1;
         
     }
-    
-    if ( include_simmaps = true )
+
+    if ( include_simmaps == true )
     {
         outStream << separator;
         outStream << "simmap";
