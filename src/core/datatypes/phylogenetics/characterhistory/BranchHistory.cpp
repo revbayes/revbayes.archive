@@ -99,6 +99,22 @@ void BranchHistory::addEvent(CharacterEvent* evt)
     history.insert(evt);
 }
 
+bool BranchHistory::areEventTimesValid(const TopologyNode &node) const
+{
+    
+    double node_age = node.getAge();
+    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
+    for (it = history.begin(); it != history.end(); it++)
+    {
+        if ( (*it)->getAge() < node_age )
+        {
+            std::cerr << node_age << " -- " << (*it)->getAge() << std::endl;
+            return false;
+        }
+    }
+    
+    return true;
+}
 
 BranchHistory* BranchHistory::clone(void) const
 {

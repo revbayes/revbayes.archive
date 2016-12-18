@@ -318,8 +318,11 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
 
             // proceed with rejection sampling
             currState = parent_states[site_index]->getState();
-            double t = 0.0;
-
+            // TODO: make t start with the age of the parent node, end at the age of the child node
+            // double t = 0.0;
+            double end_age = node->getAge();
+            double age = end_age + branch_length;
+            
             // repeated rejection sampling
             do
             {
@@ -348,12 +351,12 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                 }
 
                 // do not force valid time if event needed
-                t += RbStatistics::Exponential::rv(r, *GLOBAL_RNG);
+                age -= RbStatistics::Exponential::rv(r, *GLOBAL_RNG);
 
-                if (t < branch_length)
+                if (age > end_age)
                 {
                     currState = nextState;
-                    CharacterEvent* evt = new CharacterEvent(site_index, nextState, t);
+                    CharacterEvent* evt = new CharacterEvent(site_index, nextState, age);
                     tmpHistory.insert(evt);
                 }
                 else if (currState != endState)
@@ -365,7 +368,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
 
                 }
             }
-            while(t < branch_length);
+            while(age > end_age);
 
         }
         while (currState != endState);
