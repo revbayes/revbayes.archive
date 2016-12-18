@@ -218,6 +218,10 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
     std::vector<CharacterEvent*> curr_state = bh->getParentCharacters();
 
     // TODO: check that node ages are consistent with character histories
+    if ( bh->areEventTimesValid(node) == false)
+    {
+        return RbConstants::Double::neginf;
+    }
 
     // check parent and child states to make sure they match with the
     // ancestral and descendant branches; otherwise, return -Inf
@@ -238,10 +242,6 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
             }
         }
     }
-
-    // if (check == true) {
-    //     return RbConstants::Double::neginf;
-    // }
 
     // we need the counts for faster computation
     std::vector<size_t> counts = computeCounts(curr_state);
@@ -795,28 +795,32 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulate(void)
 template<class charType>
 void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulateHistory(const TopologyNode& node, BranchHistory* bh)
 {
-    double branch_length = node.getBranchLength();
     size_t branch_index = node.getIndex();
     double branch_rate = getBranchRate( branch_index );
     const RateGenerator& rm = homogeneousRateGenerator->getValue();
 
+    // get the start and end times
+    double branch_length = node.getBranchLength();
+    double end_age = node.getAge();
+    double start_age = end_age + branch_length;
+    
     // get parent BranchHistory state
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
     std::vector<size_t> counts = computeCounts(currState);
     std::set<CharacterEvent*,CharacterEventCompare> history;
 
     // simulate path
-    double t = 0.0;
+    double t = start_age;
     double dt = 0.0;
-    while (t + dt < branch_length)
+    while (t - dt > end_age)
     {
         // sample next event time
         double sr = rm.getSumOfRates(currState, counts) * branch_rate;
         dt = RbStatistics::Exponential::rv(sr, *GLOBAL_RNG);
-        if (t + dt < branch_length)
+        if (t - dt > end_age)
         {
             // next event type
-            CharacterEvent* evt = new CharacterEvent(0, 0, t+dt);
+            CharacterEvent* evt = new CharacterEvent(0, 0, t - dt);
             double u = GLOBAL_RNG->uniform01() * sr;
 
             bool found = false;
@@ -850,7 +854,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulateHistory(cons
             counts[s] += 1;
 
             // update history
-            t += dt;
+            t -= dt;
             currState[i] = evt;
         }
     }

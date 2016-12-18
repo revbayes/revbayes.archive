@@ -12,6 +12,7 @@
 #include "CharacterEvent.h"
 #include "CharacterEventCompare.h"
 #include "Cloneable.h"
+#include "TopologyNode.h"
 
 #include <ostream>
 #include <set>
@@ -33,6 +34,8 @@ namespace RevBayesCore {
         BranchHistory* clone(void) const;
         //bool operator()(const BranchHistory&) const;
         bool operator<(const BranchHistory&) const;
+
+        bool                                                            areEventTimesValid(const TopologyNode &node) const;
 
         const size_t                                                    getBranchIndex(void) const;
         CharacterEvent*                                                 getEvent(size_t i);
@@ -62,8 +65,7 @@ namespace RevBayesCore {
         void                                                            setChildCharacters(const std::vector<CharacterEvent*>& s);
         void                                                            setHistory(const std::set<CharacterEvent*,CharacterEventCompare>& s);
         void                                                            setHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& s);
-
-
+        
         void                                                            print(void) const;
 
     protected:
