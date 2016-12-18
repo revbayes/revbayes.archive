@@ -87,11 +87,13 @@ double RootTimeSlideUniformProposal::doProposal( void )
     TopologyNode* node = &tau.getRoot();
     
     // we need to work with the times
-    double my_age      = node->getAge();
-    double child_Age   = node->getChild( 0 ).getAge();
+    double my_age       = node->getAge();
+    TopologyNode* child = &node->getChild( 0 );
+    double child_Age    = child->getAge();
     if ( child_Age < node->getChild( 1 ).getAge())
     {
-        child_Age = node->getChild( 1 ).getAge();
+        child = &node->getChild( 1 );
+        child_Age = child->getAge();
     }
     
     // now we store all necessary values
@@ -103,6 +105,11 @@ double RootTimeSlideUniformProposal::doProposal( void )
     // set the age
     node->setAge( my_new_age );
     
+    if( child->isSampledAncestor() )
+    {
+        child->setAge( my_new_age );
+    }
+
     return 0.0;
     
 }
