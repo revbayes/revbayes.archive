@@ -40,34 +40,17 @@ RevPtr<RevVariable> Func_treeTrace::execute( void )
     RevBayesCore::TraceTree t(false);
     
     RevObject& ro = args[0].getVariable()->getRevObject();
+
+    const ModelVector<RevLanguage::Tree>& trees = static_cast<const ModelVector<RevLanguage::Tree>&>( ro );
+
     if ( ro.isType( ModelVector<TimeTree>::getClassTypeSpec() ) )
     {
-        const ModelVector<RevLanguage::TimeTree>& trees = static_cast<const ModelVector<RevLanguage::TimeTree>&>( ro );
-    
         t = RevBayesCore::TraceTree( true );
-
-        for (size_t i = 0; i < trees.size(); ++i)
-        {
-            t.addObject( new RevBayesCore::Tree( trees[i] ) );
-        }
     }
-    else if ( ro.isType( ModelVector<BranchLengthTree>::getClassTypeSpec() ) )
-    {
-        const ModelVector<RevLanguage::BranchLengthTree>& trees = static_cast<const ModelVector<RevLanguage::BranchLengthTree>&>( ro );
 
-        for (size_t i = 0; i < trees.size(); ++i)
-        {
-            t.addObject( new RevBayesCore::Tree( trees[i] ) );
-        }
-    }
-    else
+    for (size_t i = 0; i < trees.size(); ++i)
     {
-        const ModelVector<RevLanguage::Tree>& trees = static_cast<const ModelVector<RevLanguage::Tree>&>( ro );
-
-        for (size_t i = 0; i < trees.size(); ++i)
-        {
-            t.addObject( new RevBayesCore::Tree( trees[i] ) );
-        }
+        t.addObject( new RevBayesCore::Tree( trees[i] ) );
     }
 
     int burnin = static_cast<const Integer &>(args[1].getVariable()->getRevObject()).getValue();
