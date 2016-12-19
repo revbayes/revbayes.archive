@@ -265,8 +265,8 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 
     }
         
-    throw RbException( "Argument type mismatch fitting a " + theVar->getRevObject().getType() + " argument to formal " +
-                        getArgumentTypeSpec()[0].getType() + " " + getArgumentLabel() );
+    throw RbException( "Argument type mismatch while fitting a parameter of type " + theVar->getRevObject().getType() + " to the argument with name \"" + getArgumentLabel() + "\" and type "
+                        getArgumentTypeSpec()[0].getType()  );
 }
 
 
