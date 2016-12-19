@@ -574,6 +574,7 @@ bool RbFileManager::makeDirectory(const std::string &dn)
 {
     
     std::string cmd = "mkdir " + dn;
+    std::cerr << "Creating dir:\t\t\"" << cmd << "\"" << std::endl;
 
     return ( system( cmd.c_str() ) == 0 );
 }
