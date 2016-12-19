@@ -163,7 +163,7 @@ void RbSettings::initializeUserSettings(void)
         GetModuleFileName( NULL, buffer, MAX_DIR_PATH );
         std::cerr << "Buffer:\t" << buffer << std::endl;
         string::size_type pos = string( buffer ).find_last_of( "\\/" );
-        std::string test = string( buffer ).substr( 0, pos);
+        std::string test = std::string( buffer ).substr( 0, pos);
         std::cerr << "Test:\t" << test << std::endl;
 #	else
         std::string pathSeparator = "/";
