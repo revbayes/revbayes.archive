@@ -50,14 +50,6 @@ RbFileManager::RbFileManager( void ) :
 	setFileName("");
 	setFilePath(".");
     
-    fullFileName = filePath;
-    if ( fullFileName != "")
-    {
-        fullFileName += pathSeparator;
-    }
-    
-    fullFileName += fileName;
-    
 }
 
 
@@ -86,14 +78,6 @@ RbFileManager::RbFileManager(const std::string &fn) :
     // set the path and file for the string
 //    parsePathFileNames( expandUserDir( fn ) );
     parsePathFileNames( fn );
-    
-    fullFileName = filePath;
-    if ( fullFileName != "")
-    {
-        fullFileName += pathSeparator;
-    }
-    
-    fullFileName += fileName;
     
 }
 
@@ -124,14 +108,6 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
     // set the path and file for the string
     std::string tmp = pn + pathSeparator + fn;
     parsePathFileNames( tmp );
-    
-    fullFileName = filePath;
-    if ( fullFileName != "")
-    {
-        fullFileName += pathSeparator;
-    }
-    
-    fullFileName += fileName;
     
 }
 
@@ -624,6 +600,10 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
 {
     std::string name = input_string;
     
+#	ifdef RB_WIN
+    StringUtilities::replaceSubstring(name,"/","\\");
+#   endif
+    
     // check if the path is a good one
     bool isDPresent = isDirectoryPresent(name);
     bool isFPresent = isFilePresent(name);
@@ -699,6 +679,9 @@ void RbFileManager::setFileName(std::string const &s)
 void RbFileManager::setFilePath(std::string const &s)
 {
     filePath = s;
+#	ifdef RB_WIN
+    StringUtilities::replaceSubstring(filePath,"/","\\");
+#   endif
     
     fullFileName = filePath;
     if ( fullFileName == "" )
