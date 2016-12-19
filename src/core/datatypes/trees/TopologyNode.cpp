@@ -91,7 +91,7 @@ TopologyNode::TopologyNode(const TopologyNode &n) :
     node_comments( n.node_comments ),
     branch_comments( n.branch_comments )
 {
-    
+
     // copy the children
     for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++)
     {
@@ -101,7 +101,7 @@ TopologyNode::TopologyNode(const TopologyNode &n) :
         theClone->setParent(this);
     }
     
-    
+
 }
 
 
@@ -1300,35 +1300,31 @@ void TopologyNode::removeTree(Tree *t)
 }
 
 
-void TopologyNode::setAge(double a)
+void TopologyNode::setAge(double a, bool propagate )
 {
-    
+    if( sampled_ancestor && propagate )
+    {
+        parent->setAge(a);
+        return;
+    }
+
     age = a;
     
     // we need to recompute my branch-length
     recomputeBranchLength();
-    
-//    sampled_ancestor = ( !isRoot() && a == parent->getAge() & a > 0.0 );
-//    fossil          = a > 0.0;
-    
-    //
-//    // set the fossil flags
-//    setFossil( false );
-//    setSampledAncestor( false );
-//    new_fossil->setFossil( true );
-//    new_fossil->setSampledAncestor( true );
-//    
-//    // set the age and branch-length of the fossil
-//    new_fossil->setAge( age );
-//    new_fossil->setBranchLength( 0.0 );
-    
-    
-    
+
     // we also need to recompute the branch lengths of my children
     for (std::vector<TopologyNode *>::iterator it = children.begin(); it != children.end(); ++it)
     {
         TopologyNode *child = *it;
-        child->recomputeBranchLength();
+        if( child->isSampledAncestor() )
+        {
+            child->setAge(a, false);
+        }
+        else
+        {
+            child->recomputeBranchLength();
+        }
         
         // fire tree change event
         if ( tree != NULL )
@@ -1376,6 +1372,7 @@ void TopologyNode::setIndex( size_t idx)
     index = idx;
     
 }
+
 
 void TopologyNode::setName(std::string const &n)
 {
