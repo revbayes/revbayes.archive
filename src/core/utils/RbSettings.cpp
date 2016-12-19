@@ -158,6 +158,13 @@ void RbSettings::initializeUserSettings(void)
 #	ifdef RB_WIN
         std::string pathSeparator = "\\";
         std::cerr << "Found working directory:\t" << cwd << std::endl;
+        
+        char buffer[MAX_DIR_PATH];
+        GetModuleFileName( NULL, buffer, MAX_DIR_PATH );
+        std::cerr << "Buffer:\t" << buffer << std::endl;
+        string::size_type pos = string( buffer ).find_last_of( "\\/" );
+        std::string test = string( buffer ).substr( 0, pos);
+        std::cerr << "Test:\t" << test << std::endl;
 #	else
         std::string pathSeparator = "/";
 #   endif
@@ -174,9 +181,6 @@ void RbSettings::initializeUserSettings(void)
     else
     {
         workingDirectory = "";
-#	ifdef RB_WIN
-        std::cerr << "Did not find working directory:\t" << workingDirectory << std::endl;
-#   endif
     }
     
     // save the current settings for the future.
