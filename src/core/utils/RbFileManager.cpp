@@ -50,14 +50,6 @@ RbFileManager::RbFileManager( void ) :
 	setFileName("");
 	setFilePath(".");
     
-    fullFileName = filePath;
-    if ( fullFileName != "")
-    {
-        fullFileName += pathSeparator;
-    }
-    
-    fullFileName += fileName;
-    
 }
 
 
@@ -86,14 +78,6 @@ RbFileManager::RbFileManager(const std::string &fn) :
     // set the path and file for the string
 //    parsePathFileNames( expandUserDir( fn ) );
     parsePathFileNames( fn );
-    
-    fullFileName = filePath;
-    if ( fullFileName != "")
-    {
-        fullFileName += pathSeparator;
-    }
-    
-    fullFileName += fileName;
     
 }
 
@@ -124,14 +108,6 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
     // set the path and file for the string
     std::string tmp = pn + pathSeparator + fn;
     parsePathFileNames( tmp );
-    
-    fullFileName = filePath;
-    if ( fullFileName != "")
-    {
-        fullFileName += pathSeparator;
-    }
-    
-    fullFileName += fileName;
     
 }
 

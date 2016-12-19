@@ -157,6 +157,7 @@ void RbSettings::initializeUserSettings(void)
     {
 #	ifdef RB_WIN
         std::string pathSeparator = "\\";
+        std::cerr << "Found working directory:\t" << cwd << std::endl;
 #	else
         std::string pathSeparator = "/";
 #   endif
@@ -173,6 +174,9 @@ void RbSettings::initializeUserSettings(void)
     else
     {
         workingDirectory = "";
+#	ifdef RB_WIN
+        std::cerr << "Did not find working directory:\t" << workingDirectory << std::endl;
+#   endif
     }
     
     // save the current settings for the future.
