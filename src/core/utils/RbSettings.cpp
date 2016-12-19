@@ -11,9 +11,14 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#	ifdef RB_WIN
+#include <windows.h>
+#   endif
 
 
-/** Default constructor: The default settings are first read, and 
+
+
+/** Default constructor: The default settings are first read, and
  * then potentially overwritten by values contained in a file.  */
 RbSettings::RbSettings(void)
 {
