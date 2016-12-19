@@ -50,9 +50,18 @@ RevPtr<RevVariable> Func_treeTrace::execute( void )
             t.addObject( new RevBayesCore::Tree( trees[i] ) );
         }
     }
-    else
+    else if ( args[0].getVariable()->getRevObject().isType( ModelVector<BranchLengthTree>::getClassTypeSpec() ) )
     {
         const ModelVector<RevLanguage::BranchLengthTree>& trees = static_cast<const ModelVector<RevLanguage::BranchLengthTree>&>( args[0].getVariable()->getRevObject() );
+
+        for (size_t i = 0; i < trees.size(); ++i)
+        {
+            t.addObject( new RevBayesCore::Tree( trees[i] ) );
+        }
+    }
+    else if ( args[0].getVariable()->getRevObject().isType( ModelVector<Tree>::getClassTypeSpec() ) )
+    {
+        const ModelVector<RevLanguage::Tree>& trees = static_cast<const ModelVector<RevLanguage::Tree>&>( args[0].getVariable()->getRevObject() );
 
         for (size_t i = 0; i < trees.size(); ++i)
         {
@@ -78,6 +87,7 @@ const ArgumentRules& Func_treeTrace::getArgumentRules( void ) const
     if (!rules_set)
     {
         std::vector<TypeSpec> treeTypes;
+        treeTypes.push_back( ModelVector<Tree>::getClassTypeSpec() );
         treeTypes.push_back( ModelVector<TimeTree>::getClassTypeSpec() );
         treeTypes.push_back( ModelVector<BranchLengthTree>::getClassTypeSpec() );
         argumentRules.push_back( new ArgumentRule( "trees", treeTypes, "Vector of trees.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
