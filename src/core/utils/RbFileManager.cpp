@@ -172,6 +172,7 @@ void RbFileManager::createDirectoryForFile( void )
         
         if ( isDirectoryPresent( directoryName ) == false )
         {
+            std::cerr << "Let's make this directory:\t\"" << directoryName << "\"" << std::endl;
             makeDirectory( directoryName );
         }
         
