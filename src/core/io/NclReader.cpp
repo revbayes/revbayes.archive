@@ -264,8 +264,6 @@ std::vector<Tree*>* NclReader::convertTreesFromNcl(void)
                 //                rbTree->fillNodeTimes();
                 //                rbTree->equalizeBranchLengths();
                 
-                rbTree->makeInternalNodesBifurcating(true);
-                
 				rbTreesFromFile->push_back( rbTree );
             }
         }
@@ -1847,7 +1845,11 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
     const NxsSimpleNode* rn = nTree.GetRootConst();
     
     // create a new tree root node
-    const std::string& name = rn->GetName();
+    std::string name = rn->GetName();
+    if ( rn->GetTaxonIndex() < tb->GetNumTaxonLabels() )
+    {
+        name = tb->GetTaxonLabel( rn->GetTaxonIndex() ).BlanksToUnderscores();
+    }
     TopologyNode* root = new TopologyNode(name);
     
     // create a map which holds for each node a map of name value pairs.
@@ -1868,9 +1870,6 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
     
     // initialize the topology by setting the root
     tau->setRoot(root, true);
-    
-    // trees with 2-degree root nodes should not be rerooted
-    tau->setRooted( root->getNumberOfChildren() == 2 || rooted);
 
     // finally set the branch lengths
     for ( size_t i = 0; i < nodes.size(); ++i )
@@ -1878,6 +1877,11 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
         tau->getNode(nodes[i]->getIndex()).setBranchLength( brlens[i] );
     }
     
+    tau->makeInternalNodesBifurcating(true);
+
+    // trees with 2-degree root nodes should not be rerooted
+    tau->setRooted( root->getNumberOfChildren() == 2 || rooted);
+
     return tau;
     
 }
