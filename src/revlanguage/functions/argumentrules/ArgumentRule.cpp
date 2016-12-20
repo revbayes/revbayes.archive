@@ -165,7 +165,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
     
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
-        if ( evalType == BY_VALUE )
+        if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() == true )
         {
             if ( theVar->getRevObject().isType( *it ) )
             {
@@ -189,7 +189,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 // For now, change the required type of the incoming variable wrapper
                 theVar->setRequiredTypeSpec( *it );
             
-                if ( !isEllipsis() )
+                if ( isEllipsis() == false )
                 {
                     return Argument( theVar, arg.getLabel(), evalType == BY_CONSTANT_REFERENCE );
                 }
@@ -199,7 +199,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 }
             
             }
-            else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1  && (*it).isDerivedOf( theVar->getRequiredTypeSpec() ))
+            else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1  && (*it).isDerivedOf( theVar->getRequiredTypeSpec() ) )
             {
                 // Fit by type conversion. For now, we also modify the type of the incoming variable wrapper.
                 RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
