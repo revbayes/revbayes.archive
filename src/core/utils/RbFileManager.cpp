@@ -148,7 +148,11 @@ void RbFileManager::createDirectoryForFile( void )
         
         if ( isDirectoryPresent( directoryName ) == false )
         {
-            makeDirectory( directoryName );
+            bool success = makeDirectory( directoryName );
+            if ( success == false )
+            {
+                std::cerr << "Failed to build directory with name \"" << directoryName << "\"." << std::endl;
+            }
         }
         
         directoryName += pathSeparator;
@@ -367,7 +371,10 @@ std::string RbFileManager::getStringByDeletingLastPathComponent(const std::strin
 bool RbFileManager::isDirectory( void ) const
 {
     
-    return isDirectoryPresent(fullFileName);
+    bool tf isDirectoryPresent(fullFileName);
+    //Sebastian: Remove debug!
+    std::cerr << "Checking if dir exists:\t\t" << fullFileName << ( tf ? " == TRUE" : " == FALSE") << std::endl;
+    return tf;
 }
 
 
