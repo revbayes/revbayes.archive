@@ -65,7 +65,7 @@ HomologousDiscreteCharacterData<NaturalNumbersState>* BitsetCharacterDataConvert
         // get natural number value from bitset
         size_t numberState = bitsToStatesByNumOn[taxonChars];
         
-        if (numberState >= numStates)
+        if (numberState > numStates)
         {
             std::stringstream ss;
             for (size_t j = 0; j < taxon.getNumberOfCharacters(); j++)
@@ -73,7 +73,7 @@ HomologousDiscreteCharacterData<NaturalNumbersState>* BitsetCharacterDataConvert
                 ss << taxon[j].getStateIndex();
             }
             ss << "->" << numberState;
-            ss << ", max=" << numStates-1;
+            ss << ", max=" << numStates;
             throw RbException("Converted state value for " + taxon.getTaxonName() + " exceeds number of states: " + ss.str());
         }
         

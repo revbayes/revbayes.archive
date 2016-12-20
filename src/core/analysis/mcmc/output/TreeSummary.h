@@ -70,7 +70,7 @@ namespace RevBayesCore {
         void                                                                    annotateTree(Tree &inputTree, AnnotationReport report, bool verbose );
         double                                                                  cladeProbability(const Clade &c, bool verbose);
         Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool verbose);
-        int                                                                     getNumberSamples(void) const;
+        int                                                                     getBurnin(void) const;
         std::vector<Tree>                                                       getUniqueTrees(double ci=0.95, bool verbose=true);
         int                                                                     getTopologyFrequency(const Tree &t, bool verbose);
         const TraceTree&                                                        getTreeTrace(void) const;
@@ -81,6 +81,7 @@ namespace RevBayesCore {
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95, bool verbose=true);
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05, bool verbose=true);
         void                                                                    setBurnin(int b);
+        int                                                                     size(bool post = false) const;
 
     private:
 
