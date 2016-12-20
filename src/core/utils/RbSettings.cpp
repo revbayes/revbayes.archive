@@ -157,22 +157,19 @@ void RbSettings::initializeUserSettings(void)
     }
 
     // initialize the current directory to be the directory the binary is sitting in
+#	ifdef RB_WIN
+    
+    char buffer[MAX_DIR_PATH];
+    GetModuleFileName( NULL, buffer, MAX_DIR_PATH );
+    std::string::size_type pos = std::string( buffer ).find_last_of( "\\/" );
+    workingDirectory = std::string( buffer ).substr( 0, pos);
+
+#	else
+
     char cwd[MAX_DIR_PATH+1];
 	if ( getcwd(cwd, MAX_DIR_PATH+1) )
     {
-#	ifdef RB_WIN
-        std::string pathSeparator = "\\";
-        std::cerr << "Found working directory:\t" << cwd << std::endl;
-        
-        char buffer[MAX_DIR_PATH];
-        GetModuleFileName( NULL, buffer, MAX_DIR_PATH );
-        std::cerr << "Buffer:\t" << buffer << std::endl;
-        std::string::size_type pos = std::string( buffer ).find_last_of( "\\/" );
-        std::string test = std::string( buffer ).substr( 0, pos);
-        std::cerr << "Test:\t" << test << std::endl;
-#	else
         std::string pathSeparator = "/";
-#   endif
         
         std::string curdir = cwd;
         
@@ -187,6 +184,9 @@ void RbSettings::initializeUserSettings(void)
     {
         workingDirectory = "";
     }
+    
+#   endif
+
     
     // save the current settings for the future.
 //    writeUserSettings();
