@@ -371,7 +371,7 @@ std::string RbFileManager::getStringByDeletingLastPathComponent(const std::strin
 bool RbFileManager::isDirectory( void ) const
 {
     
-    bool tf isDirectoryPresent(fullFileName);
+    bool tf =  isDirectoryPresent(fullFileName);
     //Sebastian: Remove debug!
     std::cerr << "Checking if dir exists:\t\t" << fullFileName << ( tf ? " == TRUE" : " == FALSE") << std::endl;
     return tf;
