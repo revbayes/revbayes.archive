@@ -19,25 +19,31 @@ RlString::RlString( void ) : ModelObject<std::string>()
 
 
 /** Constructor from RlString */
-RlString::RlString(const std::string& v) : ModelObject<std::string>( new std::string(v) )
+RlString::RlString(const std::string& v) : ModelObject<std::string>( new std::string(v), bool parse )
 {
 
     setGuiVariableName("String");
     setGuiLatexSymbol("");
     
-    parseValue();
+    if ( parse == true )
+    {
+        parseValue();
+    }
     initMethods();
 }
 
 
 /* Construct from DAG node */
-RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : ModelObject<std::string>( v )
+RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : ModelObject<std::string>( v, bool parse )
 {
 
     setGuiVariableName("String");
     setGuiLatexSymbol("");
     
-    parseValue();
+    if ( parse == true )
+    {
+        parseValue();
+    }
     initMethods();
 }
 

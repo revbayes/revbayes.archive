@@ -40,7 +40,7 @@ RevPtr<RevVariable> Func_getwd::execute( void )
     
     std::cerr << "Test:\t\t" << wd << std::endl;
     
-    RlString* type = new RlString( wd );
+    RlString* type = new RlString( wd, false );
     
     return new RevVariable( type );
 }
