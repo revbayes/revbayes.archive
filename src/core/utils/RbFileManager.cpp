@@ -599,7 +599,9 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
     std::string name = input_string;
     
 #	ifdef RB_WIN
+    std::cerr << "Name before:\t\t" << name << std::endl;
     StringUtilities::replaceSubstring(name,"/","\\");
+    std::cerr << "Name after:\t\t" << name << std::endl;
 #   endif
     
     // check if the path is a good one
@@ -678,7 +680,9 @@ void RbFileManager::setFilePath(std::string const &s)
 {
     filePath = s;
 #	ifdef RB_WIN
+    std::cerr << "Filepath before:\t\t" << filePath << std::endl;
     StringUtilities::replaceSubstring(filePath,"/","\\");
+    std::cerr << "Filepath after:\t\t" << filePath << std::endl;
 #   endif
     
     fullFileName = filePath;
