@@ -17,8 +17,8 @@ using namespace RevLanguage;
 
 /** Constructor of empty RevVariable with specified type. */
 RevVariable::RevVariable( const TypeSpec& ts, const std::string& n ) :
-    element_index_max(0),
-    needs_building(false),
+    element_index_max( 0 ),
+    needs_building( true ),
     is_element_var( false ),
     is_hidden_var( false ),
     is_reference_var( false ),
@@ -35,8 +35,8 @@ RevVariable::RevVariable( const TypeSpec& ts, const std::string& n ) :
 
 /** Constructor of filled RevVariable (no type restrictions). */
 RevVariable::RevVariable(RevObject *v, const std::string &n) :
-    element_index_max(0),
-    needs_building(false),
+    element_index_max( 0 ),
+    needs_building( true ),
     is_element_var( false ),
     is_hidden_var( false ),
     is_reference_var( false ),
@@ -54,8 +54,8 @@ RevVariable::RevVariable(RevObject *v, const std::string &n) :
 
 /** Constructor of reference RevVariable (no type restrictions). */
 RevVariable::RevVariable(const RevPtr<RevVariable>& refVar, const std::string &n) :
-    element_index_max(0),
-    needs_building(false),
+    element_index_max( 0 ),
+    needs_building( true ),
     is_element_var( false ),
     is_hidden_var( false ),
     is_reference_var( true ),
@@ -240,7 +240,7 @@ RevObject& RevVariable::getRevObject(void) const
         }
         // @TODO: We might need a to check if this should be dynamic or not. (Sebastian)
         bool dynamic = true;
-        Function* func = Workspace::userWorkspace().getFunction("v",args,dynamic).clone();
+        Function* func = Workspace::userWorkspace().getFunction("v",args,!dynamic).clone();
         func->processArguments(args,dynamic);
         
         // Evaluate the function (call the static evaluation function)
