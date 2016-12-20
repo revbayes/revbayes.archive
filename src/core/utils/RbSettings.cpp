@@ -163,6 +163,8 @@ void RbSettings::initializeUserSettings(void)
     GetModuleFileName( NULL, buffer, MAX_DIR_PATH );
     std::string::size_type pos = std::string( buffer ).find_last_of( "\\/" );
     workingDirectory = std::string( buffer ).substr( 0, pos);
+    
+    std::cerr << "Setting user working directory to:\t" << workingDirectory << std::endl;
 
 #	else
 
