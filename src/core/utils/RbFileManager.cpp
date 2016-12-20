@@ -10,8 +10,9 @@
 #include <sys/stat.h>
 #include <cstdlib>
 
-//#include <boost/filesystem.hpp>
-
+#ifndef RB_XCODE
+#include <boost/filesystem.hpp>
+#endif
 
 //#ifdef WIN32
 //#	include <dirent.h>
@@ -581,29 +582,35 @@ bool RbFileManager::listDirectoryContents(const std::string& dirpath)
 bool RbFileManager::makeDirectory(const std::string &dn)
 {
     
-#	ifdef RB_WIN
+//#	ifdef RB_WIN
+//    
+//    CreateDirectory(dn.c_str(), NULL);
+//    
+//    return true;
+//    
+//#   else
+//    
+//    std::string cmd = "mkdir " + dn;
+//    
+//    return ( system( cmd.c_str() ) == 0 );
+//
+//#   endif
     
-    CreateDirectory(dn.c_str(), NULL);
-    
-    return true;
-    
-#   else
+# ifdef RB_XCODE
     
     std::string cmd = "mkdir " + dn;
     
     return ( system( cmd.c_str() ) == 0 );
-
-#   endif
     
-//    const char* path = dn.c_str();
-//    boost::filesystem::path dir(path);
-//    bool tf = boost::filesystem::create_directory(dir);
-//    if ( tf == true )
-//    {
-//        std::cerr<< "Directory Created: "<< dn <<std::endl;
-//    }
-//    
-//    return tf;
+# else
+    
+    const char* path = dn.c_str();
+    boost::filesystem::path dir(path);
+    bool tf = boost::filesystem::create_directory(dir);
+    
+    return tf;
+    
+#   endif
 }
 
 

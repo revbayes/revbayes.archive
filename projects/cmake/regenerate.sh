@@ -54,7 +54,7 @@ echo 'you can turn this of with argument "-boost false"'
 
 cd ../../boost_1_60_0
 rm ./project-config.jam*  # clean up from previous runs
-./bootstrap.sh --with-libraries=regex,thread,date_time,program_options,math,serialization,signals
+./bootstrap.sh --with-libraries=filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
 
 else
@@ -148,7 +148,8 @@ SET(Boost_USE_STATIC_LIBS ON)
 #find_package(Boost 1.60.0 COMPONENTS filesystem regex signals system thread date_time program_options serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
 find_package(Boost
 1.60.0
-COMPONENTS regex
+COMPONENTS filesystem
+regex
 program_options
 system
 thread
