@@ -165,7 +165,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
     
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
-        if ( evalType == BY_VALUE )
+        if ( evalType == BY_VALUE || once == true )
         {
             if ( theVar->getRevObject().isType( *it ) )
             {
