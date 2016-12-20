@@ -13,12 +13,13 @@
 //#include <boost/filesystem.hpp>
 
 
-#ifdef WIN32
-#	include <dirent.h>
-#   include <unistd.h>
-#   include <windows.h>
-#   include "Shlwapi.h"
-#elifdef RB_WIN
+//#ifdef WIN32
+//#	include <dirent.h>
+//#   include <unistd.h>
+//#   include <windows.h>
+//#   include "Shlwapi.h"
+
+#ifdef RB_WIN
 #	include <dirent.h>
 #   include <unistd.h>
 #   include <windows.h>
@@ -593,6 +594,16 @@ bool RbFileManager::makeDirectory(const std::string &dn)
     return ( system( cmd.c_str() ) == 0 );
 
 #   endif
+    
+//    const char* path = dn.c_str();
+//    boost::filesystem::path dir(path);
+//    bool tf = boost::filesystem::create_directory(dir);
+//    if ( tf == true )
+//    {
+//        std::cerr<< "Directory Created: "<< dn <<std::endl;
+//    }
+//    
+//    return tf;
 }
 
 
