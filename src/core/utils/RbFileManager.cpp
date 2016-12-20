@@ -50,6 +50,14 @@ RbFileManager::RbFileManager( void ) :
 	setFileName("");
 	setFilePath(".");
     
+    fullFileName = filePath;
+    if ( fullFileName != "")
+    {
+        fullFileName += pathSeparator;
+    }
+    
+    fullFileName += fileName;
+
 }
 
 
@@ -78,6 +86,16 @@ RbFileManager::RbFileManager(const std::string &fn) :
     // set the path and file for the string
 //    parsePathFileNames( expandUserDir( fn ) );
     parsePathFileNames( fn );
+    
+    
+    fullFileName = filePath;
+    if ( fullFileName != "")
+    {
+        fullFileName += pathSeparator;
+    }
+    
+    fullFileName += fileName;
+    
     
 }
 
@@ -109,6 +127,14 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
     std::string tmp = pn + pathSeparator + fn;
     parsePathFileNames( tmp );
     
+    
+    fullFileName = filePath;
+    if ( fullFileName != "")
+    {
+        fullFileName += pathSeparator;
+    }
+    
+    fullFileName += fileName;
 }
 
 
@@ -371,7 +397,7 @@ std::string RbFileManager::getStringByDeletingLastPathComponent(const std::strin
 bool RbFileManager::isDirectory( void ) const
 {
     
-    bool tf =  isDirectoryPresent(fullFileName);
+    bool tf = isDirectoryPresent(fullFileName);
     //Sebastian: Remove debug!
     std::cerr << "Checking if dir exists:\t\t" << fullFileName << ( tf ? " == TRUE" : " == FALSE") << std::endl;
     return tf;
