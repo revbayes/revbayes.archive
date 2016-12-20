@@ -398,8 +398,6 @@ bool RbFileManager::isDirectory( void ) const
 {
     
     bool tf = isDirectoryPresent(fullFileName);
-    //Sebastian: Remove debug!
-    std::cerr << "Checking if dir exists:\t\t" << fullFileName << ( tf ? " == TRUE" : " == FALSE") << std::endl;
     return tf;
 }
 
@@ -582,11 +580,19 @@ bool RbFileManager::listDirectoryContents(const std::string& dirpath)
 bool RbFileManager::makeDirectory(const std::string &dn)
 {
     
+#	ifdef RB_WIN
+    
+    CreateDirectory(dn.c_str(), NULL);
+    
+    return true;
+    
+#   else
+    
     std::string cmd = "mkdir " + dn;
     
-    std::cerr << "Command str:\t" << cmd << std::endl;
-
     return ( system( cmd.c_str() ) == 0 );
+
+#   endif
 }
 
 
@@ -634,9 +640,7 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
     std::string name = input_string;
     
 #	ifdef RB_WIN
-    std::cerr << "Name before:\t\t" << name << std::endl;
     StringUtilities::replaceSubstring(name,"/","\\");
-    std::cerr << "Name after:\t\t" << name << std::endl;
 #   endif
     
     // check if the path is a good one
@@ -715,9 +719,7 @@ void RbFileManager::setFilePath(std::string const &s)
 {
     filePath = s;
 #	ifdef RB_WIN
-    std::cerr << "Filepath before:\t\t" << filePath << std::endl;
     StringUtilities::replaceSubstring(filePath,"/","\\");
-    std::cerr << "Filepath after:\t\t" << filePath << std::endl;
 #   endif
     
     fullFileName = filePath;

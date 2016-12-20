@@ -65,8 +65,6 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
     if ( my_file_manager.isDirectory() == true )
     {
         my_file_manager.setStringWithNamesOfFilesInDirectory(file_names);
-//Sebastian: Remove debug!
-        std::cerr << "#Files found:\t\t" << file_names.size() << std::endl;
     }
     else 
     {
