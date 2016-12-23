@@ -874,6 +874,12 @@ void Tree::orderNodesByIndex( void )
 }
 
 
+void Tree::renameNodeParameter(const std::string &old_name, const std::string &new_name)
+{
+    getRoot().renameNodeParameter(old_name, new_name);
+}
+
+
 void Tree::reroot(const std::string &outgroup, bool reindex)
 {
     std::vector<std::string> tipnames = getTipNames();

@@ -1332,6 +1332,26 @@ void TopologyNode::removeTree(Tree *t)
 }
 
 
+void TopologyNode::renameNodeParameter(const std::string &old_name, const std::string &new_name)
+{
+    for (size_t i = 0; i < node_comments.size(); i++)
+    {
+        size_t equal_sign = node_comments[i].find("=");
+        std::string param_name = node_comments[i].substr(0, equal_sign);
+        if (param_name.compare(old_name) == 0)
+        {
+            node_comments[i] = new_name + node_comments[i].substr(equal_sign);
+            break;
+        }
+    }
+    
+    for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
+    {
+        (*it)->renameNodeParameter(old_name, new_name);
+    }
+}
+
+
 void TopologyNode::setAge(double a)
 {
     

@@ -166,6 +166,7 @@
 /* Input/output functions (in folder "functions/io") */
 #include "Func_ancestralStateTree.h"
 #include "Func_annotateTree.h"
+#include "Func_characterMapTree.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
 #include "Func_listFiles.h"
@@ -439,7 +440,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         /* Input/output functions (in folder "functions/io") */
         addFunction( new Func_ancestralStateTree()                      );
         addFunction( new Func_annotateTree()                            );
-		addFunction( new Func_consensusTree()                           );
+		addFunction( new Func_characterMapTree()                        );
+        addFunction( new Func_consensusTree()                           );
         addFunction( new Func_convertToPhylowood()                      );
         addFunction( new Func_listFiles()                               );
         addFunction( new Func_mapTree()                                 );

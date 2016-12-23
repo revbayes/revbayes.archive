@@ -299,18 +299,11 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
         {
             // calculate the conditional likelihoods for each time slice moving
             // along this branch backwards in time from the tip towards the root
-            //
-            //   tip  current_dt = 0
-            //    |   current_dt = 1
-            //    |   current_dt = 2
-            //    -----internal node   current_dt = 0
-            //               |         current_dt = 1
-            //               |         current_dt = 2
-            //               |         current_dt = 3
+
             std::vector<std::vector<double> > branch_likelihoods;
             size_t current_dt = 0;
             
-            // numerically integrate each time slice copying likelihoods to branch_likelihoods
+            // calculate partial likelihoods for each time slice and store them in branch_likelihoods
             while ( (current_dt * dt) + begin_age < end_age || current_dt < 2)
             {
                 
@@ -907,7 +900,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
     size_t downpass_dt = branch_partial_likelihoods[node_index].size() - 1;
     
     // loop over every time slice, stopping before the last time slice
-    while ( (current_dt * (dt + 1)) < branch_length) // || current_dt < 1)
+    while ( (current_dt * (dt + 1)) < branch_length)
     {
         current_dt_start = (current_dt * dt);
         current_dt_end = (current_dt * (dt + 1));
