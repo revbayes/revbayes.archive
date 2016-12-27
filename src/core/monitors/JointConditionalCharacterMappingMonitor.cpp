@@ -102,6 +102,14 @@ void JointConditionalCharacterMappingMonitor::closeStream()
  */
 void JointConditionalCharacterMappingMonitor::monitor(unsigned long gen)
 {
+    if ((gen + 1) % printgen == 0)
+    {
+        // turn sampling on
+        StateDependentSpeciationExtinctionProcess *sse_process = NULL;
+        sse_process = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &nodes[0]->getDistribution() );
+        sse_process->setSampleCharacterHistory( true );
+    }
+        
     if (gen % printgen == 0)
     {
         // print the iteration number first
@@ -143,6 +151,9 @@ void JointConditionalCharacterMappingMonitor::monitor(unsigned long gen)
         }
         
         outStream << std::endl;
+        
+        // for efficiency turn off sampling until we need it
+        sse_process->setSampleCharacterHistory( false );
     }
 }
 
