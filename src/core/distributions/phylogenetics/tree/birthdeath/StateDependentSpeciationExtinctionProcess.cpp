@@ -304,34 +304,26 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             size_t current_dt = 0;
             
             // calculate partial likelihoods for each time slice and store them in branch_likelihoods
-            while ( (current_dt * dt) + begin_age < end_age || current_dt < 2)
+            while ( (current_dt * dt) + begin_age < end_age )
             {
                 
                 std::vector<double> dt_likelihood;
-                if ( current_dt == 0 )
+                
+                double current_dt_start = (current_dt * dt) + begin_age;
+                double current_dt_end = ((current_dt + 1) * dt) + begin_age;
+                if (current_dt_end > end_age)
                 {
-                    std::vector<double>::const_iterator first = node_likelihood.begin() + num_states;
-                    std::vector<double>::const_iterator last = node_likelihood.begin() + (num_states * 2);
-                    dt_likelihood = std::vector<double>(first, last);
+                    current_dt_end = end_age;
                 }
-                else
-                {
-                    double current_dt_start = (current_dt * dt) + begin_age;
-                    double current_dt_end = ((current_dt + 1) * dt) + begin_age;
-                    if (current_dt_end > end_age)
-                    {
-                        current_dt_end = end_age;
-                    }
-                    numericallyIntegrateProcess(node_likelihood, current_dt_start, current_dt_end, true, false);
-
-                    std::vector<double>::const_iterator first = node_likelihood.begin() + num_states;
-                    std::vector<double>::const_iterator last = node_likelihood.begin() + (num_states * 2);
-                    dt_likelihood = std::vector<double>(first, last);
-                }
+                numericallyIntegrateProcess(node_likelihood, current_dt_start, current_dt_end, true, false);
+                
+                std::vector<double>::const_iterator first = node_likelihood.begin() + num_states;
+                std::vector<double>::const_iterator last = node_likelihood.begin() + (num_states * 2);
+                dt_likelihood = std::vector<double>(first, last);
                 
                 branch_likelihoods.push_back(dt_likelihood);
                 current_dt++;
-
+                
             }
             
             // save the branch conditional likelihoods
@@ -897,13 +889,13 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
     std::vector<double> transition_times;
     transition_states.push_back(current_state);
     
-    size_t downpass_dt = branch_partial_likelihoods[node_index].size() - 1;
+    int downpass_dt = int( branch_partial_likelihoods[node_index].size() ) - 1;
     
     // loop over every time slice, stopping before the last time slice
-    while ( (current_dt * (dt + 1)) < branch_length)
+    while ( downpass_dt >= 0 && ((current_dt + 1) * dt) < branch_length)
     {
         current_dt_start = (current_dt * dt);
-        current_dt_end = (current_dt * (dt + 1));
+        current_dt_end = ((current_dt + 1) * dt);
         
         numericallyIntegrateProcess(branch_conditional_probs, current_dt_start, current_dt_end, false, false);
 
@@ -915,16 +907,25 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
             probs_sum += branch_conditional_probs[i + num_states] * branch_partial_likelihoods[node_index][downpass_dt][i];
         }
         
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        double u = rng->uniform01() * probs_sum;
-
-        for (size_t i = 0; i < num_states; i++)
+        if ( probs_sum == 0.0 )
         {
-            u -= branch_conditional_probs[i + num_states] * branch_partial_likelihoods[node_index][downpass_dt][i];
-            if (u < 0.0)
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            double u = rng->uniform01() * num_states;
+            new_state = size_t(u);
+        }
+        else
+        {
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            double u = rng->uniform01() * probs_sum;
+
+            for (size_t i = 0; i < num_states; i++)
             {
-                new_state = i;
-                break;
+                u -= branch_conditional_probs[i + num_states] * branch_partial_likelihoods[node_index][downpass_dt][i];
+                if (u < 0.0)
+                {
+                    new_state = i;
+                    break;
+                }
             }
         }
         
