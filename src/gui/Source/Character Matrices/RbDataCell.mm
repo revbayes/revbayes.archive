@@ -1,4 +1,5 @@
 #import "RbDataCell.h"
+#include <ctype.h>
 
 
 
@@ -105,7 +106,7 @@
 	int nOn = 0;
 	for (int i=0; i<20; i++)
 		{
-		unsigned mask = 1 << i ;
+		unsigned mask = 1 << i;
 		if ( (x & mask) != 0 )
 			{
 			v = aaCode[i];
@@ -113,7 +114,7 @@
 			}
 		}
 	if (nOn > 1)
-		return 'N';
+		return 'X';
 	return v;
 }
 
@@ -197,6 +198,99 @@
 		return 'N';
 		}
 	return v;
+}
+
+- (unsigned)aaToUnsigned:(std::string)s {
+
+	char aaCode[20] = { 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V' };
+    unsigned x = 0;
+    for (size_t i=0; i<s.size(); i++)
+        {
+        for (size_t j=0; j<20; j++)
+            {
+            unsigned mask = 1 << j;
+            char c = toupper(s[i]);
+            if ( c == aaCode[j] || c == '-' || c == 'X' )
+                x |= mask;
+            }
+        }
+    return x;
+}
+
+- (unsigned)dnaToUnsigned:(std::string)s {
+
+    char c = toupper(s[0]);
+    unsigned x = 0;
+
+	if (c == 'A')
+		x = 1;
+	else if (c == 'C')
+		x = 2;
+	else if (c == 'M')
+		x = 3;
+	else if (c == 'G')
+		x = 4;
+	else if (c == 'R')
+		x = 5;
+	else if (c == 'S')
+		x = 6;
+	else if (c == 'V')
+		x = 7;
+	else if (c == 'T')
+		x = 8;
+	else if (c == 'W')
+		x = 9;
+	else if (c == 'Y')
+		x = 10;
+	else if (c == 'H')
+		x = 11;
+	else if (c == 'K')
+		x = 12;
+	else if (c == 'D')
+		x = 13;
+	else if (c == 'B')
+		x = 14;
+	else if (c == 'N' || c == '-')
+		x = 15;
+
+    return x;
+}
+
+- (unsigned)standardToUnsigned:(std::string)s {
+
+	char stCode[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    unsigned x = 0;
+    for (size_t i=0; i<s.size(); i++)
+        {
+        for (size_t j=0; j<10; j++)
+            {
+            unsigned mask = 1 << j;
+            char c = s[i];
+            if ( c == stCode[j] || c == '-' || c == 'N' )
+                x |= mask;
+            }
+        }
+    return x;
+}
+
+- (unsigned)standardToUnsigned:(std::string)s withLabels:(NSString*)labels {
+
+    char stCode[32];
+    for (size_t i=0; i<[labels length]; i++)
+        stCode[i] = [labels characterAtIndex:i];
+
+    unsigned x = 0;
+    for (size_t i=0; i<s.size(); i++)
+        {
+        for (size_t j=0; j<[labels length]; j++)
+            {
+            unsigned mask = 1 << j;
+            char c = s[i];
+            if ( c == stCode[j] || c == '-' || c == 'N' )
+                x |= mask;
+            }
+        }
+    return x;
 }
 
 - (id)init {

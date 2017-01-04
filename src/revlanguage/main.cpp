@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
     {
         return -1;
     }
-#endif
+#   endif
     
     /* seek out files from command line */
     std::vector<std::string> sourceFiles;

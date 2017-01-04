@@ -14,6 +14,7 @@
 #include "AbstractCharacterData.h"
 #include "HomologousCharacterData.h"
 #include "NonHomologousCharacterData.h"
+#include "RbBitSet.h"
 #include "RbMathLogic.h"
 #include "RnaState.h"
 #include "StandardState.h"
@@ -300,7 +301,20 @@
             if ( [m dataType] != CONTINUOUS )
                 {
                 const RevBayesCore::DiscreteCharacterState& theChar = static_cast<const RevBayesCore::AbstractDiscreteTaxonData &>(td).getCharacter(j);
-                unsigned int x = (unsigned int)static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getState();
+                //unsigned int x = (unsigned int)static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getState();
+                RevBayesCore::RbBitSet bs = (RevBayesCore::RbBitSet)static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getState();
+                std::string sv = (std::string)static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getStringValue();
+
+                unsigned x = 0;
+                if (dt == "DNA")
+                    x = [cell dnaToUnsigned:sv];
+                else if (dt == "RNA")
+                    x = [cell dnaToUnsigned:sv];
+                else if (dt == "Protein")
+                    x = [cell aaToUnsigned:sv];
+                else if (dt == "Standard")
+                    x = [cell standardToUnsigned:sv withLabels:sl];
+
                 NSNumber* n = [NSNumber numberWithUnsignedInt:x];
                 [cell setVal:n];
                 [cell setIsDiscrete:YES];

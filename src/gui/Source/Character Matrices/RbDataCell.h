@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+#include <string>
 
 #define DNA         0
 #define RNA         1
@@ -40,5 +41,9 @@
 - (id)initWithCell:(RbDataCell*)c;
 - (void)setDiscreteStateTo:(int)x; 
 - (unsigned)unsignedRepresentation;
+- (unsigned)aaToUnsigned:(std::string)s;
+- (unsigned)dnaToUnsigned:(std::string)s;
+- (unsigned)standardToUnsigned:(std::string)s;
+- (unsigned)standardToUnsigned:(std::string)s withLabels:(NSString*)labels;
 
 @end
