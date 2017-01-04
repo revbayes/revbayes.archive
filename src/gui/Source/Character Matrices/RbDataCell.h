@@ -36,6 +36,7 @@
 - (char)getDiscreteStateWithLabels:(NSString*)labels;
 - (char)interpretAsAminoAcid:(unsigned)x;
 - (char)interpretAsDna:(unsigned)x;
+- (char)interpretAsRna:(unsigned)x;
 - (char)interpretAsStandard:(unsigned)x;
 - (char)interpretAsStandard:(unsigned)x withLabels:(NSString*)labels;
 - (id)initWithCell:(RbDataCell*)c;
@@ -43,6 +44,7 @@
 - (unsigned)unsignedRepresentation;
 - (unsigned)aaToUnsigned:(std::string)s;
 - (unsigned)dnaToUnsigned:(std::string)s;
+- (unsigned)rnaToUnsigned:(std::string)s;
 - (unsigned)standardToUnsigned:(std::string)s;
 - (unsigned)standardToUnsigned:(std::string)s withLabels:(NSString*)labels;
 

@@ -155,6 +155,43 @@
 	return 'N';
 }
 
+- (char)interpretAsRna:(unsigned)x {
+
+    if (isGapState == YES)
+        return '-';
+	if (x == 1)
+		return 'A';
+	else if (x == 2)
+		return 'C';
+	else if (x == 3)
+		return 'M';
+	else if (x == 4)
+		return 'G';
+	else if (x == 5)
+		return 'R';
+	else if (x == 6)
+		return 'S';
+	else if (x == 7)
+		return 'V';
+	else if (x == 8)
+		return 'U';
+	else if (x == 9)
+		return 'W';
+	else if (x == 10)
+		return 'Y';
+	else if (x == 11)
+		return 'H';
+	else if (x == 12)
+		return 'K';
+	else if (x == 13)
+		return 'D';
+	else if (x == 14)
+		return 'B';
+	else if (x == 15)
+		return 'N';
+	return 'N';
+}
+
 - (char)interpretAsStandard:(unsigned)x {
 
 	char stCode[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
@@ -237,6 +274,45 @@
 	else if (c == 'V')
 		x = 7;
 	else if (c == 'T')
+		x = 8;
+	else if (c == 'W')
+		x = 9;
+	else if (c == 'Y')
+		x = 10;
+	else if (c == 'H')
+		x = 11;
+	else if (c == 'K')
+		x = 12;
+	else if (c == 'D')
+		x = 13;
+	else if (c == 'B')
+		x = 14;
+	else if (c == 'N' || c == '-')
+		x = 15;
+
+    return x;
+}
+
+- (unsigned)rnaToUnsigned:(std::string)s {
+
+    char c = toupper(s[0]);
+    unsigned x = 0;
+
+	if (c == 'A')
+		x = 1;
+	else if (c == 'C')
+		x = 2;
+	else if (c == 'M')
+		x = 3;
+	else if (c == 'G')
+		x = 4;
+	else if (c == 'R')
+		x = 5;
+	else if (c == 'S')
+		x = 6;
+	else if (c == 'V')
+		x = 7;
+	else if (c == 'U')
 		x = 8;
 	else if (c == 'W')
 		x = 9;

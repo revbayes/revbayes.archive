@@ -309,7 +309,7 @@
                 if (dt == "DNA")
                     x = [cell dnaToUnsigned:sv];
                 else if (dt == "RNA")
-                    x = [cell dnaToUnsigned:sv];
+                    x = [cell rnaToUnsigned:sv];
                 else if (dt == "Protein")
                     x = [cell aaToUnsigned:sv];
                 else if (dt == "Standard")
