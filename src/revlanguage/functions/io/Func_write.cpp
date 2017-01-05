@@ -2,6 +2,7 @@
 #include "Ellipsis.h"
 #include "Func_write.h"
 #include "RbException.h"
+#include "RbFileManager.h"
 #include "RevNullObject.h"
 #include "RlBoolean.h"
 #include "RlString.h"
@@ -51,6 +52,10 @@ RevPtr<RevVariable> Func_write::execute( void )
     {
     if ( fn != "" ) 
     {
+        
+        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
+        fm.createDirectoryForFile();
+        
         std::ofstream outStream;
         
         if ( append == true )

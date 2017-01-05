@@ -62,7 +62,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
         
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> file_names;
-    if ( my_file_manager.isDirectory() )
+    if ( my_file_manager.isDirectory() == true )
     {
         my_file_manager.setStringWithNamesOfFilesInDirectory(file_names);
     }

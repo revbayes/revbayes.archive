@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Func_mccTree, finds the maximum-a-posteriori (MAP) tree from a tree
- * trace and adds the node posterior probabilities.
- *
- * @brief Declaration of Func_mccTree
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-05-27 16:10:36 +0200 (Sun, 27 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: Func_readDiscreteCharacterData.h 1587 2012-05-27 14:10:36Z hoehna $
- */
-
 #ifndef Func_mccTree_H
 #define Func_mccTree_H
 

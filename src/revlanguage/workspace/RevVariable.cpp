@@ -240,8 +240,8 @@ RevObject& RevVariable::getRevObject(void) const
         }
         // @TODO: We might need a to check if this should be dynamic or not. (Sebastian)
         bool dynamic = true;
-        Function* func = Workspace::userWorkspace().getFunction("v",args,dynamic).clone();
-        func->processArguments(args,dynamic);
+        Function* func = Workspace::userWorkspace().getFunction("v",args,!dynamic).clone();
+        func->processArguments(args,!dynamic);
         
         // Evaluate the function (call the static evaluation function)
         RevPtr<RevVariable> func_return_value = func->execute();
@@ -389,9 +389,9 @@ void RevVariable::replaceRevObject( RevObject *newValue )
         is_reference_var = false;
         referenced_variable = NULL;
     }
-    
-    // Make sure default assignment is not a workspace (control) RevVariable assignment
-    is_workspace_var = false;
+//    
+//    // Make sure default assignment is not a workspace (control) RevVariable assignment
+//    is_workspace_var = false;
     
     if ( rev_object != NULL )
     {

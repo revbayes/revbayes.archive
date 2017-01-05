@@ -608,6 +608,7 @@ void HeterogeneousRateBirthDeath::simulateTree( void )
         psi->getNode( node.getIndex() ).setAge( 0.0 );
     }
     
+    
     // Finally store the new value
     value = psi;
     
@@ -720,9 +721,11 @@ void HeterogeneousRateBirthDeath::updateBranchProbabilitiesNumerically(std::vect
     OdeHeterogeneousRateBirthDeath ode = OdeHeterogeneousRateBirthDeath(lambda,mu,delta);
     ode.setCurrentRateCategory( current_rate_category );
 
-    typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
-    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-7 , 1E-7 , stepper_type() ) , ode , state , begin_age , end_age , dt );
+//    typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
+//    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-7 , 1E-7 , stepper_type() ) , ode , state , begin_age , end_age , dt );
 
-    
+    boost::numeric::odeint::bulirsch_stoer< state_type > stepper(1E-8, 0.0, 0.0, 0.0);
+    boost::numeric::odeint::integrate_adaptive( stepper, ode, state, begin_age, end_age, dt );
+
 }
 

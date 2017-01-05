@@ -149,7 +149,7 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         
         // If we cannot find the function name as a variable, it must be in the function table
         // This call will throw a relevant message if the function is not found
-        if ( !found )
+        if ( found == false )
         {
             func = env.getFunction(functionName, args, !dynamic).clone();
         }
@@ -216,15 +216,18 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
  * Is the expression constant?
  * Only if all arguments are constant.
  */
-bool SyntaxFunctionCall::isConstExpression(void) const {
+bool SyntaxFunctionCall::isConstExpression(void) const
+{
     
     // We need to iterate over all arguments
     for ( std::list<SyntaxLabeledExpr*>::const_iterator it = arguments->begin(); it != arguments->end(); ++it )
     {
         // We return false if this argument is not constant
         SyntaxLabeledExpr* expr = *it;
-        if ( !expr->isConstExpression() )
+        if ( expr->isConstExpression() == false )
+        {
             return false;
+        }
     }
     
     // All arguments are constant
