@@ -46,6 +46,7 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     
     const std::string&  treetype = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
     const std::string&  sep      = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
+                    int burnin   = static_cast<const Integer &>( args[3].getVariable()->getRevObject() ).getValue();
     
     std::vector<std::string> vectorOfFileNames;
     
@@ -104,7 +105,7 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
         }
     }
     
-    RevObject *rv;
+    TraceTree *rv;
     if ( treetype == "clock" )
     {
         rv = readTimeTrees(vectorOfFileNames, sep);
@@ -118,6 +119,8 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
         throw RbException("Unknown tree type to read.");
     }
     
+    rv->getValue().setBurnin(burnin);
+
     return new RevVariable( rv );
 }
 
@@ -143,6 +146,7 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const
         treeOptions.push_back( "non-clock" );
         argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), treeOptions, "The type of trees." ) );
         argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), "The separator/delimiter between values in the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()     , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         rules_set = true;
     }
     
