@@ -301,7 +301,9 @@ double Integer::isConvertibleTo( const TypeSpec& type, bool once ) const
     }
     
     if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1 && dagNode->getValue() >= 0)
+    {
         return 0.2;
+    }
     
     return RevObject::isConvertibleTo( type, once );
 }
@@ -319,10 +321,14 @@ RevObject* Integer::multiply( const RevObject& rhs ) const
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
+    {
         return multiply( static_cast<const Real&>( rhs ) );
+    }
     
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
+    {
         return multiply( static_cast<const Integer&>( rhs ) );
+    }
     
     return ModelObject<int>::multiply( rhs );
 }
@@ -374,10 +380,14 @@ RevObject* Integer::subtract( const RevObject& rhs ) const
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
+    {
         return subtract( static_cast<const Real&>( rhs ) );
+    }
     
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
+    {
         return subtract( static_cast<const Integer&>( rhs ) );
+    }
     
     return ModelObject<int>::subtract( rhs );
 }

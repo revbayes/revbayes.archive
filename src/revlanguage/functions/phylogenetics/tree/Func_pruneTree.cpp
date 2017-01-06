@@ -1,12 +1,14 @@
 #include "Func_pruneTree.h"
 #include "ModelVector.h"
 #include "PruneTreeFunction.h"
-#include "RlBoolean.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RlTree.h"
+#include "RlBoolean.h"
+#include "RlBranchLengthTree.h"
 #include "RlDeterministicNode.h"
 #include "RlTaxon.h"
+#include "RlTimeTree.h"
+#include "RlTree.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -34,7 +36,8 @@ Func_pruneTree* Func_pruneTree::clone( void ) const
 RevBayesCore::TypedFunction<RevBayesCore::Tree>* Func_pruneTree::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree&>( args[0].getVariable()->getRevObject() ).getDagNode();
+
     ModelVector<Taxon> rtv = static_cast<const ModelVector<Taxon>&>( this->args[1].getVariable()->getRevObject() ).getValue();
     std::set<RevBayesCore::Taxon> rts;
     for (size_t i = 0; i < rtv.size(); i++)
@@ -51,6 +54,27 @@ RevBayesCore::TypedFunction<RevBayesCore::Tree>* Func_pruneTree::createFunction(
 }
 
 
+/** Execute function */
+RevPtr<RevVariable> Func_pruneTree::execute( void )
+{
+    RevBayesCore::TypedFunction<RevBayesCore::Tree>* d = createFunction();
+    RevBayesCore::DeterministicNode<RevBayesCore::Tree>* rv;
+    rv = new DeterministicNode<RevBayesCore::Tree>("", d, this->clone());
+
+    RevObject& ro = args[0].getVariable()->getRevObject();
+    if ( ro.isType( TimeTree::getClassTypeSpec() ) )
+    {
+        return new RevVariable( new TimeTree(rv) );
+    }
+    else if ( ro.isType( BranchLengthTree::getClassTypeSpec() ) )
+    {
+        return new RevVariable( new BranchLengthTree(rv) );
+    }
+
+    return new RevVariable( new Tree(rv) );
+}
+
+
 /* Get argument rules */
 const ArgumentRules& Func_pruneTree::getArgumentRules( void ) const
 {
@@ -60,7 +84,7 @@ const ArgumentRules& Func_pruneTree::getArgumentRules( void ) const
     
     if ( !rules_set )
     {
-        
+
         argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The tree variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "retainTaxa" , ModelVector<Taxon>::getClassTypeSpec() , "Taxon set to retain from tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<Taxon>() ) );
 

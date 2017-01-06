@@ -238,8 +238,8 @@ double CollapseExpandFossilBranchProposal::expandBranch(TopologyNode &n)
     double new_age = (max_age-min_age) * rng->uniform01() + min_age;
     
     // set the age of the parent node equal to the new age
-    parent.setAge( new_age );
     n.setSampledAncestor( false );
+    parent.setAge( new_age );
     
     // compute the Jacobian term
     double lnJacobian = log(max_age - min_age);

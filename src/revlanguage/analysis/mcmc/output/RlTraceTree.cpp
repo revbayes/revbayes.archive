@@ -50,7 +50,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
 {
     
     
-    if ( name == "setBurnin" )
+    if ( name == "setBurninFrac" )
     {
         found = true;
         
@@ -60,6 +60,17 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         int b = int( floor( this->value->getTreeTrace().size()*f ) );
         this->value->setBurnin( b );
         
+        return NULL;
+    }
+    else if ( name == "setBurnin" )
+    {
+        found = true;
+
+        int f = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getValue();
+
+
+        this->value->setBurnin( f );
+
         return NULL;
     }
     else if ( name == "summarize" )
@@ -87,12 +98,22 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         return new RevVariable( new Probability( p ) );
 
     }
-    else if ( name == "getNumberSamples" )
+    else if ( name == "size" || name == "getNumberSamples" )
     {
         found = true;
         
-        int n = this->value->getNumberSamples();
+        bool post = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getValue();
+
+        int n = this->value->size(post);
         
+        return new RevVariable( new Natural( n ) );
+    }
+    else if ( name == "getBurnin" )
+    {
+        found = true;
+
+        int n = this->value->getBurnin();
+
         return new RevVariable( new Natural( n ) );
     }
     else if ( name == "getTree" )
@@ -203,10 +224,17 @@ const TypeSpec& TraceTree::getTypeSpec( void ) const
 void TraceTree::initMethods( void )
 {
     
+    ArgumentRules* burninFracArgRules = new ArgumentRules();
+    burninFracArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    this->methods.addFunction( new MemberProcedure( "setBurninFrac", RlUtils::Void, burninFracArgRules) );
+
     ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    burninArgRules->push_back( new ArgumentRule("burnin",      Integer::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
     this->methods.addFunction( new MemberProcedure( "setBurnin", RlUtils::Void, burninArgRules) );
     
+    ArgumentRules* getBurninArgRules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "getBurnin", Natural::getClassTypeSpec(), getBurninArgRules) );
+
     ArgumentRules* summarizeArgRules = new ArgumentRules();
     summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
     summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), "The minimum clade probability used when printing.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
@@ -219,8 +247,10 @@ void TraceTree::initMethods( void )
     this->methods.addFunction( new MemberProcedure( "cladeProbability", Probability::getClassTypeSpec(), cladeProbArgRules) );
     
     ArgumentRules* getNumberSamplesArgRules = new ArgumentRules();
+    getNumberSamplesArgRules->push_back( new ArgumentRule("post", RlBoolean::getClassTypeSpec(), "Get the post-burnin number of samples?.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false)) );
+    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), getNumberSamplesArgRules) );
     this->methods.addFunction( new MemberProcedure( "getNumberSamples", Natural::getClassTypeSpec(), getNumberSamplesArgRules) );
-    
+
     ArgumentRules* getTreeArgRules = new ArgumentRules();
     getTreeArgRules->push_back( new ArgumentRule("index", Natural::getClassTypeSpec(), "The index of the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
     this->methods.addFunction( new MemberProcedure( "getTree", Tree::getClassTypeSpec(), getTreeArgRules) );
