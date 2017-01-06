@@ -1596,7 +1596,7 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report, bool verbos
         // annotate the HPD node age intervals
         if( report.hpd )
         {
-            nodeAges = cladeAges[c];
+            //nodeAges = cladeAges[c];
 
             std::sort(nodeAges.begin(), nodeAges.end());
 

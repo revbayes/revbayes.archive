@@ -50,7 +50,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
 {
     
     
-    if ( name == "setBurnin" )
+    if ( name == "setBurninFrac" )
     {
         found = true;
         
@@ -60,6 +60,17 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         int b = int( floor( this->value->getTreeTrace().size()*f ) );
         this->value->setBurnin( b );
         
+        return NULL;
+    }
+    else if ( name == "setBurnin" )
+    {
+        found = true;
+
+        int f = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getValue();
+
+
+        this->value->setBurnin( f );
+
         return NULL;
     }
     else if ( name == "summarize" )
@@ -213,8 +224,12 @@ const TypeSpec& TraceTree::getTypeSpec( void ) const
 void TraceTree::initMethods( void )
 {
     
+    ArgumentRules* burninFracArgRules = new ArgumentRules();
+    burninFracArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    this->methods.addFunction( new MemberProcedure( "setBurninFrac", RlUtils::Void, burninFracArgRules) );
+
     ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    burninArgRules->push_back( new ArgumentRule("burnin",      Integer::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
     this->methods.addFunction( new MemberProcedure( "setBurnin", RlUtils::Void, burninArgRules) );
     
     ArgumentRules* getBurninArgRules = new ArgumentRules();
