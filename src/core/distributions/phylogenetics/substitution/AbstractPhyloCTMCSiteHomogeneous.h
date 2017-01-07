@@ -2064,10 +2064,12 @@ template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setValue(AbstractHomologousDiscreteCharacterData *v, bool force)
 {
 
-    if (v->getNumberOfStates() != this->num_chars)
+    if (v->getMaxObservedStateIndex() > this->num_chars - 1)
     {
         // We might use different sized matrices for different partitions depending on the observed number of states.
-        //throw RbException("The assigned value and distribution's value must have the same number of states.");
+        std::stringstream ss;
+        ss << "The number of observed states (" << v->getMaxObservedStateIndex() + 1 << ") is greater than the dimension of the Q matrix (" << this->num_chars << ")" << std::endl;
+        throw RbException(ss.str());
     }
 
     // delegate to the parent class

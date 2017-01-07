@@ -54,6 +54,7 @@ namespace RevBayesCore {
         std::string                                         getDataType(void) const;
         std::vector<double>                                 getEmpiricalBaseFrequencies(void) const;                                    //!< Compute the empirical base frequencies
         const std::set<size_t>&                             getExcludedCharacters(void) const;                                          //!< Returns the name of the file the data came from
+        size_t                                              getMaxObservedStateIndex(void) const;                                              //!< Get the number of observed states for the characters in this matrix
         size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                              getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
         size_t                                              getNumberOfInvariantSites(bool excl) const;                                      //!< Number of invariant sites
@@ -634,6 +635,48 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getNumberOfInclu
 
 
 /** 
+ * Get the number of observed states for the characters in this object.
+ *
+ * \return      The number of observed states for the characters.
+ */
+template<class charType>
+size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedStateIndex(void) const
+{
+
+    // Get the first character in the matrix
+    if ( getNumberOfTaxa() == 0 )
+    {
+        return 0;
+    }
+
+    RbBitSet observed( getNumberOfStates() );
+
+    for(size_t j = 0; j < getNumberOfCharacters(); j++)
+    {
+        if( isCharacterExcluded(j) )
+            continue;
+
+        for(size_t i = 0; i < getNumberOfTaxa(); i++)
+        {
+            const DiscreteTaxonData<charType>& sequence = getTaxonData( i );
+            observed |= sequence[j].getState();
+        }
+    }
+
+    int max;
+    for(max = observed.size() - 1; max >= 0; max--)
+    {
+        if(observed.isSet(max))
+        {
+            break;
+        }
+    }
+
+    return size_t(max);
+}
+
+
+/**
  * Get the number of states for the characters in this object. 
  * We assume that all of the characters in the matrix are of the same
  * type and have the same number of potential states. 
