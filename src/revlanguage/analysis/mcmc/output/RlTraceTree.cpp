@@ -50,26 +50,24 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
 {
     
     
-    if ( name == "setBurninFrac" )
-    {
-        found = true;
-        
-        double f = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
-        
-        
-        int b = int( floor( this->value->getTreeTrace().size()*f ) );
-        this->value->setBurnin( b );
-        
-        return NULL;
-    }
-    else if ( name == "setBurnin" )
+    if ( name == "setBurnin" )
     {
         found = true;
 
-        int f = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getValue();
+        int burnin = 0;
 
+        RevObject& b = args[0].getVariable()->getRevObject();
+        if ( b.isType( Integer::getClassTypeSpec() ) )
+        {
+            burnin = static_cast<const Integer &>(b).getValue();
+        }
+        else
+        {
+            double burninFrac = static_cast<const Probability &>(b).getValue();
+            burnin = int( floor( value->size()*burninFrac ) );
+        }
 
-        this->value->setBurnin( f );
+        this->value->setBurnin( burnin );
 
         return NULL;
     }
@@ -229,7 +227,10 @@ void TraceTree::initMethods( void )
     this->methods.addFunction( new MemberProcedure( "setBurninFrac", RlUtils::Void, burninFracArgRules) );
 
     ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("burnin",      Integer::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    std::vector<TypeSpec> burninTypes;
+    burninTypes.push_back( Probability::getClassTypeSpec() );
+    burninTypes.push_back( Integer::getClassTypeSpec() );
+    burninArgRules->push_back( new ArgumentRule("burnin",      burninTypes, "The fraction/number of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
     this->methods.addFunction( new MemberProcedure( "setBurnin", RlUtils::Void, burninArgRules) );
     
     ArgumentRules* getBurninArgRules = new ArgumentRules();
