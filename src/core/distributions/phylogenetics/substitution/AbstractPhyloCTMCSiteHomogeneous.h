@@ -2066,7 +2066,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setValue(Abstract
 
     if (v->getNumberOfStates() != this->num_chars)
     {
-        throw RbException("The assigned value and distribution's value must have the same number of states.");
+        // We might use different sized matrices for different partitions depending on the observed number of states.
+        //throw RbException("The assigned value and distribution's value must have the same number of states.");
     }
 
     // delegate to the parent class
