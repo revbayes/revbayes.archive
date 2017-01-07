@@ -359,7 +359,7 @@ void Workspace::updateVectorVariables( void )
     VariableTable::const_iterator it;
     for ( it = variableTable.begin(); it != variableTable.end(); it++)
     {
-        RevPtr<RevVariable>& var = it->second;
+        const RevPtr<RevVariable>& var = it->second;
         if ( var->isVectorVariable() == true )
         {
             var->getRevObject();
