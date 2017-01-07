@@ -304,5 +304,6 @@ double RealPos::isConvertibleTo(const TypeSpec& type, bool once) const
         return 0.1;
     }
     
-    return Real::isConvertibleTo(type, once) + 0.2;
+    double tmp = Real::isConvertibleTo(type, once);
+    return ( (tmp == -1.0) ? -1.0 : (tmp+0.2));
 }
