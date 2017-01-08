@@ -105,7 +105,8 @@ double Probability::isConvertibleTo( const TypeSpec& type, bool once ) const
     }
     else
     {
-        return RealPos::isConvertibleTo(type, once) + 0.1;
+        double tmp = RealPos::isConvertibleTo(type, once);
+        return ( (tmp == -1.0) ? -1.0 : (tmp+0.1));
     }
 }
 
