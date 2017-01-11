@@ -1,7 +1,8 @@
-#include "Dist_phyloDolloCTMC.h"
+#include "Dist_phyloCTMCDollo.h"
 
 #include "PhyloCTMCSiteHomogeneousConditional.h"
 #include "PhyloCTMCSiteHomogeneousDollo.h"
+#include "PhyloCTMCSiteHomogeneousDolloBinary.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RevNullObject.h"
@@ -13,32 +14,33 @@
 
 using namespace RevLanguage;
 
-Dist_phyloDolloCTMC::Dist_phyloDolloCTMC() : TypedDistribution< AbstractHomologousDiscreteCharacterData >()
+Dist_phyloCTMCDollo::Dist_phyloCTMCDollo() : TypedDistribution< AbstractHomologousDiscreteCharacterData >()
 {
 
 }
 
 
-Dist_phyloDolloCTMC::~Dist_phyloDolloCTMC()
+Dist_phyloCTMCDollo::~Dist_phyloCTMCDollo()
 {
 
 }
 
 
 
-Dist_phyloDolloCTMC* Dist_phyloDolloCTMC::clone( void ) const
+Dist_phyloCTMCDollo* Dist_phyloCTMCDollo::clone( void ) const
 {
 
-    return new Dist_phyloDolloCTMC(*this);
+    return new Dist_phyloCTMCDollo(*this);
 }
 
 
-RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData >* Dist_phyloDolloCTMC::createDistribution( void ) const
+RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData >* Dist_phyloCTMCDollo::createDistribution( void ) const
 {
 
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
+    const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     bool norm = static_cast<const RlBoolean &>( normalize->getRevObject() ).getValue();
     size_t nNodes = tau->getValue().getNumberOfNodes();
     const std::string& code = static_cast<const RlString &>( coding->getRevObject() ).getValue();
@@ -82,28 +84,77 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
     tokens.push_back(s);
 
-    // set the flags for each token
-    int cd = RevBayesCore::BinaryAscertainmentBias::NOABSENCESITES;
-    for(size_t i = 0; i < tokens.size(); i++)
-    {
-        if(tokens[i] == "informative")
-        {
-            cd = RevBayesCore::BinaryAscertainmentBias::INFORMATIVE;
-        }
-        else if(tokens[i] == "variable")
-        {
-            cd = RevBayesCore::BinaryAscertainmentBias::VARIABLE;
-        }
-        else if(tokens[i] != "noabsencesites")
-        {
-            std::stringstream ss;
-            ss << "Unrecognized coding option \"" << tokens[i] << "\" for Dollo model\n";
-            ss << "\tAvailable codings: noabsencesites, informative, variable\n";
-            throw RbException(ss.str());
-        }
-    }
+    RevBayesCore::PhyloCTMCSiteHomogeneousDollo *dist;
 
-    RevBayesCore::PhyloCTMCSiteHomogeneousDollo *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousDollo(tau, nChars + 1, true, n, true, RevBayesCore::DolloAscertainmentBias::Coding(cd), norm);
+    if( dt == "Standard" )
+    {
+        // set the flags for each token
+        int cd = RevBayesCore::DolloAscertainmentBias::NOABSENCESITES;
+        for(size_t i = 0; i < tokens.size(); i++)
+        {
+            if(tokens[i] == "informative")
+            {
+                cd = RevBayesCore::BinaryAscertainmentBias::INFORMATIVE;
+            }
+            else if(tokens[i] == "variable")
+            {
+                cd = RevBayesCore::BinaryAscertainmentBias::VARIABLE;
+            }
+            else if(tokens[i] != "noabsencesites")
+            {
+                std::stringstream ss;
+                ss << "Unrecognized coding option \"" << tokens[i] << "\" for datatype=Standard\n";
+                ss << "\tAvailable codings: noabsencesites, informative, variable\n";
+                throw RbException(ss.str());
+            }
+        }
+
+        dist = new RevBayesCore::PhyloCTMCSiteHomogeneousDollo(tau, nChars, true, n, true, RevBayesCore::DolloAscertainmentBias::Coding(cd), norm);
+
+    }
+    else
+    {
+        // set the flags for each token
+        int cd = RevBayesCore::DolloBinaryAscertainmentBias::NOABSENCESITES;
+        for(size_t i = 0; i < tokens.size(); i++)
+        {
+            if(tokens[i] == "nopresencesites")
+            {
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOPRESENCESITES;
+            }
+            else if(tokens[i] == "informative")
+            {
+                cd |= RevBayesCore::AscertainmentBias::INFORMATIVE;
+            }
+            else if(tokens[i] == "variable")
+            {
+                cd |= RevBayesCore::AscertainmentBias::VARIABLE;
+            }
+            else if(tokens[i] == "nosingletonpresence")
+            {
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONPRESENCE;
+            }
+            else if(tokens[i] == "nosingletonabsence")
+            {
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONABSENCE;
+            }
+            else if(tokens[i] == "nosingletons")
+            {
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONS;
+            }
+            else if(tokens[i] != "noabsencesites")
+            {
+                std::stringstream ss;
+                ss << "Invalid coding option \"" << tokens[i] << "\" datatype=Binary/Restriction\n";
+                ss << "\tAvailable Binary state codings: noabsencesites, nopresencesites, informative, variable, nosingletonpresence, nosingletonabsence, nosingletons\n";
+                ss << "\tDefault: noabsencesites. Codings are combined using the vertical bar \'|\'\n";
+                throw RbException(ss.str());
+            }
+        }
+
+        dist = new RevBayesCore::PhyloCTMCSiteHomogeneousDolloBinary(tau, true, n, true, RevBayesCore::DolloAscertainmentBias::Coding(cd), norm);
+
+    }
 
     // set the root frequencies (by default these are NULL so this is OK)
     dist->setRootFrequencies( rf );
@@ -171,16 +222,16 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
 
 /* Get Rev type of object */
-const std::string& Dist_phyloDolloCTMC::getClassType(void)
+const std::string& Dist_phyloCTMCDollo::getClassType(void)
 {
 
-    static std::string rev_type = "Dist_phyloDolloCTMC";
+    static std::string rev_type = "Dist_phyloCTMCDollo";
 
     return rev_type;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_phyloDolloCTMC::getClassTypeSpec(void)
+const TypeSpec& Dist_phyloCTMCDollo::getClassTypeSpec(void)
 {
 
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
@@ -196,58 +247,63 @@ const TypeSpec& Dist_phyloDolloCTMC::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_phyloDolloCTMC::getDistributionFunctionName( void ) const
+std::string Dist_phyloCTMCDollo::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "PhyloDolloCTMC";
+    std::string d_name = "PhyloCTMCDollo";
     
     return d_name;
 }
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_phyloDolloCTMC::getParameterRules(void) const
+const MemberRules& Dist_phyloCTMCDollo::getParameterRules(void) const
 {
 
-    static MemberRules distMemberRules;
+    static MemberRules         dist_member_rules;
     static bool rulesSet = false;
 
     if ( !rulesSet )
     {
-        distMemberRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The tree along which the process evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The tree along which the process evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateGenerator::getClassTypeSpec() );
         rateMatrixTypes.push_back( ModelVector<RateGenerator>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "Q", rateMatrixTypes, "The global or branch-specific rate matrices.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY , NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "Q", rateMatrixTypes, "The global or branch-specific rate matrices.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY , NULL ) );
 
-        distMemberRules.push_back( new ArgumentRule( "deathRate", RealPos::getClassTypeSpec(), "The Dollo character death rate", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "deathRate", RealPos::getClassTypeSpec(), "The Dollo character death rate", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
         // optional argument for the root frequencies
-        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec(), "The root specific frequencies of the characters, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec(), "The root specific frequencies of the characters, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         std::vector<TypeSpec> branchRateTypes;
         branchRateTypes.push_back( RealPos::getClassTypeSpec() );
         branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "branchRates", branchRateTypes, "The global or branch-specific rate multipliers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "branchRates", branchRateTypes, "The global or branch-specific rate multipliers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
-        distMemberRules.push_back( new ArgumentRule( "siteRates", ModelVector<RealPos>::getClassTypeSpec(), "The rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        dist_member_rules.push_back( new ArgumentRule( "siteRates", ModelVector<RealPos>::getClassTypeSpec(), "The rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
 
-        distMemberRules.push_back( new ArgumentRule( "nSites", Natural::getClassTypeSpec(), "The number of sites, used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
+        dist_member_rules.push_back( new ArgumentRule( "nSites", Natural::getClassTypeSpec(), "The number of sites, used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ) );
+        std::vector<std::string> options;
+        options.push_back( "Standard" );
+        options.push_back( "Binary" );
+        options.push_back( "Restriction" );
+        dist_member_rules.push_back( new OptionRule( "type", new RlString("Standard"), options, "The data type, used for simulation and initialization." ) );
 
-        distMemberRules.push_back( new ArgumentRule( "normalize", RlBoolean::getClassTypeSpec(), "Should we normalize the Dollo substitution matrices?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
+        dist_member_rules.push_back( new ArgumentRule( "normalize", RlBoolean::getClassTypeSpec(), "Should we normalize the Dollo substitution matrices?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
 
-        distMemberRules.push_back( new ArgumentRule("coding", RlString::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("noabsencesites") ) );
+        dist_member_rules.push_back( new ArgumentRule("coding", RlString::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("noabsencesites") ) );
 
         rulesSet = true;
     }
 
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 
-const TypeSpec& Dist_phyloDolloCTMC::getTypeSpec( void ) const
+const TypeSpec& Dist_phyloCTMCDollo::getTypeSpec( void ) const
 {
 
     static TypeSpec ts = getClassTypeSpec();
@@ -257,7 +313,7 @@ const TypeSpec& Dist_phyloDolloCTMC::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void Dist_phyloDolloCTMC::printValue(std::ostream& o) const
+void Dist_phyloCTMCDollo::printValue(std::ostream& o) const
 {
 
     o << "Dollo-Character-State-Evolution-Along-Tree Process(tree=";
@@ -296,6 +352,12 @@ void Dist_phyloDolloCTMC::printValue(std::ostream& o) const
     } else {
         o << "?";
     }
+    o << ", type=";
+    if ( type != NULL ) {
+        o << type->getName();
+    } else {
+        o << "?";
+    }
     o << ", coding=";
     if ( coding != NULL ) {
         o << coding->getName();
@@ -314,7 +376,7 @@ void Dist_phyloDolloCTMC::printValue(std::ostream& o) const
 
 
 /** Set a member variable */
-void Dist_phyloDolloCTMC::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Dist_phyloCTMCDollo::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
 
     if ( name == "tree" )
@@ -344,6 +406,10 @@ void Dist_phyloDolloCTMC::setConstParameter(const std::string& name, const RevPt
     else if ( name == "nSites" )
     {
         nSites = var;
+    }
+    else if ( name == "type" )
+    {
+        type = var;
     }
     else if ( name == "normalize" )
     {
