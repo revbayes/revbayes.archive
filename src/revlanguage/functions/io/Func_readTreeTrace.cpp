@@ -6,6 +6,7 @@
 #include "NclReader.h"
 #include "NewickConverter.h"
 #include "OptionRule.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RlBranchLengthTree.h"
@@ -104,7 +105,7 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
         }
     }
     
-    RevObject *rv;
+    TraceTree *rv;
     if ( treetype == "clock" )
     {
         rv = readTimeTrees(vectorOfFileNames, sep);
@@ -118,6 +119,21 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
         throw RbException("Unknown tree type to read.");
     }
     
+    int burnin = 0;
+
+    RevObject& b = args[3].getVariable()->getRevObject();
+    if ( b.isType( Integer::getClassTypeSpec() ) )
+    {
+        burnin = static_cast<const Integer &>(b).getValue();
+    }
+    else
+    {
+        double burninFrac = static_cast<const Probability &>(b).getValue();
+        burnin = int( floor( rv->getValue().size()*burninFrac ) );
+    }
+
+    rv->getValue().setBurnin(burnin);
+
     return new RevVariable( rv );
 }
 
@@ -143,6 +159,11 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const
         treeOptions.push_back( "non-clock" );
         argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), treeOptions, "The type of trees." ) );
         argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), "The separator/delimiter between values in the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+
+        std::vector<TypeSpec> burninTypes;
+        burninTypes.push_back( Probability::getClassTypeSpec() );
+        burninTypes.push_back( Integer::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , burninTypes     , "The fraction/number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
         rules_set = true;
     }
     

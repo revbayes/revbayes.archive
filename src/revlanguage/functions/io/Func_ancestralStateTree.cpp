@@ -4,6 +4,7 @@
 #include "Func_ancestralStateTree.h"
 #include "ModelVector.h"
 #include "NexusWriter.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "RevNullObject.h"
 #include "RlBranchLengthTree.h"
@@ -73,8 +74,19 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     // get the filename
     const std::string& filename = static_cast<const RlString&>( args[4].getVariable()->getRevObject() ).getValue();
     
-    int burnin = static_cast<const Integer &>(args[5].getVariable()->getRevObject()).getValue();
-    
+    int burnin = 0;
+
+    RevObject& b = args[5].getVariable()->getRevObject();
+    if ( b.isType( Integer::getClassTypeSpec() ) )
+    {
+        burnin = static_cast<const Integer &>(b).getValue();
+    }
+    else
+    {
+        double burninFrac = static_cast<const Probability &>(b).getValue();
+        burnin = int( floor( tt.getValue().size()*burninFrac ) );
+    }
+
     std::string summary_stat = static_cast<const RlString&>( args[6].getVariable()->getRevObject() ).getValue();
     
     int site = static_cast<const Integer &>(args[7].getVariable()->getRevObject()).getValue() - 1;
@@ -130,7 +142,10 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "tree_trace", TraceTree::getClassTypeSpec(), "A trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "include_start_states", RlBoolean::getClassTypeSpec(), "Annotate start states as well as end states for each branch. Only applicable for cladogenetic processes.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file to store the annotated tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        std::vector<TypeSpec> burninTypes;
+        burninTypes.push_back( Probability::getClassTypeSpec() );
+        burninTypes.push_back( Integer::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , burninTypes  , "The fraction/number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
         std::vector<std::string> summary_stats;
         summary_stats.push_back( "MAP" );
         summary_stats.push_back( "mean" );

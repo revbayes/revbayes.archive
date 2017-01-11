@@ -54,8 +54,17 @@ echo 'you can turn this of with argument "-boost false"'
 
 cd ../../boost_1_60_0
 rm ./project-config.jam*  # clean up from previous runs
+
+if [ "$mac" = "true" ]
+then
 ./bootstrap.sh --with-libraries=regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
+#./bootstrap.sh --with-libraries=filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+#./b2 link=static macosx-version-min=10.6
+else
+./bootstrap.sh --with-libraries=filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+./b2 link=static
+fi
 
 else
 echo 'not building boost libraries'
@@ -145,12 +154,11 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 SET(BOOST_ROOT ../../../boost_1_60_0)
 SET(Boost_USE_STATIC_RUNTIME true)
 SET(Boost_USE_STATIC_LIBS ON)
-#find_package(Boost 1.60.0 COMPONENTS filesystem regex signals system thread date_time program_options serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
+#find_package(Boost 1.60.0 COMPONENTS regex signals thread date_time program_options serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
 find_package(Boost
 1.60.0
 COMPONENTS regex
 program_options
-system
 thread
 signals
 date_time

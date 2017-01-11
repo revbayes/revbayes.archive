@@ -413,9 +413,9 @@ template <typename rlType>
 double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
     
-    if ( type.getParentType() == getClassTypeSpec().getParentType() && once == true )
+    if ( once == true && type.getParentType() == getClassTypeSpec().getParentType() )
     {
-        // We want to convert to another generic model vector
+        // We want to convert to another model vector
 
         // Simply check whether our elements can convert to the desired element type
         typename RevBayesCore::RbConstIterator<elementType> i;
@@ -426,16 +426,16 @@ double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) c
             rlType orgElement = rlType( orgInternalElement );
 
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( type.getElementTypeSpec() != NULL && !orgElement.isType( *type.getElementTypeSpec() ) )
+            if ( type.getElementTypeSpec() != NULL && orgElement.getTypeSpec() != *type.getElementTypeSpec() )
             {
             
-                double elementPenalty = orgElement.isConvertibleTo( *type.getElementTypeSpec(), once );
-                if ( elementPenalty == -1 )
+                double element_penalty = orgElement.isConvertibleTo( *type.getElementTypeSpec(), once );
+                if ( element_penalty == -1 )
                 {
                     // we cannot convert this element
                     return -1;
                 }
-                penalty += elementPenalty;
+                penalty += element_penalty;
             }
             
         }

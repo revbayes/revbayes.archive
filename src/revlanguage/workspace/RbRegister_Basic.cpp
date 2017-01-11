@@ -433,6 +433,13 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()     );
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()        );
         addFunction( new Func__conversion<Simplex, ModelVector<Real> >()                         );
+        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Integer> > >()         );
+//        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Real> > >()            );
+//        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<RealPos> > >()         );
+//        addFunction( new Func__conversion<ModelVector<ModelVector<Integer> >, ModelVector<ModelVector<Real> > >()            );
+        addFunction( new Func__conversion<ModelVector<ModelVector<RealPos> >, ModelVector<ModelVector<Real> > >()            );
+        addFunction( new Func__conversion<ModelVector<ModelVector<Probability> >, ModelVector<ModelVector<RealPos> > >()     );
+        addFunction( new Func__conversion<ModelVector<ModelVector<Probability> >, ModelVector<ModelVector<Real> > >()        );
         
         
 
