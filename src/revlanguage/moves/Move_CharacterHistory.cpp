@@ -80,8 +80,8 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
 
     // move/proposal parameters
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* qmap_tdn                 = static_cast<const RateGenerator&>( qmap->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
+    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* qmap_tdn                             = static_cast<const RateGenerator&>( qmap->getRevObject() ).getDagNode();
 
     std::string mt  = ctmc_tdn->getValue().getDataType();
 

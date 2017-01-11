@@ -42,54 +42,52 @@ namespace RevBayesCore {
     class NodeRejectionSampleProposal : public Proposal {
 
     public:
-        NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n );                                                                //!<  constructor
+        NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n );                                  //!<  constructor
 
         // Basic utility functions
-        void                            assignNode(TopologyNode* nd);
-        void                            assignSiteIndexSet(const std::set<size_t>& s);
-        NodeRejectionSampleProposal*    clone(void) const;                                                                  //!< Clone object
-        void                            cleanProposal(void);
-        virtual double                  computeLnProposal();
-        double                          doProposal(void);                                                                   //!< Perform proposal
-        const std::string&              getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
-        void                            printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
-        void                            prepareProposal(void);                                                              //!< Prepare the proposal
-        void                            sampleNodeCharacters(void);   //!< Sample the characters at the node
-//        void                            sampleNodeCharacters2(const TopologyNode& node, const std::set<size_t>& indexSet);   //!< Sample the characters at the node
-        double                          sampleRootCharacters(void);
-        void                            setRateGenerator(const TypedDagNode<RateGenerator> *d);                                   //!< Set the rate generator.
-        void                            setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d);                                   //!< Set the rate generator.
-        void                            tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
-        void                            undoProposal(void);                                                                 //!< Reject the proposal
+        void                                                        assignNode(TopologyNode* nd);
+        void                                                        assignSiteIndexSet(const std::set<size_t>& s);
+        NodeRejectionSampleProposal*                                clone(void) const;                                              //!< Clone object
+        void                                                        cleanProposal(void);
+        virtual double                                              computeLnProposal();
+        double                                                      doProposal(void);                                               //!< Perform proposal
+        const std::string&                                          getProposalName(void) const;                                    //!< Get the name of the proposal for summary printing
+        void                                                        printParameterSummary(std::ostream &o) const;                   //!< Print the parameter summary
+        void                                                        prepareProposal(void);                                          //!< Prepare the proposal
+        void                                                        sampleNodeCharacters(void);                                     //!< Sample the characters at the node
+        double                                                      sampleRootCharacters(void);                                     //!< Sample the characters at the root
+        void                                                        setRateGenerator(const TypedDagNode<RateGenerator> *d);         //!< Set the rate generator.
+        void                                                        setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d); //!< Set the rate generator.
+        void                                                        tune(double r);                                                 //!< Tune the proposal to achieve a better acceptance/rejection ratio
+        void                                                        undoProposal(void);                                             //!< Reject the proposal
 
     protected:
 
-        void                            swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the DAG nodes on which the Proposal is working on
-
+        void                                                        swapNodeInternal(DagNode *oldN, DagNode *newN);                 //!< Swap the DAG nodes on which the Proposal is working on
 
         // parameters
-        StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
-        const TypedDagNode<RateGenerator>*            q_map_site;
-        const TypedDagNode<RateGeneratorSequence>*    q_map_sequence;
+        StochasticNode<AbstractHomologousDiscreteCharacterData>*    ctmc;
+        const TypedDagNode<RateGenerator>*                          q_map_site;
+        const TypedDagNode<RateGeneratorSequence>*                  q_map_sequence;
 
         // dimensions
-//        size_t                                  numCharacters;
-        size_t                                  numStates;
+//        size_t                                                      numCharacters;
+        size_t                                                      numStates;
 
         // proposal
-        std::vector<size_t>                     storedNodeState;
+        std::vector<size_t>                                         storedNodeState;
 
-        TopologyNode*                           node;
-        double                                  storedLnProb;
-        double                                  proposedLnProb;
+        TopologyNode*                                               node;
+        double                                                      storedLnProb;
+        double                                                      proposedLnProb;
 
-        PathRejectionSampleProposal<charType>*  nodeProposal;
-        PathRejectionSampleProposal<charType>*  leftProposal;
-        PathRejectionSampleProposal<charType>*  rightProposal;
+        PathRejectionSampleProposal<charType>*                      nodeProposal;
+        PathRejectionSampleProposal<charType>*                      leftProposal;
+        PathRejectionSampleProposal<charType>*                      rightProposal;
 
-        TransitionProbabilityMatrix             nodeTpMatrix;
-        TransitionProbabilityMatrix             leftTpMatrix;
-        TransitionProbabilityMatrix             rightTpMatrix;
+        TransitionProbabilityMatrix                                 nodeTpMatrix;
+        TransitionProbabilityMatrix                                 leftTpMatrix;
+        TransitionProbabilityMatrix                                 rightTpMatrix;
 
     };
 
@@ -315,7 +313,6 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::prepareProposal( void 
         throw RbException("Failed cast.");
     }
 
-
     storedLnProb = 0.0;
     proposedLnProb = 0.0;
 
@@ -388,9 +385,9 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
         TopologyNode &left_child  = node->getChild(0);
         TopologyNode &right_child = node->getChild(1);
 
-        double node_age     = node->getAge();
-        double left_age     = left_child.getAge();
-        double right_age    = right_child.getAge();
+        double node_age   = node->getAge();
+        double left_age   = left_child.getAge();
+        double right_age  = right_child.getAge();
 
         double node_rate  = c->getBranchRate( node->getIndex() );
         double left_rate  = c->getBranchRate( left_child.getIndex() );
@@ -398,7 +395,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
 
         // get transition probs
         const RateGenerator& rm = q_map_site->getValue();
-        rm.calculateTransitionProbabilities(node_age, left_age,  left_rate, leftTpMatrix);
+        rm.calculateTransitionProbabilities(node_age, left_age,  left_rate,  leftTpMatrix);
         rm.calculateTransitionProbabilities(node_age, right_age, right_rate, rightTpMatrix);
 
         // states for conditional sampling probs
@@ -438,7 +435,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
                 for ( size_t i=0; i<numStates; ++i )
                 {
                     u -= (state_probs[i]/sum);
-                    if (u <= 0.0 )
+                    if ( u <= 0.0 )
                     {
 //                        s = i;
                         break;
@@ -477,7 +474,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
                 for ( size_t i=0; i<numStates; ++i )
                 {
                     u -= (state_probs[i]/sum);
-                    if (u <= 0.0 )
+                    if ( u <= 0.0 )
                     {
 //                        s = i;
                         break;

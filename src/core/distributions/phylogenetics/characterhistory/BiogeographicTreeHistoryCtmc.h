@@ -208,6 +208,29 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
 	unsigned int n0 = (unsigned)(this->numSites - n1);
     unsigned counts[2] = { n0, n1 };
 
+    // check that node ages are consistent with character event ages
+    if ( bh->areEventTimesValid(node) == false)
+    {
+        return RbConstants::Double::neginf;
+    }
+
+    // check parent and child states to make sure they match with the
+    // ancestral and descendant branches; otherwise, return -Inf
+    std::vector<CharacterEvent*> end_state = bh->getChildCharacters();
+    for(size_t i = 0; i < node.getNumberOfChildren(); ++i)
+    {
+        const TopologyNode &child = node.getChild(i);
+        size_t child_index = child.getIndex();
+        BranchHistory* child_bh = this->histories[child_index];
+        std::vector<CharacterEvent*> child_state = child_bh->getParentCharacters();
+        for(size_t j = 0; j < this->numSites; ++j)
+        {
+            if(end_state[j]->getState() != child_state[j]->getState())
+            {
+                return RbConstants::Double::neginf;
+            }
+        }
+    }
 
     if (!node.isTip() && cladogenicEvents)
     {
@@ -235,7 +258,6 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
         const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
         std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
 
-        double branchLength = node.getBranchLength();
         double currAge = (node.isRoot() ? this->tau->getValue().getRoot().getAge()*5 : node.getParent().getAge());
         double endAge = node.getAge();
         const RateGeneratorSequence_Biogeography& rm = static_cast<const RateGeneratorSequence_Biogeography&>(homogeneousRateGeneratorSequence->getValue());
@@ -246,19 +268,14 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
         double epochEndAge = epochs[epochIdx];
 
         // stepwise events
-        // double begin_age = startAge;
-        // double event_age = endAge;
-        double t = 0.0;
-        double dt = 0.0;
-        double da = 0.0;
-
+        double eventAge = 0.0;
         bool useEpoch = true;
         for (it_h = history.begin(); it_h != history.end(); it_h++)
         {
+            
             // next event time
             double idx = (*it_h)->getSiteIndex();
-            dt = (*it_h)->getAge();
-            da = dt * branchLength;
+            eventAge = (*it_h)->getAge();
 
             // reject extinction
             size_t s = (*it_h)->getState();
@@ -269,7 +286,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
             }
 
             // if epoch crossed, compute prob no events until boundary then advance epochIdx
-            while (useEpoch && currAge - da < epochEndAge)
+            while (useEpoch && eventAge < epochEndAge)
             {
                 // waiting factor
                 double sr = rm.getSumOfRates( currState, counts, this->computeBranchRate( node.getIndex() ), currAge);
@@ -279,20 +296,21 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
                 if (endAge < epochEndAge)
                 {
                     epochIdx++;
-                    da -= (currAge - epochEndAge);
                     currAge = epochEndAge;
                     epochEndAge = epochs[epochIdx];
                 }
                 // otherwise, exit loop
                 else
+                {
                     break;
+                }
 
             }
 
             // lnL for stepwise events for p(x->y)
             double tr = rm.getRate( currState, *it_h, counts, this->computeBranchRate( node.getIndex() ), currAge);
             double sr = rm.getSumOfRates( currState, counts, this->computeBranchRate( node.getIndex() ), currAge);
-            lnL += -(sr * da) + log(tr);
+            lnL += -(sr * (currAge - eventAge)) + log(tr);
 
             // update counts
             counts[currState[idx]->getState()] -= 1;
@@ -300,8 +318,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
 
             // update time and state
             currState[idx] = *it_h;
-            t += dt;
-            currAge -= da;
+            currAge = eventAge;
 
         }
 
@@ -325,7 +342,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
         else
         {
             double sr = rm.getSumOfRates( currState, counts, this->computeBranchRate( node.getIndex() ), currAge);
-            lnL += -sr * ( (1.0 - t) * branchLength );
+            lnL += -sr * (currAge - endAge);
         }
 
 

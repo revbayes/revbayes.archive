@@ -20,7 +20,10 @@
 #include <string>
 
 namespace RevBayesCore {
-
+    
+    template<class charType>
+    class NarrowExchangeDataAugmentedProposal;
+    
     /**
      * The scaling operator.
      *
@@ -37,52 +40,53 @@ namespace RevBayesCore {
 
     template<class charType>
     class PathRejectionSampleProposal : public Proposal {
-
+    
+    template<class ct>
+    friend class NarrowExchangeDataAugmentedProposal;
+        
     public:
         PathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, bool useTail=false);   //!<  constructor
 
         // Basic utility functions
-        void                            assignNode(TopologyNode* nd);
-        virtual double                  computeLnProposal(const TopologyNode& nd, const BranchHistory& bh);
-        void                            cleanProposal(void);
-        PathRejectionSampleProposal*    clone(void) const;                                                                  //!< Clone object
-        double                          doProposal(void);                                                                   //!< Perform proposal
-        virtual const std::string&      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
-        void                            printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
-        void                            prepareProposal(void);                                                              //!< Prepare the proposal
-        void                            setRateGenerator(const TypedDagNode<RateGenerator> *d);                                   //!< Set the rate generator.
-        void                            setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d);                                   //!< Set the rate generator.
-        void                            tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
-        void                            undoProposal(void);                                                                 //!< Reject the proposal
+        void                                                        assignNode(TopologyNode* nd);
+        virtual double                                              computeLnProposal(const TopologyNode& nd, const BranchHistory& bh);
+        void                                                        cleanProposal(void);
+        PathRejectionSampleProposal*                                clone(void) const;                                                              //!< Clone object
+        double                                                      doProposal(void);                                                               //!< Perform proposal
+        virtual const std::string&                                  getProposalName(void) const;                                                    //!< Get the name of the proposal for summary printing
+        void                                                        printParameterSummary(std::ostream &o) const;                                   //!< Print the parameter summary
+        void                                                        prepareProposal(void);                                                          //!< Prepare the proposal
+        void                                                        setRateGenerator(const TypedDagNode<RateGenerator> *d);                         //!< Set the rate generator.
+        void                                                        setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d);                 //!< Set the rate generator.
+        void                                                        tune(double r);                                                                 //!< Tune the proposal to achieve a better acceptance/rejection ratio
+        void                                                        undoProposal(void);                                                             //!< Reject the proposal
 
     protected:
 
-        void                            swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the DAG nodes on which the Proposal is working on
-
-
-        void                            fillStateCounts(std::vector<CharacterEvent*> s, std::vector<size_t> &counts);
-        double                          getBranchRate(size_t index) const;
+        void                                                        swapNodeInternal(DagNode *oldN, DagNode *newN);                                 //!< Swap the DAG nodes on which the Proposal is working on
+        void                                                        fillStateCounts(std::vector<CharacterEvent*> s, std::vector<size_t> &counts);
+        double                                                      getBranchRate(size_t index) const;
 
         // parameters
-        StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
-//        TypedDagNode<Tree>*                     tau;
-//        TypedDagNode<RbVector<double> >*        site_rates;
-//        TypedDagNode<RateGenerator>*            qmap;
-        const TypedDagNode<RateGenerator>*      q_map_site;
-        const TypedDagNode<RateGeneratorSequence>*  q_map_sequence;
+        StochasticNode<AbstractHomologousDiscreteCharacterData>*    ctmc;
+//        TypedDagNode<Tree>*                                         tau;
+//        TypedDagNode<RbVector<double> >*                            site_rates;
+//        TypedDagNode<RateGenerator>*                                qmap;
+        const TypedDagNode<RateGenerator>*                          q_map_site;
+        const TypedDagNode<RateGeneratorSequence>*                  q_map_sequence;
 
-        //BranchHistory*                          storedValue;
-        std::multiset<CharacterEvent*,CharacterEventCompare> storedHistory;
+//        BranchHistory*                                              storedValue;
+        std::multiset<CharacterEvent*,CharacterEventCompare>        storedHistory;
 
-        const TopologyNode*                     node;
+        const TopologyNode*                                         node;
 
-        double                                  storedLnProb;
-        double                                  proposedLnProb;
+        double                                                      storedLnProb;
+        double                                                      proposedLnProb;
 
-        size_t                                  numStates;
+        size_t                                                      numStates;
 
-        bool                                    useTail;
-        bool                                    node_assigned;
+        bool                                                        useTail;
+        bool                                                        node_assigned;
 
     };
 
@@ -194,13 +198,16 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     const RateGenerator& rm = q_map_site->getValue();
 
     // stepwise events
-    double t = 0.0;
-    double dt = 0.0;
+    double dt;
+    double eventAge;
+    double endAge = nd.getAge();
+    
     for (it_h = history.begin(); it_h != history.end(); ++it_h)
     {
         // next event time
         double idx = (*it_h)->getSiteIndex();
-        dt = (*it_h)->getAge() - t; // CHECK THIS AGE
+        eventAge = (*it_h)->getAge();
+        dt = currAge - eventAge;
 
         double tr = rm.getRate( currState[ (*it_h)->getSiteIndex() ]->getState(), (*it_h)->getState(), currAge, getBranchRate(nd.getIndex()));
         double sr = rm.getSumOfRates(currState, counts) * getBranchRate(nd.getIndex());
@@ -214,13 +221,12 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
 
         // update state
         currState[idx] = *it_h;
-        t += dt;
-        currAge -= dt;
+        currAge = eventAge;
     }
 
     // lnL for final non-event
     double sr = rm.getSumOfRates(currState, counts) * getBranchRate(nd.getIndex());
-    lnP -= (sr * (branch_length - t));
+    lnP -= sr * (currAge - endAge);
 
     return lnP;
 }
@@ -278,12 +284,12 @@ const std::string& RevBayesCore::PathRejectionSampleProposal<charType>::getPropo
 template<class charType>
 double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
 {
+    
     TreeHistoryCtmc<charType>* p = dynamic_cast< TreeHistoryCtmc<charType>* >( &ctmc->getDistribution() );
     if ( p == NULL )
     {
         throw RbException("Failed cast.");
     }
-
     size_t num_sites = p->getNumberOfSites();
 
     // get model parameters
@@ -302,15 +308,15 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
     // clear characters
     BranchHistory* bh = &p->getHistory(*node);
 
-    // reject sample path history
+    // rejection sample path history
     std::vector<CharacterEvent*> parent_states = bh->getParentCharacters();
-    std::vector<CharacterEvent*> child_states =  bh->getChildCharacters();
+    std::vector<CharacterEvent*> child_states  = bh->getChildCharacters();
     std::multiset<CharacterEvent*,CharacterEventCompare> proposed_histories;
     for (size_t site_index=0; site_index < num_sites; ++site_index)
     {
         std::set<CharacterEvent*> tmpHistory;
         size_t currState = parent_states[site_index]->getState();
-        size_t endState = child_states[site_index]->getState();
+        size_t endState  = child_states[site_index]->getState();
         do
         {
             // delete previously rejected events
@@ -318,8 +324,6 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
 
             // proceed with rejection sampling
             currState = parent_states[site_index]->getState();
-            // TODO: make t start with the age of the parent node, end at the age of the child node
-            // double t = 0.0;
             double end_age = node->getAge();
             double age = end_age + branch_length;
             
@@ -432,7 +436,6 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::prepareProposal( void 
 
     storedLnProb = x;
 
-
 }
 
 
@@ -482,10 +485,10 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::undoProposal( void )
         delete e;
     }
 
-
     // swap current value and stored value
     bh->updateHistory(storedHistory);
     storedHistory.clear();
+    
 }
 
 

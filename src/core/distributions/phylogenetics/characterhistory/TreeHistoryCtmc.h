@@ -87,7 +87,7 @@ namespace RevBayesCore {
         double                                                              lnProb;
         const size_t                                                        num_states;
         size_t                                                              num_sites;
-        size_t                                                              numSiteRates;
+        size_t                                                              num_site_rates;
         const TypedDagNode<Tree>*                                           tau;
 
         // the likelihoods
@@ -125,7 +125,7 @@ template<class charType>
 RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TypedDagNode<Tree> *t, size_t nChars, size_t nSites, bool useAmbigChar) : TypedDistribution< AbstractHomologousDiscreteCharacterData >(  new HomologousDiscreteCharacterData<charType>() ),
     num_states( nChars ),
     num_sites( nSites ),
-    numSiteRates( 1 ),
+    num_site_rates( 1 ),
     tau( t ),
     activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) ),
     historyLikelihoods(),
@@ -158,7 +158,7 @@ template<class charType>
 RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TreeHistoryCtmc &n) : TypedDistribution< AbstractHomologousDiscreteCharacterData >( n ),
     num_states( n.num_states ),
     num_sites( n.num_sites ),
-    numSiteRates( n.numSiteRates ),
+    num_site_rates( n.num_site_rates ),
     tau( n.tau ),
     activeLikelihood( n.activeLikelihood ),
     historyLikelihoods( n.historyLikelihoods ),
@@ -205,8 +205,6 @@ RevBayesCore::TreeHistoryCtmc<charType>::~TreeHistoryCtmc( void )
 template<class charType>
 double RevBayesCore::TreeHistoryCtmc<charType>::computeBranchRate(size_t index)
 {
-
-
     return 1.0;
 }
 
@@ -427,11 +425,9 @@ std::vector<RevBayesCore::BranchHistory*> RevBayesCore::TreeHistoryCtmc<charType
     return histories;
 }
 
-
 template<class charType>
 size_t RevBayesCore::TreeHistoryCtmc<charType>::getNumberOfSites( void ) const
 {
-
     return num_sites;
 }
 
@@ -523,10 +519,9 @@ void RevBayesCore::TreeHistoryCtmc<charType>::restoreSpecialization( DagNode* af
         // then we need to revert this change
         if ( changedNodes[index] )
         {
-
 //            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
         }
-
+        
         // set all flags to false
         changedNodes[index] = false;
     }
@@ -601,7 +596,6 @@ void RevBayesCore::TreeHistoryCtmc<charType>::setValue(AbstractHomologousDiscret
 
     // delegate to the parent class
     TypedDistribution< AbstractHomologousDiscreteCharacterData >::setValue(v, force);
-
 
     // now we also set the template state
     template_state = charType( static_cast<const charType&>( this->value->getTaxonData(0).getCharacter(0) ) );

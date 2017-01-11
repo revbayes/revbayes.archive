@@ -287,8 +287,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 //        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
 //        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
 
-        addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()         );
-        addTypeWithConstructor( new Move_NarrowExchangeDataAugmented()         );
+        addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()       );
+        addTypeWithConstructor( new Move_NarrowExchangeDataAugmented()    );
 
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor( new Move_CharacterHistory() );

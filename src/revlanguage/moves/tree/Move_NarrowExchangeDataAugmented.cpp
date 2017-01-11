@@ -1,5 +1,7 @@
+#include "AminoAcidState.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "DnaState.h"
 #include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_NarrowExchangeDataAugmented.h"
@@ -9,6 +11,9 @@
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlRateGenerator.h"
 #include "RlTimeTree.h"
+#include "RnaState.h"
+#include "StandardState.h"
+#include "StochasticNode.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -58,30 +63,39 @@ void Move_NarrowExchangeDataAugmented::constructInternalObject( void )
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
-//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( rate_matrices->getRevObject() ).getDagNode();
 
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* qmap_tdn                 = static_cast<const RateGenerator&>( rate_generator->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
+    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* qmap_tdn                             = static_cast<const RateGenerator&>( rate_generator->getRevObject() ).getDagNode();
 
-    // std::vector< RevBayesCore::StochasticNode<RevBayesCore::RateGenerator> *> rm;
-    // RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* deterministic_vector = static_cast<const ModelVector<RateGenerator> &>( rate_matrices->getRevObject() ).getDagNode();
-    // std::vector<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
-    // for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
-    // {
-    //     const RevBayesCore::DagNode *tmp_node = *it;
-    //     const RevBayesCore::StochasticNode<RevBayesCore::RateGenerator> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<RevBayesCore::RateGenerator>* >( tmp_node );
-    //     if ( the_node != NULL )
-    //     {
-    //         rm.push_back( const_cast<RevBayesCore::StochasticNode<RevBayesCore::RateGenerator> *>( the_node ) );
-    //     }
-    //     else
-    //     {
-    //         throw RbException("Could not add the node because it isn't a vector of stochastic nodes of rate matrices.");
-    //     }
-    // }
-
-    RevBayesCore::Proposal *p = new RevBayesCore::NarrowExchangeDataAugmentedProposal(n,ctmc_sn,qmap_tdn);
+    std::string mt = ctmc_sn->getValue().getDataType();
+    RevBayesCore::Proposal *p = NULL;
+    
+    if (mt == "DNA")
+    {
+        RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::DnaState> *tmp_p = new RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::DnaState>(n,ctmc_sn);
+        tmp_p->setRateGenerator( qmap_tdn );
+        p = tmp_p;
+    }
+    else if (mt == "RNA")
+    {
+        RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::RnaState> *tmp_p = new RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::RnaState>(n,ctmc_sn);
+        tmp_p->setRateGenerator( qmap_tdn );
+        p = tmp_p;
+    }
+    else if (mt == "AA" || mt == "Protein")
+    {
+        RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::AminoAcidState> *tmp_p = new RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::AminoAcidState>(n,ctmc_sn);
+        tmp_p->setRateGenerator( qmap_tdn );
+        p = tmp_p;
+    }
+    else if (mt == "Standard")
+    {
+        RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::StandardState>(n,ctmc_sn);
+        tmp_p->setRateGenerator( qmap_tdn );
+        p = tmp_p;
+    }
+    
     value = new RevBayesCore::MetropolisHastingsMove(p,w);
 
 }
@@ -180,7 +194,7 @@ const TypeSpec& Move_NarrowExchangeDataAugmented::getTypeSpec( void ) const
 void Move_NarrowExchangeDataAugmented::printValue(std::ostream &o) const
 {
 
-    o << "Narrow(";
+    o << "NarrowExchangeDataAugmented(";
     if (tree != NULL)
     {
         o << tree->getName();

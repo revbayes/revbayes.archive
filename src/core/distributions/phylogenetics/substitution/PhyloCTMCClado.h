@@ -1747,7 +1747,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
                 tp[i][i] = 1.0;
 
             // for each interval between events, go from present to past
-            double begin_age = startAge;
+//            double begin_age = startAge;
             double event_age = endAge;
             bool first_event = true;
 //            size_t num_event = 0;

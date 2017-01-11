@@ -184,13 +184,18 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         return 0.0;
 
     size_t nodeIndex = node.getIndex();
-    double branchLength = node.getBranchLength();
     const RateGeneratorSequence& rm = homogeneousRateGeneratorSequence->getValue();
 
     BranchHistory* bh = this->histories[nodeIndex];
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
     unsigned counts[this->numChars];
     computeCounts(currState, counts);
+
+    // check that node ages are consistent with character event ages
+    if ( bh->areEventTimesValid(node) == false)
+    {
+        return RbConstants::Double::neginf;
+    }
 
     // check parent and child states to make sure they match with the
     // ancestral and descendant branches; otherwise, return -Inf
@@ -205,8 +210,6 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         {
             if(end_state[j]->getState() != child_state[j]->getState())
             {
-                // std::cerr << "Oh oh Mike!!!" << std::endl;
-                // std::cerr << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
                 return RbConstants::Double::neginf;
             }
         }
@@ -217,22 +220,22 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
 
     // stepwise events
     double lnL = 0.0;
-    double t = 0.0;
-    double dt = 0.0;
-//    double da = 0.0;
+    double current_age = node.getParent().getAge();
+    double end_age = node.getAge();
+    double event_age;
 
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         // next event time
         double idx = (*it_h)->getSiteIndex();
-        dt = (*it_h)->getAge() - t; // CHECK THIS AGE
+        event_age = (*it_h)->getAge(); // CHECK THIS AGE
         size_t s = (*it_h)->getState();
 
         // lnL for stepwise events for p(x->y)
 //        double tr = rm.getRate(currState, *it_h, counts);
         double tr = rm.getRate(currState, *it_h);
         double sr = rm.getSumOfRates(currState, counts);
-        lnL += log(tr) -sr * dt * branchLength;
+        lnL += log(tr) - sr * (current_age - event_age);
 
         // update counts
         counts[currState[idx]->getState()] -= 1;
@@ -240,12 +243,12 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
 
         // update time and state
         currState[idx] = *it_h;
-        t += dt;
+        current_age = event_age;
     }
 
     // lnL that nothing else happens
     double sr = rm.getSumOfRates(currState, counts);
-    lnL += -sr * ( (1.0 - t) * branchLength );
+    lnL += -sr * (current_age - end_age);
 
     return lnL;
 }

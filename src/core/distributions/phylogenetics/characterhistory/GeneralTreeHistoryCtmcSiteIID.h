@@ -17,6 +17,7 @@
 
 namespace RevBayesCore {
 
+    
     template<class charType>
     class GeneralTreeHistoryCtmcSiteIID : public TreeHistoryCtmc<charType> {
 
@@ -58,7 +59,6 @@ namespace RevBayesCore {
         // (not needed)        void                         keepSpecialization(DagNode* affecter);
         // (not needed)        void                         restoreSpecialization(DagNode *restorer);
         virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
-
 
     private:
 
@@ -109,7 +109,6 @@ RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::GeneralTreeHistoryCtmcSit
     branchHeterogeneousClockRates               = false;
     branchHeterogeneousSubstitutionMatrices     = false;
 
-
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
@@ -122,6 +121,7 @@ RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::GeneralTreeHistoryCtmcSit
     this->addParameter( siteRates );
     this->addParameter( siteRatesProbs );
     this->addParameter( pInv );
+    
 }
 
 
@@ -210,22 +210,23 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
     }
 
     size_t node_index = node.getIndex();
-    double branch_length = node.getBranchLength();
     double branch_rate = getBranchRate(node_index);
     const RateGenerator& rm = homogeneousRateGenerator->getValue();
 
+    // get the branch history
     BranchHistory* bh = this->histories[node_index];
-    std::vector<CharacterEvent*> curr_state = bh->getParentCharacters();
 
-    // TODO: check that node ages are consistent with character histories
-    if ( bh->areEventTimesValid(node) == false)
+    // check that node ages are consistent with character event ages
+    if ( bh->areEventTimesValid(node) == false )
     {
+//        std::cerr << "Rejecting (invalid times)." << std::endl;
         return RbConstants::Double::neginf;
     }
 
     // check parent and child states to make sure they match with the
     // ancestral and descendant branches; otherwise, return -Inf
-    std::vector<CharacterEvent*> end_state = bh->getChildCharacters();
+    std::vector<CharacterEvent*> curr_state = bh->getParentCharacters();
+    std::vector<CharacterEvent*> end_state  = bh->getChildCharacters();
     for(size_t i = 0; i < node.getNumberOfChildren(); ++i)
     {
         const TopologyNode &child = node.getChild(i);
@@ -234,12 +235,15 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
         std::vector<CharacterEvent*> child_state = child_bh->getParentCharacters();
         for(size_t j = 0; j < this->num_sites; ++j)
         {
-            if(end_state[j]->getState() != child_state[j]->getState())
+            if( end_state[j]->getState() != child_state[j]->getState() )
             {
-                // std::cerr << "Oh oh Mike!!!" << std::endl;
-                // std::cerr << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
+//                std::cerr << "Rejecting: " << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
                 return RbConstants::Double::neginf;
             }
+//            else
+//            {
+//                std::cerr << "Not rejecting: " << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
+//            }
         }
     }
 
@@ -251,23 +255,23 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
 
     // stepwise events
     double lnL = 0.0;
-    double t = 0.0;
-    double dt = 0.0;
-    //    double da = 0.0;
-
+    double current_age = node.getParent().getAge();
+    double end_age = node.getAge();
+    double event_age;
+    
     for (it_h = history.begin(); it_h != history.end(); ++it_h)
     {
         CharacterEvent* char_event = (*it_h);
 
         // next event time
         double idx = char_event->getSiteIndex();
-        dt = char_event->getAge() - t; // CHECK THIS AGE
+        event_age = char_event->getAge();
         size_t s = char_event->getState();
 
         // lnL for stepwise events for p(x->y)
-        double tr = rm.getRate(curr_state[idx]->getState(), char_event->getState(), node.getAge(), branch_rate);
+        double tr = rm.getRate(curr_state[idx]->getState(), char_event->getState(), current_age, branch_rate);
         double sr = rm.getSumOfRates(curr_state, counts) * branch_rate;
-        lnL += log(tr) - (sr * dt);
+        lnL += log(tr) - sr * (current_age - event_age);
 
         // update counts
         counts[curr_state[idx]->getState()] -= 1;
@@ -275,12 +279,12 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
 
         // update time and state
         curr_state[idx] = char_event;
-        t += dt;
+        current_age = event_age;
     }
 
     // lnL that nothing else happens
     double sr = rm.getSumOfRates(curr_state) * branch_rate;
-    lnL -= (sr * ( (branch_length - t) ));
+    lnL -= sr * (current_age - end_age);
 
     return lnL;
 }
@@ -762,14 +766,14 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::setSiteRates(const T
     {
         // set the value
         siteRates = r;
-        this->numSiteRates = r->getValue().size();
+        this->num_site_rates = r->getValue().size();
 //        this->resizeLikelihoodVectors();
     }
     else
     {
         // set the value
         siteRates = NULL;
-        this->numSiteRates = 1;
+        this->num_site_rates = 1;
 //        this->resizeLikelihoodVectors();
 
     }
@@ -795,6 +799,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulate(void)
 template<class charType>
 void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulateHistory(const TopologyNode& node, BranchHistory* bh)
 {
+    
     size_t branch_index = node.getIndex();
     double branch_rate = getBranchRate( branch_index );
     const RateGenerator& rm = homogeneousRateGenerator->getValue();
@@ -814,6 +819,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulateHistory(cons
     double dt = 0.0;
     while (t - dt > end_age)
     {
+        
         // sample next event time
         double sr = rm.getSumOfRates(currState, counts) * branch_rate;
         dt = RbStatistics::Exponential::rv(sr, *GLOBAL_RNG);
@@ -868,7 +874,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulateHistory(cons
     }
 
     bh->setChildCharacters(currState);
-
+    
 }
 
 template<class charType>
@@ -998,7 +1004,6 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::touchSpecialization(
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == rootFrequencies )
     {
-
         const TopologyNode &root = this->tau->getValue().getRoot();
         this->flagNodeDirty( root );
     }
