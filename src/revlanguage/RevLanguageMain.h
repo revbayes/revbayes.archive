@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-class RevLanguageMain_Error {
+class RevLanguageMain {
     
     public:
     
