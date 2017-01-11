@@ -395,6 +395,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< Probability                >( new Dist_mixture<Probability>() );
 //        AddDistribution< RateGenerator              >( new Dist_mixture<RateGenerator>() );
         addDistribution( new Dist_mixture<RateGenerator>() );
+        AddDistribution< TimeTree                   >( new Dist_mixture<TimeTree>() );
         
         // Ornstein-Uhlenbeck process
         AddDistribution< Real                       >( new OrnsteinUhlenbeckProcess() );

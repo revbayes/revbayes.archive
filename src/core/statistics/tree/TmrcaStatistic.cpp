@@ -66,6 +66,20 @@ TmrcaStatistic* TmrcaStatistic::clone( void ) const
 }
 
 
+void TmrcaStatistic::fireTreeChangeEvent(const TopologyNode &n, const unsigned& m)
+{
+    if (m == TreeChangeEventMessage::DEFAULT || m == TreeChangeEventMessage::TOPOLOGY)
+    {
+        // update clade in case topology move changed MRCA node
+        ; //recursivelyFlagNodesDirty(n);
+    }
+    else
+    {
+        // otherwise, just need to read the new age
+        ;
+    }
+}
+
 void TmrcaStatistic::initialize( void )
 {
     initializeBitSet();
