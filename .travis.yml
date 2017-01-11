@@ -17,4 +17,3 @@ branches:
 # notifications
 notifications:
   slack: revbayes:bQO6VTun0Orhx2NiKktVPDsS
-    on_success: change
