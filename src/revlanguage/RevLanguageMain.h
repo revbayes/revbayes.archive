@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-class RevLanguageMain_SebastianMadeMeDoIt {
+class RevLanguageMain {
     
     public:
     
