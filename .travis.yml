@@ -13,3 +13,8 @@ branches:
   only:
   - master
   - development
+  
+# notifications
+notifications:
+  slack:
+    on_success: change
