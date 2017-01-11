@@ -6,6 +6,7 @@ compiler:
 script:
   - cd projects/cmake
   - ./build.sh
+  - rb
 
 # safelist
 branches:
