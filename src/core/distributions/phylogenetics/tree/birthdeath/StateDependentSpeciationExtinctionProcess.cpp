@@ -745,9 +745,11 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
 
 void StateDependentSpeciationExtinctionProcess::drawJointConditionalCharacterMap(std::vector<std::string*>& character_histories)
 {
-    
-    // now begin the root-to-tip pass, drawing ancestral states conditional on the start states
-    
+    // first populate partial likelihood vectors along all the branches
+    sample_character_history = true;
+    computeLnProbability();
+
+    // now begin the root-to-tip pass, drawing ancestral states for each time slice conditional on the start states
     std::map<std::vector<unsigned>, double> eventMap;
     std::vector<double> speciation_rates;
     if ( use_cladogenetic_events == true )
@@ -858,6 +860,8 @@ void StateDependentSpeciationExtinctionProcess::drawJointConditionalCharacterMap
     recursivelyDrawJointConditionalCharacterMap(left, l, character_histories);
     recursivelyDrawJointConditionalCharacterMap(right, r, character_histories);
     
+    // turn off sampling until we need it again
+    sample_character_history = false;
 }
 
 
