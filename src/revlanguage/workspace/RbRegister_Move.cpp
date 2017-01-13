@@ -154,7 +154,7 @@
 
 
 #include "Move_NarrowExchangeRateMatrix.h"
-#include "Move_NarrowExchangeDataAugmented.h"
+#include "Move_NarrowExchangeCharacterHistory.h"
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
@@ -288,7 +288,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 //        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
 
         addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()       );
-        addTypeWithConstructor( new Move_NarrowExchangeDataAugmented()    );
+        addTypeWithConstructor( new Move_NarrowExchangeCharacterHistory()    );
 
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor( new Move_CharacterHistory() );

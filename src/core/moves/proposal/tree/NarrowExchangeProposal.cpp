@@ -105,7 +105,7 @@ double NarrowExchangeProposal::doProposal( void )
         failed = false;
         
         // now we store all necessary values
-        storedChosenNode   = node;
+        storedChosenNode    = node;
         storedUncle         = uncle;
         
         // now exchange the two nodes

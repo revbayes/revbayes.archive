@@ -1,5 +1,5 @@
-#ifndef NarrowExchangeDataAugmentedProposal_H
-#define NarrowExchangeDataAugmentedProposal_H
+#ifndef NarrowExchangeCharacterHistoryProposal_H
+#define NarrowExchangeCharacterHistoryProposal_H
 
 #include "BranchHistory.h"
 #include "HomologousDiscreteCharacterData.h"
@@ -36,14 +36,14 @@ namespace RevBayesCore {
      */
     
     template<class charType>
-    class NarrowExchangeDataAugmentedProposal : public Proposal {
+    class NarrowExchangeCharacterHistoryProposal : public Proposal {
 
     public:
-        NarrowExchangeDataAugmentedProposal( StochasticNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* c);                                               //!<  constructor
+        NarrowExchangeCharacterHistoryProposal( StochasticNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* c);                                               //!<  constructor
 
         // Basic utility functions
         void                                                        cleanProposal(void);                                            //!< Clean up proposal
-        NarrowExchangeDataAugmentedProposal*                        clone(void) const;                                              //!< Clone object
+        NarrowExchangeCharacterHistoryProposal*                        clone(void) const;                                              //!< Clone object
         double                                                      computeLnProposal( TopologyNode* node );
         double                                                      computeNodeStateProbability( TopologyNode* parent);
         double                                                      doProposal(void);                                               //!< Perform proposal
@@ -113,7 +113,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType>
-RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::NarrowExchangeDataAugmentedProposal( StochasticNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* c ) : Proposal(),
+RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::NarrowExchangeCharacterHistoryProposal( StochasticNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* c ) : Proposal(),
     tree( t ),
     ctmc( c ),
     rate_generator( NULL ),
@@ -125,7 +125,8 @@ RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::NarrowExchangeDataA
     parent_tp_matrix( 2 ),
     grandparent_tp_matrix( 2 )
 {
-    // tell the base class to add the node
+    
+    // tell the base class to add the nodes
     addNode( tree );
     addNode( ctmc );
     
@@ -145,7 +146,7 @@ RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::NarrowExchangeDataA
  *
  */
 template<class charType>
-void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::cleanProposal( void )
+void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::cleanProposal( void )
 {
     node_proposal->cleanProposal();
     parent_proposal->cleanProposal();
@@ -164,14 +165,14 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::cleanProposal(
  * \return A new copy of the proposal.
  */
 template<class charType>
-RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>* RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::clone( void ) const
+RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>* RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::clone( void ) const
 {
     
-    return new NarrowExchangeDataAugmentedProposal( *this );
+    return new NarrowExchangeCharacterHistoryProposal( *this );
 }
 
 template<class charType>
-double RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::computeNodeStateProbability( TopologyNode* parent )
+double RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::computeNodeStateProbability( TopologyNode* parent )
 {
     double lnP = 0.0;
     
@@ -298,7 +299,7 @@ double RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::computeNodeS
 }
 
 template<class charType>
-double RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::computeLnProposal( TopologyNode* node )
+double RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::computeLnProposal( TopologyNode* node )
 {
     double lnP = 0.0;
     
@@ -402,9 +403,9 @@ double RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::computeLnPro
  * \return The Proposals' name.
  */
 template<class charType>
-const std::string& RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::getProposalName( void ) const
+const std::string& RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::getProposalName( void ) const
 {
-    static std::string name = "NarrowExchangeDataAugmentedProposal";
+    static std::string name = "NarrowExchangeCharacterHistoryProposal";
     
     return name;
 }
@@ -423,7 +424,7 @@ const std::string& RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::
  * \return The hastings ratio.
  */
 template<class charType>
-double RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::doProposal( void )
+double RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::doProposal( void )
 {
     
     // Get random number generator
@@ -439,9 +440,9 @@ double RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::doProposal( 
         node = &tau.getNode(index);
     } while ( node->isRoot() || node->getParent().isRoot() );
     
-    TopologyNode& parent = node->getParent();
+    TopologyNode& parent      = node->getParent();
     TopologyNode& grandparent = parent.getParent();
-    TopologyNode* uncle = &grandparent.getChild( 0 );
+    TopologyNode* uncle       = &grandparent.getChild( 0 );
     // check if we got the correct child
     if ( uncle == &parent )
     {
@@ -456,9 +457,9 @@ double RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::doProposal( 
     
     // we need to work with the times
     double parent_age = parent.getAge();
-    double uncles_age = uncle->getAge();
+    double uncle_age  = uncle->getAge();
     
-    if( uncles_age < parent_age )
+    if( uncle_age < parent_age )
     {
         failed = false;
         
@@ -471,8 +472,8 @@ double RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::doProposal( 
         size_t num_sites = p->getNumberOfSites();
         
         // step 1: store all the necessary values
-        stored_chosen_node          = node;
-        stored_uncle                = uncle;
+        stored_chosen_node = node;
+        stored_uncle       = uncle;
 
         stored_parent_node_states.clear();
         const std::vector<CharacterEvent*>& parent_node_states = p->getHistory( parent ).getChildCharacters();
@@ -497,7 +498,7 @@ double RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::doProposal( 
         parent_proposal->assignNode( &parent );
         brother_proposal->assignNode( brother );
         uncle_proposal->assignNode( uncle );
-        grandparent_proposal->assignNode(&grandparent );
+        grandparent_proposal->assignNode( &grandparent );
 
         // step 3: prepare the path proposals
         node_proposal->prepareProposal();
@@ -541,7 +542,7 @@ double RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::doProposal( 
  *
  */
 template<class charType>
-void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::prepareProposal( void )
+void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::prepareProposal( void )
 {
     
 }
@@ -555,7 +556,7 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::prepareProposa
  * \param[in]     o     The stream to which we print the summary.
  */
 template<class charType>
-void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::printParameterSummary(std::ostream &o) const
+void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::printParameterSummary(std::ostream &o) const
 {
     
     // no parameters
@@ -570,7 +571,7 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::printParameter
  * the value of the variable/DAG-node to its original value.
  */
 template<class charType>
-void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::undoProposal( void )
+void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::undoProposal( void )
 {
     
     // we undo the proposal only if it didn't fail
@@ -605,7 +606,7 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::undoProposal( 
         size_t num_sites = p->getNumberOfSites();
         const std::vector<BranchHistory*>& histories = p->getHistories();
         
-        // restore the parent state
+        // restore the parent states
         std::vector<CharacterEvent*>& parentState     = histories[parent.getIndex()]->getChildCharacters();
         std::vector<CharacterEvent*>& leftChildState  = histories[parent.getChild(0).getIndex()]->getParentCharacters();
         std::vector<CharacterEvent*>& rightChildState = histories[parent.getChild(1).getIndex()]->getParentCharacters();
@@ -617,16 +618,16 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::undoProposal( 
             rightChildState[site_index]->setState(s);
         }
         
-        // restore the grandparent state
-        std::vector<CharacterEvent*>& grandparentState          = histories[grandparent.getIndex()]->getChildCharacters();
-        std::vector<CharacterEvent*>& leftGrandparentChildState = histories[grandparent.getChild(0).getIndex()]->getParentCharacters();
-        std::vector<CharacterEvent*>& righGrandparentChildState = histories[grandparent.getChild(1).getIndex()]->getParentCharacters();
+        // restore the grandparent states
+        std::vector<CharacterEvent*>& grandparentState           = histories[grandparent.getIndex()]->getChildCharacters();
+        std::vector<CharacterEvent*>& leftGrandparentChildState  = histories[grandparent.getChild(0).getIndex()]->getParentCharacters();
+        std::vector<CharacterEvent*>& rightGrandparentChildState = histories[grandparent.getChild(1).getIndex()]->getParentCharacters();
         for (size_t site_index = 0; site_index < num_sites; ++site_index)
         {
             size_t s = stored_grandparent_node_states[site_index];
             grandparentState[site_index]->setState(s);
             leftGrandparentChildState[site_index]->setState(s);
-            righGrandparentChildState[site_index]->setState(s);
+            rightGrandparentChildState[site_index]->setState(s);
         }
         
         // restore path states
@@ -641,7 +642,7 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::undoProposal( 
 }
 
 template<class charType>
-void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::sampleNodeCharactersJoint( TopologyNode* parent )
+void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::sampleNodeCharactersJoint( TopologyNode* parent )
 {
     
     // retrieve the character history object
@@ -826,7 +827,7 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::sampleNodeChar
 }
 
 template<class charType>
-void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::sampleNodeCharacters( TopologyNode* node )
+void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::sampleNodeCharacters( TopologyNode* node )
 {
     
     if ( node->isTip() == false )
@@ -952,7 +953,7 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::sampleNodeChar
 }
 
 template<class charType>
-void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::setRateGenerator(const TypedDagNode<RateGenerator> *d)
+void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::setRateGenerator(const TypedDagNode<RateGenerator> *d)
 {
     
     rate_generator = d;
@@ -974,7 +975,7 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::setRateGenerat
 
 
 template<class charType>
-void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d)
+void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d)
 {
     
     rate_generator_sequence = d;
@@ -1001,7 +1002,7 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::setRateGenerat
  * \param[in]     newN     The new RevVariable.
  */
 template<class charType>
-void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     if ( oldN == tree )
@@ -1014,22 +1015,19 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::swapNodeIntern
     }
     else if ( oldN == rate_generator )
     {
-        rate_generator = static_cast<TypedDagNode<RateGenerator>* >(newN) ;
+        rate_generator = static_cast<TypedDagNode<RateGenerator>* >(newN);
     }
     else if ( oldN == rate_generator_sequence )
     {
         rate_generator_sequence = static_cast<DeterministicNode<RateGeneratorSequence>* >(newN);
     }
     
-    if ( oldN != tree )
-    {
-        node_proposal->swapNodeInternal(oldN, newN);
-        parent_proposal->swapNodeInternal(oldN, newN);
-        uncle_proposal->swapNodeInternal(oldN, newN);
-        brother_proposal->swapNodeInternal(oldN, newN);
-        grandparent_proposal->swapNodeInternal(oldN, newN);
-    }
-
+    node_proposal->swapNodeInternal(oldN, newN);
+    parent_proposal->swapNodeInternal(oldN, newN);
+    uncle_proposal->swapNodeInternal(oldN, newN);
+    brother_proposal->swapNodeInternal(oldN, newN);
+    grandparent_proposal->swapNodeInternal(oldN, newN);
+    
 }
 
 
@@ -1041,7 +1039,7 @@ void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::swapNodeIntern
  * and if it is too small, then we decrease the proposal size.
  */
 template<class charType>
-void RevBayesCore::NarrowExchangeDataAugmentedProposal<charType>::tune( double rate )
+void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::tune( double rate )
 {
     
     // nothing to tune

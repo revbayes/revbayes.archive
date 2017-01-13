@@ -22,7 +22,7 @@
 namespace RevBayesCore {
     
     template<class charType>
-    class NarrowExchangeDataAugmentedProposal;
+    class NarrowExchangeCharacterHistoryProposal;
     
     /**
      * The scaling operator.
@@ -42,7 +42,7 @@ namespace RevBayesCore {
     class PathRejectionSampleProposal : public Proposal {
     
     template<class ct>
-    friend class NarrowExchangeDataAugmentedProposal;
+    friend class NarrowExchangeCharacterHistoryProposal;
         
     public:
         PathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, bool useTail=false);   //!<  constructor
@@ -69,13 +69,9 @@ namespace RevBayesCore {
 
         // parameters
         StochasticNode<AbstractHomologousDiscreteCharacterData>*    ctmc;
-//        TypedDagNode<Tree>*                                         tau;
-//        TypedDagNode<RbVector<double> >*                            site_rates;
-//        TypedDagNode<RateGenerator>*                                qmap;
         const TypedDagNode<RateGenerator>*                          q_map_site;
         const TypedDagNode<RateGeneratorSequence>*                  q_map_sequence;
 
-//        BranchHistory*                                              storedValue;
         std::multiset<CharacterEvent*,CharacterEventCompare>        storedHistory;
 
         const TopologyNode*                                         node;

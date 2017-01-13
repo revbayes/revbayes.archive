@@ -1,5 +1,5 @@
-#ifndef Move_NarrowExchangeDataAugmented_H
-#define Move_NarrowExchangeDataAugmented_H
+#ifndef Move_NarrowExchangeCharacterHistory_H
+#define Move_NarrowExchangeCharacterHistory_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -25,14 +25,14 @@ namespace RevLanguage {
      * @since 2014-01-28, version 1.0
      *
      */
-    class Move_NarrowExchangeDataAugmented : public Move {
+    class Move_NarrowExchangeCharacterHistory : public Move {
 
     public:
 
-        Move_NarrowExchangeDataAugmented(void);                                                              //!< Default constructor
+        Move_NarrowExchangeCharacterHistory(void);                                                              //!< Default constructor
 
         // Basic utility functions
-        virtual Move_NarrowExchangeDataAugmented*   clone(void) const;                                                                      //!< Clone object
+        virtual Move_NarrowExchangeCharacterHistory*   clone(void) const;                                                                      //!< Clone object
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec

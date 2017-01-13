@@ -4,8 +4,8 @@
 #include "DnaState.h"
 #include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
-#include "Move_NarrowExchangeDataAugmented.h"
-#include "NarrowExchangeDataAugmentedProposal.h"
+#include "Move_NarrowExchangeCharacterHistory.h"
+#include "NarrowExchangeCharacterHistoryProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
@@ -25,7 +25,7 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Move_NarrowExchangeDataAugmented::Move_NarrowExchangeDataAugmented() : Move()
+Move_NarrowExchangeCharacterHistory::Move_NarrowExchangeCharacterHistory() : Move()
 {
 
 }
@@ -37,10 +37,10 @@ Move_NarrowExchangeDataAugmented::Move_NarrowExchangeDataAugmented() : Move()
  *
  * \return A new copy of the move.
  */
-Move_NarrowExchangeDataAugmented* Move_NarrowExchangeDataAugmented::clone(void) const
+Move_NarrowExchangeCharacterHistory* Move_NarrowExchangeCharacterHistory::clone(void) const
 {
 
-    return new Move_NarrowExchangeDataAugmented(*this);
+    return new Move_NarrowExchangeCharacterHistory(*this);
 }
 
 
@@ -54,7 +54,7 @@ Move_NarrowExchangeDataAugmented* Move_NarrowExchangeDataAugmented::clone(void) 
  *
  * \return A new internal distribution object.
  */
-void Move_NarrowExchangeDataAugmented::constructInternalObject( void )
+void Move_NarrowExchangeCharacterHistory::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -73,25 +73,25 @@ void Move_NarrowExchangeDataAugmented::constructInternalObject( void )
     
     if (mt == "DNA")
     {
-        RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::DnaState> *tmp_p = new RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::DnaState>(n,ctmc_sn);
+        RevBayesCore::NarrowExchangeCharacterHistoryProposal<RevBayesCore::DnaState> *tmp_p = new RevBayesCore::NarrowExchangeCharacterHistoryProposal<RevBayesCore::DnaState>(n,ctmc_sn);
         tmp_p->setRateGenerator( qmap_tdn );
         p = tmp_p;
     }
     else if (mt == "RNA")
     {
-        RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::RnaState> *tmp_p = new RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::RnaState>(n,ctmc_sn);
+        RevBayesCore::NarrowExchangeCharacterHistoryProposal<RevBayesCore::RnaState> *tmp_p = new RevBayesCore::NarrowExchangeCharacterHistoryProposal<RevBayesCore::RnaState>(n,ctmc_sn);
         tmp_p->setRateGenerator( qmap_tdn );
         p = tmp_p;
     }
     else if (mt == "AA" || mt == "Protein")
     {
-        RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::AminoAcidState> *tmp_p = new RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::AminoAcidState>(n,ctmc_sn);
+        RevBayesCore::NarrowExchangeCharacterHistoryProposal<RevBayesCore::AminoAcidState> *tmp_p = new RevBayesCore::NarrowExchangeCharacterHistoryProposal<RevBayesCore::AminoAcidState>(n,ctmc_sn);
         tmp_p->setRateGenerator( qmap_tdn );
         p = tmp_p;
     }
     else if (mt == "Standard")
     {
-        RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::NarrowExchangeDataAugmentedProposal<RevBayesCore::StandardState>(n,ctmc_sn);
+        RevBayesCore::NarrowExchangeCharacterHistoryProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::NarrowExchangeCharacterHistoryProposal<RevBayesCore::StandardState>(n,ctmc_sn);
         tmp_p->setRateGenerator( qmap_tdn );
         p = tmp_p;
     }
@@ -106,10 +106,10 @@ void Move_NarrowExchangeDataAugmented::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& Move_NarrowExchangeDataAugmented::getClassType(void)
+const std::string& Move_NarrowExchangeCharacterHistory::getClassType(void)
 {
 
-    static std::string rev_type = "Move_NarrowExchangeDataAugmented";
+    static std::string rev_type = "Move_NarrowExchangeCharacterHistory";
 
     return rev_type;
 }
@@ -120,7 +120,7 @@ const std::string& Move_NarrowExchangeDataAugmented::getClassType(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Move_NarrowExchangeDataAugmented::getClassTypeSpec(void)
+const TypeSpec& Move_NarrowExchangeCharacterHistory::getClassTypeSpec(void)
 {
 
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -134,10 +134,10 @@ const TypeSpec& Move_NarrowExchangeDataAugmented::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_NarrowExchangeDataAugmented::getMoveName( void ) const
+std::string Move_NarrowExchangeCharacterHistory::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "NarrowExchangeDataAugmented";
+    std::string c_name = "NarrowExchangeCharacterHistory";
 
     return c_name;
 }
@@ -151,7 +151,7 @@ std::string Move_NarrowExchangeDataAugmented::getMoveName( void ) const
  *
  * \return The member rules.
  */
-const MemberRules& Move_NarrowExchangeDataAugmented::getParameterRules(void) const
+const MemberRules& Move_NarrowExchangeCharacterHistory::getParameterRules(void) const
 {
 
     static MemberRules memberRules;
@@ -179,7 +179,7 @@ const MemberRules& Move_NarrowExchangeDataAugmented::getParameterRules(void) con
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Move_NarrowExchangeDataAugmented::getTypeSpec( void ) const
+const TypeSpec& Move_NarrowExchangeCharacterHistory::getTypeSpec( void ) const
 {
 
     static TypeSpec type_spec = getClassTypeSpec();
@@ -191,10 +191,10 @@ const TypeSpec& Move_NarrowExchangeDataAugmented::getTypeSpec( void ) const
 /**
  * Print the value for the user.
  */
-void Move_NarrowExchangeDataAugmented::printValue(std::ostream &o) const
+void Move_NarrowExchangeCharacterHistory::printValue(std::ostream &o) const
 {
 
-    o << "NarrowExchangeDataAugmented(";
+    o << "NarrowExchangeCharacterHistory(";
     if (tree != NULL)
     {
         o << tree->getName();
@@ -218,7 +218,7 @@ void Move_NarrowExchangeDataAugmented::printValue(std::ostream &o) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_NarrowExchangeDataAugmented::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_NarrowExchangeCharacterHistory::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
 
     if ( name == "tree" )
