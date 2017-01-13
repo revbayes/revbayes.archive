@@ -127,6 +127,7 @@
 /* Rate matrix functions (in folder "functions/phylogenetics/ratematrix") */
 #include "Func_blosum62.h"
 #include "Func_chromosomes.h"
+#include "Func_covarionRateMatrix.h"
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
 #include "Func_DECRateMatrix.h"
@@ -276,6 +277,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( new Func_blosum62()                 );
         addFunction( new Func_chromosomes()              );
+        addFunction( new Func_covarionRateMatrix()       );
         addFunction( new Func_cpRev()                    );
         addFunction( new Func_dayhoff()                  );
         addFunction( new Func_DECRateMatrix()            );

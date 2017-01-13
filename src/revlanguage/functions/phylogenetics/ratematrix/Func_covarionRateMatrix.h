@@ -1,14 +1,42 @@
-//
-//  Func_covarionRateMatrix.hpp
-//  RevBayes
-//
-//  Created by Lyndon Coghill on 1/12/17.
-//  Copyright © 2017 Lyndon Coghill. All rights reserved.
-//
+#ifndef Func_covarionRateMatrix_H
+#define Func_covarionRateMatrix_H
 
-#ifndef Func_covarionRateMatrix_hpp
-#define Func_covarionRateMatrix_hpp
+#include "RlTypedFunction.h"
+#include "RlRateMatrix.h"
 
-#include <stdio.h>
+#include <map>
+#include <string>
 
-#endif /* Func_covarionRateMatrix_hpp */
+namespace RevLanguage {
+    
+    /**
+     * The RevLanguage wrapper of the covarion rate matrix function.
+     *
+     * The RevLanguage wrapper of the covarion Rate Matrix connects
+     * the variables/parameters of the function and creates the internal CovarionRateMatrixFunction object.
+     * Please read the CovarionRateMatrixFunction.h for more info.
+     *
+     * @author Sebastian Hoehna & Lyndon Coghill
+     *
+     */
+    class Func_covarionRateMatrix :  public TypedFunction<RateMatrix> {
+        
+    public:
+        Func_covarionRateMatrix( void );
+        
+        // Basic utility functions
+        Func_covarionRateMatrix*                                        clone(void) const;                                          //!< Clone the objectz
+        static const std::string&                                       getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                                          getClassTypeSpec(void);                                     //!< Get class type spec
+        std::string                                                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        const TypeSpec&                                                 getTypeSpec(void) const;                                    //!< Get the type spec of the instance
+        
+        // Function functions you have to override
+        RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >*     createFunction(void) const;                                 //!< Execute function
+        const ArgumentRules&                                            getArgumentRules(void) const;                               //!< Get argument rules
+        
+    };
+    
+}
+
+#endif
