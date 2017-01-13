@@ -45,6 +45,7 @@ namespace RevBayesCore {
             void                                                updateTransitionProbabilities(size_t nodeIdx, double brlen);
             void                                                getStationaryFrequencies( std::vector<std::vector<double> >& ) const;
 
+            virtual double                                      computeIntegratedNodeCorrection(const std::vector<std::vector<std::vector<double> > >& partials, size_t nodeIndex, size_t mask, size_t mixture, const std::vector<double> &f);
             virtual void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);
 
             size_t                                              dim;
@@ -59,7 +60,6 @@ namespace RevBayesCore {
 
         private:
             double                                              getScaledNodeWeights(const TopologyNode &node, size_t pattern, std::vector<double>& weights);
-            double                                              computeIntegratedNodeCorrection(const std::vector<std::vector<std::vector<double> > >& partials, size_t nodeIndex, size_t mask, size_t mixture, const std::vector<double> &f);
             void                                                scale(size_t i);
             void                                                scale(size_t i, size_t l, size_t r);
             void                                                scale(size_t i, size_t l, size_t r, size_t m);

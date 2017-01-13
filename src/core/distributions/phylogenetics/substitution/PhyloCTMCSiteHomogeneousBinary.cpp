@@ -90,8 +90,11 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousBinary::sumRootLikelihood( void )
 
                     if( ((coding & BinaryAscertainmentBias::NOABSENCESITES)      && a == 0 && c == 0) ||
                         ((coding & BinaryAscertainmentBias::NOPRESENCESITES)     && a == 1 && c == 0) ||
-                        ((coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE) && a == 0 && c == 1 && maskObservationCounts[mask] > 1) ||
-                        ((coding & BinaryAscertainmentBias::NOSINGLETONABSENCE)  && a == 1 && c == 1 && maskObservationCounts[mask] > 2)
+                        ((coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE) && a == 0 && c == 1
+                                && (maskObservationCounts[mask] > 1 || !(coding & BinaryAscertainmentBias::NOPRESENCESITES)) ) ||
+                        ((coding & BinaryAscertainmentBias::NOSINGLETONABSENCE)  && a == 1 && c == 1
+                                && (maskObservationCounts[mask] > 1 || !(coding & BinaryAscertainmentBias::NOABSENCESITES))
+                                && (maskObservationCounts[mask] > 2 || !(coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE)) )
                         )
                     {
                         // iterate over initial states
