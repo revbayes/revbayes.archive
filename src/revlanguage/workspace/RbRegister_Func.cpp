@@ -221,6 +221,7 @@
 #include "Func_floor.h"
 #include "Func_gamma.h"
 #include "Func_lnProbability.h"
+#include "Func_geographicalDistance.h"
 #include "Func_hyperbolicTangent.h"
 #include "Func_hyperbolicSine.h"
 #include "Func_ln.h"
@@ -432,6 +433,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // standard deviation function
         addFunction( new Func_standardDeviation()  );
 
+        // geographical distance function
+        addFunction( new Func_geographicalDistance() );
+        
         // hyperbolic tangent function
         addFunction( new Func_hyperbolicTangent() );
 
