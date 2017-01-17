@@ -8,11 +8,11 @@
 using namespace RevBayesCore;
 
 PattersonsDFunction::PattersonsDFunction(const std::string &p1, const std::string &p2, const std::string &p3, const std::string &og, const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a) : TypedFunction<double>( new double(0.0) ),
+alignment( a ),
 P1( p1 ),
 P2( p2 ),
 P3( p3 ),
-OG( og ),
-alignment( a )
+OG( og )
 {
     // add the lambda parameter as a parent
     addParameter( alignment );

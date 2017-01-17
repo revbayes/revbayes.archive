@@ -127,11 +127,12 @@ namespace RevBayesCore {
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
         void                                        removeChild(TopologyNode* c);                                                       //!< Removes a specific child
         void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
-        void                                        setAge(double a);                                                                   //!< Set the age of this node (should only be done for tips).
+        void                                        setAge(double a, bool propagate = true );                                                                   //!< Set the age of this node (should only be done for tips).
         void                                        setBranchLength(double b);                                                          //!< Set the length of the branch leading to this node.
         void                                        setConstrained(bool tf);                                                            //!< Set if the node is topologically constrained
         void                                        setFossil(bool tf);                                                                 //!< Set if the node is a fossil node
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
+
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
   		void										setNodeType(bool tip, bool root, bool interior); //SK
         void                                        setSampledAncestor(bool tf);                                                        //!< Set if the node is a sampled ancestor

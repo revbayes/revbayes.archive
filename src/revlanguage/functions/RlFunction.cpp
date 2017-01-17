@@ -272,7 +272,9 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
         
         /* Skip if already matched */
         if ( taken[i] )
+        {
             continue;
+        }
         
         /* Find first empty slot and try to fit argument there */
         for (size_t j=0; j<nRules; j++) 
@@ -306,7 +308,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
         }
         
         /* Final test if we found a match */
-        if ( !taken[i] )
+        if ( taken[i] == false )
         {
             return false;
         }
@@ -326,7 +328,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             continue;
         }
         
-        if ( !theRules[i].hasDefault() )
+        if ( theRules[i].hasDefault() == false )
         {
             return false;
         }

@@ -335,10 +335,19 @@ double ConstantRateFossilizedBirthDeathProcess::pHatZero(double t) const
 void ConstantRateFossilizedBirthDeathProcess::restoreSpecialization(DagNode *affecter)
 {
 
-    if ( affecter == root_age && !useOrigin )
+    if ( affecter == root_age )
     {
-        AbstractRootedTreeDistribution::restoreSpecialization(affecter);
-
+        if( useOrigin )
+        {
+            if ( dag_node != NULL )
+            {
+                dag_node->touchAffected();
+            }
+        }
+        else
+        {
+            AbstractRootedTreeDistribution::restoreSpecialization(affecter);
+        }
     }
 
 }
@@ -379,10 +388,19 @@ void ConstantRateFossilizedBirthDeathProcess::setValue(Tree *v, bool f )
 void ConstantRateFossilizedBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
 {
 
-    if ( affecter == root_age && !useOrigin )
+    if ( affecter == root_age )
     {
-        AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
-
+        if( useOrigin )
+        {
+            if ( dag_node != NULL )
+            {
+                dag_node->touchAffected();
+            }
+        }
+        else
+        {
+            AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
+        }
     }
 
 }

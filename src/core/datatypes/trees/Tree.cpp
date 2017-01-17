@@ -279,6 +279,13 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
         rv = int( getNode( index ).getParent().getIndex() )+1;
     }
+    else if ( n == "numSampledAncestors")
+    {
+        rv = 0;
+        for(size_t i=0; i< numTips; i++){
+            rv += nodes[i]->isSampledAncestor();
+        }
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");

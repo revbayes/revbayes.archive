@@ -52,19 +52,27 @@ RevBayesCore::BinaryDivision<firstValueType, secondValueType, returnType>* RevBa
 }
 
 template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::BinaryDivision<firstValueType, secondValueType, returnType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == a) {
+void RevBayesCore::BinaryDivision<firstValueType, secondValueType, returnType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
+    
+    if (oldP == a)
+    {
         a = static_cast<const TypedDagNode<firstValueType>* >( newP );
     }
-    if (oldP == b) {
+    if (oldP == b)
+    {
         b = static_cast<const TypedDagNode<secondValueType>* >( newP );
     }
+
 }
 
 
 template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::BinaryDivision<firstValueType, secondValueType, returnType>::update( void ) {
-    *this->value = a->getValue() / b->getValue();
+void RevBayesCore::BinaryDivision<firstValueType, secondValueType, returnType>::update( void )
+{
+    firstValueType a_v = a->getValue();
+    secondValueType b_v = b->getValue();
+    *this->value = a_v / b_v;
 }
 
 #endif

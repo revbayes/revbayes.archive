@@ -34,15 +34,27 @@ namespace RevBayesCore {
     
     struct AnnotationReport
     {
-        bool ages             = true;
-        bool cc_ages          = false;
-        bool ccp              = true;
-        bool tree_ages        = false;
-        double hpd            = 0.95;
-        bool map_parameters   = false;
-        bool mean             = true;
-        bool posterior        = true;
-        bool sa               = true;
+        
+        AnnotationReport() :
+            ages(true),
+            cc_ages(false),
+            ccp(true),
+            tree_ages(false),
+            hpd(0.95),
+            map_parameters(false),
+            mean(true),
+            posterior(true),
+            sa(true) {}
+        
+        bool ages;
+        bool cc_ages;
+        bool ccp;
+        bool tree_ages;
+        double hpd;
+        bool map_parameters;
+        bool mean;
+        bool posterior;
+        bool sa;
     };
 
     class TreeSummary : public Cloneable {
@@ -59,7 +71,7 @@ namespace RevBayesCore {
         Tree*                                                                   characterMapTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, int NUM_TIME_SLICES = 500, bool verbose = true);
         double                                                                  cladeProbability(const Clade &c, bool verbose);
         Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool verbose);
-        int                                                                     getNumberSamples(void) const;
+        int                                                                     getBurnin(void) const;
         std::vector<Tree>                                                       getUniqueTrees(double ci=0.95, bool verbose=true);
         int                                                                     getTopologyFrequency(const Tree &t, bool verbose);
         const TraceTree&                                                        getTreeTrace(void) const;
@@ -70,6 +82,7 @@ namespace RevBayesCore {
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95, bool verbose=true);
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05, bool verbose=true);
         void                                                                    setBurnin(int b);
+        int                                                                     size(bool post = false) const;
 
     private:
 

@@ -53,7 +53,7 @@ void DECStationaryFrequenciesFunction::update( void ) {
     
     
     
-    value;
+    //value;
 }
 
 

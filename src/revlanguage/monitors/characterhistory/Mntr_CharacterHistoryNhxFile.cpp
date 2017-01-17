@@ -47,8 +47,20 @@ void Mntr_CharacterHistoryNhxFile::constructInternalObject( void ) {
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = static_cast<const Natural &>( samplegen->getRevObject() ).getValue();
     int mg = static_cast<const Natural &>( maxgen->getRevObject() ).getValue();
-    double b = static_cast<const Probability &>( burnin->getRevObject() ).getValue();
     
+    int burn = 0;
+
+    RevObject& b = burnin->getRevObject();
+    if ( b.isType( Integer::getClassTypeSpec() ) )
+    {
+        burn = static_cast<const Integer &>(b).getValue();
+    }
+    else
+    {
+        double f = static_cast<const Probability &>(b).getValue();
+        burn = int( mg*f );
+    }
+
     RevBayesCore::TypedDagNode<RevBayesCore::Tree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
@@ -68,7 +80,7 @@ void Mntr_CharacterHistoryNhxFile::constructInternalObject( void ) {
     if (mt == "std")
         ; // value = XXXXXX
     else if (mt == "biogeo")
-        value = new RevBayesCore::TreeCharacterHistoryNhxMonitor<RevBayesCore::StandardState>(ctmc_sn, t, atl, size_t(g), (unsigned long)(mg), int(b*mg), fn, sep, pp, l, pr, ap, sm, sr);
+        value = new RevBayesCore::TreeCharacterHistoryNhxMonitor<RevBayesCore::StandardState>(ctmc_sn, t, atl, size_t(g), (unsigned long)(mg), burn, fn, sep, pp, l, pr, ap, sm, sr);
 }
 
 
@@ -121,7 +133,10 @@ const MemberRules& Mntr_CharacterHistoryNhxFile::getParameterRules(void) const
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("atlas"     , RlAtlas::getClassTypeSpec()              , "", ArgumentRule::BY_CONSTANT_REFERENCE , ArgumentRule::ANY) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("samplegen" , Natural::getClassTypeSpec()              , "", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new Natural(1) ) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("maxgen"    , Natural::getClassTypeSpec()              , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("burnin"    , Probability::getClassTypeSpec()          , "", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new Probability(0.2) ) );
+        std::vector<TypeSpec> burninTypes;
+        burninTypes.push_back( Probability::getClassTypeSpec() );
+        burninTypes.push_back( Integer::getClassTypeSpec() );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("burnin"    , burninTypes                              , "", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new Probability(0.25) ) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec()             , "", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlString(" ") ) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec()            , "", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec()            , "", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );

@@ -6,8 +6,8 @@ using namespace RevBayesCore;
 OdeHeterogeneousRateBirthDeath::OdeHeterogeneousRateBirthDeath( const RbVector<double> &l, const RbVector<double> &m, double r ) :
     lambda( l ),
     mu( m ),
-    num_categories( l.size() ),
     switch_rate( r ),
+    num_categories( l.size() ),
     current_rate_category( 0 ),
     allow_same_category( false )
 {

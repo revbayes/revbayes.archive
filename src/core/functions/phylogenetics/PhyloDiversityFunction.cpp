@@ -8,9 +8,9 @@ using namespace RevBayesCore;
 
 
 PhyloDiversityFunction::PhyloDiversityFunction(const TypedDagNode<Tree> *t, const Clade &c, const bool i, const TypedDagNode< RbVector< double > > *w) : TypedFunction<double>( new double(0.0) ),
-    tau( t ),
-    sample( c ),
     includeRoot( i ),
+    sample( c ),
+    tau( t ),
     tipWeights( w )
 {
     addParameter( tau );

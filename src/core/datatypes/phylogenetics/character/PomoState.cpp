@@ -40,12 +40,31 @@ PomoState::PomoState(const std::string &s) : DiscreteCharacterState( 4 + 6 * (10
 
 
 /** Constructor that sets the observation and the other fields */
-PomoState::PomoState(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize ) : DiscreteCharacterState( 4 + 6 * (virtualPopulationSize - 1) ),
-    chromosome_ ( chromosome ), position_( position ), virtualPopulationSize_ ( virtualPopulationSize ), pomoRandomSampling_ (true)
+PomoState::PomoState(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize, std::vector<double> weights ) : DiscreteCharacterState( 4 + 6 * (virtualPopulationSize - 1) ),
+    chromosome_ ( chromosome ), position_( position ), virtualPopulationSize_ ( virtualPopulationSize ), weights_(weights), pomoRandomSampling_ (true)
 {
 
     setState(s);
 }
+
+
+/** Constructor that sets the observation and the other fields */
+PomoState::PomoState(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize) : DiscreteCharacterState( 4 + 6 * (virtualPopulationSize - 1) ),
+    chromosome_ ( chromosome ), position_( position ), virtualPopulationSize_ ( virtualPopulationSize ), weights_(4 + 6 * (virtualPopulationSize - 1), 0.0), pomoRandomSampling_ (true)
+{
+
+    setState(s);
+}
+
+
+/* Copy constructor */
+/*PomoState::PomoState(const PomoState& t) : DiscreteCharacterState( 4 + 6 * (t.virtualPopulationSize_ - 1) ),
+    chromosome_ ( t.chromosome_ ), position_( t.position_ ), virtualPopulationSize_ ( t.virtualPopulationSize_ ), weights_(t.weights_), pomoRandomSampling_ (t.pomoRandomSampling_)
+{
+
+
+}
+*/
 
 
 PomoState* PomoState::clone( void ) const
@@ -117,8 +136,8 @@ void PomoState::setState(const std::string &symbol)
                 if (r_int < vect[id1]) sampled_values[id1]++;
                 else sampled_values[id2]++;
             }
-            if (sampled_values[id1] == 0) state = id2 + 1;
-            else if (sampled_values[id2] == 0) state = id1 + 1;
+            if (sampled_values[id1] == 0) index = id2 + 1;
+            else if (sampled_values[id2] == 0) index = id1 + 1;
             else {
               int j = 0;
                 if (id1 == 0) j = id2 - 1;
@@ -144,8 +163,6 @@ void PomoState::setState(const std::string &symbol)
             // }
             // state += num_states; // make the state larger than num_states
         }
-        std::cout << symbol << " : " << vect.at(0) << " , " << vect.at(1) << " , " << vect.at(2) << " , " << vect.at(3) << " : " << index <<std::endl;
-
       }
       else
       {
@@ -279,7 +296,6 @@ void PomoState::setState(const std::string &symbol)
     state.set( index );
     index_single_state = index;
     num_observed_states = 1;
-
 }
 
 
@@ -290,7 +306,7 @@ std::string PomoState::getDataType( void ) const
 }
 
 
-const std::string& PomoState::getStateLabels( void ) const
+std::string PomoState::getStateLabels( void ) const
 {
 
     static std::string labels = "A C G T ";

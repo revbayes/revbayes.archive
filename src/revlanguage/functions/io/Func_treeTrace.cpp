@@ -13,6 +13,7 @@
 #include "ConstantNode.h"
 #include "ModelVector.h"
 #include "OptionRule.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "RlTree.h"
 #include "RlTraceTree.h"
@@ -39,28 +40,32 @@ RevPtr<RevVariable> Func_treeTrace::execute( void )
 {
     RevBayesCore::TraceTree t(false);
     
-    if ( args[0].getVariable()->getRevObject().isType( ModelVector<TimeTree>::getClassTypeSpec() ) )
-    {
-        const ModelVector<RevLanguage::TimeTree>& trees = static_cast<const ModelVector<RevLanguage::TimeTree>&>( args[0].getVariable()->getRevObject() );
-    
-        t = RevBayesCore::TraceTree( true );
+    RevObject& ro = args[0].getVariable()->getRevObject();
 
-        for (size_t i = 0; i < trees.size(); ++i)
-        {
-            t.addObject( new RevBayesCore::Tree( trees[i] ) );
-        }
+    const ModelVector<RevLanguage::Tree>& trees = static_cast<const ModelVector<RevLanguage::Tree>&>( ro );
+
+    if ( ro.isType( ModelVector<TimeTree>::getClassTypeSpec() ) )
+    {
+        t = RevBayesCore::TraceTree( true );
+    }
+
+    for (size_t i = 0; i < trees.size(); ++i)
+    {
+        t.addObject( new RevBayesCore::Tree( trees[i] ) );
+    }
+
+    int burnin = 0;
+
+    RevObject& b = args[1].getVariable()->getRevObject();
+    if ( b.isType( Integer::getClassTypeSpec() ) )
+    {
+        burnin = static_cast<const Integer &>(b).getValue();
     }
     else
     {
-        const ModelVector<RevLanguage::BranchLengthTree>& trees = static_cast<const ModelVector<RevLanguage::BranchLengthTree>&>( args[0].getVariable()->getRevObject() );
-
-        for (size_t i = 0; i < trees.size(); ++i)
-        {
-            t.addObject( new RevBayesCore::Tree( trees[i] ) );
-        }
+        double burninFrac = static_cast<const Probability &>(b).getValue();
+        burnin = int( floor( trees.size()*burninFrac ) );
     }
-
-    int burnin = static_cast<const Integer &>(args[1].getVariable()->getRevObject()).getValue();
 
     t.setBurnin(burnin);
 
@@ -80,8 +85,13 @@ const ArgumentRules& Func_treeTrace::getArgumentRules( void ) const
         std::vector<TypeSpec> treeTypes;
         treeTypes.push_back( ModelVector<TimeTree>::getClassTypeSpec() );
         treeTypes.push_back( ModelVector<BranchLengthTree>::getClassTypeSpec() );
+        treeTypes.push_back( ModelVector<Tree>::getClassTypeSpec() );
         argumentRules.push_back( new ArgumentRule( "trees", treeTypes, "Vector of trees.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()     , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+
+        std::vector<TypeSpec> burninTypes;
+        burninTypes.push_back( Probability::getClassTypeSpec() );
+        burninTypes.push_back( Integer::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , burninTypes     , "The fraction/number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
         
         rules_set = true;
     }

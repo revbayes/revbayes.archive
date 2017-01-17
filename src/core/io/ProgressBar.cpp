@@ -8,8 +8,8 @@ using namespace RevBayesCore;
 /** Read Model Trace */
 ProgressBar::ProgressBar( size_t m, size_t o ) :
     max( m ),
-    offset( o ),
-    num_stars( 0 )
+    num_stars( 0 ),
+    offset( o )
 {
     
 }

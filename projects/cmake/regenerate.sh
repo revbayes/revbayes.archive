@@ -10,6 +10,7 @@ debug="false"
 mac="false"
 win="false"
 mpi="false"
+help="false"
 
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
@@ -54,8 +55,17 @@ echo 'you can turn this of with argument "-boost false"'
 
 cd ../../boost_1_60_0
 rm ./project-config.jam*  # clean up from previous runs
+
+if [ "$mac" = "true" ]
+then
 ./bootstrap.sh --with-libraries=regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
+#./bootstrap.sh --with-libraries=filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+#./b2 link=static macosx-version-min=10.6
+else
+./bootstrap.sh --with-libraries=filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+./b2 link=static
+fi
 
 else
 echo 'not building boost libraries'
@@ -88,7 +98,7 @@ project(RevBayes)
 if [ "$debug" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3 -std=c++0x")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall")
 '  >> "$HERE/CMakeLists.txt"
 elif [ "$mac" = "true" ]
@@ -101,12 +111,12 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 elif [ "$win" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -std=c++0x -static")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -static")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -static")
 '  >> "$HERE/CMakeLists.txt"
 else
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -std=c++0x")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 '  >> "$HERE/CMakeLists.txt"
 fi
@@ -132,6 +142,7 @@ add_definitions(-DRB_WIN)
 fi
 
 
+
 echo '
 # Add extra CMake libraries into ./CMake
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
@@ -144,12 +155,11 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 SET(BOOST_ROOT ../../../boost_1_60_0)
 SET(Boost_USE_STATIC_RUNTIME true)
 SET(Boost_USE_STATIC_LIBS ON)
-#find_package(Boost 1.60.0 COMPONENTS filesystem regex signals system thread date_time program_options serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
+#find_package(Boost 1.60.0 COMPONENTS regex signals thread date_time program_options serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
 find_package(Boost
 1.60.0
 COMPONENTS regex
 program_options
-system
 thread
 signals
 date_time
@@ -175,9 +185,17 @@ add_subdirectory(libs)
 add_subdirectory(core)
 add_subdirectory(revlanguage)
 
+
 ############# executables #################
 # basic rev-bayes binary
 ' >> $HERE/CMakeLists.txt
+
+if [ "$help" = "true" ]
+then
+echo '
+add_subdirectory(revlanguage)
+' >> $HERE/CMakeLists.txt
+fi
 
 if [ "$mpi" = "true" ]
 then
@@ -186,6 +204,14 @@ add_executable(rb-mpi ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
 target_link_libraries(rb-mpi rb-parser rb-core libs ${Boost_LIBRARIES} ${MPI_LIBRARIES})
 set_target_properties(rb-mpi PROPERTIES PREFIX "../")
+' >> $HERE/CMakeLists.txt
+elif [ "$help" = "true" ]
+then
+echo '
+add_executable(rb ${PROJECT_SOURCE_DIR}/tool/help/HtmlHelpGenerator.cpp)
+
+target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+set_target_properties(rb PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
 else
 echo '

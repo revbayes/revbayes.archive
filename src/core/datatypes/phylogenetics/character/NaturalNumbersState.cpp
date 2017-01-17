@@ -52,7 +52,7 @@ std::string NaturalNumbersState::getDataType( void ) const
 }
 
 
-const std::string& NaturalNumbersState::getStateLabels( void ) const
+std::string NaturalNumbersState::getStateLabels( void ) const
 {
     std::string labels = "";
     size_t n = getNumberOfStates();

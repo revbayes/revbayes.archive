@@ -14,8 +14,8 @@ namespace RevLanguage {
 
         public:
             RlString(void);                                                                         //!< Default: empty RlString
-            RlString(const std::string& v);                                                         //!< Constructor from RlString
-            RlString(RevBayesCore::TypedDagNode<std::string> *x);                                   //!< Construct from DAG node
+            RlString(const std::string& v, bool parse=true);                                                         //!< Constructor from RlString
+            RlString(RevBayesCore::TypedDagNode<std::string> *x, bool parse=true);                                   //!< Construct from DAG node
         
             // Basic operator functions
             RevObject*                      add(const RevObject &rhs) const;                        //!< Addition operator used for example in '+=' statements

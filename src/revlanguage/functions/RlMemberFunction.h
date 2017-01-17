@@ -12,6 +12,7 @@ namespace RevLanguage {
         
     public:
         MemberFunction(const std::string &name, const memberObjectType* o, ArgumentRules* argRules);                                             //!< Constructor
+        virtual ~MemberFunction(){};
         
         // Basic utility functions
         MemberFunction*                                                 clone(void) const;                              //!< Clone the object
