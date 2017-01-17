@@ -21,7 +21,8 @@ namespace RevLanguage {
         virtual const TypeSpec&                         getVariableTypeSpec(void) const;                                                    //!< Get the variable type spec of this distribution
         virtual rlType*                                 createRandomVariable(void) const;                                                   //!< Create a random variable from this distribution
         void                                            setVariable(rlType* v);
-        void                                            printValue(std::ostream& o, bool user) const;                                                      //!< Print the general information on the function ('usage')
+        virtual void                                    printValue(std::ostream& o, bool user) const;                                                      //!< Print the general information on the function ('usage')
+        virtual void                                    printValue(std::ostream& o) const { printValue(o, true); };
 
         // Basic utility functions you have to override
         virtual TypedDistribution<rlType>*              clone(void) const = 0;                                                              //!< Clone object

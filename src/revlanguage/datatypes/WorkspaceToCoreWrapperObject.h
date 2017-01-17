@@ -41,6 +41,7 @@ namespace RevLanguage {
         rbType&                                             getValue(void) const;                                           //!< Get value
         void                                                setValue(const rbType& x);                                      //!< Set value
         virtual void                                        printValue(std::ostream& o, bool user) const;                                                      //!< Print value (for user)
+        virtual void                                        printValue(std::ostream& o) const { printValue(o, true); };
 
     protected:
         WorkspaceToCoreWrapperObject(void);

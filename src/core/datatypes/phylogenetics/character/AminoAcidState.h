@@ -32,7 +32,7 @@ namespace RevBayesCore {
 
         // Discrete character observation functions
         std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
-        const std::string&              getStateLabels(void) const;                         //!< Get valid state labels
+        std::string                     getStateLabels(void) const;                         //!< Get valid state labels
             
     };
     

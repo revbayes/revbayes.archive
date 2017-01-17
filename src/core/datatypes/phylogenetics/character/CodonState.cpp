@@ -321,7 +321,7 @@ std::string CodonState::getDataType( void ) const
 }
 
 
-const std::string& CodonState::getStateLabels( void ) const
+std::string CodonState::getStateLabels( void ) const
 {
     
     static const std::string stateLabels = "AAA...TTT";

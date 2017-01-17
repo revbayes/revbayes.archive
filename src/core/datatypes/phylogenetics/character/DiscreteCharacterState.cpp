@@ -7,10 +7,10 @@ using namespace RevBayesCore;
 
 /** Constructor */
 DiscreteCharacterState::DiscreteCharacterState(size_t n) : CharacterState(),
-    num_observed_states( 0 ),
     index_single_state( 0 ),
-    weighted( false ),
-    state(n)
+    num_observed_states( 0 ),
+    state(n),
+    weighted( false )
 {
 
 

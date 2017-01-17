@@ -11,9 +11,14 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#	ifdef RB_WIN
+#include <windows.h>
+#   endif
 
 
-/** Default constructor: The default settings are first read, and 
+
+
+/** Default constructor: The default settings are first read, and
  * then potentially overwritten by values contained in a file.  */
 RbSettings::RbSettings(void)
 {
@@ -152,14 +157,19 @@ void RbSettings::initializeUserSettings(void)
     }
 
     // initialize the current directory to be the directory the binary is sitting in
+#	ifdef RB_WIN
+    
+    char buffer[MAX_DIR_PATH];
+    GetModuleFileName( NULL, buffer, MAX_DIR_PATH );
+    std::string::size_type pos = std::string( buffer ).find_last_of( "\\/" );
+    workingDirectory = std::string( buffer ).substr( 0, pos);
+
+#	else
+
     char cwd[MAX_DIR_PATH+1];
 	if ( getcwd(cwd, MAX_DIR_PATH+1) )
     {
-#	ifdef RB_WIN
-        std::string pathSeparator = "\\";
-#	else
         std::string pathSeparator = "/";
-#   endif
         
         std::string curdir = cwd;
         
@@ -174,6 +184,9 @@ void RbSettings::initializeUserSettings(void)
     {
         workingDirectory = "";
     }
+    
+#   endif
+
     
     // save the current settings for the future.
 //    writeUserSettings();

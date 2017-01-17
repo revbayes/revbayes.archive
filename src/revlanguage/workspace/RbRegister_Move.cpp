@@ -236,6 +236,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_MixtureAllocation<Integer>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<Probability>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<RateGenerator>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<Tree>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Real>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RealPos>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Natural>( ) );
@@ -256,7 +257,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BirthDeathEvent()                      );
         addTypeWithConstructor( new Move_DiscreteEventCategoryRandomWalk()      );
         addTypeWithConstructor( new Move_EventTimeBeta()                        );
-        addTypeWithConstructor( new Move_EventTimeSlide()                       );
+//        addTypeWithConstructor( new Move_EventTimeSlide()                       );
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */

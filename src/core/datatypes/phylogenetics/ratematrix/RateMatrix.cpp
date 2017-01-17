@@ -39,17 +39,3 @@ RateMatrix& RateMatrix::assign(const Assignable &m)
         throw RbException("Could not assign rate matrix.");
     }
 }
-
-void RateMatrix::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const
-{
-    size_t n_states = this->getNumberOfStates();
-//    rv.resize(n_states);
-    rv.clear();
-    
-    size_t from_idx = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
-    
-    for (size_t to_idx = 0; to_idx < n_states; to_idx++)
-    {
-        rv.push_back(this->getRate(from_idx, to_idx, 0.0, 1.0));
-    }
-}

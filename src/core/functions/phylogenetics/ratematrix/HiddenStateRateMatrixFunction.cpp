@@ -7,13 +7,13 @@
 using namespace RevBayesCore;
 
 HiddenStateRateMatrixFunction::HiddenStateRateMatrixFunction(bool r) : TypedFunction<RateGenerator>( NULL ),
+    rescale( r ),
+    num_observed_states( 0 ),
+    num_hidden_states( 0 ),
     observed_transition_rates( NULL ),
     observed_transition_rates_flat( NULL ),
     hidden_transition_rates( NULL ),
-    hidden_transition_rates_flat( NULL ),
-    num_observed_states( 0 ),
-    num_hidden_states( 0 ),
-    rescale( r )
+    hidden_transition_rates_flat( NULL )
 {
 
 }

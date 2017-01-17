@@ -45,8 +45,9 @@ namespace RevLanguage {
         virtual const rbType&                   getValue(void) const;                                                       //!< Get the value (const)
         virtual rbType&                         getValue(void);                                                             //!< Get the value (non-const)
         void                                    setValue(rbType *x);                                                        //!< Set new constant value
-        void                                    printValue(std::ostream& o, bool user) const;                                          //!< Print value
-      
+        virtual void                            printValue(std::ostream& o, bool user) const;                                          //!< Print value
+        virtual void                            printValue(std::ostream& o) const { printValue(o, true); };                 //!< Print value overload
+
     protected:
         ModelObject(void);
         ModelObject(rbType *v);
@@ -191,18 +192,19 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
 template <typename rbType>
 RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
+    RevMemberObject * rmo = dynamic_cast<RevMemberObject *>( dagNode );
     
-    RevPtr<RevVariable> retVal = dynamic_cast<RevMemberObject *>( dagNode )->executeMethod(name, args, found);
-    
-    if ( found == true )
+    if ( rmo != NULL )
     {
-        return retVal;
-    }
-    else
-    {
-        return RevObject::executeMethod( name, args, found );
+        RevPtr<RevVariable> retVal = rmo->executeMethod(name, args, found);
+
+        if( found == true)
+        {
+            return retVal;
+        }
     }
     
+    return RevObject::executeMethod( name, args, found );
 }
 
 

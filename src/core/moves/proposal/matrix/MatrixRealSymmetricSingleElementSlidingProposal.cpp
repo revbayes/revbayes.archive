@@ -16,8 +16,8 @@ using namespace RevBayesCore;
  */
 MatrixRealSymmetricSingleElementSlidingProposal::MatrixRealSymmetricSingleElementSlidingProposal( StochasticNode<MatrixReal> *n, double l) : Proposal(),
 variable( n ),
-storedValue( 0.0 ),
-lambda( l )
+lambda( l ),
+storedValue( 0.0 )
 {
     // tell the base class to add the node
     addNode( variable );

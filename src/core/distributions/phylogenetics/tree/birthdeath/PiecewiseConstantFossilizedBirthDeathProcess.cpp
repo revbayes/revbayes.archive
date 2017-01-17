@@ -251,7 +251,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::p( size_t i, double t ) con
  *
  *
  */
-void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void )
+void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void ) const
 {
     // clean all the sets
     rateChangeTimes.clear();

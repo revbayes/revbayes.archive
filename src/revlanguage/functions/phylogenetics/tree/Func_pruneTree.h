@@ -16,6 +16,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Func_pruneTree*                                                  clone(void) const;                                          //!< Clone the object
+        virtual RevPtr<RevVariable>                                         execute(void);
         static const std::string&                                           getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                              getClassTypeSpec(void);                                     //!< Get class type spec
         std::string                                                         getFunctionName(void) const;                                //!< Get the primary name of the function in Rev

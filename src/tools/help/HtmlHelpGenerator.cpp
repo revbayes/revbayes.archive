@@ -38,7 +38,7 @@ int main(int argc, const char * argv[])
     
     // read html templates
     std::string entry_tpl_file = "html-template/entry.tpl.html";
-    std::string index_tpl_file =  "html-template/index.tpl.html";
+    std::string index_tpl_file = "html-template/index.tpl.html";
     std::string type_tpl_file =  "html-template/type-page.tpl.html";
     std::string dist_tpl_file =  "html-template/distribution-page.tpl.html";
     std::string move_tpl_file =  "html-template/move-page.tpl.html";

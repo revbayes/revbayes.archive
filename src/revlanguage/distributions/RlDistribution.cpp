@@ -225,7 +225,7 @@ MethodTable Distribution::getDistributionMethods( void ) const
  *
  * \param[in]    the stream to which to print.
  */
-void Distribution::printValue(std::ostream &o) const 
+/*void Distribution::printValue(std::ostream &o) const
 {
     o << getClassType() << "(...)" << std::endl;
-}
+}*/

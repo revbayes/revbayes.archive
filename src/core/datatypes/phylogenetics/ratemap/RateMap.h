@@ -16,6 +16,7 @@ namespace RevBayesCore {
     class RateMap : public Cloneable {
         
     public:
+        RateMap(void);                                                                          //!< Default constructor
         RateMap(const RateMap& m);                                                              //!< Copy constructor
         RateMap(size_t ns, size_t nc);                                                          //!< Construct rate matrix with n states
         RateMap&                            operator=(const RateMap& r);

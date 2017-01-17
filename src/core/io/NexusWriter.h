@@ -27,7 +27,7 @@ namespace RevBayesCore {
         
         // public methods
         void                    closeStream(void);                                                          //!< Close the file stream
-        void                    openStream(void);                                                           //!< Open the file stream
+        void                    openStream(bool reopen);                                                    //!< Open the stream for writing
         void                    writeNexusBlock(const AbstractHomologousDiscreteCharacterData &d);          //!< Write a nexus block with a discrete character data
         void                    writeNexusBlock(const ContinuousCharacterData &data);                       //!< Write a nexus block with a continuous character data
         void                    writeNexusBlock(const Clade &c);                                            //!< Write a nexus block with tree(s)

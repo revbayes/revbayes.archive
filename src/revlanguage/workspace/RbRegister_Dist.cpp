@@ -98,7 +98,7 @@
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
 #include "Dist_phyloCTMCClado.h"
-#include "Dist_phyloDolloCTMC.h"
+//#include "Dist_phyloCTMCDollo.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 
@@ -232,7 +232,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( new Dist_phyloCTMC() );
         addDistribution( new Dist_phyloDACTMC() );
         addDistribution( new Dist_phyloCTMCClado() );
-        //addDistribution( new Dist_phyloDolloCTMC() );
+//        addDistribution( new Dist_phyloCTMCDollo() );
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
@@ -395,6 +395,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< Probability                >( new Dist_mixture<Probability>() );
 //        AddDistribution< RateGenerator              >( new Dist_mixture<RateGenerator>() );
         addDistribution( new Dist_mixture<RateGenerator>() );
+        AddDistribution< TimeTree                   >( new Dist_mixture<TimeTree>() );
         
         // Ornstein-Uhlenbeck process
         AddDistribution< Real                       >( new OrnsteinUhlenbeckProcess() );

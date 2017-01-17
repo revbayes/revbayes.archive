@@ -60,10 +60,6 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
     report.hpd       = static_cast<const Probability &>(args[arg_index++].getVariable()->getRevObject()).getValue();
     report.mean      = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
     report.sa        = static_cast<const RlBoolean &>( this->args[arg_index++].getVariable()->getRevObject() ).getValue();
-
-//    
-//    // get burnin
-//    int burnin = static_cast<const Integer &>(args[arg_index++].getVariable()->getRevObject()).getValue();
     
     // do not make a new tree summary object
     // this way we don't need to resummarize every time we annotate a tree
@@ -77,7 +73,7 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
     {
 
         RevBayesCore::NexusWriter writer(filename);
-        writer.openStream();
+        writer.openStream(false);
         
         std::vector<RevBayesCore::Taxon> taxa;
         tree->getRoot().getTaxa(taxa);
@@ -121,7 +117,7 @@ const ArgumentRules& Func_annotateTree::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "ages" , RlBoolean::getClassTypeSpec() , "Annotate node ages?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         argumentRules.push_back( new ArgumentRule( "ccAges" , RlBoolean::getClassTypeSpec() , "Annotate conditional clade ages?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         argumentRules.push_back( new ArgumentRule( "ccp" , RlBoolean::getClassTypeSpec() , "Annotate conditional clade probabilities?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        argumentRules.push_back( new ArgumentRule( "conditionalAges" , RlBoolean::getClassTypeSpec() , "Annotate node ages conditional on the input topology?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        argumentRules.push_back( new ArgumentRule( "conditionalAges" , RlBoolean::getClassTypeSpec() , "Annotate node ages conditional on the input topology?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         argumentRules.push_back( new ArgumentRule( "hpd"   ,    Probability::getClassTypeSpec() , "The probability mass of the highest posterior density age interval.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95) ) );
         argumentRules.push_back( new ArgumentRule( "mean" , RlBoolean::getClassTypeSpec() , "Annotate node ages using the mean age instead of the median?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         argumentRules.push_back( new ArgumentRule( "sampledAncestors" , RlBoolean::getClassTypeSpec() , "Annotate sampled ancestor probs?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );

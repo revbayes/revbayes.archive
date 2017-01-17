@@ -1737,7 +1737,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
                 double p_clado = it->second;
                 cp[i][j] += p_clado;
 //                std::cout << cp << "\n\n";
-                 const size_t k = idx[2];
+//                 const size_t k = idx[2];
 //                 std::cout << i << "->" << j << "," << k << " = " << it->second << "\n";
             }
             
@@ -1751,7 +1751,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
             double dt = 0.0;
             double event_age = startAge;
             bool first_event = true;
-            size_t num_event = 0;
+//            size_t num_event = 0;
 //            std::cout << nodeIdx << " " << events.size() << "\n";
             std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
             for (it = events.begin(); it != events.end(); it++)

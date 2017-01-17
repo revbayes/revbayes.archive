@@ -41,7 +41,7 @@ namespace RevBayesCore {
         
         // FileMonitor functions
         void                                closeStream(void);                                                  //!< Close stream after finish writing
-        void                                openStream(void);                                                   //!< Open the stream for writing
+        void                                openStream(bool reopen);                                            //!< Open the stream for writing
         void                                printHeader(void);                                                  //!< Print header
         
     private:

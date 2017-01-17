@@ -12,7 +12,7 @@ void AbstractHomologousDiscreteCharacterData::writeToFile(const std::string &dir
     fm.createDirectoryForFile();
     
     NexusWriter nw( fm.getFullFileName() );
-    nw.openStream();
+    nw.openStream(false);
     
     nw.writeNexusBlock( *this );
     

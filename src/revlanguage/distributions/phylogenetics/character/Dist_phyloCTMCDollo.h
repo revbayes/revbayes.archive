@@ -1,5 +1,5 @@
-#ifndef Dist_phyloDolloCTMC_H
-#define Dist_phyloDolloCTMC_H
+#ifndef Dist_phyloCTMCDollo_H
+#define Dist_phyloCTMCDollo_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
@@ -8,14 +8,14 @@
 
 namespace RevLanguage {
 
-    class Dist_phyloDolloCTMC :  public TypedDistribution< AbstractHomologousDiscreteCharacterData > {
+    class Dist_phyloCTMCDollo :  public TypedDistribution< AbstractHomologousDiscreteCharacterData > {
 
     public:
-        Dist_phyloDolloCTMC( void );
-        virtual ~Dist_phyloDolloCTMC();
+        Dist_phyloCTMCDollo( void );
+        virtual ~Dist_phyloCTMCDollo();
 
         // Basic utility functions
-        Dist_phyloDolloCTMC*                            clone(void) const;                                                                      //!< Clone the object
+        Dist_phyloCTMCDollo*                            clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
@@ -41,6 +41,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       siteRates;
         RevPtr<const RevVariable>                       rootFrequencies;
         RevPtr<const RevVariable>                       nSites;
+        RevPtr<const RevVariable>                       type;
         RevPtr<const RevVariable>                       coding;
         RevPtr<const RevVariable>                       normalize;
 

@@ -31,8 +31,8 @@ using namespace RevBayesCore;
 NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const RelativeNodeAgeConstraints &c) : TypedDistribution<Tree>( new Tree() ),
     base_distribution( base_dist ),
     constraints( c ),
-    nodeAges(),
     constrainedNodes(),
+    nodeAges(),
     owns_tree( false )
 {
     // add the parameters to our set (in the base class)
@@ -63,8 +63,9 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(Typed
 NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(const NodeOrderConstrainedTreeDistribution &d) : TypedDistribution<Tree>( d ),
     base_distribution( d.base_distribution->clone() ),
     constraints( d.constraints ),
+    constrainedNodes( d.constrainedNodes ),
     nodeAges( d.nodeAges ),
-    constrainedNodes( d.constrainedNodes )
+    owns_tree( d.owns_tree )
 {
     // the copy constructor of the TypedDistribution creates a new copy of the value
     // however, here we want to hold exactly the same value as the base-distribution

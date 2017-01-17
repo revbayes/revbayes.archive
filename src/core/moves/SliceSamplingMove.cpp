@@ -216,7 +216,7 @@ double search_interval(double x0,double& L, double& R, slice_function& g,double 
   assert(L < R);
   assert(L <= x0 and x0 <= R);
 
-  double L0 = L, R0 = R;
+  //double L0 = L, R0 = R;
 
   for(int i=0;i<200;i++)
   {

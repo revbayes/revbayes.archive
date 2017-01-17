@@ -249,6 +249,7 @@ const TypeTable& Workspace::getTypeTable( void ) const
 void Workspace::initializeGlobalWorkspace( void )
 {
     
+    initializeBasicTypeGlobalWorkspace();
     initializeTypeGlobalWorkspace();
     initializeMonitorGlobalWorkspace();
     initializeMoveGlobalWorkspace();
@@ -336,10 +337,16 @@ void Workspace::printValue(std::ostream& o) const
         std::map<std::string, RevObject *>::const_iterator i;
         for (i=typeTable.begin(); i!=typeTable.end(); i++)
         {
+            
             if ( (*i).second != NULL )
+            {
                 o << (*i).first << " = " << (*i).second->getTypeSpec() << std::endl;
+            }
             else
+            {
                 o << (*i).first << " = " << "unknown class vector" << std::endl;
+            }
+            
         }
         
     }
@@ -347,3 +354,15 @@ void Workspace::printValue(std::ostream& o) const
 }
 
 
+void Workspace::updateVectorVariables( void )
+{
+    VariableTable::const_iterator it;
+    for ( it = variableTable.begin(); it != variableTable.end(); it++)
+    {
+        const RevPtr<RevVariable>& var = it->second;
+        if ( var->isVectorVariable() == true )
+        {
+            var->getRevObject();
+        }
+    }
+}

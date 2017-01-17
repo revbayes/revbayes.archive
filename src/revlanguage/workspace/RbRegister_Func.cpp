@@ -116,6 +116,7 @@
 #include "Func_readPomoCountFile.h"
 #include "Func_pruneTree.h"
 #include "Func_simTree.h"
+#include "Func_simCompleteTree.h"
 #include "Func_stitchTree.h"
 #include "Func_symmetricDifference.h"
 #include "Func_tmrca.h"
@@ -220,6 +221,7 @@
 #include "Func_floor.h"
 #include "Func_gamma.h"
 #include "Func_lnProbability.h"
+#include "Func_geographicalDistance.h"
 #include "Func_hyperbolicTangent.h"
 #include "Func_hyperbolicSine.h"
 #include "Func_ln.h"
@@ -337,6 +339,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_pruneTree()                );
         addFunction( new Func_readPomoCountFile()       );
         addFunction( new Func_simTree()                  );
+        addFunction( new Func_simCompleteTree()          );
         addFunction( new Func_stitchTree()               );
         addFunction( new Func_symmetricDifference()      );
         addFunction( new Func_tmrca()                    );
@@ -430,6 +433,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // standard deviation function
         addFunction( new Func_standardDeviation()  );
 
+        // geographical distance function
+        addFunction( new Func_geographicalDistance() );
+        
         // hyperbolic tangent function
         addFunction( new Func_hyperbolicTangent() );
 

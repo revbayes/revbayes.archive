@@ -30,12 +30,17 @@ namespace RevBayesCore {
         PomoState(size_t vps);                                                              //!< Constructor with virtual population size
         PomoState(const std::string &s);                                                    //!< Constructor with an observation
         PomoState(const std::string &s, const std::string chromosome,
-          const size_t position, const size_t virtualPopulationSize );                      //!< Constructor that sets all fields
+          const size_t position, const size_t virtualPopulationSize,
+          std::vector<double> weights  );                                                   //!< Constructor that sets all fields
+        PomoState(const std::string &s, const std::string chromosome,
+          const size_t position, const size_t virtualPopulationSize);
+  //      PomoState(const PomoState& t);                                                      //!< Copy constructor
+
         PomoState*                       clone(void) const;                                 //!< Get a copy of this object
 
         // Discrete character observation functions
         std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
-        const std::string&              getStateLabels(void) const;                         //!< Get valid state labels
+        std::string                     getStateLabels(void) const;                         //!< Get valid state labels
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
         void                            setVirtualPopulationSize(size_t populationSize);    //!< Set the virtual population size for the state space
         void                            setState(const std::string &symbol);                //!< Compute the internal state value for this character.

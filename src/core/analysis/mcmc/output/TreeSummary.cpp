@@ -1596,7 +1596,7 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report, bool verbos
         // annotate the HPD node age intervals
         if( report.hpd )
         {
-            nodeAges = cladeAges[c];
+            //nodeAges = cladeAges[c];
 
             std::sort(nodeAges.begin(), nodeAges.end());
 
@@ -1790,12 +1790,10 @@ TopologyNode* TreeSummary::findParentNode(TopologyNode& n, const Clade& tmp, std
 }
 
 
-int TreeSummary::getNumberSamples( void ) const
+int TreeSummary::getBurnin( void ) const
 {
-    
-    double total_samples = trace.size();
-    
-    return total_samples - burnin;
+
+    return burnin;
 }
 
 
@@ -2358,6 +2356,17 @@ void TreeSummary::setBurnin(int b)
     }
 
     summarized = summarized && old == burnin;
+}
+
+
+int TreeSummary::size( bool post ) const
+{
+
+    double total_samples = trace.size();
+
+    if(post) total_samples -= burnin;
+
+    return total_samples;
 }
 
 
