@@ -1352,7 +1352,7 @@ void TopologyNode::renameNodeParameter(const std::string &old_name, const std::s
 }
 
 
-void TopologyNode::setAge(double a)
+void TopologyNode::setAge(double a, bool propagate)
 {
     if( sampled_ancestor && propagate )
     {
@@ -1384,8 +1384,6 @@ void TopologyNode::setAge(double a)
             tree->getTreeChangeEventHandler().fire( *child, RevBayesCore::TreeChangeEventMessage::BRANCH_LENGTH );
         }
     }
-    
-    
     
 }
 
