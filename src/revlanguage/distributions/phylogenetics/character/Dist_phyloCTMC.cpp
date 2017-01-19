@@ -256,7 +256,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                 }
             }
 
-
             dist->setRateMatrix( rm );
         }
         else

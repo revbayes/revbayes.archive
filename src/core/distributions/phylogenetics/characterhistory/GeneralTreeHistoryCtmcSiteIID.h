@@ -24,7 +24,7 @@ namespace RevBayesCore {
     public:
         GeneralTreeHistoryCtmcSiteIID(const TypedDagNode< Tree > *t, size_t nChars, size_t nSites, bool useAmbigChar=false);
         GeneralTreeHistoryCtmcSiteIID(const GeneralTreeHistoryCtmcSiteIID &n);                                                                         //!< Copy constructor
-        virtual                                            ~GeneralTreeHistoryCtmcSiteIID(void);                                                //!< Virtual destructor
+        virtual                                             ~GeneralTreeHistoryCtmcSiteIID(void);                                                //!< Virtual destructor
 
         // public member functions
 

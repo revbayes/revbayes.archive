@@ -21,9 +21,6 @@
 
 namespace RevBayesCore {
     
-    template<class charType>
-    class NarrowExchangeCharacterHistoryProposal;
-    
     /**
      * The scaling operator.
      *
@@ -43,7 +40,13 @@ namespace RevBayesCore {
     
     template<class ct>
     friend class NarrowExchangeCharacterHistoryProposal;
-        
+
+    template<class ct>
+    friend class FixedNodeheightPruneAndRegraftCharacterHistoryProposal;
+
+    template<class ct>
+    friend class NodeTimeSlideUniformCharacterHistoryProposal;
+
     public:
         PathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, bool useTail=false);   //!<  constructor
 
@@ -171,7 +174,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     fillStateCounts(currState, counts);
 
     double branch_length = nd.getBranchLength();
-    if (nd.isRoot() == true && useTail == true )
+    if ( nd.isRoot() == true && useTail == true )
     {
         branch_length = nd.getAge() * 5;
     }
@@ -468,6 +471,11 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::undoProposal( void )
 
     // delete new events
     BranchHistory* bh = &p->getHistory(*node);
+    
+//    std::cout << "Undoing branch history." << std::endl;
+//    std::cout << "Proposed history:" << std::endl;
+//    bh->print();
+    
     std::multiset<CharacterEvent*,CharacterEventCompare> proposed_history = bh->getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     std::vector<CharacterEvent*> events;
@@ -484,6 +492,10 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::undoProposal( void )
     // swap current value and stored value
     bh->updateHistory(storedHistory);
     storedHistory.clear();
+    
+//    BranchHistory* old_bh = &p->getHistory(*node);
+//    std::cout << "Initial history:" << std::endl;
+//    old_bh->print();
     
 }
 
