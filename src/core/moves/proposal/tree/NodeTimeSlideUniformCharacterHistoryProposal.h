@@ -114,7 +114,7 @@ RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::NodeTimeSl
     node_proposal  = new PathRejectionSampleProposal<charType>( c );
     left_proposal  = new PathRejectionSampleProposal<charType>( c );
     right_proposal = new PathRejectionSampleProposal<charType>( c );
-
+    
 }
 
 
@@ -179,8 +179,6 @@ template<class charType>
 double RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::doProposal( void )
 {
     
-    bool DEBUG = true;
-    
     // get random number generator
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
@@ -213,13 +211,6 @@ double RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::doP
         throw RbException("Failed cast.");
     }
     size_t num_sites = p->getNumberOfSites();
-
-//    double before = p->computeLnProbability();
-//    if (DEBUG)
-//    {
-//        std::cout << std::endl;
-//        std::cout << "Probability before move: " << before << std::endl;
-//    }
     
     // now we store all necessary values
     stored_node = node;
@@ -258,15 +249,6 @@ double RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::doP
     ln_proposal_probability += node_proposal->doProposal();
     ln_proposal_probability += left_proposal->doProposal();
     ln_proposal_probability += right_proposal->doProposal();
-
-    
-//    double after = p->computeLnProbability();
-//    if (DEBUG)
-//    {
-//        std::cout << "Probability after move: " << after << std::endl;
-//        std::cout << "Proposal probability: " << ln_proposal_probability << std::endl;
-//        std::cout << "Likelihood ratio: " << after - before << std::endl;
-//    }
 
     return ln_proposal_probability;
     
@@ -309,8 +291,6 @@ template<class charType>
 void RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::undoProposal( void )
 {
 
-    bool DEBUG = true;
-    
     // retrieve the tree
     Tree& tau = tree->getValue();
 
@@ -327,8 +307,6 @@ void RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::undoP
     size_t num_sites = p->getNumberOfSites();
     const std::vector<BranchHistory*>& histories = p->getHistories();
 
-//    if (DEBUG) std::cout << "Probability before rejecting move: " << p->computeLnProbability() << std::endl;
-    
     // restore node state
     std::vector<CharacterEvent*>& node_child_state   = histories[stored_node->getIndex()]->getChildCharacters();
     std::vector<CharacterEvent*>& left_parent_state  = histories[stored_node->getChild(0).getIndex()]->getParentCharacters();
@@ -345,8 +323,6 @@ void RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::undoP
     node_proposal->undoProposal();
     left_proposal->undoProposal();
     right_proposal->undoProposal();
-
-//    if (DEBUG) std::cout << "Probability after rejecting move: " << p->computeLnProbability() << std::endl;
 
 }
 
