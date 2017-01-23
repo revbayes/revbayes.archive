@@ -1,5 +1,5 @@
 #include "DistributionNormal.h"
-#include "PhyloBrownianProcessREML.h"
+#include "PhyloMultivariateBrownianProcessREML.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -10,7 +10,7 @@
 
 using namespace RevBayesCore;
 
-PhyloBrownianProcessREML::PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, size_t ns) :
+PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const TypedDagNode<Tree> *t, size_t ns) :
     AbstractPhyloBrownianProcess( t, ns ),
     partial_likelihoods( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) ) ),
     contrasts( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) ) ),
@@ -38,7 +38,7 @@ PhyloBrownianProcessREML::PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, 
  * TreeChangeEventHandler, we need to remove ourselves as a reference and possibly delete tau
  * when we die. All other parameters are handled by others.
  */
-PhyloBrownianProcessREML::~PhyloBrownianProcessREML( void )
+PhyloMultivariateBrownianProcessREML::~PhyloMultivariateBrownianProcessREML( void )
 {
     // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
     
@@ -52,14 +52,14 @@ PhyloBrownianProcessREML::~PhyloBrownianProcessREML( void )
 
 
 
-PhyloBrownianProcessREML* PhyloBrownianProcessREML::clone( void ) const
+PhyloMultivariateBrownianProcessREML* PhyloMultivariateBrownianProcessREML::clone( void ) const
 {
     
-    return new PhyloBrownianProcessREML( *this );
+    return new PhyloMultivariateBrownianProcessREML( *this );
 }
 
 
-double PhyloBrownianProcessREML::computeLnProbability( void )
+double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
 {
     
     // we need to check here if we still are listining to this tree for change events
@@ -86,7 +86,9 @@ double PhyloBrownianProcessREML::computeLnProbability( void )
         // start by filling the likelihood vector for the children of the root
         if ( root.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
         {
+            
 //            recursiveComputeLnProbability( root, rootIndex );
+            
         }
         else if ( root.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
         {
@@ -118,7 +120,7 @@ double PhyloBrownianProcessREML::computeLnProbability( void )
 
 
 
-void PhyloBrownianProcessREML::fireTreeChangeEvent( const TopologyNode &n, const unsigned& m )
+void PhyloMultivariateBrownianProcessREML::fireTreeChangeEvent( const TopologyNode &n, const unsigned& m )
 {
     
     // call a recursive flagging of all node above (closer to the root) and including this node
@@ -127,7 +129,7 @@ void PhyloBrownianProcessREML::fireTreeChangeEvent( const TopologyNode &n, const
 }
 
 
-void PhyloBrownianProcessREML::keepSpecialization( DagNode* affecter )
+void PhyloMultivariateBrownianProcessREML::keepSpecialization( DagNode* affecter )
 {
     
     // reset all flags
@@ -144,7 +146,7 @@ void PhyloBrownianProcessREML::keepSpecialization( DagNode* affecter )
 }
 
 
-void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode &node, size_t node_index )
+void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode &node, size_t node_index )
 {
 
     // check for recomputation
@@ -229,7 +231,7 @@ void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode
 }
 
 
-//void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode &node, size_t node_index )
+//void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode &node, size_t node_index )
 //{
 //    
 //    // check for recomputation
@@ -296,7 +298,7 @@ void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode
 
 
 
-void PhyloBrownianProcessREML::recursivelyFlagNodeDirty( const TopologyNode &n )
+void PhyloMultivariateBrownianProcessREML::recursivelyFlagNodeDirty( const TopologyNode &n )
 {
     
     // we need to flag this node and all ancestral nodes for recomputation
@@ -326,7 +328,7 @@ void PhyloBrownianProcessREML::recursivelyFlagNodeDirty( const TopologyNode &n )
 }
 
 
-void PhyloBrownianProcessREML::resetValue( void )
+void PhyloMultivariateBrownianProcessREML::resetValue( void )
 {
     
     // check if the vectors need to be resized
@@ -387,7 +389,7 @@ void PhyloBrownianProcessREML::resetValue( void )
 }
 
 
-void PhyloBrownianProcessREML::restoreSpecialization( DagNode* affecter )
+void PhyloMultivariateBrownianProcessREML::restoreSpecialization( DagNode* affecter )
 {
     
     // reset the flags
@@ -413,7 +415,7 @@ void PhyloBrownianProcessREML::restoreSpecialization( DagNode* affecter )
 }
 
 
-std::vector<double> PhyloBrownianProcessREML::simulateRootCharacters(size_t n)
+std::vector<double> PhyloMultivariateBrownianProcessREML::simulateRootCharacters(size_t n)
 {
     
     std::vector<double> chars = std::vector<double>(num_sites, 0);
@@ -426,7 +428,7 @@ std::vector<double> PhyloBrownianProcessREML::simulateRootCharacters(size_t n)
 }
 
 
-double PhyloBrownianProcessREML::sumRootLikelihood( void )
+double PhyloMultivariateBrownianProcessREML::sumRootLikelihood( void )
 {
     // get the root node
     const TopologyNode &root = this->tau->getValue().getRoot();
@@ -448,7 +450,7 @@ double PhyloBrownianProcessREML::sumRootLikelihood( void )
 }
 
 
-void PhyloBrownianProcessREML::touchSpecialization( DagNode* affecter, bool touchAll )
+void PhyloMultivariateBrownianProcessREML::touchSpecialization( DagNode* affecter, bool touchAll )
 {
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
@@ -501,7 +503,7 @@ void PhyloBrownianProcessREML::touchSpecialization( DagNode* affecter, bool touc
 
 
 /** Swap a parameter of the distribution */
-void PhyloBrownianProcessREML::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void PhyloMultivariateBrownianProcessREML::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == this->tau)
