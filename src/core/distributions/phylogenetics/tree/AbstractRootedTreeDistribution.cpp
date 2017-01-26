@@ -48,20 +48,19 @@ AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNod
     }
     
     log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
-    
-    std::set<Taxon> found;
+
+    std::set<std::string> found;
     for(size_t i = 0; i < taxa.size(); i++)
     {
-        if(found.find(taxa[i]) == found.end())
+        if(found.find(taxa[i].getName()) == found.end())
         {
-            found.insert(taxa[i]);
+            found.insert(taxa[i].getName());
         }
         else
         {
             throw(RbException("Duplicate taxon name encountered when building tree distribution"));
         }
     }
-
 }
 
 
