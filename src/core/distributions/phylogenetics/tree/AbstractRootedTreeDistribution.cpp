@@ -58,7 +58,9 @@ AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNod
         }
         else
         {
-            throw(RbException("Duplicate taxon name encountered when building tree distribution"));
+            std::stringstream ss;
+            ss << "Duplicate taxon name '" << taxa[i].getName() << "' encountered when building tree distribution";
+            throw(RbException(ss.str()));
         }
     }
 }
