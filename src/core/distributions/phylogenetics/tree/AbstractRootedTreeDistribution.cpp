@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <sstream>
 
 using namespace RevBayesCore;
 
