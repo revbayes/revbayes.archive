@@ -49,6 +49,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   qmap;                                                                                       //!< The variable on which the move works
         RevPtr<const RevVariable>                   graph;
         RevPtr<const RevVariable>                   proposal;
+        RevPtr<const RevVariable>                   lambda;
         
     };
     

@@ -75,6 +75,7 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
 
     // move/proposal arguments
     double w        = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    double d        = static_cast<const Probability &>( lambda->getRevObject() ).getValue();
     std::string gt  = static_cast<const RlString &>( graph->getRevObject() ).getValue();
     std::string pt  = static_cast<const RlString &>( proposal->getRevObject() ).getValue();
 
@@ -219,6 +220,7 @@ const MemberRules& RevLanguage::Move_CharacterHistory::getParameterRules(void) c
 
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The PhyloCTMC variable.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateGenerator::getClassTypeSpec()                      , "Some rate-map.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , "", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
 
 //        std::vector<std::string> optionsType;
 //        optionsType.push_back( "Biogeo" );
@@ -309,6 +311,10 @@ void RevLanguage::Move_CharacterHistory::setConstParameter(const std::string& na
     else if ( name == "proposal" )
     {
         proposal = var;
+    }
+    else if ( name == "lambda" )
+    {
+        lambda = var;
     }
     else
     {
