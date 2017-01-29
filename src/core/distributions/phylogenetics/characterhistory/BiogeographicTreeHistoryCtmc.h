@@ -209,7 +209,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
     unsigned counts[2] = { n0, n1 };
 
     // check that node ages are consistent with character event ages
-    if ( bh->areEventTimesValid(node) == false)
+    if ( bh->areEventTimesValid(node) == false && !node.isRoot())
     {
         bh->print();
         return RbConstants::Double::neginf;
