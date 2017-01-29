@@ -211,6 +211,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
     // check that node ages are consistent with character event ages
     if ( bh->areEventTimesValid(node) == false)
     {
+        bh->print();
         return RbConstants::Double::neginf;
     }
 
@@ -227,6 +228,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
         {
             if(end_state[j]->getState() != child_state[j]->getState())
             {
+                
                 return RbConstants::Double::neginf;
             }
         }
@@ -251,6 +253,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
 
     if (counts[1] == 0 && forbidExtinction)
     {
+        
         return RbConstants::Double::neginf;
     }
     else
@@ -281,6 +284,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
             size_t s = (*it_h)->getState();
             if (counts[1] == 0 && forbidExtinction)
             {
+                
                 return RbConstants::Double::neginf;
                 break;
             }
@@ -351,7 +355,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
 
 
     // @Michael: My compiler complained about reaching the end of a non-void function. (Sebastian)
-    return RbConstants::Double::nan;
+    return RbConstants::Double::neginf;
 }
 
 
@@ -512,7 +516,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::drawInitValue( void )
 {
     std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType>::tau->getValue().getNodes();
 
-    std::cout << this->tau->getValue() << "\n";
+//    std::cout << this->tau->getValue() << "\n";
 
     // assign tip values
     initializeTipValues();
@@ -556,7 +560,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::drawInitValue( void )
             samplePathHistoryCount++;
         } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
 
-        //        this->histories[i]->print();
+        this->histories[i]->print();
     }
     
     double lnL = this->computeLnProbability();
@@ -745,7 +749,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathHistory(con
 //    const Tree& tree = this->tau->getValue();
     double branchLength = node.getBranchLength();
     if (node.isRoot())
-        branchLength = node.getAge() * 5;
+        branchLength = node.getAge() * 2;
     const RateGeneratorSequence_Biogeography& rm = static_cast<const RateGeneratorSequence_Biogeography&>(homogeneousRateGeneratorSequence->getValue());
 
     // begin update
@@ -755,9 +759,10 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathHistory(con
     double startAge;
 
     if (node.isRoot())
-        startAge = 5 * node.getAge();
+        startAge = 2 * node.getAge();
     else
         startAge = node.getParent().getAge();
+    double endAge = node.getAge();
 
     // reject sample path history
     std::vector<CharacterEvent*> parentVector = bh->getParentCharacters();
@@ -812,7 +817,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathHistory(con
                     if (t < 1.0)
                     {
                         currState = nextState;
-                        CharacterEvent* evt = new CharacterEvent(*it, nextState, t);
+                        CharacterEvent* evt = new CharacterEvent(*it, nextState, currAge);
                         tmpHistory.insert(evt);
                     }
                     else if (currState != endState)
@@ -904,7 +909,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathStart(const
 
         // subset sympatry, allopatry: sparse
         else
-            budState.push_back(new CharacterEvent(i,0,0.0));
+            budState.push_back(new CharacterEvent(i,0, node.getAge()));
     }
 
     // subset sympatry: add bud area

@@ -39,6 +39,31 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
     size_t nStates = rm->getValue().getNumberOfStates();
     size_t nChars = rm->getValue().getNumberOfCharacters();
+    size_t nNodes = tau->getValue().getNumberOfNodes();
+    
+    // clock rates
+    // set the clock rates
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = NULL;
+    RevBayesCore::TypedDagNode<double>* clockRate = NULL;
+    if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    {
+        clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
+        
+        // sanity check
+        size_t nRates = clockRates->getValue().size();
+        if ( (nNodes-1) != nRates )
+        {
+            throw RbException( "The number of clock rates does not match the number of branches" );
+        }
+    }
+    else
+    {
+         clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
+    }
+
+    //        dist->setClockRate( clockRates );
+    //        dist->setClockRate( clockRate );
+
 
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
@@ -49,7 +74,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
         RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
         dist->setRateGeneratorSequence( rm );
-
+        
         d = dist;
     }
     else if ( dt == "RNA" )
@@ -150,10 +175,19 @@ const MemberRules& Dist_phyloCTMCDASequence::getParameterRules(void) const
     {
 
         distMemberRules.push_back( new ArgumentRule( "tree"               , Tree::getClassTypeSpec() , "The along which the character(s) evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        
         distMemberRules.push_back( new ArgumentRule( "Q"                  , RateGeneratorSequence::getClassTypeSpec()  , "The transition rate matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        
+        std::vector<TypeSpec> branchRateTypes;
+        branchRateTypes.push_back( RealPos::getClassTypeSpec() );
+        branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
+        distMemberRules.push_back( new ArgumentRule( "branchRates", branchRateTypes, "The global or branch-specific rate multipliers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        
         distMemberRules.push_back( new ArgumentRule( "cladoProbs"         , Simplex::getClassTypeSpec()  , "The cladogenetic probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        
         distMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , RlBoolean::getClassTypeSpec(), "Should we exclude complete extinction (zero areas occupied)?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
-        distMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , RlBoolean::getClassTypeSpec(), "Should we use cladigenesis?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
+        
+        distMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , RlBoolean::getClassTypeSpec(), "Should we use cladogenesis?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
 
         std::vector<std::string> options;
         options.push_back( "Biogeo" );
@@ -212,6 +246,12 @@ void Dist_phyloCTMCDASequence::printValue(std::ostream& o) const {
     } else {
         o << "?";
     }
+    o << ", branchRates=";
+    if ( rate != NULL ) {
+        o << rate->getName();
+    } else {
+        o << "?";
+    }
     o << ")";
 }
 
@@ -226,6 +266,10 @@ void Dist_phyloCTMCDASequence::setConstParameter(const std::string& name, const 
     else if ( name == "Q" )
     {
         q = var;
+    }
+    else if ( name == "branchRates" )
+    {
+        rate = var;
     }
     else if ( name == "type" )
     {
