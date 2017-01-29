@@ -1,5 +1,5 @@
 #include "DistributionUniform.h"
-#include "NodeTimeSlideUniformProposal.h"
+#include "NodeTimeSlideUniformCharacterHistoryProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -16,7 +16,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-NodeTimeSlideUniformProposal::NodeTimeSlideUniformProposal( StochasticNode<Tree> *n ) : Proposal(),
+NodeTimeSlideUniformCharacterHistoryProposal::NodeTimeSlideUniformCharacterHistoryProposal( StochasticNode<Tree> *n ) : Proposal(),
     variable( n )
 {
     // tell the base class to add the node
@@ -30,7 +30,7 @@ NodeTimeSlideUniformProposal::NodeTimeSlideUniformProposal( StochasticNode<Tree>
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void NodeTimeSlideUniformProposal::cleanProposal( void )
+void NodeTimeSlideUniformCharacterHistoryProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -41,10 +41,10 @@ void NodeTimeSlideUniformProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-NodeTimeSlideUniformProposal* NodeTimeSlideUniformProposal::clone( void ) const
+NodeTimeSlideUniformCharacterHistoryProposal* NodeTimeSlideUniformCharacterHistoryProposal::clone( void ) const
 {
     
-    return new NodeTimeSlideUniformProposal( *this );
+    return new NodeTimeSlideUniformCharacterHistoryProposal( *this );
 }
 
 
@@ -53,7 +53,7 @@ NodeTimeSlideUniformProposal* NodeTimeSlideUniformProposal::clone( void ) const
  *
  * \return The Proposals' name.
  */
-const std::string& NodeTimeSlideUniformProposal::getProposalName( void ) const
+const std::string& NodeTimeSlideUniformCharacterHistoryProposal::getProposalName( void ) const
 {
     static std::string name = "NodeTimeSlideUniform";
     
@@ -73,7 +73,7 @@ const std::string& NodeTimeSlideUniformProposal::getProposalName( void ) const
  *
  * \return The hastings ratio.
  */
-double NodeTimeSlideUniformProposal::doProposal( void )
+double NodeTimeSlideUniformCharacterHistoryProposal::doProposal( void )
 {
     
     // Get random number generator
@@ -118,7 +118,7 @@ double NodeTimeSlideUniformProposal::doProposal( void )
 /**
  *
  */
-void NodeTimeSlideUniformProposal::prepareProposal( void )
+void NodeTimeSlideUniformCharacterHistoryProposal::prepareProposal( void )
 {
     
 }
@@ -132,7 +132,7 @@ void NodeTimeSlideUniformProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NodeTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
+void NodeTimeSlideUniformCharacterHistoryProposal::printParameterSummary(std::ostream &o) const
 {
     
 }
@@ -145,7 +145,7 @@ void NodeTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void NodeTimeSlideUniformProposal::undoProposal( void )
+void NodeTimeSlideUniformCharacterHistoryProposal::undoProposal( void )
 {
     
     // undo the proposal
@@ -160,7 +160,7 @@ void NodeTimeSlideUniformProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void NodeTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void NodeTimeSlideUniformCharacterHistoryProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
@@ -175,7 +175,7 @@ void NodeTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void NodeTimeSlideUniformProposal::tune( double rate )
+void NodeTimeSlideUniformCharacterHistoryProposal::tune( double rate )
 {
     
 }

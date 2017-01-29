@@ -1,5 +1,5 @@
-#ifndef FixedNodeheightPruneAndRegraftProposal_H
-#define FixedNodeheightPruneAndRegraftProposal_H
+#ifndef FixedNodeheightPruneAndRegraftCharacterHistoryProposal_H
+#define FixedNodeheightPruneAndRegraftCharacterHistoryProposal_H
 
 #include <string>
 
@@ -22,14 +22,14 @@ namespace RevBayesCore {
      * @since 2012-07-12, version 1.0
      *
      */
-    class FixedNodeheightPruneAndRegraftProposal : public Proposal {
+    class FixedNodeheightPruneAndRegraftCharacterHistoryProposal : public Proposal {
         
     public:
-        FixedNodeheightPruneAndRegraftProposal( StochasticNode<Tree> *n);                                   //!<  constructor
+        FixedNodeheightPruneAndRegraftCharacterHistoryProposal( StochasticNode<Tree> *n);                                   //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
-        FixedNodeheightPruneAndRegraftProposal* clone(void) const;                                          //!< Clone object
+        FixedNodeheightPruneAndRegraftCharacterHistoryProposal* clone(void) const;                                          //!< Clone object
         double                                  doProposal(void);                                           //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                      //!< Prepare the proposal

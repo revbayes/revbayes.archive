@@ -1,5 +1,5 @@
-#ifndef Move_NodeTimeSlideUniform_H
-#define Move_NodeTimeSlideUniform_H
+#ifndef Move_NodeTimeSlideUniformCharacterHistory_H
+#define Move_NodeTimeSlideUniformCharacterHistory_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -20,14 +20,14 @@ namespace RevLanguage {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @copyright GPL version 3
      */
-    class Move_NodeTimeSlideUniform : public Move {
+    class Move_NodeTimeSlideUniformCharacterHistory : public Move {
         
     public:
         
-        Move_NodeTimeSlideUniform(void);                                                                                                    //!< Default constructor
+        Move_NodeTimeSlideUniformCharacterHistory(void);                                                                                                    //!< Default constructor
         
         // Basic utility functions
-        virtual Move_NodeTimeSlideUniform*          clone(void) const;                                                                      //!< Clone object
+        virtual Move_NodeTimeSlideUniformCharacterHistory*          clone(void) const;                                                                      //!< Clone object
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec

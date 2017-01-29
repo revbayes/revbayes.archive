@@ -1,4 +1,4 @@
-#include "FixedNodeheightPruneAndRegraftProposal.h"
+#include "FixedNodeheightPruneAndRegraftCharacterHistoryProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-FixedNodeheightPruneAndRegraftProposal::FixedNodeheightPruneAndRegraftProposal( StochasticNode<Tree> *n ) : Proposal(),
+FixedNodeheightPruneAndRegraftCharacterHistoryProposal::FixedNodeheightPruneAndRegraftCharacterHistoryProposal( StochasticNode<Tree> *n ) : Proposal(),
     variable( n )
 {
     // tell the base class to add the node
@@ -28,7 +28,7 @@ FixedNodeheightPruneAndRegraftProposal::FixedNodeheightPruneAndRegraftProposal( 
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void FixedNodeheightPruneAndRegraftProposal::cleanProposal( void )
+void FixedNodeheightPruneAndRegraftCharacterHistoryProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -39,15 +39,15 @@ void FixedNodeheightPruneAndRegraftProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-FixedNodeheightPruneAndRegraftProposal* FixedNodeheightPruneAndRegraftProposal::clone( void ) const
+FixedNodeheightPruneAndRegraftCharacterHistoryProposal* FixedNodeheightPruneAndRegraftCharacterHistoryProposal::clone( void ) const
 {
     
-    return new FixedNodeheightPruneAndRegraftProposal( *this );
+    return new FixedNodeheightPruneAndRegraftCharacterHistoryProposal( *this );
 }
 
 
 
-void FixedNodeheightPruneAndRegraftProposal::findNewBrothers(std::vector<TopologyNode *> &b, TopologyNode &p, TopologyNode *n) {
+void FixedNodeheightPruneAndRegraftCharacterHistoryProposal::findNewBrothers(std::vector<TopologyNode *> &b, TopologyNode &p, TopologyNode *n) {
     // security check that I'm not a tip
     if (!n->isTip() && &p != n)
     {
@@ -81,7 +81,7 @@ void FixedNodeheightPruneAndRegraftProposal::findNewBrothers(std::vector<Topolog
  *
  * \return The Proposals' name.
  */
-const std::string& FixedNodeheightPruneAndRegraftProposal::getProposalName( void ) const
+const std::string& FixedNodeheightPruneAndRegraftCharacterHistoryProposal::getProposalName( void ) const
 {
     static std::string name = "FNPR";
     
@@ -101,7 +101,7 @@ const std::string& FixedNodeheightPruneAndRegraftProposal::getProposalName( void
  *
  * \return The hastings ratio.
  */
-double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
+double FixedNodeheightPruneAndRegraftCharacterHistoryProposal::doProposal( void )
 {
     
     // reset flags
@@ -169,7 +169,7 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
 /**
  *
  */
-void FixedNodeheightPruneAndRegraftProposal::prepareProposal( void )
+void FixedNodeheightPruneAndRegraftCharacterHistoryProposal::prepareProposal( void )
 {
     
 }
@@ -183,7 +183,7 @@ void FixedNodeheightPruneAndRegraftProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void FixedNodeheightPruneAndRegraftProposal::printParameterSummary(std::ostream &o) const
+void FixedNodeheightPruneAndRegraftCharacterHistoryProposal::printParameterSummary(std::ostream &o) const
 {
     
     // no parameters
@@ -198,7 +198,7 @@ void FixedNodeheightPruneAndRegraftProposal::printParameterSummary(std::ostream 
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void FixedNodeheightPruneAndRegraftProposal::undoProposal( void )
+void FixedNodeheightPruneAndRegraftCharacterHistoryProposal::undoProposal( void )
 {
     
     // we undo the proposal only if it didn't fail
@@ -233,7 +233,7 @@ void FixedNodeheightPruneAndRegraftProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void FixedNodeheightPruneAndRegraftProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void FixedNodeheightPruneAndRegraftCharacterHistoryProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
@@ -248,7 +248,7 @@ void FixedNodeheightPruneAndRegraftProposal::swapNodeInternal(DagNode *oldN, Dag
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void FixedNodeheightPruneAndRegraftProposal::tune( double rate )
+void FixedNodeheightPruneAndRegraftCharacterHistoryProposal::tune( double rate )
 {
     
     // nothing to tune

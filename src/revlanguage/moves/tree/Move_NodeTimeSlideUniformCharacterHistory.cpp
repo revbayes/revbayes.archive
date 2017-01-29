@@ -1,8 +1,8 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
-#include "Move_NodeTimeSlideUniform.h"
-#include "NodeTimeSlideUniformProposal.h"
+#include "Move_NodeTimeSlideUniformCharacterHistory.h"
+#include "NodeTimeSlideUniformCharacterHistoryProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -13,7 +13,7 @@
 
 using namespace RevLanguage;
 
-Move_NodeTimeSlideUniform::Move_NodeTimeSlideUniform() : Move()
+Move_NodeTimeSlideUniformCharacterHistory::Move_NodeTimeSlideUniformCharacterHistory() : Move()
 {
     
 }
@@ -25,14 +25,14 @@ Move_NodeTimeSlideUniform::Move_NodeTimeSlideUniform() : Move()
  *
  * \return A new copy of the process.
  */
-Move_NodeTimeSlideUniform* Move_NodeTimeSlideUniform::clone(void) const
+Move_NodeTimeSlideUniformCharacterHistory* Move_NodeTimeSlideUniformCharacterHistory::clone(void) const
 {
     
-	return new Move_NodeTimeSlideUniform(*this);
+	return new Move_NodeTimeSlideUniformCharacterHistory(*this);
 }
 
 
-void Move_NodeTimeSlideUniform::constructInternalObject( void )
+void Move_NodeTimeSlideUniformCharacterHistory::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -43,22 +43,22 @@ void Move_NodeTimeSlideUniform::constructInternalObject( void )
     
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::NodeTimeSlideUniformProposal( t );
+    RevBayesCore::Proposal *p = new RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal( t );
     value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_NodeTimeSlideUniform::getClassType(void)
+const std::string& Move_NodeTimeSlideUniformCharacterHistory::getClassType(void)
 {
     
-    static std::string rev_type = "Move_NodeTimeSlideUniform";
+    static std::string rev_type = "Move_NodeTimeSlideUniformCharacterHistory";
     
 	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_NodeTimeSlideUniform::getClassTypeSpec(void)
+const TypeSpec& Move_NodeTimeSlideUniformCharacterHistory::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -72,7 +72,7 @@ const TypeSpec& Move_NodeTimeSlideUniform::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_NodeTimeSlideUniform::getMoveName( void ) const
+std::string Move_NodeTimeSlideUniformCharacterHistory::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
     std::string c_name = "NodeTimeSlideUniform";
@@ -82,7 +82,7 @@ std::string Move_NodeTimeSlideUniform::getMoveName( void ) const
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_NodeTimeSlideUniform::getParameterRules(void) const
+const MemberRules& Move_NodeTimeSlideUniformCharacterHistory::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -104,7 +104,7 @@ const MemberRules& Move_NodeTimeSlideUniform::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_NodeTimeSlideUniform::getTypeSpec( void ) const
+const TypeSpec& Move_NodeTimeSlideUniformCharacterHistory::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -115,10 +115,10 @@ const TypeSpec& Move_NodeTimeSlideUniform::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_NodeTimeSlideUniform::printValue(std::ostream &o) const
+void Move_NodeTimeSlideUniformCharacterHistory::printValue(std::ostream &o) const
 {
     
-    o << "Move_NodeTimeSlideUniform(";
+    o << "Move_NodeTimeSlideUniformCharacterHistory(";
     if (tree != NULL)
     {
         o << tree->getName();
@@ -132,7 +132,7 @@ void Move_NodeTimeSlideUniform::printValue(std::ostream &o) const
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_NodeTimeSlideUniform::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_NodeTimeSlideUniformCharacterHistory::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )
