@@ -504,6 +504,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::drawInitValue( void )
 {
     std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType>::tau->getValue().getNodes();
 
+    std::cout << this->tau->getValue() << "\n";
     //    if (this->tipsInitialized == false)
 //    if (this->dagNode->isClamped())
         initializeTipValues();
@@ -630,6 +631,15 @@ template<class charType>
 bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet)
 {
 //    double lnP = 0.0;
+    double parent_age = 0.0;
+    if (node.isRoot())
+    {
+        parent_age = node.getAge() * 2;
+    }
+    else {
+        parent_age = node.getParent().getAge();
+    }
+    
 
     if (node.isTip())
     {
@@ -670,7 +680,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathEnd(const T
         {
             rm.calculateTransitionProbabilities(leftTpMatrix, node.getAge(), node.getChild(0).getAge(), this->computeBranchRate( node.getChild(0).getIndex() ), *it);
             rm.calculateTransitionProbabilities(leftTpMatrix, node.getAge(), node.getChild(1).getAge(), this->computeBranchRate( node.getChild(1).getIndex() ), *it);
-            rm.calculateTransitionProbabilities(ancTpMatrix, node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ), *it);
+            rm.calculateTransitionProbabilities(ancTpMatrix, parent_age, node.getAge(), this->computeBranchRate( node.getIndex() ), *it);
 
             size_t desS1 = leftChildState[*it]->getState();
             size_t desS2 = rightChildState[*it]->getState();
@@ -898,7 +908,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathStart(const
     if (node.isRoot())
     {
         TransitionProbabilityMatrix nodeTpMatrix(this->numSites);
-
+        double parent_age = node.getAge() * 2;
 
 
         // for sampling probs
@@ -909,7 +919,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathStart(const
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
 //            homogeneousRateGeneratorSequence->getValue().calculateTransitionProbabilities( node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ), nodeTpMatrix, *it);
-            homogeneousRateGeneratorSequence->getValue().calculateTransitionProbabilities( nodeTpMatrix, node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ) );
+            homogeneousRateGeneratorSequence->getValue().calculateTransitionProbabilities( nodeTpMatrix, parent_age, node.getAge(), this->computeBranchRate( node.getIndex() ) );
 //            unsigned int desS1 = nodeChildState[*it]->getState();
 
             //            double u = GLOBAL_RNG->uniform01();
