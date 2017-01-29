@@ -258,7 +258,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
         const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
         std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
 
-        double currAge = (node.isRoot() ? this->tau->getValue().getRoot().getAge()*5 : node.getParent().getAge());
+        double currAge = (node.isRoot() ? this->tau->getValue().getRoot().getAge()*2 : node.getParent().getAge());
         double endAge = node.getAge();
         const RateGeneratorSequence_Biogeography& rm = static_cast<const RateGeneratorSequence_Biogeography&>(homogeneousRateGeneratorSequence->getValue());
 
@@ -461,16 +461,24 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::historyContainsExtinc
 template<class charType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::initializeTipValues( void )
 {
+    
     std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType>::tau->getValue().getNodes();
+    
+    // for all nodes
     for (size_t i = 0; i < nodes.size(); i++)
     {
         TopologyNode* node = nodes[i];
+        
+        // for tips only
         if (node->isTip())
         {
             DiscreteTaxonData<StandardState>& d = static_cast< DiscreteTaxonData<StandardState>& >( this->value->getTaxonData( node->getName() ) );
             std::vector<CharacterEvent*> tipState;
+            
+            // for all tips for the character
             for (size_t j = 0; j < d.getNumberOfCharacters(); j++)
             {
+                // assign the binary state
                 unsigned s = 0;
                 if (!this->usingAmbiguousCharacters)
                     s = (unsigned)d[j].getStateIndex();
@@ -505,10 +513,11 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::drawInitValue( void )
     std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType>::tau->getValue().getNodes();
 
     std::cout << this->tau->getValue() << "\n";
-    //    if (this->tipsInitialized == false)
-//    if (this->dagNode->isClamped())
-        initializeTipValues();
 
+    // assign tip values
+    initializeTipValues();
+
+    // update all sites
     std::set<size_t> indexSet;
     for (size_t i = 0; i < this->numSites; i++)
         indexSet.insert(i);
@@ -529,6 +538,10 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::drawInitValue( void )
         {
             samplePathStartCount++;
         } while (samplePathStart(*nd,indexSet) == false && samplePathStartCount < 100);
+        
+//        this->histories[ nd->getIndex() ]->print();
+
+        ;
     }
 
     // sample paths
@@ -545,7 +558,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::drawInitValue( void )
 
         //        this->histories[i]->print();
     }
-
+    
     double lnL = this->computeLnProbability();
 
     if (lnL == RbConstants::Double::neginf)
@@ -679,16 +692,22 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathEnd(const T
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
             rm.calculateTransitionProbabilities(leftTpMatrix, node.getAge(), node.getChild(0).getAge(), this->computeBranchRate( node.getChild(0).getIndex() ), *it);
-            rm.calculateTransitionProbabilities(leftTpMatrix, node.getAge(), node.getChild(1).getAge(), this->computeBranchRate( node.getChild(1).getIndex() ), *it);
+            rm.calculateTransitionProbabilities(rightTpMatrix, node.getAge(), node.getChild(1).getAge(), this->computeBranchRate( node.getChild(1).getIndex() ), *it);
             rm.calculateTransitionProbabilities(ancTpMatrix, parent_age, node.getAge(), this->computeBranchRate( node.getIndex() ), *it);
 
+            
+//            std::cout << "left\n" << leftTpMatrix << "\n\n";
+//            std::cout << "right\n" <<  rightTpMatrix << "\n\n";
+//            std::cout << "anc\n" << ancTpMatrix << "\n\n";
+            
             size_t desS1 = leftChildState[*it]->getState();
             size_t desS2 = rightChildState[*it]->getState();
             size_t ancS = (size_t)(GLOBAL_RNG->uniform01() * 2);
+            
 
             double u = GLOBAL_RNG->uniform01();
-            double g0 = leftTpMatrix[0][desS1] * rightTpMatrix[0][desS2] * ancTpMatrix[ancS][0]; // mul by ancTpMatrix[uar][s] to enforce epochs
-            double g1 = leftTpMatrix[1][desS1] * rightTpMatrix[1][desS2] * ancTpMatrix[ancS][1];
+            double g0 = leftTpMatrix[0][desS1] * rightTpMatrix[0][desS2]; // * ancTpMatrix[ancS][0]; // mul by ancTpMatrix[uar][s] to enforce epochs
+            double g1 = leftTpMatrix[1][desS1] * rightTpMatrix[1][desS2]; // * ancTpMatrix[ancS][1];
 
 //            std::cout << desS1 << " " << desS2 << " " << ancS << " " << g0 << " " << g1 << "\n";
             unsigned int s = 0;

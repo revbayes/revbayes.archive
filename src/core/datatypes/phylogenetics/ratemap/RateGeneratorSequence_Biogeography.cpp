@@ -221,7 +221,7 @@ double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> 
 
     if (from[ to->getSiteIndex() ]->getState() == to->getState())
     {
-        std::cout << count[0] << " " << count[1] << "\n";
+//        std::cout << count[0] << " " << count[1] << "\n";
 //        std::cout << node.getIndex() << " problem...\n";
         ;
     }
