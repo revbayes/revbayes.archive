@@ -3,7 +3,7 @@
 
 
 #include "AbstractCharacterData.h"
-#include "AbstractTreeHistoryCtmc.h"
+#include "TreeHistoryCtmc.h"
 #include "BiogeographicCladoEvent.h"
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "DagNode.h"
@@ -148,7 +148,7 @@ template<class charType>
 std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharacterHistoryString(TopologyNode* n, std::string infoStr)
 {
 
-    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
     const BranchHistory& bh = p->getHistory(*n);
     std::stringstream ss;
 
@@ -351,7 +351,7 @@ template<class charType>
 std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildNumEventsStr(TopologyNode* nd)
 {
 
-    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
     BranchHistory* bh = &p->getHistory(*nd);
 
     std::stringstream ss;
@@ -369,7 +369,7 @@ template<class charType>
 std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildNumEventsStr(TopologyNode* nd, unsigned state)
 {
 
-    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
     BranchHistory* bh = &p->getHistory(*nd);
 
     const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh->getHistory();
@@ -393,7 +393,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildNumEve
 template<class charType>
 std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildNumEventsForTreeStr(unsigned state)
 {
-    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
 
     const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
     unsigned v = 0;
@@ -425,7 +425,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCladoF
 {
     std::stringstream ss;
 
-    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
     BiogeographicTreeHistoryCtmc<charType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType>* >(p);
 
     const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
@@ -445,7 +445,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCladoS
 {
     std::stringstream ss;
 
-    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
     BiogeographicTreeHistoryCtmc<charType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType>* >(p);
     int cladoState = q->getCladogenicState(*nd);
     ss << cladoState;
