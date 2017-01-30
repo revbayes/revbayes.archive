@@ -1,0 +1,14 @@
+language: cpp
+
+compiler:
+  - gcc
+
+script:
+  - cd projects/cmake
+  - ./build.sh
+
+# safelist
+branches:
+  only:
+  - master
+  - development

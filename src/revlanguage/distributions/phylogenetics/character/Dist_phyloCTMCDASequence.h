@@ -40,6 +40,7 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                       tree;
         RevPtr<const RevVariable>                       q;
+        RevPtr<const RevVariable>                       rate;
         RevPtr<const RevVariable>                       cladoStateFreqs;
         RevPtr<const RevVariable>                       forbidExtinction;
         RevPtr<const RevVariable>                       useCladogenesis;

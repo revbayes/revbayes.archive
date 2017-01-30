@@ -333,7 +333,7 @@ void BranchHistory::print(void) const
         else std::cout << " ";
     }
     std::cout << "\n";
-    std::cout << "                       0.0 : ";
+    std::cout << "                     start : ";
     for (it_v = parentCharacters.begin(); it_v != parentCharacters.end(); it_v++)
     {
 //        std::cout << (*it_v)->getState();
@@ -363,7 +363,7 @@ void BranchHistory::print(void) const
         std::cout << "\n";
 
     }
-    std::cout << "                       1.0 : ";
+    std::cout << "                       end : ";
     for (it_v = childCharacters.begin(); it_v != childCharacters.end(); it_v++)
     {
 //        std::cout << (*it_v)->getState();
