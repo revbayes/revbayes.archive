@@ -1,5 +1,7 @@
 # RevBayes 
 
+[![Build Status](https://travis-ci.org/revbayes/revbayes.svg?branch=master)](https://travis-ci.org/revbayes/revbayes)
+
 **RevBayes** -- Bayesian phylogenetic inference using probabilistic graphical models and an interactive language.
 
 RevBayes is free software released under the GPL license, version 3.
