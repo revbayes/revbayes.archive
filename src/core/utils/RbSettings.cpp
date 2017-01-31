@@ -11,6 +11,8 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include <algorithm>
+
 #	ifdef RB_WIN
 #include <windows.h>
 #   endif
