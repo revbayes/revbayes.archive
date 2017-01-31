@@ -16,9 +16,10 @@ using namespace RevBayesCore;
  */
 CorrelationMatrixProposal::CorrelationMatrixProposal( StochasticNode<MatrixReal> *n, RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* s, double l ) : Proposal(),
 variable( n ),
-storedValue( 0.0 ),
 sigma( s ),
-lambda( l ) {
+lambda( l ),
+storedValue( 0.0 )
+{
 
     // tell the base class to add the node
     addNode( variable );

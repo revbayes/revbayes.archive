@@ -18,7 +18,7 @@ using namespace RevLanguage;
 /** Constructor of empty RevVariable with specified type. */
 RevVariable::RevVariable( const TypeSpec& ts, const std::string& n ) :
     element_index_max(0),
-    last_max_index(0),
+    needs_building(false),
     is_element_var( false ),
     is_hidden_var( false ),
     is_reference_var( false ),
@@ -36,7 +36,7 @@ RevVariable::RevVariable( const TypeSpec& ts, const std::string& n ) :
 /** Constructor of filled RevVariable (no type restrictions). */
 RevVariable::RevVariable(RevObject *v, const std::string &n) :
     element_index_max(0),
-    last_max_index(0),
+    needs_building(false),
     is_element_var( false ),
     is_hidden_var( false ),
     is_reference_var( false ),
@@ -54,8 +54,8 @@ RevVariable::RevVariable(RevObject *v, const std::string &n) :
 
 /** Constructor of reference RevVariable (no type restrictions). */
 RevVariable::RevVariable(const RevPtr<RevVariable>& refVar, const std::string &n) :
-element_index_max(0),
-last_max_index(0),
+    element_index_max(0),
+    needs_building(false),
     is_element_var( false ),
     is_hidden_var( false ),
     is_reference_var( true ),
@@ -74,7 +74,7 @@ last_max_index(0),
 /** Copy constructor */
 RevVariable::RevVariable(const RevVariable &v) :
     element_index_max( v.element_index_max ),
-    last_max_index(v.last_max_index),
+    needs_building(v.needs_building),
     is_element_var( v.is_element_var ),
     is_hidden_var( v.is_hidden_var ),
     is_reference_var( v.is_hidden_var ),
@@ -123,7 +123,7 @@ RevVariable& RevVariable::operator=(const RevVariable &v)
         is_vector_var       = v.is_vector_var;
         is_workspace_var    = v.is_workspace_var;
         element_index_max   = v.element_index_max;
-        last_max_index      = v.last_max_index;
+        needs_building      = v.needs_building;
         referenced_variable = v.referenced_variable;
         
         if ( is_reference_var )
@@ -158,6 +158,8 @@ void RevVariable::addIndex(size_t idx)
     {
         element_index_max = idx;
     }
+    
+    needs_building = true;
     
 }
 
@@ -210,9 +212,9 @@ RevObject& RevVariable::getRevObject(void) const
         return referenced_variable->getRevObject();
     }
     
-    if ( is_vector_var == true && last_max_index != element_index_max )
+    if ( is_vector_var == true && needs_building == true )
     {
-        last_max_index = element_index_max;
+        needs_building = false;
         
         //        const std::set<int>& indices = theVar->getElementIndices();
         //        if ( indices.empty() )
@@ -238,8 +240,8 @@ RevObject& RevVariable::getRevObject(void) const
         }
         // @TODO: We might need a to check if this should be dynamic or not. (Sebastian)
         bool dynamic = true;
-        Function* func = Workspace::userWorkspace().getFunction("v",args,dynamic).clone();
-        func->processArguments(args,dynamic);
+        Function* func = Workspace::userWorkspace().getFunction("v",args,!dynamic).clone();
+        func->processArguments(args,!dynamic);
         
         // Evaluate the function (call the static evaluation function)
         RevPtr<RevVariable> func_return_value = func->execute();
@@ -387,9 +389,9 @@ void RevVariable::replaceRevObject( RevObject *newValue )
         is_reference_var = false;
         referenced_variable = NULL;
     }
-    
-    // Make sure default assignment is not a workspace (control) RevVariable assignment
-    is_workspace_var = false;
+//    
+//    // Make sure default assignment is not a workspace (control) RevVariable assignment
+//    is_workspace_var = false;
     
     if ( rev_object != NULL )
     {
@@ -503,6 +505,10 @@ void RevVariable::setVectorVariableState(bool flag)
     }
     
     is_vector_var = flag;
+    if ( is_vector_var == true )
+    {
+        needs_building = true;
+    }
 }
 
 

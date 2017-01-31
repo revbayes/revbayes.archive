@@ -244,7 +244,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::p( size_t i, double t ) 
  *
  *
  */
-void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( void )
+void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( void ) const
 {
     
     // clean all the sets

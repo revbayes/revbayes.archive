@@ -33,7 +33,7 @@ void NexusWriter::closeStream( void )
 /**
  * Open the file stream to a file with the name used in the constructor.
  */
-void NexusWriter::openStream( void ) 
+void NexusWriter::openStream(bool reopen) 
 {
     RbFileManager f = RbFileManager(fileName);
     f.createDirectoryForFile();

@@ -33,17 +33,17 @@ namespace RevBayesCore {
         size_t                                  getNumberOfStates(void) const;                      //!< Get the number of discrete states for the character
         const RbBitSet&                         getState(void) const;                               //!< Get the state (as the bitset)
         size_t                                  getStateIndex(void) const;                          //!< Get the state index
-        virtual std::string                     getStringValue(void) const;                                 //!< Get a representation of the character as a string
+        virtual std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
         bool                                    isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
         bool                                    isStateSet(size_t index) const;                     //!< Is the discrete observation
         void                                    setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
         void                                    setStateByIndex(size_t index);                      //!< Set the discrete observation
         virtual void                            setState(const std::string &symbol);                //!< Set the discrete observation
 
-//        virtual unsigned long                   getState(void) const = 0;                           //!< Get the discrete observation
+//        virtual unsigned long                   getState(void) const = 0;                         //!< Get the discrete observation
 
         // Discrete character observation functions
-        virtual const std::string&              getStateLabels(void) const = 0;                     //!< Get valid state labels
+        virtual std::string                     getStateLabels(void) const = 0;                     //!< Get valid state labels
 //      virtual void                            setState(size_t pos, bool val) = 0;                 //!< Set the discrete observation
         virtual const std::vector<double>       getWeights() const ;                                //!< Get the weights of the state
         bool                                    isWeighted() const ;                                //!< Is the state weighted?

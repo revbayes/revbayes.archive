@@ -99,14 +99,14 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECStationaryFr
     }
     
     std::string nullRangeStr = static_cast<const RlString &>( this->args[3].getVariable()->getRevObject() ).getValue();
-    bool cs = nullRangeStr=="CondSurv";
-    bool ex = nullRangeStr=="Exclude";
+//    bool cs = nullRangeStr=="CondSurv";
+//    bool ex = nullRangeStr=="Exclude";
     //    std::cout << nullRangeStr << " " << cs << " " << ex << "\n";
     
-    bool os = static_cast<const RlBoolean&>(this->args[4].getVariable()->getRevObject() ).getValue();
+//    bool os = static_cast<const RlBoolean&>(this->args[4].getVariable()->getRevObject() ).getValue();
     
-    bool uc = false;
-    RevBayesCore::DECRateMatrixFunction* f;// = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs, ex, os, uc );
+//    bool uc = false;
+    RevBayesCore::DECRateMatrixFunction* f = NULL;// = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs, ex, os, uc );
 //    RevBayesCore::DECStationaryFrequenciesFunction* f; // = new RevBayesCore::DECStationaryFrequenciesFunction(dr, er, rs, cs, ex, os, uc);
     
     return f;

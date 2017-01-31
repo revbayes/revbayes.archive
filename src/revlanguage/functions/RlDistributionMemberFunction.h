@@ -11,6 +11,7 @@ namespace RevLanguage {
         
     public:
         DistributionMemberFunction(const std::string &n, const typename distributionType::rlValueType* o, ArgumentRules* argRules, bool f=false);                                 //!< Constructor
+        virtual ~DistributionMemberFunction(){};
         
         // Basic utility functions
         DistributionMemberFunction*                                     clone(void) const;                              //!< Clone the object

@@ -194,7 +194,7 @@ void ExtendedNewickAdmixtureTreeMonitor::monitor(unsigned long gen) {
 
 
 /** open the file stream for printing */
-void ExtendedNewickAdmixtureTreeMonitor::openStream(void) {
+void ExtendedNewickAdmixtureTreeMonitor::openStream(bool reopen) {
     
     // open the stream to the file
     if (append)

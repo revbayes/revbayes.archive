@@ -35,22 +35,22 @@ CharacterDependentCladoBirthDeathProcess::CharacterDependentCladoBirthDeathProce
                                                                          const TypedDagNode<double> *rh,
                                                                          const std::string &cdt,
                                                                          const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
+    condition( cdt ),
+    num_taxa( tn.size() ),
+    changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
+    dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
+    partial_likelihoods( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2*mo->getValue().size(), 0) ) ),
+    extinction_probabilities( std::vector<std::vector<double> >( 500.0, std::vector<double>( mo->getValue().size(), 0) ) ),
+    num_states( mo->getValue().size() ),
+    use_cladogenetic_events( false ),
+    cladogenesis_matrix( NULL ),
     root_age( ra ),
     mu( mo ),
     pi( p ),
     Q( q ),
     rate( r ),
     rho( rh ),
-    cladogenesis_matrix( NULL ),
-    use_cladogenetic_events( false ),
-    condition( cdt ),
-    num_taxa( tn.size() ),
-    changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
-    dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
-    partial_likelihoods( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2*mo->getValue().size(), 0) ) ),
-    num_states( mo->getValue().size() ),
-    NUM_TIME_SLICES( 500.0 ),
-    extinction_probabilities( std::vector<std::vector<double> >( 500.0, std::vector<double>( mo->getValue().size(), 0) ) )
+    NUM_TIME_SLICES( 500.0 )
 {
     addParameter( mu );
     addParameter( pi );

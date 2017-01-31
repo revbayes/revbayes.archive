@@ -41,7 +41,7 @@ RevPtr<RevVariable> Func_writeNexus::execute( void )
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     RevBayesCore::NexusWriter fw( fn.getValue() );
-    fw.openStream();
+    fw.openStream(false);
 
     
 //    const AbstractCharacterData& ac = static_cast<const AbstractCharacterData&>( args[1].getVariable()->getRevObject() );

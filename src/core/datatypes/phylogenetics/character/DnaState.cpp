@@ -138,7 +138,7 @@ std::string DnaState::getDataType( void ) const
 }
 
 
-const std::string& DnaState::getStateLabels( void ) const
+std::string DnaState::getStateLabels( void ) const
 {
     
     static std::string labels = "ACGT";

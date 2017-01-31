@@ -34,7 +34,7 @@ std::string AminoAcidState::getDataType( void ) const
 }
 
 
-const std::string& AminoAcidState::getStateLabels( void ) const
+std::string AminoAcidState::getStateLabels( void ) const
 {
     
     static const std::string stateLabels = "ARNDCQEGHILKMFPSTWYV";

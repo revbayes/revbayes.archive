@@ -264,8 +264,6 @@ std::vector<Tree*>* NclReader::convertTreesFromNcl(void)
                 //                rbTree->fillNodeTimes();
                 //                rbTree->equalizeBranchLengths();
                 
-                rbTree->makeInternalNodesBifurcating(true);
-                
 				rbTreesFromFile->push_back( rbTree );
             }
         }
@@ -627,21 +625,65 @@ NonHomologousDiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatri
 }
 
 /** Create an object to hold aligned RNA data */
-HomologousDiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charblock)
-{
+HomologousDiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
+    
+    if ( charblock == NULL )
+        {
+        throw RbException("Trying to create an RNA matrix from a NULL pointer.");
+        }
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::rna )
-    {
+        {
+        std::cout << "Could not read in data matrix of type RNA because the nexus files says the type is:" << std::endl;
+        switch ( charblock->GetDataType() )
+            {
+            case 1:
+                std::cout << "Standard" << std::endl;
+                break;
+                
+            case 2:
+                std::cout << "DNA" << std::endl;
+                break;
+                
+            case 3:
+                std::cout << "RNA" << std::endl;
+                break;
+                
+            case 4:
+                std::cout << "Nucleotide" << std::endl;
+                break;
+                
+            case 5:
+                std::cout << "Protein" << std::endl;
+                break;
+                
+            case 6:
+                std::cout << "Continuous" << std::endl;
+                break;
+                
+            case 7:
+                std::cout << "Codon" << std::endl;
+                break;
+                
+            case 8:
+                std::cout << "Mixed" << std::endl;
+                break;
+                
+            default:
+                std::cout << "Unknown" << std::endl;
+                break;
+            }
         return NULL;
-    }
+        }
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
-    {
+        {
         charset.insert(i);
-    }
+        }
+    
     unsigned numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
@@ -652,7 +694,7 @@ HomologousDiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharact
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
-    {
+        {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
@@ -660,38 +702,41 @@ HomologousDiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharact
         std::vector<std::string> tokens;
         StringUtilities::stringSplit(tName, "|", tokens);
         
-        // allocate a vector of RNA states
-        DiscreteTaxonData<RnaState> dataVec = DiscreteTaxonData<RnaState>(tokens[0]);
+        // allocate a vector of DNA states
+        DiscreteTaxonData<RnaState> dataVec = DiscreteTaxonData<RnaState>( tokens[0] );
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
-        {
+            {
             // add the character state to the matrix
             RnaState rnaState;
+            bool isResolved = true;
             if ( charblock->IsGapState(origTaxIndex, *cit) == true )
-            {
-                rnaState.setGapState(true);
+                {
                 rnaState.setState("-");
-            }
+                rnaState.setGapState(true);
+                isResolved = false;
+                }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
-            {
+                {
                 rnaState.setState("?");
                 rnaState.setMissingState(true);
-            }
+                isResolved = false;
+                }
             else
-            {
+                {
                 rnaState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
                 for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
-                {
+                    {
                     rnaState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
+                    }
                 }
+            dataVec.addCharacter(rnaState, isResolved);
             }
-            dataVec.addCharacter( rnaState );
-        }
         
         // add sequence to character matrix
         cMat->addTaxonData( dataVec );
-    }
+        }
     
     setExcluded( charblock, cMat );
     
@@ -1847,7 +1892,11 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
     const NxsSimpleNode* rn = nTree.GetRootConst();
     
     // create a new tree root node
-    const std::string& name = rn->GetName();
+    std::string name = rn->GetName();
+    if ( rn->GetTaxonIndex() < tb->GetNumTaxonLabels() )
+    {
+        name = tb->GetTaxonLabel( rn->GetTaxonIndex() ).BlanksToUnderscores();
+    }
     TopologyNode* root = new TopologyNode(name);
     
     // create a map which holds for each node a map of name value pairs.
@@ -1868,9 +1917,6 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
     
     // initialize the topology by setting the root
     tau->setRoot(root, true);
-    
-    // trees with 2-degree root nodes should not be rerooted
-    tau->setRooted( root->getNumberOfChildren() == 2 || rooted);
 
     // finally set the branch lengths
     for ( size_t i = 0; i < nodes.size(); ++i )
@@ -1878,6 +1924,11 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
         tau->getNode(nodes[i]->getIndex()).setBranchLength( brlens[i] );
     }
     
+    tau->makeInternalNodesBifurcating(true);
+
+    // trees with 2-degree root nodes should not be rerooted
+    tau->setRooted( root->getNumberOfChildren() == 2 || rooted);
+
     return tau;
     
 }

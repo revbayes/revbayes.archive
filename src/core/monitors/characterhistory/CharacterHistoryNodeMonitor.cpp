@@ -195,7 +195,7 @@ void CharacterHistoryNodeMonitor::monitor(unsigned long gen) {
 
 
 /** open the file stream for printing */
-void CharacterHistoryNodeMonitor::openStream(void) {
+void CharacterHistoryNodeMonitor::openStream(bool reopen) {
     
     // open the stream to the file
     if (append)

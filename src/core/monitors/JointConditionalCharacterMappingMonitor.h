@@ -109,8 +109,8 @@ outStream(),
 filename( m.filename ),
 separator( m.separator ),
 append( m.append ),
-cdbdp( m.cdbdp ),
-tree( m.tree )
+tree( m.tree ),
+cdbdp( m.cdbdp )
 {
     
     if (m.outStream.is_open() == true )
@@ -221,11 +221,11 @@ void JointConditionalCharacterMappingMonitor<characterType>::monitor(unsigned lo
         
         
         // print ancestral states
-        const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
-        for (int i = 0; i < nds.size(); i++)
-        {
-            size_t node_index = nds[i]->getIndex();
-            
+//        const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
+//        for (int i = 0; i < nds.size(); i++)
+//        {
+//            size_t node_index = nds[i]->getIndex();
+//
 //            // start states
 //            if (withStartStates)
 //            {
@@ -252,7 +252,7 @@ void JointConditionalCharacterMappingMonitor<characterType>::monitor(unsigned lo
 //                    outStream << endStates[node_index][j].getStringValue();
 //                }
 //            }
-        }
+//        }
         outStream << std::endl;
     }
 }
@@ -291,12 +291,12 @@ void JointConditionalCharacterMappingMonitor<characterType>::printHeader()
     outStream << "Iteration";
     
     std::vector<TopologyNode*> nodes = tree->getValue().getNodes();
-    
+
     // iterate through all tree nodes and make header with node index
-    for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
-    {
-        TopologyNode* nd = nodes[i];
-        size_t node_index = nd->getIndex();
+//    for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
+//    {
+//        TopologyNode* nd = nodes[i];
+//        size_t node_index = nd->getIndex();
 //        if (withStartStates)
 //        {
 //            outStream << separator;
@@ -309,7 +309,7 @@ void JointConditionalCharacterMappingMonitor<characterType>::printHeader()
 //            outStream << separator;
 //            outStream << "end_" << node_index+1;
 //        }
-    }
+//    }
     outStream << std::endl;
 }
 

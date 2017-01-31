@@ -126,7 +126,7 @@ RevPtr<RevVariable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dy
     
     funcName += opCode[ operation ];
     Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args, false ).clone();
-    theFunction->processArguments( args, false );
+    theFunction->processArguments( args, !dynamic );
     
     RevPtr<RevVariable> theReturnValue = theFunction->execute();
     

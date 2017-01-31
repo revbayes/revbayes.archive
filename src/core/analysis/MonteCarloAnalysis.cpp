@@ -460,7 +460,7 @@ void MonteCarloAnalysis::resetReplicates( void )
         for (size_t j=0; j<10; ++j) rng->uniform01();
         
 
-        if ( i >= 0 && runs[i] != NULL )
+        if ( i > 0 && runs[i] != NULL )
         {
             runs[i]->redrawStartingValues();
         }

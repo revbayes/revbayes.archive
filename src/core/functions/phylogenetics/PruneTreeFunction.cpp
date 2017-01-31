@@ -12,11 +12,11 @@
 using namespace RevBayesCore;
 
 PruneTreeFunction::PruneTreeFunction(const TypedDagNode<Tree> *t,  std::set<Taxon> rt, std::set<Taxon> pt, bool pf) : TypedFunction<Tree>( new Tree() ),
-tau( t ),
-retainedTaxa( std::set<Taxon>() ),
-initRetainedTaxa( rt ),
-prunedTaxa( pt ),
-pruneFossils( pf )
+    pruneFossils( pf ),
+    prunedTaxa( pt ),
+    retainedTaxa( std::set<Taxon>() ),
+    initRetainedTaxa( rt ),
+    tau( t )
 {
     // add the lambda parameter as a parent
     addParameter( tau );

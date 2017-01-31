@@ -134,8 +134,9 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         
         // First we see if the function name corresponds to a user-defined variable
         // We can do this first because user-defined variables are not allowed to mask function names
+        // Skip if we're not in UserWorkspace, because functions can only be user-defined in UserWorkspace
         bool found = false;
-        if ( env.existsVariable( functionName ) )
+        if ( env.existsVariable( functionName ) && &env == &Workspace::userWorkspace() )
         {
             RevObject &theObject = env.getRevObject( functionName );
             
