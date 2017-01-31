@@ -11,7 +11,7 @@ using namespace RevBayesCore;
 StandardState::StandardState(size_t n) : DiscreteCharacterState( n ),
     labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" )
 {
-
+    labels = labels.substr(0, n);
 }
 
 
