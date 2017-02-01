@@ -22,6 +22,7 @@
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlBoolean.h"
 #include "RlRateGenerator.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "RnaState.h"
@@ -75,14 +76,14 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
 
     // move/proposal arguments
     double w        = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    double d        = static_cast<const Probability &>( lambda->getRevObject() ).getValue();
+//    double d        = static_cast<const Probability &>( lambda->getRevObject() ).getValue();
     std::string gt  = static_cast<const RlString &>( graph->getRevObject() ).getValue();
     std::string pt  = static_cast<const RlString &>( proposal->getRevObject() ).getValue();
 
     // move/proposal parameters
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
-    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* qmap_tdn                             = static_cast<const RateGenerator&>( qmap->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* qmap_tdn                     = static_cast<const RateGeneratorSequence&>( qmap->getRevObject() ).getDagNode();
 
     std::string mt  = ctmc_tdn->getValue().getDataType();
 
@@ -219,8 +220,8 @@ const MemberRules& RevLanguage::Move_CharacterHistory::getParameterRules(void) c
     {
 
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The PhyloCTMC variable.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateGenerator::getClassTypeSpec()                      , "Some rate-map.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , "", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateGeneratorSequence::getClassTypeSpec()                    , "Some rate-map.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+//        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , "", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
 
 //        std::vector<std::string> optionsType;
 //        optionsType.push_back( "Biogeo" );

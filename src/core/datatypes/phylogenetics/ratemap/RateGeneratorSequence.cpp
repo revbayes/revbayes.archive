@@ -34,10 +34,10 @@ RateGeneratorSequence::~RateGeneratorSequence(void)
     
 }
 
-void RateGeneratorSequence::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age) const
-{
-    calculateTransitionProbabilities(P, age, 0.0, 1.0);
-}
+//void RateGeneratorSequence::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age) const
+//{
+//    calculateTransitionProbabilities(P, age, 0.0, 1.0);
+//}
 
 
 
@@ -78,92 +78,5 @@ void RateGeneratorSequence::updateMap(void)
     }
 }
 
-
-//double RateGeneratorSequence::getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age) const
-//{
-//    size_t fromState = from[ to->getSiteIndex() ]->getState();
-//    size_t toState = to->getState();
-//    
-//    double rate = 0.0;
-//    const RateGenerator* rm;
-//    if (branchHeterogeneousRateMatrices)
-//    {
-//        rm = &heterogeneousRateMatrices[node.getIndex()];
-//    }
-//    else
-//    {
-//        rm = homogeneousRateMatrix;
-//    }
-//    
-//    rate = rm->getRate(fromState, toState, age, 1.0);
-//    
-//    if (branchHeterogeneousClockRates)
-//    {
-//        rate *= heterogeneousClockRates[node.getIndex()];
-//    }
-//    else
-//    {
-//        rate *= homogeneousClockRate;
-//    }
-//    
-//    return rate;
-//    
-//}
-//
-//double RateGeneratorSequence::getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age) const
-//{
-//    
-//    double rate = 0.0;
-//    const RateGenerator* rm;
-//    if (branchHeterogeneousRateMatrices)
-//    {
-//        rm = &heterogeneousRateMatrices[node.getIndex()];
-//    }
-//    else
-//    {
-//        rm = homogeneousRateMatrix;
-//    }
-//    
-//    rate = rm->getRate(from->getState(), to->getState(), age, 1.0);
-//    
-//    if (branchHeterogeneousClockRates)
-//    {
-//        rate *= heterogeneousClockRates[node.getIndex()];
-//    }
-//    else
-//    {
-//        rate *= homogeneousClockRate;
-//    }
-//    
-//    return rate;
-//}
-//
-//double RateGeneratorSequence::getSiteRate(const TopologyNode& node, size_t from, size_t to, size_t charIdx, double age) const
-//{
-//    
-//    double rate = 0.0;
-//    const RateGenerator* rm;
-//    if (branchHeterogeneousRateMatrices)
-//    {
-//        rm = &heterogeneousRateMatrices[node.getIndex()];
-//    }
-//    else
-//    {
-//        rm = homogeneousRateMatrix;
-//    }
-//    
-//    rate = rm->getRate(from, to, age, 1.0);
-//    
-//    if (branchHeterogeneousClockRates)
-//    {
-//        rate *= heterogeneousClockRates[node.getIndex()];
-//    }
-//    else
-//    {
-//        rate *= homogeneousClockRate;
-//    }
-//    
-//    return rate;
-//}
 
 

@@ -19,9 +19,9 @@ namespace RevBayesCore {
         RateGeneratorSequence_Biogeography&                       operator=(const RateGeneratorSequence_Biogeography& r);
         
         // virtual RateGeneratorSequence functions
-        void                                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
-        void                                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const;   //!< Calculate the transition matrixmatrix
-        void                                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate, size_t charIdx) const;   //!< Calculate the transition matrixmatrix
+//        void                                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrixmatrix
+//        void                                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate, size_t charIdx) const;   //!< Calculate the transition matrixmatrix
         RateGeneratorSequence_Biogeography*                       clone(void) const;
         double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate=1.0, double age=0.0) const;
         double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const;

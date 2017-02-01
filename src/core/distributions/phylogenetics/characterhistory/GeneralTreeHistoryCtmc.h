@@ -86,7 +86,7 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Typ
 {
     
     // initialize with default parameters
-    homogeneousRateGenerator    = new ConstantNode<RateGeneratorSequence>("rateGenerator", new RateGeneratorSequenceUsingMatrix( nSites, nChars ) );
+    homogeneousRateGenerator    = new ConstantNode<RateGeneratorSequence>("rateGenerator", new RateGeneratorSequenceUsingMatrix( nChars, nSites ) );
     heterogeneousRateGenerator  = NULL;
     rootFrequencies             = NULL;
     
@@ -426,8 +426,8 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathEnd(const Topolog
         double left_branch_rate  = this->getBranchRate( left_index );
         double right_branch_rate = this->getBranchRate( right_index );
         
-        rm.calculateTransitionProbabilities(leftTpMatrix, begin_age, node.getChild(0).getAge(), left_branch_rate);
-        rm.calculateTransitionProbabilities(rightTpMatrix, begin_age, node.getChild(1).getAge(), right_branch_rate);
+        rm.calculateTransitionProbabilities(begin_age, node.getChild(0).getAge(), left_branch_rate, leftTpMatrix);
+        rm.calculateTransitionProbabilities(begin_age, node.getChild(1).getAge(), right_branch_rate, rightTpMatrix);
         
         // for sampling probs
         const std::vector<CharacterEvent*>& leftChildState  = this->histories[left_index]->getChildCharacters();
@@ -644,7 +644,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
     {
         
         // sample next event time
-        double sr = rm.getSumOfRates(currState, counts) * branch_rate;
+        double sr = rm.getSumOfRates(currState, counts, t, branch_rate);
         dt = RbStatistics::Exponential::rv(sr, *GLOBAL_RNG);
         if (t - dt > end_age)
         {
@@ -655,7 +655,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
             bool found = false;
             size_t i;
             size_t s = 0;
-            for (i = 0; !found && i < this->num_sites; ++i)
+            for (i = 0; !found && i < this->num_sites; i++)
             {
                 evt->setSiteIndex(i);
                 for (s = 0; !found && s < this->num_states; ++s)
@@ -664,8 +664,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
                     if (s != currState[i]->getState())
                     {
                         evt->setState(s);
-                        // double r = rm.getRate(currState, evt, counts);
-                        double r = rm.getRate(currState[i]->getState(), evt->getState(), node.getAge(), branch_rate);
+                        double r = rm.getRate(currState[i]->getState(), evt->getState(), t, branch_rate);
                         
                         u -= r;
                         if (u <= 0.0)

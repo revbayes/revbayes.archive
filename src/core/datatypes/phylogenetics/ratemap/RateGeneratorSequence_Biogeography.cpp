@@ -100,7 +100,7 @@ RateGeneratorSequence_Biogeography& RateGeneratorSequence_Biogeography::operator
     return *this;
 }
 
-void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double r) const
+void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
 
     double branchLength = startAge - endAge;
@@ -111,8 +111,8 @@ void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(Transi
 //    if (node.isRoot())
 //        branchLength = node.getAge() * 5;
 
-    double expPart = exp( -( rm->getRate(1,0, startAge, r) + rm->getRate(0,1, startAge, r) ) * branchLength);
-    double p = rm->getRate(1,0, startAge, r) / (rm->getRate(1,0, startAge, r) + rm->getRate(0,1, startAge, r));
+    double expPart = exp( -( rm->getRate(1,0, startAge, rate) + rm->getRate(0,1, startAge, rate) ) * branchLength);
+    double p = rm->getRate(1,0, startAge, rate) / (rm->getRate(1,0, startAge, rate) + rm->getRate(0,1, startAge, rate));
     double q = 1.0 - p;
 
     P[0][0] = p + q * expPart;
@@ -120,6 +120,10 @@ void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(Transi
     P[1][0] = p - p * expPart;
     P[1][1] = q + p * expPart;
 }
+
+
+// @MJL: Fix this later 02/01/17
+/*
 
 void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double r, size_t charIdx) const
 {
@@ -200,6 +204,7 @@ void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(Transi
         }
     }
 }
+ */
 
 RateGeneratorSequence_Biogeography* RateGeneratorSequence_Biogeography::clone(void) const
 {
@@ -207,12 +212,12 @@ RateGeneratorSequence_Biogeography* RateGeneratorSequence_Biogeography::clone(vo
 }
 
 
-void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
-{
-    const RateGenerator* rm = rateMatrix;
-
-    rm->calculateTransitionProbabilities(age, 0, 1.0, P);
-}
+//void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
+//{
+//    const RateGenerator* rm = rateMatrix;
+//
+//    rm->calculateTransitionProbabilities(age, 0, 1.0, P);
+//}
 
 
 double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* count, double r, double age) const

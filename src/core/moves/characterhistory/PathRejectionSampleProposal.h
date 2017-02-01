@@ -191,7 +191,8 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     }
 
     // get sampling ratemap
-    const RateGenerator& rm = q_map_site->getValue();
+//    const RateGenerator& rm = q_map_site->getValue();
+    const RateGeneratorSequence& rm = q_map_sequence->getValue();
 
     // stepwise events
     double dt;
@@ -299,7 +300,9 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
         return 0.0;
     }
 
-    const RateGenerator& rm = q_map_site->getValue();
+//    const RateGenerator& rm = q_map_site->getValue();
+    const RateGeneratorSequence& rm = q_map_sequence->getValue();
+    
 
     // clear characters
     BranchHistory* bh = &p->getHistory(*node);

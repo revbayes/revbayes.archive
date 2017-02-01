@@ -74,16 +74,16 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGeneratorSeque
 }
 
 
-void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
-{
-    const RateGenerator* rm = rateMatrix;
+//void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
+//{
+//    const RateGenerator* rm = rateMatrix;
+//
+//    rm->calculateTransitionProbabilities(age, 0, 1.0, P);
+//}
 
-    rm->calculateTransitionProbabilities(age, 0, 1.0, P);
-}
 
 
-
-void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double startAge, double endAge, double rate) const
+void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     const RateGenerator* rm = rateMatrix;
 
@@ -97,7 +97,7 @@ RateGeneratorSequenceUsingMatrix* RateGeneratorSequenceUsingMatrix::clone(void) 
 }
 
 
-double RateGeneratorSequenceUsingMatrix::getRate(size_t from, size_t to, double rate, double age) const
+double RateGeneratorSequenceUsingMatrix::getRate(size_t from, size_t to, double age, double rate) const
 {
 
     const RateGenerator* rm = rateMatrix;
@@ -109,7 +109,7 @@ double RateGeneratorSequenceUsingMatrix::getRate(size_t from, size_t to, double 
 }
 
 
-double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate, double age) const
+double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double age, double rate) const
 {
     size_t from_state = from[ to->getSiteIndex() ]->getState();
     size_t to_state = to->getState();
@@ -124,7 +124,7 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
 
 
 
-double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate, double age) const
+double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age, double rate) const
 {
     size_t from_state = from[ to->getSiteIndex() ]->getState();
     size_t to_state = to->getState();
@@ -137,7 +137,7 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
 
 }
 
-double RateGeneratorSequenceUsingMatrix::getSiteRate(CharacterEvent* from, CharacterEvent* to, double r, double age) const
+double RateGeneratorSequenceUsingMatrix::getSiteRate(CharacterEvent* from, CharacterEvent* to, double age, double r) const
 {
 
     double rate = 0.0;
@@ -148,14 +148,16 @@ double RateGeneratorSequenceUsingMatrix::getSiteRate(CharacterEvent* from, Chara
     return rate;
 }
 
-double RateGeneratorSequenceUsingMatrix::getSiteRate(size_t from, size_t to, size_t charIdx, double r, double age) const
+double RateGeneratorSequenceUsingMatrix::getSiteRate(size_t from, size_t to, size_t charIdx, double age, double r) const
 {
 
     double rate = 0.0;
     const RateGenerator* rm = rateMatrix;
 
-    rate = rm->getRate(from, to, rate, r);
+    rate = rm->getRate(from, to, age, r);
 
+    throw(RbException("MJL: Will need to be fixed depending on how site rates are used."));
+    
     return rate;
 }
 
@@ -171,7 +173,7 @@ std::vector<double> RateGeneratorSequenceUsingMatrix::getStationaryFrequencies(v
 
 }
 
-double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, std::vector<size_t> counts, double rate, double age) const
+double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, std::vector<size_t> counts, double age, double rate) const
 {
 
     // get characters in each state
@@ -201,7 +203,7 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
     return sum;
 }
 
-double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, double rate, double age) const
+double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, double age, double rate) const
 {
 
     std::vector<size_t> counts = std::vector<size_t>(this->numStates, 0);
@@ -211,7 +213,7 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
         counts[ from[i]->getState() ] += 1;
     }
 
-    return getSumOfRates( from, counts, rate, age);
+    return getSumOfRates( from, counts, age, rate);
 }
 
 
