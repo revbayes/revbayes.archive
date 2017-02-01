@@ -19,7 +19,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, size_t nSites );
+        PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, size_t nSites);
         virtual                                                            ~PhyloBrownianProcessREML(void);                                                              //!< Virtual destructor
         
         // public member functions
