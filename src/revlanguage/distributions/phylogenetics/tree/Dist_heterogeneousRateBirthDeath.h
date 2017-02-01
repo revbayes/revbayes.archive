@@ -46,6 +46,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       extinction;
         RevPtr<const RevVariable>                       event_rate;
         RevPtr<const RevVariable>                       rho;
+        RevPtr<const RevVariable>                       condition;                                                                              //!< The condition of the process (none/survival/#Taxa)
         RevPtr<const RevVariable>                       taxa;
     
     };

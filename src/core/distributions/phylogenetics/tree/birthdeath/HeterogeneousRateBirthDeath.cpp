@@ -14,7 +14,7 @@
 
 using namespace RevBayesCore;
 
-HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<double> *a, const TypedDagNode<int> *rs, const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *e, const TypedDagNode<double > *ev, const TypedDagNode< double > *r, const std::vector<Taxon> &n) : AbstractCharacterHistoryBirthDeathProcess(),
+HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<double> *a, const TypedDagNode<int> *rs, const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *e, const TypedDagNode<double > *ev, const TypedDagNode< double > *r, const std::string &cdt, const std::vector<Taxon> &n) : AbstractCharacterHistoryBirthDeathProcess(),
     root_age( a ),
     root_state( rs ),
     speciation( s ),
@@ -22,6 +22,7 @@ HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<dou
     event_rate( ev ),
     rho( r ),
     branch_histories( NULL, 1, speciation->getValue().size() ),
+    condition( cdt ),
     taxa( n ),
     activeLikelihood( std::vector<size_t>(2*n.size()-1, 0) ),
     changed_nodes( std::vector<bool>(2*n.size()-1, false) ),
@@ -228,6 +229,7 @@ double HeterogeneousRateBirthDeath::computeLnProbability( void )
     {
         return RbConstants::Double::neginf;
     }
+
     
     return lnProb + logTreeTopologyProb;
 }
@@ -397,6 +399,12 @@ double HeterogeneousRateBirthDeath::computeRootLikelihood( void )
     std::vector< double > rightStates = nodeStates[right_index][activeLikelihood[right_index]];
     
     double prob = leftStates[num_rate_categories]*rightStates[num_rate_categories];
+    
+    if ( condition == "survival" )
+    {
+        prob = - 2*log( leftStates[ root_state->getValue()-1 ] );
+        //        lnProbTimes = - log( pSurvival(0,present_time) );
+    }
     
     return log(prob) + totalScaling;
 }
