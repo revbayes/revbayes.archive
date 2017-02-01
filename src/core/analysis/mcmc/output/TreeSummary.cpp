@@ -1674,11 +1674,6 @@ void TreeSummary::mapContinuous(Tree &tree, const std::string &n, size_t paramIn
                 entries.push_back( state );
                 
             } // end if the sampled tree contained this clade
-            else
-            {
-                sample_root.containsClade(node, true);
-                throw RbException("Clade not found!");
-            }
             
         } // end loop over all nodes in the tree
         
