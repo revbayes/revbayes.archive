@@ -493,7 +493,7 @@ const TypeSpec& Dist_phyloCTMCDASequence::getClassTypeSpec(void)
 std::string Dist_phyloCTMCDASequence::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "PhyloCTMCDASiteIID";
+    std::string d_name = "PhyloCTMCDASequence";
     
     return d_name;
 }
