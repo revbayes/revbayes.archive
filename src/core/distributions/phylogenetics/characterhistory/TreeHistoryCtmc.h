@@ -3,6 +3,7 @@
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "BranchHistory.h"
+#include "ConstantNode.h"
 #include "DiscreteTaxonData.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "DiscreteCharacterState.h"
@@ -38,7 +39,7 @@ namespace RevBayesCore {
         virtual void                                                        initializeTipValues(void) = 0;
         void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<int> &rv) const;     //!< Map the member methods to internal function calls
         void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
-        virtual double                                                      getBranchRate(size_t idx) const = 0;
+        virtual double                                                      getBranchRate(size_t idx) const;
         virtual std::vector<double>                                         getRootFrequencies(void) const = 0;
         virtual bool                                                        samplePathStart(const TopologyNode& node) = 0;
         virtual bool                                                        samplePathEnd(const TopologyNode& node) = 0;
@@ -58,6 +59,12 @@ namespace RevBayesCore {
         void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);           //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                setTipProbs(const HomologousCharacterData* tp);
 
+        // model parameters
+        void                                                                setClockRate(const TypedDagNode< double > *r);
+        void                                                                setClockRate(const TypedDagNode< RbVector< double > > *r);
+        void                                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
+
+        
         virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd);
         virtual const std::vector<std::vector<double> >&                    getTipProbs(void);
 
@@ -109,10 +116,18 @@ namespace RevBayesCore {
         bool                                                                treatUnknownAsGap;
         bool                                                                treatAmbiguousAsGaps;
         bool                                                                tipsInitialized;
+        bool                                                                branchHeterogeneousClockRates;
 
         charType                                                            template_state;                                 //!< Template state used for ancestral state estimation. This makes sure that the state labels are preserved.
 
     private:
+        
+        // members
+        const TypedDagNode< double >*                       homogeneousClockRate;
+        const TypedDagNode< RbVector< double > >*           heterogeneousClockRates;
+        const TypedDagNode< RbVector< double > >*           siteRates;
+        const TypedDagNode< RbVector< double > >*           siteRatesProbs;
+        
         // private methods
         void                                                                fillLikelihoodVector(const TopologyNode &n);
         void                                                                initializeHistoriesVector(void);
@@ -140,10 +155,25 @@ RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TypedDagNode<Tree
     tipsInitialized( false ),
     template_state()
 {
+    // initialize with default parameters
+    homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
+    heterogeneousClockRates     = NULL;
+    siteRates                   = NULL;
+    siteRatesProbs              = NULL;
+    
+    // flags specifying which model variants we use
+    branchHeterogeneousClockRates               = false;
+    
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     this->addParameter( tau );
+    this->addParameter( homogeneousClockRate );
+    this->addParameter( heterogeneousClockRates );
+    this->addParameter( siteRates );
+    this->addParameter( siteRatesProbs );
+
+
 
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -174,6 +204,16 @@ RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TreeHistoryCtmc &
     tipsInitialized( n.tipsInitialized ),
     template_state( n.template_state )
 {
+    
+    homogeneousClockRate        = n.homogeneousClockRate;
+    heterogeneousClockRates     = n.heterogeneousClockRates;
+    siteRates                   = n.siteRates;
+    siteRatesProbs              = n.siteRatesProbs;
+    
+    // flags specifying which model variants we use
+    branchHeterogeneousClockRates               = n.branchHeterogeneousClockRates;
+
+    
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
 
@@ -400,6 +440,25 @@ void RevBayesCore::TreeHistoryCtmc<charType>::flagNodeDirty( const RevBayesCore:
 }
 
 template<class charType>
+double RevBayesCore::TreeHistoryCtmc<charType>::getBranchRate(size_t nodeIdx) const
+{
+    
+    // get the clock rate for the branch
+    double rate;
+    if ( this->branchHeterogeneousClockRates == true )
+    {
+        rate = this->heterogeneousClockRates->getValue()[nodeIdx];
+    }
+    else
+    {
+        rate = this->homogeneousClockRate->getValue();
+    }
+    
+    return rate;
+}
+
+
+template<class charType>
 const RevBayesCore::BranchHistory&  RevBayesCore::TreeHistoryCtmc<charType>::getHistory(const TopologyNode& nd) const
 {
     return histories[nd.getIndex()];
@@ -531,6 +590,70 @@ void RevBayesCore::TreeHistoryCtmc<charType>::restoreSpecialization( DagNode* af
 }
 
 template<class charType>
+void RevBayesCore::TreeHistoryCtmc<charType>::setClockRate(const TypedDagNode< double > *r)
+{
+    
+    // remove the old parameter first
+    if ( homogeneousClockRate != NULL )
+    {
+        this->removeParameter( homogeneousClockRate );
+        homogeneousClockRate = NULL;
+    }
+    else // heterogeneousClockRate != NULL
+    {
+        this->removeParameter( heterogeneousClockRates );
+        heterogeneousClockRates = NULL;
+    }
+    
+    // set the value
+    branchHeterogeneousClockRates = false;
+    homogeneousClockRate = r;
+    
+    // add the new parameter
+    this->addParameter( homogeneousClockRate );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+
+template<class charType>
+void RevBayesCore::TreeHistoryCtmc<charType>::setClockRate(const TypedDagNode< RbVector< double > > *r)
+{
+    
+    // remove the old parameter first
+    if ( homogeneousClockRate != NULL )
+    {
+        this->removeParameter( homogeneousClockRate );
+        homogeneousClockRate = NULL;
+    }
+    else // heterogeneousClockRate != NULL
+    {
+        this->removeParameter( heterogeneousClockRates );
+        heterogeneousClockRates = NULL;
+    }
+    
+    // set the value
+    branchHeterogeneousClockRates = true;
+    heterogeneousClockRates = r;
+    
+    // add the new parameter
+    this->addParameter( heterogeneousClockRates );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+template<class charType>
 void RevBayesCore::TreeHistoryCtmc<charType>::setHistory(const BranchHistory& bh, const TopologyNode& nd)
 {
     // free memory
@@ -552,6 +675,45 @@ void RevBayesCore::TreeHistoryCtmc<charType>::setHistories(const std::vector<Bra
     }
 
 }
+
+
+template<class charType>
+void RevBayesCore::TreeHistoryCtmc<charType>::setSiteRates(const TypedDagNode< RbVector< double > > *r)
+{
+    
+    // remove the old parameter first
+    if ( siteRates != NULL )
+    {
+        this->removeParameter( siteRates );
+        siteRates = NULL;
+    }
+    
+    if ( r != NULL )
+    {
+        // set the value
+        siteRates = r;
+        this->num_site_rates = r->getValue().size();
+        //        this->resizeLikelihoodVectors();
+    }
+    else
+    {
+        // set the value
+        siteRates = NULL;
+        this->num_site_rates = 1;
+        //        this->resizeLikelihoodVectors();
+        
+    }
+    
+    // add the new parameter
+    this->addParameter( siteRates );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+}
+
 
 
 template<class charType>
@@ -658,13 +820,25 @@ void RevBayesCore::TreeHistoryCtmc<charType>::simulate(void)
 template<class charType>
 void RevBayesCore::TreeHistoryCtmc<charType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
 
-    // we only have the topology here as the parameter
     if (oldP == tau)
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
         tau = static_cast<const TypedDagNode<Tree>* >( newP );
         tau->getValue().getTreeChangeEventHandler().addListener( this );
     }
+    else if (oldP == siteRates)
+    {
+        siteRates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+    }
+    else if (oldP == homogeneousClockRate)
+    {
+        homogeneousClockRate = static_cast<const TypedDagNode< double >* >( newP );
+    }
+    else if (oldP == heterogeneousClockRates)
+    {
+        heterogeneousClockRates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+    }
+
 
 }
 

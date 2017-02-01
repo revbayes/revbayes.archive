@@ -30,7 +30,7 @@ namespace RevBayesCore {
         virtual double                      getSiteRate(CharacterEvent* from, CharacterEvent* to, double rate=1.0, double age=0.0) const;
         virtual double                      getSiteRate(size_t from, size_t to, size_t charIdx=0, double rate=1.0, double age=0.0) const;
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, double rate=1.0, double age=0.0) const;
-        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double rate=1.0, double age=0.0) const;
+        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, std::vector<size_t> counts, double rate=1.0, double age=0.0) const;
         
         void                                setRateMatrix(const RateGenerator *rm);
         virtual void                        updateMap(void);
