@@ -159,6 +159,18 @@ double RateGeneratorSequenceUsingMatrix::getSiteRate(size_t from, size_t to, siz
     return rate;
 }
 
+std::vector<double> RateGeneratorSequenceUsingMatrix::getStationaryFrequencies(void) const
+{
+    const RateMatrix* rm = static_cast<RateMatrix*>(rateMatrix);
+    if (rm != NULL) {
+       return rm->getStationaryFrequencies();
+    } else {
+        // @MJL: Need to come up with a good way to manage stationary frequencies for e.g. biogeo process...
+        throw(RbException("Model needs stationary frequencies!"));
+    }
+
+}
+
 double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, std::vector<size_t> counts, double rate, double age) const
 {
 

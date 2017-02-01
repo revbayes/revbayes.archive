@@ -135,6 +135,7 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>* RevBayesCore::GeneralTreeHistory
 template<class charType>
 std::vector<size_t> RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeCounts(const std::vector<CharacterEvent*>& s)
 {
+    
     std::vector<size_t> counts(this->num_states, 0);
     
     for (size_t i = 0; i < s.size(); i++)
@@ -336,7 +337,7 @@ std::vector<double> RevBayesCore::GeneralTreeHistoryCtmc<charType>::getRootFrequ
     }
     else
     {
-        const RateMatrix *rm = dynamic_cast<const RateMatrix *>( &homogeneousRateGenerator->getValue() );
+        const RateGeneratorSequence *rm = dynamic_cast<const RateGeneratorSequence *>( &homogeneousRateGenerator->getValue() );
         if ( rm != NULL )
         {
             return rm->getStationaryFrequencies();
@@ -652,7 +653,8 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
             double u = GLOBAL_RNG->uniform01() * sr;
             
             bool found = false;
-            size_t i, s = 0;
+            size_t i;
+            size_t s = 0;
             for (i = 0; !found && i < this->num_sites; ++i)
             {
                 evt->setSiteIndex(i);
@@ -662,7 +664,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
                     if (s != currState[i]->getState())
                     {
                         evt->setState(s);
-                        //                        double r = rm.getRate(currState, evt, counts);
+                        // double r = rm.getRate(currState, evt, counts);
                         double r = rm.getRate(currState[i]->getState(), evt->getState(), node.getAge(), branch_rate);
                         
                         u -= r;

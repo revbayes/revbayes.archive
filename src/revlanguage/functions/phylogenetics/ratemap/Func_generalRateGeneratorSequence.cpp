@@ -46,8 +46,9 @@ RevBayesCore::TypedFunction<RevBayesCore::RateGeneratorSequence>* Func_generalRa
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    unsigned nc = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
     size_t ns = rm->getValue().getNumberOfStates();
+    unsigned nc = static_cast<const Natural&>( this->args[1].getVariable()->getRevObject() ).getValue();
+    
 
     RevBayesCore::GeneralRateGeneratorSequenceFunction* f = new RevBayesCore::GeneralRateGeneratorSequenceFunction(ns, nc);
     f->setRateMatrix(rm);
