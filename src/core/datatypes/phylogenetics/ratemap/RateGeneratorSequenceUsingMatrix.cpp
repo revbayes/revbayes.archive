@@ -159,23 +159,19 @@ double RateGeneratorSequenceUsingMatrix::getSiteRate(size_t from, size_t to, siz
     return rate;
 }
 
-double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double rate, double age) const
+double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, std::vector<size_t> counts, double rate, double age) const
 {
 
     // get characters in each state
-    if (counts == NULL)
+    if (counts.size()==0)
     {
-
-        // need dynamic allocation
-        unsigned tmpCounts[20] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-        counts = tmpCounts;
+        counts = std::vector<size_t>(this->numStates, 0);
         for (size_t i = 0; i < from.size(); i++)
         {
             counts[ from[i]->getState() ] += 1;
         }
 
     }
-
 
     // get rate matrix
     const RateGenerator* rm = rateMatrix;
@@ -196,12 +192,8 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
 double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, double rate, double age) const
 {
 
-    // need dynamic allocation
-    unsigned counts[20] = { 0,0,0,0,0,
-        0,0,0,0,0,
-        0,0,0,0,0,
-        0,0,0,0,0  };
-
+    std::vector<size_t> counts = std::vector<size_t>(this->numStates, 0);
+    
     for (size_t i = 0; i < from.size(); i++)
     {
         counts[ from[i]->getState() ] += 1;

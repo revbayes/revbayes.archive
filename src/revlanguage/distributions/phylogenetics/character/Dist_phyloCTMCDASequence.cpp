@@ -73,7 +73,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::DnaState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::DnaState>(tau, nStates, nChars);
 
         RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
-        dist->setRateGeneratorSequence( rm );
+        dist->setRateGenerator( rm );
         
         d = dist;
     }
@@ -82,7 +82,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState>(tau, nStates, nChars);
 
         RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
-        dist->setRateGeneratorSequence( rm );
+        dist->setRateGenerator( rm );
 
         d = dist;
     }
@@ -91,7 +91,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState>(tau, nStates, nChars);
 
         RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
-        dist->setRateGeneratorSequence( rm );
+        dist->setRateGenerator( rm );
 
         d = dist;
     }
@@ -100,7 +100,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState>(tau, nStates, nChars);
 
         RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
-        dist->setRateGeneratorSequence( rm );
+        dist->setRateGenerator( rm );
 
         d = dist;
     }
@@ -116,11 +116,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
 
         // (const TypedDagNode< treeType > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool forbidExt=true, bool useClado=true)
-        RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState> *dist = new RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState>(tau, nStates, nChars, false, fe, uc);
+        RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState> *dist = new RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState>(tau, nStates, nChars, false, fe);
+        
+//        const TypedDagNode< Tree > *t, size_t nChars, size_t nSites, bool useAmbigChar=false
 
         RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
-        dist->setRateGeneratorSequence( rm );
-        dist->setCladogenicStateFrequencies( csf );
+//        dist->setRateGenerator( rm );
+        dist->setCladogeneticStateProbabilities( csf );
 
         d = dist;
     }

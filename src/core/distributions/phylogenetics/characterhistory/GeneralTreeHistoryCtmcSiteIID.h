@@ -31,7 +31,6 @@ namespace RevBayesCore {
         GeneralTreeHistoryCtmcSiteIID*                      clone(void) const;                                                           //!< Create an independent clone
         void                                                initializeTipValues(void);
         void                                                drawInitValue(void);
-        double                                              getBranchRate(size_t idx) const;
         std::vector<double>                                 getRootFrequencies(void) const;
         void                                                redrawValue(void);
         virtual void                                        simulate(void);
@@ -40,13 +39,10 @@ namespace RevBayesCore {
         bool                                                samplePathEnd(const TopologyNode& node);
         bool                                                samplePathHistory(const TopologyNode& node);
 
-        void                                                setClockRate(const TypedDagNode< double > *r);
-        void                                                setClockRate(const TypedDagNode< RbVector< double > > *r);
-        void                                                setPInv(const TypedDagNode< double > *);
         void                                                setRateGenerator(const TypedDagNode< RateGenerator > *rm);
         void                                                setRateGenerator(const TypedDagNode< RbVector< RateGenerator > > *rm);
+        void                                                setPInv(const TypedDagNode< double > *);
         void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
-        void                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
 
     protected:
 
@@ -63,17 +59,13 @@ namespace RevBayesCore {
     private:
 
         // members
-        const TypedDagNode< double >*                       homogeneousClockRate;
-        const TypedDagNode< RbVector< double > >*           heterogeneousClockRates;
         const TypedDagNode< RateGenerator >*                homogeneousRateGenerator;
         const TypedDagNode< RbVector< RateGenerator > >*    heterogeneousRateGenerator;
         const TypedDagNode< RbVector< double > >*           rootFrequencies;
-        const TypedDagNode< RbVector< double > >*           siteRates;
-        const TypedDagNode< RbVector< double > >*           siteRatesProbs;
         const TypedDagNode< double >*                       pInv;
+        
 
         // flags specifying which model variants we use
-        bool                                                branchHeterogeneousClockRates;
         bool                                                branchHeterogeneousSubstitutionMatrices;
 
         virtual void                                        simulate(const TopologyNode& node, BranchHistory* bh, std::vector< DiscreteTaxonData< charType > >& taxa);
@@ -95,31 +87,22 @@ RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::GeneralTreeHistoryCtmcSit
 {
 
     // initialize with default parameters
-    homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
-    heterogeneousClockRates     = NULL;
     homogeneousRateGenerator    = new ConstantNode<RateGenerator>("rateGenerator", new RateMatrix_JC( nChars ) );
     heterogeneousRateGenerator  = NULL;
-    rootFrequencies             = NULL;
-    siteRates                   = NULL;
-    siteRatesProbs              = NULL;
     pInv                        = new ConstantNode<double>("pInv", new double(0.0) );
-
+    rootFrequencies             = NULL;
+    
 
     // flags specifying which model variants we use
-    branchHeterogeneousClockRates               = false;
     branchHeterogeneousSubstitutionMatrices     = false;
 
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     this->addParameter( tau );
-    this->addParameter( homogeneousClockRate );
-    this->addParameter( heterogeneousClockRates );
     this->addParameter( homogeneousRateGenerator );
     this->addParameter( heterogeneousRateGenerator );
     this->addParameter( rootFrequencies );
-    this->addParameter( siteRates );
-    this->addParameter( siteRatesProbs );
     this->addParameter( pInv );
     
 }
@@ -129,19 +112,12 @@ template<class charType>
 RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::GeneralTreeHistoryCtmcSiteIID(const GeneralTreeHistoryCtmcSiteIID &d) : TreeHistoryCtmc<charType>( d )
 {
     // initialize with default parameters
-    homogeneousClockRate        = d.homogeneousClockRate;
-    heterogeneousClockRates     = d.heterogeneousClockRates;
     homogeneousRateGenerator    = d.homogeneousRateGenerator;
     heterogeneousRateGenerator  = d.heterogeneousRateGenerator;
     rootFrequencies             = d.rootFrequencies;
-
-    siteRates                   = d.siteRates;
-    siteRatesProbs              = d.siteRatesProbs;
     pInv                        = d.pInv;
-
-
+    
     // flags specifying which model variants we use
-    branchHeterogeneousClockRates               = d.branchHeterogeneousClockRates;
     branchHeterogeneousSubstitutionMatrices     = d.branchHeterogeneousSubstitutionMatrices;
 
 }
@@ -210,7 +186,7 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
     }
 
     size_t node_index = node.getIndex();
-    double branch_rate = getBranchRate(node_index);
+    double branch_rate = this->getBranchRate(node_index);
     const RateGenerator& rm = homogeneousRateGenerator->getValue();
 
     // get the branch history
@@ -378,25 +354,6 @@ std::vector<double> RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::getRo
 
 }
 
-
-template<class charType>
-double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::getBranchRate(size_t nodeIdx) const
-{
-
-    // get the clock rate for the branch
-    double rate;
-    if ( this->branchHeterogeneousClockRates == true )
-    {
-        rate = this->heterogeneousClockRates->getValue()[nodeIdx];
-    }
-    else
-    {
-        rate = this->homogeneousClockRate->getValue();
-    }
-
-    return rate;
-}
-
 template<class charType>
 void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::initializeTipValues( void )
 {
@@ -469,8 +426,8 @@ bool RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::samplePathEnd(const 
         size_t left_index  = node.getChild(0).getIndex();
         size_t right_index = node.getChild(1).getIndex();
 
-        double left_branch_rate  = getBranchRate( left_index );
-        double right_branch_rate = getBranchRate( right_index );
+        double left_branch_rate  = this->getBranchRate( left_index );
+        double right_branch_rate = this->getBranchRate( right_index );
 
         rm.calculateTransitionProbabilities(begin_age, node.getChild(0).getAge(), left_branch_rate,  leftTpMatrix);
         rm.calculateTransitionProbabilities(begin_age, node.getChild(0).getAge(), right_branch_rate, rightTpMatrix);
@@ -564,70 +521,6 @@ bool RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::samplePathStart(cons
     return true;
 }
 
-
-template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::setClockRate(const TypedDagNode< double > *r)
-{
-
-    // remove the old parameter first
-    if ( homogeneousClockRate != NULL )
-    {
-        this->removeParameter( homogeneousClockRate );
-        homogeneousClockRate = NULL;
-    }
-    else // heterogeneousClockRate != NULL
-    {
-        this->removeParameter( heterogeneousClockRates );
-        heterogeneousClockRates = NULL;
-    }
-
-    // set the value
-    branchHeterogeneousClockRates = false;
-    homogeneousClockRate = r;
-
-    // add the new parameter
-    this->addParameter( homogeneousClockRate );
-
-    // redraw the current value
-    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
-    {
-        this->redrawValue();
-    }
-
-}
-
-
-
-template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::setClockRate(const TypedDagNode< RbVector< double > > *r)
-{
-
-    // remove the old parameter first
-    if ( homogeneousClockRate != NULL )
-    {
-        this->removeParameter( homogeneousClockRate );
-        homogeneousClockRate = NULL;
-    }
-    else // heterogeneousClockRate != NULL
-    {
-        this->removeParameter( heterogeneousClockRates );
-        heterogeneousClockRates = NULL;
-    }
-
-    // set the value
-    branchHeterogeneousClockRates = true;
-    heterogeneousClockRates = r;
-
-    // add the new parameter
-    this->addParameter( heterogeneousClockRates );
-
-    // redraw the current value
-    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
-    {
-        this->redrawValue();
-    }
-
-}
 
 
 template<class charType>
@@ -751,43 +644,6 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::setRootFrequencies(c
 }
 
 
-template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::setSiteRates(const TypedDagNode< RbVector< double > > *r)
-{
-
-    // remove the old parameter first
-    if ( siteRates != NULL )
-    {
-        this->removeParameter( siteRates );
-        siteRates = NULL;
-    }
-
-    if ( r != NULL )
-    {
-        // set the value
-        siteRates = r;
-        this->num_site_rates = r->getValue().size();
-//        this->resizeLikelihoodVectors();
-    }
-    else
-    {
-        // set the value
-        siteRates = NULL;
-        this->num_site_rates = 1;
-//        this->resizeLikelihoodVectors();
-
-    }
-
-    // add the new parameter
-    this->addParameter( siteRates );
-
-    // redraw the current value
-    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
-    {
-        this->redrawValue();
-    }
-}
-
 
 template<class charType>
 void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulate(void)
@@ -801,7 +657,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulateHistory(cons
 {
     
     size_t branch_index = node.getIndex();
-    double branch_rate = getBranchRate( branch_index );
+    double branch_rate = this->getBranchRate( branch_index );
     const RateGenerator& rm = homogeneousRateGenerator->getValue();
 
     // get the start and end times
@@ -977,18 +833,6 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::swapParameterInterna
     else if (oldP == rootFrequencies)
     {
         rootFrequencies = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
-    }
-    else if (oldP == siteRates)
-    {
-        siteRates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
-    }
-    else if (oldP == homogeneousClockRate)
-    {
-        homogeneousClockRate = static_cast<const TypedDagNode< double >* >( newP );
-    }
-    else if (oldP == heterogeneousClockRates)
-    {
-        heterogeneousClockRates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else
     {

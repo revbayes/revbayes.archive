@@ -174,7 +174,9 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
     else if (infoStr=="clado_state")
     {
         BiogeographicTreeHistoryCtmc<charType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType>* >(p);
-        int cladoState = q->getCladogenicState(*n);
+        // @MJL: fix this
+//        int cladoState = q->getCladogenicState(*n);
+        int cladoState = 0;
 
         if (cladoState == BiogeographicCladoEvent::SYMPATRY_NARROW)
             ss << "n";
@@ -191,7 +193,9 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
     else if (infoStr=="bud_state")
     {
         BiogeographicTreeHistoryCtmc<charType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType>* >(p);
-        int budState = (q)->getBuddingState(*n);
+        // @MJL: fix this
+//        int budState = (q)->getBuddingState(*n);
+        int budState = 0;
 
         ss << ( budState == 1 ? n->getIndex() : n->getParent().getChild(1).getIndex() );
     }
@@ -433,7 +437,8 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCladoF
     int cladoCount = 0;
     for (size_t i = 0; i < nds.size(); i++)
     {
-        if (!nds[i]->isTip() && state == q->getCladogenicState(nds[i]->getChild(0)))
+        // @MJL: fix this
+//        if (!nds[i]->isTip() && state == q->getCladogenicState(nds[i]->getChild(0)))
             cladoCount++;
     }
     ss << cladoCount;
@@ -447,7 +452,10 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCladoS
 
     TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
     BiogeographicTreeHistoryCtmc<charType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType>* >(p);
-    int cladoState = q->getCladogenicState(*nd);
+    
+    // @MJL: fix this
+//    int cladoState = q->getCladogenicState(*nd);
+    int cladoState = 0;
     ss << cladoState;
 
 //    std::string cladoStr = "";
