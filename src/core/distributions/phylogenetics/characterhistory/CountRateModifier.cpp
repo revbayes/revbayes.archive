@@ -34,7 +34,7 @@ CountRateModifier::CountRateModifier(const CountRateModifier& g)
     }
 }
 
-double CountRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double CountRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
 {
     double r = 1.0;
     
@@ -47,22 +47,22 @@ double CountRateModifier::computeRateModifier(std::vector<CharacterEvent *> curr
     return r;
 }
 
-double CountRateModifier::computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double CountRateModifier::computeRateMultiplier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
 {
-    return computeRateModifier(currState, newState, age);
+    return computeRateMultiplier(currState, newState, age);
 }
 
-double CountRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
+double CountRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
 {
-    return computeRateModifier(currState, newState, 0.0);
+    return computeRateMultiplier(currState, newState, 0.0);
 }
 
-double CountRateModifier::computeSiteRateModifier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
+double CountRateModifier::computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
 {
     return 1.0;
 }
 
-double CountRateModifier::computeSiteRateModifier(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx, double age)
+double CountRateModifier::computeSiteRateMultiplier(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx, double age)
 {
     return 1.0;
 }

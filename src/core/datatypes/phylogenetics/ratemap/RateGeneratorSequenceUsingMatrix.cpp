@@ -102,6 +102,7 @@ double RateGeneratorSequenceUsingMatrix::getRate(size_t from, size_t to, double 
 
     const RateGenerator* rm = rateMatrix;
 
+    // no rate modifiers applied (per-site)
     double r = rm->getRate(from, to, age, rate);
 
     return r;
@@ -117,6 +118,11 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
     const RateGenerator* rm = rateMatrix;
 
     double r = rm->getRate(from_state, to_state, age, rate);
+    
+    for (size_t i = 0; i < rateModifiers->size(); i++)
+    {
+        r *= (*rateModifiers)[i].computeRateMultiplier(from, to);
+    }
 
     return r;
 
@@ -128,11 +134,16 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
 {
     size_t from_state = from[ to->getSiteIndex() ]->getState();
     size_t to_state = to->getState();
-
+    
     const RateGenerator* rm = rateMatrix;
-
+    
     double r = rm->getRate(from_state, to_state, age, rate);
-
+    
+    for (size_t i = 0; i < rateModifiers->size(); i++)
+    {
+        r *= (*rateModifiers)[i].computeRateMultiplier(from, to);
+    }
+    
     return r;
 
 }
@@ -143,7 +154,7 @@ double RateGeneratorSequenceUsingMatrix::getSiteRate(CharacterEvent* from, Chara
     const RateGenerator* rm = rateMatrix;
 
     double r = rm->getRate(from->getState(), to->getState(), age, rate);
-
+    
     return r;
 }
 
@@ -173,31 +184,66 @@ std::vector<double> RateGeneratorSequenceUsingMatrix::getStationaryFrequencies(v
 
 double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, std::vector<size_t> counts, double age, double rate) const
 {
-
-    // get characters in each state
-    if (counts.size()==0)
-    {
-        counts = std::vector<size_t>(this->num_states, 0);
-        for (size_t i = 0; i < from.size(); i++)
-        {
-            counts[ from[i]->getState() ] += 1;
-        }
-
-    }
-
+//
+//    // get characters in each state
+//    if (counts.size()==0)
+//    {
+//        counts = std::vector<size_t>(this->num_states, 0);
+//        for (size_t i = 0; i < from.size(); i++)
+//        {
+//            counts[ from[i]->getState() ] += 1;
+//        }
+//
+//    }
+//
+//    // get rate matrix
+//    const RateGenerator* rm = rateMatrix;
+//
+//    // get the rate of leaving the sequence-state
+//    double sum = 0.0;
+//    for (size_t i = 0; i < this->num_states; i++)
+//    {
+//        sum += -rm->getRate(i, i, age, 1.0) * counts[i];
+//    }
+//
+//    // apply rate for branch
+//    sum *= rate;
+//
+//    return sum;
+    
     // get rate matrix
     const RateGenerator* rm = rateMatrix;
-
-    // get the rate of leaving the sequence-state
+    
+    // compute sum of leaving rates
     double sum = 0.0;
-    for (size_t i = 0; i < this->num_states; i++)
+    
+    // for each site in the starting sequence
+    for (size_t i = 0; i < from.size(); i++)
     {
-        sum += -rm->getRate(i, i, age, 1.0) * counts[i];
+        size_t from_state = from[i]->getState();
+        
+        // look at all outgoing states
+        for (size_t to_state = 0; to_state < this->num_states; to_state++) {
+            
+            // ignore virtual events (where states match)
+            if (from_state == to_state)
+                continue;
+            
+            // get base rate
+            double r = rm->getRate(from_state, to_state, age, 1.0);
+            
+            // get modified rate
+            CharacterEvent to(i, to_state, age);
+            for (size_t k = 0; i < rateModifiers->size(); k++)
+            {
+                r *= (*rateModifiers)[k].computeRateMultiplier(from, &to);
+            }
+            
+            // add rate to sum
+            sum += r;
+        }
     }
-
-    // apply rate for branch
-    sum *= rate;
-
+    
     return sum;
 }
 
@@ -217,13 +263,21 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
 
 void RateGeneratorSequenceUsingMatrix::setRateMatrix(const RateGenerator* r)
 {
-
     if (r != rateMatrix)
     {
         delete rateMatrix;
         rateMatrix = r->clone();
     }
+}
 
+
+void RateGeneratorSequenceUsingMatrix::setRateModifiers(const RbVector<CharacterHistoryRateModifier>* r)
+{
+    if (r != rateModifiers)
+    {
+        delete rateModifiers;
+        rateModifiers = r->clone();
+    }
 }
 
 

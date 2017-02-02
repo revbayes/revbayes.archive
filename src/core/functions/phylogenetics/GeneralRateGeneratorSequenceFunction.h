@@ -2,6 +2,7 @@
 #define GeneralRateGeneratorSequenceFunction_H
 
 //#include "GeographyRateModifier.h"
+#include "CharacterHistoryRateModifier.h"
 #include "RateGeneratorSequence.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
@@ -25,6 +26,7 @@ namespace RevBayesCore {
         
         // set parameters
         void                                                setRateMatrix(const TypedDagNode<RateGenerator>* rm);
+        void                                                setRateModifiers(const TypedDagNode<RbVector<CharacterHistoryRateModifier> >*);
         
     protected:
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swapping parameters
@@ -34,7 +36,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<RateGenerator>*                  homogeneousRateMatrix;
-        
+        const TypedDagNode<RbVector<CharacterHistoryRateModifier> >* rateModifiers;
     };
     
 //    std::ostream& operator<<(std::ostream& o, const std::vector<std::vector<double> >& x);

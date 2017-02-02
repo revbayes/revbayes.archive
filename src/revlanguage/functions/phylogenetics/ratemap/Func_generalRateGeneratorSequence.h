@@ -48,6 +48,7 @@ namespace RevLanguage {
 
     private:
         RevPtr<const RevVariable>                               q;
+        RevPtr<const RevVariable>                               rateModifiers;
         RevPtr<const RevVariable>                               rootFrequencies;
         RevPtr<const RevVariable>                               numChars;
     };

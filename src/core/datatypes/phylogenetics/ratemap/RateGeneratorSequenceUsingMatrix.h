@@ -1,6 +1,7 @@
 #ifndef RateGeneratorSequenceUsingMatrix_H
 #define RateGeneratorSequenceUsingMatrix_H
 
+#include "CharacterHistoryRateModifier.h"
 #include "RateGeneratorSequence.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
@@ -34,12 +35,14 @@ namespace RevBayesCore {
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, std::vector<size_t> counts, double age=0.0, double rate=1.0) const;
         
         void                                setRateMatrix(const RateGenerator *rm);
+        void                                setRateModifiers(const RbVector<CharacterHistoryRateModifier>* rm);
         virtual void                        updateMap(void);
         
         
     protected:
         // protected members available for derived classes
-        RateGenerator*                      rateMatrix;
+        RateGenerator*                          rateMatrix;
+        RbVector<CharacterHistoryRateModifier>* rateModifiers;
         
         
     };

@@ -1,7 +1,7 @@
 #ifndef GeographyRateModifier_H
 #define GeographyRateModifier_H
 
-#include "AbstractCharacterHistoryRateModifier.h"
+#include "CharacterHistoryRateModifier.h"
 #include "TimeAtlas.h"
 #include "GeographicArea.h"
 #include "StochasticNode.h"
@@ -10,18 +10,18 @@
 
 namespace RevBayesCore
 {
-    class GeographyRateModifier : public AbstractCharacterHistoryRateModifier
+    class GeographyRateModifier : public CharacterHistoryRateModifier
     {
     public:
         GeographyRateModifier( const TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
         GeographyRateModifier(const GeographyRateModifier& g);
 
-        double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
-        double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
-        double                              computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
+        double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
+        double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
+        double                              computeRateMultiplier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
 //        double                              computeRateModifier_test(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
-        double                              computeSiteRateModifier(CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
-        double                              computeSiteRateModifier(size_t curState, size_t newState, size_t charIdx=0, double age=0.0);
+        double                              computeSiteRateMultiplier(CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
+        double                              computeSiteRateMultiplier(size_t curState, size_t newState, size_t charIdx=0, double age=0.0);
         unsigned                            getNumAvailableAreas(std::vector<CharacterEvent*> curState, double age=0.0);
         unsigned                            getNumEmigratableAreas(std::vector<CharacterEvent*> curState, double age=0.0);
         void                                setDistancePower(double dp, bool upd=true);

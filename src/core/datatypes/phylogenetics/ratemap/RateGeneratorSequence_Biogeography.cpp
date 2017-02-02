@@ -250,7 +250,7 @@ double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> 
 
     // apply rate modifiers
     if (useGeographyRateModifier) // want this to take in age as an argument...
-        rate *= geographyRateModifier->computeRateModifier(from, to, age);
+        rate *= geographyRateModifier->computeRateMultiplier(from, to, age);
 
 //    // root freqs
 //    if (useRootFrequencies)
@@ -299,7 +299,7 @@ double RateGeneratorSequence_Biogeography::getSiteRate(CharacterEvent* from, Cha
 
     // area effects
     if (useGeographyRateModifier)
-        rate *= geographyRateModifier->computeSiteRateModifier(from,to,age);
+        rate *= geographyRateModifier->computeSiteRateMultiplier(from,to,age);
 
 
     return rate;
@@ -320,7 +320,7 @@ double RateGeneratorSequence_Biogeography::getSiteRate( size_t from, size_t to, 
     // area effects
     if (useGeographyRateModifier)
     {
-        double rm = geographyRateModifier->computeSiteRateModifier(from,to,charIdx,age);
+        double rm = geographyRateModifier->computeSiteRateMultiplier(from,to,charIdx,age);
 
         rate *= rm;
     }

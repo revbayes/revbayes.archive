@@ -136,7 +136,7 @@ GeographyRateModifier::GeographyRateModifier(const GeographyRateModifier& g)
     }
 }
 
-double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double GeographyRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
 {
     unsigned epochIdx = getEpochIndex(age);
 
@@ -337,17 +337,17 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     return r;
 }
 
-double GeographyRateModifier::computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double GeographyRateModifier::computeRateMultiplier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
 {
-    return computeRateModifier(currState, newState, age);
+    return computeRateMultiplier(currState, newState, age);
 }
 
-double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
+double GeographyRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
 {
-    return computeRateModifier(currState, newState, 0.0);
+    return computeRateMultiplier(currState, newState, 0.0);
 }
 
-double GeographyRateModifier::computeSiteRateModifier( CharacterEvent* currState, CharacterEvent* newState, double age)
+double GeographyRateModifier::computeSiteRateMultiplier( CharacterEvent* currState, CharacterEvent* newState, double age)
 {
     size_t s = newState->getState();
     size_t charIdx = newState->getSiteIndex();
@@ -369,7 +369,7 @@ double GeographyRateModifier::computeSiteRateModifier( CharacterEvent* currState
     return r;
 }
 
-double GeographyRateModifier::computeSiteRateModifier( size_t from, size_t to, size_t charIdx, double age)
+double GeographyRateModifier::computeSiteRateMultiplier( size_t from, size_t to, size_t charIdx, double age)
 {
     unsigned epochIdx = getEpochIndex(age);
 

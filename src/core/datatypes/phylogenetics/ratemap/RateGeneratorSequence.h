@@ -44,8 +44,6 @@ namespace RevBayesCore {
         size_t                              num_characters;                                      //!< The number of characters
         bool                                needsUpdate;
         
-        
-        
     };
     
     // Global functions using the class

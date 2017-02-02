@@ -48,7 +48,8 @@ RevBayesCore::TypedFunction<RevBayesCore::RateGeneratorSequence>* Func_generalRa
     RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     size_t ns = rm->getValue().getNumberOfStates();
     unsigned nc = static_cast<const Natural&>( this->args[1].getVariable()->getRevObject() ).getValue();
-    
+//    RevBayesCore::TypedDagNode<RevBayesCore::CharacterHistoryRateModifier>* rate_mods = static_cast<const RateGenerator&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
     RevBayesCore::GeneralRateGeneratorSequenceFunction* f = new RevBayesCore::GeneralRateGeneratorSequenceFunction(ns, nc);
     f->setRateMatrix(rm);
@@ -68,6 +69,7 @@ const ArgumentRules& Func_generalRateGeneratorSequence::getArgumentRules( void )
     {
         argumentRules.push_back( new ArgumentRule( "Q", RateGenerator::getClassTypeSpec(), "The per-character rate generator.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "numChars", Natural::getClassTypeSpec(), "The number of characters.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rateModifiers", RateGenerator::getClassTypeSpec(), "The sequence-wide context-dependent rate modifiers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -100,7 +102,7 @@ const TypeSpec& Func_generalRateGeneratorSequence::getClassTypeSpec(void)
 std::string Func_generalRateGeneratorSequence::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnGeneralRateGeneratorSequence";
+    std::string f_name = "fnRateGeneratorSequence";
     
     return f_name;
 }
@@ -122,6 +124,10 @@ void Func_generalRateGeneratorSequence::setConstParameter(const std::string& nam
     if ( name == "qSite" )
     {
         q = var;
+    }
+    else if ( name == "rateModifiers" )
+    {
+        rateModifiers = var;
     }
     else if ( name == "rfSite" )
     {

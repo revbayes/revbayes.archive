@@ -9,7 +9,7 @@
 #ifndef __rb_mlandis__CountRateModifier__
 #define __rb_mlandis__CountRateModifier__
 
-#include "AbstractCharacterHistoryRateModifier.h"
+#include "CharacterHistoryRateModifier.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
 
@@ -17,17 +17,17 @@
 
 namespace RevBayesCore
 {
-    class CountRateModifier : public AbstractCharacterHistoryRateModifier
+    class CountRateModifier : public CharacterHistoryRateModifier
     {
     public:
         CountRateModifier(unsigned nc);
         CountRateModifier(const CountRateModifier& g);
         
-        double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
-        double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
-        double                              computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
-        double                              computeSiteRateModifier(const TopologyNode& node, CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
-        double                              computeSiteRateModifier(const TopologyNode& node, unsigned curState, unsigned newState, unsigned charIdx=0, double age=0.0);
+        double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
+        double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
+        double                              computeRateMultiplier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
+        double                              computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
+        double                              computeSiteRateMultiplier(const TopologyNode& node, unsigned curState, unsigned newState, unsigned charIdx=0, double age=0.0);
         const std::vector<double>&          getProportions(void) const;
         void                                setProportions(const std::vector<double>& dp);
         
