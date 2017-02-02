@@ -179,7 +179,7 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
     // get characters in each state
     if (counts.size()==0)
     {
-        counts = std::vector<size_t>(this->numStates, 0);
+        counts = std::vector<size_t>(this->num_states, 0);
         for (size_t i = 0; i < from.size(); i++)
         {
             counts[ from[i]->getState() ] += 1;
@@ -192,7 +192,7 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
 
     // get the rate of leaving the sequence-state
     double sum = 0.0;
-    for (size_t i = 0; i < numStates; i++)
+    for (size_t i = 0; i < this->num_states; i++)
     {
         sum += -rm->getRate(i, i, age, 1.0) * counts[i];
     }
@@ -206,7 +206,7 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
 double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, double age, double rate) const
 {
 
-    std::vector<size_t> counts = std::vector<size_t>(this->numStates, 0);
+    std::vector<size_t> counts = std::vector<size_t>(this->num_states, 0);
     
     for (size_t i = 0; i < from.size(); i++)
     {

@@ -19,11 +19,11 @@ RateGeneratorSequence_Biogeography::RateGeneratorSequence_Biogeography(size_t nc
 
     epochs = std::vector<double>(1,0.0);
     numEpochs = epochs.size();
-    epochOffset = numEpochs * numCharacters;
+    epochOffset = numEpochs * num_characters;
 //    extinctionValues = std::vector<double>(numEpochs * this->numCharacters, 1.0);
 //    dispersalValues = std::vector<double>(numEpochs * this->numCharacters * this->numCharacters, 1.0);
-    adjacentAreaVector = std::vector<double>(numEpochs * this->numCharacters * this->numCharacters, 1.0);
-    availableAreaVector = std::vector<double>(numEpochs * this->numCharacters, 1.0);
+    adjacentAreaVector = std::vector<double>(numEpochs * this->num_characters * this->num_characters, 1.0);
+    availableAreaVector = std::vector<double>(numEpochs * this->num_characters, 1.0);
 
     useGeographyRateModifier = false;
     useAreaAvailable = false;
@@ -270,7 +270,7 @@ double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> 
 double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double age, double r) const
 {
     unsigned n1 = (unsigned)numOn(from);
-    unsigned n0 = (unsigned)(numCharacters - n1);
+    unsigned n0 = (unsigned)(num_characters - n1);
     unsigned counts[2] = { n0, n1 };
     return getRate(from, to, counts, age, r);
 }
@@ -399,7 +399,7 @@ double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterE
 double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterEvent*> from, double r, double age) const
 {
     unsigned n1 = (unsigned)numOn(from);
-    unsigned n0 = (unsigned)(numCharacters - n1);
+    unsigned n0 = (unsigned)(num_characters - n1);
     unsigned counts[2] = {n0,n1};
 
     return RateGeneratorSequence_Biogeography::getSumOfRates( from, counts, r, age);
@@ -418,7 +418,7 @@ double RateGeneratorSequence_Biogeography::getUnnormalizedSumOfRates( std::vecto
     for (size_t i = 0; i < from.size(); i++)
     {
         size_t s = from[i]->getState();
-        double v = availableAreaVector[ epochIdx * this->numCharacters + i ];
+        double v = availableAreaVector[ epochIdx * this->num_characters + i ];
 
         if (forbidExtinction && s == 1 && counts[1] == 0)
             sum += 0.0;
@@ -487,13 +487,13 @@ const GeographyRateModifier& RateGeneratorSequence_Biogeography::getGeographyRat
 const bool RateGeneratorSequence_Biogeography::isAreaAvailable(size_t charIdx, double age) const
 {
     size_t epochIdx = getEpochIndex(age);
-    return availableAreaVector[epochIdx*this->numCharacters + charIdx] > 0.0;
+    return availableAreaVector[epochIdx*this->num_characters + charIdx] > 0.0;
 }
 
 const bool RateGeneratorSequence_Biogeography::areAreasAdjacent(size_t fromCharIdx, size_t toCharIdx, double age) const
 {
     size_t epochIdx = getEpochIndex(age);
-    return adjacentAreaVector[epochIdx*epochOffset + this->numCharacters*fromCharIdx + toCharIdx] > 0.0;
+    return adjacentAreaVector[epochIdx*epochOffset + this->num_characters*fromCharIdx + toCharIdx] > 0.0;
 
 }
 

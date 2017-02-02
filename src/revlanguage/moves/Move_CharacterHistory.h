@@ -46,7 +46,8 @@ namespace RevLanguage {
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);           //!< Set member variable
         
         RevPtr<const RevVariable>                   ctmc;                                                                                       //!< The variable on which the move works
-        RevPtr<const RevVariable>                   qmap;                                                                                       //!< The variable on which the move works
+        RevPtr<const RevVariable>                   qmap_site;                                                                                  //!< The variable on which the move works
+        RevPtr<const RevVariable>                   qmap_seq;                                                                                   //!< The variable on which the move works
         RevPtr<const RevVariable>                   graph;
         RevPtr<const RevVariable>                   proposal;
         RevPtr<const RevVariable>                   lambda;

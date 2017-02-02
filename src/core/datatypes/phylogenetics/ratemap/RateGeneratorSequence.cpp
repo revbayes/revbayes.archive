@@ -1,5 +1,6 @@
 #include "MatrixReal.h"
 #include "RateGeneratorSequence.h"
+#include "RateGenerator.h"
 #include "RateMatrix.h"
 #include "RateMatrix_JC.h"
 #include "RbVector.h"
@@ -16,12 +17,11 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateGeneratorSequence::RateGeneratorSequence(size_t ns, size_t nc)
+RateGeneratorSequence::RateGeneratorSequence(size_t ns, size_t nc) : RateGenerator(ns)
 {
     
-    numStates            = ns;
-    numCharacters        = nc;
-    
+//    numStates            = ns;
+    num_characters        = nc;
     needsUpdate          = true;
     
 }
@@ -41,20 +41,20 @@ RateGeneratorSequence::~RateGeneratorSequence(void)
 
 
 
-size_t RateGeneratorSequence::getNumberOfStates( void ) const
-{
-    return numStates;
-}
+//size_t RateGeneratorSequence::getNumberOfStates( void ) const
+//{
+//    return numStates;
+//}
 
 size_t RateGeneratorSequence::getNumberOfCharacters( void ) const
 {
-    return numCharacters;
+    return num_characters;
 }
 
-size_t RateGeneratorSequence::size( void ) const
-{
-    return numStates;
-}
+//size_t RateGeneratorSequence::size( void ) const
+//{
+//    return numStates;
+//}
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGeneratorSequence& x)
 {
