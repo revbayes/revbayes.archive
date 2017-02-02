@@ -338,7 +338,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                     {
                         continue;
                     }
-                    double v = rm.getRate(currState, i, node->getAge(), getBranchRate(node->getIndex()));
+                    double v = rm.getRate(currState, i, age, getBranchRate(node->getIndex()));
                     rates[i] = v;
                     r += v;
                 }

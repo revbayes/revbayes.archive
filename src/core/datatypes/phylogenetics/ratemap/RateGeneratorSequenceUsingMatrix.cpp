@@ -137,28 +137,26 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
 
 }
 
-double RateGeneratorSequenceUsingMatrix::getSiteRate(CharacterEvent* from, CharacterEvent* to, double age, double r) const
+double RateGeneratorSequenceUsingMatrix::getSiteRate(CharacterEvent* from, CharacterEvent* to, double age, double rate) const
 {
 
-    double rate = 0.0;
     const RateGenerator* rm = rateMatrix;
 
-    rate = rm->getRate(from->getState(), to->getState(), age, r);
+    double r = rm->getRate(from->getState(), to->getState(), age, rate);
 
-    return rate;
+    return r;
 }
 
-double RateGeneratorSequenceUsingMatrix::getSiteRate(size_t from, size_t to, size_t charIdx, double age, double r) const
+double RateGeneratorSequenceUsingMatrix::getSiteRate(size_t from, size_t to, size_t charIdx, double age, double rate) const
 {
 
-    double rate = 0.0;
     const RateGenerator* rm = rateMatrix;
 
-    rate = rm->getRate(from, to, age, r);
+    double r = rm->getRate(from, to, age, rate);
 
     throw(RbException("MJL: Will need to be fixed depending on how site rates are used."));
     
-    return rate;
+    return r;
 }
 
 std::vector<double> RateGeneratorSequenceUsingMatrix::getStationaryFrequencies(void) const
