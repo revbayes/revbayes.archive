@@ -69,7 +69,7 @@ const ArgumentRules& Func_generalRateGeneratorSequence::getArgumentRules( void )
     {
         argumentRules.push_back( new ArgumentRule( "Q", RateGenerator::getClassTypeSpec(), "The per-character rate generator.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "numChars", Natural::getClassTypeSpec(), "The number of characters.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "rateModifiers", RateGenerator::getClassTypeSpec(), "The sequence-wide context-dependent rate modifiers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rateModifiers", RateGenerator::getClassTypeSpec(), "The sequence-wide context-dependent rate modifiers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }

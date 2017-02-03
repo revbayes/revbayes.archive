@@ -51,7 +51,10 @@ void GeneralRateGeneratorSequenceFunction::update( void )
 {
 
     const RateGenerator& rm = homogeneousRateMatrix->getValue();
-    const RbVector<CharacterHistoryRateModifier>& rate_mods = rateModifiers->getValue();
+    
+    if (rateModifiers != NULL) {
+        const RbVector<CharacterHistoryRateModifier>& rate_mods = rateModifiers->getValue();
+    }
 
     // set the rate modifiers in RateGeneratorSequence!!
     static_cast< RateGeneratorSequenceUsingMatrix* >(value)->setRateMatrix( &rm );

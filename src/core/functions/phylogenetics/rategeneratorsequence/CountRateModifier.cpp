@@ -41,7 +41,7 @@ double CountRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> cu
     std::map<unsigned, unsigned> m;
     for (size_t i = 0; i < currState.size(); i++)
     {
-        
+        ; //  m[ currState[i]->getState() ]
     }
     
     return r;

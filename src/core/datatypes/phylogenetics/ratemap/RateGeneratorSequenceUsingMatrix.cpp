@@ -20,6 +20,7 @@ RateGeneratorSequenceUsingMatrix::RateGeneratorSequenceUsingMatrix(size_t ns, si
 {
 
     rateMatrix = new RateMatrix_JC(ns);
+    rateModifiers = new RbVector<CharacterHistoryRateModifier>();
 
 }
 
@@ -30,6 +31,7 @@ RateGeneratorSequenceUsingMatrix::RateGeneratorSequenceUsingMatrix(const RateGen
 {
 
     rateMatrix = m.rateMatrix->clone();
+    rateModifiers = m.rateModifiers->clone();
 
 }
 
@@ -39,6 +41,7 @@ RateGeneratorSequenceUsingMatrix::~RateGeneratorSequenceUsingMatrix(void)
 {
 
     delete rateMatrix;
+    delete rateModifiers;
 
 }
 
@@ -52,8 +55,10 @@ RateGeneratorSequenceUsingMatrix& RateGeneratorSequenceUsingMatrix::operator=(co
     {
 
         delete rateMatrix;
+        delete rateModifiers;
 
         rateMatrix = r.rateMatrix->clone();
+        rateModifiers = r.rateModifiers->clone();
 
     }
 
@@ -236,13 +241,16 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
             CharacterEvent to(i, to_state, age);
             for (size_t k = 0; i < rateModifiers->size(); k++)
             {
-                r *= (*rateModifiers)[k].computeRateMultiplier(from, &to);
+                double m = (*rateModifiers)[k].computeRateMultiplier(from, &to);
+                r *= m;
             }
             
             // add rate to sum
             sum += r;
         }
     }
+    
+    sum *= rate;
     
     return sum;
 }
