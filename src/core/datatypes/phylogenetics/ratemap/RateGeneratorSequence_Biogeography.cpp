@@ -4,12 +4,11 @@
 
 using namespace RevBayesCore;
 
-RateGeneratorSequence_Biogeography::RateGeneratorSequence_Biogeography(size_t nc, bool fe, unsigned mrs) : RateGeneratorSequenceUsingMatrix(2, nc),
-    geographyRateModifier()
+RateGeneratorSequence_Biogeography::RateGeneratorSequence_Biogeography(size_t nc, bool fe, unsigned mrs) : RateGeneratorSequenceUsingMatrix(2, nc)
 {
 
     forbidExtinction = fe;
-    geographyRateModifier = NULL;
+    distanceRateModifier = NULL;
     distancePower = 0.0;
     maxRangeSize = mrs;
     if (mrs == 0 || mrs > nc)
@@ -25,7 +24,7 @@ RateGeneratorSequence_Biogeography::RateGeneratorSequence_Biogeography(size_t nc
     adjacentAreaVector = std::vector<double>(numEpochs * this->num_characters * this->num_characters, 1.0);
     availableAreaVector = std::vector<double>(numEpochs * this->num_characters, 1.0);
 
-    useGeographyRateModifier = false;
+    useDistanceRateModifier = false;
     useAreaAvailable = false;
     useAreaAdjacency = false;
     useDistanceDependence = false;
@@ -54,8 +53,8 @@ RateGeneratorSequence_Biogeography::RateGeneratorSequence_Biogeography(const Rat
     useRootFrequencies = m.useRootFrequencies;
     useUnnormalizedRates = m.useUnnormalizedRates;
 
-    geographyRateModifier = m.geographyRateModifier;
-    useGeographyRateModifier = m.useGeographyRateModifier;
+    distanceRateModifier     = m.distanceRateModifier;
+    useDistanceRateModifier = m.useDistanceRateModifier;
 
 
     forbidExtinction = m.forbidExtinction;
@@ -84,8 +83,8 @@ RateGeneratorSequence_Biogeography& RateGeneratorSequence_Biogeography::operator
         adjacentAreaVector = r.adjacentAreaVector;
         availableAreaVector = r.availableAreaVector;
 
-        geographyRateModifier = r.geographyRateModifier;
-        useGeographyRateModifier = r.useGeographyRateModifier;
+        distanceRateModifier = r.distanceRateModifier;
+        useDistanceRateModifier = r.useDistanceRateModifier;
 
         useAreaAdjacency = r.useAreaAdjacency;
         useAreaAvailable = r.useAreaAvailable;
@@ -249,19 +248,9 @@ double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> 
     double rate = rateMatrix->getRate(!s,s,age,r);
 
     // apply rate modifiers
-    if (useGeographyRateModifier) // want this to take in age as an argument...
-        rate *= geographyRateModifier->computeRateMultiplier(from, to, age);
+    if (useDistanceRateModifier) // want this to take in age as an argument...
+        rate *= distanceRateModifier->computeRateMultiplier(from, to, age);
 
-//    // root freqs
-//    if (useRootFrequencies)
-//    {
-//        int countDiff[2][2] = { {1, -1}, {-1, 1} };
-//        double rfr = pow(2*rootFrequencies[0], count[0] + countDiff[s][0]) * pow(2*rootFrequencies[1], count[1] + countDiff[s][1]);
-////        double rfr = ( s == 0 ? rootFrequencies[0] / rootFrequencies[1] : rootFrequencies[1] / rootFrequencies[0] );
-////        double rfr = ( s == 1 ? rootFrequencies[1] / rootFrequencies[0] : 1.0 );
-////        double rfr = ( s == 0 ? rootFrequencies[0] : rootFrequencies[1] );
-//        rate *= rfr;
-//    }
 
     return rate;
 
@@ -298,8 +287,8 @@ double RateGeneratorSequence_Biogeography::getSiteRate(CharacterEvent* from, Cha
 //    rate = rateMatrix->getRate(!s,s,age,r);
 
     // area effects
-    if (useGeographyRateModifier)
-        rate *= geographyRateModifier->computeSiteRateMultiplier(from,to,age);
+    if (useDistanceRateModifier)
+        rate *= distanceRateModifier->computeSiteRateMultiplier(from,to,age);
 
 
     return rate;
@@ -318,13 +307,13 @@ double RateGeneratorSequence_Biogeography::getSiteRate( size_t from, size_t to, 
 
 
     // area effects
-    if (useGeographyRateModifier)
+    if (useDistanceRateModifier)
     {
-        double rm = geographyRateModifier->computeSiteRateMultiplier(from,to,charIdx,age);
+        double rm = distanceRateModifier->computeSiteRateMultiplier(from,to,charIdx,age);
 
         rate *= rm;
     }
-//        rate *= geographyRateModifier->computeSiteRateModifier(node,from,to,charIdx,age);
+//        rate *= distanceRateModifier->computeSiteRateModifier(node,from,to,charIdx,age);
 
 
     return rate;
@@ -338,8 +327,8 @@ double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterE
 
     // get rate away away from currState
     unsigned n0 = counts[0];
-//    if (useGeographyRateModifier)
-//        n0 = geographyRateModifier->getNumAvailableAreas(node, from, age);
+//    if (useDistanceRateModifier)
+//        n0 = distanceRateModifier->getNumAvailableAreas(node, from, age);
     unsigned n1 = counts[1];
 
     // forbid extinction events
@@ -365,12 +354,12 @@ double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterE
     if (useAreaAdjacency)
     {
         r1 = n1;
-//        r0 = geographyRateModifier->getNumAvailableAreas(node,from,age);
-        r0 = geographyRateModifier->getNumEmigratableAreas(from,age);
+//        r0 = distanceRateModifier->getNumAvailableAreas(node,from,age);
+        r0 = distanceRateModifier->getNumEmigratableAreas(from,age);
     }
 
 //    if (useAreaAdjacency || useAreaAvailable)
-//        r0 = geographyRateModifier->getNumAvailableAreas(node,from,age);
+//        r0 = distanceRateModifier->getNumAvailableAreas(node,from,age);
 //
     // apply ctmc for branch
     r0 *= rateMatrix->getRate(1,0,age,r);
@@ -458,30 +447,30 @@ void RateGeneratorSequence_Biogeography::setDistancePower(double d)
     distancePower = d;
 }
 
-void RateGeneratorSequence_Biogeography::setGeographyRateModifier(const GeographyRateModifier& gdrm)
+void RateGeneratorSequence_Biogeography::setDistanceRateModifier(const DistanceRateModifier& gdrm)
 {
-    useGeographyRateModifier = true;
+    useDistanceRateModifier = true;
 
     // ugly hack, prob better way to handle constness...
-    geographyRateModifier = &const_cast<GeographyRateModifier&>(gdrm);
+    distanceRateModifier = &const_cast<DistanceRateModifier&>(gdrm);
 
-    epochs = geographyRateModifier->getEpochs();
+    epochs = distanceRateModifier->getEpochs();
     numEpochs = epochs.size();
-    adjacentAreaVector = geographyRateModifier->getAdjacentAreaVector();
-    availableAreaVector = geographyRateModifier->getAvailableAreaVector();
-    useAreaAdjacency = geographyRateModifier->getUseAreaAdjacency();
-    useAreaAvailable = geographyRateModifier->getUseAreaAvailable();
+    adjacentAreaVector = distanceRateModifier->getAdjacentAreaVector();
+    availableAreaVector = distanceRateModifier->getAvailableAreaVector();
+    useAreaAdjacency = distanceRateModifier->getUseAreaAdjacency();
+    useAreaAvailable = distanceRateModifier->getUseAreaAvailable();
 }
 
-void RateGeneratorSequence_Biogeography::setGeographicDistancePowers(const GeographyRateModifier& gdrm)
+void RateGeneratorSequence_Biogeography::setGeographicDistancePowers(const DistanceRateModifier& gdrm)
 {
-    useGeographyRateModifier = true;
-    geographyRateModifier->setGeographicDistancePowers(gdrm.getGeographicDistancePowers());
+    useDistanceRateModifier = true;
+    distanceRateModifier->setGeographicDistancePowers(gdrm.getGeographicDistancePowers());
 }
 
-const GeographyRateModifier& RateGeneratorSequence_Biogeography::getGeographyRateModifier(void)
+const DistanceRateModifier& RateGeneratorSequence_Biogeography::getDistanceRateModifier(void)
 {
-    return *geographyRateModifier;
+    return *distanceRateModifier;
 }
 
 const bool RateGeneratorSequence_Biogeography::isAreaAvailable(size_t charIdx, double age) const
@@ -503,7 +492,7 @@ const std::set<size_t> RateGeneratorSequence_Biogeography::getRangeAndFrontierSe
     const std::vector<CharacterEvent*>& from = bh->getParentCharacters();
 //    const std::vector<CharacterEvent*>& to = bh->getParentCharacters();
     size_t epochIdx = getEpochIndex(age);
-    const std::vector<std::set<size_t> >& adjacentAreaSet = geographyRateModifier->getAdjacentAreaSet();
+    const std::vector<std::set<size_t> >& adjacentAreaSet = distanceRateModifier->getAdjacentAreaSet();
 
 //    std::set<size_t>
     for (size_t i = 0; i < from.size(); i++)

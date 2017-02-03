@@ -1,5 +1,5 @@
-#ifndef GeographyRateModifier_H
-#define GeographyRateModifier_H
+#ifndef DistanceRateModifier_H
+#define DistanceRateModifier_H
 
 #include "CharacterHistoryRateModifier.h"
 #include "TimeAtlas.h"
@@ -10,11 +10,11 @@
 
 namespace RevBayesCore
 {
-    class GeographyRateModifier : public CharacterHistoryRateModifier
+    class DistanceRateModifier : public CharacterHistoryRateModifier
     {
     public:
-        GeographyRateModifier( const TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
-        GeographyRateModifier(const GeographyRateModifier& g);
+        DistanceRateModifier( const TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
+        DistanceRateModifier(const DistanceRateModifier& g);
 
         double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
         double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
@@ -38,7 +38,7 @@ namespace RevBayesCore
         const bool                          getUseAreaAdjacency(void) const;
 
         void                                update(void);
-        GeographyRateModifier*              clone(void) const;
+        DistanceRateModifier*              clone(void) const;
         void                                print(std::vector<std::vector<double> > m);
         void                                printAll(void);
 
@@ -95,7 +95,7 @@ namespace RevBayesCore
 
     };
 
-    std::ostream& operator<<(std::ostream& o, const GeographyRateModifier& x);
+    std::ostream& operator<<(std::ostream& o, const DistanceRateModifier& x);
 }
 
 #endif

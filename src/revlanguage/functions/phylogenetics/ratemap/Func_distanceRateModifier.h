@@ -4,7 +4,7 @@
  * which is used to created deterministic variable associated with the dec_ddd
  * function.
  *
- * @brief Declaration and implementation of Func_geographyRateModifier
+ * @brief Declaration and implementation of Func_distanceRateModifier
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -16,8 +16,8 @@
  */
 
 
-#ifndef Func_geographyRateModifier_H
-#define Func_geographyRateModifier_H
+#ifndef Func_distanceRateModifier_H
+#define Func_distanceRateModifier_H
 
 #include "RlCharacterHistoryRateModifier.h"
 #include "RlTypedFunction.h"
@@ -27,13 +27,13 @@
 
 namespace RevLanguage {
     
-    class Func_geographyRateModifier : public TypedFunction<CharacterHistoryRateModifier> {
+    class Func_distanceRateModifier : public TypedFunction<CharacterHistoryRateModifier> {
         
     public:
-        Func_geographyRateModifier( void );
+        Func_distanceRateModifier( void );
         
         // Basic utility functions
-        Func_geographyRateModifier*                                                            clone(void) const;                                          //!< Clone the object
+        Func_distanceRateModifier*                                                            clone(void) const;                                          //!< Clone the object
         static const std::string&                                                   getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                                      getClassTypeSpec(void);                                     //!< Get class type spec
         std::string                                                                 getFunctionName(void) const;                                //!< Get the primary name of the function in Rev

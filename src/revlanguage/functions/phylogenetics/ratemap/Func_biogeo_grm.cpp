@@ -1,6 +1,6 @@
-#include "Func_geographyRateModifier.h"
-#include "GeographyRateModifier.h"
-#include "GeographyRateModifierFunction.h"
+#include "Func_distanceRateModifier.h"
+#include "DistanceRateModifier.h"
+#include "DistanceRateModifierFunction.h"
 #include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -16,7 +16,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_geographyRateModifier::Func_geographyRateModifier( void ) : TypedFunction< CharacterHistoryRateModifier >( )
+Func_distanceRateModifier::Func_distanceRateModifier( void ) : TypedFunction< CharacterHistoryRateModifier >( )
 {
     
 }
@@ -28,13 +28,13 @@ Func_geographyRateModifier::Func_geographyRateModifier( void ) : TypedFunction< 
  *
  * \return A new copy of the process.
  */
-Func_geographyRateModifier* Func_geographyRateModifier::clone( void ) const {
+Func_distanceRateModifier* Func_distanceRateModifier::clone( void ) const {
     
-    return new Func_geographyRateModifier( *this );
+    return new Func_distanceRateModifier( *this );
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_geographyRateModifier::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_distanceRateModifier::createFunction( void ) const
 {
     
     const RevBayesCore::TimeAtlas* atlas = &( static_cast<const RlAtlas&>( this->args[0].getVariable()->getRevObject() ).getValue() );
@@ -45,14 +45,14 @@ RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_
     bool uadj   = false; // static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
 
 
-    RevBayesCore::GeographyRateModifierFunction* f = new RevBayesCore::GeographyRateModifierFunction(dp, atlas, uadj, uav, udd);
+    RevBayesCore::DistanceRateModifierFunction* f = new RevBayesCore::DistanceRateModifierFunction(dp, atlas, uadj, uav, udd);
     
     return f;
 }
 
 
 /* Get argument rules */
-const ArgumentRules& Func_geographyRateModifier::getArgumentRules( void ) const
+const ArgumentRules& Func_distanceRateModifier::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -61,7 +61,8 @@ const ArgumentRules& Func_geographyRateModifier::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "atlas"        , RlAtlas::getClassTypeSpec()   , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "distances"    , ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "Matrix of distances", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+//        argumentRules.push_back( new ArgumentRule( "atlas"        , RlAtlas::getClassTypeSpec()   , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "distancePower", Real::getClassTypeSpec()      , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1e-5) ) );
         argumentRules.push_back( new ArgumentRule( "useDistances" , RlBoolean::getClassTypeSpec() , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
         argumentRules.push_back( new ArgumentRule( "useAvailable" , RlBoolean::getClassTypeSpec() , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
@@ -74,16 +75,16 @@ const ArgumentRules& Func_geographyRateModifier::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_geographyRateModifier::getClassType(void)
+const std::string& Func_distanceRateModifier::getClassType(void)
 {
     
-    static std::string revType = "Func_geographyRateModifier";
+    static std::string revType = "Func_distanceRateModifier";
     
 	return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_geographyRateModifier::getClassTypeSpec(void)
+const TypeSpec& Func_distanceRateModifier::getClassTypeSpec(void)
 {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -95,16 +96,16 @@ const TypeSpec& Func_geographyRateModifier::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_geographyRateModifier::getFunctionName( void ) const
+std::string Func_distanceRateModifier::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnGeographyRateModifier";
+    std::string f_name = "fnDistanceRateModifier";
     
     return f_name;
 }
 
 
-const TypeSpec& Func_geographyRateModifier::getTypeSpec( void ) const
+const TypeSpec& Func_distanceRateModifier::getTypeSpec( void ) const
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();

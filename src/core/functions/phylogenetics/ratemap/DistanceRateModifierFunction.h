@@ -1,13 +1,13 @@
 //
-//  GeographyRateModifierFunction.h
+//  DistanceRateModifierFunction.h
 //  rb_mlandis
 //
 //  Created by Michael Landis on 5/17/14.
 //  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
-#ifndef __rb_mlandis__GeographyRateModifierFunction__
-#define __rb_mlandis__GeographyRateModifierFunction__
+#ifndef __rb_mlandis__DistanceRateModifierFunction__
+#define __rb_mlandis__DistanceRateModifierFunction__
 
 #include "TimeAtlas.h"
 #include "CharacterHistoryRateModifier.h"
@@ -19,14 +19,14 @@
 
 namespace RevBayesCore {
     
-    class GeographyRateModifierFunction : public TypedFunction<CharacterHistoryRateModifier> {
+    class DistanceRateModifierFunction : public TypedFunction<CharacterHistoryRateModifier> {
         
     public:
-        GeographyRateModifierFunction(const TypedDagNode<double>* dp, const TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false);
-        virtual ~GeographyRateModifierFunction(void);                                                                                                  //!< Virtual destructor
+        DistanceRateModifierFunction(const TypedDagNode<double>* dp, const TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false);
+        virtual ~DistanceRateModifierFunction(void);                                                                                                  //!< Virtual destructor
         
         // public member functions
-        GeographyRateModifierFunction*                                     clone(void) const;                                                          //!< Create an independent clone
+        DistanceRateModifierFunction*                                     clone(void) const;                                                          //!< Create an independent clone
         void                                                                    update(void);
         
     protected:
@@ -42,4 +42,4 @@ namespace RevBayesCore {
 }
 
 
-#endif /* defined(__rb_mlandis__GeographyRateModifierFunction__) */
+#endif /* defined(__rb_mlandis__DistanceRateModifierFunction__) */

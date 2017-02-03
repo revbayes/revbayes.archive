@@ -2,7 +2,7 @@
 #define BiogeographyRateGeneratorSequenceFunction_H
 
 //#include "CountRateModifier.h"
-#include "GeographyRateModifier.h"
+#include "DistanceRateModifier.h"
 #include "RateGenerator.h"
 #include "RateGeneratorSequence_Biogeography.h"
 #include "RbVector.h"
@@ -24,7 +24,7 @@ namespace RevBayesCore {
         BiogeographyRateGeneratorSequenceFunction*                        clone(void) const;                                                              //!< Create an independent clone
         
         // set parameters
-        void                                                setGeographyRateModifier(const TypedDagNode<GeographyRateModifier>* drm);
+        void                                                setDistanceRateModifier(const TypedDagNode<CharacterHistoryRateModifier>* drm);
 //        void                                                setCountRateModifier(const TypedDagNode<double>* rsrm);
         void                                                setGainLossRates(const TypedDagNode< RbVector<double> >* glr);
         void                                                setRateMatrix(const TypedDagNode<RateGenerator>* rm);
@@ -38,7 +38,7 @@ namespace RevBayesCore {
         // members
         const TypedDagNode<RateGenerator>*                  homogeneousRateMatrix;
 
-        const TypedDagNode<GeographyRateModifier>*          geographyRateModifier;
+        const TypedDagNode<CharacterHistoryRateModifier>*   distanceRateModifier;
 //      const TypedDagNode<CountRateModifier>*              countRateModifier;
         
         // geography epochs

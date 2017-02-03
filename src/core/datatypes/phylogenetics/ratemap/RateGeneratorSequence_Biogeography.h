@@ -2,7 +2,7 @@
 #define RateGeneratorSequence_Biogeography_H
 
 #include "RateGeneratorSequenceUsingMatrix.h"
-#include "GeographyRateModifier.h"
+#include "DistanceRateModifier.h"
 #include <vector>
 
 namespace RevBayesCore {
@@ -41,9 +41,9 @@ namespace RevBayesCore {
         void                                        setDistancePower(double d);
         
         // other crazy stuff for BiogeographyRateGeneratorSequenceFunction to handle
-        void                                        setGeographyRateModifier(const GeographyRateModifier& gdrm);
-        void                                        setGeographicDistancePowers(const GeographyRateModifier& gdrm);
-        const GeographyRateModifier &               getGeographyRateModifier(void);
+        void                                        setDistanceRateModifier(const DistanceRateModifier& gdrm);
+        void                                        setGeographicDistancePowers(const DistanceRateModifier& gdrm);
+        const DistanceRateModifier &                getDistanceRateModifier(void);
         const std::vector<double>&                  getEpochs(void) const;
         
     private:
@@ -55,8 +55,8 @@ namespace RevBayesCore {
         unsigned                                    maxRangeSize;
         
         // geography models
-        bool                                        useGeographyRateModifier;
-        GeographyRateModifier*                      geographyRateModifier;
+        bool                                        useDistanceRateModifier;
+        DistanceRateModifier*                       distanceRateModifier;
         std::vector<double>                         epochs;
         size_t                                      numEpochs;
         size_t                                      epochOffset;
