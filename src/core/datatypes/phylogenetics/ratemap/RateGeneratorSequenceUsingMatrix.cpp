@@ -239,9 +239,10 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
             
             // get modified rate
             CharacterEvent to(i, to_state, age);
-            for (size_t k = 0; i < rateModifiers->size(); k++)
+            for (size_t k = 0; k < rateModifiers->size(); k++)
             {
-                double m = (*rateModifiers)[k].computeRateMultiplier(from, &to);
+                CharacterHistoryRateModifier& chrm = (*rateModifiers)[k];
+                double m = chrm.computeRateMultiplier(from, &to);
                 r *= m;
             }
             

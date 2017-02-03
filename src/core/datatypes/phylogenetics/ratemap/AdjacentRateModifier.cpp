@@ -31,30 +31,30 @@ AdjacentRateModifier::AdjacentRateModifier(const AdjacentRateModifier& g) : Char
 
 double AdjacentRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
 {
-    double r = 1.0;
-    
     size_t num_match = 0;
     
     size_t to_index = newState->getSiteIndex();
     size_t to_state = newState->getState();
     
-    int lower_bound = 0;
-    int upper_bound = (int)(this->num_characters - 1);
+    int lower_bound = ( (int)(to_index - width) < 0                     ? 0                               : (int)(to_index - width) );
+    int upper_bound = ( (int)(to_index + width) >= this->num_characters ? (int)(this->num_characters - 1) : (int)(to_index + width) );
     
-    for (int i = (int)(to_index - width); i < i + width; i++)
+//    std::cout << to_index << ":\n";
+    for (int i = lower_bound; i <= upper_bound; i++)
     {
-        if ( i < lower_bound || i > upper_bound )
-        {
+        if (i == to_index)
             continue;
-        }
-        else if (currState[to_index]->getState() == to_state)
+        else if (currState[i]->getState() == to_state)
         {
             num_match++;
         }
+//        size_t from_state = currState[i]->getState();
+//        std::cout << i << " " << from_state << " " << to_state << "\n";
     }
     
-    r *= num_match * factor;
-    
+    double r = exp(num_match * factor);
+//    std::cout << r << "\n\n";
+    return 1.0;
     return r;
 }
 

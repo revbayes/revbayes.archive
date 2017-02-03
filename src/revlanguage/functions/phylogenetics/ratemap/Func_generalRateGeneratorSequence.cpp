@@ -51,9 +51,6 @@ RevBayesCore::TypedFunction<RevBayesCore::RateGeneratorSequence>* Func_generalRa
     unsigned nc = static_cast<const Natural&>( this->args[1].getVariable()->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::CharacterHistoryRateModifier> >* rm_vec = static_cast<const ModelVector<CharacterHistoryRateModifier>&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
-//    RevBayesCore::TypedDagNode<RevBayesCore::CharacterHistoryRateModifier>* rate_mods = static_cast<const RateGenerator&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
-//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
-
     RevBayesCore::GeneralRateGeneratorSequenceFunction* f = new RevBayesCore::GeneralRateGeneratorSequenceFunction(ns, nc);
     f->setRateMatrix(rm);
     f->setRateModifiers(rm_vec);
