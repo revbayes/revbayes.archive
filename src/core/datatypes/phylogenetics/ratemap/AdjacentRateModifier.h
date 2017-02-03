@@ -20,7 +20,7 @@ namespace RevBayesCore
     class AdjacentRateModifier : public CharacterHistoryRateModifier
     {
     public:
-        AdjacentRateModifier(size_t ns, size_t nc, size_t width, double f);
+        AdjacentRateModifier(size_t ns, size_t nc);
         AdjacentRateModifier(const AdjacentRateModifier& g);
         
         double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
@@ -28,6 +28,10 @@ namespace RevBayesCore
         double                              computeRateMultiplier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
         double                              computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
         double                              computeSiteRateMultiplier(const TopologyNode& node, unsigned curState, unsigned newState, unsigned charIdx=0, double age=0.0);
+        
+        void                                setFactor(double f);
+        void                                setWidth(size_t w);
+        
         
         void                                update(void);
         AdjacentRateModifier*               clone(void) const;

@@ -16,6 +16,7 @@
 #include "RateGeneratorSequence.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlCharacterHistoryRateModifier.h"
 #include "RlBoolean.h"
 #include "RlDeterministicNode.h"
 #include "RlRateGeneratorSequence.h"
@@ -48,11 +49,14 @@ RevBayesCore::TypedFunction<RevBayesCore::RateGeneratorSequence>* Func_generalRa
     RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     size_t ns = rm->getValue().getNumberOfStates();
     unsigned nc = static_cast<const Natural&>( this->args[1].getVariable()->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::CharacterHistoryRateModifier> >* rm_vec = static_cast<const ModelVector<CharacterHistoryRateModifier>&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+    
 //    RevBayesCore::TypedDagNode<RevBayesCore::CharacterHistoryRateModifier>* rate_mods = static_cast<const RateGenerator&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
 //    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
     RevBayesCore::GeneralRateGeneratorSequenceFunction* f = new RevBayesCore::GeneralRateGeneratorSequenceFunction(ns, nc);
     f->setRateMatrix(rm);
+    f->setRateModifiers(rm_vec);
     
     return f;
 }
@@ -69,7 +73,7 @@ const ArgumentRules& Func_generalRateGeneratorSequence::getArgumentRules( void )
     {
         argumentRules.push_back( new ArgumentRule( "Q", RateGenerator::getClassTypeSpec(), "The per-character rate generator.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "numChars", Natural::getClassTypeSpec(), "The number of characters.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "rateModifiers", RateGenerator::getClassTypeSpec(), "The sequence-wide context-dependent rate modifiers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "rateModifiers", ModelVector<CharacterHistoryRateModifier>::getClassTypeSpec(), "The sequence-wide context-dependent rate modifiers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }

@@ -21,6 +21,11 @@ CharacterHistoryRateModifier::CharacterHistoryRateModifier(void) : ModelObject<R
 }
 
 
+CharacterHistoryRateModifier::CharacterHistoryRateModifier( const RevBayesCore::CharacterHistoryRateModifier &v) : ModelObject<RevBayesCore::CharacterHistoryRateModifier>( v.clone() )
+{
+    
+}
+
 CharacterHistoryRateModifier::CharacterHistoryRateModifier( RevBayesCore::CharacterHistoryRateModifier *v) : ModelObject<RevBayesCore::CharacterHistoryRateModifier>( v ) {
     
 }

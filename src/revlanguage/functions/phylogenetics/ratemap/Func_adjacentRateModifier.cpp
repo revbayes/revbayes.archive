@@ -7,6 +7,7 @@
 //
 
 #include "Func_adjacentRateModifier.h"
+#include "AdjacentRateModifierFunction.h"
 #include "CharacterHistoryRateModifier.h"
 //#include "DistanceDependentDispersalFunction.h"
 #include "ModelVector.h"
@@ -41,10 +42,12 @@ Func_adjacentRateModifier* Func_adjacentRateModifier::clone( void ) const {
 RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_adjacentRateModifier::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<double>* f = static_cast<const Real&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* p = static_cast<const Real&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<int>* w = static_cast<const Natural&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    size_t ns = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
+    size_t nc = static_cast<const Natural&>( this->args[3].getVariable()->getRevObject() ).getValue();
 
-//    RevBayesCore::DistanceDependentDispersalFunction* f = new RevBayesCore::Adjacen(dp, atlas, uadj, uav, udd);
+    RevBayesCore::AdjacentRateModifierFunction* f = new RevBayesCore::AdjacentRateModifierFunction(p, w, ns, nc);
     
     return f;
 }
@@ -60,8 +63,10 @@ const ArgumentRules& Func_adjacentRateModifier::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1.0) );
-        argumentRules.push_back( new ArgumentRule( "width",  Natural::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(1) );
+        argumentRules.push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "Multiplicative factor (r' = r * n * f) for towards characters within range `width`", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1.0) ) );
+        argumentRules.push_back( new ArgumentRule( "width",  Natural::getClassTypeSpec(), "Width of context-dependence window", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(1) ) );
+        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), "Number of states", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
+        argumentRules.push_back( new ArgumentRule( "numChars", Natural::getClassTypeSpec(), "Number of characters", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
         
         rulesSet = true;
     }
@@ -94,7 +99,7 @@ const TypeSpec& Func_adjacentRateModifier::getClassTypeSpec(void)
 std::string Func_adjacentRateModifier::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnBiogeoGRM";
+    std::string f_name = "fnAdjacentRateModifier";
     
     return f_name;
 }

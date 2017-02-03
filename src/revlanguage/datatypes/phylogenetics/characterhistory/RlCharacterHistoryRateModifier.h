@@ -22,7 +22,8 @@ namespace RevLanguage {
         
     public:
         
-        CharacterHistoryRateModifier(void);                                                                                  //!< Default constructor
+        CharacterHistoryRateModifier(void);                                                                                //!< Default constructor
+        CharacterHistoryRateModifier(const RevBayesCore::CharacterHistoryRateModifier& m);                                 //!< Default constructor
         CharacterHistoryRateModifier(RevBayesCore::CharacterHistoryRateModifier *m);                                       //!< Default constructor
         CharacterHistoryRateModifier(RevBayesCore::TypedDagNode<RevBayesCore::CharacterHistoryRateModifier> *d);           //!< Default constructor
         

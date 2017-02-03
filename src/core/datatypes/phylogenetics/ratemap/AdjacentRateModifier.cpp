@@ -14,10 +14,7 @@
 
 using namespace RevBayesCore;
 
-AdjacentRateModifier::AdjacentRateModifier(size_t ns, size_t nc, size_t w, double f) : CharacterHistoryRateModifier(ns, nc),
-    width(w),
-    factor(f)
-
+AdjacentRateModifier::AdjacentRateModifier(size_t ns, size_t nc) : CharacterHistoryRateModifier(ns, nc)
 {
 
 }
@@ -91,6 +88,18 @@ void AdjacentRateModifier::update(void)
 {
     ; // do nothing
 }
+
+void AdjacentRateModifier::setFactor(double f)
+{
+    factor = f;
+}
+
+void AdjacentRateModifier::setWidth(size_t w)
+{
+    width = w;
+}
+
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const AdjacentRateModifier& x)
 {
