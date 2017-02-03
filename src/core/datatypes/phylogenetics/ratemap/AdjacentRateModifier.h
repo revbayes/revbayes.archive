@@ -1,13 +1,13 @@
 //
-//  CountRateModifier.h
+//  AdjacentRateModifier.h
 //  rb_mlandis
 //
 //  Created by Michael Landis on 8/8/13.
 //  Copyright (c) 2013 Michael Landis. All rights reserved.
 //
 
-#ifndef __rb_mlandis__CountRateModifier__
-#define __rb_mlandis__CountRateModifier__
+#ifndef __rb_mlandis__AdjacentRateModifier__
+#define __rb_mlandis__AdjacentRateModifier__
 
 #include "CharacterHistoryRateModifier.h"
 #include "StochasticNode.h"
@@ -17,37 +17,32 @@
 
 namespace RevBayesCore
 {
-    class CountRateModifier : public CharacterHistoryRateModifier
+    class AdjacentRateModifier : public CharacterHistoryRateModifier
     {
     public:
-        CountRateModifier(unsigned nc);
-        CountRateModifier(const CountRateModifier& g);
+        AdjacentRateModifier(size_t ns, size_t nc, size_t width, double f);
+        AdjacentRateModifier(const AdjacentRateModifier& g);
         
         double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
         double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
         double                              computeRateMultiplier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
         double                              computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
         double                              computeSiteRateMultiplier(const TopologyNode& node, unsigned curState, unsigned newState, unsigned charIdx=0, double age=0.0);
-        const std::vector<double>&          getProportions(void) const;
-        void                                setProportions(const std::vector<double>& dp);
         
         void                                update(void);
-        CountRateModifier*                  clone(void) const;
+        AdjacentRateModifier*               clone(void) const;
         
     protected:
        
         
     private:
         
-        // parameter
-        std::vector<double> proportions;
-        
-        // helper variables
-        unsigned numCharacters;
-        
+        size_t                              width;
+        double                              factor;
+                
     };
     
-    std::ostream& operator<<(std::ostream& o, const CountRateModifier& x);
+    std::ostream& operator<<(std::ostream& o, const AdjacentRateModifier& x);
 }
 
-#endif /* defined(__rb_mlandis__CountRateModifier__) */
+#endif /* defined(__rb_mlandis__AdjacentRateModifier__) */

@@ -11,9 +11,22 @@
 
 using namespace RevBayesCore;
 
-CharacterHistoryRateModifier::CharacterHistoryRateModifier(void)
+CharacterHistoryRateModifier::CharacterHistoryRateModifier(size_t ns, size_t nc) :
+    num_states(ns),
+    num_characters(nc)
 {
-    ;
+    ; // do nothing
+}
+
+
+CharacterHistoryRateModifier::CharacterHistoryRateModifier(const CharacterHistoryRateModifier& g)
+{
+    
+    if (&g != this)
+    {
+        num_states = g.num_states;
+        num_characters = g.num_characters;
+    }
 }
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<CharacterHistoryRateModifier*>& x)

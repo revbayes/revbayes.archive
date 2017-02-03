@@ -1,0 +1,109 @@
+//
+//  Func_adjacentRateModifier.cpp
+//  revbayes-proj
+//
+//  Created by Michael Landis on 2/3/17.
+//  Copyright © 2017 Michael Landis. All rights reserved.
+//
+
+#include "Func_adjacentRateModifier.h"
+#include "CharacterHistoryRateModifier.h"
+//#include "DistanceDependentDispersalFunction.h"
+#include "ModelVector.h"
+#include "Real.h"
+#include "RealPos.h"
+#include "RlBoolean.h"
+#include "RlDeterministicNode.h"
+#include "RlRateGeneratorSequence.h"
+#include "TypedDagNode.h"
+
+using namespace RevLanguage;
+
+/** default constructor */
+Func_adjacentRateModifier::Func_adjacentRateModifier( void ) : TypedFunction< CharacterHistoryRateModifier >( )
+{
+    
+}
+
+
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Func_adjacentRateModifier* Func_adjacentRateModifier::clone( void ) const {
+    
+    return new Func_adjacentRateModifier( *this );
+}
+
+
+RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_adjacentRateModifier::createFunction( void ) const
+{
+    
+    RevBayesCore::TypedDagNode<double>* f = static_cast<const Real&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<int>* w = static_cast<const Natural&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+
+//    RevBayesCore::DistanceDependentDispersalFunction* f = new RevBayesCore::Adjacen(dp, atlas, uadj, uav, udd);
+    
+    return f;
+}
+
+
+/* Get argument rules */
+const ArgumentRules& Func_adjacentRateModifier::getArgumentRules( void ) const
+{
+    
+    static ArgumentRules argumentRules = ArgumentRules();
+    static bool          rulesSet = false;
+    
+    if ( !rulesSet )
+    {
+        
+        argumentRules.push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1.0) );
+        argumentRules.push_back( new ArgumentRule( "width",  Natural::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(1) );
+        
+        rulesSet = true;
+    }
+    
+    return argumentRules;
+}
+
+
+const std::string& Func_adjacentRateModifier::getClassType(void)
+{
+    
+    static std::string revType = "Func_adjacentRateModifier";
+    
+    return revType;
+}
+
+/* Get class type spec describing type of object */
+const TypeSpec& Func_adjacentRateModifier::getClassTypeSpec(void)
+{
+    
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    
+    return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_adjacentRateModifier::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnBiogeoGRM";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_adjacentRateModifier::getTypeSpec( void ) const
+{
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
+}

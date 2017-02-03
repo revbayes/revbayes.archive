@@ -17,7 +17,7 @@
 
 using namespace RevBayesCore;
 
-GeographyRateModifier::GeographyRateModifier(const TimeAtlas* ta, bool uadj, bool uav, bool udd, int idx, double dp, double th, std::string dt )
+GeographyRateModifier::GeographyRateModifier(const TimeAtlas* ta, bool uadj, bool uav, bool udd, int idx, double dp, double th, std::string dt ) : CharacterHistoryRateModifier(2, ta->getNumAreas())
 
 {
     // initialize
@@ -81,7 +81,7 @@ GeographyRateModifier::GeographyRateModifier(const TimeAtlas* ta, bool uadj, boo
     update();
 }
 
-GeographyRateModifier::GeographyRateModifier(const GeographyRateModifier& g)
+GeographyRateModifier::GeographyRateModifier(const GeographyRateModifier& g) : CharacterHistoryRateModifier(g)
 {
 
     if (&g != this)
