@@ -126,7 +126,7 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
     
     for (size_t i = 0; i < rateModifiers->size(); i++)
     {
-        r *= (*rateModifiers)[i].computeRateMultiplier(from, to);
+        r *= (*rateModifiers)[i].computeRateMultiplier(from, to, age);
     }
 
     return r;
@@ -275,22 +275,31 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRatesDifferential(std::vector<C
 {
     double r = 0.0;
     
-    size_t old_state = from[ to->getSiteIndex() ]->getState();
+    size_t index = to->getSiteIndex();
+    size_t old_state = from[ index ]->getState();
     size_t new_state = to->getState();
     
+    CharacterEvent* possible_event = new CharacterEvent(*to);
     
-    for (size_t possible_state = 0; possible_state < num_states; possible_state++)
+    for (size_t s = 0; s < num_states; s++)
     {
+        possible_event->setState(s);
+        
         // subtract the contribution of rates leaving the old state
-        if (possible_state != old_state) {
-            r -= getRate(old_state, possible_state, age, rate);
+        if (s != old_state) {
+            r -= getRate(from, possible_event, age, rate);
         }
         
+        from[ index ]->setState( new_state );
         // add the contribution of rates leaving the new state
-        if (possible_state != new_state) {
-            r += getRate(new_state, possible_state, age, rate);
+        if (s != new_state) {
+            r += getRate(from, possible_event, age, rate);
         }
+        
+        from[ index ]->setState( old_state );
     }
+    
+    delete possible_event;
     
     return r;
 }

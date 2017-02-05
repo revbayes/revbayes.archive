@@ -107,5 +107,7 @@ void GeneralRateGeneratorSequenceFunction::swapParameterInternal(const DagNode *
     else if (oldP == rateModifiers)
     {
         rateModifiers = static_cast<const TypedDagNode<RbVector<CharacterHistoryRateModifier> >* >( newP );
+        std::cout << "GRGSF::this " << this << "\n";
+        std::cout << "GRGSF::ARMF " << oldP << " -> " << newP << "\n";
     }
 }

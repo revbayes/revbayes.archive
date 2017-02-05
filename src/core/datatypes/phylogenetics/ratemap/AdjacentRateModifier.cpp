@@ -29,9 +29,23 @@ AdjacentRateModifier::AdjacentRateModifier(const AdjacentRateModifier& g) : Char
     }
 }
 
+AdjacentRateModifier& AdjacentRateModifier::assign(const Assignable &m)
+{
+    
+    const AdjacentRateModifier *crm = dynamic_cast<const AdjacentRateModifier*>(&m);
+    if ( crm != NULL )
+    {
+        return operator=(*crm);
+    }
+    else
+    {
+        throw RbException("Could not assign character history rate modifier.");
+    }
+}
+
 double AdjacentRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
 {
-    size_t num_match = 0;
+    int num_match = 0;
     
     size_t to_index = newState->getSiteIndex();
     size_t to_state = newState->getState();
@@ -48,24 +62,16 @@ double AdjacentRateModifier::computeRateMultiplier(std::vector<CharacterEvent *>
         {
             num_match++;
         }
-//        size_t from_state = currState[i]->getState();
-//        std::cout << i << " " << from_state << " " << to_state << "\n";
+        else
+        {
+            num_match--;
+        }
+        
     }
     
     double r = exp(num_match * factor);
-//    std::cout << r << "\n\n";
-    return 1.0;
+
     return r;
-}
-
-double AdjacentRateModifier::computeRateMultiplier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
-{
-    return computeRateMultiplier(currState, newState, age);
-}
-
-double AdjacentRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
-{
-    return computeRateMultiplier(currState, newState, 0.0);
 }
 
 double AdjacentRateModifier::computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)

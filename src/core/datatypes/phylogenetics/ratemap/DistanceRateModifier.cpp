@@ -136,6 +136,20 @@ DistanceRateModifier::DistanceRateModifier(const DistanceRateModifier& g) : Char
     }
 }
 
+DistanceRateModifier& DistanceRateModifier::assign(const Assignable &m)
+{
+    
+    const DistanceRateModifier *crm = dynamic_cast<const DistanceRateModifier*>(&m);
+    if ( crm != NULL )
+    {
+        return operator=(*crm);
+    }
+    else
+    {
+        throw RbException("Could not assign character history rate modifier.");
+    }
+}
+
 double DistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
 {
     unsigned epochIdx = getEpochIndex(age);
@@ -337,15 +351,15 @@ double DistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *>
     return r;
 }
 
-double DistanceRateModifier::computeRateMultiplier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
-{
-    return computeRateMultiplier(currState, newState, age);
-}
+//double DistanceRateModifier::computeRateMultiplier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+//{
+//    return computeRateMultiplier(currState, newState, age);
+//}
 
-double DistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
-{
-    return computeRateMultiplier(currState, newState, 0.0);
-}
+//double DistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
+//{
+//    return computeRateMultiplier(currState, newState, 0.0);
+//}
 
 double DistanceRateModifier::computeSiteRateMultiplier( CharacterEvent* currState, CharacterEvent* newState, double age)
 {

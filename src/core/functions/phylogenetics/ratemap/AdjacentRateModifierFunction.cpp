@@ -24,11 +24,19 @@ AdjacentRateModifierFunction::AdjacentRateModifierFunction(const TypedDagNode<do
     update();
 }
 
+AdjacentRateModifierFunction::AdjacentRateModifierFunction(const AdjacentRateModifierFunction& m) : TypedFunction<CharacterHistoryRateModifier>( m )
+{
+    factor = m.factor;
+    width = m.width;
+}
+
 
 AdjacentRateModifierFunction::~AdjacentRateModifierFunction( void )
 {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
+
+
 
 
 
@@ -56,7 +64,10 @@ void AdjacentRateModifierFunction::swapParameterInternal(const DagNode *oldP, co
     if (oldP == factor)
     {
         factor = static_cast<const TypedDagNode<double>* >( newP );
-    } else if (oldP == width)
+        std::cout << "ARMF::this " << this << "\n";
+        std::cout << "ARMF::factor " << oldP << " -> " << newP << "\n";
+    }
+    else if (oldP == width)
     {
         width = static_cast<const TypedDagNode<int>* >( newP );
     }

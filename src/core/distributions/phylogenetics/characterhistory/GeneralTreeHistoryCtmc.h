@@ -242,7 +242,8 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         size_t s = char_event->getState();
         
         // lnL for stepwise events for p(x->y)
-        double tr = rm.getRate(curr_state[idx]->getState(), char_event->getState(), current_age, branch_rate);
+//        double tr = rm.getRate(curr_state[idx]->getState(), char_event->getState(), current_age, branch_rate);
+        double tr = rm.getRate(curr_state, char_event, current_age, branch_rate);
 //        double sr = rm.getSumOfRates(curr_state, counts) * branch_rate;
         lnL += log(tr) - sr * (current_age - event_age);
         
@@ -645,19 +646,23 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
     // get start sum of rates
     double sr = rm.getSumOfRates(currState, counts, start_age, branch_rate);
     
+//    for (size_t i = 0; i < currState.size(); i++) {
+//        std::cout << currState[i]->getState();
+//    }
+//    std::cout << "\n";
+    
     // simulate path
     double t = start_age;
     double dt = 0.0;
     while (t - dt > end_age)
     {
         
-        // get incremental sum of rates
-//        double sr = rm.getSumOfRates(currState, counts, t, branch_rate);
-        
         // sample next event time
         dt = RbStatistics::Exponential::rv(sr, *GLOBAL_RNG);
         if (t - dt > end_age)
         {
+            double sr = rm.getSumOfRates(currState, counts, t, branch_rate);
+            
             // next event type
             CharacterEvent* evt = new CharacterEvent(0, 0, t - dt);
             double u = GLOBAL_RNG->uniform01() * sr;
@@ -674,7 +679,8 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
                     if (s != currState[i]->getState())
                     {
                         evt->setState(s);
-                        double r = rm.getRate(currState[i]->getState(), evt->getState(), t, branch_rate);
+//                        double r = rm.getRate(currState[i]->getState(), evt->getState(), t, branch_rate);
+                        double r = rm.getRate(currState, evt, t, branch_rate);
                         
                         u -= r;
                         if (u <= 0.0)
@@ -689,7 +695,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
             }
             
             // update sum of rates
-            sr += rm.getSumOfRatesDifferential(currState, evt, t-dt, branch_rate);
+//            sr += rm.getSumOfRatesDifferential(currState, evt, t-dt, branch_rate);
             
             // update counts
             counts[ currState[i]->getState() ] -= 1;
@@ -805,6 +811,8 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::swapParameterInternal( cons
     if (oldP == homogeneousRateGenerator)
     {
         homogeneousRateGenerator = static_cast<const TypedDagNode< RateGeneratorSequence >* >( newP );
+        std::cout << "GTHC::this  " << this << "\n";
+        std::cout << "GTHC::GRGSF " << oldP << " -> " << newP << "\n";
     }
     else if (oldP == heterogeneousRateGenerator)
     {

@@ -22,6 +22,7 @@ namespace RevBayesCore {
         
     public:
         AdjacentRateModifierFunction(const TypedDagNode<double>* f, const TypedDagNode<int>* w, size_t ns, size_t nc);
+        AdjacentRateModifierFunction(const AdjacentRateModifierFunction& m);
         virtual ~AdjacentRateModifierFunction(void);                                                                                                  //!< Virtual destructor
         
         // public member functions
