@@ -256,6 +256,8 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
     return sum;
 }
 
+
+
 double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, double age, double rate) const
 {
 
@@ -267,6 +269,30 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
     }
 
     return getSumOfRates( from, counts, age, rate);
+}
+
+double RateGeneratorSequenceUsingMatrix::getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEvent* to, double age, double rate) const
+{
+    double r = 0.0;
+    
+    size_t old_state = from[ to->getSiteIndex() ]->getState();
+    size_t new_state = to->getState();
+    
+    
+    for (size_t possible_state = 0; possible_state < num_states; possible_state++)
+    {
+        // subtract the contribution of rates leaving the old state
+        if (possible_state != old_state) {
+            r -= getRate(old_state, possible_state, age, rate);
+        }
+        
+        // add the contribution of rates leaving the new state
+        if (possible_state != new_state) {
+            r += getRate(new_state, possible_state, age, rate);
+        }
+    }
+    
+    return r;
 }
 
 

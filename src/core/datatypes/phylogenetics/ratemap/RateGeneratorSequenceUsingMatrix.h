@@ -33,7 +33,7 @@ namespace RevBayesCore {
         virtual std::vector<double>         getStationaryFrequencies(void) const;
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, double age=0.0, double rate=1.0) const;
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, std::vector<size_t> counts, double age=0.0, double rate=1.0) const;
-        
+        virtual double                      getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0, double rate=1.0) const;
         void                                setRateMatrix(const RateGenerator *rm);
         void                                setRateModifiers(const RbVector<CharacterHistoryRateModifier>* rm);
         virtual void                        updateMap(void);

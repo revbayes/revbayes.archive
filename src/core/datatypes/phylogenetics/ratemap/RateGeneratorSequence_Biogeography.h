@@ -23,14 +23,14 @@ namespace RevBayesCore {
         void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrixmatrix
 //        void                                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate, size_t charIdx) const;   //!< Calculate the transition matrixmatrix
         RateGeneratorSequence_Biogeography*                       clone(void) const;
-        double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate=1.0, double age=0.0) const;
-        double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const;
-        double                                      getRate(size_t from, size_t to, double rate=1.0, double age=0.0) const;
-        double                                      getSiteRate(CharacterEvent* from, CharacterEvent* to, double rate=1.0, double age=0.0) const;
-        double                                      getSiteRate(size_t from, size_t to, size_t charIdx=0, double rate=1.0, double age=0.0) const;
-        double                                      getSumOfRates(std::vector<CharacterEvent*> from, double rate=1.0, double age=0.0) const;
-        double                                      getSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double rate=1.0, double age=0.0) const;
-        double                                      getUnnormalizedSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double rate=1.0, double age=0.0) const;
+        double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0, double rate=1.0) const;
+        double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age=0.0, double rate=1.0) const;
+        double                                      getRate(size_t from, size_t to, double age=0.0, double rate=1.0) const;
+        double                                      getSiteRate(CharacterEvent* from, CharacterEvent* to, double age=0.0, double rate=1.0) const;
+        double                                      getSiteRate(size_t from, size_t to, size_t charIdx=0, double age=0.0, double rate=1.0) const;
+        double                                      getSumOfRates(std::vector<CharacterEvent*> from, double age=0.0, double rate=1.0) const;
+        double                                      getSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0, double rate=1.0) const;
+        double                                      getUnnormalizedSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0, double rate=1.0) const;
         const bool                                  isAreaAvailable(size_t charIdx, double age=0.0) const;
         const bool                                  areAreasAdjacent(size_t fromCharIdx, size_t toCharIdx, double age=0.0) const;
         const std::set<size_t>                      getRangeAndFrontierSet(BranchHistory* bh, double age=0.0) const;

@@ -198,6 +198,9 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     double dt;
     double eventAge;
     double endAge = nd.getAge();
+    double branchRate = getBranchRate(nd.getIndex());
+    double sr = rm.getSumOfRates(currState, counts, currAge, branchRate);
+    
     
     for (it_h = history.begin(); it_h != history.end(); ++it_h)
     {
@@ -206,8 +209,8 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
         eventAge = (*it_h)->getAge();
         dt = currAge - eventAge;
 
-        double tr = rm.getRate( currState[ (*it_h)->getSiteIndex() ]->getState(), (*it_h)->getState(), currAge, getBranchRate(nd.getIndex()));
-        double sr = rm.getSumOfRates(currState, counts) * getBranchRate(nd.getIndex());
+        // get the new transition rate
+        double tr = rm.getRate( currState[ (*it_h)->getSiteIndex() ]->getState(), (*it_h)->getState(), currAge, branchRate);
 
         // lnP for stepwise events for p(x->y)
         lnP += log(tr) - (sr * dt);
@@ -216,13 +219,16 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
         counts[ currState[idx]->getState() ] -= 1;
         counts[ (*it_h)->getState() ] += 1;
 
+        // update sum of rates
+        sr += rm.getSumOfRatesDifferential(currState, *it_h, currAge, branchRate);
+        
         // update state
         currState[idx] = *it_h;
         currAge = eventAge;
+        
     }
 
     // lnL for final non-event
-    double sr = rm.getSumOfRates(currState, counts) * getBranchRate(nd.getIndex());
     lnP -= sr * (currAge - endAge);
 
     return lnP;

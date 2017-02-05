@@ -22,12 +22,9 @@ namespace RevBayesCore {
         virtual                            ~RateGeneratorSequence(void);                                                                 //!< Destructor
         
         // public methods
-//        size_t                              getNumberOfStates(void) const;                      //!< Return the number of states
         size_t                              getNumberOfCharacters(void) const;                  //!< Return the number of characters
-//        size_t                              size(void) const;                                                                           //!< Get the size of the rate matrix, which is the same as the number of states
 
         // virtual public methods
-//        virtual void                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixmatrix
         virtual RateGeneratorSequence*      clone(void) const = 0;
 //        virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const = 0;
@@ -36,6 +33,7 @@ namespace RevBayesCore {
         virtual std::vector<double>         getStationaryFrequencies(void) const = 0;
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, double age=0.0, double rate=1.0) const = 0;
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, std::vector<size_t> counts, double age=0.0, double rate=1.0) const = 0;
+        virtual double                      getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0, double rate=1.0) const = 0;
         virtual void                        updateMap(void);
         
     protected:

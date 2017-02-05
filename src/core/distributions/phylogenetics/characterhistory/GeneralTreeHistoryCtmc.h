@@ -230,6 +230,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     double current_age = node.getParent().getAge();
     double end_age = node.getAge();
     double event_age;
+    double sr = rm.getSumOfRates(curr_state, counts, current_age, branch_rate);
     
     for (it_h = history.begin(); it_h != history.end(); ++it_h)
     {
@@ -242,8 +243,11 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         
         // lnL for stepwise events for p(x->y)
         double tr = rm.getRate(curr_state[idx]->getState(), char_event->getState(), current_age, branch_rate);
-        double sr = rm.getSumOfRates(curr_state, counts) * branch_rate;
+//        double sr = rm.getSumOfRates(curr_state, counts) * branch_rate;
         lnL += log(tr) - sr * (current_age - event_age);
+        
+        // update sum of rates
+        sr += rm.getSumOfRatesDifferential(curr_state, char_event, event_age, branch_rate);
         
         // update counts
         counts[curr_state[idx]->getState()] -= 1;
@@ -255,7 +259,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     }
     
     // lnL that nothing else happens
-    double sr = rm.getSumOfRates(curr_state) * branch_rate;
+//    double sr = rm.getSumOfRates(curr_state) * branch_rate;
     lnL -= sr * (current_age - end_age);
     
     return lnL;
@@ -637,14 +641,20 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
     std::vector<size_t> counts = computeCounts(currState);
     std::set<CharacterEvent*,CharacterEventCompare> history;
     
+    
+    // get start sum of rates
+    double sr = rm.getSumOfRates(currState, counts, start_age, branch_rate);
+    
     // simulate path
     double t = start_age;
     double dt = 0.0;
     while (t - dt > end_age)
     {
         
+        // get incremental sum of rates
+//        double sr = rm.getSumOfRates(currState, counts, t, branch_rate);
+        
         // sample next event time
-        double sr = rm.getSumOfRates(currState, counts, t, branch_rate);
         dt = RbStatistics::Exponential::rv(sr, *GLOBAL_RNG);
         if (t - dt > end_age)
         {
@@ -677,6 +687,9 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
                 }
                 if (found) break;
             }
+            
+            // update sum of rates
+            sr += rm.getSumOfRatesDifferential(currState, evt, t-dt, branch_rate);
             
             // update counts
             counts[ currState[i]->getState() ] -= 1;
