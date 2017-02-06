@@ -39,7 +39,8 @@ namespace RevBayesCore
         double                              computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age=0.0);
         
         void                                setContextMatrix(const RbVector<RbVector<double> >& c);
-        void                                setFactor(double f);
+        void                                setGainFactor(double f);
+        void                                setLossFactor(double f);
         void                                setWidth(size_t w);
         
         
@@ -60,7 +61,8 @@ namespace RevBayesCore
         
         std::vector<std::vector<adjacency> > context_matrix;
         size_t                               width;
-        double                               factor;
+        double                               gain_factor;
+        double                               loss_factor;
         
         std::string                          context_type;
     };

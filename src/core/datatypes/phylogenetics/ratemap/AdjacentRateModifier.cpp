@@ -16,7 +16,8 @@ using namespace RevBayesCore;
 
 AdjacentRateModifier::AdjacentRateModifier(size_t ns, size_t nc) : CharacterHistoryRateModifier(ns, nc),
   width(1),
-  factor(1),
+  gain_factor(0.0),
+  loss_factor(0.0),
   context_matrix( std::vector<std::vector<adjacency> >() ),
   context_type("width")
 {
@@ -29,7 +30,8 @@ AdjacentRateModifier::AdjacentRateModifier(const AdjacentRateModifier& g) : Char
     if (&g != this)
     {
         width = g.width;
-        factor = g.factor;
+        gain_factor = g.gain_factor;
+        loss_factor = g.loss_factor;
         context_matrix = g.context_matrix;
         context_type = g.context_type;
     }
@@ -72,7 +74,7 @@ double AdjacentRateModifier::computeRateMultiplier(std::vector<CharacterEvent *>
 
 double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age)
 {
-    double num_match = 0;
+    std::vector<double> match(2, 0.0);
     
     size_t to_index = newState->getSiteIndex();
     size_t to_state = newState->getState();
@@ -86,23 +88,24 @@ double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<Charact
             continue;
         else if (currState[i]->getState() == to_state)
         {
-            num_match += 1.0;
+            match[1] += 1.0;
         }
         else
         {
-            num_match -= 1.0;
+            match[0] += 1.0;
         }
         
     }
     
-    double r = exp(num_match * factor);
+//    double r = exp(num_match * factor);
+    double r = exp(gain_factor * match[1] - loss_factor * match[0]);
     
     return r;
 }
 
 double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age)
 {
-    double num_match = 0;
+    std::vector<double> match(2, 0.0);
     
     size_t to_index = newState->getSiteIndex();
     size_t to_state = newState->getState();
@@ -111,7 +114,6 @@ double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<Charac
     {
         for (size_t j = 0; j < context_matrix[i].size(); j++)
         {
-            double w = 0.0;
             const adjacency& v = context_matrix[i][j];
             if (v.to == to_index)
             {
@@ -119,17 +121,15 @@ double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<Charac
             }
             else if (currState[v.to]->getState() == to_state)
             {
-                w = v.weight;
+                match[1] += v.weight;
             }
             else
             {
-                w = -v.weight;
+                match[0] += v.weight;
             }
-            num_match += w;
-//            std::cout << i << " " << j << " " << w << "\n";
         }
     }
-    double r = exp(num_match * factor);
+    double r = exp(gain_factor * match[1] - loss_factor * match[0]);
     
     return r;
 }
@@ -156,10 +156,16 @@ void AdjacentRateModifier::update(void)
     ; // do nothing
 }
 
-void AdjacentRateModifier::setFactor(double f)
+void AdjacentRateModifier::setGainFactor(double f)
 {
-    factor = f;
+    gain_factor = f;
 }
+
+void AdjacentRateModifier::setLossFactor(double f)
+{
+    loss_factor = f;
+}
+
 
 void AdjacentRateModifier::setWidth(size_t w)
 {

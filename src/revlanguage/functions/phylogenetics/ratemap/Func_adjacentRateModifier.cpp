@@ -43,16 +43,17 @@ Func_adjacentRateModifier* Func_adjacentRateModifier::clone( void ) const {
 RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_adjacentRateModifier::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<double>* p = static_cast<const Real&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<int>* w = static_cast<const Natural&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* gf = static_cast<const Real&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* lf = static_cast<const Real&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<int>* w = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* c = NULL;
-    if ( this->args[2].getVariable()->getRevObject().isType( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() ) )
+    if ( this->args[3].getVariable()->getRevObject().isType( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() ) )
     {
         
-        c = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+        c = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
     }
-    size_t ns = static_cast<const Natural&>( this->args[3].getVariable()->getRevObject() ).getValue();
-    size_t nc = static_cast<const Natural&>( this->args[4].getVariable()->getRevObject() ).getValue();
+    size_t ns = static_cast<const Natural&>( this->args[4].getVariable()->getRevObject() ).getValue();
+    size_t nc = static_cast<const Natural&>( this->args[5].getVariable()->getRevObject() ).getValue();
 
     
     // validate input
@@ -68,7 +69,7 @@ RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_
     }
 
     
-    RevBayesCore::AdjacentRateModifierFunction* f = new RevBayesCore::AdjacentRateModifierFunction(p, w, c, ns, nc);
+    RevBayesCore::AdjacentRateModifierFunction* f = new RevBayesCore::AdjacentRateModifierFunction(gf, lf, w, c, ns, nc);
     
     return f;
 }
@@ -84,7 +85,8 @@ const ArgumentRules& Func_adjacentRateModifier::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "factor", Real::getClassTypeSpec(), "Multiplicative factor (r' = r * e^{ n * f }) for towards characters within range `width`", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1.0) ) );
+        argumentRules.push_back( new ArgumentRule( "gainFactor", Real::getClassTypeSpec(), "Multiplicative factor (r' = r * e^{ n_1 * f }) for characters in context set", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
+        argumentRules.push_back( new ArgumentRule( "lossFactor", Real::getClassTypeSpec(), "Multiplicative factor (r' = r * e^{ n_0 * f }) for characters in context set", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         argumentRules.push_back( new ArgumentRule( "width",  Natural::getClassTypeSpec(), "Width of context-dependence window", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(1) ) );
         argumentRules.push_back( new ArgumentRule( "matrix",  ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "Weighted character adjacency matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), "Number of states", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
