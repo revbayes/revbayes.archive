@@ -19,10 +19,6 @@ AbstractPhyloContinuousCharacterHistoryProcess::AbstractPhyloContinuousCharacter
     heterogeneous_root_state    = NULL;
     
     addParameter( homogeneous_root_state );
-
-    // now we need to reset the value
-    // Sebastian: We cannot do this here because redraw has calls the pure virtual functions simulateRootCharacters and simulateRecursively
-//    this->redrawValue();
     
 }
 
@@ -89,7 +85,7 @@ void AbstractPhyloContinuousCharacterHistoryProcess::redrawValue( void )
     
     // tell the derived classes
     this->resetValue();
-    
+
 }
 
 void AbstractPhyloContinuousCharacterHistoryProcess::setRootState(const TypedDagNode<double> *s)

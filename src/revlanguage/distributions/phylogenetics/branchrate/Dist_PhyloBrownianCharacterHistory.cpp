@@ -1,33 +1,33 @@
-#include "Dist_PhyloBrownianREML.h"
+#include "Dist_PhyloBrownianCharacterHistory.h"
 #include "OptionRule.h"
-#include "PhyloBrownianProcessREML.h"
+#include "PhyloBrownianCharacterHistoryProcess.h"
 #include "RevNullObject.h"
 #include "RlString.h"
 #include "RlTree.h"
 
 using namespace RevLanguage;
 
-Dist_PhyloBrownianREML::Dist_PhyloBrownianREML() : TypedDistribution< ContinuousCharacterData >()
+Dist_PhyloBrownianCharacterHistory::Dist_PhyloBrownianCharacterHistory() : TypedDistribution< ContinuousCharacterData >()
 {
     
 }
 
 
-Dist_PhyloBrownianREML::~Dist_PhyloBrownianREML()
+Dist_PhyloBrownianCharacterHistory::~Dist_PhyloBrownianCharacterHistory()
 {
     
 }
 
 
 
-Dist_PhyloBrownianREML* Dist_PhyloBrownianREML::clone( void ) const
+Dist_PhyloBrownianCharacterHistory* Dist_PhyloBrownianCharacterHistory::clone( void ) const
 {
     
-    return new Dist_PhyloBrownianREML(*this);
+    return new Dist_PhyloBrownianCharacterHistory(*this);
 }
 
 
-RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_PhyloBrownianREML::createDistribution( void ) const
+RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_PhyloBrownianCharacterHistory::createDistribution( void ) const
 {
     
     // get the parameters
@@ -35,7 +35,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     size_t n_nodes = tau->getValue().getNumberOfNodes();
     
-    RevBayesCore::PhyloBrownianProcessREML *dist = new RevBayesCore::PhyloBrownianProcessREML(tau, n);
+    RevBayesCore::PhyloBrownianCharacterHistoryProcess *dist = new RevBayesCore::PhyloBrownianCharacterHistoryProcess(tau, n);
 
     // set the clock rates
     if ( branchRates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
@@ -77,16 +77,16 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
 
 
 /* Get Rev type of object */
-const std::string& Dist_PhyloBrownianREML::getClassType(void)
+const std::string& Dist_PhyloBrownianCharacterHistory::getClassType(void)
 {
     
-    static std::string rev_type = "Dist_PhyloBrownianREML";
+    static std::string rev_type = "Dist_PhyloBrownianCharacterHistory";
     
     return rev_type;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_PhyloBrownianREML::getClassTypeSpec(void)
+const TypeSpec& Dist_PhyloBrownianCharacterHistory::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
@@ -102,17 +102,17 @@ const TypeSpec& Dist_PhyloBrownianREML::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_PhyloBrownianREML::getDistributionFunctionName( void ) const
+std::string Dist_PhyloBrownianCharacterHistory::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "PhyloBrownianREML";
+    std::string d_name = "PhyloBrownianCharacterHistory";
     
     return d_name;
 }
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_PhyloBrownianREML::getParameterRules(void) const
+const MemberRules& Dist_PhyloBrownianCharacterHistory::getParameterRules(void) const
 {
     
     static MemberRules dist_member_rules;
@@ -133,6 +133,12 @@ const MemberRules& Dist_PhyloBrownianREML::getParameterRules(void) const
         RealPos *defaultSiteRates = new RealPos(1.0);
         dist_member_rules.push_back( new ArgumentRule( "siteRates" , siteRateTypes, "The per site rate-multiplier(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         
+        std::vector<TypeSpec> rootStateTypes;
+        rootStateTypes.push_back( Real::getClassTypeSpec() );
+        rootStateTypes.push_back( ModelVector<Real>::getClassTypeSpec() );
+        Real *defaultRootStates = new Real(0.0);
+        dist_member_rules.push_back( new ArgumentRule( "rootStates" , rootStateTypes, "The vector of root states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultRootStates ) );
+
         dist_member_rules.push_back( new ArgumentRule( "nSites"         ,  Natural::getClassTypeSpec(), "The number of sites used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
         
         rules_set = true;
@@ -142,7 +148,7 @@ const MemberRules& Dist_PhyloBrownianREML::getParameterRules(void) const
 }
 
 
-const TypeSpec& Dist_PhyloBrownianREML::getTypeSpec( void ) const
+const TypeSpec& Dist_PhyloBrownianCharacterHistory::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -152,10 +158,10 @@ const TypeSpec& Dist_PhyloBrownianREML::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void Dist_PhyloBrownianREML::printValue(std::ostream& o) const
+void Dist_PhyloBrownianCharacterHistory::printValue(std::ostream& o) const
 {
     
-    o << "PhyloBrownianProcess(tree=";
+    o << "PhyloBrownianCharacterHistoryProcess(tree=";
     if ( tree != NULL )
     {
         o << tree->getName();
@@ -197,7 +203,7 @@ void Dist_PhyloBrownianREML::printValue(std::ostream& o) const
 
 
 /** Set a member variable */
-void Dist_PhyloBrownianREML::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Dist_PhyloBrownianCharacterHistory::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )
@@ -211,6 +217,10 @@ void Dist_PhyloBrownianREML::setConstParameter(const std::string& name, const Re
     else if ( name == "siteRates" )
     {
         site_rates = var;
+    }
+    else if ( name == "rootStates" )
+    {
+        root_states = var;
     }
     else if ( name == "nSites" )
     {
