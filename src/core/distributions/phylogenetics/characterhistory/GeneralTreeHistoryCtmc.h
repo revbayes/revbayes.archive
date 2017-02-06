@@ -811,8 +811,6 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::swapParameterInternal( cons
     if (oldP == homogeneousRateGenerator)
     {
         homogeneousRateGenerator = static_cast<const TypedDagNode< RateGeneratorSequence >* >( newP );
-        std::cout << "GTHC::this  " << this << "\n";
-        std::cout << "GTHC::GRGSF " << oldP << " -> " << newP << "\n";
     }
     else if (oldP == heterogeneousRateGenerator)
     {
