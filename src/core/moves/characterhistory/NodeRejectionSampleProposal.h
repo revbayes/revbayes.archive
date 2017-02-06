@@ -180,7 +180,8 @@ double RevBayesCore::NodeRejectionSampleProposal<charType>::computeLnProposal(vo
         double right_rate = c->getBranchRate( right_child.getIndex() );
 
         // get transition probs
-        const RateGenerator& rm = q_map_site->getValue();
+//        const RateGenerator& rm = q_map_site->getValue();
+        const RateGenerator& rm = ( q_map_sequence != NULL ? q_map_sequence->getValue() : q_map_site->getValue() );
         rm.calculateTransitionProbabilities(node_age, left_age,  left_rate, leftTpMatrix);
         rm.calculateTransitionProbabilities(node_age, right_age, right_rate, rightTpMatrix);
 
@@ -394,7 +395,8 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
         double right_rate = c->getBranchRate( right_child.getIndex() );
 
         // get transition probs
-        const RateGenerator& rm = q_map_site->getValue();
+        //        const RateGenerator& rm = q_map_site->getValue();
+        const RateGenerator& rm = ( q_map_sequence != NULL ? q_map_sequence->getValue() : q_map_site->getValue() );
         rm.calculateTransitionProbabilities(node_age, left_age,  left_rate,  leftTpMatrix);
         rm.calculateTransitionProbabilities(node_age, right_age, right_rate, rightTpMatrix);
 

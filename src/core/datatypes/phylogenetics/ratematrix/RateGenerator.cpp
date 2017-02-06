@@ -58,20 +58,20 @@ size_t RateGenerator::getNumberOfStates( void ) const
     return num_states;
 }
 
-double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from, const std::vector<size_t> &counts) const
+double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from, const std::vector<size_t> &counts, double age, double rate) const
 {
 
     // get the rate of leaving the sequence-state
     double sum = 0.0;
     for (size_t i = 0; i < num_states; ++i)
     {
-        sum += -getRate(i, i, 0.0, 1.0) * counts[i];
+        sum += -getRate(i, i, age, rate) * counts[i];
     }
 
     return sum;
 }
 
-double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from) const
+double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from, double age, double rate) const
 {
 
     // need dynamic allocation
@@ -82,7 +82,32 @@ double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from) const
         ++counts[ from[i]->getState() ];
     }
 
-    return getSumOfRates(from, counts);
+    return getSumOfRates(from, counts, age, rate);
+}
+
+double RateGenerator::getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEvent* to, double age, double rate) const
+{
+
+    double r = 0.0;
+    
+    size_t old_state = from[ to->getSiteIndex() ]->getState();
+    size_t new_state = to->getState();
+
+    
+    for (size_t possible_state = 0; possible_state < num_states; possible_state++)
+    {
+        // subtract the contribution of rates leaving the old state
+        if (possible_state != old_state) {
+            r -= getRate(old_state, possible_state, age, rate);
+        }
+        
+        // add the contribution of rates leaving the new state
+        if (possible_state != new_state) {
+            r += getRate(new_state, possible_state, age, rate);
+        }
+    }
+    
+    return r;
 }
 
 void RateGenerator::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<RbVector<double> >& rv) const

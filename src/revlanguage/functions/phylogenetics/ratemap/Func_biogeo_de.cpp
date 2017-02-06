@@ -1,7 +1,7 @@
 #include "BiogeographyRateGeneratorSequenceFunction.h"
 #include "Func_FreeBinary.h"
 #include "Func_biogeo_de.h"
-#include "GeographyRateModifier.h"
+#include "DistanceRateModifier.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "RlRateMatrix.h"
@@ -11,7 +11,7 @@
 #include "RealPos.h"
 #include "RlBoolean.h"
 #include "RlDeterministicNode.h"
-#include "RlGeographyRateModifier.h"
+#include "RlCharacterHistoryRateModifier.h"
 #include "RlRateGeneratorSequence.h"
 #include "RlSimplex.h"
 #include "TypedDagNode.h"
@@ -58,11 +58,11 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGeneratorSequence >* Func_biogeo_
     
     RevBayesCore::TypedDagNode< RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier>* grm = NULL;
+    RevBayesCore::TypedDagNode<RevBayesCore::CharacterHistoryRateModifier>* grm = NULL;
 
     if (this->args[1].getVariable()->getRevObject() != RevNullObject::getInstance())
     {
-        grm = static_cast<const GeographyRateModifier&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+        grm = static_cast<const CharacterHistoryRateModifier&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     }
 
     unsigned nc  = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
@@ -73,7 +73,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGeneratorSequence >* Func_biogeo_
     
     if (grm != NULL)
     {
-        f->setGeographyRateModifier(grm);
+        f->setDistanceRateModifier(grm);
     }
     
     return f;
@@ -93,7 +93,7 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const
 //        argumentRules.push_back( new ArgumentRule( "gainLossRates"   , ModelVector<RealPos>::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "gainLossRates"   , RateGenerator::getClassTypeSpec()          , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 //        argumentRules.push_back( new ArgumentRule( "rootFrequencies" , Simplex::getClassTypeSpec()                , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( std::vector<double>(2,0.5)) ) );
-        argumentRules.push_back( new ArgumentRule( "geoRateMod"      , GeographyRateModifier::getClassTypeSpec()  , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ));
+        argumentRules.push_back( new ArgumentRule( "geoRateMod"      , CharacterHistoryRateModifier::getClassTypeSpec()  , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ));
         argumentRules.push_back( new ArgumentRule( "numAreas"        , Natural::getClassTypeSpec()                , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "forbidExtinction", RlBoolean::getClassTypeSpec()              , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
         

@@ -165,8 +165,9 @@
 
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
+#include "Func_adjacentRateModifier.h"
 #include "Func_biogeo_de.h"
-#include "Func_biogeo_grm.h"
+#include "Func_distanceRateModifier.h"
 #include "Func_generalRateGeneratorSequence.h"
 
 
@@ -307,8 +308,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_wag()                      );
 
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
+        addFunction( new Func_adjacentRateModifier() );
         addFunction( new Func_biogeo_de() );
-        addFunction( new Func_biogeo_grm() );
+        addFunction( new Func_distanceRateModifier() );
         addFunction( new Func_generalRateGeneratorSequence() );
 
         /* cladogenic probs used for e.g. DEC models (in folder "functions/phylogenetics") */

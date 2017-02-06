@@ -44,8 +44,9 @@ void BiogeographyRateGeneratorSequenceFunction::update( void )
     // set the distancePower
     if (useGeographicDistance)
     {
-        const GeographyRateModifier& drm = geographyRateModifier->getValue();
-        static_cast< RateGeneratorSequence_Biogeography* >(value)->setGeographyRateModifier(drm);
+        ;
+//        const DistanceRateModifier& drm = const_cast<const DistanceRateModifier>( distanceRateModifier->getValue() );
+//        static_cast< RateGeneratorSequence_Biogeography* >(value)->setDistanceRateModifier(drm);
     }
 
     // @Michael: Might add back root frequencies!
@@ -75,22 +76,22 @@ void BiogeographyRateGeneratorSequenceFunction::setRateMatrix(const TypedDagNode
 }
 
 
-void BiogeographyRateGeneratorSequenceFunction::setGeographyRateModifier(const TypedDagNode<GeographyRateModifier> *drm)
+void BiogeographyRateGeneratorSequenceFunction::setDistanceRateModifier(const TypedDagNode<CharacterHistoryRateModifier> *drm)
 {
     
     // remove the old parameter first
-    if ( geographyRateModifier != NULL )
+    if ( distanceRateModifier != NULL )
     {
-        this->removeParameter( geographyRateModifier );
-        geographyRateModifier = NULL;
+        this->removeParameter( distanceRateModifier );
+        distanceRateModifier = NULL;
     }
     
     // set the value
     useGeographicDistance = true;
-    geographyRateModifier = drm;
+    distanceRateModifier = drm;
     
     // add the parameter
-    this->addParameter( geographyRateModifier );
+    this->addParameter( distanceRateModifier );
 
 }
 
@@ -102,9 +103,9 @@ void BiogeographyRateGeneratorSequenceFunction::swapParameterInternal(const DagN
     {
         homogeneousRateMatrix = static_cast<const TypedDagNode<RateGenerator>* >( newP );
     }
-    else if (oldP == geographyRateModifier)
+    else if (oldP == distanceRateModifier)
     {
-        geographyRateModifier = static_cast<const TypedDagNode<GeographyRateModifier>* >( newP );
+        distanceRateModifier = static_cast<const TypedDagNode<CharacterHistoryRateModifier>* >( newP );
     }
 
 }

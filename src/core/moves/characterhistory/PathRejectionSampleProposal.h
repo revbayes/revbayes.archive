@@ -194,12 +194,13 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     }
 
     // get sampling ratemap
-    const RateGenerator& rm = q_map_site->getValue();
+    const RateGenerator& rm = ( q_map_sequence != NULL ? q_map_sequence->getValue() : q_map_site->getValue() );
 
     // stepwise events
     double dt;
     double eventAge;
     double endAge = nd.getAge();
+    double branchRate = getBranchRate(nd.getIndex());
     
     for (it_h = history.begin(); it_h != history.end(); ++it_h)
     {
@@ -208,8 +209,9 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
         eventAge = (*it_h)->getAge();
         dt = currAge - eventAge;
 
-        double tr = rm.getRate( currState[ (*it_h)->getSiteIndex() ]->getState(), (*it_h)->getState(), currAge, getBranchRate(nd.getIndex()));
-        double sr = rm.getSumOfRates(currState, counts) * getBranchRate(nd.getIndex());
+        // get the new transition rate
+        double tr = rm.getRate( currState[ (*it_h)->getSiteIndex() ]->getState(), (*it_h)->getState(), currAge, branchRate);
+        double sr = rm.getSumOfRates(currState, counts, currAge, branchRate);
 
         // lnP for stepwise events for p(x->y)
         lnP += log(tr) - (sr * dt);
@@ -217,14 +219,15 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
         // update counts
         counts[ currState[idx]->getState() ] -= 1;
         counts[ (*it_h)->getState() ] += 1;
-
+        
         // update state
         currState[idx] = *it_h;
         currAge = eventAge;
+        
     }
 
     // lnL for final non-event
-    double sr = rm.getSumOfRates(currState, counts) * getBranchRate(nd.getIndex());
+    double sr = rm.getSumOfRates(currState, counts, currAge, branchRate);
     lnP -= sr * (currAge - endAge);
 
     return lnP;
@@ -302,7 +305,9 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
         return 0.0;
     }
 
-    const RateGenerator& rm = q_map_site->getValue();
+//    const RateGenerator& rm = q_map_site->getValue();
+    const RateGenerator& rm = ( q_map_sequence != NULL ? q_map_sequence->getValue() : q_map_site->getValue() );
+    
 
     // clear characters
     BranchHistory* bh = &p->getHistory(*node);
@@ -338,7 +343,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                     {
                         continue;
                     }
-                    double v = rm.getRate(currState, i, node->getAge(), getBranchRate(node->getIndex()));
+                    double v = rm.getRate(currState, i, age, getBranchRate(node->getIndex()));
                     rates[i] = v;
                     r += v;
                 }

@@ -1,4 +1,5 @@
 #include "CharacterEvent.h"
+#include "CharacterEventType.h"
 #include <iostream>
 #include <sstream>
 
@@ -10,10 +11,11 @@ CharacterEvent::CharacterEvent(void)
 
 }
 
-CharacterEvent::CharacterEvent(size_t i, size_t s, double a) :
+CharacterEvent::CharacterEvent(size_t i, size_t s, double a, size_t t) :
     site_index(i),
     state(s),
-    age(a)
+    age(a),
+    event_type(t)
 {
 
 }
@@ -21,7 +23,8 @@ CharacterEvent::CharacterEvent(size_t i, size_t s, double a) :
 CharacterEvent::CharacterEvent(const CharacterEvent& c) :
     site_index(c.site_index),
     state(c.state),
-    age(c.age)
+    age(c.age),
+    event_type(c.event_type)
 {
 
 }
@@ -51,6 +54,11 @@ double CharacterEvent::getAge(void) const
     return age;
 }
 
+size_t CharacterEvent::getEventType(void) const
+{
+    return event_type;
+}
+
 size_t CharacterEvent::getSiteIndex(void) const
 {
     return site_index;
@@ -70,6 +78,16 @@ std::string CharacterEvent::getStateStr(void) const
     return ss.str();
 }
 
+void CharacterEvent::setAge(double a)
+{
+    age = a;
+}
+
+void CharacterEvent::setEventType(size_t t)
+{
+    event_type = t;
+}
+
 void CharacterEvent::setSiteIndex(size_t i)
 {
     site_index = i;
@@ -80,10 +98,7 @@ void CharacterEvent::setState(size_t s)
     state = s;
 }
 
-void CharacterEvent::setAge(double a)
-{
-    age = a;
-}
+
 
 void CharacterEvent::print(void) const
 {
