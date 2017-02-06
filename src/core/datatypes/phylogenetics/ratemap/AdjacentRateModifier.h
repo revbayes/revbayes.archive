@@ -13,10 +13,16 @@
 #include "StochasticNode.h"
 #include "TopologyNode.h"
 
+#include <set>
 #include <string>
+#include <vector>
+
 
 namespace RevBayesCore
 {
+    
+    
+    
     class AdjacentRateModifier : public CharacterHistoryRateModifier
     {
     public:
@@ -25,10 +31,14 @@ namespace RevBayesCore
         
         
         AdjacentRateModifier&               assign(const Assignable &m);
-        double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
-        double                              computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
-        double                              computeSiteRateMultiplier(const TopologyNode& node, unsigned curState, unsigned newState, unsigned charIdx=0, double age=0.0);
+        double                              computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age=0.0);
+        double                              computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age=0.0);
+        double                              computeSiteRateMultiplier(const TopologyNode& node, unsigned currState, unsigned newState, unsigned charIdx=0, double age=0.0);
         
+        double                              computeRateMultiplierUsingWidth(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age=0.0);
+        double                              computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age=0.0);
+        
+        void                                setContextMatrix(const RbVector<RbVector<double> >& c);
         void                                setFactor(double f);
         void                                setWidth(size_t w);
         
@@ -40,10 +50,19 @@ namespace RevBayesCore
        
         
     private:
+        void                                initializeContexts(RbVector<RbVector<double> > c);
         
-        size_t                              width;
-        double                              factor;
-                
+        struct adjacency {
+            size_t                          from;
+            size_t                          to;
+            double                          weight;
+        };
+        
+        std::vector<std::vector<adjacency> > context_matrix;
+        size_t                               width;
+        double                               factor;
+        
+        std::string                          context_type;
     };
     
     std::ostream& operator<<(std::ostream& o, const AdjacentRateModifier& x);
