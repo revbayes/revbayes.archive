@@ -149,6 +149,8 @@
 #include "Dist_exponentialOffsetPositive.h"
 #include "Dist_gamma.h"
 #include "Dist_geom.h"
+#include "Dist_halfCauchy.h"
+#include "Dist_halfCauchyPositive.h"
 #include "Dist_poisson.h"
 #include "Dist_lnorm.h"
 #include "Dist_lnormOffset.h"
@@ -326,6 +328,10 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // geometric distribution
         AddDistribution< Natural                    >( new Dist_geom() );
+        
+        // half-Cauchy distribution
+        AddContinuousDistribution< Real             >( new Dist_halfCauchy() );
+//        AddContinuousDistribution< RealPos          >( new Dist_halfCauchyPositive() );
         
         // poisson distribution
         AddDistribution< Natural                    >( new Dist_poisson() );
