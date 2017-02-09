@@ -230,7 +230,7 @@ double ConstantRateFossilizedBirthDeathProcess::pSurvival(double start, double e
 /**
  * Simulate new speciation times.
  */
-double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double orig, double present) const
+double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
 
     // incorrect placeholder for constant FBDP
@@ -241,7 +241,7 @@ double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double or
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
-    double age = present - orig;
+    double age = present - origin;
     double b = lambda->getValue();
     double d = mu->getValue();
     double r = rho->getValue();
@@ -262,7 +262,7 @@ double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double or
     }    
     
     //    return present - t;
-    return orig + t;
+    return present - t;
 }
 
 

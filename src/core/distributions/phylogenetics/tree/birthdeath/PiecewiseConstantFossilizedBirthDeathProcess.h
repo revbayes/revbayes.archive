@@ -34,15 +34,21 @@ namespace RevBayesCore {
         
     public:
         PiecewiseConstantFossilizedBirthDeathProcess (const TypedDagNode<double> *ra,
-                                                      const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *st,
-                                                      const TypedDagNode<RbVector<double> > *e, const TypedDagNode<RbVector<double> > *et,
-                                                      const TypedDagNode<RbVector<double> > *p, const TypedDagNode<RbVector<double> > *pt,
-                                                      const TypedDagNode<RbVector<double> > *r, const TypedDagNode<RbVector<double> > *rt,
-                                                      const std::string &cdt, const std::vector<Taxon> &tn);  //!< Constructor
+                                                      const DagNode *s,
+                                                      const DagNode *e,
+                                                      const DagNode *p,
+                                                      const DagNode *r, const TypedDagNode<RbVector<double> > *t,
+                                                      bool uo, const std::string &cdt, const std::vector<Taxon> &tn);  //!< Constructor
         
         // public member functions
         PiecewiseConstantFossilizedBirthDeathProcess*   clone(void) const;                                         //!< Create an independent clone
-        
+        virtual double                                  getRootAge(void) const;
+
+        double                                          getExtinctionRate( size_t index = 0 ) const;
+        double                                          getFossilizationRate( size_t index = 0 ) const;
+        double                                          getSamplingProbability( size_t index = 0 ) const;
+        double                                          getSpeciationRate( size_t index = 0 ) const;
+
     protected:
         // Parameter management functions
         void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
@@ -62,15 +68,18 @@ namespace RevBayesCore {
         int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
         
         // members
-        const TypedDagNode<RbVector<double> >*          lambda;                                                    //!< The speciation rates.
-        const TypedDagNode<RbVector<double> >*          lambdaTimes;                                               //!< The time of the speciation rate changes.
-        const TypedDagNode<RbVector<double> >*          mu;                                                        //!< The extinction rates.
-        const TypedDagNode<RbVector<double> >*          muTimes;                                                   //!< The times of the extinction rate changes.
-        const TypedDagNode<RbVector<double> >*          psi;                                                       //!< The (fossil) sampling rates.
-        const TypedDagNode<RbVector<double> >*          psiTimes;                                                  //!< The times of the (fossil) sampling rate changes.
-        const TypedDagNode<RbVector<double> >*          rho;                                                       //!< The instantaneous sampling probability.
-        const TypedDagNode<RbVector<double> >*          rhoTimes;                                                  //!< The times of the instantaneous sampling events.
+        const TypedDagNode<double >*                    homogeneous_lambda;                                        //!< The homogeneous speciation rates.
+        const TypedDagNode<RbVector<double> >*          heterogeneous_lambda;                                      //!< The heterogeneous speciation rates.
+        const TypedDagNode<double >*                    homogeneous_mu;                                        //!< The homogeneous speciation rates.
+        const TypedDagNode<RbVector<double> >*          heterogeneous_mu;                                      //!< The heterogeneous speciation rates.
+        const TypedDagNode<double >*                    homogeneous_psi;                                        //!< The homogeneous speciation rates.
+        const TypedDagNode<RbVector<double> >*          heterogeneous_psi;                                      //!< The heterogeneous speciation rates.
+        const TypedDagNode<double >*                    homogeneous_rho;                                        //!< The homogeneous speciation rates.
+        const TypedDagNode<RbVector<double> >*          heterogeneous_rho;                                      //!< The heterogeneous speciation rates.
+        const TypedDagNode<RbVector<double> >*          times;                                                  //!< The times of the instantaneous sampling events.
         
+        bool                                            useOrigin;
+
         mutable std::vector<double>                     rateChangeTimes;
         mutable std::vector<double>                     birth;
         mutable std::vector<double>                     death;
