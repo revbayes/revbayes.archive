@@ -222,7 +222,7 @@ double HeterogeneousRateBirthDeath::computeLnProbability( void )
         
     }
     
-    // add the survival of a second species if we condition on the MRCA
+    // compute the probability at the root
     lnProb = computeRootLikelihood();
     
     if ( shift_same_category == true )
@@ -399,14 +399,14 @@ double HeterogeneousRateBirthDeath::computeRootLikelihood( void )
     std::vector< double > rightStates = nodeStates[right_index][activeLikelihood[right_index]];
     
     double prob = leftStates[num_rate_categories]*rightStates[num_rate_categories];
+    double ln_prob = log( prob );
     
     if ( condition == "survival" )
     {
-        prob = - 2*log( 1.0-leftStates[ root_state->getValue()-1 ] );
-        //        lnProbTimes = - log( pSurvival(0,present_time) );
+        ln_prob -= 2*log( 1.0-leftStates[ root_state->getValue()-1 ] );
     }
     
-    return log(prob) + totalScaling;
+    return ln_prob + totalScaling;
 }
 
 
