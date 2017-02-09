@@ -402,7 +402,7 @@ double HeterogeneousRateBirthDeath::computeRootLikelihood( void )
     
     if ( condition == "survival" )
     {
-        prob = - 2*log( leftStates[ root_state->getValue()-1 ] );
+        prob = - 2*log( 1.0-leftStates[ root_state->getValue()-1 ] );
         //        lnProbTimes = - log( pSurvival(0,present_time) );
     }
     
