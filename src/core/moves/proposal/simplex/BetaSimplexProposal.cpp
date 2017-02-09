@@ -17,7 +17,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-BetaSimplexProposal::BetaSimplexProposal( StochasticNode<RbVector<double> > *n, double a ) : SimpleProposal<RbVector<double> >( n ),
+BetaSimplexProposal::BetaSimplexProposal( StochasticNode<RbVector<double> > *n, double a, double p ) : SimpleProposal<RbVector<double> >( n, p ),
     storedValue( RbVector<double>() ),
     alpha( a )
 {
@@ -196,13 +196,15 @@ void BetaSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void BetaSimplexProposal::tune( double rate )
 {
     
-    if ( rate > 0.234 )
+    double p = this->targetAcceptanceRate;
+    
+    if ( rate > p )
     {
-        alpha /= (1.0 + ((rate-0.234)/0.766) );
+        alpha /= (1.0 + ((rate-p)/(1.0 - p)) );
     }
     else
     {
-        alpha *= (2.0 - rate/0.234 );
+        alpha *= (2.0 - rate/p);
     }
     
 }
