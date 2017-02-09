@@ -98,7 +98,7 @@ double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<Charact
     }
     
 //    double r = exp(num_match * factor);
-    double r = exp(gain_factor * match[1] - loss_factor * match[0]);
+    double r = exp(gain_factor * match[1] + loss_factor * match[0]);
     
     return r;
 }
@@ -107,29 +107,30 @@ double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<Charac
 {
     std::vector<double> match(2, 0.0);
     
-    size_t to_index = newState->getSiteIndex();
-    size_t to_state = newState->getState();
+    size_t i = newState->getSiteIndex();
+    size_t s = newState->getState();
     
-    for (size_t i = 0; i < context_matrix.size(); i++)
+//    for (size_t i = 0; i < context_matrix.size(); i++)
+//    {
+    
+    for (size_t j = 0; j < context_matrix[i].size(); j++)
     {
-        for (size_t j = 0; j < context_matrix[i].size(); j++)
+        const adjacency& edge = context_matrix[i][j];
+        if (i == j)
         {
-            const adjacency& v = context_matrix[i][j];
-            if (v.to == to_index)
-            {
-                continue;
-            }
-            else if (currState[v.to]->getState() == to_state)
-            {
-                match[1] += v.weight;
-            }
-            else
-            {
-                match[0] += v.weight;
-            }
+            continue;
+        }
+        else if (currState[edge.to]->getState() == s)
+        {
+            match[1] += edge.weight;
+        }
+        else
+        {
+            match[0] += edge.weight;
         }
     }
-    double r = exp(gain_factor * match[1] - loss_factor * match[0]);
+    
+    double r = exp(gain_factor * match[1] + loss_factor * match[0]);
     
     return r;
 }
@@ -183,7 +184,7 @@ void AdjacentRateModifier::setContextMatrix(const RbVector<RbVector<double> >& c
     {
         for (size_t j = 0; j < this->num_characters; j++)
         {
-            if (c[i][j] > 0.0)
+            if (c[i][j] != 0.0)
             {
                 adjacency v;
                 v.from = i;
