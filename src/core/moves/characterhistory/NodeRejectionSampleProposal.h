@@ -42,7 +42,7 @@ namespace RevBayesCore {
     class NodeRejectionSampleProposal : public Proposal {
 
     public:
-        NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n );                                  //!<  constructor
+        NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, double l=1.0 );                                  //!<  constructor
 
         // Basic utility functions
         void                                                        assignNode(TopologyNode* nd);
@@ -54,6 +54,8 @@ namespace RevBayesCore {
         const std::string&                                          getProposalName(void) const;                                    //!< Get the name of the proposal for summary printing
         void                                                        printParameterSummary(std::ostream &o) const;                   //!< Print the parameter summary
         void                                                        prepareProposal(void);                                          //!< Prepare the proposal
+        std::set<size_t>                                            sampleCharacters(double p);
+        void                                                        setSampledCharacters(const std::set<size_t>& s);
         void                                                        sampleNodeCharacters(void);                                     //!< Sample the characters at the node
         double                                                      sampleRootCharacters(void);                                     //!< Sample the characters at the root
         void                                                        setRateGenerator(const TypedDagNode<RateGenerator> *d);         //!< Set the rate generator.
@@ -71,7 +73,7 @@ namespace RevBayesCore {
         const TypedDagNode<RateGeneratorSequence>*                  q_map_sequence;
 
         // dimensions
-//        size_t                                                      numCharacters;
+        size_t                                                      numCharacters;
         size_t                                                      numStates;
 
         // proposal
@@ -88,6 +90,10 @@ namespace RevBayesCore {
         TransitionProbabilityMatrix                                 nodeTpMatrix;
         TransitionProbabilityMatrix                                 leftTpMatrix;
         TransitionProbabilityMatrix                                 rightTpMatrix;
+        
+        double                                                      lambda;
+        std::set<size_t>                                            sampledCharacters;
+        std::set<size_t>                                            allCharacters;
 
     };
 
@@ -101,22 +107,29 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType>
-RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n ) : Proposal(),
+RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, double l ) : Proposal(),
     ctmc(n),
     q_map_site( NULL ),
     q_map_sequence( NULL ),
     numStates(2),
+    numCharacters(n->getValue().getNumberOfCharacters()),
     node( NULL ),
     nodeTpMatrix(2),
     leftTpMatrix(2),
-    rightTpMatrix(2)
+    rightTpMatrix(2),
+    lambda(l)
 {
 
     addNode( ctmc );
 
-    nodeProposal = new PathRejectionSampleProposal<charType>(n);
-    leftProposal = new PathRejectionSampleProposal<charType>(n);
-    rightProposal = new PathRejectionSampleProposal<charType>(n);
+    nodeProposal = new PathRejectionSampleProposal<charType>(n, l);
+    leftProposal = new PathRejectionSampleProposal<charType>(n, l);
+    rightProposal = new PathRejectionSampleProposal<charType>(n, l);
+    
+    for (size_t i = 0; i < numCharacters; i++)
+    {
+        allCharacters.insert(i);
+    }
 
 }
 
@@ -199,8 +212,11 @@ double RevBayesCore::NodeRejectionSampleProposal<charType>::computeLnProposal(vo
 
             const std::vector<CharacterEvent*>& nodeParentState = histories[node->getIndex()]->getParentCharacters();
 
-            for (size_t site_index = 0; site_index < num_sites; ++site_index)
+            std::set<size_t>::iterator it_s;
+            //            for (size_t site_index = 0; site_index < num_sites; ++site_index)
+            for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
             {
+                size_t site_index = *it_s;
                 size_t ancS  = nodeParentState[site_index]->getState();
                 size_t desS1 = leftChildState[site_index]->getState();
                 size_t desS2 = rightChildState[site_index]->getState();
@@ -224,8 +240,11 @@ double RevBayesCore::NodeRejectionSampleProposal<charType>::computeLnProposal(vo
 
             std::vector<double> rf = c->getRootFrequencies();
 
-            for (size_t site_index = 0; site_index < num_sites; ++site_index)
+            std::set<size_t>::iterator it_s;
+            //            for (size_t site_index = 0; site_index < num_sites; ++site_index)
+            for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
             {
+                size_t site_index = *it_s;
                 size_t desS1 = leftChildState[site_index]->getState();
                 size_t desS2 = rightChildState[site_index]->getState();
 
@@ -349,6 +368,12 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::prepareProposal( void 
         size_t s = nodeState[site_index]->getState();
         storedNodeState[site_index] = s;
     }
+    
+    // sample characters to be updated and pass to proposals
+    sampledCharacters = sampleCharacters(lambda);
+    nodeProposal->setSampledCharacters(sampledCharacters);
+    leftProposal->setSampledCharacters(sampledCharacters);
+    rightProposal->setSampledCharacters(sampledCharacters);
 
 }
 
@@ -416,8 +441,11 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
 
             const std::vector<CharacterEvent*>& nodeParentState = histories[node->getIndex()]->getParentCharacters();
 
-            for (size_t site_index = 0; site_index < num_sites; ++site_index)
+            std::set<size_t>::iterator it_s;
+//            for (size_t site_index = 0; site_index < num_sites; ++site_index)
+            for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
             {
+                size_t site_index = *it_s;
                 size_t ancS  = nodeParentState[site_index]->getState();
                 size_t desS1 = leftChildState[site_index]->getState();
                 size_t desS2 = rightChildState[site_index]->getState();
@@ -533,6 +561,37 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::undoProposal( void )
     nodeProposal->undoProposal();
     rightProposal->undoProposal();
     leftProposal->undoProposal();
+    
+    // clear sampled character set
+    sampledCharacters.clear();
+}
+
+template<class charType>
+std::set<size_t> RevBayesCore::NodeRejectionSampleProposal<charType>::sampleCharacters(double p)
+{
+    
+    if (p == 1.0)
+    {
+        return allCharacters;
+    }
+    
+    std::set<size_t> s;
+    s.insert(GLOBAL_RNG->uniform01() * numCharacters);
+    for (size_t i = 0; i < numCharacters; i++)
+    {
+        if (GLOBAL_RNG->uniform01() < p)
+        {
+            s.insert(i);
+        }
+    }
+    return s;
+    
+}
+
+template<class charType>
+void RevBayesCore::NodeRejectionSampleProposal<charType>::setSampledCharacters(const std::set<size_t>& s)
+{
+    sampledCharacters = s;
 }
 
 
