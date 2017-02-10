@@ -184,7 +184,7 @@ void SlideProposalContinuous::tune( double rate )
     double p = this->targetAcceptanceRate;
     if ( rate > p )
     {
-        lambda *= (1.0 + ((rate-p)/0.56) );
+        lambda *= (1.0 + ((rate-p)/(1.0 - p)));
     }
     else
     {
