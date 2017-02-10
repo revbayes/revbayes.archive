@@ -64,7 +64,7 @@ double ChisqDistribution::getMin( void ) const
 
 double ChisqDistribution::quantile(double p) const
 {
-    return RbStatistics::ChiSquare::quantile(degrees->getValue(), p);
+    return RbStatistics::ChiSquare::quantile(p, degrees->getValue());
 }
 
 
