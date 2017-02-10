@@ -36,26 +36,28 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    const TypedDagNode<double> *rh,
                                                                                    const std::string &cdt,
                                                                                    const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
-    root_age( ra ),
-    mu( ext ),
-    pi( p ),
-    Q( q ),
-    rate( r ),
-    rho( rh ),
-    cladogenesis_matrix( NULL ),
-    use_cladogenetic_events( false ),
     condition( cdt ),
     num_taxa( tn.size() ),
     active_likelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
     changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
     dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
     node_partial_likelihoods( std::vector<std::vector<std::vector<double> > >(2*tn.size()-1, std::vector<std::vector<double> >(2,std::vector<double>(2*ext->getValue().size(),0))) ),
+    extinction_probabilities( std::vector<std::vector<double> >( 500.0, std::vector<double>( ext->getValue().size(), 0) ) ),
     num_states( ext->getValue().size() ),
-    NUM_TIME_SLICES( 500.0 ),
-    sample_character_history( false ),
     scaling_factors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
     total_scaling( 0.0 ),
-    extinction_probabilities( std::vector<std::vector<double> >( 500.0, std::vector<double>( ext->getValue().size(), 0) ) )
+    use_cladogenetic_events( false ),
+    sample_character_history( false ),
+    cladogenesis_matrix( NULL ),
+    root_age( ra ),
+    mu( ext ),
+    lambda(NULL),
+    pi( p ),
+    Q( q ),
+    rate( r ),
+    rho( rh ),
+    NUM_TIME_SLICES( 500.0 )
+
 {
     addParameter( mu );
     addParameter( pi );
@@ -499,7 +501,7 @@ void StateDependentSpeciationExtinctionProcess::drawJointConditionalAncestralSta
     }
     
     // sample ancestor, left, and right character states from probs
-    size_t a, l, r;
+    size_t a = 0, l = 0, r = 0;
     
     if (sample_probs_sum == 0)
     {
@@ -690,7 +692,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         }
         
         // finally, sample ancestor, left, and right character states from probs
-        size_t a, l, r;
+        size_t a = 0, l = 0, r = 0;
 
         if (sample_probs_sum == 0)
         {
@@ -813,7 +815,7 @@ void StateDependentSpeciationExtinctionProcess::drawJointConditionalCharacterMap
     }
     
     // sample ancestor, left, and right character states from probs
-    size_t a, l, r;
+    size_t a = 0, l = 0, r = 0;
     
     if (sample_probs_sum == 0)
     {
