@@ -122,7 +122,7 @@
 #include "Dist_ConstrainedTopology.h"
 #include "Dist_ConstrainedNodeOrder.h"
 #include "Dist_WeightedConstrainedNodeOrder.h"
-#include "Dist_constFBDP.h"
+#include "Dist_FBDP.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
@@ -249,7 +249,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         
         // constant rate fossil-birth-death process
-        AddDistribution< TimeTree                   >( new Dist_constFBDP());
+        AddDistribution< TimeTree                   >( new Dist_FBDP());
         
         // diversity-dependent pure-birth process
         AddDistribution< TimeTree                   >( new Dist_divDepYuleProcess() );

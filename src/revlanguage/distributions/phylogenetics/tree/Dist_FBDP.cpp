@@ -266,7 +266,7 @@ const MemberRules& Dist_FBDP::getParameterRules(void) const
         rhoTypes.push_back( ModelVector<Probability>::getClassTypeSpec() );
         dist_member_rules.push_back( new ArgumentRule( "rho",     rhoTypes, "The taxon sampling fraction(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
 
-        dist_member_rules.push_back( new ArgumentRule( "times",  ModelVector<RealPos>::getClassTypeSpec(), "The epoch times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "times",  ModelVector<RealPos>::getClassTypeSpec(), "The rate change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();

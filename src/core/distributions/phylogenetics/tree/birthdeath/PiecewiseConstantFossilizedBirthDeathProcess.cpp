@@ -15,13 +15,10 @@ using namespace RevBayesCore;
  * We delegate most parameters to the base class and initialize the members.
  *
  * \param[in]    s              Speciation rates.
- * \param[in]    st             Speciation rate-change times.
  * \param[in]    e              Extinction rates.
- * \param[in]    et             Extinction rate-change times.
  * \param[in]    p              Fossil sampling rates.
- * \param[in]    pt             Fossil sampling rate-change times.
  * \param[in]    r              Instantaneous sampling probabilities.
- * \param[in]    rt             Instantaneous sampling times.
+ * \param[in]    t              Rate change times.
  * \param[in]    cdt            Condition of the process (none/survival/#Taxa).
  * \param[in]    tn             Taxa.
  * \param[in]    c              Clades conditioned to be present.
@@ -52,6 +49,11 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     else
     {
         heterogeneous_lambda = tmp_v;
+        if(heterogeneous_lambda->getValue().size() != times->getValue().size() + 1)
+        {
+            throw(RbException("Number of speciation rates does not match number of epochs (# rate change times + 1)"));
+        }
+
         addParameter( heterogeneous_lambda );
     }
 
@@ -70,6 +72,11 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     else
     {
         heterogeneous_mu = tmp_v;
+        if(heterogeneous_mu->getValue().size() != times->getValue().size() + 1)
+        {
+            throw(RbException("Number of extinction rates does not match number of epochs (# rate change times + 1)"));
+        }
+
         addParameter( heterogeneous_mu );
     }
 
@@ -88,6 +95,11 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     else
     {
         heterogeneous_psi = tmp_v;
+        if(heterogeneous_psi->getValue().size() != times->getValue().size() + 1)
+        {
+            throw(RbException("Number of fossilization rates does not match number of epochs (# rate change times + 1)"));
+        }
+
         addParameter( heterogeneous_psi );
     }
 
@@ -106,6 +118,11 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     else
     {
         heterogeneous_rho = tmp_v;
+        if(heterogeneous_rho->getValue().size() != times->getValue().size() + 1)
+        {
+            throw(RbException("Number of sampling probabilities does not match number of epochs (# rate change times + 1)"));
+        }
+
         addParameter( heterogeneous_rho );
     }
 
@@ -342,7 +359,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
     
     rateChangeTimes = times->getValue();
 
-    for (size_t i = 0; i < rateChangeTimes.size(); i++)
+    for (size_t i = 0; i < rateChangeTimes.size() + 1; i++)
     {
         birth.push_back( getSpeciationRate(i) );
 
