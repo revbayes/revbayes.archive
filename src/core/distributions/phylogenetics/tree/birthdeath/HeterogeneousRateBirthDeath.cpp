@@ -222,7 +222,7 @@ double HeterogeneousRateBirthDeath::computeLnProbability( void )
         
     }
     
-    // add the survival of a second species if we condition on the MRCA
+    // compute the probability at the root
     lnProb = computeRootLikelihood();
     
     if ( shift_same_category == true )
@@ -318,7 +318,9 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
             
             updateBranchProbabilitiesNumerically(initialState, beginAge, beginAge+time_interval, s, e, r, current_state);
             
-            initialState[num_rate_categories] = initialState[num_rate_categories]*event_rate->getValue()* (1.0/num_rate_categories);
+            bool allow_same_category = false;
+            double rate_cat_prob = ( allow_same_category == true ? 1.0/num_rate_categories : 1.0 / (num_rate_categories-1.0) );
+            initialState[num_rate_categories] = initialState[num_rate_categories]*event_rate->getValue() * rate_cat_prob;
             
             
             begin_time = end_time;
@@ -399,14 +401,14 @@ double HeterogeneousRateBirthDeath::computeRootLikelihood( void )
     std::vector< double > rightStates = nodeStates[right_index][activeLikelihood[right_index]];
     
     double prob = leftStates[num_rate_categories]*rightStates[num_rate_categories];
+    double ln_prob = log( prob );
     
     if ( condition == "survival" )
     {
-        prob = - 2*log( leftStates[ root_state->getValue()-1 ] );
-        //        lnProbTimes = - log( pSurvival(0,present_time) );
+        ln_prob -= 2*log( 1.0-leftStates[ root_state->getValue()-1 ] );
     }
     
-    return log(prob) + totalScaling;
+    return ln_prob + totalScaling;
 }
 
 

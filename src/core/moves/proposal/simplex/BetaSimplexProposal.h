@@ -26,7 +26,7 @@ namespace RevBayesCore {
     class BetaSimplexProposal : public SimpleProposal<RbVector<double> > {
         
     public:
-        BetaSimplexProposal( StochasticNode<RbVector<double> > *n, double a);                                                                    //!<  constructor
+        BetaSimplexProposal( StochasticNode<RbVector<double> > *n, double a, double p=0.44);                                                                    //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal

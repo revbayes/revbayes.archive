@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SlideProposalContinuous::SlideProposalContinuous( ContinuousStochasticNode *n, double l) : Proposal(),
+SlideProposalContinuous::SlideProposalContinuous( ContinuousStochasticNode *n, double l, double r) : Proposal(r),
     variable( n ),
     storedValue( 0.0 ),
     lambda( l )
@@ -181,13 +181,14 @@ void SlideProposalContinuous::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void SlideProposalContinuous::tune( double rate )
 {
     
-    if ( rate > 0.44 )
+    double p = this->targetAcceptanceRate;
+    if ( rate > p )
     {
-        lambda *= (1.0 + ((rate-0.44)/0.56) );
+        lambda *= (1.0 + ((rate-p)/(1.0 - p)));
     }
     else
     {
-        lambda /= (2.0 - rate/0.44 );
+        lambda /= (2.0 - rate/p);
     }
     
     lambda = fmin(10000, lambda);

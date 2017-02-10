@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class SlideProposalContinuous : public Proposal {
         
     public:
-        SlideProposalContinuous( ContinuousStochasticNode *n, double l);                                                                      //!<  constructor
+        SlideProposalContinuous( ContinuousStochasticNode *n, double l, double r=0.44);                                                                      //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal

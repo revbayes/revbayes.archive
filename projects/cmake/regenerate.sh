@@ -58,12 +58,12 @@ rm ./project-config.jam*  # clean up from previous runs
 
 if [ "$mac" = "true" ]
 then
-./bootstrap.sh --with-libraries=regex,thread,date_time,program_options,math,serialization,signals
+./bootstrap.sh --with-libraries=atomic,chrono,regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
 #./bootstrap.sh --with-libraries=filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
 #./b2 link=static macosx-version-min=10.6
 else
-./bootstrap.sh --with-libraries=filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
 fi
 
