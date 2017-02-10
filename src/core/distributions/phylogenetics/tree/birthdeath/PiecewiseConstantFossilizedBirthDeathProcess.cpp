@@ -34,6 +34,16 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
                                                                                            const std::vector<Taxon> &tn ) : AbstractBirthDeathProcess( ra, cdt, tn ),
     times( t ), useOrigin(uo)
 {
+    // initialize all the pointers to NULL
+    homogeneous_lambda   = NULL;
+    homogeneous_mu       = NULL;
+    homogeneous_psi      = NULL;
+    homogeneous_rho      = NULL;
+    heterogeneous_lambda = NULL;
+    heterogeneous_mu     = NULL;
+    heterogeneous_psi    = NULL;
+    heterogeneous_rho    = NULL;
+
     const TypedDagNode<RbVector<double> > *tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(s);
     const TypedDagNode<double> *tmp_c = dynamic_cast<const TypedDagNode<double >*>(s);
 
@@ -51,7 +61,9 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
         heterogeneous_lambda = tmp_v;
         if(heterogeneous_lambda->getValue().size() != times->getValue().size() + 1)
         {
-            throw(RbException("Number of speciation rates does not match number of epochs (# rate change times + 1)"));
+            std::stringstream ss;
+            ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of epochs (" << times->getValue().size() + 1 << ")";
+            throw(RbException(ss.str()));
         }
 
         addParameter( heterogeneous_lambda );
@@ -74,7 +86,9 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
         heterogeneous_mu = tmp_v;
         if(heterogeneous_mu->getValue().size() != times->getValue().size() + 1)
         {
-            throw(RbException("Number of extinction rates does not match number of epochs (# rate change times + 1)"));
+            std::stringstream ss;
+            ss << "Number of extinction rates (" << heterogeneous_mu->getValue().size() << ") does not match number of epochs (" << times->getValue().size() + 1 << ")";
+            throw(RbException(ss.str()));
         }
 
         addParameter( heterogeneous_mu );
@@ -97,7 +111,9 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
         heterogeneous_psi = tmp_v;
         if(heterogeneous_psi->getValue().size() != times->getValue().size() + 1)
         {
-            throw(RbException("Number of fossilization rates does not match number of epochs (# rate change times + 1)"));
+            std::stringstream ss;
+            ss << "Number of fossilization rates (" << heterogeneous_psi->getValue().size() << ") does not match number of epochs (" << times->getValue().size() + 1 << ")";
+            throw(RbException(ss.str()));
         }
 
         addParameter( heterogeneous_psi );
@@ -120,7 +136,9 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
         heterogeneous_rho = tmp_v;
         if(heterogeneous_rho->getValue().size() != times->getValue().size() + 1)
         {
-            throw(RbException("Number of sampling probabilities does not match number of epochs (# rate change times + 1)"));
+            std::stringstream ss;
+            ss << "Number of sampling probabilities (" << heterogeneous_rho->getValue().size() << ") does not match number of epochs (" << times->getValue().size() + 1 << ")";
+            throw(RbException(ss.str()));
         }
 
         addParameter( heterogeneous_rho );
