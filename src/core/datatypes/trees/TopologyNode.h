@@ -39,6 +39,7 @@
 #include "Clade.h"
 #include "RbBitSet.h"
 //#include "RevPtr.h"
+#include "TreeChangeEventMessage.h"
 #include "Taxon.h"
 #include "TaxonMap.h"
 
@@ -85,6 +86,7 @@ namespace RevBayesCore {
         bool                                        containsClade(const RbBitSet &c, bool strict) const;
 //        bool                                        containsClade(const TopologyNode* c) const;
 //        bool                                        containsClade(const Clade &c) const;
+        void                                        fireTreeChangeEvent(const unsigned& m = RevBayesCore::TreeChangeEventMessage::DEFAULT);
         double                                      getAge(void) const;                                                                 //!< Get the age (time ago from present) for this node
         const std::vector<std::string>&             getBranchParameters(void) const;                                                        //!< Get the branch length leading towards this node
         double                                      getBranchLength(void) const;                                                        //!< Get the branch length leading towards this node

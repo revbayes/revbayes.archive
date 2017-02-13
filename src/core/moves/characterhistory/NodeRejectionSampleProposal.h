@@ -14,6 +14,7 @@
 #include "RbException.h"
 #include "StochasticNode.h"
 //#include "TransitionProbability.h"
+#include "TreeChangeEventMessage.h"
 #include "TopologyNode.h"
 #include "TypedDagNode.h"
 
@@ -356,6 +357,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::prepareProposal( void 
 
     rightProposal->assignNode(&node->getChild(1));
     rightProposal->prepareProposal();
+
 
     // store node state values
     storedNodeState.clear();

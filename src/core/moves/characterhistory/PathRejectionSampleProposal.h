@@ -11,6 +11,7 @@
 #include "RateGeneratorSequence.h"
 #include "RbException.h"
 #include "StochasticNode.h"
+#include "TreeChangeEventMessage.h"
 #include "TopologyNode.h"
 #include "TypedDagNode.h"
 
@@ -450,7 +451,7 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::prepareProposal( void 
     storedHistory = history;
 
     // flag node as dirty
-    p->fireTreeChangeEvent(*node);
+    const_cast<TopologyNode*>(node)->fireTreeChangeEvent(RevBayesCore::TreeChangeEventMessage::CHARACTER_HISTORY);
 
     double x = computeLnProposal(*node, *bh);
 
@@ -506,6 +507,9 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::undoProposal( void )
         CharacterEvent* e = events[i];
         delete e;
     }
+    
+    // flag node as dirty
+    const_cast<TopologyNode*>(node)->fireTreeChangeEvent(RevBayesCore::TreeChangeEventMessage::CHARACTER_HISTORY);
 
     // swap current value and stored value
     bh->updateHistory(storedHistory);

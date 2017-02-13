@@ -686,6 +686,16 @@ bool TopologyNode::equals(const TopologyNode& node) const
 }
 
 
+void TopologyNode::fireTreeChangeEvent( const unsigned& m ) {
+    
+    // fire tree change event
+    if ( tree != NULL )
+    {
+        tree->getTreeChangeEventHandler().fire( *this, m );
+    }
+
+}
+
 /*
  * Get the Age.
  * We internally store the age so can return it. However, if we invalidated the age ( age = Inf ),

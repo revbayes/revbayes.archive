@@ -117,6 +117,7 @@ namespace RevBayesCore {
         bool                                                                treatAmbiguousAsGaps;
         bool                                                                tipsInitialized;
         bool                                                                branchHeterogeneousClockRates;
+        bool                                                                useDirtyNodes;
 
         charType                                                            template_state;                                 //!< Template state used for ancestral state estimation. This makes sure that the state labels are preserved.
 
@@ -153,7 +154,8 @@ RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TypedDagNode<Tree
     treatUnknownAsGap( true ),
     treatAmbiguousAsGaps( true ),
     tipsInitialized( false ),
-    template_state()
+    template_state(),
+    useDirtyNodes(false)
 {
     // initialize with default parameters
     homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
@@ -212,6 +214,7 @@ RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TreeHistoryCtmc &
     
     // flags specifying which model variants we use
     branchHeterogeneousClockRates               = n.branchHeterogeneousClockRates;
+    useDirtyNodes                               = n.useDirtyNodes;
 
     
     // We don'e want tau to die before we die, or it can't remove us as listener
@@ -377,7 +380,7 @@ template<class charType>
 void RevBayesCore::TreeHistoryCtmc<charType>::fillLikelihoodVector(const TopologyNode &node)
 {
     size_t nodeIndex = node.getIndex();
-    if ( dirtyNodes[nodeIndex] == false && false )
+    if ( dirtyNodes[nodeIndex] == false && useDirtyNodes )
     {
         return;
     }
@@ -422,7 +425,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::flagNodeDirty( const RevBayesCore:
     size_t index = n.getIndex();
 
     // if this node is already dirty, the also all the ancestral nodes must have been flagged as dirty
-    if ( dirtyNodes[index] == false )
+    if ( dirtyNodes[index] == false && useDirtyNodes )
     {
         // set the flag
         dirtyNodes[index] = true;
@@ -430,7 +433,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::flagNodeDirty( const RevBayesCore:
         // if we previously haven't touched this node, then we need to change the active likelihood pointer
         if ( changedNodes[index] == false )
         {
-            //            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
+            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
             //activeLikelihood[index] = 0;
             changedNodes[index] = true;
         }
@@ -576,9 +579,9 @@ void RevBayesCore::TreeHistoryCtmc<charType>::restoreSpecialization( DagNode* af
     {
         // we have to restore, that means if we have changed the active likelihood vector
         // then we need to revert this change
-        if ( changedNodes[index] )
+        if ( changedNodes[index])
         {
-//            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
+            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
         }
         
         // set all flags to false
@@ -848,7 +851,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::touchSpecialization( DagNode* affe
 {
 
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
-    if ( affecter == this->dag_node )
+    if ( affecter == this->dag_node && useDirtyNodes )
     {
         // do nothing, assume tree events have been fired
         ;
@@ -864,9 +867,9 @@ void RevBayesCore::TreeHistoryCtmc<charType>::touchSpecialization( DagNode* affe
         // flip the active likelihood pointers
         for (size_t index = 0; index < changedNodes.size(); ++index)
         {
-            if ( !changedNodes[index] )
+            if ( !changedNodes[index])
             {
-//                activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
+                activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
                 //activeLikelihood[index] = 0;
                 changedNodes[index] = true;
             }
