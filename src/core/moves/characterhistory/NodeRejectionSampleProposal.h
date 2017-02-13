@@ -486,8 +486,11 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
 
             std::vector<double> rf = c->getRootFrequencies();
 
-            for (size_t site_index = 0; site_index < num_sites; ++site_index)
+            std::set<size_t>::iterator it_s;
+//            for (size_t site_index = 0; site_index < num_sites; ++site_index)
+            for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
             {
+                size_t site_index = *it_s;
                 size_t desS1 = leftChildState[site_index]->getState();
                 size_t desS2 = rightChildState[site_index]->getState();
 
