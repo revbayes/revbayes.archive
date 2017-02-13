@@ -6,9 +6,14 @@ compiler:
 script:
   - cd projects/cmake
   - ./build.sh
+  - echo "\"Hello World\"" | ./rb
 
 # safelist
 branches:
   only:
   - master
   - development
+  
+# notifications
+notifications:
+  slack: revbayes:bQO6VTun0Orhx2NiKktVPDsS

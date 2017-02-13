@@ -1,9 +1,12 @@
+//////
+//////  Move_PathCharacterHistoryRejectionSample.cpp
+//////  rb_mlandis
+//////
+//////  Created by Michael Landis on 7/5/14.
+//////  Copyright (c) 2014 Michael Landis. All rights reserved.
+//////
 ////
-////  Move_PathCharacterHistoryRejectionSample.cpp
-////  rb_mlandis
 ////
-////  Created by Michael Landis on 7/5/14.
-////  Copyright (c) 2014 Michael Landis. All rights reserved.
 ////
 //
 //
@@ -12,7 +15,7 @@
 //#include "ArgumentRules.h"
 //#include "BiogeographyPathRejectionSampleProposal.h"
 //#include "ContinuousStochasticNode.h"
-//#include "Dist_phyloCTMCDASequence.h"
+//#include "Dist_phyloDACTMC.h"
 //#include "MetropolisHastingsMove.h"
 //#include "Move_PathCharacterHistoryRejectionSample.h"
 //#include "OptionRule.h"
@@ -24,7 +27,7 @@
 //#include "RlBoolean.h"
 //#include "RlString.h"
 //#include "Probability.h"
-//#include "RlRateGeneratorSequence.h"
+//#include "RlRateMap.h"
 //#include "RlTimeTree.h"
 //#include "ScaleProposal.h"
 //#include "TypedDagNode.h"
@@ -81,10 +84,10 @@
 //    
 //    // move/proposal parameters
 //    RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
-//    RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* qmap_tdn                 = static_cast<const RateGeneratorSequence&>( qmap->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* qmap_tdn                 = static_cast<const RateMap&>( qmap->getRevObject() ).getDagNode();
 //    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tree_tdn                = static_cast<const TimeTree&>( tree->getRevObject() ).getDagNode();
 //    RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
-//    RevBayesCore::DeterministicNode<RevBayesCore::RateGeneratorSequence>* qmap_dn             = static_cast<RevBayesCore::DeterministicNode<RevBayesCore::RateGeneratorSequence>* >(qmap_tdn);
+//    RevBayesCore::DeterministicNode<RevBayesCore::RateMap>* qmap_dn             = static_cast<RevBayesCore::DeterministicNode<RevBayesCore::RateMap>* >(qmap_tdn);
 //    RevBayesCore::StochasticNode<RevBayesCore::Tree>* tree_sn               = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree>* >(tree_tdn);
 //    
 //    // finally create the internal move object
@@ -109,9 +112,9 @@
 //const std::string& Move_PathCharacterHistoryRejectionSample::getClassType(void)
 //{
 //    
-//    static std::string revType = "Move_PathCharacterHistoryRejectionSample";
+//    static std::string rev_type = "Move_PathCharacterHistoryRejectionSample";
 //    
-//	return revType;
+//	return rev_type;
 //}
 //
 //
@@ -123,9 +126,9 @@
 //const TypeSpec& Move_PathCharacterHistoryRejectionSample::getClassTypeSpec(void)
 //{
 //    
-//    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+//    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
 //    
-//	return revTypeSpec;
+//	return rev_type_spec;
 //}
 //
 //
@@ -156,29 +159,29 @@
 //const MemberRules& Move_PathCharacterHistoryRejectionSample::getParameterRules(void) const
 //{
 //    
-//    static MemberRules pathChrsMoveMemberRules;
-//    static bool rulesSet = false;
+//    static MemberRules pathChrsmove_member_rules;
+//    static bool rules_set = false;
 //    
-//    if ( !rulesSet )
+//    if ( !rules_set )
 //    {
-//        pathChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-//        pathChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateGeneratorSequence::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-//        pathChrsMoveMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-//        pathChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY , new Probability(0.1) ) );
-////        pathChrsMoveMemberRules.push_back( new ArgumentRule( "type", true, RlString::getClassTypeSpec(), new RlString("std") ) );
+//        pathChrsmove_member_rules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+//        pathChrsmove_member_rules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+//        pathChrsmove_member_rules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+//        pathChrsmove_member_rules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY , new Probability(0.1) ) );
+////        pathChrsmove_member_rules.push_back( new ArgumentRule( "type", true, RlString::getClassTypeSpec(), new RlString("std") ) );
 //        std::vector<std::string> options;
 //        options.push_back( "std" );
 //        options.push_back( "biogeo" );
-//        pathChrsMoveMemberRules.push_back( new OptionRule( "type", new RlString("std"), options, "" ) );
+//        pathChrsmove_member_rules.push_back( new OptionRule( "type", new RlString("std"), options, "" ) );
 //        
 //        /* Inherit weight from Move, put it after variable */
 //        const MemberRules& inheritedRules = Move::getParameterRules();
-//        pathChrsMoveMemberRules.insert( pathChrsMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
+//        pathChrsmove_member_rules.insert( pathChrsmove_member_rules.end(), inheritedRules.begin(), inheritedRules.end() );
 //        
-//        rulesSet = true;
+//        rules_set = true;
 //    }
 //    
-//    return pathChrsMoveMemberRules;
+//    return pathChrsmove_member_rules;
 //}
 //
 //
@@ -190,9 +193,9 @@
 //const TypeSpec& Move_PathCharacterHistoryRejectionSample::getTypeSpec( void ) const
 //{
 //    
-//    static TypeSpec typeSpec = getClassTypeSpec();
+//    static TypeSpec type_spec = getClassTypeSpec();
 //    
-//    return typeSpec;
+//    return type_spec;
 //}
 //
 //

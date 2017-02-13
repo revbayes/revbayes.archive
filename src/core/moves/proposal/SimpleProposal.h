@@ -45,7 +45,7 @@ namespace RevBayesCore {
         
         
     protected:
-        SimpleProposal(StochasticNode<valueType> *v);                                                                                                                           //!< Default constructor
+        SimpleProposal(StochasticNode<valueType> *v, double p=0.44);                                                                                                                           //!< Default constructor
         SimpleProposal(const SimpleProposal<valueType> &p);                                                                                                        //!< Copy constructor
         SimpleProposal<valueType>&                              operator=(const SimpleProposal<valueType> &p);                                                     //!< Assignment operator
         
@@ -65,7 +65,7 @@ namespace RevBayesCore {
 
 
 template <class valueType>
-RevBayesCore::SimpleProposal<valueType>::SimpleProposal( StochasticNode<valueType> *v ) : Proposal(),
+RevBayesCore::SimpleProposal<valueType>::SimpleProposal( StochasticNode<valueType> *v, double p ) : Proposal( p ),
     variable( v )
 {
     

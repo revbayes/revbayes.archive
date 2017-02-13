@@ -320,12 +320,12 @@
                             if ([loop isExecuting] == YES)
                                 infoStr = [infoStr stringByAppendingFormat:@"%c:%d, ", [loop indexLetter], [loop currentIndex]];
                             }
-                        infoStr = [infoStr stringByAppendingFormat:@"%d/%d) = %d", i+1, (int)[myTrees count], treeLength];
+                        infoStr = [infoStr stringByAppendingFormat:@"%d of %d) = %d", i+1, (int)[myTrees count], treeLength];
                         [t setInfo:infoStr];
                         }
                     else
                         {
-                        NSString* infoStr = [NSString stringWithFormat:@"Parsimony length (%d/%d) = %d", i+1, (int)[myTrees count], treeLength];
+                        NSString* infoStr = [NSString stringWithFormat:@"Parsimony length (%d of %d) = %d", i+1, (int)[myTrees count], treeLength];
                         [t setInfo:infoStr];
                         }
                     }
@@ -341,7 +341,9 @@
                 }
             }
 
+        //TEMP!!!
         [self removeFilesFromTemporaryDirectory];
+        NSLog(@"paupDirectory = %@", paupDirectory);
         }
     else
         {

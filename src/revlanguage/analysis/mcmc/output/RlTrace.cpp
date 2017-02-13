@@ -4,6 +4,7 @@
 #include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "Natural.h"
+#include "Probability.h"
 #include "RlUtils.h"
 
 using namespace RevLanguage;
@@ -12,7 +13,10 @@ Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>()
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    std::vector<TypeSpec> burninTypes;
+    burninTypes.push_back( Probability::getClassTypeSpec() );
+    burninTypes.push_back( Integer::getClassTypeSpec() );
+    summarizeArgRules->push_back( new ArgumentRule("burnin", burninTypes, "The fraction/number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25)) );
     methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
 
 }
@@ -22,7 +26,10 @@ Trace::Trace(const RevBayesCore::TraceNumeric &t) : WorkspaceToCoreWrapperObject
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    std::vector<TypeSpec> burninTypes;
+    burninTypes.push_back( Probability::getClassTypeSpec() );
+    burninTypes.push_back( Integer::getClassTypeSpec() );
+    summarizeArgRules->push_back( new ArgumentRule("burnin", burninTypes, "The fraction/number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25)) );
     methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
 
 }

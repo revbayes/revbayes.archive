@@ -74,7 +74,7 @@ const ArgumentRules& Func_convertToPhylowood::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "treefile",  RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "geofile",   RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "outfile",   RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "burnin",    Probability::getClassTypeSpec()            , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        argumentRules.push_back( new ArgumentRule( "burnin",    Probability::getClassTypeSpec()        , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
         
         std::vector<std::string> options;
         options.push_back( "NaturalNumbers" );

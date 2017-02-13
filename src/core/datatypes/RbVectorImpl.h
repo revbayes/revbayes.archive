@@ -70,7 +70,18 @@ namespace RevBayesCore {
 //        void                                                insert(size_t i, const valueType &v) { values[i] = v; }
 //        void                                                push_back(const valueType &v) { values.push_back( v ); }
         virtual size_t                                      size(void) const { return this->std::vector<valueType>::size(); }
-
+        valueType&                                          operator[](size_t i)
+        {
+            if ( i >= std::vector<valueType>::size() )
+            throw(RbException("Vector index out of range"));
+            return std::vector<valueType>::operator [](i);
+        }
+        const valueType&                                    operator[](size_t i) const
+        {
+            if ( i >= std::vector<valueType>::size() )
+            throw(RbException("Vector index out of range"));
+            return std::vector<valueType>::operator [](i);
+        }
         void                                                printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
             o << "[";
@@ -149,8 +160,18 @@ namespace RevBayesCore {
             }
             return *this;
         }
-        valueType&                                          operator[](size_t i) { return *values[i]; }
-        const valueType&                                    operator[](size_t i) const { return *values[i]; }
+        valueType&                                          operator[](size_t i)
+        {
+            if ( i >= values.size() )
+            throw(RbException("Vector index out of range"));
+            return *values[i];
+        }
+        const valueType&                                    operator[](size_t i) const
+        {
+            if ( i >= values.size() )
+            throw(RbException("Vector index out of range"));
+            return *values[i];
+        }
         bool                                                operator==(const RbVectorImpl<valueType,1>& x) const { return values == x.values; }                              //!< Equals operator
         bool                                                operator!=(const RbVectorImpl<valueType,1>& x) const { return !operator==(x); }                              //!< Not-Equals operator
         bool                                                operator<(const RbVectorImpl<valueType,1>& x) const { return values < x.values; }

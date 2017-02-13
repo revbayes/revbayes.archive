@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : SimpleProposal<double>( n ),
+ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l, double p) : SimpleProposal<double>( n, p ),
     storedValue( 0.0 ),
     lambda( l )
 {
@@ -153,13 +153,14 @@ void ScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void ScaleProposal::tune( double rate ) 
 {
     
-    if ( rate > 0.44 ) 
+    double p = this->targetAcceptanceRate;
+    if ( rate > p )
     {
-        lambda *= (1.0 + ((rate-0.44)/0.56) );
+        lambda *= (1.0 + ((rate-p)/(1.0 - p)) );
     }
     else 
     {
-        lambda /= (2.0 - rate/0.44 );
+        lambda /= (2.0 - rate/p);
     }
     
 }

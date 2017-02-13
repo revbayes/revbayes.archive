@@ -289,26 +289,6 @@ void DiscreteCharacterState::setStateByIndex(size_t index)
 }
 
 
-void DiscreteCharacterState::setState(const RbBitSet &s)
-{
-    
-    num_observed_states = 0;
-    state = s;
-    
-    for (size_t i = 0; i < s.size(); i++)
-    {
-        
-        if ( s.isSet(i) == true )
-        {
-            ++num_observed_states;
-            index_single_state = i;
-        }
-        
-    }
-    
-}
-
-
 
 void DiscreteCharacterState::setState(const std::string &s)
 {
@@ -330,8 +310,7 @@ void DiscreteCharacterState::setState(const std::string &s)
 }
 
 
-const std::vector<double> DiscreteCharacterState::getWeights() const
-{
+const std::vector<double> DiscreteCharacterState::getWeights() const {
     
     // @Bastien: Change this function as needed!beta
     return std::vector<double>(num_observed_states, 1.0);

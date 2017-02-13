@@ -84,31 +84,31 @@ RevPtr<RevVariable> UserFunction::executeCode( void )
         
         if ( Signals::getSignals().isSet( Signals::RETURN ) )
         {
-//            Signals::getSignals().clearFlags();
+            Signals::getSignals().clearFlags();
             break;
         }
     }
 
     // non-void return type?
-    if(getReturnType() != RevObject::getClassTypeSpec())
+    if ( getReturnType() != RevObject::getClassTypeSpec() )
     {
         // void return value?
-        if(retVar == NULL)
+        if (retVar == NULL)
         {
             throw(RbException("No return value in function '"+this->getFunctionName()+"' returning non-void type "+getReturnType().getType()));
         }
-        // incompatible return value?
-        else if(retVar->getRevObject().getTypeSpec() != getReturnType())
+        else if ( retVar->getRevObject().isType( getReturnType() ) == true )
         {
-            if(retVar->getRevObject().isConvertibleTo(getReturnType(),true) == -1)
-            {
-                throw(RbException("Returning "+retVar->getRevObject().getTypeSpec().getType()+" in function '"+this->getFunctionName()+"' with incompatible return type "+getReturnType().getType()));
-            }
             // compatible but differing return value
-            else
+            if ( retVar->getRevObject().isConvertibleTo(getReturnType(),true) >= 0 )
             {
                 //convert the return value
                 retVar = new RevVariable( retVar->getRevObject().convertTo(getReturnType()) );
+            }
+            // incompatible return value?
+            else
+            {
+                throw(RbException("Returning "+retVar->getRevObject().getTypeSpec().getType()+" in function '"+this->getFunctionName()+"' with incompatible return type "+getReturnType().getType()));
             }
         }
     }

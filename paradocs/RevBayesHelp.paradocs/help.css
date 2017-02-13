@@ -1,0 +1,196 @@
+/* Document Basics */
+
+html {
+    background-color: white;
+}
+
+body {
+    font: 11pt Georgia, "Times New Roman", Times, serif;
+    line-height: 13pt;
+    font-weight: normal;
+    font-style: normal;
+    text-decoration: none;
+    text-align: left;
+    color: black;
+    padding: 20px;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+pre {
+    border-left: 1px solid #bbb;
+    border: 2pt solid gray;
+    padding: 1em;
+    margin: 1em;
+    background-color: silver;
+    -webkit-border-radius: 5px;
+    
+}
+
+h1 {
+    font: bold 22pt "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    clear: both;
+}
+
+h2 {
+    font: bold 18pt "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    clear: both;
+}
+
+h3 {
+    font: bold 14pt "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    clear: both;
+}
+
+h4 {
+    font: bold 14pt "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    color: gray;
+    clear: both;
+}
+
+
+/* image position on screen */
+
+img.flushLeft {
+    margin-left: 0;
+}
+
+img.flushRight {
+    margin-right: 0;
+}
+
+img.floatLeft {
+    float: left;
+    margin-right: 10px;
+}
+
+img.floatRight {
+    float: right;
+    margin-left: 10px;
+}
+
+img.centreImage {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Links */
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: : underline;
+}
+
+/* standard page */
+
+page {
+    margin: 20px;
+}
+
+/* Table of Contents */
+
+#toc {
+    padding: 10px;
+}
+
+#toc > h1 {
+    color: blue;
+}
+
+#toc p {
+    font-variant: small-caps;
+    font-weight: bold;
+    font-size: 12pt;
+    padding-left: 5%;
+    text-align: left;
+}
+
+#tocIconAndText {
+    
+}
+
+#appBlurb {
+    
+}
+
+
+
+/* Subpages */
+
+#subPages > h1 {
+    color: gray;
+    font-size: 120%;
+    font-variant: small-caps;
+}
+
+#subPages p {
+    font-variant: small-caps;
+    font-style: italic;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 10%;
+}
+
+#subPages hr {
+    width: 50%;
+}
+
+/* See Also Pages */
+
+#seeAlso > h1 {
+    color: gray;
+    font-size: 120%;
+    font-variant: small-caps;
+}
+
+#seeAlso p {
+    font-variant: small-caps;
+    font-style: italic;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 10%;
+}
+
+#seeAlso hr {
+    width: 50%;
+}
+
+/* External Pages */
+
+#externalPages > h1 {
+    
+    color: gray;
+    font-size: 120%;
+    font-variant: small-caps;
+}
+
+#externalPages p {
+    font-variant: small-caps;
+    font-style: italic;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 10%;
+}
+
+#externalPages hr {
+    width: 50%;
+}
+
+/* Tables */
+
+bodyText > tr {
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+    border-collapse: collapse;
+}
+
+

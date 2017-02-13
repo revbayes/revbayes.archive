@@ -201,6 +201,8 @@
 	[dataMatrix setCellSize:NSMakeSize(cw, cellHeight)];
 	[dataMatrix setAllowsEmptySelection:YES];
 	allCells = [dataMatrix cells];
+    int nextSiteMarker = 10;
+    NSString* nextSiteMarkerStr = [NSString stringWithFormat:@"%d", nextSiteMarker];
 	for (int i=0; i<nRows; i++)
 		{
         int nc = 0;
@@ -220,7 +222,34 @@
 				[aCell setBackgroundColor:headerBackground];
 				[aCell setTextColor:headerTextColor];
 				[aCell setAlignment:NSCenterTextAlignment];
-				[aCell setStringValue:@""];
+                int testVal = (j+1) % 10;
+                if (testVal == 0)
+                    testVal = 10;
+                if ( j == 0 )
+                    {
+					[aCell setStringValue:@"1"];
+                    }
+                else if ( 10 - testVal < [nextSiteMarkerStr length] )
+                    {
+                    if ( (j+1) > (nc - nc % 10) )
+                        {
+                        [aCell setStringValue:@""];
+                        }
+                    else
+                        {
+                        NSString* charStr = [NSString stringWithFormat:@"%c", [nextSiteMarkerStr characterAtIndex:(([nextSiteMarkerStr length]-1)-(10-testVal))]];
+                        [aCell setStringValue:charStr];
+                        }
+                    if ( (j+1) % 10 == 0 )
+                        {
+                        nextSiteMarker += 10;
+                        nextSiteMarkerStr = [NSString stringWithFormat:@"%d", nextSiteMarker];
+                        }
+                    }
+                else
+                    {
+                    [aCell setStringValue:@""];
+                    }
 				}
 			else if (i == 1)
 				{

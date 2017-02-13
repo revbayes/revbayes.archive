@@ -105,11 +105,11 @@
 
 /* These types are needed as template types for the moves */
 #include "RlBranchLengthTree.h"
+#include "RlCharacterHistoryRateModifier.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
 #include "RlRateGenerator.h"
 #include "RlCladogeneticProbabilityMatrix.h"
-#include "RlCharacterHistoryRateModifier.h"
 #include "RlTimeTree.h"
 
 
@@ -121,15 +121,13 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
     try
     {
 
-        
         AddWorkspaceVectorType<Taxon,4>::addTypeToWorkspace( *this, new Taxon() );
         AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
         AddWorkspaceVectorType<CladogeneticProbabilityMatrix,3>::addTypeToWorkspace( *this, new CladogeneticProbabilityMatrix() );
-        AddWorkspaceVectorType<CharacterHistoryRateModifier,3>::addTypeToWorkspace( *this, new CharacterHistoryRateModifier() );
         AddWorkspaceVectorType<MatrixReal,3>::addTypeToWorkspace( *this, new MatrixReal() );
         AddWorkspaceVectorType<MatrixRealSymmetric,3>::addTypeToWorkspace( *this, new MatrixRealSymmetric() );
         AddWorkspaceVectorType<AbstractHomologousDiscreteCharacterData,3>::addTypeToWorkspace( *this, new AbstractHomologousDiscreteCharacterData() );
-
+        AddWorkspaceVectorType<CharacterHistoryRateModifier,3>::addTypeToWorkspace( *this, new CharacterHistoryRateModifier() );
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
         AddWorkspaceVectorType<Tree,3>::addTypeToWorkspace( *this, new Tree() );
@@ -138,7 +136,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 
         //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
 //        addFunction( new Func_workspaceVector<AbstractModelObject>() );
-
+        
 		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
 
 //        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );
@@ -165,7 +163,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 
         /* Add math types (in folder "datatypes/math") */
         addTypeWithConstructor( new CorrespondenceAnalysis()                    );
-        addType( new RateGeneratorSequence()                                    );
+//        addType( new RateMap()                                                  );
 //        addType( new MatrixReal()                                               );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */

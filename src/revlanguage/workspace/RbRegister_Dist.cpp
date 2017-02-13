@@ -99,7 +99,7 @@
 #include "Dist_phyloCTMCDASequence.h"
 #include "Dist_phyloCTMCDASiteIID.h"
 #include "Dist_phyloCTMCClado.h"
-#include "Dist_phyloDolloCTMC.h"
+//#include "Dist_phyloCTMCDollo.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 
@@ -202,8 +202,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         ///////////////////////////////////////////////////
         /* Add distributions (in folder "distributions") */
         ///////////////////////////////////////////////////
-
-
+        
+        
         /* Evolutionary processes (in folder "distributions/evolution") */
 
         /* Branch rate processes (in folder "distributions/evolution/branchrate") */
@@ -218,9 +218,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianREML()         );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMVN()          );
         AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()    );
-
+        
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()          );
-
+        
         // multivariate brownian motion
         AddDistribution< ModelVector< ModelVector<Real> > >( new Dist_PhyloMvtBrownian() );
 
@@ -234,8 +234,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( new Dist_phyloCTMCDASequence() );
         addDistribution( new Dist_phyloCTMCDASiteIID() );
         addDistribution( new Dist_phyloCTMCClado() );
-        //addDistribution( new Dist_phyloDolloCTMC() );
-
+//        addDistribution( new Dist_phyloCTMCDollo() );
+        
         /* Tree distributions (in folder "distributions/evolution/tree") */
 
         // constant rate birth-death process
@@ -313,7 +313,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // chi-square distribution
         AddContinuousDistribution< RealPos          >( new Dist_chisq() );
-
+        
         // Student's t distribution
         AddContinuousDistribution< Real             >(new Dist_studentT() );
 
@@ -380,7 +380,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         /* Mixture distributions (in folder "distributions/mixture") */
         AddDistribution< ModelVector<TimeTree>      >( new Dist_EmpiricalSample<TimeTree>());
 
-
+        
         // dirichlet process prior distribution
         AddDistribution< ModelVector<Real>          >( new Dist_dpp<Real>()         );
 		AddDistribution< ModelVector<RealPos>       >( new Dist_dpp<RealPos>()      );
@@ -397,7 +397,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< Probability                >( new Dist_mixture<Probability>() );
 //        AddDistribution< RateGenerator              >( new Dist_mixture<RateGenerator>() );
         addDistribution( new Dist_mixture<RateGenerator>() );
-
+        AddDistribution< TimeTree                   >( new Dist_mixture<TimeTree>() );
+        
         // Ornstein-Uhlenbeck process
         AddDistribution< Real                       >( new OrnsteinUhlenbeckProcess() );
 

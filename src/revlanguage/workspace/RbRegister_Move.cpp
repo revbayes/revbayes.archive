@@ -154,7 +154,6 @@
 
 
 #include "Move_NarrowExchangeRateMatrix.h"
-#include "Move_NarrowExchangeCharacterHistory.h"
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
@@ -172,10 +171,10 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_Scale() );
         addTypeWithConstructor( new Move_Slide() );
         addTypeWithConstructor( new Move_SliceSampling() );
-
+        
         /* Moves on probability */
         addTypeWithConstructor( new Move_BetaProbability() );
-
+		
         /* compound moves */
 //        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
         addTypeWithConstructor( new Move_UpDownTreeScale() );
@@ -194,7 +193,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_DirichletSimplex() );
         addTypeWithConstructor( new Move_BetaSimplex() );
         addTypeWithConstructor( new Move_ElementSwapSimplex() );
-
+        
         /* Moves on vectors of real values */
         addTypeWithConstructor( new Move_SingleElementSlide() );
         addTypeWithConstructor( new Move_SingleElementScale() );
@@ -237,13 +236,14 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_MixtureAllocation<Integer>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<Probability>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<RateGenerator>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<Tree>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Real>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RealPos>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Natural>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Integer>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Probability>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RateGenerator>( ) );
-
+        
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Real>( )                  );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<RealPos>( )               );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Natural>( )               );
@@ -286,10 +286,10 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_TreeScale()                      );
 //        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
 //        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
+        
+        addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()         );
 
-        addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()       );
-        addTypeWithConstructor( new Move_NarrowExchangeCharacterHistory()    );
-
+        
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor( new Move_CharacterHistory() );
         // addTypeWithConstructor( new Move_NodeCharacterHistoryRejectionSample() );

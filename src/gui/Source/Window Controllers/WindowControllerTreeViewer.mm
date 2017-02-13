@@ -43,6 +43,7 @@
 
     //configure carousel
     [self.window makeFirstResponder:self.carousel];
+    [carousel reloadData];
     
     [infoLabel setHidden:YES];
 }

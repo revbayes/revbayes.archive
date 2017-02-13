@@ -43,7 +43,7 @@ namespace RevBayesCore {
         bool                                    isSequenceMissing(void) const;                                      //!< Returns whether the contains only missing data or has some actual observations
         void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
         void                                    setAllCharactersMissing(void);                                      //!< Set all characters as missing
-
+        
     private:
 
         std::vector<charType>                   sequence;
@@ -473,8 +473,6 @@ void RevBayesCore::DiscreteTaxonData<charType>::setAllCharactersMissing( void )
     }
 
 }
-
-
 
 template<class charType>
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const DiscreteTaxonData<charType>& x)

@@ -22,6 +22,7 @@
 #include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "StandardState.h"
+#include "StateDependentSpeciationExtinctionProcess.h"
 #include "TypeSpec.h"
 
 
@@ -50,34 +51,24 @@ Mntr_JointConditionalCharacterMapping* Mntr_JointConditionalCharacterMapping::cl
 void Mntr_JointConditionalCharacterMapping::constructInternalObject( void )
 {
     
-    const std::string& file_name      = static_cast<const RlString  &>( filename->getRevObject()    ).getValue();
-    const std::string& sep            = static_cast<const RlString  &>( separator->getRevObject()   ).getValue();
-    int                print_gen      = static_cast<const Natural   &>( printgen->getRevObject()    ).getValue();
-    bool               app            = static_cast<const RlBoolean &>( append->getRevObject()      ).getValue();
-    std::string		   character_type = static_cast<const RlString  &>( monitorType->getRevObject() ).getValue();
+    const std::string& file_name      = static_cast<const RlString  &>( filename->getRevObject()       ).getValue();
+    bool               is             = static_cast<const RlBoolean &>( include_simmap->getRevObject() ).getValue();
+    const std::string& sep            = static_cast<const RlString  &>( separator->getRevObject()      ).getValue();
+    int                print_gen      = static_cast<const Natural   &>( printgen->getRevObject()       ).getValue();
+    bool               app            = static_cast<const RlBoolean &>( append->getRevObject()         ).getValue();
     
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>*   cdbdp_tdn = static_cast<const RevLanguage::Tree&>( cdbdp->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree>* cdbdp_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree>* >( cdbdp_tdn );
     
+    RevBayesCore::StateDependentSpeciationExtinctionProcess *sse_process = NULL;
+    sse_process = dynamic_cast<RevBayesCore::StateDependentSpeciationExtinctionProcess*>( &cdbdp_sn->getDistribution() );
+    sse_process->setSampleCharacterHistory( true );
+    
+    RevBayesCore::JointConditionalCharacterMappingMonitor *m = new RevBayesCore::JointConditionalCharacterMappingMonitor( cdbdp_sn, (unsigned long)print_gen, file_name, is, sep );
+    m->setAppend( app );
+    
     delete value;
-    if (character_type == "NaturalNumbers")
-    {
-        RevBayesCore::JointConditionalCharacterMappingMonitor<RevBayesCore::NaturalNumbersState> *m;
-        m = new RevBayesCore::JointConditionalCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>(cdbdp_sn, (unsigned long)print_gen, file_name, sep);
-        m->setAppend( app );
-        value = m;
-    }
-    else if (character_type == "Standard")
-    {
-        RevBayesCore::JointConditionalCharacterMappingMonitor<RevBayesCore::StandardState> *m;
-        m = new RevBayesCore::JointConditionalCharacterMappingMonitor<RevBayesCore::StandardState>(cdbdp_sn, (unsigned long)print_gen, file_name, sep);
-        m->setAppend( app );
-        value = m;
-    }
-    else
-    {
-        throw RbException( "Incorrect character type specified. Valid options are: NaturalNumbers, Standard" );
-    }
+    value = m;
     
 }
 
@@ -129,12 +120,12 @@ const MemberRules& Mntr_JointConditionalCharacterMapping::getParameterRules(void
     
     if ( !rules_set )
     {
-        monitor_rules.push_back( new ArgumentRule("cdbdp"          , TimeTree::getClassTypeSpec(),  "The character dependent birth-death process to monitor.",     ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
-        monitor_rules.push_back( new ArgumentRule("filename"       , RlString::getClassTypeSpec() , "The file to save sampled character histories.",               ArgumentRule::BY_VALUE,     ArgumentRule::ANY ) );
-        monitor_rules.push_back( new ArgumentRule("type"           , RlString::getClassTypeSpec() , "The character type to monitor.",                              ArgumentRule::BY_VALUE,     ArgumentRule::ANY ) );
-        monitor_rules.push_back( new ArgumentRule("printgen"       , Natural::getClassTypeSpec()  , "The frequency how often we print. 1 by default.",             ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new Natural(1) ) );
-        monitor_rules.push_back( new ArgumentRule("separator"      , RlString::getClassTypeSpec() , "The delimiter between variables. \t by default.",             ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new RlString("\t") ) );
-        monitor_rules.push_back( new ArgumentRule("append"         , RlBoolean::getClassTypeSpec(), "Should we append an existing file exists? False by default.", ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new RlBoolean(false) ) );
+        monitor_rules.push_back( new ArgumentRule("cdbdp"          , TimeTree::getClassTypeSpec(),  "The character dependent birth-death process to monitor.",                   ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
+        monitor_rules.push_back( new ArgumentRule("filename"       , RlString::getClassTypeSpec() , "The file to save sampled character histories.",                             ArgumentRule::BY_VALUE,     ArgumentRule::ANY ) );
+        monitor_rules.push_back( new ArgumentRule("include_simmap" , RlBoolean::getClassTypeSpec(), "Should we log SIMMAP/phytools compatible newick strings? True by default.", ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new RlBoolean(true) ) );
+        monitor_rules.push_back( new ArgumentRule("printgen"       , Natural::getClassTypeSpec()  , "The frequency how often we print. 1 by default.",                           ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new Natural(1) ) );
+        monitor_rules.push_back( new ArgumentRule("separator"      , RlString::getClassTypeSpec() , "The delimiter between variables. \t by default.",                           ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new RlString("\t") ) );
+        monitor_rules.push_back( new ArgumentRule("append"         , RlBoolean::getClassTypeSpec(), "Should we append an existing file exists? False by default.",               ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new RlBoolean(false) ) );
         rules_set = true;
     }
     
@@ -178,10 +169,6 @@ void Mntr_JointConditionalCharacterMapping::setConstParameter(const std::string&
     {
         separator = var;
     }
-    else if ( name == "type" )
-    {
-        monitorType = var;
-    }
     else if ( name == "cdbdp" )
     {
         cdbdp = var;
@@ -193,6 +180,10 @@ void Mntr_JointConditionalCharacterMapping::setConstParameter(const std::string&
     else if ( name == "append" )
     {
         append = var;
+    }
+    else if ( name == "include_simmap" )
+    {
+        include_simmap = var;
     }
     else
     {

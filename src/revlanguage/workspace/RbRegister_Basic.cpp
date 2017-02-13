@@ -166,6 +166,7 @@
 /* Input/output functions (in folder "functions/io") */
 #include "Func_ancestralStateTree.h"
 #include "Func_annotateTree.h"
+#include "Func_characterMapTree.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
 #include "Func_listFiles.h"
@@ -433,13 +434,23 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()     );
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()        );
         addFunction( new Func__conversion<Simplex, ModelVector<Real> >()                         );
+        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Integer> > >()         );
+//        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Real> > >()            );
+//        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<RealPos> > >()         );
+//        addFunction( new Func__conversion<ModelVector<ModelVector<Integer> >, ModelVector<ModelVector<Real> > >()            );
+        addFunction( new Func__conversion<ModelVector<ModelVector<RealPos> >, ModelVector<ModelVector<Real> > >()            );
+        addFunction( new Func__conversion<ModelVector<ModelVector<Probability> >, ModelVector<ModelVector<RealPos> > >()     );
+        addFunction( new Func__conversion<ModelVector<ModelVector<Probability> >, ModelVector<ModelVector<Real> > >()        );
+        
+        
 
 
 
         /* Input/output functions (in folder "functions/io") */
         addFunction( new Func_ancestralStateTree()                      );
         addFunction( new Func_annotateTree()                            );
-		addFunction( new Func_consensusTree()                           );
+		addFunction( new Func_characterMapTree()                        );
+        addFunction( new Func_consensusTree()                           );
         addFunction( new Func_convertToPhylowood()                      );
         addFunction( new Func_listFiles()                               );
         addFunction( new Func_mapTree()                                 );
@@ -468,7 +479,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_writeCharacterDataDelimited()             );
         addFunction( new Func_writeFasta()                              );
         addFunction( new Func_writeNexus()                              );
-
+        
     }
     catch(RbException& rbException)
     {
