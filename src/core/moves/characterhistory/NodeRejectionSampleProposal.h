@@ -43,7 +43,7 @@ namespace RevBayesCore {
     class NodeRejectionSampleProposal : public Proposal {
 
     public:
-        NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, double l=1.0 );                                  //!<  constructor
+        NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, double l=1.0, double r=0.234 );                                  //!<  constructor
 
         // Basic utility functions
         void                                                        assignNode(TopologyNode* nd);
@@ -108,7 +108,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType>
-RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, double l ) : Proposal(),
+RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, double l, double r ) : Proposal(r),
     ctmc(n),
     q_map_site( NULL ),
     q_map_sequence( NULL ),
@@ -123,9 +123,9 @@ RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal
 
     addNode( ctmc );
 
-    nodeProposal = new PathRejectionSampleProposal<charType>(n, l);
-    leftProposal = new PathRejectionSampleProposal<charType>(n, l);
-    rightProposal = new PathRejectionSampleProposal<charType>(n, l);
+    nodeProposal = new PathRejectionSampleProposal<charType>(n, l, r);
+    leftProposal = new PathRejectionSampleProposal<charType>(n, l, r);
+    rightProposal = new PathRejectionSampleProposal<charType>(n, l, r);
     
     for (size_t i = 0; i < numCharacters; i++)
     {
@@ -671,7 +671,17 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::swapNodeInternal(DagNo
 template<class charType>
 void RevBayesCore::NodeRejectionSampleProposal<charType>::tune( double rate )
 {
-    ; // do nothing
+    double p = this->targetAcceptanceRate;
+    if ( rate > p )
+    {
+        lambda /= (1.0 + ((rate-p)/(1.0 - p)));
+    }
+    else
+    {
+        lambda *= (2.0 - rate/p);
+        if (lambda > 1.0)
+            lambda = 1.0;
+    }
 }
 
 #endif /* defined(__rb_mlandis__NodeRejectionSampleProposal__) */
