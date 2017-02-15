@@ -31,7 +31,7 @@ namespace RevBayesCore {
     class PhyloCTMCClado : public AbstractPhyloCTMCSiteHomogeneous<charType> {
         
     public:
-        PhyloCTMCClado(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb);
+        PhyloCTMCClado(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal);
         PhyloCTMCClado(const PhyloCTMCClado &n);
         virtual                                            ~PhyloCTMCClado(void);                                                                   //!< Virtual destructor
         
@@ -88,6 +88,7 @@ namespace RevBayesCore {
         bool useObservedCladogenesis;
         bool useSampledCladogenesis;
         bool branchHeterogeneousCladogenesis;
+        bool store_internal_nodes;
     };
     
 }
@@ -110,7 +111,7 @@ namespace RevBayesCore {
 #include <vector>
 
 template<class charType>
-RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb ),
+RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb ),
 
 //    cladoPartialLikelihoods( new double[2*this->num_nodes*this->num_site_rates*this->num_sites*this->num_chars*this->num_chars] ),
 //    cladoMarginalLikelihoods( new double[this->num_nodes*this->num_site_rates*this->num_sites*this->num_chars*this->num_chars] ),
@@ -119,7 +120,8 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
 
     useObservedCladogenesis(false),
     useSampledCladogenesis(false),
-    branchHeterogeneousCladogenesis(false)
+    branchHeterogeneousCladogenesis(false),
+    store_internal_nodes(internal)
 {
     unsigned numReducedChar = (unsigned)( log( nChars ) / log( 2 ) );
     std::vector<std::string> et;
@@ -1918,7 +1920,6 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
 //    std::cout << "\n";
     
     // add the taxon data to the character data
-    bool store_internal_nodes = !false;
     for (size_t i = 0; i < this->tau->getValue().getNumberOfNodes(); ++i)
     {
         const TopologyNode& node = this->tau->getValue().getNode(i);
