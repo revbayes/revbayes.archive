@@ -170,6 +170,7 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const PhyloCTMCClado &n) 
 
     useObservedCladogenesis(n.useObservedCladogenesis),
     useSampledCladogenesis(n.useSampledCladogenesis),
+    store_internal_nodes(n.store_internal_nodes),
     branchHeterogeneousCladogenesis(n.branchHeterogeneousCladogenesis)
 {
     // initialize with default parameters
@@ -1922,15 +1923,19 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     // add the taxon data to the character data
     for (size_t i = 0; i < this->tau->getValue().getNumberOfNodes(); ++i)
     {
+        
         const TopologyNode& node = this->tau->getValue().getNode(i);
         size_t node_index = node.getIndex();
-        if (node_index < this->tau->getValue().getNumberOfTips()) {
+        
+        if (node.isTip() == true)
+        {
             this->value->addTaxonData( taxa[node_index] );
         }
-        else if (store_internal_nodes) {
+        else if (store_internal_nodes == true)
+        {
             std::stringstream ss;
-            ss << "Index_" << node_index+1;
-            taxa[node_index].setTaxon(Taxon(ss.str()));
+            ss << "Index_" << node_index + 1;
+            taxa[node_index].setTaxon( Taxon(ss.str()) );
             this->value->addTaxonData( taxa[node_index] );
         }
         

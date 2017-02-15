@@ -72,7 +72,7 @@ namespace RevBayesCore {
 
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false );
+        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false, bool internal = false );
         AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n);                                                                                          //!< Copy constructor
         virtual                                                            ~AbstractPhyloCTMCSiteHomogeneous(void);                                                              //!< Virtual destructor
 
@@ -199,6 +199,8 @@ namespace RevBayesCore {
         bool                                                                useMarginalLikelihoods;
         bool                                                                inMcmcMode;
 
+        bool                                                                store_internal_nodes;
+        
         // members
         const TypedDagNode< double >*                                       homogeneous_clock_rate;
         const TypedDagNode< RbVector< double > >*                           heterogeneous_clock_rates;
@@ -257,7 +259,7 @@ namespace RevBayesCore {
 
 
 template<class charType>
-RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb, bool wd) :
+RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb, bool internal, bool wd) :
     TypedDistribution< AbstractHomologousDiscreteCharacterData >(  NULL ),
     lnProb( 0.0 ),
     storedLnProb( 0.0 ),
@@ -296,6 +298,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     pattern_block_start( 0 ),
     pattern_block_end( num_patterns ),
     pattern_block_size( num_patterns ),
+    store_internal_nodes( internal ),
     template_state()
 {
 
@@ -384,6 +387,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     pattern_block_start( n.pattern_block_start ),
     pattern_block_end( n.pattern_block_end ),
     pattern_block_size( n.pattern_block_size ),
+    store_internal_nodes( n.store_internal_nodes ),
     template_state( n.template_state )
 {
 
@@ -1746,10 +1750,24 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     simulate( tau->getValue().getRoot(), taxa, inv, perSiteMixtures );
 
     // add the taxon data to the character data
-//    for (size_t i = 0; i < tau->getValue().getNumberOfNodes(); ++i)
-    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+    for (size_t i = 0; i < this->tau->getValue().getNumberOfNodes(); ++i)
     {
-        this->value->addTaxonData( taxa[i] );
+        
+        const TopologyNode& node = this->tau->getValue().getNode(i);
+        size_t node_index = node.getIndex();
+
+        if (node.isTip() == true)
+        {
+            this->value->addTaxonData( taxa[node_index] );
+        }
+        else if (store_internal_nodes == true)
+        {
+            std::stringstream ss;
+            ss << "Index_" << node_index + 1;
+            taxa[node_index].setTaxon( Taxon(ss.str()) );
+            this->value->addTaxonData( taxa[node_index] );
+        }
+        
     }
 
     if ( do_mask == true )
