@@ -242,6 +242,7 @@ void ChromosomesCladogenicStateFunction::update( void )
             } 
         }
     }
+    value->setEventMap(eventMapProbs);
 }
 
 
