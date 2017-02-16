@@ -237,6 +237,7 @@
 #include "Func_powerVector.h"
 #include "Func_probability.h"
 #include "Func_round.h"
+#include "Func_shortestDistance.h"
 #include "Func_simplex.h"
 #include "Func_simplexFromVector.h"
 #include "Func_sum.h"
@@ -439,6 +440,8 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // geographical distance function
         addFunction( new Func_geographicalDistance() );
+        addFunction( new Func_shortestDistance() );
+        
         
         // hyperbolic tangent function
         addFunction( new Func_hyperbolicTangent() );

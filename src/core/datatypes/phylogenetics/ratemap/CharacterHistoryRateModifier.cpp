@@ -43,9 +43,17 @@ CharacterHistoryRateModifier& CharacterHistoryRateModifier::assign(const Assigna
     }
 }
 
-double CharacterHistoryRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age) {
-    return computeRateMultiplier(curState, newState);
+
+double CharacterHistoryRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, std::vector<size_t> counts, double age)
+{
+    return computeRateMultiplier(currState, newState);
 }
+
+double CharacterHistoryRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, std::vector<std::set<size_t> > sites_with_states, double age)
+{
+    return computeRateMultiplier(currState, newState);
+}
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<CharacterHistoryRateModifier*>& x)
 {
