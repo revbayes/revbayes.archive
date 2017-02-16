@@ -34,27 +34,10 @@ RateGeneratorSequence::~RateGeneratorSequence(void)
     
 }
 
-//void RateGeneratorSequence::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age) const
-//{
-//    calculateTransitionProbabilities(P, age, 0.0, 1.0);
-//}
-
-
-
-//size_t RateGeneratorSequence::getNumberOfStates( void ) const
-//{
-//    return numStates;
-//}
-
 size_t RateGeneratorSequence::getNumberOfCharacters( void ) const
 {
     return num_characters;
 }
-
-//size_t RateGeneratorSequence::size( void ) const
-//{
-//    return numStates;
-//}
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGeneratorSequence& x)
 {
@@ -66,7 +49,6 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGeneratorSeque
     
     return o;
 }
-
 
 void RateGeneratorSequence::updateMap(void)
 {
