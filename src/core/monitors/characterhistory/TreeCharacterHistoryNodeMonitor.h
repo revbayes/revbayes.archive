@@ -5,7 +5,7 @@
 #include "AbstractCharacterData.h"
 #include "TreeHistoryCtmc.h"
 #include "BiogeographicCladoEvent.h"
-#include "BiogeographicTreeHistoryCtmc.h"
+#include "GeneralTreeHistoryCtmc.h"
 #include "DagNode.h"
 #include "Model.h"
 #include "Monitor.h"
@@ -74,7 +74,7 @@ namespace RevBayesCore {
         bool                                showNumEvents;
         bool                                showTreeEvents;
         size_t                              num_states;
-
+        
     };
 
 }
@@ -100,7 +100,7 @@ num_states(0)
     nodes.push_back(s);
 //    nodes.push_back(t);
     s->incrementReferenceCount();
-
+    
     num_states = static_cast<const DiscreteCharacterState&>(s->getValue().getCharacter(0,0)).getNumberOfStates();
 }
 
@@ -115,7 +115,7 @@ showMetadata(m.showMetadata),
 showNumEvents(m.showNumEvents),
 showTreeEvents(m.showTreeEvents),
 num_states(m.num_states)
-{
+{    
     filename    = m.filename;
     separator   = m.separator;
     prior       = m.prior;
@@ -173,7 +173,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
     }
     else if (infoStr=="clado_state")
     {
-        BiogeographicTreeHistoryCtmc<charType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType>* >(p);
+        GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
         // @MJL: fix this
 //        int cladoState = q->getCladogenicState(*n);
         int cladoState = 0;
@@ -192,7 +192,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
     }
     else if (infoStr=="bud_state")
     {
-        BiogeographicTreeHistoryCtmc<charType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType>* >(p);
+        GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
         // @MJL: fix this
 //        int budState = (q)->getBuddingState(*n);
         int budState = 0;
@@ -204,7 +204,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         // loop over events
         const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh.getHistory();
         std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
-
+        
         std::vector<unsigned> v(num_states,0);
         for (it = evts.begin(); it != evts.end(); it++)
         {
@@ -227,7 +227,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh.getHistory();
         std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
         std::vector<CharacterEvent*> characters = bh.getParentCharacters();
-
+        
         std::vector<unsigned> v(num_states*num_states,0);
         for (it = evts.begin(); it != evts.end(); it++)
         {
@@ -261,7 +261,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh.getHistory();
         std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
         std::vector<CharacterEvent*> characters = bh.getParentCharacters();
-
+        
         std::vector<unsigned> v(num_states*num_states,0);
         double ndAge;
         if (n->isRoot())
@@ -430,7 +430,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCladoF
     std::stringstream ss;
 
     TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
-    BiogeographicTreeHistoryCtmc<charType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType>* >(p);
+    GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
 
     const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
 
@@ -451,7 +451,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCladoS
     std::stringstream ss;
 
     TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
-    BiogeographicTreeHistoryCtmc<charType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType>* >(p);
+    GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
     
     // @MJL: fix this
 //    int cladoState = q->getCladogenicState(*nd);
@@ -561,7 +561,7 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::monitor(unsigned l
 /** open the file stream for printing */
 template<class charType>
 void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::openStream(bool reopen) {
-
+    
     // open the stream to the file
     if (append)
         outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);

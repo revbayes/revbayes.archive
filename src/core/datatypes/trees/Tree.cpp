@@ -279,6 +279,13 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
         rv = int( getNode( index ).getParent().getIndex() )+1;
     }
+    else if ( n == "numSampledAncestors")
+    {
+        rv = 0;
+        for(size_t i=0; i< numTips; i++){
+            rv += nodes[i]->isSampledAncestor();
+        }
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");
@@ -490,6 +497,16 @@ TopologyNode& Tree::getRoot(void)
 const TopologyNode& Tree::getRoot(void) const
 {
     return *root;
+}
+
+
+/**
+ * Get the tree and character history in newick format
+ * compatible with SIMMAP and phytools
+ */
+std::string Tree::getSimmapNewickRepresentation() const
+{
+    return root->computeSimmapNewick();
 }
 
 
@@ -864,6 +881,12 @@ void Tree::orderNodesByIndex( void )
 }
 
 
+void Tree::renameNodeParameter(const std::string &old_name, const std::string &new_name)
+{
+    getRoot().renameNodeParameter(old_name, new_name);
+}
+
+
 void Tree::reroot(const std::string &outgroup, bool reindex)
 {
     std::vector<std::string> tipnames = getTipNames();
@@ -933,7 +956,7 @@ void Tree::setRooted(bool tf)
 }
 
 
-void Tree::setRoot( TopologyNode* r, bool resetIndex )
+void Tree::setRoot( TopologyNode* r, bool reindex )
 {
 
     // delete the old root if it's not in this tree
@@ -949,7 +972,7 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
     // bootstrap all nodes from the root and add the in a pre-order traversal
     fillNodesByPhylogeneticTraversal(r);
 
-    if ( resetIndex == true )
+    if ( reindex == true )
     {
         for (unsigned int i = 0; i < nodes.size(); ++i)
         {

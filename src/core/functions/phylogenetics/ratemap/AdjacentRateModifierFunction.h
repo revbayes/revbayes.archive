@@ -21,7 +21,7 @@ namespace RevBayesCore {
     class AdjacentRateModifierFunction : public TypedFunction<CharacterHistoryRateModifier> {
         
     public:
-        AdjacentRateModifierFunction(const TypedDagNode<double>* f, const TypedDagNode<int>* w, const TypedDagNode<RbVector<RbVector<double> > >* c, size_t ns, size_t nc);
+        AdjacentRateModifierFunction(const TypedDagNode<double>* gf, const TypedDagNode<double>* lf, const TypedDagNode<int>* w, const TypedDagNode<RbVector<RbVector<double> > >* c, size_t ns, size_t nc);
         AdjacentRateModifierFunction(const AdjacentRateModifierFunction& m);
         virtual ~AdjacentRateModifierFunction(void);                                                                                                  //!< Virtual destructor
         
@@ -35,7 +35,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<double>*                                       factor;
+        const TypedDagNode<double>*                                       gainFactor;
+        const TypedDagNode<double>*                                       lossFactor;
         const TypedDagNode<int>*                                          width;
         const TypedDagNode<RbVector<RbVector<double> > >*                 context_matrix;
         

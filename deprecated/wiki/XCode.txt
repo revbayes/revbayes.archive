@@ -4,21 +4,17 @@
 
   * Open Xcode 5 and in the Welcome to Xcode window, choose Create a new Xcode Project 
   * Select Command Line Tool and name it RevBayes 
-  * Add a new target for the tests by going to File-&gt;New-&gt;Target 
-  * Add as a Command Line Tool and name it RevBayesCoreTests 
-  * Delete the files in each of the directories including main.cpp so that RevBayes and RevBayesCoreTests are empty 
+  * Delete the files in each of the directories including main.cpp so that RevBayes is empty 
   * Add the source files by selecting the appropriate directory and going to the "File" pull-down menu 
     * Add the revbayes/src/revlanguage directory to RevBayes by going to File-&gt;Add Files to "RevBayes"... 
       * Make sure that only the "RevBayes" target is selected 
-    * Add the revbayes/src/tests directory to RevBayesCoreTests by going to File-&gt;Add Files to "RevBayesCoreTests"... 
-      * Make sure that only the "RevBayesCoreTests" target is selected 
     * Add the revbayes/src/core directory to RevBayes by going to File-&gt;Add Files to "RevBayes"... 
       * Make sure that ALL targets are selected 
-    * Add the revbayes/src/libs to the RevBayes project and select both the RevBayes and RevBayesCoreTests targets 
+    * Add the revbayes/src/libs to the RevBayes project and select the RevBayes target
   * Add the boost library to your Xcode project 
     * Select the RevBayes project and go to the BulidSettings, make sure that the RevBayes project is selected at the very top (otherwise, you must make this change for each target) 
     * Under the "Search Paths" heading find the setting called "Header Search Paths" 
-    * Add the value: **"$(inherited) &lt;path to revbayes repository&gt;/revbayes/boost_1_55_0"** to both the Debug and Release, where &lt;path to revbayes repository&gt; = the location of the revbayes repository on your machine. 
+    * Add the value: **"$(inherited) &lt;path to revbayes repository&gt;/revbayes/boost_1_60_0"** to both the Debug and Release, where &lt;path to revbayes repository&gt; = the location of the revbayes repository on your machine. 
   * In the Xcode project build settings change some default settings 
     * C++ Language Dialect: **GNU++98 [-std=gnu++98]**
     * C++ Standard Library: **libstdc++ (GNU C++ standard library)**

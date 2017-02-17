@@ -13,8 +13,9 @@
 
 using namespace RevBayesCore;
 
-AdjacentRateModifierFunction::AdjacentRateModifierFunction(const TypedDagNode<double>* f, const TypedDagNode<int>* w, const TypedDagNode<RbVector<RbVector<double> > >* c, size_t ns, size_t nc) : TypedFunction<CharacterHistoryRateModifier>( new AdjacentRateModifier(ns, nc) ),
-    factor(f),
+AdjacentRateModifierFunction::AdjacentRateModifierFunction(const TypedDagNode<double>* gf, const TypedDagNode<double>* lf, const TypedDagNode<int>* w, const TypedDagNode<RbVector<RbVector<double> > >* c, size_t ns, size_t nc) : TypedFunction<CharacterHistoryRateModifier>( new AdjacentRateModifier(ns, nc) ),
+    gainFactor(gf),
+    lossFactor(lf),
     width(w),
     context_matrix(c),
     context_type("width")
@@ -24,7 +25,8 @@ AdjacentRateModifierFunction::AdjacentRateModifierFunction(const TypedDagNode<do
     }
     
     // add the parameters as parents
-    addParameter(factor);
+    addParameter(gainFactor);
+    addParameter(lossFactor);
     addParameter(width);
     addParameter(context_matrix);
     
@@ -33,7 +35,8 @@ AdjacentRateModifierFunction::AdjacentRateModifierFunction(const TypedDagNode<do
 
 AdjacentRateModifierFunction::AdjacentRateModifierFunction(const AdjacentRateModifierFunction& m) : TypedFunction<CharacterHistoryRateModifier>( m )
 {
-    factor = m.factor;
+    gainFactor = m.gainFactor;
+    lossFactor = m.lossFactor;
     width = m.width;
     context_matrix = m.context_matrix;
     context_type = m.context_type;
@@ -58,8 +61,12 @@ AdjacentRateModifierFunction* AdjacentRateModifierFunction::clone( void ) const
 void AdjacentRateModifierFunction::update( void )
 {
     
-    double f = factor->getValue();
-    static_cast<AdjacentRateModifier*>(value)->setFactor(f);
+    double gf = gainFactor->getValue();
+    static_cast<AdjacentRateModifier*>(value)->setGainFactor(gf);
+    
+    double lf = lossFactor->getValue();
+    static_cast<AdjacentRateModifier*>(value)->setLossFactor(lf);
+    
     
     if (context_type == "width")
     {
@@ -79,9 +86,13 @@ void AdjacentRateModifierFunction::update( void )
 void AdjacentRateModifierFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if (oldP == factor)
+    if (oldP == gainFactor)
     {
-        factor = static_cast<const TypedDagNode<double>* >( newP );
+        gainFactor = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == lossFactor)
+    {
+        lossFactor = static_cast<const TypedDagNode<double>* >( newP );
     }
     else if (oldP == width)
     {

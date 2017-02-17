@@ -11,9 +11,9 @@
 namespace RevBayesCore {
 
     class TransitionProbabilityMatrix;
-
+    
     class RateGenerator : public Cloneable, public Assignable, public Printable, public Serializable, public MemberObject<RbVector<RbVector<double> > >, public MemberObject<RbVector<double> > {
-
+        
     public:
         virtual                             ~RateGenerator(void);
 
@@ -46,7 +46,7 @@ namespace RevBayesCore {
         virtual void                        printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const;            //!< print object for user (in user-formatted way)
         virtual void                        printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const;   //!< print object for user (in user-formatted way)
         virtual void                        printForComplexStoring( std::ostream &o, const std::string &sep, int l, bool left ) const;  //!< print object for user (in user-formatted way)
-
+        
     protected:
         // prevent instantiation
         RateGenerator(size_t n);                                                                                                        //!< Construct rate matrix with n states
@@ -56,6 +56,6 @@ namespace RevBayesCore {
 
 
     };
-
+    
 };
 #endif

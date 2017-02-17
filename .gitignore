@@ -7,6 +7,7 @@
 # Blacklist
 # ----------------------------------------------
 projects/cmake
+src/revlanguage/utils/GitVersion.cpp
 src/revlanguage/constants.h
 src/ui/constants.h
 boost_1_55_0/bootstrap.log
@@ -24,20 +25,20 @@ boost_1_55_0/tools/build/v2/engine/bin.linuxx86_64/bjam
 boost_1_60_0/bootstrap.log
 boost_1_60_0/bin.v2
 boost_1_60_0/stage/lib
+boost_1_60_0/libs/config/checks
 boost_1_60_0/project
 boost_1_60_0/project-config.jam
 boost_1_60_0/tools/build/src/engine/bootstrap
+boost_1_60_0/tools/build/v2/engine/bootstrap
 boost_1_60_0/b2
 boost_1_60_0/bjam
 boost_1_60_0/tools/build/src/engine/bin.macosxx86_64/b2
 boost_1_60_0/tools/build/src/engine/bin.macosxx86_64/bjam
-boost_1_60_0/tools/build/src/engine/bin.linuxx86_64/b2
-boost_1_60_0/tools/build/src/engine/bin.linuxx86_64/bjam
-boost_1_60_0/libs/config/checks/architecture/bin/darwin-4.2.1/debug/64.o
-boost_1_60_0/libs/config/checks/architecture/bin/darwin-4.2.1/debug/x86.o
+boost_1_60_0/tools/build/v2/engine/bin.macosxx86_64/b2
+boost_1_60_0/tools/build/v2/engine/bin.macosxx86_64/bjam
+boost_1_60_0/tools/build/v2/engine/bin.linuxx86_64/b2
+boost_1_60_0/tools/build/v2/engine/bin.linuxx86_64/bjam
 projects/xcode/revbayes.xcodeproj
 .DS_Store
-*.aux
-*.synctex.gz
 .history
 history.txt

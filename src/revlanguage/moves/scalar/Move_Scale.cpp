@@ -4,6 +4,7 @@
 #include "ContinuousStochasticNode.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_Scale.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -57,11 +58,12 @@ void Move_Scale::constructInternalObject( void )
     // now allocate a new sliding move
     double d = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    double r = static_cast<const Probability &>( tuneTarget->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getRevObject() ).getDagNode();
     RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::ScaleProposal(n, d);
+    RevBayesCore::Proposal *p = new RevBayesCore::ScaleProposal(n, d, r);
     value = new RevBayesCore::MetropolisHastingsMove(p, w, t);
     
 }

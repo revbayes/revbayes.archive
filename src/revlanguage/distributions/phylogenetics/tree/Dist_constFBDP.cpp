@@ -65,7 +65,7 @@ RevBayesCore::ConstantRateFossilizedBirthDeathProcess* Dist_constFBDP::createDis
     // sampling probability
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     // the start condition
-    bool uo = ( startCondition == "originTime" ? true : false );
+    bool uo = ( startCondition == "originAge" ? true : false );
     
     // sampling condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
@@ -160,7 +160,7 @@ const MemberRules& Dist_constFBDP::getParameterRules(void) const
 
         std::vector<std::string> aliases;
         aliases.push_back("rootAge");
-        aliases.push_back("originTime");
+        aliases.push_back("originAge");
         dist_member_rules.push_back( new ArgumentRule( aliases,   RealPos::getClassTypeSpec(), "The start age of the process, either the root age or the origin time.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "lambda",  RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "mu",      RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
@@ -217,7 +217,7 @@ const TypeSpec& Dist_constFBDP::getTypeSpec( void ) const
  */
 void Dist_constFBDP::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
-    if (name == "rootAge" || name == "originTime")
+    if (name == "rootAge" || name == "originAge")
     {
         startCondition = name;
         startAge = var;

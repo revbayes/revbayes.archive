@@ -381,8 +381,9 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 else 
                 {
                     size_t j;
-                    for (j=0; j<matchScore->size() && j<bestScore.size(); j++) 
+                    for (j=0; j<matchScore->size() && j<bestScore.size(); ++j)
                     {
+                        
                         if ((*matchScore)[j] < bestScore[j]) 
                         {
                             bestScore = *matchScore;
@@ -391,14 +392,20 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                             break;
                         }
                         else if ((*matchScore)[j] > bestScore[j])
+                        {
                             break;
+                        }
+                        
                     }
                     if (j==matchScore->size() || j==bestScore.size()) 
                     {
                         ambiguous = true;   // Continue checking, there might be better matches ahead
                     }
+                    
                 }
+                
             }
+            
         }
         
         // free the memory

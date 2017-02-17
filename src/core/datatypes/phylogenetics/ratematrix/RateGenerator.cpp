@@ -163,7 +163,7 @@ void RateGenerator::printForUser(std::ostream &o, const std::string &sep, int l,
 {
     std::streamsize previous_precision = o.precision();
     std::ios_base::fmtflags previous_flags = o.flags();
-
+    
     o << "[ ";
     o << std::fixed;
     o << std::setprecision(4);
@@ -179,7 +179,7 @@ void RateGenerator::printForUser(std::ostream &o, const std::string &sep, int l,
         {
             o << "  ";
         }
-
+        
         for (size_t j = 0; j < size(); ++j)
         {
             if (j != 0)
@@ -189,7 +189,7 @@ void RateGenerator::printForUser(std::ostream &o, const std::string &sep, int l,
             o << getRate( i, j, 1e-6,1.0);
         }
         o <<  " ]";
-
+        
         if (i == size()-1)
         {
             o << " ]";
@@ -198,19 +198,19 @@ void RateGenerator::printForUser(std::ostream &o, const std::string &sep, int l,
         {
             o << " ,\n";
         }
-
+        
     }
-
+    
     o.setf(previous_flags);
     o.precision(previous_precision);
-
+    
 }
 
 
 
 void RateGenerator::printForSimpleStoring(std::ostream &o, const std::string &sep, int l, bool left) const
 {
-
+    
     // print the RbMatrix with each column of equal width and each column centered on the decimal
     for (size_t i=0; i < size(); i++)
     {
@@ -226,18 +226,18 @@ void RateGenerator::printForSimpleStoring(std::ostream &o, const std::string &se
             }
             o << getRate( i, j, 1e-6, 1.0);
         }
-
+        
     }
-
+    
 }
 
 
 
 void RateGenerator::printForComplexStoring(std::ostream &o, const std::string &sep, int l, bool left) const
 {
-
+    
     o << "[ ";
-
+    
     // print the RbMatrix with each column of equal width and each column centered on the decimal
     for (size_t i=0; i < size(); i++)
     {
@@ -251,7 +251,7 @@ void RateGenerator::printForComplexStoring(std::ostream &o, const std::string &s
             o << getRate( i, j, 1e-6, 1.0);
         }
         o <<  " ]";
-
+        
         if (i == size()-1)
         {
             o << " ]";
@@ -260,7 +260,7 @@ void RateGenerator::printForComplexStoring(std::ostream &o, const std::string &s
         {
             o << " ,";
         }
-
+        
     }
-
+    
 }

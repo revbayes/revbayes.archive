@@ -29,6 +29,46 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
     
     logTreeTopologyProb = (num_taxa - 2 - !rooted) * RbConstants::LN2 + nodeLnFact - branchLnFact;
     
+    std::vector<Taxon> unordered_taxa = taxa;
+    std::vector<std::string> ordered_taxa;
+    for (size_t i = 0; i < unordered_taxa.size(); ++i)
+    {
+        ordered_taxa.push_back(unordered_taxa[i].getName());
+    }
+
+    // order taxon names
+    std::sort(ordered_taxa.begin(), ordered_taxa.end());
+
+    std::map<Taxon, size_t> taxon_bitset_map;
+    // add taxa to bitset map
+    for (size_t i = 0; i < ordered_taxa.size(); ++i)
+    {
+        taxon_bitset_map[ordered_taxa[i]] = i;
+    }
+
+    RbBitSet b( num_taxa );
+    for(size_t j = 0; j < outgroup.size(); j++)
+    {
+        size_t k = taxon_bitset_map[ outgroup.getTaxonName(j) ];
+
+        b.set(k);
+    }
+
+    outgroup.setBitRepresentation( b );
+
+    for(size_t i = 0; i < constraints.size(); i++)
+    {
+        RbBitSet b( num_taxa );
+        for(size_t j = 0; j < constraints[i].size(); j++)
+        {
+            size_t k = taxon_bitset_map[ constraints[i].getTaxonName(j) ];
+
+            b.set(k);
+        }
+
+        constraints[i].setBitRepresentation( b );
+    }
+
     simulateTree();
     
 }

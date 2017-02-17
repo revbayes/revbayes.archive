@@ -47,7 +47,6 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       treatAmbiguousAsGap;
         RevPtr<const RevVariable>                       coding;
 
-
     };
 
 }

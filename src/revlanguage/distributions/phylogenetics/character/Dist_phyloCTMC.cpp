@@ -49,7 +49,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getValue();
-    bool siteMatrices = static_cast<const RlBoolean &>( site_matrices->getRevObject() ).getValue();
     size_t nNodes = tau->getValue().getNumberOfNodes();
     const std::string& code = static_cast<const RlString &>( coding->getRevObject() ).getValue();
 
@@ -69,6 +68,35 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     if ( root_frequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
+    }
+
+    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *sp = NULL;
+
+    bool siteMatrices = false;
+
+    if ( site_matrices->getRevObject().isType( Simplex::getClassTypeSpec() ) )
+    {
+        siteMatrices = true;
+
+        sp = static_cast<const Simplex &>( site_matrices->getRevObject() ).getDagNode();
+
+        if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
+            // sanity check
+            if ( sp->getValue().size() != rm->getValue().size())
+            {
+                throw RbException( "The number of substitution matrices does not match the number of matrix probabilities" );
+            }
+        }
+        else
+        {
+            throw RbException( "The number of substitution matrices does not match the number of matrix mixture probabilities" );
+        }
+    }
+    else if ( site_matrices->getRevObject().isType( RlBoolean::getClassTypeSpec() ) )
+    {
+        siteMatrices = static_cast<const RlBoolean &>( site_matrices->getRevObject() ).getDagNode()->getValue();
     }
 
     if( !(dt == "Binary" || dt == "Restriction" || dt == "Standard") && code != "all")
@@ -105,7 +133,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices);
+        dist->setUseSiteMatrices(siteMatrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
@@ -127,6 +155,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
             dist->setRateMatrix( rm );
         }
+
         else
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
@@ -168,7 +197,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices);
+        dist->setUseSiteMatrices(siteMatrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
@@ -234,7 +263,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices);
+        dist->setUseSiteMatrices(siteMatrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
@@ -314,7 +343,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices);
+        dist->setUseSiteMatrices(siteMatrices, sp);
+
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
@@ -420,7 +450,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices);
+        dist->setUseSiteMatrices(siteMatrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
@@ -499,7 +529,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices);
+        dist->setUseSiteMatrices(siteMatrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
@@ -640,7 +670,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices);
+        dist->setUseSiteMatrices(siteMatrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
@@ -759,7 +789,12 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "branchRates", branchRateTypes, "The global or branch-specific rate multipliers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
-        dist_member_rules.push_back( new ArgumentRule( "siteMatrices", RlBoolean::getClassTypeSpec(), "Treat Q as vector of site mixture categories instead of branch-specific matrices?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        //dist_member_rules.push_back( new ArgumentRule( "siteMatrices", RlBoolean::getClassTypeSpec(), "Treat Q as vector of site mixture categories instead of branch-specific matrices?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        std::vector<TypeSpec> matrix_probs_types;
+        matrix_probs_types.push_back(Simplex::getClassTypeSpec());
+        matrix_probs_types.push_back(RlBoolean::getClassTypeSpec());
+
+        dist_member_rules.push_back( new ArgumentRule( "siteMatrices", matrix_probs_types, "Simplex of site matrix mixture probabilities. Treats Q as vector of site mixture categories instead of branch-specific matrices.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "siteRates", ModelVector<RealPos>::getClassTypeSpec(), "The rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         dist_member_rules.push_back( new ArgumentRule( "pInv", Probability::getClassTypeSpec(), "The probability of a site being invariant.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
 

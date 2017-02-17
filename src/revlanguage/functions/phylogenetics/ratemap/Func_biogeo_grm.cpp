@@ -56,9 +56,9 @@ const ArgumentRules& Func_distanceRateModifier::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "distances"    , ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "Matrix of distances", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -68,7 +68,7 @@ const ArgumentRules& Func_distanceRateModifier::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "useAvailable" , RlBoolean::getClassTypeSpec() , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
 //        argumentRules.push_back( new ArgumentRule( "useAdjacency" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -78,18 +78,18 @@ const ArgumentRules& Func_distanceRateModifier::getArgumentRules( void ) const
 const std::string& Func_distanceRateModifier::getClassType(void)
 {
     
-    static std::string revType = "Func_distanceRateModifier";
+    static std::string rev_type = "Func_biogeo_grm";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_distanceRateModifier::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -108,7 +108,7 @@ std::string Func_distanceRateModifier::getFunctionName( void ) const
 const TypeSpec& Func_distanceRateModifier::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

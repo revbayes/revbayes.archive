@@ -76,9 +76,10 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
 
     // move/proposal arguments
     double w        = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-//    double d        = static_cast<const Probability &>( lambda->getRevObject() ).getValue();
+    double l        = static_cast<const Probability &>( lambda->getRevObject() ).getValue();
     std::string gt  = static_cast<const RlString &>( graph->getRevObject() ).getValue();
     std::string pt  = static_cast<const RlString &>( proposal->getRevObject() ).getValue();
+    double r        = static_cast<const Probability &>( tuneTarget->getRevObject() ).getValue();
 
     // move/proposal parameters
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
@@ -102,26 +103,17 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
         throw RbException("qmap_site or qmap_seq must be provided!");
     }
     
-    
+    // get data type
     std::string mt  = ctmc_tdn->getValue().getDataType();
 
-    // finally create the internal move object
-    //    RevBayesCore::Proposal *p = NULL;
-    //    if (mt == "std")
-    //        ;
-    //    else if (mt == "biogeo")
-    //        p = new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState, RevBayesCore::Tree>(ctmc_sn, tree_sn, qmap_dn, d);
-    //
-    //    value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
-    //    value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, RevBayesCore::Tree>(ctmc_sn, tree_sn, qmap_dn, new RevBayesCore::BiogeographyNodeRejectionSampleProposal<RevBayesCore::StandardState,RevBayesCore::Tree>(ctmc_sn, tree_sn, qmap_dn, d), d, false, w);
-
+    // create the proposal
     RevBayesCore::Proposal *p = NULL;
 
     if (mt == "DNA")
     {
         if (gt == "node" && pt == "rejection")
         {
-            RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::DnaState> *tmp_p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::DnaState>(ctmc_sn);
+            RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::DnaState> *tmp_p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::DnaState>(ctmc_sn, l, r);
     
 //            tmp_p->setRateGenerator( qmap_tdn );
             if (use_site) {
@@ -133,7 +125,7 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
         }
         else if (gt == "branch" && pt == "rejection")
         {
-            RevBayesCore::PathRejectionSampleProposal<RevBayesCore::DnaState> *tmp_p = new RevBayesCore::PathRejectionSampleProposal<RevBayesCore::DnaState>(ctmc_sn);
+            RevBayesCore::PathRejectionSampleProposal<RevBayesCore::DnaState> *tmp_p = new RevBayesCore::PathRejectionSampleProposal<RevBayesCore::DnaState>(ctmc_sn, l, r);
 //            tmp_p->setRateGenerator( qmap_tdn );
             if (use_site) {
                 tmp_p->setRateGenerator( qmap_site_tdn );
@@ -147,8 +139,19 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
     {
         if (gt == "node" && pt == "rejection")
         {
-            RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::RnaState> *tmp_p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::RnaState>(ctmc_sn);
+            RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::RnaState> *tmp_p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::RnaState>(ctmc_sn, l, r);
 //            tmp_p->setRateGenerator( qmap_tdn );
+            if (use_site) {
+                tmp_p->setRateGenerator( qmap_site_tdn );
+            } else if (use_seq) {
+                tmp_p->setRateGenerator( qmap_seq_tdn );
+            }
+            p = tmp_p;
+        }
+        else if (gt == "branch" && pt == "rejection")
+        {
+            RevBayesCore::PathRejectionSampleProposal<RevBayesCore::RnaState> *tmp_p = new RevBayesCore::PathRejectionSampleProposal<RevBayesCore::RnaState>(ctmc_sn, l, r);
+            //            tmp_p->setRateGenerator( qmap_tdn );
             if (use_site) {
                 tmp_p->setRateGenerator( qmap_site_tdn );
             } else if (use_seq) {
@@ -161,7 +164,7 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
     {
         if (gt == "node" && pt == "rejection")
         {
-            RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::AminoAcidState> *tmp_p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::AminoAcidState>(ctmc_sn);
+            RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::AminoAcidState> *tmp_p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::AminoAcidState>(ctmc_sn, l, r);
 //            tmp_p->setRateGenerator( qmap_tdn );
             if (use_site) {
                 tmp_p->setRateGenerator( qmap_site_tdn );
@@ -172,7 +175,7 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
         }
         else if (gt == "branch" && pt == "rejection")
         {
-            RevBayesCore::PathRejectionSampleProposal<RevBayesCore::AminoAcidState> *tmp_p = new RevBayesCore::PathRejectionSampleProposal<RevBayesCore::AminoAcidState>(ctmc_sn);
+            RevBayesCore::PathRejectionSampleProposal<RevBayesCore::AminoAcidState> *tmp_p = new RevBayesCore::PathRejectionSampleProposal<RevBayesCore::AminoAcidState>(ctmc_sn, l, r);
 //            tmp_p->setRateGenerator( qmap_tdn );
             if (use_site) {
                 tmp_p->setRateGenerator( qmap_site_tdn);
@@ -186,7 +189,7 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
     {
         if (gt == "node" && pt == "rejection")
         {
-            RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::StandardState>(ctmc_sn);
+            RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::StandardState>(ctmc_sn, l, r);
 //            tmp_p->setRateGenerator( qmap_tdn );
             if (use_site) {
                 tmp_p->setRateGenerator( qmap_site_tdn );
@@ -197,7 +200,7 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
         }
         else if (gt == "branch" && pt == "rejection")
         {
-            RevBayesCore::PathRejectionSampleProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::PathRejectionSampleProposal<RevBayesCore::StandardState>(ctmc_sn);
+            RevBayesCore::PathRejectionSampleProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::PathRejectionSampleProposal<RevBayesCore::StandardState>(ctmc_sn, l, r);
 //            tmp_p->setRateGenerator( qmap_tdn );
             if (use_site) {
                 tmp_p->setRateGenerator( qmap_site_tdn );
@@ -278,7 +281,7 @@ const MemberRules& RevLanguage::Move_CharacterHistory::getParameterRules(void) c
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The PhyloCTMC variable.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap_site", RateGenerator::getClassTypeSpec(),         "Per-site rate generator.",     ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap_seq",  RateGeneratorSequence::getClassTypeSpec(), "Per-sequence rate generator.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
-//        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , "", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec(), "Tuning probability to propose new site history.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
 
 //        std::vector<std::string> optionsType;
 //        optionsType.push_back( "Biogeo" );

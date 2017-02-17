@@ -101,6 +101,8 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Typ
     this->addParameter( heterogeneousRateGenerator );
     this->addParameter( rootFrequencies );
     
+    this->useDirtyNodes = true;
+    
 }
 
 

@@ -9,18 +9,6 @@
 
 namespace RevBayesCore {
     
-    class Clade;
-    struct node_compare {
-        bool operator() (TopologyNode* lhs, TopologyNode* rhs) const{
-            return lhs->getName() < rhs->getName();
-        }
-    };
-    struct clade_compare {
-        bool operator() (const Clade& lhs, const Clade& rhs) const {
-            return lhs.getNumberOfTaxa() < rhs.getNumberOfTaxa();
-        }
-    };
-    
     /**
      * @file
      * This file contains the declaration of the random variable class for constant rate birth-death process.
@@ -53,10 +41,7 @@ namespace RevBayesCore {
         
     protected:
         
-//        // virtual methods that may be overwritten, but then the derived class should call this methods
-//        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                      //!< get affected nodes
-        
-        virtual void                                        initializeBitSets(void);
+        void                                                initializeBitSets();
         virtual void                                        keepSpecialization(DagNode* affecter);
         virtual void                                        restoreSpecialization(DagNode *restorer);
         virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
@@ -66,25 +51,25 @@ namespace RevBayesCore {
         
         
         // helper functions
-        void                                                initializeBackbone(void);
-        void                                                recursivelyBuildBackboneClades(const TopologyNode* n, std::map<const TopologyNode*, Clade>& m);
-        void                                                recursivelyFlagNodesDirty(const TopologyNode& n);
         bool                                                matchesBackbone(void);
         bool                                                matchesConstraints(void);
+        RbBitSet                                            recursivelyAddBackboneConstraints(const TopologyNode& node);
+        void                                                recursivelyFlagNodesDirty(const TopologyNode& n);
+        RbBitSet                                            recursivelyUpdateClades(const TopologyNode& node);
         Tree*                                               simulateTree(void);
         
-        // members
-        TypedDistribution<Tree>*                            base_distribution;
-        const TypedDagNode<Tree>*                           backbone_topology;
-        std::map<const TopologyNode*, Clade>                backbone_clades;
-        std::vector<Clade>                                  constraints;                                                                                              //!< Topological constrains.
-        std::vector<bool>                                   dirty_nodes;
-//        std::set<Clade, clade_compare>                      backbone_clades;
 
-        
-        
-        // just for testing
-        bool                                                owns_tree;
+        // members
+        std::vector<RbBitSet>                               active_backbone_clades;
+        std::vector<RbBitSet>                               active_clades;
+        std::vector<RbBitSet>                               backbone_constraints;
+        RbBitSet                                            backbone_mask;
+        const TypedDagNode<Tree>*                           backbone_topology;
+        TypedDistribution<Tree>*                            base_distribution;
+        std::vector<bool>                                   dirty_nodes;
+        std::vector<Clade>                                  monophyly_constraints;
+        std::vector<RbBitSet>                               stored_backbone_clades;
+        std::vector<RbBitSet>                               stored_clades;
     };
     
 }

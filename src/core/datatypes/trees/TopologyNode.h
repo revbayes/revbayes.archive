@@ -39,6 +39,7 @@
 #include "Clade.h"
 #include "RbBitSet.h"
 //#include "RevPtr.h"
+#include "TreeChangeEventMessage.h"
 #include "Taxon.h"
 #include "TaxonMap.h"
 
@@ -80,11 +81,13 @@ namespace RevBayesCore {
 		void                                        clearNodeParameters(void);
         virtual std::string                         computeNewick(void);                                                                //!< Compute the newick string for this clade
         std::string                                 computePlainNewick(void) const;                                                     //!< Compute the newick string for this clade as a plain string without branch length
+        std::string                                 computeSimmapNewick(void);                                                          //!< Compute the newick string compatible with SIMMAP and phytools
         bool                                        containsClade(const TopologyNode* c, bool strict) const;
         bool                                        containsClade(const Clade &c, bool strict) const;
         bool                                        containsClade(const RbBitSet &c, bool strict) const;
 //        bool                                        containsClade(const TopologyNode* c) const;
 //        bool                                        containsClade(const Clade &c) const;
+        void                                        fireTreeChangeEvent(const unsigned& m = RevBayesCore::TreeChangeEventMessage::DEFAULT);
         double                                      getAge(void) const;                                                                 //!< Get the age (time ago from present) for this node
         const std::vector<std::string>&             getBranchParameters(void) const;                                                        //!< Get the branch length leading towards this node
         double                                      getBranchLength(void) const;                                                        //!< Get the branch length leading towards this node
@@ -122,14 +125,16 @@ namespace RevBayesCore {
         bool                                        isConstrained(void) const;                                                          //!< Is node topologically constrained?
         bool                                        isTip(void) const;                                                                  //!< Is node tip?
         void                                        makeBifurcating(void);                                                              //!< Make this and all its descendants bifurcating.
+        void                                        renameNodeParameter(const std::string &old_name, const std::string &new_name);
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
         void                                        removeChild(TopologyNode* c);                                                       //!< Removes a specific child
         void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
-        void                                        setAge(double a);                                                                   //!< Set the age of this node (should only be done for tips).
+        void                                        setAge(double a, bool propagate = true );                                                                   //!< Set the age of this node (should only be done for tips).
         void                                        setBranchLength(double b);                                                          //!< Set the length of the branch leading to this node.
         void                                        setConstrained(bool tf);                                                            //!< Set if the node is topologically constrained
         void                                        setFossil(bool tf);                                                                 //!< Set if the node is a fossil node
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
+
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
   		void										setNodeType(bool tip, bool root, bool interior); //SK
         void                                        setSampledAncestor(bool tf);                                                        //!< Set if the node is a sampled ancestor
@@ -145,7 +150,7 @@ namespace RevBayesCore {
     protected:
         
         // helper methods
-        virtual std::string                         buildNewickString(void);                                                            //!< compute the newick string for a tree rooting at this node
+        virtual std::string                         buildNewickString(bool simmap);                                                     //!< compute the newick string for a tree rooting at this node
         
         // protected members
         double                                      age;

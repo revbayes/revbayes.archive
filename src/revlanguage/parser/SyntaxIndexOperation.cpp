@@ -210,7 +210,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
  * frame of a composite variable found by another SyntaxIndexOperation element.
  *
  * If dynamic == true, then we cannot compute a static index for indexed variables.
- * Instead, we need to deliver an index conisting of variables resulting
+ * Instead, we need to deliver an index consisting of variables resulting
  * from dynamic evaluation of the index variables. These need to be put
  * in a dynamic lookup variable.
  */
@@ -246,6 +246,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
             f->processArguments( args, false );
             theVar = f->execute();
             theVar->setName( identifier );
+            theVar->setElementVariableState(true);
             
             delete f;
         }
@@ -272,6 +273,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
 
                 theVar = theFunction->execute();
                 theVar->setName( identifier );
+                theVar->setElementVariableState(true);
             }
             else
             {

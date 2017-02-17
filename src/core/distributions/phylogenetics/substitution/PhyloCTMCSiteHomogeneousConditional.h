@@ -993,7 +993,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
 
         const std::vector< double > &freqs = ff[perSiteRates[i] % ff.size()];
 
-        std::vector<charType> siteData(num_nodes, charType());
+        std::vector<charType> siteData(num_nodes, charType(this->num_chars));
 
         // create the character
         charType &c = siteData[rootIndex];

@@ -2,6 +2,7 @@
 #include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "Func_readTrace.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RlString.h"
@@ -139,11 +140,29 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
         }
     }
     
+    RevObject& b = args[2].getVariable()->getRevObject();
+
     WorkspaceVector<Trace> *rv = new WorkspaceVector<Trace>();
     for (std::vector<RevBayesCore::TraceNumeric>::iterator it = data.begin(); it != data.end(); ++it)
     {
+        int burnin = 0;
+
+        if ( b.isType( Integer::getClassTypeSpec() ) )
+        {
+            burnin = static_cast<const Integer &>(b).getValue();
+        }
+        else
+        {
+            double burninFrac = static_cast<const Probability &>(b).getValue();
+            burnin = int( floor( rv->getValue().size()*burninFrac ) );
+        }
+
         it->computeStatistics();
-        rv->push_back( Trace( *it ) );
+
+        Trace trace( *it );
+        trace.getValue().setBurnin(burnin);
+
+        rv->push_back( trace );
     }
     
     // return the vector of traces
@@ -163,6 +182,12 @@ const ArgumentRules& Func_readTrace::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "Name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns (e.g., the iteration number and the trees).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+
+        std::vector<TypeSpec> burninTypes;
+        burninTypes.push_back( Probability::getClassTypeSpec() );
+        burninTypes.push_back( Integer::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , burninTypes     , "The fraction/number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
+
         rules_set = true;
     }
     
