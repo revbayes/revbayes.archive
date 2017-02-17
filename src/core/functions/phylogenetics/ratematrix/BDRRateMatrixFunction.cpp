@@ -18,23 +18,33 @@
 
 using namespace RevBayesCore;
 
-BDRRateMatrixFunction::BDRRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *m, const TypedDagNode<double> *l_l, const TypedDagNode<double> *d_l) :
+BDRRateMatrixFunction::BDRRateMatrixFunction( const TypedDagNode<int> *n, const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<double> *l_i, const TypedDagNode<double> *m_i, const TypedDagNode<double> *l_a, const TypedDagNode<double> *m_a, const TypedDagNode<double> *l_ia, const TypedDagNode<double> *l_ai ) :
     TypedFunction<RateGenerator>( new RateMatrix_BDR(n->getValue()) ),
-    lambda( l ),
-    delta( d ),
-    rho( r ),
-    mu( m ),
-    lambda_l( l_l ),
-    delta_l( d_l )
+
+    alpha( a ),
+    beta( b ),
+
+    lambda_a( l_a ),
+    mu_a( m_a ),
+
+    lambda_i( l_i ),
+    mu_i( m_i ),
+
+    lambda_ai( l_ai ),
+    lambda_ia( l_ia )
+
 {
 
-    addParameter( lambda );
-    addParameter( delta );
-    addParameter( rho );
-    addParameter( lambda_l );
-    addParameter( delta_l );
-    addParameter( mu );
     
+    addParameter( alpha );
+    addParameter( beta );
+    addParameter( lambda_a );
+    addParameter( mu_a );
+    addParameter( lambda_i );
+    addParameter( mu_i );
+    addParameter( lambda_ai );
+    addParameter( lambda_ia );
+
     update();
 }
 
@@ -52,20 +62,29 @@ BDRRateMatrixFunction* BDRRateMatrixFunction::clone( void ) const {
 
 
 void BDRRateMatrixFunction::update( void ) {
-    double la = lambda->getValue();
-    double de = delta->getValue();
-    double rh = rho->getValue();
-    double la_l = lambda_l->getValue();
-    double de_l = delta_l->getValue();
-    double m = mu->getValue();
+    
+    double a = alpha->getValue();
+    double b = beta->getValue();
 
-    static_cast< RateMatrix_BDR* >(value)->setLambda( la );
-    static_cast< RateMatrix_BDR* >(value)->setDelta( de );
-    static_cast< RateMatrix_BDR* >(value)->setRho( rh );
-    static_cast< RateMatrix_BDR* >(value)->setMu( m );
-    static_cast< RateMatrix_BDR* >(value)->setLambda_l( la_l );
-    static_cast< RateMatrix_BDR* >(value)->setDelta_l( de_l );
+    double l_i = lambda_i->getValue();
+    double m_i = mu_i->getValue();
 
+    double l_a = lambda_a->getValue();
+    double m_a = mu_a->getValue();
+    
+    double l_ai = lambda_ai->getValue();
+    double l_ia = lambda_ia->getValue();
+    
+
+    static_cast< RateMatrix_BDR* >(value)->setAlpha( a );
+    static_cast< RateMatrix_BDR* >(value)->setBeta( b );
+    static_cast< RateMatrix_BDR* >(value)->setLambdaA( l_a );
+    static_cast< RateMatrix_BDR* >(value)->setMuA( m_a );
+    static_cast< RateMatrix_BDR* >(value)->setLambdaI( l_i );
+    static_cast< RateMatrix_BDR* >(value)->setMuI( m_i );
+    static_cast< RateMatrix_BDR* >(value)->setLambdaAI( l_ai );
+    static_cast< RateMatrix_BDR* >(value)->setLambdaIA( l_ia );
+    
     static_cast< RateMatrix_BDR* >(value)->update();
     
 }
@@ -74,22 +93,28 @@ void BDRRateMatrixFunction::update( void ) {
 
 void BDRRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
-    if (oldP == lambda) {
-        lambda = static_cast<const TypedDagNode<double>* >( newP );
+    if (oldP == alpha) {
+        alpha = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == delta) {
-        delta = static_cast<const TypedDagNode<double>* >( newP );
+    else if (oldP == beta) {
+        beta = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == rho) {
-        rho = static_cast<const TypedDagNode<double>* >( newP );
-    } else if (oldP == mu) {
-        mu = static_cast<const TypedDagNode<double>* >( newP );
+    else if (oldP == lambda_a) {
+        lambda_a = static_cast<const TypedDagNode<double>* >( newP );
+    } else if (oldP == mu_a) {
+        mu_a = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == delta_l) {
-        delta_l = static_cast<const TypedDagNode<double>* >( newP );
+    else if (oldP == lambda_i) {
+        lambda_i = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == lambda_l) {
-        lambda_l = static_cast<const TypedDagNode<double>* >( newP );
+    else if (oldP == mu_i) {
+        mu_i = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == lambda_ai) {
+        lambda_ai = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == lambda_ia) {
+        lambda_ia = static_cast<const TypedDagNode<double>* >( newP );
     }
     
 }

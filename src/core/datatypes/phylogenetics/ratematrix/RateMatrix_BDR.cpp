@@ -25,14 +25,18 @@ using namespace RevBayesCore;
 RateMatrix_BDR::RateMatrix_BDR(size_t n) : AbstractRateMatrix( n+1 ),
     matrixSize( n+1 )
 {
-    setLambda(1.0);
-    setRho(1.0);
-    setDelta(1.0);
-    setMu(1.0);
-    setLambda_l(1.0);
-    setDelta_l(1.0);
+    
+    setAlpha(1.0);
+    setBeta(1.0);
+    setLambdaA(1.0);
+    setMuA(1.0);
+    setLambdaI(1.0);
+    setMuI(1.0);
+    setLambdaAI(1.0);
+    setLambdaIA(1.0);
     
     update();
+    
 }
 
 
@@ -49,41 +53,41 @@ double RateMatrix_BDR::averageRate(void) const {
 void RateMatrix_BDR::buildRateMatrix(void) 
 {
     
-    for (size_t i=0; i< matrixSize; i++)
-    {
-        for (size_t j=0; j< matrixSize; j++)
-        {
-			(*the_rate_matrix)[i][j] = 0.0;
-			if (j != 0 && i != 0)
-            {
-				if (j == i+1)
-                {
-					(*the_rate_matrix)[i][j] += lambda * exp( lambda_l * (i-1) );
-				}
-                if (j == i-1)
-                {
-					(*the_rate_matrix)[i][j] += delta * exp( delta_l * (i-1) );
-				}
-                if (j == (2*i))
-                {
-					(*the_rate_matrix)[i][j] += rho;
-                }
-                if ( (i % 2 == 0) && (j == (size_t)(1.5*i)) )
-                {
-                    (*the_rate_matrix)[i][j] += mu;
-                }
-                if ( (i % 2 != 0) && ( (j == (size_t)(1.5*i - 0.5)) || (j == (size_t)(1.5*i + 0.5) ) ) )
-                {
-                    (*the_rate_matrix)[i][j] += mu;
-                }
-			}
-        }
-    }	
-    // set the diagonal values
-    setDiagonal();
-    
-    // rescale rates
-    //rescaleToAverageRate( 1.0 );
+//    for (size_t i=0; i< matrixSize; i++)
+//    {
+//        for (size_t j=0; j< matrixSize; j++)
+//        {
+//			(*the_rate_matrix)[i][j] = 0.0;
+//			if (j != 0 && i != 0)
+//            {
+//				if (j == i+1)
+//                {
+//					(*the_rate_matrix)[i][j] += lambda * exp( lambda_l * (i-1) );
+//				}
+//                if (j == i-1)
+//                {
+//					(*the_rate_matrix)[i][j] += delta * exp( delta_l * (i-1) );
+//				}
+//                if (j == (2*i))
+//                {
+//					(*the_rate_matrix)[i][j] += rho;
+//                }
+//                if ( (i % 2 == 0) && (j == (size_t)(1.5*i)) )
+//                {
+//                    (*the_rate_matrix)[i][j] += mu;
+//                }
+//                if ( (i % 2 != 0) && ( (j == (size_t)(1.5*i - 0.5)) || (j == (size_t)(1.5*i + 0.5) ) ) )
+//                {
+//                    (*the_rate_matrix)[i][j] += mu;
+//                }
+//			}
+//        }
+//    }	
+//    // set the diagonal values
+//    setDiagonal();
+//    
+//    // rescale rates
+//    //rescaleToAverageRate( 1.0 ); # TODO: We actually DO want to rescale the rate matrix... implement this function
     
 }
 
@@ -193,60 +197,75 @@ std::vector<double> RateMatrix_BDR::getStationaryFrequencies( void ) const
     return stationary_freqs;
 }
 
-void RateMatrix_BDR::setLambda( double l )
+
+void RateMatrix_BDR::setAlpha(double a)
 {
-    
-    lambda = l;
+    alpha = a;
     
     // set flags
     needs_update = true;
-    
 }
 
-void RateMatrix_BDR::setRho( double r )
+void RateMatrix_BDR::setBeta(double b)
 {
-    
-    rho = r;
-    
-    // set flags
-    needs_update = true;
-    
-}
-
-void RateMatrix_BDR::setDelta( double d ) {
-    
-    delta = d;
+    beta = b;
     
     // set flags
     needs_update = true;
     
 }
 
-void RateMatrix_BDR::setMu( double m ) {
+void RateMatrix_BDR::setLambdaA(double l_a)
+{
+    lambda_a = l_a;
     
-    mu = m;
+    // set flags
+    needs_update = true;
+  
+}
+
+void RateMatrix_BDR::setMuA(double m_a)
+{
+    mu_a = m_a;
+    
+    // set flags
+    needs_update = true;
+   
+}
+
+void RateMatrix_BDR::setLambdaI(double l_i)
+{
+    lambda_i = l_i;
     
     // set flags
     needs_update = true;
     
 }
 
-void RateMatrix_BDR::setLambda_l( double l ) {
-    
-    lambda_l = l;
+void RateMatrix_BDR::setMuI(double m_i)
+{
+    mu_i = m_i;
     
     // set flags
     needs_update = true;
     
 }
 
-void RateMatrix_BDR::setDelta_l( double d ) {
-    
-    delta_l = d;
+void RateMatrix_BDR::setLambdaAI(double l_ai)
+{
+    lambda_ai = l_ai;
     
     // set flags
     needs_update = true;
     
+}
+
+void RateMatrix_BDR::setLambdaIA(double l_ia)
+{
+    lambda_ia = l_ia;
+    
+    // set flags
+    needs_update = true;
 }
 
 

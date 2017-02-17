@@ -36,21 +36,26 @@ namespace RevBayesCore {
         RateMatrix_BDR*                 clone(void) const;
         std::vector<double>             getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in this model I don't know them
         void                            update(void);
-        void                            setLambda(double l);
-        void                            setDelta(double d);
-        void                            setRho(double r);
-        void                            setMu(double m);
-        void                            setLambda_l(double l);
-        void                            setDelta_l(double d);
         
+        void                            setAlpha(double a);
+        void                            setBeta(double b);
+        void                            setLambdaA(double l_a);
+        void                            setMuA(double m_a);
+        void                            setLambdaI(double l_i);
+        void                            setMuI(double m_i);
+        void                            setLambdaAI(double l_ai);
+        void                            setLambdaIA(double l_ia);
         
     private:
-        double                          lambda;
-        double                          delta;
-        double                          rho;
-        double                          mu;
-        double                          lambda_l;
-        double                          delta_l;
+        
+        double                          alpha;
+        double                          beta;
+        double                          lambda_a;
+        double                          mu_a;
+        double                          lambda_i;
+        double                          mu_i;
+        double                          lambda_ai;
+        double                          lambda_ia;
         size_t                          matrixSize;                         //!< Number of elements in a row or column of the rate matrix
         std::vector<double>             stationary_freqs;                    //!< Holds the stationary frequencies
 

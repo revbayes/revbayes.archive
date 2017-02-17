@@ -27,12 +27,12 @@ namespace RevBayesCore {
     class BDRRateMatrixFunction : public TypedFunction<RateGenerator> {
 
     public:
-        BDRRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *m, const TypedDagNode<double> *l_l, const TypedDagNode<double> *d_l);
+        BDRRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<double> *l_a, const TypedDagNode<double> *m_a, const TypedDagNode<double> *l_i, const TypedDagNode<double> *m_i, const TypedDagNode<double> *l_ia, const TypedDagNode<double> *l_ai );
         
         virtual                                     ~BDRRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        BDRRateMatrixFunction*              clone(void) const;                                                              //!< Create an independent clone
+        BDRRateMatrixFunction*                      clone(void) const;                                                              //!< Create an independent clone
         void                                        update(void);
         
     protected:
@@ -43,12 +43,15 @@ namespace RevBayesCore {
         // members
 
         const TypedDagNode<int>*                    n;
-        const TypedDagNode<double>*                 lambda;
-        const TypedDagNode<double>*                 delta;
-        const TypedDagNode<double>*                 rho;
-        const TypedDagNode<double>*                 mu;
-        const TypedDagNode<double>*                 lambda_l;
-        const TypedDagNode<double>*                 delta_l;
+        const TypedDagNode<double>*                 alpha;
+        const TypedDagNode<double>*                 beta;
+        const TypedDagNode<double>*                 lambda_a;
+        const TypedDagNode<double>*                 mu_a;
+        const TypedDagNode<double>*                 lambda_i;
+        const TypedDagNode<double>*                 mu_i;
+        const TypedDagNode<double>*                 lambda_ai;
+        const TypedDagNode<double>*                 lambda_ia;
+
 
     };
     
