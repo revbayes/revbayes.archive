@@ -23,7 +23,7 @@ namespace RevLanguage {
     class Dist_ConstrainedNodeOrder : public TypedDistribution<TimeTree> {
         
     public:
-        Dist_ConstrainedNodeOrder( void );
+                                                            Dist_ConstrainedNodeOrder(void);
         
         // Basic utility functions
         Dist_ConstrainedNodeOrder*                          clone(void) const;                                                                      //!< Clone the object
@@ -36,20 +36,16 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::NodeOrderConstrainedTreeDistribution*  createDistribution(void) const;
+        RevBayesCore::NodeOrderConstrainedTreeDistribution* createDistribution(void) const;
         
     protected:
-        
         void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
-        
         
     private:
         
         RevPtr<const RevVariable>                           baseDistribution;
-        RevPtr<const RevVariable>                           constraints;                                                                                 //!< The base tree distribution
-        
+        RevPtr<const RevVariable>                           constraints;                                                                            //!< The base tree distribution
     };
-    
 }
 
 #endif
