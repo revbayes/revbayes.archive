@@ -19,7 +19,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        PhyloMultivariateBrownianProcessREML(const TypedDagNode<Tree> *t, size_t nSites );
+        PhyloMultivariateBrownianProcessREML(const TypedDagNode<Tree> *t, const TypedDagNode<MatrixReal> *c, size_t nSites );
         virtual                                                            ~PhyloMultivariateBrownianProcessREML(void);                                                              //!< Virtual destructor
         
         // public member functions
@@ -46,7 +46,7 @@ namespace RevBayesCore {
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter
 
         // the likelihoods
-        std::vector<std::vector<std::vector<double> > >                     partial_likelihoods;
+        std::vector<std::vector<double> >                                   partial_likelihoods;
         std::vector<std::vector<std::vector<double> > >                     contrasts;
         std::vector<std::vector<double> >                                   contrast_uncertainty;
         std::vector<size_t>                                                 active_likelihood;
@@ -56,6 +56,8 @@ namespace RevBayesCore {
         std::vector<bool>                                                   dirty_nodes;
 
     private:
+        
+        const TypedDagNode< MatrixReal >*                                   rate_matrix;
                 
     };
     
