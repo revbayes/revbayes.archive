@@ -1,4 +1,5 @@
 #include "Dist_PhyloMultivariateBrownianREML.h"
+#include "RlMatrixRealSymmetric.h"
 #include "OptionRule.h"
 #include "PhyloMultivariateBrownianProcessREML.h"
 #include "RevNullObject.h"
@@ -35,7 +36,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     size_t n_nodes = tau->getValue().getNumberOfNodes();
     
-    RevBayesCore::PhyloMultivariateBrownianProcessREML *dist = new RevBayesCore::PhyloMultivariateBrownianProcessREML(tau, n);
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* vcv = static_cast<const MatrixRealSymmetric&>( rate_matrix->getRevObject() ).getDagNode();
+
+    RevBayesCore::PhyloMultivariateBrownianProcessREML *dist = new RevBayesCore::PhyloMultivariateBrownianProcessREML(tau, vcv, n);
 
     // set the clock rates
     if ( branchRates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
@@ -60,16 +63,16 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     }
     
     // set the clock rates
-    if ( site_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
-    {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sr = static_cast<const ModelVector<RealPos> &>( site_rates->getRevObject() ).getDagNode();
-        dist->setSiteRate( sr );
-    }
-    else
-    {
-        RevBayesCore::TypedDagNode< double >* sr = static_cast<const RealPos &>( site_rates->getRevObject() ).getDagNode();
-        dist->setSiteRate( sr );
-    }
+    //if ( site_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    //{
+    //    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sr = static_cast<const ModelVector<RealPos> &>( site_rates->getRevObject() ).getDagNode();
+    //    dist->setSiteRate( sr );
+    //}
+    //else
+    //{
+    //    RevBayesCore::TypedDagNode< double >* sr = static_cast<const RealPos &>( site_rates->getRevObject() ).getDagNode();
+    //    dist->setSiteRate( sr );
+    //}
     
     return dist;
 }
@@ -127,13 +130,16 @@ const MemberRules& Dist_PhyloMultivariateBrownianREML::getParameterRules(void) c
         branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         dist_member_rules.push_back( new ArgumentRule( "branchRates" , branchRateTypes, "The per branch rate-multiplier(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
-        std::vector<TypeSpec> siteRateTypes;
-        siteRateTypes.push_back( RealPos::getClassTypeSpec() );
-        siteRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        RealPos *defaultSiteRates = new RealPos(1.0);
-        dist_member_rules.push_back( new ArgumentRule( "siteRates" , siteRateTypes, "The per site rate-multiplier(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        // std::vector<TypeSpec> siteRateTypes;
+        // siteRateTypes.push_back( RealPos::getClassTypeSpec() );
+        // siteRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
+        // RealPos *defaultSiteRates = new RealPos(1.0);
+        // dist_member_rules.push_back( new ArgumentRule( "siteRates" , siteRateTypes, "The per site rate-multiplier(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        
+        dist_member_rules.push_back( new ArgumentRule( "rateMatrix", MatrixRealSymmetric::getClassTypeSpec(), "The variance-covariance matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         dist_member_rules.push_back( new ArgumentRule( "nSites"         ,  Natural::getClassTypeSpec(), "The number of sites used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
+
         
         rules_set = true;
     }
@@ -173,15 +179,15 @@ void Dist_PhyloMultivariateBrownianREML::printValue(std::ostream& o) const
     {
         o << "?";
     }
-    o << ", siteRates=";
-    if ( site_rates != NULL )
-    {
-        o << site_rates->getName();
-    }
-    else
-    {
-        o << "?";
-    }
+    // o << ", siteRates=";
+    // if ( site_rates != NULL )
+    // {
+    //     o << site_rates->getName();
+    // }
+    // else
+    //{
+    //     o << "?";
+    // }
     o << ", nSites=";
     if ( nSites != NULL )
     {
@@ -208,13 +214,17 @@ void Dist_PhyloMultivariateBrownianREML::setConstParameter(const std::string& na
     {
         branchRates = var;
     }
-    else if ( name == "siteRates" )
-    {
-        site_rates = var;
-    }
+    // else if ( name == "siteRates" )
+    // {
+    //    site_rates = var;
+    // }
     else if ( name == "nSites" )
     {
         nSites = var;
+    }
+    else if ( name == "rateMatrix" )
+    {
+        rate_matrix = var;
     }
     else
     {

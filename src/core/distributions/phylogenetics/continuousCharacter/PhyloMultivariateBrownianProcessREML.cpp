@@ -1,4 +1,4 @@
-#include "DistributionNormal.h"
+#include "DistributionMultivariateNormal.h"
 #include "PhyloMultivariateBrownianProcessREML.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -10,21 +10,23 @@
 
 using namespace RevBayesCore;
 
-PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const TypedDagNode<Tree> *t, size_t ns) :
+PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const TypedDagNode<Tree> *t, const TypedDagNode<MatrixReal> *c, size_t ns) :
     AbstractPhyloBrownianProcess( t, ns ),
-    partial_likelihoods( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) ) ),
-    contrasts( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) ) ),
+    rate_matrix( c ),
+    partial_likelihoods( std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) ) ),
+    contrasts( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0.0) ) ) ),
     contrast_uncertainty( std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) ) ),
     active_likelihood( std::vector<size_t>(this->num_nodes, 0) ),
     changed_nodes( std::vector<bool>(this->num_nodes, false) ),
     dirty_nodes( std::vector<bool>(this->num_nodes, true) )
 {
     
+    // add the parameters to our set
+    this->addParameter( rate_matrix );
     
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
-    
-    
+
     // now we need to reset the value
     this->redrawValue();
     
@@ -80,7 +82,6 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
     if ( this->dirty_nodes[rootIndex] )
     {
         
-        
         recursiveComputeLnProbability( root, rootIndex );
         
         // start by filling the likelihood vector for the children of the root
@@ -110,9 +111,10 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
             throw RbException("The root node has an unexpected number of children. Only 2 (for rooted trees) or 3 (for unrooted trees) are allowed.");
         }
         
-        
         // sum the partials up
-        this->lnProb = sumRootLikelihood();
+        double p_root  = this->partial_likelihoods[this->active_likelihood[rootIndex]][rootIndex];
+
+        this->lnProb = p_root;
         
     }
     return this->lnProb;
@@ -155,10 +157,9 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
         // mark as computed
         dirty_nodes[node_index] = false;
 
-        std::vector<double> &p_node  = this->partial_likelihoods[this->active_likelihood[node_index]][node_index];
-        std::vector<double> &mu_node  = this->contrasts[this->active_likelihood[node_index]][node_index];
+        double              &p_node  = this->partial_likelihoods[this->active_likelihood[node_index]][node_index];
+        std::vector<double> &mu_node = this->contrasts[this->active_likelihood[node_index]][node_index];
 
-        
         // get the number of children
         size_t num_children = node.getNumberOfChildren();
         
@@ -178,8 +179,8 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
             size_t right_index = right.getIndex();
             recursiveComputeLnProbability( right, right_index );
 
-            const std::vector<double> &p_left  = this->partial_likelihoods[this->active_likelihood[left_index]][left_index];
-            const std::vector<double> &p_right = this->partial_likelihoods[this->active_likelihood[right_index]][right_index];
+            const double &p_left  = this->partial_likelihoods[this->active_likelihood[left_index]][left_index];
+            const double &p_right = this->partial_likelihoods[this->active_likelihood[right_index]][right_index];
 
             // get the per node and site contrasts
             const std::vector<double> &mu_left  = this->contrasts[this->active_likelihood[left_index]][left_index];
@@ -204,25 +205,47 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
             // set delta_node = (t_l*t_r)/(t_l+t_r);
             this->contrast_uncertainty[this->active_likelihood[node_index]][node_index] = (t_left*t_right) / (t_left+t_right);
 
-            double stdev = sqrt(t_left+t_right);
-            for (int i=0; i<this->num_sites; i++)
+            double branch_length = t_left + t_right;
+            
+            std::vector<double> contrasts(num_sites);
+            std::vector<double> means(num_sites, 0.0);
+            for (size_t i = 0; i < this->num_sites; ++i)
             {
-
+                contrasts[i] = mu_left[i] - mu_right[i];
                 mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
+            }
+            
+            
+            MatrixReal dummy_matrix = rate_matrix->getValue();
+            MatrixReal omega = dummy_matrix.computeInverse();
 
-                // get the site specific rate of evolution
-                double standDev = this->computeSiteRate(i) * stdev;
-
-                // compute the contrasts for this site and node
-                double contrast = mu_left[i] - mu_right[i];
-
-                // compute the probability for the contrasts at this node
-                double lnl_node = RbStatistics::Normal::lnPdf(0, standDev, contrast);
-
-                // sum up the probabilities of the contrasts
-                p_node[i] = lnl_node + p_left[i] + p_right[i];
-
-            } // end for-loop over all sites
+            double lnl_node = RbStatistics::MultivariateNormal::lnPdfCovariance(means, rate_matrix->getValue(), contrasts, branch_length);
+            p_node = lnl_node + p_left + p_right;
+     
+            
+            
+            std::cout << "left: " << p_left << ", right: " << p_right << ", contrast: " << lnl_node << ", node: " << p_node << std::endl;
+            
+            //for (int i=0; i<this->num_sites; i++)
+            //{
+            //
+            //    mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
+            //
+            //    // get the site specific rate of evolution
+            //    double sigma = this->computeSiteRate(i) * bLength;
+            //
+            //    // compute the contrasts for this site and node
+            //    double contrast = mu_left[i] - mu_right[i];
+            //
+            //    // compute the probability for the contrasts at this node
+            //    //double lnl_node = RbStatistics::Normal::lnPdf(0, standDev, contrast);
+            //    double lnl_node = RbStatistics::MultivariateNormal::lnPdfCovariance(0, c * sigma, contrast, double scale);
+            //
+            //
+            // // sum up the probabilities of the contrasts
+            //   p_node[i] = lnl_node + p_left[i] + p_right[i];
+            //
+            //} // end for-loop over all sites
 
         } // end for-loop over all children
         
@@ -332,7 +355,7 @@ void PhyloMultivariateBrownianProcessREML::resetValue( void )
 {
     
     // check if the vectors need to be resized
-    partial_likelihoods = std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) );
+    partial_likelihoods = std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) );
     contrasts = std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) );
     contrast_uncertainty = std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) );
     
@@ -431,22 +454,24 @@ std::vector<double> PhyloMultivariateBrownianProcessREML::simulateRootCharacters
 double PhyloMultivariateBrownianProcessREML::sumRootLikelihood( void )
 {
     // get the root node
-    const TopologyNode &root = this->tau->getValue().getRoot();
+    // const TopologyNode &root = this->tau->getValue().getRoot();
     
     // get the index of the root node
-    size_t node_index = root.getIndex();
+    // size_t node_index = root.getIndex();
     
     // get the pointers to the partial likelihoods of the left and right subtree
-    std::vector<double> &p_node = this->partial_likelihoods[this->active_likelihood[node_index]][node_index];
+    // double &p_node = this->partial_likelihoods[this->active_likelihood[node_index]][node_index];
     
     // sum the log-likelihoods for all sites together
-    double sum_partial_probs = 0.0;
-    for (size_t site = 0; site < this->num_sites; ++site)
-    {
-        sum_partial_probs += p_node[site];
-    }
+    // double sum_partial_probs = 0.0;
+    // for (size_t site = 0; site < this->num_sites; ++site)
+    // {
+    //     sum_partial_probs += p_node[site];
+    // }
     
-    return sum_partial_probs;
+    // return sum_partial_probs;
+    
+    return 0.0;
 }
 
 
@@ -511,6 +536,10 @@ void PhyloMultivariateBrownianProcessREML::swapParameterInternal(const DagNode *
         this->tau->getValue().getTreeChangeEventHandler().removeListener( this );
         AbstractPhyloBrownianProcess::swapParameterInternal(oldP, newP);
         this->tau->getValue().getTreeChangeEventHandler().addListener( this );
+    }
+    if (oldP == this->rate_matrix)
+    {
+        rate_matrix = static_cast<const TypedDagNode< MatrixReal >* >( newP );
     }
     else
     {

@@ -156,9 +156,9 @@ void MatrixReal::clear( void )
 MatrixReal MatrixReal::computeInverse( void ) const
 {
  
+    
     // update the eigensystem if necessary
     update();
-    
     
     const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
     
@@ -171,6 +171,8 @@ MatrixReal MatrixReal::computeInverse( void ) const
     tmp *= eigensystem->getInverseEigenvectors();
     MatrixReal inverse = eigensystem->getEigenvectors() * tmp;
 
+    
+    
     return inverse;
 
 }
@@ -501,6 +503,8 @@ size_t MatrixReal::size( void ) const
 
 void MatrixReal::update( void ) const
 {
+    
+    
     
     if ( eigensystem == NULL )
     {
