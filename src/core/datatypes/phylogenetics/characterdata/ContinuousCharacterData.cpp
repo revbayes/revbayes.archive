@@ -5,6 +5,7 @@
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbFileManager.h"
+#include "TypedDagNode.h"
 
 #include <string>
 #include <algorithm>
@@ -22,6 +23,21 @@ ContinuousCharacterData::ContinuousCharacterData()
 
 
 
+/**
+ * Index (const) operator to access a TaxonData object at position i.
+ *
+ * \param[in]    i    The position of the TaxonData object.
+ *
+ * \return            The TaxonData object at position i.
+ */
+ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i )
+{
+    
+    return getTaxonData( i );
+}
+
+
+
 /** 
  * Index (const) operator to access a TaxonData object at position i.
  *
@@ -32,7 +48,7 @@ ContinuousCharacterData::ContinuousCharacterData()
 const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i ) const 
 {
     
-    return static_cast<const ContinuousTaxonData&>( getTaxonData( i ) );
+    return getTaxonData( i );
 }
 
 
@@ -195,6 +211,23 @@ void ContinuousCharacterData::excludeCharacter(size_t i)
     deletedCharacters.insert( i );
     
 }
+
+void ContinuousCharacterData::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
+{
+    
+    if ( n == "get" )
+    {
+        int index_taxon = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        int index_site = static_cast<const TypedDagNode<int> *>( args[1] )->getValue()-1;
+        rv = getTaxonData(index_taxon)[index_site];
+    }
+    else
+    {
+        throw RbException("A continuous character data object does not have a member method called '" + n + "'.");
+    }
+    
+}
+
 
 
 /** 
