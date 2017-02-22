@@ -418,6 +418,12 @@ void MultispeciesCoalescent::simulateTree( void )
         }
         
         TopologyNode *species_node = species_names_2_nodes[species_name];
+        
+        if ( species_node == NULL )
+        {
+            throw RbException("Could not match a taxon with name" + species_name + " to any of the tips in the species tree.");
+        }
+        
         n->setAge( 0.0 );
         std::vector< TopologyNode * > &nodes_at_node = individuals_per_branch[ species_node ];
         nodes_at_node.push_back( n );
