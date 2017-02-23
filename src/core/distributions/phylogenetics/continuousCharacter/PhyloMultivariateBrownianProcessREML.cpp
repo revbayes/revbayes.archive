@@ -215,16 +215,10 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
                 mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
             }
             
-            
-            MatrixReal dummy_matrix = rate_matrix->getValue();
-            MatrixReal omega = dummy_matrix.computeInverse();
+            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfCovariance(means, rate_matrix->getValue(), contrasts, branch_length);
+            p_node = lnl_contrast + p_left + p_right;
 
-            double lnl_node = RbStatistics::MultivariateNormal::lnPdfCovariance(means, rate_matrix->getValue(), contrasts, branch_length);
-            p_node = lnl_node + p_left + p_right;
-     
-            
-            
-            std::cout << "left: " << p_left << ", right: " << p_right << ", contrast: " << lnl_node << ", node: " << p_node << std::endl;
+//            std::cout << "left: " << p_left << ", right: " << p_right << ", contrast: " << lnl_contrast << ", node: " << p_node << std::endl;
             
             //for (int i=0; i<this->num_sites; i++)
             //{

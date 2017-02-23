@@ -1278,20 +1278,26 @@ void EigenSystem::update(void)
 	// compute eigenvalues and eigenvectors
 	hqr2(low, high, A, realEigenvalues, imaginaryEigenvalues, eigenvectors);
     
-    for (std::vector<double>::iterator it = realEigenvalues.begin(); it != realEigenvalues.end(); ++it)
-    {
-        if ( *it > 0.0 )
-        {
-            *it = 0.0;
-        }
-    }
+    // mrm 2/22/17
+    // Is this really necessary? It breaks eigen decomposition for VCV matrices, which may have positive eigenvalues.
+//    for (std::vector<double>::iterator it = realEigenvalues.begin(); it != realEigenvalues.end(); ++it)
+//    {
+//        if ( *it > 0.0 )
+//        {
+//            *it = 0.0;
+//        }
+//    }
 	
 	// reverse balancing to obtain eigenvectors
 	balback(low, high, scale, eigenvectors);
     
 	// checks whether there are complex eigenvalues
 	complex = checkForComplexEigenvalues();
-	
+    
+    // mrm 2/22/17
+    // these computations are seriously unstable for VCV matrices.
+    // the smallest eigenvector is off by many orders of magnitude!!!
+    
 	// invert eigenvectors
 	if ( isComplex() == false ) 
     {

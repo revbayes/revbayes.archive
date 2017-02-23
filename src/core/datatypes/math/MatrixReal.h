@@ -29,6 +29,7 @@
 namespace RevBayesCore {
     
     class EigenSystem;
+    class CholeskyDecomposition;
     
     class MatrixReal : public Cloneable, public MemberObject<RbVector<double> > {
         
@@ -73,7 +74,7 @@ namespace RevBayesCore {
         
         
         
-        // utility funcions
+        // utility functions
         void                                    clear(void);
         MatrixReal*                             clone(void) const;
         MatrixReal                              computeInverse(void) const;
@@ -92,6 +93,9 @@ namespace RevBayesCore {
         bool                                    isPositive() const;
         bool                                    isSquareMatrix(void) const;
         bool                                    isSymmetric(void) const;
+        void                                    setCholesky(bool c) { useCholeskyDecomp = c; }
+        
+        
         size_t                                  size(void) const;
         void                                    resize(size_t r, size_t c);
         
@@ -105,6 +109,10 @@ namespace RevBayesCore {
         size_t                                  nCols;
         mutable EigenSystem*                    eigensystem;
         mutable bool                            eigenNeedsUpdate;
+        
+        mutable CholeskyDecomposition*          choleskyDecomp;
+        mutable bool                            choleskyNeedsUpdate;
+        bool                                    useCholeskyDecomp;
         
     };
     
