@@ -8,6 +8,7 @@
 
 #include "Func_shortestDistance.h"
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "ShortestDistanceFunction.h"
 #include "Probability.h"
 #include "RbVector.h"
@@ -41,7 +42,20 @@ RevBayesCore::TypedFunction<RevBayesCore::RbVector<RevBayesCore::RbVector<double
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<int> > >* adj = static_cast<const ModelVector<ModelVector<Natural> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* dist = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* dist = NULL;
+    if ( this->args[1].getVariable()->getRevObject().isType( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() ) )
+    {
+        dist = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    }
+    else
+    {
+        size_t num_nodes = adj->getValue().size();
+        dist = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >( "",
+                                                                                                        new RevBayesCore::RbVector<RevBayesCore::RbVector<double> >(
+                                                                                                                num_nodes,
+                                                                                                                RevBayesCore::RbVector<double>(num_nodes, 1))
+                                                                                                        );
+    }
     
     RevBayesCore::ShortestDistanceFunction* f = new RevBayesCore::ShortestDistanceFunction( adj, dist );
     
@@ -61,7 +75,7 @@ const ArgumentRules& Func_shortestDistance::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "adjacencies", ModelVector<ModelVector<Natural> >::getClassTypeSpec(), "The adjaceny matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "distances", ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "The distance matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "distances", ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "The distance matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         rules_set = true;
     }
@@ -93,7 +107,7 @@ const TypeSpec& Func_shortestDistance::getClassTypeSpec(void)
 std::string Func_shortestDistance::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnShortestPath";
+    std::string f_name = "fnShortestDistance";
     
     return f_name;
 }
