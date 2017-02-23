@@ -603,8 +603,6 @@ void MatrixReal::update( void ) const
     
 }
 
-
-
 #include "RbMathMatrix.h"
 #include "RbException.h"
 

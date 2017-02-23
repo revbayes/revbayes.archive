@@ -25,7 +25,6 @@ CholeskyDecomposition::CholeskyDecomposition( const MatrixReal* m )
     
     // initialize the decomposed and inverted matrices
     L = MatrixReal(n, n, 0.0);
-//    L.setCholesky(false);
     inverseMatrix = MatrixReal(n, n, 0.0);
     
     // update the decomposition
@@ -51,6 +50,7 @@ void CholeskyDecomposition::computeInverse( void )
     
     // now, multiply the two matrices together
     inverseMatrix = inverseLowerFactorTranspose * inverseLowerFactor;
+//    inverseMatrix.getLogDet(); // this is just for debugging purposes: I want to force the matrix to update
     
 }
 

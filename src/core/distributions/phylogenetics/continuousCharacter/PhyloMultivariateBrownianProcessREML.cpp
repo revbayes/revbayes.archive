@@ -35,6 +35,10 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     
     // we need to reset the contrasts
     resetValue();
+    
+    // compute the inverse variance-covariance matrix (the precision matrix)
+    precision_matrix = rate_matrix->getValue().computeInverse();
+
 }
 
 
@@ -74,6 +78,10 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
         tau->getValue().getTreeChangeEventHandler().addListener( this );
         dirty_nodes = std::vector<bool>(tau->getValue().getNumberOfNodes(), true);
     }
+    
+    // recompute the inverse variance-covariance matrix (the precision matrix)
+    precision_matrix = rate_matrix->getValue().computeInverse();
+//    precision_matrix.getLogDet(); // this is for debugging only. I want to force the matrix to compute do eigen decomposition.
     
     // compute the ln probability by recursively calling the probability calculation for each node
     const TopologyNode &root = this->tau->getValue().getRoot();
@@ -218,32 +226,10 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
                 mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
             }
             
-            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfCovariance(means, rate_matrix->getValue(), contrasts, branch_length);
+//            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfCovariance(means, rate_matrix->getValue(), contrasts, branch_length);
+            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfPrecision(means, precision_matrix, contrasts, branch_length);
             p_node = lnl_contrast + p_left + p_right;
-
-//            std::cout << "left: " << p_left << ", right: " << p_right << ", contrast: " << lnl_contrast << ", node: " << p_node << std::endl;
             
-            //for (int i=0; i<this->num_sites; i++)
-            //{
-            //
-            //    mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
-            //
-            //    // get the site specific rate of evolution
-            //    double sigma = this->computeSiteRate(i) * bLength;
-            //
-            //    // compute the contrasts for this site and node
-            //    double contrast = mu_left[i] - mu_right[i];
-            //
-            //    // compute the probability for the contrasts at this node
-            //    //double lnl_node = RbStatistics::Normal::lnPdf(0, standDev, contrast);
-            //    double lnl_node = RbStatistics::MultivariateNormal::lnPdfCovariance(0, c * sigma, contrast, double scale);
-            //
-            //
-            // // sum up the probabilities of the contrasts
-            //   p_node[i] = lnl_node + p_left[i] + p_right[i];
-            //
-            //} // end for-loop over all sites
-
         } // end for-loop over all children
         
     } // end if we need to compute something for this node.
@@ -474,7 +460,7 @@ double PhyloMultivariateBrownianProcessREML::sumRootLikelihood( void )
 
 void PhyloMultivariateBrownianProcessREML::touchSpecialization( DagNode* affecter, bool touchAll )
 {
-    
+ 
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == this->heterogeneous_clock_rates )
     {

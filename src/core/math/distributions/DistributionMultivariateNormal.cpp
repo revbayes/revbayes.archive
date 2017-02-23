@@ -54,8 +54,10 @@ double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<doubl
     // we compute the precision matrix, which is the inverse of the covariance matrix
     // and then simply call the lnPDF for the precision matrix.
     // This simplifies the coding.
+    
+    // I think this is really wasteful: each new omega matrix (one per branch) has to
+    // do eigen decomposition on itself to compute the log determinant.
     MatrixReal omega = sigma.computeInverse();
-    omega.setCholesky(false);
     
     return lnPdfPrecision(mu, omega, x, scale);
 }

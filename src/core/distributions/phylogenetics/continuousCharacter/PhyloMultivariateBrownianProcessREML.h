@@ -58,6 +58,7 @@ namespace RevBayesCore {
     private:
         
         const TypedDagNode< MatrixReal >*                                   rate_matrix;
+        MatrixReal                                                          precision_matrix;
                 
     };
     
