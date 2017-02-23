@@ -80,7 +80,7 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
     }
     
     // recompute the inverse variance-covariance matrix (the precision matrix)
-    precision_matrix = rate_matrix->getValue().computeInverse();
+//    precision_matrix = rate_matrix->getValue().computeInverse();
 //    precision_matrix.getLogDet(); // this is for debugging only. I want to force the matrix to compute do eigen decomposition.
     
     // compute the ln probability by recursively calling the probability calculation for each node
@@ -398,6 +398,13 @@ void PhyloMultivariateBrownianProcessREML::resetValue( void )
 void PhyloMultivariateBrownianProcessREML::restoreSpecialization( DagNode* affecter )
 {
     
+    
+//    if ( affecter == rate_matrix )
+//    {
+//        // compute the inverse variance-covariance matrix (the precision matrix)
+//        precision_matrix = rate_matrix->getValue().computeInverse();
+//    }
+    
     // reset the flags
     for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
     {
@@ -461,6 +468,12 @@ double PhyloMultivariateBrownianProcessREML::sumRootLikelihood( void )
 void PhyloMultivariateBrownianProcessREML::touchSpecialization( DagNode* affecter, bool touchAll )
 {
  
+//    if ( affecter == rate_matrix )
+//    {
+//        // compute the inverse variance-covariance matrix (the precision matrix)
+//        precision_matrix = rate_matrix->getValue().computeInverse();
+//    }
+    
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == this->heterogeneous_clock_rates )
     {
