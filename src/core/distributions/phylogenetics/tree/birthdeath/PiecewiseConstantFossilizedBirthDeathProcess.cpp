@@ -192,10 +192,24 @@ double PiecewiseConstantFossilizedBirthDeathProcess::getRootAge( void ) const
 double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
     // variable declarations and initialization
-    double lnProbTimes = 0;
-    
-    // present time 
-    double org = root_age->getValue();
+    double lnProbTimes = 0.0;
+    double process_time = getOriginTime();
+    size_t num_initial_lineages = 0;
+    TopologyNode* root = &value->getRoot();
+
+    if (useOrigin) {
+        // If we are conditioning on survival from the origin,
+        // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
+        // TODO: Generalize AbstractBirthDeathProcess to allow conditioning on the origin
+        num_initial_lineages = 1;
+    }
+    // if conditioning on root, root node must be a "true" bifurcation event
+    else
+    {
+        if (root->getChild(0).isSampledAncestor() || root->getChild(1).isSampledAncestor())
+            return RbConstants::Double::neginf;
+        num_initial_lineages = 2;
+    }
     
     // retrieved the speciation times
     std::vector<double>* agesInts  = getAgesOfInternalNodesFromMostRecentSample();
@@ -271,8 +285,15 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         lnProbTimes += div * log( (1.0 - sampling[i+1]) * q(i, t) );
     }
     
-    lnProbTimes += log( q(rateChangeTimes.size(), org ) );
+    lnProbTimes += log( q(rateChangeTimes.size(), process_time ) );
     
+    // condition on survival
+    if ( condition == "survival" )
+    {
+        lnProbTimes -= num_initial_lineages * log( pSurvival(0,process_time) );
+    }
+
+
     delete agesInts;
     delete agesTips;
     

@@ -98,12 +98,7 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
         // If we are conditioning on survival from the origin,
         // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
         // TODO: Generalize AbstractBirthDeathProcess to allow conditioning on the origin
-        if ( condition == "survival" )
-        {
-            lnProbTimes += log( pSurvival(0,process_time) );
-        }
         num_initial_lineages = 1;
-
     }
     
     // if conditioning on root, root node must be a "true" bifurcation event
@@ -178,20 +173,34 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     lnProbTimes += num_extant_taxa * log( sampling_prob );
     
     // add the log probability of the initial sequences
-    lnProbTimes += lnQ(process_time, c1, c2) - num_initial_lineages * log(1.0 - pHatZero(process_time)) - log(birth_rate);
-
+    lnProbTimes += lnQ(process_time, c1, c2) - (num_initial_lineages - 1) * log(birth_rate);
 	
+    // add the log probability for the internal node ages
+    lnProbTimes += internal_node_ages.size() * log(2.0 * birth_rate);
 	for(size_t i=0; i<internal_node_ages.size(); i++)
     {
 		double t = internal_node_ages[i];
-		lnProbTimes += log(2.0 * birth_rate) + lnQ(t, c1, c2);
+		lnProbTimes += lnQ(t, c1, c2);
 	}
 
+	// add the log probability for the fossil tip ages
 	for(size_t f=0; f < fossil_tip_ages.size(); f++)
     {
 		double t = fossil_tip_ages[f];
 		lnProbTimes += log(pZero(t, c1, c2)) - lnQ(t, c1, c2);
 	}
+
+	// condition on survival
+    if( condition == "survival")
+    {
+        lnProbTimes -= num_initial_lineages * log(1.0 - pHatZero(process_time));
+    }
+
+    // subtract the normalizing constant for the number of labeled trees
+    for(size_t i = 2; i <= num_fossil_taxa + num_sampled_ancestors; i++)
+    {
+        lnProbTimes -= log(i);
+    }
 
     return lnProbTimes;
     
