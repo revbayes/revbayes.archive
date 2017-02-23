@@ -24,6 +24,9 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     // add the parameters to our set
     this->addParameter( rate_matrix );
     
+    // make sure the rate matrix is inverted using Cholesky decomposition
+    rate_matrix->getValue().setCholesky(true);
+    
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
 

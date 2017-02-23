@@ -27,7 +27,7 @@ MatrixReal::MatrixReal( void ) : elements( RbVector<RbVector<double> >() ),
     eigenNeedsUpdate( true ),
     choleskyDecomp( NULL ),
     choleskyNeedsUpdate( true ),
-    useCholeskyDecomp( true )
+    useCholeskyDecomp( false )
 {
 
 }
@@ -40,7 +40,7 @@ MatrixReal::MatrixReal( size_t n ) : elements( RbVector<RbVector<double> >(n, Rb
     eigenNeedsUpdate( true ),
     choleskyDecomp( NULL ),
     choleskyNeedsUpdate( true ),
-    useCholeskyDecomp( true )
+    useCholeskyDecomp( false )
 {
     
 }
@@ -53,7 +53,7 @@ MatrixReal::MatrixReal( size_t n, size_t k) : elements( RbVector<RbVector<double
     eigenNeedsUpdate( true ),
     choleskyDecomp( NULL ),
     choleskyNeedsUpdate( true ),
-    useCholeskyDecomp( true )
+    useCholeskyDecomp( false )
 {
     
 }
@@ -67,7 +67,7 @@ MatrixReal::MatrixReal( size_t n, size_t k, double v) :
     eigenNeedsUpdate( true ),
     choleskyDecomp( NULL ),
     choleskyNeedsUpdate( true ),
-    useCholeskyDecomp( true )
+    useCholeskyDecomp( false )
 {
 
 }
@@ -80,7 +80,7 @@ MatrixReal::MatrixReal( const MatrixReal &m ) :
     eigenNeedsUpdate( true ),
     choleskyDecomp( NULL ),
     choleskyNeedsUpdate( true ),
-    useCholeskyDecomp( true )
+    useCholeskyDecomp( false )
 {
     
 }
@@ -517,8 +517,18 @@ void MatrixReal::resize(size_t r, size_t c)
     nCols = c;
     
     eigenNeedsUpdate = true;
+    choleskyNeedsUpdate = true;
 }
 
+
+void MatrixReal::setCholesky(bool c) const
+{
+    
+    useCholeskyDecomp = c;
+    eigenNeedsUpdate = true;
+    choleskyNeedsUpdate = true;
+    
+}
 
 size_t MatrixReal::size( void ) const
 {
@@ -551,7 +561,7 @@ void MatrixReal::update( void ) const
             
             catch(...)
             {
-                throw RbException("MatrixReal: cholesky decomposition update failed");
+                throw RbException("MatrixReal: Cholesky decomposition update failed");
             }
             
         }
@@ -570,7 +580,13 @@ void MatrixReal::update( void ) const
             try
             {
                 
-                eigensystem->update();
+                // mrm 2/23/17
+                // this matrix should have positive eigenvalues!
+                // the standard update will truncate eigenvalues to 0,
+                // so for the time-begin we use an update that does not
+                // truncate at 0.
+//                eigensystem->update();
+                eigensystem->updatePositiveEigenvalues();
                 
                 eigenNeedsUpdate = false;
                 
