@@ -1,0 +1,115 @@
+//
+//  SiteRateModifier.cpp
+//  rb_mlandis
+//
+//  Created by Michael Landis on 8/8/13.
+//  Copyright (c) 2013 Michael Landis. All rights reserved.
+//
+
+#include <iomanip>
+#include <cmath>
+#include "CharacterEvent.h"
+#include "SiteRateModifier.h"
+#include "RbConstants.h"
+
+using namespace RevBayesCore;
+
+SiteRateModifier::SiteRateModifier(size_t ns, size_t nc) : CharacterHistoryRateModifier(ns, nc),
+    rate_multipliers( RbVector<RbVector<double> >() ),
+    event_classes( RbVector<RbVector<int> >() ),
+    site_classes( RbVector<int>() )
+{
+    ;
+}
+
+SiteRateModifier::SiteRateModifier(const SiteRateModifier& g) : CharacterHistoryRateModifier(g)
+{
+    
+    if (&g != this)
+    {
+        rate_multipliers = g.rate_multipliers;
+        event_classes = g.event_classes;
+        site_classes = g.site_classes;
+    }
+}
+
+SiteRateModifier& SiteRateModifier::assign(const Assignable &m)
+{
+    
+    const SiteRateModifier *crm = dynamic_cast<const SiteRateModifier*>(&m);
+    if ( crm != NULL )
+    {
+        return operator=(*crm);
+    }
+    else
+    {
+        throw RbException("Could not assign character history rate modifier.");
+    }
+}
+
+double SiteRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+{
+    
+    // the new event acts on which site?
+    size_t new_site = newState->getSiteIndex();
+    
+    // which site_class does that site belong to?
+    size_t new_site_class = site_classes[new_site];
+    
+    // the new event is what event type?
+    size_t old_state = currState[new_site]->getState();
+    size_t new_state = newState->getState();
+    
+    // which event_class does that event belong to?
+    size_t new_event_class = event_classes[old_state][new_state];
+    
+    // pick (site_class,event_class) from rate_multipliers
+    double f = rate_multipliers[new_site_class][new_event_class];
+    
+    
+    return f;
+}
+
+double SiteRateModifier::computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
+{
+    return 1.0;
+}
+
+double SiteRateModifier::computeSiteRateMultiplier(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx, double age)
+{
+    return 1.0;
+}
+
+
+SiteRateModifier* SiteRateModifier::clone(void) const
+{
+    return new SiteRateModifier(*this);
+}
+
+void SiteRateModifier::update(void)
+{
+    ; // do nothing
+}
+
+void SiteRateModifier::setRateMultipliers(const RbVector<RbVector<double> >& rm)
+{
+    rate_multipliers = rm;
+}
+
+void SiteRateModifier::setEventClasses(const RbVector<RbVector<int> >& ec)
+{
+    event_classes = ec;
+}
+
+void SiteRateModifier::setSiteClasses(const RbVector<int>& sc)
+{
+    site_classes = sc;
+}
+
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const SiteRateModifier& x)
+{
+    o << "SiteRateModifier";
+    return o;
+}

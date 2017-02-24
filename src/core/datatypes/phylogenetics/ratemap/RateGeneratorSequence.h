@@ -9,6 +9,8 @@
 #include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
+
+#include <set>
 #include <vector>
 
 namespace RevBayesCore {
@@ -27,13 +29,22 @@ namespace RevBayesCore {
         // virtual public methods
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixmatrix
         virtual RateGeneratorSequence*      clone(void) const = 0;
-//        virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const = 0;
-        virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0, double rate=1.0) const = 0;
+        
         virtual double                      getRate(size_t from, size_t to, double age=0.0, double rate=1.0) const = 0;
+        virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0, double rate=1.0) const = 0;
+//        virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const = 0;
+        virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, std::vector<std::set<size_t> > sites_with_states, double age=0.0, double rate=1.0) const = 0;
+        
         virtual std::vector<double>         getStationaryFrequencies(void) const = 0;
+        
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, double age=0.0, double rate=1.0) const = 0;
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, std::vector<size_t> counts, double age=0.0, double rate=1.0) const = 0;
+        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, std::vector<std::set<size_t> > sites_with_states, double age=0.0, double rate=1.0) const = 0;
+        
         virtual double                      getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0, double rate=1.0) const = 0;
+        virtual double                      getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEvent* to, std::vector<std::set<size_t> > sites_with_states, double age=0.0, double rate=1.0) const = 0;
+      
+
         virtual void                        updateMap(void);
         
     protected:

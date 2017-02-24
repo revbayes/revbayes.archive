@@ -51,6 +51,7 @@ double CharacterHistoryRateModifier::computeRateMultiplier(std::vector<Character
 
 double CharacterHistoryRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, std::vector<std::set<size_t> > sites_with_states, double age)
 {
+    
     return computeRateMultiplier(currState, newState);
 }
 
