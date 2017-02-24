@@ -12,10 +12,10 @@
 using namespace RevBayesCore;
 
 
-AbstractPhyloContinuousCharacterProcess::AbstractPhyloContinuousCharacterProcess(const TypedDagNode<Tree> *t, size_t nSites) :
+AbstractPhyloContinuousCharacterProcess::AbstractPhyloContinuousCharacterProcess(const TypedDagNode<Tree> *t, size_t ns) :
     TypedDistribution< ContinuousCharacterData >(  new ContinuousCharacterData() ),
     num_nodes( t->getValue().getNumberOfNodes() ),
-    num_sites( nSites ),
+    num_sites( ns ),
     tau( t )
 {
     

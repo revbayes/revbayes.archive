@@ -1573,7 +1573,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyFlagNo
     if ( dirty_nodes[index] == false )
     {
         // the root doesn't have an ancestor
-        if ( !n.isRoot() )
+        if ( n.isRoot() == false )
         {
             recursivelyFlagNodeDirty( n.getParent() );
         }

@@ -162,7 +162,8 @@ void AbstractCharacterData::addMissingTaxon(const std::string &n) {
  *
  * \param[in]    obsd    The TaxonData object that should be added.
  */
-void AbstractCharacterData::addTaxonData(const AbstractTaxonData &obs) {
+void AbstractCharacterData::addTaxonData(const AbstractTaxonData &obs)
+{
     
     // add the sequence name to the list
     taxa.push_back( obs.getTaxon() );

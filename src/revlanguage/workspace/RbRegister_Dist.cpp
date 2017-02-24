@@ -106,6 +106,7 @@
 #include "Dist_PhyloBrownian.h"
 #include "Dist_PhyloBrownianMVN.h"
 #include "Dist_PhyloBrownianREML.h"
+#include "Dist_PhyloBrownianMultiSampleREML.h"
 #include "Dist_PhyloOrnsteinUhlenbeck.h"
 #include "Dist_PhyloOrnsteinUhlenbeckMVN.h"
 #include "Dist_PhyloMvtBrownian.h"
@@ -213,12 +214,13 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         /* trait evolution (in folder "distributions/evolution/branchrate") */
 
         // brownian motion
-        AddDistribution< ModelVector<Real>          >( new Dist_PhyloBrownian()             );
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianREML()         );
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMVN()          );
-        AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()    );
+        AddDistribution< ModelVector<Real>          >( new Dist_PhyloBrownian()                 );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianREML()             );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMVN()              );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMultiSampleREML()  );
+        AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()        );
         
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()          );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()     );
         
         // multivariate brownian motion
         AddDistribution< ModelVector< ModelVector<Real> > >( new Dist_PhyloMvtBrownian() );
