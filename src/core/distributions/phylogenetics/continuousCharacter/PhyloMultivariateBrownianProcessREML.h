@@ -24,7 +24,7 @@ namespace RevBayesCore {
         
         // public member functions
         // pure virtual
-        virtual PhyloMultivariateBrownianProcessREML*                                   clone(void) const;                                                                      //!< Create an independent clone
+        virtual PhyloMultivariateBrownianProcessREML*                       clone(void) const;                                                                      //!< Create an independent clone
         
         // non-virtual
         void                                                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                             //!< The tree has changed and we want to know which part.

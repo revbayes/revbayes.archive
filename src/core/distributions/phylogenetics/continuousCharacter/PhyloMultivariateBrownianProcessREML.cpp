@@ -80,7 +80,7 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
     }
     
     // recompute the inverse variance-covariance matrix (the precision matrix)
-//    precision_matrix = rate_matrix->getValue().computeInverse();
+    precision_matrix = rate_matrix->getValue().computeInverse();
 //    precision_matrix.getLogDet(); // this is for debugging only. I want to force the matrix to compute do eigen decomposition.
     
     // compute the ln probability by recursively calling the probability calculation for each node
