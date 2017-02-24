@@ -49,6 +49,9 @@ namespace RevBayesCore
         RbVector<RbVector<double> >         rate_multipliers;
         RbVector<RbVector<int> >            event_classes;
         RbVector<int>                       site_classes;
+        
+        size_t                              num_event_classes;
+        size_t                              num_site_classes;
     };
     
     std::ostream& operator<<(std::ostream& o, const SiteRateModifier& x);

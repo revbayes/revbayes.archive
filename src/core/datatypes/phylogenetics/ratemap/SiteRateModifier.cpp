@@ -17,7 +17,9 @@ using namespace RevBayesCore;
 SiteRateModifier::SiteRateModifier(size_t ns, size_t nc) : CharacterHistoryRateModifier(ns, nc),
     rate_multipliers( RbVector<RbVector<double> >() ),
     event_classes( RbVector<RbVector<int> >() ),
-    site_classes( RbVector<int>() )
+    site_classes( RbVector<int>() ),
+    num_event_classes( 0 ),
+    num_site_classes( 0 )
 {
     ;
 }
@@ -30,6 +32,8 @@ SiteRateModifier::SiteRateModifier(const SiteRateModifier& g) : CharacterHistory
         rate_multipliers = g.rate_multipliers;
         event_classes = g.event_classes;
         site_classes = g.site_classes;
+        num_event_classes = g.num_event_classes;
+        num_site_classes = g.num_site_classes;
     }
 }
 
@@ -64,7 +68,7 @@ double SiteRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> cur
     size_t new_event_class = event_classes[old_state][new_state];
     
     // pick (site_class,event_class) from rate_multipliers
-    double f = rate_multipliers[new_site_class][new_event_class];
+    double f = rate_multipliers[new_site_class][new_event_class] * num_event_classes;
     
     
     return f;
@@ -99,11 +103,19 @@ void SiteRateModifier::setRateMultipliers(const RbVector<RbVector<double> >& rm)
 void SiteRateModifier::setEventClasses(const RbVector<RbVector<int> >& ec)
 {
     event_classes = ec;
+    std::set<size_t> s;
+    for (size_t i = 0; i < event_classes.size(); i++)
+    {
+        s.insert( event_classes[i].begin(), event_classes[i].end() );
+    }
+    num_event_classes = s.size();
 }
 
 void SiteRateModifier::setSiteClasses(const RbVector<int>& sc)
 {
     site_classes = sc;
+    std::set<size_t> s( site_classes.begin(), site_classes.end() );
+    num_site_classes = s.size();
 }
 
 
