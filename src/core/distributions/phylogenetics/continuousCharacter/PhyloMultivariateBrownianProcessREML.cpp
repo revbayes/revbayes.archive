@@ -95,7 +95,9 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
         this->lnProb = this->partial_likelihoods[this->active_likelihood[rootIndex]][rootIndex];
         
     }
+    
     return this->lnProb;
+    
 }
 
 
@@ -181,7 +183,7 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
             double t_right = v_right + delta_right;
 
             // set delta_node = (t_l*t_r)/(t_l+t_r);
-            this->contrast_uncertainty[this->active_likelihood[node_index]][node_index] = (t_left*t_right) / (t_left+t_right);
+            this->contrast_uncertainty[this->active_likelihood[node_index]][node_index] = (t_left * t_right) / (t_left + t_right);
 
             double branch_length = t_left + t_right;
             
@@ -190,7 +192,7 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
             for (size_t i = 0; i < this->num_sites; ++i)
             {
                 contrasts[i] = mu_left[i] - mu_right[i];
-                mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
+                mu_node[i] = (mu_left[i] * t_right + mu_right[i] * t_left) / (t_left + t_right);
             }
             
 //            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfCovariance(means, rate_matrix->getValue(), contrasts, branch_length);
@@ -337,30 +339,6 @@ std::vector<double> PhyloMultivariateBrownianProcessREML::simulateRootCharacters
     }
     
     return chars;
-}
-
-
-double PhyloMultivariateBrownianProcessREML::sumRootLikelihood( void )
-{
-    // get the root node
-    // const TopologyNode &root = this->tau->getValue().getRoot();
-    
-    // get the index of the root node
-    // size_t node_index = root.getIndex();
-    
-    // get the pointers to the partial likelihoods of the left and right subtree
-    // double &p_node = this->partial_likelihoods[this->active_likelihood[node_index]][node_index];
-    
-    // sum the log-likelihoods for all sites together
-    // double sum_partial_probs = 0.0;
-    // for (size_t site = 0; site < this->num_sites; ++site)
-    // {
-    //     sum_partial_probs += p_node[site];
-    // }
-    
-    // return sum_partial_probs;
-    
-    return 0.0;
 }
 
 
