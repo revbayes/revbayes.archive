@@ -22,8 +22,9 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_BDR::RateMatrix_BDR(size_t n) : AbstractRateMatrix( n+1 ),
-    matrixSize( n+1 )
+RateMatrix_BDR::RateMatrix_BDR(size_t n) : AbstractRateMatrix( n ),
+    matrixSize( n ),
+    maxGenes( n )
 {
     
     setAlpha(1.0);
@@ -34,6 +35,15 @@ RateMatrix_BDR::RateMatrix_BDR(size_t n) : AbstractRateMatrix( n+1 ),
     setMuI(1.0);
     setLambdaAI(1.0);
     setLambdaIA(1.0);
+    
+    // we need to make sure that the rate matrix is initialized to 0.0
+    for (size_t i = 0; i < matrixSize; ++i)
+    {
+        for (size_t j = 0; j < matrixSize; ++i)
+        {
+            (*the_rate_matrix)[i][j] = 0.0;
+        }
+    }
     
     update();
     
@@ -52,41 +62,50 @@ double RateMatrix_BDR::averageRate(void) const {
 
 void RateMatrix_BDR::buildRateMatrix(void) 
 {
+
+    for (size_t fam_size = 1; fam_size < maxGenes; ++fam_size)
+    {
+        for (size_t num_active = 0; num_active <= fam_size; ++num_active)
+        {
+            
+            // given we know fam_size and num_active (the tuple)
+            // what tuples do we touch, an what are the parameters for
+            // those transitions
+            
+            int i, j; // we need to compute these indeces for all the states this state touches
+            
+            // birth from active to active
+            // (*the_rate_matrix)[i][j] = lambda_a * num_active
+            
+            // death from active
+            // (*the_rate_matrix)[i][j] = mu_a * num_active
+            
+            // birth from inactive to inactive
+            // (*the_rate_matrix)[i][j] = lambda_i * (fam_size - num_active)
+            
+            // death from inactive
+            // (*the_rate_matrix)[i][j] = mu_i * (fam_size - num_active)
+            
+            // birth from active to inactive
+            // (*the_rate_matrix)[i][j] = lambda_ai * num_active
+            
+            // birth form inactive to active
+            // (*the_rate_matrix)[i][j] = lambda_ia * (fam_size - num_active)
+            
+            // regulatory activation
+            // (*the_rate_matrix)[i][j] = alpha * num_active
+            
+            // regulatory inactivation
+            // (*the_rate_matrix)[i][j] = beta * (fam_size - num_active)
+            
+        }
+        
+    }
     
-//    for (size_t i=0; i< matrixSize; i++)
-//    {
-//        for (size_t j=0; j< matrixSize; j++)
-//        {
-//			(*the_rate_matrix)[i][j] = 0.0;
-//			if (j != 0 && i != 0)
-//            {
-//				if (j == i+1)
-//                {
-//					(*the_rate_matrix)[i][j] += lambda * exp( lambda_l * (i-1) );
-//				}
-//                if (j == i-1)
-//                {
-//					(*the_rate_matrix)[i][j] += delta * exp( delta_l * (i-1) );
-//				}
-//                if (j == (2*i))
-//                {
-//					(*the_rate_matrix)[i][j] += rho;
-//                }
-//                if ( (i % 2 == 0) && (j == (size_t)(1.5*i)) )
-//                {
-//                    (*the_rate_matrix)[i][j] += mu;
-//                }
-//                if ( (i % 2 != 0) && ( (j == (size_t)(1.5*i - 0.5)) || (j == (size_t)(1.5*i + 0.5) ) ) )
-//                {
-//                    (*the_rate_matrix)[i][j] += mu;
-//                }
-//			}
-//        }
-//    }	
-//    // set the diagonal values
-//    setDiagonal();
-//    
-//    // rescale rates
+    // set the diagonal values
+    setDiagonal();
+
+    // rescale rates
 //    //rescaleToAverageRate( 1.0 ); # TODO: We actually DO want to rescale the rate matrix... implement this function
     
 }
@@ -183,8 +202,6 @@ inline void RateMatrix_BDR::multiplyMatrices(TransitionProbabilityMatrix& p,  Tr
     }
 }
 
-
-
 RateMatrix_BDR* RateMatrix_BDR::clone( void ) const
 {
     return new RateMatrix_BDR( *this );
@@ -193,7 +210,7 @@ RateMatrix_BDR* RateMatrix_BDR::clone( void ) const
 
 std::vector<double> RateMatrix_BDR::getStationaryFrequencies( void ) const
 {
-    
+    std::vector<double> stationary_freqs(matrixSize, 1 / matrixSize);
     return stationary_freqs;
 }
 

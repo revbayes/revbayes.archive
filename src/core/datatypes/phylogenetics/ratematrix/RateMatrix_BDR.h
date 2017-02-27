@@ -57,7 +57,7 @@ namespace RevBayesCore {
         double                          lambda_ai;
         double                          lambda_ia;
         size_t                          matrixSize;                         //!< Number of elements in a row or column of the rate matrix
-        std::vector<double>             stationary_freqs;                    //!< Holds the stationary frequencies
+        size_t                          maxGenes;
 
         void                            buildRateMatrix(void);
         void                            exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
