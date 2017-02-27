@@ -27,6 +27,9 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     // make sure the rate matrix is inverted using Cholesky decomposition
     rate_matrix->getValue().setCholesky(true);
     
+    // compute the inverse variance-covariance matrix (the precision matrix)
+    precision_matrix = rate_matrix->getValue().computeInverse();
+
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
 
@@ -35,9 +38,6 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     
     // we need to reset the contrasts
     resetValue();
-    
-    // compute the inverse variance-covariance matrix (the precision matrix)
-    precision_matrix = rate_matrix->getValue().computeInverse();
 
 }
 
@@ -79,10 +79,6 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
         dirty_nodes = std::vector<bool>(tau->getValue().getNumberOfNodes(), true);
     }
     
-    // recompute the inverse variance-covariance matrix (the precision matrix)
-//    precision_matrix = rate_matrix->getValue().computeInverse();
-//    precision_matrix.getLogDet(); // this is for debugging only. I want to force the matrix to compute do eigen decomposition.
-    
     // compute the ln probability by recursively calling the probability calculation for each node
     const TopologyNode &root = this->tau->getValue().getRoot();
     
@@ -95,37 +91,8 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
         
         recursiveComputeLnProbability( root, rootIndex );
         
-        // start by filling the likelihood vector for the children of the root
-        if ( root.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
-        {
-            
-//            recursiveComputeLnProbability( root, rootIndex );
-            
-        }
-        else if ( root.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
-        {
-//            const TopologyNode &left = root.getChild(0);
-//            size_t left_index = left.getIndex();
-//            recursiveComputeLnProbability( left, left_index );
-//            const TopologyNode &right = root.getChild(1);
-//            size_t right_index = right.getIndex();
-//            recursiveComputeLnProbability( right, right_index );
-//            const TopologyNode &middle = root.getChild(2);
-//            size_t middleIndex = middle.getIndex();
-//            recursiveComputeLnProbability( middle, middleIndex );
-            
-            //            computeRootLikelihood( rootIndex, left_index, right_index, middleIndex );
-            
-        }
-        else
-        {
-            throw RbException("The root node has an unexpected number of children. Only 2 (for rooted trees) or 3 (for unrooted trees) are allowed.");
-        }
-        
-        // sum the partials up
-        double p_root  = this->partial_likelihoods[this->active_likelihood[rootIndex]][rootIndex];
-
-        this->lnProb = p_root;
+        // return the likelihood at the root
+        this->lnProb = this->partial_likelihoods[this->active_likelihood[rootIndex]][rootIndex];
         
     }
     return this->lnProb;
@@ -235,74 +202,6 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
     } // end if we need to compute something for this node.
 
 }
-
-
-//void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode &node, size_t node_index )
-//{
-//    
-//    // check for recomputation
-//    if ( node.isTip() == false && dirty_nodes[node_index] )
-//    {
-//        // mark as computed
-//        dirty_nodes[node_index] = false;
-//
-//        const TopologyNode &left = node.getChild(0);
-//        size_t left_index = left.getIndex();
-//        recursiveComputeLnProbability( left, left_index );
-//        
-//        const TopologyNode &right = node.getChild(1);
-//        size_t right_index = right.getIndex();
-//        recursiveComputeLnProbability( right, right_index );
-//        
-//        std::vector<double> &p_node  = this->partial_likelihoods[this->active_likelihood[node_index]][node_index];
-//        const std::vector<double> &p_left  = this->partial_likelihoods[this->active_likelihood[left_index]][left_index];
-//        const std::vector<double> &p_right = this->partial_likelihoods[this->active_likelihood[right_index]][right_index];
-//        
-//        // get the per node and site contrasts
-//        std::vector<double> &mu_node  = this->contrasts[this->active_likelihood[node_index]][node_index];
-//        const std::vector<double> &mu_left  = this->contrasts[this->active_likelihood[left_index]][left_index];
-//        const std::vector<double> &mu_right = this->contrasts[this->active_likelihood[right_index]][right_index];
-//        
-//        // get the propagated uncertainties
-//        double delta_left  = this->contrast_uncertainty[this->active_likelihood[left_index]][left_index];
-//        double delta_right = this->contrast_uncertainty[this->active_likelihood[right_index]][right_index];
-//        
-//        // get the scaled branch lengths
-//        double v_left  = this->computeBranchTime(left_index, left.getBranchLength());
-//        double v_right = this->computeBranchTime(right_index, right.getBranchLength());
-//        
-//        // add the propagated uncertainty to the branch lengths
-//        double t_left  = v_left  + delta_left;
-//        double t_right = v_right + delta_right;
-//        
-//        // set delta_node = (t_l*t_r)/(t_l+t_r);
-//        this->contrast_uncertainty[this->active_likelihood[node_index]][node_index] = (t_left*t_right) / (t_left+t_right);
-//        
-//        double stdev = sqrt(t_left+t_right);
-//        for (int i=0; i<this->num_sites; i++)
-//        {
-//            
-//            mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
-//            
-//            // get the site specific rate of evolution
-//            double standDev = this->computeSiteRate(i) * stdev;
-//            
-//            // compute the contrasts for this site and node
-//            double contrast = mu_left[i] - mu_right[i];
-//            
-//            // compute the probability for the contrasts at this node
-//            double lnl_node = RbStatistics::Normal::lnPdf(0, standDev, contrast);
-//            
-//            // sum up the probabilities of the contrasts
-//            p_node[i] = lnl_node + p_left[i] + p_right[i];
-//            
-//        } // end for-loop over all sites
-//        
-//    } // end if we need to compute something for this node.
-//    
-//}
-
-
 
 void PhyloMultivariateBrownianProcessREML::recursivelyFlagNodeDirty( const TopologyNode &n )
 {
