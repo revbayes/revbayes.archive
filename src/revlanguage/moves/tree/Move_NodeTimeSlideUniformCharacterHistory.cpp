@@ -1,15 +1,21 @@
+#include "AminoAcidState.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "DnaState.h"
 #include "MetropolisHastingsMove.h"
+#include "ModelVector.h"
 #include "Move_NodeTimeSlideUniformCharacterHistory.h"
 #include "NodeTimeSlideUniformCharacterHistoryProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RevObject.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
+#include "RlRateGenerator.h"
 #include "RlTimeTree.h"
+#include "RnaState.h"
+#include "StandardState.h"
+#include "StochasticNode.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-
 
 using namespace RevLanguage;
 
@@ -37,14 +43,44 @@ void Move_NodeTimeSlideUniformCharacterHistory::constructInternalObject( void )
     // we free the memory first
     delete value;
     
-    // now allocate a new move
-    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
-    
+    // now allocate a new sliding move
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
-    RevBayesCore::Proposal *p = new RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal( t );
-    value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
+    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* qmap_tdn                             = static_cast<const RateGenerator&>( rate_generator->getRevObject() ).getDagNode();
+    
+    std::string mt = ctmc_sn->getValue().getDataType();
+    RevBayesCore::Proposal *p = NULL;
+    
+    if (mt == "DNA")
+    {
+        RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<RevBayesCore::DnaState> *tmp_p = new RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<RevBayesCore::DnaState>(n,ctmc_sn);
+        tmp_p->setRateGenerator( qmap_tdn );
+        p = tmp_p;
+    }
+    else if (mt == "RNA")
+    {
+        RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<RevBayesCore::RnaState> *tmp_p = new RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<RevBayesCore::RnaState>(n,ctmc_sn);
+        tmp_p->setRateGenerator( qmap_tdn );
+        p = tmp_p;
+    }
+    else if (mt == "AA" || mt == "Protein")
+    {
+        RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<RevBayesCore::AminoAcidState> *tmp_p = new RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<RevBayesCore::AminoAcidState>(n,ctmc_sn);
+        tmp_p->setRateGenerator( qmap_tdn );
+        p = tmp_p;
+    }
+    else if (mt == "Standard")
+    {
+        RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<RevBayesCore::StandardState>(n,ctmc_sn);
+        tmp_p->setRateGenerator( qmap_tdn );
+        p = tmp_p;
+    }
+    
+    value = new RevBayesCore::MetropolisHastingsMove(p,w);
 }
 
 
@@ -75,7 +111,7 @@ const TypeSpec& Move_NodeTimeSlideUniformCharacterHistory::getClassTypeSpec(void
 std::string Move_NodeTimeSlideUniformCharacterHistory::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "NodeTimeSlideUniform";
+    std::string c_name = "NodeTimeSlideUniformCharacterHistory";
     
     return c_name;
 }
@@ -91,7 +127,9 @@ const MemberRules& Move_NodeTimeSlideUniformCharacterHistory::getParameterRules(
     if ( !rules_set )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The ctmc.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "qmap", RateGenerator::getClassTypeSpec(), "The rate matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -139,8 +177,17 @@ void Move_NodeTimeSlideUniformCharacterHistory::setConstParameter(const std::str
     {
         tree = var;
     }
+    else if ( name == "ctmc" )
+    {
+        ctmc = var;
+    }
+    else if ( name == "qmap")
+    {
+        rate_generator = var;
+    }
     else
     {
         Move::setConstParameter(name, var);
     }
+
 }

@@ -164,6 +164,7 @@ void NarrowExchangeProposal::undoProposal( void )
     // we undo the proposal only if it didn't fail
     if ( !failed )
     {
+        
         // undo the proposal
         TopologyNode& parent = storedUncle->getParent();
         TopologyNode& grandparent = storedChosenNode->getParent();

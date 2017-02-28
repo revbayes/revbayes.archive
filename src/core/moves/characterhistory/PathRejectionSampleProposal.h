@@ -24,9 +24,6 @@
 
 namespace RevBayesCore {
     
-    template<class charType>
-    class NarrowExchangeCharacterHistoryProposal;
-    
     /**
      * The scaling operator.
      *
@@ -46,7 +43,13 @@ namespace RevBayesCore {
     
     template<class ct>
     friend class NarrowExchangeCharacterHistoryProposal;
-        
+
+    template<class ct>
+    friend class FixedNodeheightPruneAndRegraftCharacterHistoryProposal;
+
+    template<class ct>
+    friend class NodeTimeSlideUniformCharacterHistoryProposal;
+
     public:
         PathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, double l=1.0, double r=0.234, bool useTail=false);   //!<  constructor
 
@@ -196,7 +199,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     fillStateCounts(currState, counts);
 
     double branch_length = nd.getBranchLength();
-    if (nd.isRoot() == true && useTail == true )
+    if ( nd.isRoot() == true && useTail == true )
     {
         branch_length = nd.getAge() * 5;
     }
@@ -545,6 +548,10 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::undoProposal( void )
 
     proposed_history.clear();
     storedHistory.clear();
+    
+//    BranchHistory* old_bh = &p->getHistory(*node);
+//    std::cout << "Initial history:" << std::endl;
+//    old_bh->print();
     
 }
 

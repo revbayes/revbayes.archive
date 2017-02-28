@@ -28,7 +28,7 @@ namespace RevLanguage {
         Move_FNPRCharacterHistory(void);                                                                                                                    //!< Default constructor
         
         // Basic utility functions
-        virtual Move_FNPRCharacterHistory*                          clone(void) const;                                                                      //!< Clone object
+        virtual Move_FNPRCharacterHistory*          clone(void) const;                                                                      //!< Clone object
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
@@ -42,6 +42,8 @@ namespace RevLanguage {
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         RevPtr<const RevVariable>                   tree;
+        RevPtr<const RevVariable>                   ctmc;
+        RevPtr<const RevVariable>                   rate_generator;
         
     };
     

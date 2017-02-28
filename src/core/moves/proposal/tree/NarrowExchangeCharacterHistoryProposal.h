@@ -43,7 +43,7 @@ namespace RevBayesCore {
 
         // Basic utility functions
         void                                                        cleanProposal(void);                                            //!< Clean up proposal
-        NarrowExchangeCharacterHistoryProposal*                        clone(void) const;                                              //!< Clone object
+        NarrowExchangeCharacterHistoryProposal*                     clone(void) const;                                              //!< Clone object
         double                                                      computeLnProposal( TopologyNode* node );
         double                                                      computeNodeStateProbability( TopologyNode* parent);
         double                                                      doProposal(void);                                               //!< Perform proposal
@@ -470,6 +470,8 @@ double RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::doProposa
             throw RbException("Failed cast.");
         }
         size_t num_sites = p->getNumberOfSites();
+
+//        double before = p->computeLnProbability();
         
         // step 1: store all the necessary values
         stored_chosen_node = node;
@@ -526,8 +528,11 @@ double RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::doProposa
         ln_proposal_probability += uncle_proposal->doProposal();
         ln_proposal_probability += grandparent_proposal->doProposal();
         
+//        double after = p->computeLnProbability();
+        
         // step 7: return the hastings ratio
-        return ln_proposal_probability;
+        return 0.0;
+//        return ln_proposal_probability - before + after;
         
     }
     else
@@ -574,9 +579,13 @@ template<class charType>
 void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::undoProposal( void )
 {
     
+//    std::cout << "Undoing proposal." << std::endl;
+
     // we undo the proposal only if it didn't fail
     if ( failed == false )
     {
+        
+//        std::cout << "Rejecting proposal." << std::endl;
         
         // undo the proposal
         TopologyNode& parent      = stored_uncle->getParent();

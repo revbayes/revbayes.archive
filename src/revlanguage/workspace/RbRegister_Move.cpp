@@ -154,6 +154,9 @@
 
 
 #include "Move_NarrowExchangeRateMatrix.h"
+//#include "Move_NarrowExchangeCharacterHistory.h"
+//#include "Move_FNPRCharacterHistory.h"
+//#include "Move_NodeTimeSlideUniformCharacterHistory.h"
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
@@ -287,9 +290,12 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 //        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
 //        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
         
-        addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()         );
 
-        
+        addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()       );
+//        addTypeWithConstructor( new Move_NarrowExchangeCharacterHistory() );
+//        addTypeWithConstructor( new Move_FNPRCharacterHistory()           );
+//        addTypeWithConstructor( new Move_NodeTimeSlideUniformCharacterHistory());
+
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor( new Move_CharacterHistory() );
         // addTypeWithConstructor( new Move_NodeCharacterHistoryRejectionSample() );
