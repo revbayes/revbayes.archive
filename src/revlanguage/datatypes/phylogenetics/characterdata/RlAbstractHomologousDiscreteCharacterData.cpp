@@ -131,12 +131,12 @@ AbstractHomologousDiscreteCharacterData& AbstractHomologousDiscreteCharacterData
 
 
 
-AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d, std::string type) const
+void AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d, std::string type) const
 {
     const AbstractHomologousDiscreteCharacterData* tmp = dynamic_cast<const AbstractHomologousDiscreteCharacterData*>( &d );
     if ( tmp != NULL )
     {
-        return concatenate( *tmp, type );
+        concatenate( *tmp, type );
     }
     else
     {
@@ -147,19 +147,32 @@ AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData
 
 
 
-AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type) const
-{
-    AbstractHomologousDiscreteCharacterData* cloneObj = clone();
+//AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type) const
+//{
+//    AbstractHomologousDiscreteCharacterData* clone_obj = clone();
+//
+//    // we need to make this a constant DAG node so that we can actually modify the value
+//    // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
+//    clone_obj->makeConstantValue();
+//    
+//    // now concatenate
+//    clone_obj->getDagNode()->getValue().concatenate( d.getValue(), type );
+//    
+//    // return the copy
+//    return clone_obj;
+//}
 
+
+void AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type) const
+{
+    
     // we need to make this a constant DAG node so that we can actually modify the value
     // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
-    cloneObj->makeConstantValue();
+//    clone_obj->makeConstantValue();
     
     // now concatenate
-    cloneObj->getDagNode()->getValue().concatenate( d.getValue(), type );
+    getDagNode()->getValue().concatenate( d.getValue(), type );
     
-    // return the copy
-    return cloneObj;
 }
 
 

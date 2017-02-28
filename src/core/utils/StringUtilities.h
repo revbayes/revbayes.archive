@@ -19,10 +19,6 @@
 #include <string>
 #include <vector>
 
-#include "IsDerivedFrom.h"
-#include "Serializer.h"
-#include "Serializable.h"
-
 namespace StringUtilities {
     
     
