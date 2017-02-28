@@ -1,13 +1,13 @@
 //
-//  SiteRateModifierFunction.hpp
+//  SiteRateModifierFunction.h
 //  revbayes-branch-proj
 //
 //  Created by Michael Landis on 2/23/17.
 //  Copyright © 2017 Michael Landis. All rights reserved.
 //
 
-#ifndef SiteRateModifierFunction_hpp
-#define SiteRateModifierFunction_hpp
+#ifndef SiteRateModifierFunction_h
+#define SiteRateModifierFunction_h
 
 #include "CharacterHistoryRateModifier.h"
 #include "TypedDagNode.h"
@@ -42,4 +42,4 @@ namespace RevBayesCore {
     };
 }
 
-#endif /* SiteRateModifierFunction_hpp */
+#endif /* SiteRateModifierFunction_h */
