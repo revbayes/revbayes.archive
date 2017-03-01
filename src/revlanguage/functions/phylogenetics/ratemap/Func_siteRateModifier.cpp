@@ -63,8 +63,6 @@ const ArgumentRules& Func_siteRateModifier::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        
-//        argumentRules.push_back( new ArgumentRule( "rateMultipliers", ModelVector<RealPos>::getClassTypeSpec(), "Multiplies character i by rate-multiplier r_i.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>( RevBayesCore::RbVector<double>(1,1) ) ) );
         argumentRules.push_back( new ArgumentRule( "rateMultipliers", ModelVector<Simplex>::getClassTypeSpec(), "Multiplies character i by rate-multiplier r_i.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
         argumentRules.push_back( new ArgumentRule( "eventClasses", ModelVector<ModelVector<Natural> >::getClassTypeSpec(), "Assigns event classes to rate matrix events.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
         argumentRules.push_back( new ArgumentRule( "siteClasses", ModelVector<Natural>::getClassTypeSpec(), "Assigns classes to the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );

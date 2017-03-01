@@ -16,7 +16,7 @@ using namespace RevBayesCore;
 SiteRateModifierFunction::SiteRateModifierFunction(const TypedDagNode<RbVector<RbVector<double> > >* rm,
                                                    const TypedDagNode<RbVector<RbVector<int> > >* ec,
                                                    const TypedDagNode<RbVector<int> >* sc) :
-    TypedFunction<CharacterHistoryRateModifier>( new SiteRateModifier(0, sc->getValue().size() ) ),
+    TypedFunction<CharacterHistoryRateModifier>( new SiteRateModifier(ec->getValue().size(), sc->getValue().size() ) ),
     rate_multipliers(rm),
     event_classes(ec),
     site_classes(sc)

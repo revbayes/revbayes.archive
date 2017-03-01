@@ -375,6 +375,28 @@ void Tree::fillNodesByPhylogeneticTraversal(TopologyNode* node)
     }
 }
 
+const std::vector<std::vector<double> > Tree::getAdjacencyMatrix(void) const
+{
+    std::vector<std::vector<double> > adjacency(num_nodes, std::vector<double>(num_nodes, 0.0));
+    
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        const TopologyNode* nd = nodes[i];
+        std::vector<TopologyNode*> children = nd->getChildren();
+        for (std::vector<TopologyNode*>::iterator ch = children.begin(); ch != children.end(); ch++)
+        {
+            adjacency[nd->getIndex()][(*ch)->getIndex()] = (*ch)->getBranchLength();
+        }
+        if (!nd->isRoot())
+        {
+            const TopologyNode* pa = &nd->getParent();
+            adjacency[nd->getIndex()][pa->getIndex()] = pa->getBranchLength();
+        }
+    }
+    
+    return adjacency;
+}
+
 std::vector<Taxon> Tree::getFossilTaxa() const
 {
     std::vector< Taxon > taxa;
