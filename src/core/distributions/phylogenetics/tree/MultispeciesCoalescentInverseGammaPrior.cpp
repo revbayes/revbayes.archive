@@ -40,7 +40,7 @@ MultispeciesCoalescentInverseGammaPrior* MultispeciesCoalescentInverseGammaPrior
 double MultispeciesCoalescentInverseGammaPrior::computeLnCoalescentProbability(size_t k, const std::vector<double> &times, double begin_age, double end_age, size_t index, bool add_final_interval)
 {
     double alpha = shape->getValue();
-    double beta = 1.0 / scale->getValue();
+    double beta =  rate->getValue();
     
     size_t n = times.size();
     double a = k - n;
@@ -81,21 +81,9 @@ double MultispeciesCoalescentInverseGammaPrior::computeLnCoalescentProbability(s
 double MultispeciesCoalescentInverseGammaPrior::drawNe( size_t index )
 {
     
-    double u = RbStatistics::InverseGamma::rv(shape->getValue(), scale->getValue(), *GLOBAL_RNG);
+    double u = RbStatistics::InverseGamma::rv(shape->getValue(), rate->getValue(), *GLOBAL_RNG);
     
     return u;
-}
-
-
-
-void MultispeciesCoalescentInverseGammaPrior::setScale(TypedDagNode<double>* s)
-{
-    
-    removeParameter( scale );
-    
-    scale = s;
-    
-    addParameter( scale );
 }
 
 
@@ -111,13 +99,25 @@ void MultispeciesCoalescentInverseGammaPrior::setShape(TypedDagNode<double>* s)
 }
 
 
+
+void MultispeciesCoalescentInverseGammaPrior::setRate(TypedDagNode<double>* r)
+{
+    
+    removeParameter( rate );
+    
+    rate = r;
+    
+    addParameter( rate );
+}
+
+
 /** Swap a parameter of the distribution */
 void MultispeciesCoalescentInverseGammaPrior::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if ( oldP == scale )
+    if ( oldP == rate )
     {
-        scale = static_cast<const TypedDagNode< double >* >( newP );
+        rate = static_cast<const TypedDagNode< double >* >( newP );
     }
     
     if ( oldP == shape )

@@ -129,6 +129,8 @@
 #include "Dist_empiricalTree.h"
 #include "Dist_episodicBirthDeath.h"
 #include "Dist_heterogeneousRateBirthDeath.h"
+#include "Dist_multispeciesCoalescentInverseGammaPrior.h"
+#include "Dist_multispeciesCoalescentUniformPrior.h"
 #include "Dist_outgroupBirthDeath.h"
 #include "Dist_phyloDistanceGamma.h"
 #include "Dist_sampledSpeciationBirthDeathProcess.h"
@@ -268,6 +270,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // multispecies coalescent (per branch constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_constPopMultispCoal() );
+        AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentInverseGammaPrior() );
+        AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentUniformPrior() );
         
         // constrained node order distribution
         AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeOrder() );

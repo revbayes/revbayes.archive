@@ -16,7 +16,7 @@ namespace RevBayesCore {
         // public member functions
         MultispeciesCoalescentInverseGammaPrior*            clone(void) const;                                                                                  //!< Create an independent clone
         void                                                setShape(TypedDagNode<double>* s);
-        void                                                setScale(TypedDagNode<double>* s);
+        void                                                setRate(TypedDagNode<double>* r);
         
     protected:
         // Parameter management functions
@@ -30,7 +30,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<double>*                          shape;
-        const TypedDagNode<double>*                          scale;
+        const TypedDagNode<double>*                          rate;
 
     };
     
