@@ -34,6 +34,8 @@ namespace RevBayesCore {
         const RbBitSet&                         getState(void) const;                               //!< Get the state (as the bitset)
         size_t                                  getStateIndex(void) const;                          //!< Get the state index
         virtual std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
+        virtual std::string                     getStateDescription(void) const;
+        virtual std::vector<std::string>        getStateDescriptions(void) const;
         bool                                    isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
         bool                                    isStateSet(size_t index) const;                     //!< Is the discrete observation
         void                                    setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state

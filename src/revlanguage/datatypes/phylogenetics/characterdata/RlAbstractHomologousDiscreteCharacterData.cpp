@@ -247,6 +247,14 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         
         return new RevVariable( new Natural(n) );
     }
+    else if ( name == "getStateDescriptions" )
+    {
+        found = true;
+        
+        std::vector<std::string> descriptions = this->dagNode->getValue().getTaxonData(0).getCharacter(0).getStateDescriptions();        
+        
+        return new RevVariable( new ModelVector<RlString>(descriptions) );
+    }
     else if (name == "isHomologous")
     {
         found = true;
@@ -659,7 +667,8 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     
     ArgumentRules* translateCharactersArgRules          = new ArgumentRules();
     ArgumentRules* expandCharactersArgRules             = new ArgumentRules();
-    
+    ArgumentRules* getStateDescriptionsArgRules         = new ArgumentRules();
+
     
     setCodonPartitionArgRules->push_back(       new ArgumentRule("",        Natural::getClassTypeSpec()              , "The index of the codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setCodonPartitionArgRules2->push_back(      new ArgumentRule("",        ModelVector<Natural>::getClassTypeSpec() , "The indicies of the codon positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -704,6 +713,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     methods.addFunction( new MemberProcedure( "meanGcContentByCodonPosition",   Probability::getClassTypeSpec(),    meanGcContentByCodonPositionArgRules                ) );
     methods.addFunction( new MemberProcedure( "numInvariableBlocks",            Natural::getClassTypeSpec(),        numInvariableBlocksArgRules         ) );
     methods.addFunction( new MemberProcedure( "numTaxaMissingSequence",         Natural::getClassTypeSpec(),        numTaxaMissingSequenceArgRules         ) );
+    methods.addFunction( new MemberProcedure( "getStateDescriptions",           ModelVector<RlString>::getClassTypeSpec(), getStateDescriptionsArgRules ) );
     methods.addFunction( new MemberProcedure( "translateCharacters",            AbstractHomologousDiscreteCharacterData::getClassTypeSpec(),        translateCharactersArgRules         ) );
     methods.addFunction( new MemberProcedure( "varGcContent",                   Probability::getClassTypeSpec(),    varGcContentArgRules                ) );
     methods.addFunction( new MemberProcedure( "varGcContentByCodonPosition",    Probability::getClassTypeSpec(),    varGcContentByCodonPositionArgRules                ) );
