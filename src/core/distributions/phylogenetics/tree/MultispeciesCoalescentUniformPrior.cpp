@@ -1,6 +1,6 @@
 #include "Clade.h"
 #include "ConstantNode.h"
-#include "MultispeciesCoalescent.h"
+#include "MultispeciesCoalescentUniformPrior.h"
 #include "DistributionExponential.h"
 #include "DistributionUniform.h"
 #include "RandomNumberFactory.h"
@@ -14,13 +14,13 @@
 
 using namespace RevBayesCore;
 
-MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<Tree> *sp, const std::vector<Taxon> &t) : AbstractMultispeciesCoalescent(sp, t)
+MultispeciesCoalescentUniformPrior::MultispeciesCoalescentUniformPrior(const TypedDagNode<Tree> *sp, const std::vector<Taxon> &t) : AbstractMultispeciesCoalescent(sp, t)
 {
     
 }
 
 
-MultispeciesCoalescent::~MultispeciesCoalescent()
+MultispeciesCoalescentUniformPrior::~MultispeciesCoalescentUniformPrior()
 {
     
 }
@@ -29,17 +29,17 @@ MultispeciesCoalescent::~MultispeciesCoalescent()
 
 
 
-MultispeciesCoalescent* MultispeciesCoalescent::clone( void ) const
+MultispeciesCoalescentUniformPrior* MultispeciesCoalescentUniformPrior::clone( void ) const
 {
     
-    return new MultispeciesCoalescent( *this );
+    return new MultispeciesCoalescentUniformPrior( *this );
 }
 
 
-double MultispeciesCoalescent::computeLnCoalescentProbability(size_t k, const std::vector<double> &times, double begin_age, double end_age, size_t index, bool add_final_interval)
+double MultispeciesCoalescentUniformPrior::computeLnCoalescentProbability(size_t k, const std::vector<double> &times, double begin_age, double end_age, size_t index, bool add_final_interval)
 {
     
-    double theta = getNe( index );
+    double theta = 1.0;
     
     double ln_prob_coal = 0;
     double current_time = begin_age;
@@ -49,14 +49,14 @@ double MultispeciesCoalescent::computeLnCoalescentProbability(size_t k, const st
         // now we do the computation
         //a is the time between the previous and the current coalescences
         double a = times[i] - current_time;
-        
+
         // get the number j of individuals we had before the current coalescence
         size_t j = k - i;
         
         // compute the number of pairs: pairs = C(j choose 2) = j * (j-1.0) / 2.0
         double n_pairs = j * (j-1.0) / 2.0;
         double lambda = n_pairs * theta;
-        
+
         // add the density for this coalescent event
         //lnProbCoal += log( lambda ) - lambda * a;
         //Corrected version:
@@ -78,72 +78,37 @@ double MultispeciesCoalescent::computeLnCoalescentProbability(size_t k, const st
 }
 
 
-double MultispeciesCoalescent::drawNe( size_t index )
+double MultispeciesCoalescentUniformPrior::drawNe( size_t index )
 {
     
-    return getNe( index );
+    // Get the rng
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    
+    double u = RbStatistics::Uniform::rv( 0, max_theta->getValue(), *rng);
+    
+    return u;
 }
 
 
 
-double  MultispeciesCoalescent::getNe(size_t index) const
+void MultispeciesCoalescentUniformPrior::setMaxTheta(TypedDagNode<double>* m)
 {
     
-    if (Ne != NULL)
-    {
-        return Ne->getValue();
-    }
-    else if (Nes != NULL)
-    {
-        return Nes->getValue()[index];
-    }
-    else
-    {
-        std::cerr << "Error: Null Pointers for Ne and Nes." << std::endl;
-        exit(-1);
-    }
-}
-
-
-void MultispeciesCoalescent::setNes(TypedDagNode< RbVector<double> >* input_nes)
-{
+    removeParameter( max_theta );
     
-    removeParameter( Nes );
-    removeParameter( Ne );
+    max_theta = m;
     
-    Nes = input_nes;
-    Ne  = NULL;
-    
-    addParameter( Nes );
-    
-}
-
-
-void MultispeciesCoalescent::setNe(TypedDagNode<double>* input_ne)
-{
-    
-    removeParameter( Ne );
-    removeParameter( Nes );
-    
-    Ne  = input_ne;
-    Nes = NULL;
-    
-    addParameter( Ne );
+    addParameter( max_theta );
 }
 
 
 /** Swap a parameter of the distribution */
-void MultispeciesCoalescent::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void MultispeciesCoalescentUniformPrior::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if (oldP == Nes )
+    if ( oldP == max_theta )
     {
-        Nes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
-    }
-    
-    if ( oldP == Ne )
-    {
-        Ne = static_cast<const TypedDagNode< double >* >( newP );
+        max_theta = static_cast<const TypedDagNode< double >* >( newP );
     }
     
     AbstractMultispeciesCoalescent::swapParameterInternal(oldP, newP);
