@@ -39,7 +39,8 @@ MultispeciesCoalescent* MultispeciesCoalescent::clone( void ) const
 double MultispeciesCoalescent::computeLnCoalescentProbability(size_t k, const std::vector<double> &times, double begin_age, double end_age, size_t index, bool add_final_interval)
 {
     
-    double theta = getNe( index );
+//    double theta = getNe( index );
+    double theta = 1.0 / getNe( index );
     
     double ln_prob_coal = 0;
     double current_time = begin_age;
@@ -49,6 +50,8 @@ double MultispeciesCoalescent::computeLnCoalescentProbability(size_t k, const st
         // now we do the computation
         //a is the time between the previous and the current coalescences
         double a = times[i] - current_time;
+        
+        current_time = times[i];
         
         // get the number j of individuals we had before the current coalescence
         size_t j = k - i;
@@ -66,7 +69,7 @@ double MultispeciesCoalescent::computeLnCoalescentProbability(size_t k, const st
     
     // compute the probability of no coalescent event in the final part of the branch
     // only do this if the branch is not the root branch
-    if ( add_final_interval == false )
+    if ( add_final_interval == true )
     {
         double final_interval = end_age - current_time;
         size_t j = k - times.size();
@@ -89,11 +92,11 @@ double MultispeciesCoalescent::drawNe( size_t index )
 double  MultispeciesCoalescent::getNe(size_t index) const
 {
     
-    if (Ne != NULL)
+    if ( Ne != NULL )
     {
         return Ne->getValue();
     }
-    else if (Nes != NULL)
+    else if ( Nes != NULL )
     {
         return Nes->getValue()[index];
     }
@@ -136,7 +139,7 @@ void MultispeciesCoalescent::setNe(TypedDagNode<double>* input_ne)
 void MultispeciesCoalescent::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if (oldP == Nes )
+    if ( oldP == Nes )
     {
         Nes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }

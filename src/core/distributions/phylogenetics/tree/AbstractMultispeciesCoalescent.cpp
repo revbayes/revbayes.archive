@@ -134,6 +134,13 @@ double AbstractMultispeciesCoalescent::computeLnProbability( void )
 }
 
 
+double AbstractMultispeciesCoalescent::drawNe( size_t index )
+{
+    
+    return 1.0;
+}
+
+
 double AbstractMultispeciesCoalescent::recursivelyComputeLnProbability( const RevBayesCore::TopologyNode &species_node )
 {
 
@@ -180,12 +187,13 @@ double AbstractMultispeciesCoalescent::recursivelyComputeLnProbability( const Re
         }
     }
     
-    double currentTime = species_age;
-    while ( currentTime < parent_species_age && coal_times_2_nodes.size() > 0 )
+    double current_time = species_age;
+    while ( current_time < parent_species_age && coal_times_2_nodes.size() > 0 )
     {
         
         const TopologyNode *parent = coal_times_2_nodes.begin()->second;
         double parent_age = parent->getAge();
+        current_time = parent_age;
         
         if ( parent_age < parent_species_age )
         { //Coalescence in the species tree branch
@@ -212,38 +220,12 @@ double AbstractMultispeciesCoalescent::recursivelyComputeLnProbability( const Re
                 coal_times_2_nodes[ grand_parent->getAge() ] = grand_parent;
             }
             
-            
             coal_times.push_back( parent_age );
-            
-//            // now we do the computation
-//            //a is the time between the previous and the current coalescences
-//            double a = parentAge - currentTime;
-//            
-//            // get the number j of individuals we had before the current coalescence
-//            size_t j = remainingIndividuals.size() + 1;
-//            // compute the number of pairs: pairs = C(j choose 2) = j * (j-1.0) / 2.0
-//            double nPairs = j * (j-1.0) / 2.0;
-//            double lambda = nPairs * theta;
-//            
-//            // add the density for this coalescent event
-//            //lnProbCoal += log( lambda ) - lambda * a;
-//            //Corrected version:
-//            lnProbCoal += log( theta ) - lambda * a;
-            
             
             
         } //End if coalescence in the species tree branch
         else
         { //No more coalescences in this species tree branch
-            
-//            // compute the probability of no coalescent event in the final part of the branch
-//            // only do this if the branch is not the root branch
-//            if ( species_node.isRoot() == false )
-//            {
-//                double finalInterval = parentSpeciesAge - currentTime;
-//                size_t k = remainingIndividuals.size();
-//                lnProbCoal -= k*(k-1.0)/2.0 * finalInterval * theta;
-//            }
             
             // jump out of the while loop
             //                currentTime = speciesAge;
