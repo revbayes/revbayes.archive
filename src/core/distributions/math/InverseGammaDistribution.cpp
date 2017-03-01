@@ -20,17 +20,20 @@ InverseGammaDistribution::InverseGammaDistribution(const TypedDagNode<double> *s
 }
 
 
-InverseGammaDistribution::~InverseGammaDistribution( void ) {
+InverseGammaDistribution::~InverseGammaDistribution( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
-double InverseGammaDistribution::cdf( void ) const {
+double InverseGammaDistribution::cdf( void ) const
+{
     return RbStatistics::InverseGamma::cdf(shape->getValue(), scale->getValue(), *value);
 }
 
 
-InverseGammaDistribution* InverseGammaDistribution::clone( void ) const {
+InverseGammaDistribution* InverseGammaDistribution::clone( void ) const
+{
     return new InverseGammaDistribution( *this );
 }
 
@@ -50,22 +53,26 @@ double InverseGammaDistribution::computeLnProbability( void )
 }
 
 
-double InverseGammaDistribution::getMax( void ) const {
+double InverseGammaDistribution::getMax( void ) const
+{
     return RbConstants::Double::inf;
 }
 
 
-double InverseGammaDistribution::getMin( void ) const {
+double InverseGammaDistribution::getMin( void ) const
+{
     return 0.0;
 }
 
 
-double InverseGammaDistribution::quantile(double p) const {
+double InverseGammaDistribution::quantile(double p) const
+{
     return RbStatistics::InverseGamma::quantile(shape->getValue(), scale->getValue(), p);
 }
 
 
-void InverseGammaDistribution::redrawValue( void ) {
+void InverseGammaDistribution::redrawValue( void )
+{
     *value = RbStatistics::InverseGamma::rv(shape->getValue(), scale->getValue(), *GLOBAL_RNG);
 }
 

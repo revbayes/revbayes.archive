@@ -7,6 +7,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
+#include "RbMathFunctions.h"
 #include "TopologyNode.h"
 
 #include <algorithm>
@@ -38,30 +39,23 @@ MultispeciesCoalescentUniformPrior* MultispeciesCoalescentUniformPrior::clone( v
 
 double MultispeciesCoalescentUniformPrior::computeLnCoalescentProbability(size_t k, const std::vector<double> &times, double begin_age, double end_age, size_t index, bool add_final_interval)
 {
+    double theta_max = max_theta->getValue();
     
-    double theta = 1.0;
-    
-    double ln_prob_coal = 0;
     double current_time = begin_age;
-    for (size_t i=0; i<times.size(); ++i)
+    double fn = 0.0;
+    size_t n = times.size();
+    for (size_t i=0; i<n; ++i)
     {
         
         // now we do the computation
         //a is the time between the previous and the current coalescences
         double a = times[i] - current_time;
-
+        
         // get the number j of individuals we had before the current coalescence
         size_t j = k - i;
-        
-        // compute the number of pairs: pairs = C(j choose 2) = j * (j-1.0) / 2.0
         double n_pairs = j * (j-1.0) / 2.0;
-        double lambda = n_pairs * theta;
 
-        // add the density for this coalescent event
-        //lnProbCoal += log( lambda ) - lambda * a;
-        //Corrected version:
-        ln_prob_coal += log( theta ) - lambda * a;
-        
+        fn += a * n_pairs;
     }
     
     // compute the probability of no coalescent event in the final part of the branch
@@ -70,9 +64,13 @@ double MultispeciesCoalescentUniformPrior::computeLnCoalescentProbability(size_t
     {
         double final_interval = end_age - current_time;
         size_t j = k - times.size();
-        ln_prob_coal -= j*(j-1.0)/2.0 * final_interval * theta;
+        double n_pairs = j * (j-1.0) / 2.0;
+        fn += final_interval * n_pairs;
         
     }
+    
+    double ln_prob_coal = RbConstants::LN2 - log( fn ) * (n-2) - log( theta_max );
+    ln_prob_coal += RbMath::incompleteGamma(theta_max, n-2, 2*fn/theta_max);
     
     return ln_prob_coal;
 }
