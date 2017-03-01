@@ -144,13 +144,15 @@
 #include "Dist_categorical.h"
 #include "Dist_chisq.h"
 #include "Dist_cppNormal.h"
+#include "Dist_decomposedInverseWishart.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
 #include "Dist_exponentialOffset.h"
 #include "Dist_exponentialOffsetPositive.h"
 #include "Dist_gamma.h"
 #include "Dist_geom.h"
-#include "Dist_poisson.h"
+#include "Dist_inverseGamma.h"
+#include "Dist_inverseWishart.h"
 #include "Dist_lnorm.h"
 #include "Dist_lnormOffset.h"
 #include "Dist_lnormOffsetPositive.h"
@@ -160,6 +162,7 @@
 #include "Dist_norm.h"
 #include "Dist_normalTruncated.h"
 #include "Dist_normalTruncatedPositive.h"
+#include "Dist_poisson.h"
 #include "Dist_softBoundUniformNormal.h"
 #include "Dist_studentT.h"
 #include "Dist_unif.h"
@@ -169,8 +172,6 @@
 #include "Dist_UniformNatural.h"
 #include "Dist_varianceGamma.h"
 #include "Dist_wishart.h"
-#include "Dist_inverseWishart.h"
-#include "Dist_decomposedInverseWishart.h"
 #include "Process_OrnsteinUhlenbeck.h"
 
 /* Mixture distributions (in folder "distributions/mixture") */
@@ -328,6 +329,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // geometric distribution
         AddDistribution< Natural                    >( new Dist_geom() );
+        
+        // inverse-gamma distribution
+        AddContinuousDistribution< RealPos          >( new Dist_inverseGamma() );
         
         // poisson distribution
         AddDistribution< Natural                    >( new Dist_poisson() );

@@ -39,7 +39,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<double>*                          shape;
-        const TypedDagNode<double>*                          scale;
+        const TypedDagNode<double>*                          rate;
         
     };
     
