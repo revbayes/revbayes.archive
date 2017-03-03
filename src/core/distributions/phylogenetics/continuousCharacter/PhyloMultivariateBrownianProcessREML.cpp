@@ -79,6 +79,8 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
         dirty_nodes = std::vector<bool>(tau->getValue().getNumberOfNodes(), true);
     }
     
+    precision_matrix = rate_matrix->getValue().computeInverse();
+    
     // compute the ln probability by recursively calling the probability calculation for each node
     const TopologyNode &root = this->tau->getValue().getRoot();
     
@@ -300,11 +302,11 @@ void PhyloMultivariateBrownianProcessREML::restoreSpecialization( DagNode* affec
 {
     
     
-    if ( affecter == rate_matrix )
-    {
-        // compute the inverse variance-covariance matrix (the precision matrix)
-        precision_matrix = rate_matrix->getValue().computeInverse();
-    }
+//    if ( affecter == rate_matrix )
+//    {
+//        // compute the inverse variance-covariance matrix (the precision matrix)
+//        precision_matrix = rate_matrix->getValue().computeInverse();
+//    }
     
     // reset the flags
     for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
@@ -345,11 +347,11 @@ std::vector<double> PhyloMultivariateBrownianProcessREML::simulateRootCharacters
 void PhyloMultivariateBrownianProcessREML::touchSpecialization( DagNode* affecter, bool touchAll )
 {
  
-    if ( affecter == rate_matrix )
-    {
-        // compute the inverse variance-covariance matrix (the precision matrix)
-        precision_matrix = rate_matrix->getValue().computeInverse();
-    }
+//    if ( affecter == rate_matrix )
+//    {
+//        // compute the inverse variance-covariance matrix (the precision matrix)
+//        precision_matrix = rate_matrix->getValue().computeInverse();
+//    }
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == this->heterogeneous_clock_rates )
