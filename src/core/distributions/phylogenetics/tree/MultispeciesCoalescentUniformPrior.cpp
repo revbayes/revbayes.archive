@@ -39,6 +39,9 @@ MultispeciesCoalescentUniformPrior* MultispeciesCoalescentUniformPrior::clone( v
 
 double MultispeciesCoalescentUniformPrior::computeLnCoalescentProbability(size_t k, const std::vector<double> &times, double begin_age, double end_age, size_t index, bool add_final_interval)
 {
+    
+    if ( k == 1 ) return 0.0;
+    
     double theta_max = max_theta->getValue();
     
     double current_time = begin_age;
@@ -60,7 +63,7 @@ double MultispeciesCoalescentUniformPrior::computeLnCoalescentProbability(size_t
     
     // compute the probability of no coalescent event in the final part of the branch
     // only do this if the branch is not the root branch
-    if ( add_final_interval == false )
+    if ( add_final_interval == true )
     {
         double final_interval = end_age - current_time;
         size_t j = k - times.size();
@@ -69,8 +72,19 @@ double MultispeciesCoalescentUniformPrior::computeLnCoalescentProbability(size_t
         
     }
     
-    double ln_prob_coal = RbConstants::LN2 - log( fn ) * (n-2) - log( theta_max );
-    ln_prob_coal += RbMath::incompleteGamma(theta_max, n-2, 2*fn/theta_max);
+    double ln_prob_coal = RbConstants::LN2 - log( fn ) * (n-1) - log( theta_max );
+    
+//    shape, rate/x
+//    double lowerIncompleteGamma = RbMath::incompleteGamma( rate/x, shape, RbMath::lnGamma(shape) );
+//    double gamma = RbMath::gamma(shape);
+    
+//    Gamma(n-2,2*fn/theta_max)
+    double lower_incomplete_gamma = RbMath::incompleteGamma( 2*fn/theta_max, n-1, RbMath::lnGamma(n-1) );
+    
+    double gamma = RbMath::lnGamma(n-1);
+    gamma = 0.0;
+
+    ln_prob_coal -= log( lower_incomplete_gamma ) - gamma;
     
     return ln_prob_coal;
 }

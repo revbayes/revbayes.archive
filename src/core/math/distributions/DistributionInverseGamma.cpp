@@ -111,10 +111,9 @@ double RbStatistics::InverseGamma::lnPdf(double shape, double rate, double x)
 double RbStatistics::InverseGamma::cdf(double shape, double rate, double x)
 {
 
-    double lowerIncompleteGamma = RbMath::incompleteGamma( rate/x, shape, RbMath::lnGamma(shape) );
-    double gamma = RbMath::gamma(shape);
+    double lower_incomplete_gamma = RbMath::incompleteGamma( rate/x, shape, RbMath::lnGamma(shape) );
     
-    return (gamma - lowerIncompleteGamma) / gamma;
+    return 1 - lower_incomplete_gamma;
 }
 
 /*!

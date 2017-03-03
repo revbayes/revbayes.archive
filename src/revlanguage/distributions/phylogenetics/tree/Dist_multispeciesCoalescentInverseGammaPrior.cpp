@@ -166,18 +166,15 @@ void Dist_multispeciesCoalescentInverseGammaPrior::setConstParameter(const std::
     {
         species_tree = var;
     }
-    
-    if ( name == "shape" )
+    else if ( name == "shape" )
     {
         shape = var;
     }
-    
-    if ( name == "rate" )
+    else if ( name == "rate" )
     {
         rate = var;
     }
-    
-    if ( name == "taxa" )
+    else if ( name == "taxa" )
     {
         taxa = var;
     }

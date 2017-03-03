@@ -120,6 +120,7 @@ void AbstractMultispeciesCoalescent::buildRandomBinaryTree(std::vector<TopologyN
 
 double AbstractMultispeciesCoalescent::computeLnProbability( void )
 {
+    resetTipAllocations();
     
     // variable declarations and initialization
     double ln_prob_coal = 0;
@@ -235,7 +236,10 @@ double AbstractMultispeciesCoalescent::recursivelyComputeLnProbability( const Re
         
     } // end of while loop
     
-    ln_prob_coal += computeLnCoalescentProbability(initial_individuals.size(), coal_times, species_age, parent_species_age, species_node.getIndex(), species_node.isRoot() == false);
+    if ( initial_individuals.size() > 1 )
+    {
+        ln_prob_coal += computeLnCoalescentProbability(initial_individuals.size(), coal_times, species_age, parent_species_age, species_node.getIndex(), species_node.isRoot() == false);
+    }
     
     
     // merge the two sets of individuals that go into the next species
