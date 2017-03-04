@@ -45,6 +45,8 @@ namespace RevBayesCore {
         void                            setMuI(double m_i);
         void                            setLambdaAI(double l_ai);
         void                            setLambdaIA(double l_ia);
+        void                            setDenovoI(double d_i);
+        void                            setDenovoA(double d_a);
         
     private:
         
@@ -56,6 +58,8 @@ namespace RevBayesCore {
         double                          mu_i;
         double                          lambda_ai;
         double                          lambda_ia;
+        double                          denovo_i;
+        double                          denovo_a;
         size_t                          matrixSize;                         //!< Number of elements in a row or column of the rate matrix
         size_t                          maxGenes;
 

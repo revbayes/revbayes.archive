@@ -22,8 +22,8 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_BDR::RateMatrix_BDR(size_t n) : AbstractRateMatrix( n ),
-    matrixSize( n ),
+RateMatrix_BDR::RateMatrix_BDR(size_t n) : AbstractRateMatrix( 2 + 0.5 * (n + 1) * (n + 2) + n ),
+    matrixSize( 2 + 0.5 * (n + 1) * (n + 2) + n ),
     maxGenes( n )
 {
     
@@ -35,11 +35,13 @@ RateMatrix_BDR::RateMatrix_BDR(size_t n) : AbstractRateMatrix( n ),
     setMuI(1.0);
     setLambdaAI(1.0);
     setLambdaIA(1.0);
-    
+    setDenovoA(0.0);
+    setDenovoI(0.0);
+
     // we need to make sure that the rate matrix is initialized to 0.0
     for (size_t i = 0; i < matrixSize; ++i)
     {
-        for (size_t j = 0; j < matrixSize; ++i)
+        for (size_t j = 0; j < matrixSize; ++j)
         {
             (*the_rate_matrix)[i][j] = 0.0;
         }
@@ -63,54 +65,55 @@ double RateMatrix_BDR::averageRate(void) const {
 void RateMatrix_BDR::buildRateMatrix(void) 
 {
 
+    // set up de novo elements of rate matrix.
+				
+    // birth to inactive
+    (*the_rate_matrix)[0][1] = denovo_i;
+				
+    // birth to active
+    (*the_rate_matrix)[0][2] = denovo_a;
+    
+    // set up the rest of the matrix
+    int i;
+    
     for (size_t fam_size = 1; fam_size < maxGenes; ++fam_size)
     {
         for (size_t num_active = 0; num_active <= fam_size; ++num_active)
         {
-            
             // given we know fam_size and num_active (the tuple)
             // what tuples do we touch, an what are the parameters for
             // those transitions
             
-            int i, j; // we need to compute these indeces for all the states this state touches
+            i = 0.5 * fam_size * (fam_size + 1) + num_active;
             
-            // birth from active to active
-            // (*the_rate_matrix)[i][j] = lambda_a * num_active
+            // birth to inactive
+            (*the_rate_matrix)[i][i+fam_size+1] = num_active * lambda_ai + (fam_size - num_active) * lambda_i;
             
-            // death from active
-            // (*the_rate_matrix)[i][j] = mu_a * num_active
+            // birth to active
+            (*the_rate_matrix)[i][i+fam_size+2] = (fam_size - num_active) * lambda_ia + num_active * lambda_a;
             
-            // birth from inactive to inactive
-            // (*the_rate_matrix)[i][j] = lambda_i * (fam_size - num_active)
+            if(num_active > 0){
+                // death of active
+                (*the_rate_matrix)[i][i-fam_size-1] = mu_a * num_active;
+                
+                // regulatory inactivation
+                (*the_rate_matrix)[i][i-1] = beta * num_active;
+            }
             
-            // death from inactive
-            // (*the_rate_matrix)[i][j] = mu_i * (fam_size - num_active)
-            
-            // birth from active to inactive
-            // (*the_rate_matrix)[i][j] = lambda_ai * num_active
-            
-            // birth form inactive to active
-            // (*the_rate_matrix)[i][j] = lambda_ia * (fam_size - num_active)
-            
-            // regulatory activation
-            // (*the_rate_matrix)[i][j] = alpha * num_active
-            
-            // regulatory inactivation
-            // (*the_rate_matrix)[i][j] = beta * (fam_size - num_active)
-            
+            if(fam_size > num_active){
+                // death of inactive
+                (*the_rate_matrix)[i][i-fam_size] = mu_i * (fam_size - num_active);
+                
+                // regulatory activation
+                (*the_rate_matrix)[i][i+1] = alpha * (fam_size - num_active);
+            }
         }
-        
     }
     
     // set the diagonal values
     setDiagonal();
-
-    // rescale rates
-//    //rescaleToAverageRate( 1.0 ); # TODO: We actually DO want to rescale the rate matrix... implement this function
     
 }
-
-
 
 
 /** Calculate the transition probabilities */
@@ -182,6 +185,7 @@ void RateMatrix_BDR::exponentiateMatrixByScalingAndSquaring(double t,  Transitio
         multiplyMatrices(p, p, r);
         p = r;
     }
+    
 }
 
 
@@ -229,7 +233,6 @@ void RateMatrix_BDR::setBeta(double b)
     
     // set flags
     needs_update = true;
-    
 }
 
 void RateMatrix_BDR::setLambdaA(double l_a)
@@ -238,7 +241,6 @@ void RateMatrix_BDR::setLambdaA(double l_a)
     
     // set flags
     needs_update = true;
-  
 }
 
 void RateMatrix_BDR::setMuA(double m_a)
@@ -247,7 +249,6 @@ void RateMatrix_BDR::setMuA(double m_a)
     
     // set flags
     needs_update = true;
-   
 }
 
 void RateMatrix_BDR::setLambdaI(double l_i)
@@ -256,7 +257,6 @@ void RateMatrix_BDR::setLambdaI(double l_i)
     
     // set flags
     needs_update = true;
-    
 }
 
 void RateMatrix_BDR::setMuI(double m_i)
@@ -265,7 +265,6 @@ void RateMatrix_BDR::setMuI(double m_i)
     
     // set flags
     needs_update = true;
-    
 }
 
 void RateMatrix_BDR::setLambdaAI(double l_ai)
@@ -285,6 +284,21 @@ void RateMatrix_BDR::setLambdaIA(double l_ia)
     needs_update = true;
 }
 
+void RateMatrix_BDR::setDenovoI(double d_i)
+{
+    denovo_a = d_i;
+    
+    // set flags
+    needs_update = true;
+}
+
+void RateMatrix_BDR::setDenovoA(double d_a)
+{
+    denovo_i = d_a;
+    
+    // set flags
+    needs_update = true;
+}
 
 void RateMatrix_BDR::update( void ) {
     
@@ -294,6 +308,7 @@ void RateMatrix_BDR::update( void ) {
         // clean flags
         needs_update = false;
     }
+
 }
 
 

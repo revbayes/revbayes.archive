@@ -45,7 +45,10 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_BDR::createFunc
     RevBayesCore::TypedDagNode< double >* lambda_ai = static_cast<const RealPos &>( this->args[7].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* lambda_ia = static_cast<const RealPos &>( this->args[8].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::BDRRateMatrixFunction* f = new RevBayesCore::BDRRateMatrixFunction( n, alpha, beta, lambda_a, mu_a, lambda_i, mu_i, lambda_ai, lambda_ia );
+    RevBayesCore::TypedDagNode< double >* denovo_i = static_cast<const RealPos &>( this->args[8].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< double >* denovo_a = static_cast<const RealPos &>( this->args[9].getVariable()->getRevObject() ).getDagNode();
+
+    RevBayesCore::BDRRateMatrixFunction* f = new RevBayesCore::BDRRateMatrixFunction( n, alpha, beta, lambda_a, mu_a, lambda_i, mu_i, lambda_ai, lambda_ia, denovo_i, denovo_a );
     
 	return f;
 }
@@ -74,7 +77,10 @@ const ArgumentRules& Func_BDR::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "lambda_ai"     , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         argumentRules.push_back( new ArgumentRule( "lambda_ia"     , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        
+
+        argumentRules.push_back( new ArgumentRule( "denovo_i"     , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        argumentRules.push_back( new ArgumentRule( "denovo_a"     , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+
         rules_set = true;
         
     }

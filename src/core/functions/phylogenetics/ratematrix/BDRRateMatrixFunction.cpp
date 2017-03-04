@@ -18,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-BDRRateMatrixFunction::BDRRateMatrixFunction( const TypedDagNode<int> *n, const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<double> *l_i, const TypedDagNode<double> *m_i, const TypedDagNode<double> *l_a, const TypedDagNode<double> *m_a, const TypedDagNode<double> *l_ia, const TypedDagNode<double> *l_ai ) :
+BDRRateMatrixFunction::BDRRateMatrixFunction( const TypedDagNode<int> *n, const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<double> *l_a, const TypedDagNode<double> *m_a, const TypedDagNode<double> *l_i, const TypedDagNode<double> *m_i, const TypedDagNode<double> *l_ia, const TypedDagNode<double> *l_ai, const TypedDagNode<double> *d_i, const TypedDagNode<double> *d_a ) :
     TypedFunction<RateGenerator>( new RateMatrix_BDR(n->getValue()) ),
 
     alpha( a ),
@@ -31,7 +31,11 @@ BDRRateMatrixFunction::BDRRateMatrixFunction( const TypedDagNode<int> *n, const 
     mu_i( m_i ),
 
     lambda_ai( l_ai ),
-    lambda_ia( l_ia )
+    lambda_ia( l_ia ),
+
+    denovo_i( d_i ),
+    denovo_a( d_a )
+
 
 {
 
@@ -44,6 +48,8 @@ BDRRateMatrixFunction::BDRRateMatrixFunction( const TypedDagNode<int> *n, const 
     addParameter( mu_i );
     addParameter( lambda_ai );
     addParameter( lambda_ia );
+    addParameter( denovo_i );
+    addParameter( denovo_a );
 
     update();
 }
@@ -75,6 +81,9 @@ void BDRRateMatrixFunction::update( void ) {
     double l_ai = lambda_ai->getValue();
     double l_ia = lambda_ia->getValue();
     
+    double d_i = denovo_i->getValue();
+    double d_a = denovo_a->getValue();
+    
 
     static_cast< RateMatrix_BDR* >(value)->setAlpha( a );
     static_cast< RateMatrix_BDR* >(value)->setBeta( b );
@@ -84,6 +93,8 @@ void BDRRateMatrixFunction::update( void ) {
     static_cast< RateMatrix_BDR* >(value)->setMuI( m_i );
     static_cast< RateMatrix_BDR* >(value)->setLambdaAI( l_ai );
     static_cast< RateMatrix_BDR* >(value)->setLambdaIA( l_ia );
+    static_cast< RateMatrix_BDR* >(value)->setDenovoI( d_i );
+    static_cast< RateMatrix_BDR* >(value)->setDenovoA( d_a );
     
     static_cast< RateMatrix_BDR* >(value)->update();
     
@@ -115,6 +126,12 @@ void BDRRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const Dag
     }
     else if (oldP == lambda_ia) {
         lambda_ia = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == denovo_i) {
+        denovo_i = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == denovo_a) {
+        denovo_a = static_cast<const TypedDagNode<double>* >( newP );
     }
     
 }
