@@ -27,7 +27,7 @@ namespace RevBayesCore {
     class BDRRateMatrixFunction : public TypedFunction<RateGenerator> {
 
     public:
-        BDRRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<double> *l_a, const TypedDagNode<double> *m_a, const TypedDagNode<double> *l_i, const TypedDagNode<double> *m_i, const TypedDagNode<double> *l_ia, const TypedDagNode<double> *l_ai, const TypedDagNode<double> *d_i, const TypedDagNode<double> *d_a );
+        BDRRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<double> *l_a, const TypedDagNode<double> *m_a, const TypedDagNode<double> *l_i, const TypedDagNode<double> *m_i, const TypedDagNode<double> *l_ai, const TypedDagNode<double> *l_ia, const TypedDagNode<double> *d_i, const TypedDagNode<double> *d_a );
         
         virtual                                     ~BDRRateMatrixFunction(void);                                                    //!< Virtual destructor
         

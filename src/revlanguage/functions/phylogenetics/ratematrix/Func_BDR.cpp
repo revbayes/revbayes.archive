@@ -48,7 +48,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_BDR::createFunc
     RevBayesCore::TypedDagNode< double >* denovo_i = static_cast<const RealPos &>( this->args[8].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* denovo_a = static_cast<const RealPos &>( this->args[9].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::BDRRateMatrixFunction* f = new RevBayesCore::BDRRateMatrixFunction( n, alpha, beta, lambda_a, mu_a, lambda_i, mu_i, lambda_ai, lambda_ia, denovo_i, denovo_a );
+    RevBayesCore::BDRRateMatrixFunction* f = new RevBayesCore::BDRRateMatrixFunction( n, alpha, beta, lambda_a, mu_a, lambda_i, mu_i, lambda_ai, lambda_ia, denovo_i, denovo_a  );
     
 	return f;
 }

@@ -18,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-BDRRateMatrixFunction::BDRRateMatrixFunction( const TypedDagNode<int> *n, const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<double> *l_a, const TypedDagNode<double> *m_a, const TypedDagNode<double> *l_i, const TypedDagNode<double> *m_i, const TypedDagNode<double> *l_ia, const TypedDagNode<double> *l_ai, const TypedDagNode<double> *d_i, const TypedDagNode<double> *d_a ) :
+BDRRateMatrixFunction::BDRRateMatrixFunction( const TypedDagNode<int> *n, const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<double> *l_a, const TypedDagNode<double> *m_a, const TypedDagNode<double> *l_i, const TypedDagNode<double> *m_i, const TypedDagNode<double> *l_ai, const TypedDagNode<double> *l_ia, const TypedDagNode<double> *d_i, const TypedDagNode<double> *d_a ) :
     TypedFunction<RateGenerator>( new RateMatrix_BDR(n->getValue()) ),
 
     alpha( a ),

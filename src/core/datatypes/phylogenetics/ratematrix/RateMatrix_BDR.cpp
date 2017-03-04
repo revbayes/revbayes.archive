@@ -22,8 +22,8 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_BDR::RateMatrix_BDR(size_t n) : AbstractRateMatrix( 2 + 0.5 * (n + 1) * (n + 2) + n ),
-    matrixSize( 2 + 0.5 * (n + 1) * (n + 2) + n ),
+RateMatrix_BDR::RateMatrix_BDR(size_t n) : AbstractRateMatrix( 2 + (0.5 * n * (n + 1) + n) ),
+    matrixSize( 2 + (0.5 * n * (n + 1) + n) ),
     maxGenes( n )
 {
     
@@ -35,8 +35,8 @@ RateMatrix_BDR::RateMatrix_BDR(size_t n) : AbstractRateMatrix( 2 + 0.5 * (n + 1)
     setMuI(1.0);
     setLambdaAI(1.0);
     setLambdaIA(1.0);
-    setDenovoA(0.0);
-    setDenovoI(0.0);
+    setDenovoA(1.0);
+    setDenovoI(1.0);
 
     // we need to make sure that the rate matrix is initialized to 0.0
     for (size_t i = 0; i < matrixSize; ++i)
@@ -76,7 +76,7 @@ void RateMatrix_BDR::buildRateMatrix(void)
     // set up the rest of the matrix
     int i;
     
-    for (size_t fam_size = 1; fam_size < maxGenes; ++fam_size)
+    for (size_t fam_size = 1; fam_size <= maxGenes; ++fam_size)
     {
         for (size_t num_active = 0; num_active <= fam_size; ++num_active)
         {
@@ -85,12 +85,27 @@ void RateMatrix_BDR::buildRateMatrix(void)
             // those transitions
             
             i = 0.5 * fam_size * (fam_size + 1) + num_active;
+            (*the_rate_matrix)[i][matrixSize-1] = 0.0; // just to be safe
             
             // birth to inactive
-            (*the_rate_matrix)[i][i+fam_size+1] = num_active * lambda_ai + (fam_size - num_active) * lambda_i;
+            if ( i + fam_size + 2 < matrixSize )
+            {
+                (*the_rate_matrix)[i][i+fam_size+1] = num_active * lambda_ai + (fam_size - num_active) * lambda_i;
+            }
+            else
+            {
+                (*the_rate_matrix)[i][matrixSize-1] = num_active * lambda_ai + (fam_size - num_active) * lambda_i;
+            }
             
             // birth to active
-            (*the_rate_matrix)[i][i+fam_size+2] = (fam_size - num_active) * lambda_ia + num_active * lambda_a;
+            if ( i + fam_size + 3 < matrixSize )
+            {
+                (*the_rate_matrix)[i][i+fam_size+2] = (fam_size - num_active) * lambda_ia + num_active * lambda_a;
+            }
+            else
+            {
+                (*the_rate_matrix)[i][matrixSize-1] += (fam_size - num_active) * lambda_ia + num_active * lambda_a;
+            }
             
             if(num_active > 0){
                 // death of active
