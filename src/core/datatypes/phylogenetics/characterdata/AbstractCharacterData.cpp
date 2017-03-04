@@ -144,7 +144,7 @@ AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacter
 void AbstractCharacterData::addMissingTaxon(const std::string &n) {
     
     if ( indexOfTaxonWithName(n) == -1 )
-        {
+    {
         // add the sequence name to the list
         taxa.push_back( Taxon(n) );
     
@@ -153,7 +153,7 @@ void AbstractCharacterData::addMissingTaxon(const std::string &n) {
     
         // add the sequence also as a member so that we can access it by name
         taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( n, taxon_data ) );
-        }
+    }
 }
 
 
