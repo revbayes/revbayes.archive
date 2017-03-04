@@ -326,18 +326,24 @@ void RateMatrix_Covarion::setRateMatrices(const RbVector<MatrixReal> &rm)
 {
     rate_matrices = rm;
     num_states_per_class = rm[0].getDim();
+    // set flags
+    needs_update = true;
 }
 
 void RateMatrix_Covarion::setSwitchRates(const MatrixReal &sr)
 {
     switch_rates = sr;
     num_classes = sr.getDim();
+    // set flags
+    needs_update = true;
 }
 
 void RateMatrix_Covarion::setClockRates(const RbVector<double>& cr)
 {
     clock_rates = cr;
     num_classes = cr.size();
+    // set flags
+    needs_update = true;
 }
 
 
