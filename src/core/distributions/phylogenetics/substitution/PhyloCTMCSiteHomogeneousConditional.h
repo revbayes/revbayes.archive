@@ -225,11 +225,24 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
                         mask += "-";
                     numGap++;
                 }
+                else if (c.isAmbiguous())
+                {
+                    if(coding != AscertainmentBias::ALL)
+                        mask += " ";
+                    RbBitSet b = c.getState();
+                    for (size_t k = 0; k < b.size(); k++)
+                    {
+                        if (b[k] != 0)
+                        {
+                            charCounts[k]++;
+                        }
+                        
+                    }
+                }
                 else
                 {
                     if(coding != AscertainmentBias::ALL)
                         mask += " ";
-                    
                     charCounts[c.getStateIndex()]++;
                 }
 
