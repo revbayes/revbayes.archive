@@ -56,7 +56,13 @@ TreeSummary* TreeSummary::clone(void) const
     return new TreeSummary(*this);
 }
 
-void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool joint, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &states)
+
+/**
+ *
+ * Helper function for ancestralStateTree() that traverses the tree from root to tips collecting ancestral state samples.
+ *
+ */
+void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool joint, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &states, ProgressBar &progress, size_t &num_finished_nodes, bool verbose)
 {
     
     size_t parent_node_index = 0;
@@ -77,6 +83,10 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
     // loop through all the ancestral state samples
     for (size_t j = burnin; j < num_sampled_states; ++j)
     {
+        if ( verbose == true )
+        {
+            progress.update( num_finished_nodes * num_sampled_states + num_sampled_states * (j - burnin) / (num_sampled_states - burnin) );
+        }
         
         // if necessary, get the sampled tree from the tree trace
         const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : final_summary_tree;
@@ -218,22 +228,31 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
         }
     }
     
+    // update nodes finished for the progress bar
+    num_finished_nodes += 1;
+    
+    // recurse through tree
     std::vector<int> children_indices = summary_nodes[node_index]->getChildrenIndices();
     for (size_t i = 0; i < children_indices.size(); i++)
     {
-        recursivelyCollectAncestralStateSamples(children_indices[i], map_state, false, joint, ancestral_state_traces, b, site, num_sampled_states, num_sampled_trees, final_summary_tree, summary_nodes, pp, states);
+        recursivelyCollectAncestralStateSamples(children_indices[i], map_state, false, joint, ancestral_state_traces, b, site, num_sampled_states, num_sampled_trees, final_summary_tree, summary_nodes, pp, states, progress, num_finished_nodes, verbose);
     }
     
 }
 
 
 /*
- * This method calculates ancestral character states for the nodes on the input_summary_tree. It annotates the summary
- * tree with the posterior probabilities of the 3 most probable states. The method requires a vector of traces containing
- * sampled ancestral states, and optionally will also work with a trace containing sampled trees that correspond to the
+ * This method calculates ancestral character states for the nodes on the input_summary_tree. When summary_stat = MAP, it annotates
+ * the summary tree with the posterior probabilities of the 3 most probable states. The method requires a vector of traces containing
+ * sampled ancestral states, and optionally works with a trace containing sampled trees that correspond to the
  * ancestral state samples, enabling ancestral states to be estimated over a distribution of trees. In this case the annotated
  * posterior probability for a given character state is the probability of the node existing times the probability of the 
  * node being in the character state (see Pagel et al. 2004).
+ *
+ * This method summarizes both joint and marginal ancestral states. When joint = false the method summarizes marginal
+ * ancestral states. joint = true should only be used if the states were sampled using the JointConditionalAncestralStateMonitor.
+ * When summarizing joint ancestral states the posterior probabilities of each state are conditioned on the parent node being
+ * in the MAP state.
  */
 Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool joint, bool verbose )
 {
@@ -277,118 +296,19 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
     std::vector<std::vector<double> > pp( summary_nodes.size(), std::vector<double>() );
     std::vector<std::vector<std::string> > states( summary_nodes.size(), std::vector<std::string>() );
     
-//    bool joint = true;
-//    if (joint == true)
-    if (true)
+    size_t num_finished_nodes = 0;
+    ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, 0 );
+    if ( verbose == true )
     {
-        size_t node_index = final_summary_tree->getRoot().getIndex();
-        recursivelyCollectAncestralStateSamples(node_index, "", true, joint, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, states);
-        
+        progress.start();
     }
-    else
-    {
     
-        double weight = 1.0 / ( num_sampled_states - burnin );
-        
-        bool process_active = true;
-        ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, 0 );
-        if ( verbose == true && process_active == true )
-        {
-            progress.start();
-        }
-            
-        // loop through all nodes in the summary tree
-        for (size_t i = 0; i < summary_nodes.size(); ++i)
-        {
-            size_t sample_clade_index;
-            bool trace_found = false;
-            AncestralStateTrace ancestralstate_trace;
-            
-            // loop through all the ancestral state samples
-            for (size_t j = burnin; j < num_sampled_states; ++j)
-            {
-                
-                if ( verbose == true && process_active == true )
-                {
-                    progress.update( i * num_sampled_states + num_sampled_states * (j - burnin) / (num_sampled_states - burnin) );
-                }
-                
-                // if necessary, get the sampled tree from the tree trace
-                const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : *final_summary_tree;
-                const TopologyNode& sample_root = sample_tree.getRoot();
-                
-                if ( use_tree_trace == true )
-                {
-                    // check if the clade in the summary tree is also in the sampled tree
-                    sample_clade_index = sample_root.getCladeIndex( summary_nodes[i] );
-                    
-                    // and we must also find the trace for this node index
-                    trace_found = false;
-                }
-                else
-                {
-                    sample_clade_index = summary_nodes[i]->getIndex();
-                }
-                
-                if ( RbMath::isFinite( sample_clade_index ) == true )
-                {
-                    
-                    // if necessary find the AncestralStateTrace for the sampled node
-                    if ( trace_found == false )
-                    {
-                        for (size_t k = 0; k < ancestralstate_traces.size(); ++k)
-                        {
-                            // if we have an ancestral state trace from an anagenetic-only process
-                            if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sample_clade_index + 1))
-                            {
-                                ancestralstate_trace = ancestralstate_traces[k];
-                                trace_found = true;
-                                break;
-                            }
-                            // if we have an ancestral state trace from a cladogenetic process
-                            // if you need to annotate start states too, use cladoAncestralStateTree
-                            if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sample_clade_index + 1))
-                            {
-                                ancestralstate_trace = ancestralstate_traces[k];
-                                trace_found = true;
-                                break;
-                            }
-                        }
-                    }
-                    
-                    // get the sampled ancestral state for this iteration
-                    const std::vector<std::string>& ancestralstate_vector = ancestralstate_trace.getValues();
-                    std::string ancestralstate = getSiteState( ancestralstate_vector[j], site );
-                    
-                    bool state_found = false;
-                    size_t k = 0;
-                    for (; k < pp[i].size(); k++)
-                    {
-                        if ( states[i][k] == ancestralstate )
-                        {
-                            state_found = true;
-                            break;
-                        }
-                    }
-                    // update the pp and states vectors
-                    if ( state_found == false )
-                    {
-                        pp[i].push_back(weight);
-                        states[i].push_back(ancestralstate);
-                    }
-                    else
-                    {
-                        pp[i][k] += weight;
-                    }
-                }
-            }
-        }
-        
-        if ( verbose == true && process_active == true )
-        {
-            progress.finish();
-        }
-
+    size_t node_index = final_summary_tree->getRoot().getIndex();
+    recursivelyCollectAncestralStateSamples(node_index, "", true, joint, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, states, progress, num_finished_nodes, verbose);
+    
+    if ( verbose == true )
+    {
+        progress.finish();
     }
     
     if (summary_stat == "MAP")

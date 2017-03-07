@@ -5,6 +5,7 @@
 #include "Clade.h"
 #include "ConditionalClade.h"
 #include "NewickConverter.h"
+#include "ProgressBar.h"
 #include "RlUserInterface.h"
 #include "Sample.h"
 #include "Tree.h"
@@ -86,7 +87,7 @@ namespace RevBayesCore {
 
     private:
 
-        void                                                                    recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool joint, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &states);
+        void                                                                    recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool joint, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &states, ProgressBar &progress, size_t &num_finished_nodes, bool verbose);
         void                                                                    enforceNonnegativeBranchLengths(TopologyNode& tree) const;
         Clade                                                                   fillConditionalClades(const TopologyNode &n, std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> &cc);
         const Sample<Clade>&                                                    findCladeSample(const Clade &n) const;
