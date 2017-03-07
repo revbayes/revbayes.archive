@@ -1304,7 +1304,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::getScaledNodeWeights(const T
 
     std::vector<TopologyNode*> children = node.getChildren();
 
-    TopologyNode* child;
+    TopologyNode* child = NULL;
     size_t num_with_descendants = 0;
 
     for(size_t i = 0; i < children.size(); i++)
@@ -1313,7 +1313,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::getScaledNodeWeights(const T
         const double* p_child  = partialLikelihoods + activeLikelihood[child_index]  * activeLikelihoodOffset + child_index*nodeOffset  + pattern*siteOffset;
 
         // does this child have descendants?
-        if(p_child[dim] == 0)
+        if (p_child[dim] == 0)
         {
             child = children[i];
             num_with_descendants++;
@@ -1321,7 +1321,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::getScaledNodeWeights(const T
     }
 
     //if more than one child has observed descendants, then this is the last ancestral node
-    if(num_with_descendants == 1)
+    if (num_with_descendants == 1)
     {
         max = std::max(max, getScaledNodeWeights(*child, pattern, weights));
     }
