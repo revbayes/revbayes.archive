@@ -10,6 +10,7 @@ debug="false"
 mac="false"
 win="false"
 mpi="false"
+help="false"
 
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
@@ -57,12 +58,12 @@ rm ./project-config.jam*  # clean up from previous runs
 
 if [ "$mac" = "true" ]
 then
-./bootstrap.sh --with-libraries=regex,thread,date_time,program_options,math,serialization,signals
+./bootstrap.sh --with-libraries=atomic,chrono,regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
 #./bootstrap.sh --with-libraries=filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
 #./b2 link=static macosx-version-min=10.6
 else
-./bootstrap.sh --with-libraries=filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
 fi
 
@@ -184,9 +185,17 @@ add_subdirectory(libs)
 add_subdirectory(core)
 add_subdirectory(revlanguage)
 
+
 ############# executables #################
 # basic rev-bayes binary
 ' >> $HERE/CMakeLists.txt
+
+if [ "$help" = "true" ]
+then
+echo '
+add_subdirectory(revlanguage)
+' >> $HERE/CMakeLists.txt
+fi
 
 if [ "$mpi" = "true" ]
 then
@@ -195,6 +204,14 @@ add_executable(rb-mpi ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
 target_link_libraries(rb-mpi rb-parser rb-core libs ${Boost_LIBRARIES} ${MPI_LIBRARIES})
 set_target_properties(rb-mpi PROPERTIES PREFIX "../")
+' >> $HERE/CMakeLists.txt
+elif [ "$help" = "true" ]
+then
+echo '
+add_executable(rb ${PROJECT_SOURCE_DIR}/tool/help/HtmlHelpGenerator.cpp)
+
+target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+set_target_properties(rb PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
 else
 echo '

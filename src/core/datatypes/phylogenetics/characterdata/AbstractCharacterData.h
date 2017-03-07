@@ -81,7 +81,6 @@ namespace RevBayesCore {
         
         
         // CharacterData functions
-//      virtual AbstractCharacterData&              concatenate(const AbstractCharacterData &d) = 0;                            //!< Concatenate two sequences
         virtual std::string                         getDataType(void) const = 0;                                                //!< Return the data type of this character data matrix
         virtual bool                                isHomologyEstablished(void) const = 0;                                      //!< Returns whether the homology of the characters has been established
         

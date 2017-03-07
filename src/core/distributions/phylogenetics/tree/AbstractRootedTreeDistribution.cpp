@@ -48,7 +48,21 @@ AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNod
     }
     
     log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
-    
+
+    std::set<std::string> found;
+    for(size_t i = 0; i < taxa.size(); i++)
+    {
+        if (found.find(taxa[i].getName()) == found.end())
+        {
+            found.insert(taxa[i].getName());
+        }
+        else
+        {
+            std::stringstream ss;
+            ss << "Duplicate taxon name '" << taxa[i].getName() << "' encountered when building tree distribution";
+            throw(RbException(ss.str()));
+        }
+    }
 }
 
 
@@ -582,149 +596,28 @@ void AbstractRootedTreeDistribution::simulateTree( void )
     double ra = getRootAge();
     double max_age = getOriginTime();
 
-    // we need a sorted vector of constraints, starting with the smallest
-    std::vector<Clade> sorted_clades;
-
-    // create a clade that contains all species
-    Clade all_species = Clade(taxa);
-    all_species.setAge( ra );
-    sorted_clades.push_back(all_species);
-
-    // next sort the clades
-    std::sort(sorted_clades.begin(),sorted_clades.end());
-
-    // remove duplicates
-    std::vector<Clade> tmp;
-    tmp.push_back( sorted_clades[0] );
-    for (size_t i = 1; i < sorted_clades.size(); ++i)
+    double max_node_age = 0;
+    for (size_t j = 0; j < nodes.size(); ++j)
     {
-        Clade &a = tmp[tmp.size()-1];
-        Clade &b = sorted_clades[i];
-
-        if ( a.size() != b.size() )
+        if ( nodes[j]->getAge() > max_node_age )
         {
-            tmp.push_back( sorted_clades[i] );
+            max_node_age = nodes[j]->getAge();
         }
-        else
-        {
-            bool equal = true;
-            for (size_t j = 0; j < a.size(); ++j)
-            {
-                if ( a.getTaxon(j) != b.getTaxon(j) )
-                {
-                    equal = false;
-                    break;
-                }
-            }
-            if ( equal == false )
-            {
-                tmp.push_back( sorted_clades[i] );
-            }
-        }
-
     }
-    sorted_clades = tmp;
-
-    std::vector<Clade> virtual_taxa;
-    for (size_t i = 0; i < sorted_clades.size(); ++i)
+    if ( ra <= max_node_age )
     {
-
-        Clade &c = sorted_clades[i];
-        std::vector<Taxon> taxa = c.getTaxa();
-        std::vector<Clade> clades;
-
-        for (int j = int(i)-1; j >= 0; --j)
+        if(ra > 0.0)
         {
-            const Clade &c_nested = sorted_clades[j];
-            const std::vector<Taxon> &taxa_nested = c_nested.getTaxa();
-
-            bool found_all = true;
-            bool found_some = false;
-            for (size_t k = 0; k < taxa_nested.size(); ++k)
-            {
-                std::vector<Taxon>::iterator it = std::find(taxa.begin(), taxa.end(), taxa_nested[k]);
-                if ( it != taxa.end() )
-                {
-                    taxa.erase( it );
-                    found_some = true;
-                }
-                else
-                {
-                    std::cerr << taxa_nested[k].getName() << std::endl;
-                    std::cerr << taxa_nested[k].getSpeciesName() << std::endl;
-                    found_all = false;
-                }
-
-            }
-
-            if ( found_all == true )
-            {
-                //                c.addTaxon( virtual_taxa[j] );
-                //                taxa.push_back( virtual_taxa[j] );
-                clades.push_back( virtual_taxa[j] );
-            }
-
-            if ( found_all == false && found_some == true )
-            {
-                throw RbException("Cannot simulate tree: conflicting monophyletic clade constraints. Check that all clade constraints are properly nested.");
-            }
-
+            throw(RbException("Root age younger than oldest taxon age"));
         }
 
+        // Get the rng
+        RandomNumberGenerator* rng = GLOBAL_RNG;
 
-        std::vector<TopologyNode*> nodes_in_clade;
-
-
-        for (size_t k = 0; k < taxa.size(); ++k)
-        {
-            Clade c = Clade( taxa[k] );
-            c.setAge( taxa[k].getAge() );
-            clades.push_back( c );
-        }
-
-        for (size_t k = 0; k < clades.size(); ++k)
-        {
-            for (size_t j = 0; j < nodes.size(); ++j)
-            {
-                if (nodes[j]->getClade() == clades[k])
-                {
-                    nodes_in_clade.push_back( nodes[j] );
-                    nodes.erase( nodes.begin()+j );
-                    break;
-                }
-
-            }
-
-        }
-
-        double clade_age = c.getAge();
-
-        double max_node_age = 0;
-        for (size_t j = 0; j < nodes_in_clade.size(); ++j)
-        {
-            if ( nodes_in_clade[j]->getAge() > max_node_age )
-            {
-                max_node_age = nodes_in_clade[j]->getAge();
-            }
-        }
-        if ( clade_age <= max_node_age )
-        {
-            // Get the rng
-            RandomNumberGenerator* rng = GLOBAL_RNG;
-
-            clade_age = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
-        }
-
-        simulateClade(nodes_in_clade, clade_age, max_age);
-        nodes.push_back( nodes_in_clade[0] );
-
-        std::vector<Taxon> v_taxa;
-        nodes_in_clade[0]->getTaxa(v_taxa);
-        Clade new_clade = Clade(v_taxa);
-        new_clade.setAge( nodes_in_clade[0]->getAge() );
-        virtual_taxa.push_back( new_clade );
-
+        ra = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
     }
+
+    simulateClade(nodes, ra, max_age);
 
     TopologyNode *root = nodes[0];
 

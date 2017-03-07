@@ -6,10 +6,12 @@
 //
 
 #include "Func_chromosomesCladoProbs.h"
+#include "CladogeneticProbabilityMatrix.h"
 #include "ConstantNode.h"
 #include "ChromosomesCladogenicStateFunction.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlCladogeneticProbabilityMatrix.h"
 #include "RlDeterministicNode.h"
 #include "MatrixReal.h"
 #include "RlSimplex.h"
@@ -18,7 +20,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_chromosomesCladoProbs::Func_chromosomesCladoProbs( void ) : TypedFunction<MatrixReal>( ) {
+Func_chromosomesCladoProbs::Func_chromosomesCladoProbs( void ) : TypedFunction<CladogeneticProbabilityMatrix>( ) {
     
 }
 
@@ -35,7 +37,7 @@ Func_chromosomesCladoProbs* Func_chromosomesCladoProbs::clone( void ) const {
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_chromosomesCladoProbs::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func_chromosomesCladoProbs::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ep = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();

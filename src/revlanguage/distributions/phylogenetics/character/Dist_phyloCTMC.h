@@ -45,8 +45,8 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       nSites;
         RevPtr<const RevVariable>                       type;
         RevPtr<const RevVariable>                       treatAmbiguousAsGap;
+        RevPtr<const RevVariable>                       storeInternalNodes;
         RevPtr<const RevVariable>                       coding;
-
 
     };
 

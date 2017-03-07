@@ -14,7 +14,7 @@
 
 using namespace RevBayesCore;
 
-HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<double> *a, const TypedDagNode<int> *rs, const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *e, const TypedDagNode<double > *ev, const TypedDagNode< double > *r, const std::vector<Taxon> &n) : AbstractCharacterHistoryBirthDeathProcess(),
+HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<double> *a, const TypedDagNode<int> *rs, const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *e, const TypedDagNode<double > *ev, const TypedDagNode< double > *r, const std::string &cdt, const std::vector<Taxon> &n) : AbstractCharacterHistoryBirthDeathProcess(),
     root_age( a ),
     root_state( rs ),
     speciation( s ),
@@ -22,6 +22,7 @@ HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<dou
     event_rate( ev ),
     rho( r ),
     branch_histories( NULL, 1, speciation->getValue().size() ),
+    condition( cdt ),
     taxa( n ),
     activeLikelihood( std::vector<size_t>(2*n.size()-1, 0) ),
     changed_nodes( std::vector<bool>(2*n.size()-1, false) ),
@@ -221,13 +222,14 @@ double HeterogeneousRateBirthDeath::computeLnProbability( void )
         
     }
     
-    // add the survival of a second species if we condition on the MRCA
+    // compute the probability at the root
     lnProb = computeRootLikelihood();
     
     if ( shift_same_category == true )
     {
         return RbConstants::Double::neginf;
     }
+
     
     return lnProb + logTreeTopologyProb;
 }
@@ -316,7 +318,9 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
             
             updateBranchProbabilitiesNumerically(initialState, beginAge, beginAge+time_interval, s, e, r, current_state);
             
-            initialState[num_rate_categories] = initialState[num_rate_categories]*event_rate->getValue()* (1.0/num_rate_categories);
+            bool allow_same_category = false;
+            double rate_cat_prob = ( allow_same_category == true ? 1.0/num_rate_categories : 1.0 / (num_rate_categories-1.0) );
+            initialState[num_rate_categories] = initialState[num_rate_categories]*event_rate->getValue() * rate_cat_prob;
             
             
             begin_time = end_time;
@@ -397,8 +401,14 @@ double HeterogeneousRateBirthDeath::computeRootLikelihood( void )
     std::vector< double > rightStates = nodeStates[right_index][activeLikelihood[right_index]];
     
     double prob = leftStates[num_rate_categories]*rightStates[num_rate_categories];
+    double ln_prob = log( prob );
     
-    return log(prob) + totalScaling;
+    if ( condition == "survival" )
+    {
+        ln_prob -= 2*log( 1.0-leftStates[ root_state->getValue()-1 ] );
+    }
+    
+    return ln_prob + totalScaling;
 }
 
 

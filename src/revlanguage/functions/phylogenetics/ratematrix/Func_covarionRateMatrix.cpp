@@ -36,23 +36,25 @@ Func_covarionRateMatrix* Func_covarionRateMatrix::clone( void ) const
 RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_covarionRateMatrix::createFunction( void ) const
 {
     
-    bool rescale = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getDagNode()->getValue();
-    RevBayesCore::CovarionRateMatrixFunction* f = new RevBayesCore::CovarionRateMatrixFunction( rescale );
+//    bool rescale = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getDagNode()->getValue();
+//    RevBayesCore::CovarionRateMatrixFunction* f = new RevBayesCore::CovarionRateMatrixFunction( rescale );
+//
+//    // set transition rates for observed character states
+//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+//    f->setRateMatrices( rm );
+//    
+//    // set transition rates for hidden character states
+//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rs = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+//    f->setRateScalars( rs );
+//    
+//    // set transition rates for hidden character states
+//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* sr = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+//    f->setSwitchRates( sr );
+//    
+//    
+//    return f;
     
-    // set transition rates for observed character states
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    f->setRateMatrices( rm );
-    
-    // set transition rates for hidden character states
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rs = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    f->setRateScalars( rs );
-    
-    // set transition rates for hidden character states
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* sr = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
-    f->setSwitchRates( sr );
-    
-    
-    return f;
+    return NULL;
 }
 
 

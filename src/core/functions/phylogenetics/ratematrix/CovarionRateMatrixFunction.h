@@ -1,7 +1,17 @@
-#ifndef CovarionRateMatrixFunction_H
-#define CovarionRateMatrixFunction_H
+//
+//  CovarionRateMatrixFunction.h
+//  revbayes-proj
+//
+//  Created by Michael Landis on 3/3/17.
+//  Copyright © 2017 Michael Landis. All rights reserved.
+//
 
-#include "RateMatrix_FreeBinary.h"
+#ifndef CovarionRateMatrixFunction_h
+#define CovarionRateMatrixFunction_h
+
+
+#include "RateMatrix_GTR.h"
+#include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -10,43 +20,41 @@
 namespace RevBayesCore {
     
     /**
-     * @brief Hidden state rate matrix function.
+     * @brief GTR rate matrix function.
      *
-     * The RevLanguage wrapper of the Free-K rate matrix connects
-     * the variables/parameters of the function and creates the internal CovarionRateMatrixFunction object.
-     * Please read the CovarionRateMatrixFunction.h for more info.
+     * This function creates the GTR rates matrix object by setting the exchangeability rates
+     * and the base frequencies. The rate matrix takes care of the setting of the actual rates and transition probabilities.
      *
-     * @author Sebastian Hoehna & Lyndon Coghill
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since Version 1.0, 2014-07-04
      *
      */
     class CovarionRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        CovarionRateMatrixFunction(bool r);
-        virtual                                            ~CovarionRateMatrixFunction(void);                                      //!< Virtual destructor
+        CovarionRateMatrixFunction(const TypedDagNode<RbVector<RateGenerator> > *rm, const TypedDagNode<RateGenerator> *sr, const TypedDagNode< RbVector<double> > *cr);
+        virtual                                            ~CovarionRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        CovarionRateMatrixFunction*                      clone(void) const;                                                          //!< Create an independent clone
+        CovarionRateMatrixFunction*                         clone(void) const;                                                              //!< Create an independent clone
         void                                                update(void);
-        void                                                setRateMatrices(const TypedDagNode< RbVector<RateGenerator> > *rm);
-        void                                                setRateScalars(const TypedDagNode< RbVector<double> > *tr);
-        void                                                setSwitchRates(const TypedDagNode< RbVector<RbVector<double> > > *tr);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
         
     private:
         
         // members
-        bool                                                rescale;
-//        size_t                                              num_observed_states;
-//        size_t                                              num_hidden_states;
-        const TypedDagNode<RbVector<RateGenerator> >*       rate_matrices;
-        const TypedDagNode<RbVector<double> >*              rate_scalars;
-        const TypedDagNode<RbVector<RbVector<double> > >*   switch_rates;
+        
+        const TypedDagNode< RbVector<RateGenerator> >*         rate_matrices;
+        const TypedDagNode< RateGenerator >*                   switch_rates;
+        const TypedDagNode< RbVector<double> >*                clock_rates;
         
     };
     
 }
 
-#endif
+
+#endif /* CovarionRateMatrixFunction_h */

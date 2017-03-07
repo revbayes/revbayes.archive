@@ -166,6 +166,7 @@
 /* Input/output functions (in folder "functions/io") */
 #include "Func_ancestralStateTree.h"
 #include "Func_annotateTree.h"
+#include "Func_characterMapTree.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
 #include "Func_listFiles.h"
@@ -358,15 +359,11 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
         
         // division
-        addFunction( new Func__div< Natural                            , RealPos               , RealPos                   >(  )  );
         addFunction( new Func__div< RealPos                            , Natural               , RealPos                   >(  )  );
-        addFunction( new Func__div< Integer                            , Real                  , Real                      >(  )  );
         addFunction( new Func__div< Real                               , Integer               , Real                      >(  )  );
         addFunction( new Func__div< Real                               , Real                  , Real                      >(  )  );
         addFunction( new Func__div< RealPos                            , RealPos               , RealPos                   >(  )  );
-        addFunction( new Func__div< ModelVector<Natural>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
         addFunction( new Func__div< ModelVector<RealPos>               , ModelVector<Natural>  , ModelVector<RealPos>      >(  )  );
-        addFunction( new Func__div< ModelVector<Integer>               , ModelVector<Real>     , ModelVector<Real>         >(  )  );
         addFunction( new Func__div< ModelVector<Real>                  , ModelVector<Integer>  , ModelVector<Real>         >(  )  );
         addFunction( new Func__div< ModelVector<RealPos>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
         addFunction( new Func__div< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<RealPos>      >(  )  );
@@ -446,7 +443,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         /* Input/output functions (in folder "functions/io") */
         addFunction( new Func_ancestralStateTree()                      );
         addFunction( new Func_annotateTree()                            );
-		addFunction( new Func_consensusTree()                           );
+		addFunction( new Func_characterMapTree()                        );
+        addFunction( new Func_consensusTree()                           );
         addFunction( new Func_convertToPhylowood()                      );
         addFunction( new Func_listFiles()                               );
         addFunction( new Func_mapTree()                                 );

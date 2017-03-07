@@ -84,7 +84,7 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     else
     {
         double burninFrac = static_cast<const Probability &>(b).getValue();
-        burnin = int( floor( tt.getValue().size()*burninFrac ) );
+        burnin = int( floor( ancestralstate_traces[0].size() * burninFrac ) );
     }
 
     std::string summary_stat = static_cast<const RlString&>( args[6].getVariable()->getRevObject() ).getValue();

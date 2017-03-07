@@ -68,6 +68,7 @@ namespace RevBayesCore {
 
         Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool verbose);
         void                                                                    annotateTree(Tree &inputTree, AnnotationReport report, bool verbose );
+        Tree*                                                                   characterMapTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, int NUM_TIME_SLICES = 500, bool verbose = true);
         double                                                                  cladeProbability(const Clade &c, bool verbose);
         Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool verbose);
         int                                                                     getBurnin(void) const;

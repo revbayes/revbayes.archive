@@ -188,12 +188,17 @@ void TopologyConstrainedTreeDistribution::fireTreeChangeEvent(const TopologyNode
  */
 bool TopologyConstrainedTreeDistribution::matchesBackbone( void )
 {
+    
     for(size_t i = 0; i < backbone_constraints.size(); i++)
     {
         std::vector<RbBitSet>::iterator it = std::find(active_backbone_clades.begin(), active_backbone_clades.end(), backbone_constraints[i] );
+//        std::cout << backbone_constraints[i] << "\n";
         if(it == active_backbone_clades.end())
         {
+//            std::cout << "...missing!\n";
             return false;
+        } else {
+//            std::cout << "...found!\n";
         }
     }
 
@@ -253,7 +258,10 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyAddBackboneConstraints(
             tmp |= recursivelyAddBackboneConstraints( node.getChild(i) );
         }
 
-        backbone_constraints.push_back(tmp);
+        if ( !node.isRoot() )
+        {
+            backbone_constraints.push_back(tmp);
+        }
     }
 
     return tmp;

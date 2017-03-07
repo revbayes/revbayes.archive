@@ -10,6 +10,7 @@
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RlBranchLengthTree.h"
+#include "RlClade.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "RlTraceTree.h"
@@ -43,16 +44,21 @@ Func_readTreeTrace* Func_readTreeTrace::clone( void ) const
 RevPtr<RevVariable> Func_readTreeTrace::execute( void )
 {
     
+    size_t arg_index_files     = 0;
+    size_t arg_index_tree_type = 1;
+    size_t arg_index_outgroup  = 2;
+    size_t arg_index_separator = 3;
+    size_t arg_index_burnin    = 4;
+
     // get the information from the arguments for reading the file
-    
-    const std::string&  treetype = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-    const std::string&  sep      = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
+    const std::string&  treetype = static_cast<const RlString&>( args[arg_index_tree_type].getVariable()->getRevObject() ).getValue();
+    const std::string&  sep      = static_cast<const RlString&>( args[arg_index_separator].getVariable()->getRevObject() ).getValue();
     
     std::vector<std::string> vectorOfFileNames;
     
     if ( args[0].getVariable()->getRevObject().isType( ModelVector<RlString>::getClassTypeSpec() ) )
     {
-        const ModelVector<RlString>& fn = static_cast<const ModelVector<RlString> &>( args[0].getVariable()->getRevObject() ).getValue();
+        const ModelVector<RlString>& fn = static_cast<const ModelVector<RlString> &>( args[arg_index_files].getVariable()->getRevObject() ).getValue();
         std::vector<std::string> tmp;
         for (size_t i = 0; i < fn.size(); i++)
         {
@@ -84,7 +90,7 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     else
     {
         // check that the file/path name has been correctly specified
-        const std::string&  fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
+        const std::string&  fn       = static_cast<const RlString&>( args[arg_index_files].getVariable()->getRevObject() ).getValue();
         RevBayesCore::RbFileManager myFileManager( fn );
         
         if ( !myFileManager.testFile() && !(myFileManager.testDirectory() && myFileManager.getFileName() == "" ) )
@@ -112,7 +118,13 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     }
     else if ( treetype == "non-clock" )
     {
-        rv = readBranchLengthTrees(vectorOfFileNames, sep);
+        RevBayesCore::Clade og;
+        if ( args[arg_index_outgroup].getVariable() != NULL && args[arg_index_outgroup].getVariable()->getRevObject() != RevNullObject::getInstance())
+        {
+            og = static_cast<const Clade &>( args[arg_index_outgroup].getVariable()->getRevObject() ).getValue();
+        }
+        
+        rv = readBranchLengthTrees(vectorOfFileNames, sep, og);
     }
     else
     {
@@ -121,7 +133,7 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     
     int burnin = 0;
 
-    RevObject& b = args[3].getVariable()->getRevObject();
+    RevObject& b = args[arg_index_burnin].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
         burnin = static_cast<const Integer &>(b).getValue();
@@ -158,6 +170,7 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const
         treeOptions.push_back( "clock" );
         treeOptions.push_back( "non-clock" );
         argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), treeOptions, "The type of trees." ) );
+        argumentRules.push_back( new ArgumentRule( "outgroup"   , Clade::getClassTypeSpec(), "The clade (consisting of one or more taxa) used as an outgroup.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), "The separator/delimiter between values in the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
 
         std::vector<TypeSpec> burninTypes;
@@ -222,7 +235,7 @@ const TypeSpec& Func_readTreeTrace::getReturnType( void ) const
 }
 
 
-TraceTree* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter)
+TraceTree* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::string> &vector_of_file_names, const std::string &delimitter, const RevBayesCore::Clade &outgroup)
 {
     
     
@@ -232,8 +245,8 @@ TraceTree* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::stri
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
-    std::map<std::string,std::string> fileMap;
-    for (std::vector<std::string>::const_iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
+    std::map<std::string,std::string> file_map;
+    for (std::vector<std::string>::const_iterator p = vector_of_file_names.begin(); p != vector_of_file_names.end(); p++)
     {
         bool hasHeaderBeenRead = false;
         const std::string &fn = *p;
@@ -245,12 +258,12 @@ TraceTree* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::stri
             throw RbException( "Could not open file \"" + fn + "\"" );
         
         /* Initialize */
-        std::string commandLine;
+        std::string command_line;
         RBOUT( "Processing file \"" + fn + "\"");
         
         size_t index = 0;
         
-        std::string outgroup = "";
+//        std::string outgroup = "";
         
         /* Command-processing loop */
         while ( inFile.good() )
@@ -324,6 +337,11 @@ TraceTree* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::stri
             //            // re-root the tree so that we can compare the the trees
             //            tau->reroot( outgroup );
             
+            if ( outgroup.size() > 0 )
+            {
+//                tau->reroot( outgroup, false );
+            }
+            
             t.addObject( tau );
         }
     }
@@ -332,7 +350,8 @@ TraceTree* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::stri
 }
 
 
-TraceTree* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter) {
+TraceTree* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter)
+{
     
     
     std::vector<RevBayesCore::TraceTree> data;

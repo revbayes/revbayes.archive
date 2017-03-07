@@ -16,19 +16,36 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
+RateMap::RateMap( void )
+{
+    
+    num_states           = 2;
+    numCharacters        = 1;
+    
+    homogeneous_clock_rate = 1.0;
+    homogeneous_rate_matrix = new RateMatrix_JC(num_states);
+    root_frequencies = std::vector<double>(num_states,1.0/num_states);
+    
+    needs_update                        = true;
+    branch_heterogeneous_clock_rates    = false;
+    branchHeterogeneousRateMatrices     = false;
+    
+}
+
+/** Construct rate matrix with n states */
 RateMap::RateMap(size_t ns, size_t nc)
 {
     
-    num_states            = ns;
+    num_states           = ns;
     numCharacters        = nc;
     
     homogeneous_clock_rate = 1.0;
-    homogeneous_rate_matrix = new RateMatrix_JC(ns);
-    root_frequencies = std::vector<double>(ns,1.0/ns);
+    homogeneous_rate_matrix = new RateMatrix_JC(num_states);
+    root_frequencies = std::vector<double>(num_states,1.0/num_states);
     
-    needs_update          = true;
-    branch_heterogeneous_clock_rates = false;
-    branchHeterogeneousRateMatrices = false;
+    needs_update                        = true;
+    branch_heterogeneous_clock_rates    = false;
+    branchHeterogeneousRateMatrices     = false;
     
 }
 

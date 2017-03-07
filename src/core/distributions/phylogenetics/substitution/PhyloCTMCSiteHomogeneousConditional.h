@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class PhyloCTMCSiteHomogeneousConditional : public PhyloCTMCSiteHomogeneous<charType> {
 
     public:
-        PhyloCTMCSiteHomogeneousConditional(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding cod = AscertainmentBias::ALL);
+        PhyloCTMCSiteHomogeneousConditional(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding cod = AscertainmentBias::ALL, bool internal = false);
         PhyloCTMCSiteHomogeneousConditional(const PhyloCTMCSiteHomogeneousConditional &n);
         virtual                                            ~PhyloCTMCSiteHomogeneousConditional(void);                                                                   //!< Virtual destructor
 
@@ -81,8 +81,8 @@ namespace RevBayesCore {
 #include <climits>
 
 template<class charType>
-RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomogeneousConditional(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding ty) :
-    PhyloCTMCSiteHomogeneous<charType>(  t, nChars, c, nSites, amb ), warned(false), coding(ty), N(nSites), numCorrectionMasks(0)
+RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomogeneousConditional(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding ty, bool internal) :
+    PhyloCTMCSiteHomogeneous<charType>(  t, nChars, c, nSites, amb, internal ), warned(false), coding(ty), N(nSites), numCorrectionMasks(0)
 {
     if(coding != AscertainmentBias::ALL)
     {
@@ -225,11 +225,24 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
                         mask += "-";
                     numGap++;
                 }
+                else if (c.isAmbiguous())
+                {
+                    if(coding != AscertainmentBias::ALL)
+                        mask += " ";
+                    RbBitSet b = c.getState();
+                    for (size_t k = 0; k < b.size(); k++)
+                    {
+                        if (b[k] != 0)
+                        {
+                            charCounts[k]++;
+                        }
+                        
+                    }
+                }
                 else
                 {
                     if(coding != AscertainmentBias::ALL)
                         mask += " ";
-                    
                     charCounts[c.getStateIndex()]++;
                 }
 
@@ -993,7 +1006,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
 
         const std::vector< double > &freqs = ff[perSiteRates[i] % ff.size()];
 
-        std::vector<charType> siteData(num_nodes, charType());
+        std::vector<charType> siteData(num_nodes, charType(this->num_chars));
 
         // create the character
         charType &c = siteData[rootIndex];

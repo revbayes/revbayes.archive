@@ -11,6 +11,8 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include <algorithm>
+
 #	ifdef RB_WIN
 #include <windows.h>
 #   endif
@@ -66,7 +68,7 @@ std::string RbSettings::getOption(const std::string &key) const
     }
     else if ( key == "printNodeIndex" )
     {
-        return printNodeIndex ? "TRUE" : "FALSE";
+        return printNodeIndex ? "true" : "false";
     }
     else if ( key == "tolerance" )
     {
@@ -82,11 +84,11 @@ std::string RbSettings::getOption(const std::string &key) const
     }
     else if ( key == "useScaling" )
     {
-        return useScaling ? "TRUE" : "FALSE";
+        return useScaling ? "true" : "false";
     }
     else if ( key == "collapseSampledAncestors" )
     {
-        return collapseSampledAncestors ? "TRUE" : "FALSE";
+        return collapseSampledAncestors ? "true" : "false";
     }
     else
     {
@@ -248,8 +250,11 @@ void RbSettings::setCollapseSampledAncestors(bool w)
 }
 
 
-void RbSettings::setOption(const std::string &key, const std::string &value, bool write)
+void RbSettings::setOption(const std::string &key, const std::string &v, bool write)
 {
+
+    std::string value = v;
+    std::transform(value.begin(), value.end(), value.begin(), ::tolower);
 
     if ( key == "moduledir" )
     {
@@ -257,7 +262,7 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
     }
     else if ( key == "printNodeIndex" )
     {
-        printNodeIndex = value == "TRUE";
+        printNodeIndex = value == "true";
     }
     else if ( key == "tolerance" )
     {
@@ -273,7 +278,7 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
     }
     else if ( key == "useScaling" )
     {
-        useScaling = value == "TRUE";
+        useScaling = value == "true";
     }
     else if ( key == "scalingDensity" )
     {
@@ -285,7 +290,7 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
     }
     else if ( key == "collapseSampledAncestors" )
     {
-        collapseSampledAncestors = value == "TRUE";
+        collapseSampledAncestors = value == "true";
     }
     else
     {
@@ -345,12 +350,12 @@ void RbSettings::writeUserSettings( void )
     std::ofstream writeStream;
     fm.openFile( writeStream );
     writeStream << "moduledir=" << moduleDir << std::endl;
-    writeStream << "printNodeIndex=" << (printNodeIndex ? "TRUE" : "FALSE") << std::endl;
+    writeStream << "printNodeIndex=" << (printNodeIndex ? "true" : "false") << std::endl;
     writeStream << "tolerance=" << tolerance << std::endl;
     writeStream << "linewidth=" << lineWidth << std::endl;
     writeStream << "useScaling=" << useScaling << std::endl;
     writeStream << "scalingDensity=" << scalingDensity << std::endl;
-    writeStream << "collapseSampledAncestors=" << (collapseSampledAncestors ? "TRUE" : "FALSE") << std::endl;
+    writeStream << "collapseSampledAncestors=" << (collapseSampledAncestors ? "true" : "false") << std::endl;
     fm.closeFile( writeStream );
 
 }

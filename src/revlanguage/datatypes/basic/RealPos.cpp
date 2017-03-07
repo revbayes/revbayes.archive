@@ -299,7 +299,7 @@ double RealPos::isConvertibleTo(const TypeSpec& type, bool once) const
     {
         return 0.2;
     }
-    else if ( type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1.0 )
+    else if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1.0 )
     {
         return 0.1;
     }
