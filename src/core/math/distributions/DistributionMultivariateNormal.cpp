@@ -121,7 +121,7 @@ std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::ve
  * \brief MultivariateNormal probability density.
  * \param mu is a reference to a vector of doubles containing the mean
  * \param omega is a reference to a precision matrix containing the precision
- * \param z is a reference to a vector of doubles containing the random variables.
+ * \param x is a reference to a vector of doubles containing the random variables.
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
@@ -139,7 +139,7 @@ double RbStatistics::MultivariateNormal::pdfPrecision(const std::vector<double>&
  * \brief Natural log of MultivariateNormal probability density.
  * \param mu is a reference to a vector of doubles containing the mean
  * \param omega is a reference to a precision matrix containing the precision
- * \param z is a reference to a vector of doubles containing the random variables.
+ * \param x is a reference to a vector of doubles containing the random variables.
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
@@ -149,24 +149,24 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
     double logNormalize = -0.5 * log( RbConstants::TwoPI );
     
     double logDet = omega.getLogDet();
-    if ( !RbMath::isAComputableNumber(logDet) )
-        {
+    if ( RbMath::isAComputableNumber(logDet) == false )
+    {
         return logDet;
-        }
+    }
     
     size_t dim = x.size();
     std::vector<double> tmp = std::vector<double>(dim,0.0);
     
     double s2 = 0;
     for (size_t i=0; i<dim; i++)
-        {
+    {
         double tmp = 0;
         for (size_t j=0; j<dim; j++)
-            {
+        {
             tmp += omega[i][j] * (x[j] - mu[j]);
-            }
-        s2 += (x[i] - mu[i]) * tmp;
         }
+        s2 += (x[i] - mu[i]) * tmp;
+    }
     
     double lnProb = dim * logNormalize + 0.5 * (logDet - dim * log(scale) - s2 / scale);
 

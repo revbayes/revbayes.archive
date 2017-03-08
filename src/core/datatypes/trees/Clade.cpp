@@ -321,9 +321,41 @@ const std::string& Clade::getTaxonName(size_t i) const
 
 
 /**
+ * Reset the bitset.
+ *
+ * \param[in]    map    The map between taxon names and index.
+ *
+ */
+void Clade::resetTaxonBitset(const std::map<std::string, size_t> map)
+{
+    
+    bitset = RbBitSet( map.size() );
+    
+    for (size_t i = 0; i < taxa.size(); ++i)
+    {
+        const std::map<std::string, size_t >::const_iterator& it = map.find( taxa[i].getName() );
+        if ( it != map.end() )
+        {
+            bitset.set( it->second );
+        }
+        else
+        {
+            for (std::map<std::string, size_t >::const_iterator it=map.begin(); it != map.end(); ++it)
+            {
+                std::cerr << it->first << " -- " << it->second << std::endl;
+            }
+            throw RbException("Missing taxon.");
+        }
+    }
+    
+}
+
+
+
+/**
  * Set the age of the clade.
  *
- * \param[in]    age  The age of the clade.
+ * \param[in]    a  The age of the clade.
  *
  */
 void Clade::setAge(double a)
@@ -335,10 +367,10 @@ void Clade::setAge(double a)
 /**
  * Set the bitset of the clade.
  *
- * \param[in]    bitset  The bitset representation of this clade.
+ * \param[in]    b  The bitset representation of this clade.
  *
  */
-void Clade::setBitRepresentation( RbBitSet b )
+void Clade::setBitRepresentation( const RbBitSet &b )
 {
     bitset = b;
 }

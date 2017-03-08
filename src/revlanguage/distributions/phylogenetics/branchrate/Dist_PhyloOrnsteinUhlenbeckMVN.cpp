@@ -1,5 +1,6 @@
 #include "Dist_PhyloOrnsteinUhlenbeckMVN.h"
 #include "PhyloOrnsteinUhlenbeckProcessMVN.h"
+#include "PhyloOrnsteinUhlenbeckProcessEVE.h"
 #include "OptionRule.h"
 #include "RevNullObject.h"
 #include "RlBoolean.h"
@@ -37,7 +38,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     size_t n_nodes = tau->getValue().getNumberOfNodes();
     
-    RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN *dist = new RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN(tau, n);
+//    RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN *dist = new RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN(tau, n);
+    RevBayesCore::PhyloOrnsteinUhlenbeckProcessEVE *dist = new RevBayesCore::PhyloOrnsteinUhlenbeckProcessEVE(tau, n);
     
     
     // set the clock rates
@@ -110,17 +112,17 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
         dist->setSigma( s );
     }
     
-    // set the clock rates
-    if ( rootStates->getRevObject().isType( ModelVector<Real>::getClassTypeSpec() ) )
-    {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rs = static_cast<const ModelVector<Real> &>( rootStates->getRevObject() ).getDagNode();
-        dist->setRootState( rs );
-    }
-    else
-    {
+    // set the root states
+//    if ( rootStates->getRevObject().isType( ModelVector<Real>::getClassTypeSpec() ) )
+//    {
+//        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rs = static_cast<const ModelVector<Real> &>( rootStates->getRevObject() ).getDagNode();
+//        dist->setRootState( rs );
+//    }
+//    else
+//    {
         RevBayesCore::TypedDagNode< double >* rs = static_cast<const Real &>( rootStates->getRevObject() ).getDagNode();
         dist->setRootState( rs );
-    }
+//    }
     
     return dist;
 }
