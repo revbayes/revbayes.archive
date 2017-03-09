@@ -78,11 +78,13 @@ void CovarionRateMatrixFunction::swapParameterInternal(const DagNode *oldP, cons
     {
         rate_matrices = static_cast<const TypedDagNode< RbVector<RateGenerator> >* >( newP );
     }
-    else if (oldP == switch_rates)
+    
+    if (oldP == switch_rates)
     {
         switch_rates = static_cast<const TypedDagNode<RateGenerator>* >( newP );
     }
-    else if (oldP == clock_rates)
+    
+    if (oldP == clock_rates)
     {
         clock_rates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
