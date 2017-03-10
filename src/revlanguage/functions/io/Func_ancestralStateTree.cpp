@@ -104,7 +104,7 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     RevBayesCore::Tree* tree;
     if (start_states)
     {
-        tree = summary.cladoAncestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, verbose);
+        tree = summary.cladoAncestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, joint, verbose);
     }
     else
     {
