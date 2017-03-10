@@ -565,6 +565,7 @@ std::map<std::string, size_t> Tree::getTaxonBitSetMap()
             taxon_bitset_map[ordered_taxa[i]] = i;
         }
     }
+    
     return taxon_bitset_map;
 }
 
@@ -886,32 +887,67 @@ void Tree::renameNodeParameter(const std::string &old_name, const std::string &n
     getRoot().renameNodeParameter(old_name, new_name);
 }
 
+void Tree::reroot(const Clade &o, bool reindex)
+{
+    
+    bool strict = true;
+    
+    // for safety we reset the bitrepresentation of the clade
+    Clade outgroup = o;
+    outgroup.resetTaxonBitset( getTaxonBitSetMap() );
+    
+    if ( root->containsClade(outgroup, strict ) == false )
+    {
+        throw RbException("Cannot reroot the tree because we could not find an outgroup with name '" + outgroup.toString() + "'.");
+    }
+    
+    // reset parent/child relationships
+    TopologyNode *outgroup_node = root->getNode( outgroup, strict);
+    
+    if ( outgroup_node == NULL )
+    {
+        throw RbException("Cannot reroot the tree because we could not find an outgroup with name '" + outgroup.toString() + "'.");
+    }
+
+    if ( outgroup_node->isRoot() == false )
+    {
+        
+//        TopologyNode &new_root = outgroup_node->getParent();
+        reverseParentChild( outgroup_node->getParent() );
+        outgroup_node->getParent().setParent( NULL );
+    
+        // set the new root
+        setRoot( &outgroup_node->getParent(), reindex );
+    }
+    
+}
+
 
 void Tree::reroot(const std::string &outgroup, bool reindex)
 {
-    std::vector<std::string> tipnames = getTipNames();
-    size_t outgroupIndex = tipnames.size();
-    for (size_t i=0; i<tipnames.size(); ++i)
+    std::vector<std::string> tip_names = getTipNames();
+    size_t outgroup_index = tip_names.size();
+    for (size_t i=0; i<tip_names.size(); ++i)
     {
-        if ( tipnames[i] == outgroup )
+        if ( tip_names[i] == outgroup )
         {
-            outgroupIndex = i;
+            outgroup_index = i;
             break;
         }
     }
 
-    if ( outgroupIndex == tipnames.size() )
+    if ( outgroup_index == tip_names.size() )
     {
         throw RbException("Cannot reroot the tree because we could not find an outgroup with name '" + outgroup + "'.");
     }
 
     // reset parent/child relationships
-	TopologyNode& outgroupNode = getTipNode( outgroupIndex );
-    reverseParentChild( outgroupNode.getParent() );
-    outgroupNode.getParent().setParent( NULL );
+	TopologyNode& outgroup_node = getTipNode( outgroup_index );
+    reverseParentChild( outgroup_node.getParent() );
+    outgroup_node.getParent().setParent( NULL );
 
 	// set the new root
-	setRoot( &outgroupNode.getParent(), reindex );
+	setRoot( &outgroup_node.getParent(), reindex );
 
 }
 

@@ -44,6 +44,9 @@
     //configure carousel
     [self.window makeFirstResponder:self.carousel];
     [carousel reloadData];
+
+    if ([self activeTree] != nil)
+        [carousel scrollToItemAtIndex:(NSInteger)(0) duration:0.5];
     
     [infoLabel setHidden:YES];
 }

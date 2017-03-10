@@ -1966,8 +1966,22 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report, bool verbos
 double TreeSummary::cladeProbability(const RevBayesCore::Clade &c, bool verbose )
 {
     summarize(verbose);
+    
+    double f = 0.0;
+    Clade tmp = c;
+    tmp.resetTaxonBitset( getTreeTrace().getValues()[0].getTaxonBitSetMap() );
+    
+    try
+    {
+        const Sample<Clade> &s = findCladeSample( tmp );
+        f = double(s.getFrequency()) / s.getSampleSize();
+    }
+    catch (RbException e)
+    {
+        // do nothing
+    }
 
-    return findCladeSample(c).getFrequency();
+    return f;
 }
 
 
@@ -1987,7 +2001,7 @@ void TreeSummary::enforceNonnegativeBranchLengths(TopologyNode& node) const
 
 
 //filling in clades and clade ages - including tip nodes in clade sample - to get age for serially sampled tips in time trees
-Clade TreeSummary::fillConditionalClades(const TopologyNode &n, std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> &condClades)
+Clade TreeSummary::fillConditionalClades(const TopologyNode &n, std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> &cond_clades)
 {
     
     Clade parent = n.getClade();
@@ -1997,13 +2011,13 @@ Clade TreeSummary::fillConditionalClades(const TopologyNode &n, std::map<Clade, 
 
     for (size_t i = 0; i < n.getNumberOfChildren(); i++)
     {
-        const TopologyNode &childNode = n.getChild(i);
+        const TopologyNode &child_node = n.getChild(i);
 
-        Clade ChildClade = fillConditionalClades(childNode, condClades);
-        children.insert(ChildClade);
+        Clade child_clade = fillConditionalClades(child_node, cond_clades);
+        children.insert(child_clade);
     }
     
-    condClades[parent] = children;
+    cond_clades[parent] = children;
 
     return parent;
 }
@@ -2014,7 +2028,7 @@ const Sample<Clade>& TreeSummary::findCladeSample(const Clade &n) const
     
     std::vector<Sample<Clade> >::const_iterator it = find_if(cladeSamples.begin(), cladeSamples.end(), CladeComparator(rooted, n) );
 
-    if(it != cladeSamples.end())
+    if ( it != cladeSamples.end() )
     {
         return *it;
     }
@@ -2741,7 +2755,7 @@ void TreeSummary::summarize( bool verbose )
         // collect clade ages and increment the clade frequency counter
         for (std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator >::iterator it=condClades.begin(); it!=condClades.end(); ++it )
         {
-            const Clade& c  = it->first;
+            const Clade& c = it->first;
 
             // insert a new sample
             Sample<Clade> cladeSample = Sample<Clade>(c, 0);
@@ -2914,7 +2928,7 @@ bool CladeComparator::operator()(const Sample<Clade>& s) const
 
     if( ab.empty() || bb.empty() )
     {
-        throw(RbException("Cannot compare unrooted clades (splits) with empty bitsets"));
+        throw RbException("Cannot compare unrooted clades (splits) with empty bitsets");
     }
 
     // do bitwise comparison
@@ -2923,7 +2937,7 @@ bool CladeComparator::operator()(const Sample<Clade>& s) const
     bool neg_ab = ab[0];
     bool neg_bb = bb[0];
 
-    for(size_t i = 0; i < ab.size(); i++)
+    for (size_t i = 0; i < ab.size(); i++)
     {
         bool vab = ab[i];
         bool vbb = bb[i];
@@ -2933,7 +2947,7 @@ bool CladeComparator::operator()(const Sample<Clade>& s) const
         bool mbb = neg_bb ? !vbb : vbb;
 
         // return result from first mismatch
-        if(mab != mbb)
+        if (mab != mbb)
         {
             return false;
         }
