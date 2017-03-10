@@ -62,7 +62,7 @@ TreeSummary* TreeSummary::clone(void) const
  * Helper function for ancestralStateTree() and cladoAncestralStateTree() that traverses the tree from root to tips collecting ancestral state samples.
  *
  */
-void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool joint, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, size_t &num_finished_nodes, bool verbose)
+void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool conditional, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, size_t &num_finished_nodes, bool verbose)
 {
     
     size_t parent_node_index = 0;
@@ -178,7 +178,7 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
                 }
             }
             // if we are conditioning on the parent's state we must get the corresponding sample from the parent
-            if ( joint == true && root == false && parent_trace_found == false )
+            if ( conditional == true && root == false && parent_trace_found == false )
             {
                 for (size_t k = 0; k < ancestral_state_traces.size(); ++k)
                 {
@@ -205,7 +205,7 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
             
             // get the sampled ancestral state from the parent node
             std::string sampled_parent_state = "";
-            if ( joint == true && root == false )
+            if ( conditional == true && root == false )
             {
                 const std::vector<std::string>& parent_ancestral_state_vector = parent_ancestral_state_trace.getValues();
                 sampled_parent_state = getSiteState( parent_ancestral_state_vector[j], site );
@@ -213,11 +213,11 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
                 
             // first check if we need to condition on the parent state
             bool count_sample = false;
-            if ( joint == true && sampled_parent_state == map_parent_state )
+            if ( conditional == true && sampled_parent_state == map_parent_state )
             {
                 count_sample = true;
             }
-            if ( joint == false || root == true )
+            if ( conditional == false || root == true )
             {
                 count_sample = true;
             }
@@ -295,7 +295,7 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
     
     std::string map_state = "";
     double max_pp = 0.0;
-    if ( joint == true )
+    if ( conditional == true )
     {
         // find the MAP state
         for (size_t i = 0; i < end_states[node_index].size(); i++)
@@ -315,7 +315,7 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
     std::vector<int> children_indices = summary_nodes[node_index]->getChildrenIndices();
     for (size_t i = 0; i < children_indices.size(); i++)
     {
-        recursivelyCollectAncestralStateSamples(children_indices[i], map_state, false, joint, ancestral_state_traces, b, site, num_sampled_states, num_sampled_trees, final_summary_tree, summary_nodes, pp, end_states, start_states, clado, progress, num_finished_nodes, verbose);
+        recursivelyCollectAncestralStateSamples(children_indices[i], map_state, false, conditional, ancestral_state_traces, b, site, num_sampled_states, num_sampled_trees, final_summary_tree, summary_nodes, pp, end_states, start_states, clado, progress, num_finished_nodes, verbose);
     }
     
 }
@@ -329,12 +329,12 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
  * posterior probability for a given character state is the probability of the node existing times the probability of the 
  * node being in the character state (see Pagel et al. 2004).
  *
- * This method summarizes both joint and marginal ancestral states. When joint = false the method summarizes marginal
- * ancestral states. joint = true should only be used if the states were sampled using the JointConditionalAncestralStateMonitor.
- * When summarizing joint ancestral states the posterior probabilities of each state are conditioned on the parent node being
+ * This method summarizes both conditional and marginal ancestral states. When conditional = false the method summarizes marginal
+ * ancestral states. conditional = true should only be used if the states were sampled using the JointConditionalAncestralStateMonitor.
+ * When summarizing conditional ancestral states the posterior probabilities of each state are conditioned on the parent node being
  * in the MAP state.
  */
-Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool joint, bool verbose )
+Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool conditional, bool verbose )
 {
     
     // get the number of ancestral state samples and the number of tree samples
@@ -385,7 +385,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
     
     // recurse through summary tree and collect ancestral state samples
     size_t node_index = final_summary_tree->getRoot().getIndex();
-    recursivelyCollectAncestralStateSamples(node_index, "", true, joint, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, states, states, false, progress, num_finished_nodes, verbose);
+    recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, states, states, false, progress, num_finished_nodes, verbose);
     
     if ( verbose == true )
     {
@@ -587,7 +587,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
  * a cladogenetic event, so for each node the MAP state includes the end state and the starting states for 
  * the two daughter lineages.
  */
-Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool joint, bool verbose )
+Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool conditional, bool verbose )
 {
     
     // get the number of ancestral state samples and the number of tree samples
@@ -639,7 +639,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
     
     // recurse through summary tree and collect ancestral state samples
     size_t node_index = final_summary_tree->getRoot().getIndex();
-    recursivelyCollectAncestralStateSamples(node_index, "", true, joint, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, end_states, start_states, true, progress, num_finished_nodes, verbose);
+    recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, end_states, start_states, true, progress, num_finished_nodes, verbose);
     
     if ( verbose == true )
     {
