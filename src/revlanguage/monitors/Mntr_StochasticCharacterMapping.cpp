@@ -57,6 +57,7 @@ void Mntr_StochasticCharacterMapping::constructInternalObject( void )
     int                print_gen      = static_cast<const Natural   &>( printgen->getRevObject()       ).getValue();
     bool               app            = static_cast<const RlBoolean &>( append->getRevObject()         ).getValue();
     
+    
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn = NULL;
     RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn = NULL;
     
@@ -79,7 +80,7 @@ void Mntr_StochasticCharacterMapping::constructInternalObject( void )
     }
     else
     {
-        throw RbException("mnStochasticCharacterMappingMonitor requires either a CTMC or a character-dependent birth death process (CDBDP).");
+        throw RbException("mnStochasticCharacterMap requires either a CTMC or a character-dependent birth death process (CDBDP).");
     }
     
     
@@ -104,7 +105,7 @@ void Mntr_StochasticCharacterMapping::constructInternalObject( void )
 const std::string& Mntr_StochasticCharacterMapping::getClassType(void)
 {
     
-    static std::string revType = "Mntr_StochasticCharacterMapping";
+    static std::string revType = "Mntr_StochasticCharacterMap";
     
     return revType;
     
@@ -131,7 +132,7 @@ std::string Mntr_StochasticCharacterMapping::getMonitorName( void ) const
 {
     
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "StochasticCharacterMappingMonitor";
+    std::string c_name = "StochasticCharacterMap";
     
     return c_name;
     
@@ -177,7 +178,7 @@ const TypeSpec& Mntr_StochasticCharacterMapping::getTypeSpec( void ) const
 void Mntr_StochasticCharacterMapping::printValue(std::ostream &o) const
 {
     
-    o << "Mntr_StochasticCharacterMapping";
+    o << "Mntr_StochasticCharacterMap";
     
 }
 
@@ -203,7 +204,7 @@ void Mntr_StochasticCharacterMapping::setConstParameter(const std::string& name,
     }
     else if ( name == "ctmc" )
     {
-        cdbdp = var;
+        ctmc = var;
     }
     else if ( name == "printgen" )
     {

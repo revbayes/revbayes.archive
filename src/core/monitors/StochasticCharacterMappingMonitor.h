@@ -135,6 +135,7 @@ filename( m.filename ),
 separator( m.separator ),
 append( m.append ),
 cdbdp( m.cdbdp ),
+ctmc( m.ctmc ),
 tree( m.tree ),
 include_simmaps( m.include_simmaps )
 {
@@ -204,6 +205,7 @@ void StochasticCharacterMappingMonitor<characterType>::monitor(unsigned long gen
         outStream << gen;
         
         size_t num_nodes;
+        
         
         // get the distribution for the character
         StateDependentSpeciationExtinctionProcess *sse_process = NULL;
@@ -344,7 +346,7 @@ void StochasticCharacterMappingMonitor<characterType>::swapNode(DagNode *oldN, D
     {
         ctmc = static_cast< StochasticNode<AbstractHomologousDiscreteCharacterData> *>( newN );
     }
-    if ( oldN == cdbdp )
+    else if ( oldN == cdbdp )
     {
         cdbdp = static_cast< StochasticNode<Tree> *>( newN );
         tree = static_cast< StochasticNode<Tree> *>( newN );
