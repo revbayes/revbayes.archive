@@ -120,7 +120,6 @@ JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralS
 {
     cdbdp = NULL;
     
-    // the cdbdp is both the tree and character evolution model
     addVariable( tree );
     addVariable( ctmc );
     

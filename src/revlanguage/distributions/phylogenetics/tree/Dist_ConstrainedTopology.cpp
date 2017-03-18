@@ -49,11 +49,6 @@ Dist_ConstrainedTopology* Dist_ConstrainedTopology::clone( void ) const {
  * \return A new internal distribution object.
  */
 RevBayesCore::TopologyConstrainedTreeDistribution* Dist_ConstrainedTopology::createDistribution( void ) const {
-    
-    std::cout << "baseDistribution=" << baseDistribution << std::endl;
-    std::cout << "constraints=" << constraints << std::endl;
-    std::cout << "backbone=" << backbone << std::endl;
-    std::cout << "invertConstraint=" << invertConstraint << std::endl;
 
     // get the parameters
     const RevBayesCore::RbVector<RevBayesCore::Clade>& c      = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
@@ -61,14 +56,9 @@ RevBayesCore::TopologyConstrainedTreeDistribution* Dist_ConstrainedTopology::cre
     RevBayesCore::TypedDistribution<RevBayesCore::Tree>* base = static_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rlDistribution.createDistribution() );
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* bb        = NULL;
     if ( backbone != NULL && backbone->getRevObject() != RevNullObject::getInstance() )
-        {
+    {
         bb = static_cast<const TimeTree &>( backbone->getRevObject() ).getDagNode();
-        }
-    
-    // SEBASTIAN: Uncomment tne next two lines to see the problem. Because invertConstraint is NULL, we have a problem. Unfortunately, I don't understand
-    //            why invertConstraint is NULL. 
-    //const bool inv       = static_cast<const RlBoolean &>( invertConstraint->getRevObject() ).getValue();
-    //std::cout << "inverse=" << inv << std::endl;
+    }
     
     // create the internal distribution object
     RevBayesCore::TopologyConstrainedTreeDistribution* d = new RevBayesCore::TopologyConstrainedTreeDistribution(base, c, bb);
@@ -180,23 +170,23 @@ const TypeSpec& Dist_ConstrainedTopology::getTypeSpec( void ) const {
 void Dist_ConstrainedTopology::setConstParameter(const std::string& name, const RevPtr<const RevVariable>& var) {
     
     if ( name == "constraints" )
-        {
+    {
         constraints = var;
-        }
+    }
     else if ( name == "treeDistribution" )
-        {
+    {
         baseDistribution = var;
-        }
+    }
     else if ( name == "backbone" )
-        {
+    {
         backbone = var;
-        }
+    }
     else if ( name == "inverse" )
-        {
-        backbone = var;
-        }
+    {
+        invertConstraint = var;
+    }
     else
-        {
+    {
         TypedDistribution<TimeTree>::setConstParameter(name, var);
-        }
+    }
 }

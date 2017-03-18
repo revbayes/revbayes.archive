@@ -85,16 +85,19 @@ namespace RevBayesCore {
         virtual double                                                      computeLnProbability(void);
 		virtual std::vector<charType>										drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
+        virtual void                                                        drawStochasticCharacterMap(std::vector<std::string*>& character_histories, size_t site);
         void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
         void                                                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                                 //!< The tree has changed and we want to know which part.
         virtual void                                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
+        virtual void                                                        recursivelyDrawStochasticCharacterMap(const TopologyNode &node, std::vector<std::string*>& character_histories, std::vector<std::vector<charType> >& start_states, std::vector<std::vector<charType> >& end_states, size_t site);
         virtual void                                                        redrawValue(void);
         void                                                                reInitialized(void);
         void                                                                setMcmcMode(bool tf);                                                                       //!< Change the likelihood computation to or from MCMC mode.
         void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);                                   //!< Set the current value, e.g. attach an observation (clamp)
         virtual void                                                        tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
         void																updateMarginalNodeLikelihoods(void);
-
+        const TypedDagNode<Tree>*                                           getTree(void);
+        
         void                                                                setClockRate(const TypedDagNode< double > *r);
         void                                                                setClockRate(const TypedDagNode< RbVector< double > > *r);
         void                                                                setPInv(const TypedDagNode< double > *);
@@ -243,6 +246,7 @@ namespace RevBayesCore {
 
 
 #include "DiscreteCharacterState.h"
+#include "DistributionExponential.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -1184,6 +1188,188 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
 
     }
 }
+
+
+template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawStochasticCharacterMap(std::vector<std::string*>& character_histories, size_t site)
+{
+    
+    // first draw joint ancestral states
+    std::vector<std::vector<charType> > start_states(this->num_nodes, std::vector<charType>(this->num_sites));
+    std::vector<std::vector<charType> > end_states(this->num_nodes, std::vector<charType>(this->num_sites));
+    this->drawJointConditionalAncestralStates( start_states, end_states );
+    
+    // save the character history for the root
+    const TopologyNode &root = this->tau->getValue().getRoot();
+    size_t root_index = root.getIndex();
+    std::string* simmap_string = new std::string("{" + end_states[root_index][site].getStringValue() + "," + StringUtilities::toString( root.getBranchLength() ) + "}");
+    character_histories[root_index] = simmap_string;
+    
+    // recurse towards tips
+    const TopologyNode &right = root.getChild(0);
+    const TopologyNode &left = root.getChild(1);
+    recursivelyDrawStochasticCharacterMap(left, character_histories, start_states, end_states, site);
+    recursivelyDrawStochasticCharacterMap(right, character_histories, start_states, end_states, site);
+    
+}
+
+
+template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, std::vector<std::string*>& character_histories, std::vector<std::vector<charType> >& start_states, std::vector<std::vector<charType> >& end_states, size_t site)
+{
+    
+    // get the start and end states
+    size_t node_index = node.getIndex();
+    size_t start_state = start_states[node_index][site].getStateIndex();
+    size_t end_state = start_state;
+    bool ambiguous_end_state = false;
+    
+    // check whether we should simulate the end state
+    if ( end_states[node_index][site].isAmbiguous() == true )
+    {
+        ambiguous_end_state = true;
+    }
+    else
+    {
+        end_state = end_states[node_index][site].getStateIndex();
+    }
+    
+    // set up vectors to hold the character transition events
+    std::vector<size_t> transition_states;
+    std::vector<double> transition_times;
+    transition_states.push_back(start_state);
+    
+    // get the rate matrix for this branch
+    RateMatrix_JC jc(this->num_chars);
+    const RateGenerator *rate_matrix = &jc;
+    if ( this->branch_heterogeneous_substitution_matrices == true )
+    {
+        if (this->heterogeneous_rate_matrices != NULL)
+        {
+            rate_matrix = &this->heterogeneous_rate_matrices->getValue()[node_index];
+        }
+    }
+    else
+    {
+        if (this->homogeneous_rate_matrix != NULL)
+        {
+            rate_matrix = &this->homogeneous_rate_matrix->getValue();
+        }
+    }
+    
+    // get the clock rate for the branch
+    double clock_rate = 1.0;
+    if ( this->branch_heterogeneous_clock_rates == true )
+    {
+        if (this->heterogeneous_clock_rates != NULL)
+        {
+            clock_rate = this->heterogeneous_clock_rates->getValue()[node_index];
+        }
+    }
+    else
+    {
+        if (this->homogeneous_clock_rate != NULL)
+        {
+            clock_rate = this->homogeneous_clock_rate->getValue();
+        }
+    }
+    
+    // now sample a character history for the branch leading to this node
+    double branch_length = node.getBranchLength();
+    if (branch_length < 0.0)
+    {
+        branch_length = 1.0;
+    }
+    double current_time = 0.0;
+    double last_transition_time = 0.0;
+    size_t current_state = start_state;
+    bool valid_history = false;
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    while ( valid_history == false )
+    {
+        
+        // draw time of next transition
+        double rate_sum = -1 * rate_matrix->getRate( current_state, current_state, 0, clock_rate );
+        double transition_time = RbStatistics::Exponential::rv( 1/rate_sum, *rng );
+        current_time += transition_time;
+        
+        if ( current_time >= branch_length && ( current_state == end_state || ambiguous_end_state == true ) )
+        {
+            
+            // we've got a valid sample so we can move on
+            transition_times.push_back(branch_length - last_transition_time);
+            valid_history = true;
+            
+        }
+        else if ( current_time >= branch_length && current_state != end_state && ambiguous_end_state == false )
+        {
+            
+            // reject this sample and get ready to draw a new one
+            current_time = 0.0;
+            last_transition_time = 0.0;
+            current_state = start_state;
+            transition_states.clear();
+            transition_times.clear();
+            transition_states.push_back(start_state);
+            
+        }
+        else if ( current_time < branch_length )
+        {
+            
+            // draw state of next transition
+            double u = rng->uniform01() * rate_sum;
+            size_t new_state = current_state;
+            for (size_t i = 0; i < this->num_chars; i++)
+            {
+                if (i != current_state)
+                {
+                    u -= rate_matrix->getRate( current_state, i, 0, clock_rate );
+                    if (u < 0.0)
+                    {
+                        new_state = i;
+                        break;
+                    }
+                }
+            }
+            
+            if (new_state != current_state)
+            {
+                transition_times.push_back(current_time - last_transition_time);
+                transition_states.push_back(new_state);
+                current_state = new_state;
+                last_transition_time = current_time;
+            }
+            
+        }
+        
+    }
+    
+    // make SIMMAP string
+    std::string simmap_string = "{";
+    for (size_t i = transition_times.size(); i > 0; i--)
+    {
+        simmap_string = simmap_string + StringUtilities::toString(transition_states[i - 1]) + "," + StringUtilities::toString(transition_times[i - 1]);
+        if (i != 1)
+        {
+            simmap_string = simmap_string + ":";
+        }
+    }
+    simmap_string = simmap_string + "}";
+    
+    // save the character history for this branch
+    character_histories[node_index] = new std::string(simmap_string);
+    
+    // recurse towards tips
+    if ( node.isTip() == false )
+    {
+        const TopologyNode &right = node.getChild(0);
+        const TopologyNode &left = node.getChild(1);
+        recursivelyDrawStochasticCharacterMap(left, character_histories, start_states, end_states, site);
+        recursivelyDrawStochasticCharacterMap(right, character_histories, start_states, end_states, site);
+    }
+    
+}
+
 
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
@@ -2235,6 +2421,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const T
 
     }
 
+}
+
+
+template<class charType>
+const RevBayesCore::TypedDagNode<RevBayesCore::Tree>* RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getTree()
+{
+    return tau;
 }
 
 
