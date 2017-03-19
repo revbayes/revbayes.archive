@@ -253,9 +253,10 @@ void StochasticCharacterMappingMonitor<characterType>::monitor(unsigned long gen
         {
             // print out the SIMMAP/phytools compatible newick string as the last column of the log file
             outStream << separator;
-            tree->getValue().clearNodeParameters();
-            tree->getValue().addNodeParameter( "character_history", character_histories, false );
-            outStream << tree->getValue().getSimmapNewickRepresentation();
+            Tree t = Tree(tree->getValue());
+            t.clearNodeParameters();
+            t.addNodeParameter( "character_history", character_histories, false );
+            outStream << t.getSimmapNewickRepresentation();
         }
         
         outStream << std::endl;
