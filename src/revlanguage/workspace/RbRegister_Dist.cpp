@@ -125,6 +125,7 @@
 #include "Dist_WeightedConstrainedNodeOrder.h"
 #include "Dist_constFBDP.h"
 #include "Dist_constPopMultispCoal.h"
+#include "Dist_constSSBDP.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
 #include "Dist_episodicBirthDeath.h"
@@ -255,6 +256,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // constant rate fossil-birth-death process
         AddDistribution< TimeTree                   >( new Dist_constFBDP());
+        
+        // constant rate serial-sampled-birth-death process
+        AddDistribution< TimeTree                   >( new Dist_constSSBDP());
         
         // diversity-dependent pure-birth process
         AddDistribution< TimeTree                   >( new Dist_divDepYuleProcess() );
@@ -402,7 +406,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< RealPos                    >( new Dist_mixture<RealPos>() );
 		AddDistribution< Natural                    >( new Dist_mixture<Natural>() );
 		AddDistribution< Integer                    >( new Dist_mixture<Integer>() );
-		AddDistribution< Probability                >( new Dist_mixture<Probability>() );
+        AddDistribution< Probability                >( new Dist_mixture<Probability>() );
+        AddDistribution< Simplex                    >( new Dist_mixture<Simplex>() );
 //        AddDistribution< RateGenerator              >( new Dist_mixture<RateGenerator>() );
         addDistribution( new Dist_mixture<RateGenerator>() );
         AddDistribution< TimeTree                   >( new Dist_mixture<TimeTree>() );

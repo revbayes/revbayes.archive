@@ -65,7 +65,8 @@ RevBayesCore::VectorIndexOperator<valueType>::VectorIndexOperator( const TypedDa
 
 
 template <class valueType>
-RevBayesCore::VectorIndexOperator<valueType>::~VectorIndexOperator( void ) {
+RevBayesCore::VectorIndexOperator<valueType>::~VectorIndexOperator( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
@@ -99,7 +100,8 @@ void RevBayesCore::VectorIndexOperator<valueType>::update( void )
 
 
 template <class valueType>
-void RevBayesCore::VectorIndexOperator<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::VectorIndexOperator<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
     if (oldP == vector)
     {
