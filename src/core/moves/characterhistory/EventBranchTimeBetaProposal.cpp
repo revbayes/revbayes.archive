@@ -110,6 +110,8 @@ double EventBranchTimeBetaProposal::doProposal( void )
         double a = delta * m + offset;
         double b = delta * (1.0-m) + offset;
         
+        // Sebastian: This is a fix we noticed during the Bodega 2017 workshop
+        // apparently those values are not bounded
         if ( a > 0.0 && b > 0.0  )
         {
             double new_time = RbStatistics::Beta::rv(a, b, *rng);
