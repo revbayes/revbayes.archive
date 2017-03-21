@@ -37,7 +37,7 @@ namespace RevBayesCore {
                                                       const DagNode *s,
                                                       const DagNode *e,
                                                       const DagNode *p,
-                                                      const DagNode *r, const TypedDagNode<RbVector<double> > *t,
+                                                      const TypedDagNode<double >* r, const TypedDagNode<RbVector<double> > *t,
                                                       bool uo, const std::string &cdt, const std::vector<Taxon> &tn);  //!< Constructor
         
         // public member functions
@@ -46,7 +46,6 @@ namespace RevBayesCore {
 
         double                                          getExtinctionRate( size_t index = 0 ) const;
         double                                          getFossilizationRate( size_t index = 0 ) const;
-        double                                          getSamplingProbability( size_t index = 0 ) const;
         double                                          getSpeciationRate( size_t index = 0 ) const;
 
     protected:
@@ -75,7 +74,6 @@ namespace RevBayesCore {
         const TypedDagNode<double >*                    homogeneous_psi;                                        //!< The homogeneous speciation rates.
         const TypedDagNode<RbVector<double> >*          heterogeneous_psi;                                      //!< The heterogeneous speciation rates.
         const TypedDagNode<double >*                    homogeneous_rho;                                        //!< The homogeneous speciation rates.
-        const TypedDagNode<RbVector<double> >*          heterogeneous_rho;                                      //!< The heterogeneous speciation rates.
         const TypedDagNode<RbVector<double> >*          times;                                                  //!< The times of the instantaneous sampling events.
         
         bool                                            useOrigin;
@@ -84,7 +82,6 @@ namespace RevBayesCore {
         mutable std::vector<double>                     birth;
         mutable std::vector<double>                     death;
         mutable std::vector<double>                     fossil;
-        mutable std::vector<double>                     sampling;
     };
 }
 

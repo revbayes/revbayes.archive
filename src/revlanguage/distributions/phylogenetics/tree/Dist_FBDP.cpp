@@ -70,7 +70,6 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_FBDP::createDistribution( void ) c
     bool piecewiseLambda = false;
     bool piecewiseMu = false;
     bool piecewisePsi = false;
-    bool piecewiseRho = false;
 
     if( lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
@@ -87,12 +86,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_FBDP::createDistribution( void ) c
         piecewisePsi = true;
     }
 
-    if( rho->getRevObject().isType( ModelVector<Probability>::getClassTypeSpec() ) )
-    {
-        piecewiseRho = true;
-    }
-
-    bool piecewise = piecewiseLambda || piecewiseMu || piecewisePsi || piecewiseRho;
+    bool piecewise = piecewiseLambda || piecewiseMu || piecewisePsi;
 
     if ( piecewise && (times == NULL || times->getRevObject() == RevNullObject::getInstance() ) )
     {
@@ -110,8 +104,6 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_FBDP::createDistribution( void ) c
         RevBayesCore::DagNode* m;
         // fossilization rate
         RevBayesCore::DagNode* p;
-        // sampling probability
-        RevBayesCore::DagNode* r;
 
         if(piecewiseLambda)
         {
@@ -139,15 +131,9 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_FBDP::createDistribution( void ) c
         {
             p = static_cast<const RealPos &>( psi->getRevObject() ).getDagNode();
         }
+
         // sampling probability
-        if(piecewiseRho)
-        {
-            r = static_cast<const ModelVector<Probability> &>( rho->getRevObject() ).getDagNode();
-        }
-        else
-        {
-            r = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
-        }
+        RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
 
         // rate change times
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt       = static_cast<const ModelVector<RealPos> &>( times->getRevObject() ).getDagNode();
@@ -261,12 +247,9 @@ const MemberRules& Dist_FBDP::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "lambda",  paramTypes, "The speciation rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "mu",      paramTypes, "The extinction rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         dist_member_rules.push_back( new ArgumentRule( "psi",     paramTypes, "The fossilization rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        std::vector<TypeSpec> rhoTypes;
-        rhoTypes.push_back( Probability::getClassTypeSpec() );
-        rhoTypes.push_back( ModelVector<Probability>::getClassTypeSpec() );
-        dist_member_rules.push_back( new ArgumentRule( "rho",     rhoTypes, "The taxon sampling fraction(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "rho",     Probability::getClassTypeSpec(), "The taxon sampling fraction(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
 
-        dist_member_rules.push_back( new ArgumentRule( "times",  ModelVector<RealPos>::getClassTypeSpec(), "The rate change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "times",   ModelVector<RealPos>::getClassTypeSpec(), "The rate change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
