@@ -1063,58 +1063,9 @@ Tree* TreeSummary::characterMapTree(const Tree &input_summary_tree, std::vector<
                 // get the sampled character history for this iteration
                 const std::vector<std::string>& ancestralstate_vector = ancestralstate_trace.getValues();
                 std::string character_history = ancestralstate_vector[j];
-                boost::trim(character_history);
                 
-                // Now parse the sampled SIMMAP string:
-                // These strings represent character histories for a single branch in the form
-                // {state_1,time_in_state_1:state_2,time_in_state_2} where the states are
-                // listed left to right from the tip to the root. We loop through the string
-                // from right to left to store events in forward time (root to tip).
-                bool parsed_time = false;
-                std::vector< std::pair<size_t, double> > this_branch_map = std::vector< std::pair<size_t, double> >();
-                std::pair<size_t, double> this_event = std::pair<size_t, double>();
-                std::string state = "";
-                std::string time = "";
-                size_t k = character_history.size();
-                
-                while (true) {
-                    
-                    if ( k == (character_history.size() - 1) &&
-                                        std::string(1, character_history[0]).compare("{") != 0 &&
-                                        std::string(1, character_history[k]).compare("}") != 0 )
-                    {
-                        throw RbException("Error while summarizing character maps: trace does not contain valid SIMMAP string.");
-                    }
-                    else if ( std::string(1, character_history[k]).compare(",") == 0 )
-                    {
-                        parsed_time = true;
-                        this_event.second = std::atof( time.c_str() );
-                    }
-                    else if ( std::string(1, character_history[k]).compare(":") == 0 || k == 0 )
-                    {
-                        this_event.first = std::atoi( state.c_str() );
-                        this_branch_map.push_back( this_event );
-                        if (k == 0)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            state = "";
-                            time = "";
-                            parsed_time = false;
-                        }
-                    }
-                    else if ( parsed_time == false )
-                    {
-                        time = std::string(1, character_history[k]) + time;
-                    }
-                    else
-                    {
-                        state = std::string(1, character_history[k]) + state;
-                    }
-                    k--;
-                }
+                // parse sampled SIMMAP string
+                std::vector< std::pair<size_t, double> > this_branch_map = parseSIMMAPForNode(character_history);
                 
                 branch_maps.push_back(this_branch_map);
                 
@@ -1228,6 +1179,70 @@ Tree* TreeSummary::characterMapTree(const Tree &input_summary_tree, std::vector<
     
     return final_summary_tree;
     
+}
+                
+
+/*
+ * Helper function that parses a SIMMAP character history for a single branch.
+ * These strings represent character histories for a single branch in the form
+ * {state_2,time_in_state_2:state_1,time_in_state_1} where the states are
+ * listed left to right from the tip to the root (backward time). We loop through 
+ * the string from right to left to store events in forward time (root to tip).
+ * Returns vector of events: [<state_1, time_in_state_1>, <state_2, time_in_state_2>]
+ */
+std::vector< std::pair<size_t, double> > TreeSummary::parseSIMMAPForNode(std::string character_history)
+{
+
+    boost::trim(character_history);
+    
+    // Now parse the sampled SIMMAP string:
+    bool parsed_time = false;
+    std::vector< std::pair<size_t, double> > this_branch_map = std::vector< std::pair<size_t, double> >();
+    std::pair<size_t, double> this_event = std::pair<size_t, double>();
+    std::string state = "";
+    std::string time = "";
+    size_t k = character_history.size();
+    
+    while (true) {
+        
+        if ( k == (character_history.size() - 1) &&
+                            std::string(1, character_history[0]).compare("{") != 0 &&
+                            std::string(1, character_history[k]).compare("}") != 0 )
+        {
+            throw RbException("Error while summarizing character maps: trace does not contain valid SIMMAP string.");
+        }
+        else if ( std::string(1, character_history[k]).compare(",") == 0 )
+        {
+            parsed_time = true;
+            this_event.second = std::atof( time.c_str() );
+        }
+        else if ( std::string(1, character_history[k]).compare(":") == 0 || k == 0 )
+        {
+            this_event.first = std::atoi( state.c_str() );
+            this_branch_map.push_back( this_event );
+            if (k == 0)
+            {
+                break;
+            }
+            else
+            {
+                state = "";
+                time = "";
+                parsed_time = false;
+            }
+        }
+        else if ( parsed_time == false )
+        {
+            time = std::string(1, character_history[k]) + time;
+        }
+        else
+        {
+            state = std::string(1, character_history[k]) + state;
+        }
+        k--;
+    }
+
+    return this_branch_map;
 }
 
 
@@ -2852,6 +2867,226 @@ void TreeSummary::summarize( bool verbose )
     if( using_sampled_ancestors == false ) sampledAncestorSamples.clear();
 
     summarized = true;
+}
+
+
+/**
+ *
+ * Summarizes sampled character histories for a vector of stochastic character map traces for each node of a given summary tree.
+ *
+ */
+void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, std::string filename, int burnin, bool verbose, std::string separator)
+{
+    // get the number of ancestral state samples and the number of tree samples
+    size_t num_sampled_states = ancestralstate_traces[0].getValues().size();
+    size_t num_sampled_trees;
+    if (use_tree_trace == false)
+    {
+        // the ancestral states were sampled over the same tree
+        num_sampled_trees = 1;
+    }
+    else
+    {
+        // the ancestral states were sampled over different trees each iteration
+        num_sampled_trees = trace.size();
+    }
+    
+    setBurnin(burnin);
+    if ( burnin >= num_sampled_states )
+    {
+        throw RbException("Burnin size is too large for the ancestral state trace.");
+    }
+    
+    if ( use_tree_trace == true &&  num_sampled_trees != num_sampled_states )
+    {
+        throw RbException("The tree trace and the ancestral state trace must contain the same number of samples.");
+    }
+    
+    std::stringstream ss;
+    ss << "Compiling stochastic character maps from " << num_sampled_states << " samples in the character map trace, using a burnin of " << burnin << " samples.\n";
+    RBOUT(ss.str());
+    
+    const std::vector<TopologyNode*> &summary_nodes = input_tree.getNodes();
+    
+    ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, 0 );
+    if ( verbose == true )
+    {
+        progress.start();
+    }
+
+    // open stream for file output
+    RbFileManager f = RbFileManager(filename);
+    f.createDirectoryForFile();
+    std::fstream out;
+    out.open( filename.c_str(), std::fstream::out);
+    
+    // write column headers
+    out << "node_index" << separator; 
+    out << "branch_start_time" << separator;
+    out << "branch_end_time" << separator;
+    out << "start_state" << separator;
+    out << "end_state" << separator;
+    out << "transition_time" << separator;
+    out << "transition_type" << std::endl; 
+
+//    std::vector<size_t> start_states( summary_nodes.size() );
+//    std::vector<size_t> end_states( summary_nodes.size() );
+
+    // loop through all nodes in the summary tree
+    for (size_t i = 0; i < summary_nodes.size(); ++i)
+    {
+        size_t sample_clade_index;
+        bool trace_found = false;
+        AncestralStateTrace character_map_trace;
+        
+        // loop through all the stochastic character map samples
+        for (size_t j = burnin; j < num_sampled_states; ++j)
+        {
+            
+            if ( verbose == true )
+            {
+                progress.update( i * num_sampled_states + num_sampled_states * (j - burnin) / (num_sampled_states - burnin) );
+            }
+            
+            // if necessary, get the sampled tree from the tree trace
+            //const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : input_tree;
+            //const TopologyNode& sample_root = sample_tree.getRoot();
+            const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : input_tree;
+            const TopologyNode& sample_root = sample_tree.getRoot();
+            
+            if ( use_tree_trace == true )
+            {
+                // check if the clade in the summary tree is also in the sampled tree
+                sample_clade_index = sample_root.getCladeIndex( summary_nodes[i] );
+
+                // and we must also find the trace for this node index
+                trace_found = false;
+            }
+            else
+            {
+                sample_clade_index = summary_nodes[i]->getIndex();
+            }
+            
+            if ( RbMath::isFinite( sample_clade_index ) == true )
+            {
+                
+                // if necessary find the AncestralStateTrace for the sampled node
+                if ( trace_found == false )
+                {
+                    for (size_t k = 0; k < ancestralstate_traces.size(); k++)
+                    {
+                        if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sample_clade_index + 1))
+                        {
+                            character_map_trace = ancestralstate_traces[k];
+                            trace_found = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // get the sampled character history for this node for this iteration
+                const std::vector<std::string>& ancestralstate_vector = character_map_trace.getValues();
+                std::string character_history = ancestralstate_vector[j];
+
+                // parse sampled SIMMAP string
+                std::vector< std::pair<size_t, double> > this_branch_map = parseSIMMAPForNode(character_history);
+
+                double start_time = sample_tree.getNode( sample_clade_index ).getAge() + sample_tree.getNode( sample_clade_index ).getBranchLength();
+                double end_time = sample_tree.getNode( sample_clade_index ).getAge();
+
+                // sanity check
+                double t = 0.0;
+                for (size_t k = 0; k < this_branch_map.size(); k++)
+                {
+                    t += this_branch_map[k].second;
+                }
+
+                double current_time = start_time;
+                size_t current_state;
+                if ( this_branch_map.size() > 0 )
+                {
+                    current_state = this_branch_map[0].first;
+ //                   start_states[ sample_clade_index ] = current_state;
+ //                   end_states[ sample_clade_index ] = this_branch_map[ this_branch_map.size() ].first;
+                }
+                else
+                {
+                    throw RbException("There were no sampled character histories for node " + StringUtilities::toString(sample_clade_index + 1) + " in the summary tree.");
+                }
+                
+                // write output for each transition along the branch in forward time (towards tips)
+                for (size_t k = 1; k < this_branch_map.size(); k++)
+                {
+                    if (this_branch_map[k].first != current_state)
+                    {
+                        // write node index
+                        out << summary_nodes[i]->getIndex() + 1 << separator; 
+                        
+                        // write branch start/end times
+                        out << start_time << separator;
+                        out << end_time << separator;
+                        
+                        // write start state
+                        out << current_state << separator;
+                        
+                        // write end state
+                        out << this_branch_map[k].first << separator;
+
+                        // write transition time
+                        out << current_time - this_branch_map[k - 1].second << separator;
+
+                        out << "anagenetic" << std::endl; 
+                        
+                    }
+                    current_state = this_branch_map[k].first;
+                    current_time = current_time - this_branch_map[k - 1].second;
+                }   
+            }
+        }
+    }  
+    
+//    // loop through all nodes in the summary tree to output any cladogenetic transitions
+//    for (size_t i = 0; i < summary_nodes.size(); ++i)
+//    {
+//
+//        double start_time = summary_nodes[i]->getAge() + summary_nodes[i]->getBranchLength();
+//        double end_time = summary_nodes[i]->getAge();
+//
+//        std::vector<int> children_indices = summary_nodes[i]->getChildrenIndices();
+//
+//        for (int j = 0; j < children_indices.size(); j++)
+//        {
+//
+//            if (end_states[i] != start_states[children_indices[j]])
+//            {
+//                // write node index
+//                out << i + 1 << separator; 
+//                
+//                // write branch start/end times
+//                out << start_time << separator;
+//                out << end_time << separator;
+//                
+//                // write start state
+//                out << end_states[i] << separator;
+//                
+//                // write end state
+//                out << start_states[children_indices[j]] << separator;
+//                
+//                // write transition time
+//                out << end_time << separator;
+//
+//                out << "cladogenetic" << std::endl; 
+//            }
+//        }
+//    }
+   
+    out.close();
+
+    if ( verbose == true )
+    {
+        progress.finish();
+    }
+
 }
 
 /*

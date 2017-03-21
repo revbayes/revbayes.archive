@@ -190,6 +190,7 @@
 #include "Func_readAncestralStateTreeTrace.h"
 #include "Func_readAncestralStateTrace.h"
 #include "Func_source.h"
+#include "Func_summarizeCharacterMaps.h"
 #include "Func_TaxonReader.h"
 #include "Func_treeTrace.h"
 #include "Func_write.h"
@@ -468,6 +469,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
 		addFunction( new Func_readCharacterDataDelimited()              );
         addFunction( new Func_readDataDelimitedFile()                   );
         addFunction( new Func_source()                                  );
+        addFunction( new Func_summarizeCharacterMaps()                  );
         addFunction( new Func_treeTrace()                               );
         addFunction( new Func_write()                                   );
         addFunction( new Func_writeCharacterDataDelimited()             );

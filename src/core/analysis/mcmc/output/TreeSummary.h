@@ -84,6 +84,7 @@ namespace RevBayesCore {
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05, bool verbose=true);
         void                                                                    setBurnin(int b);
         int                                                                     size(bool post = false) const;
+        void                                                                    summarizeCharacterMaps(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, std::string filename, int burnin, bool verbose, std::string separator);
 
     private:
 
@@ -93,6 +94,7 @@ namespace RevBayesCore {
         const Sample<Clade>&                                                    findCladeSample(const Clade &n) const;
         TopologyNode*                                                           findParentNode(TopologyNode&, const Clade &, std::vector<TopologyNode*>&, RbBitSet& ) const;
         std::string                                                             getSiteState( const std::string &site_sample, size_t site );
+        std::vector< std::pair<size_t, double> >                                parseSIMMAPForNode(std::string character_history);
         void                                                                    mapContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, bool np=true ) const;
         void                                                                    mapDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, bool np=true ) const;
         void                                                                    mapParameters(Tree &inputTree) const;
