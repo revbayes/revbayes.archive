@@ -232,7 +232,7 @@ void Distribution::swapParameter(const DagNode *oldP, const DagNode *newP)
     else
     {
         
-        throw RbException("Could not find the distribution parameter to be swapped: " + oldP->getName());
+        throw RbException("Could not find the distribution parameter to be swapped: " + oldP->getName() + " to " + newP->getName()) ;
     
     }
     
