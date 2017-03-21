@@ -2929,9 +2929,6 @@ void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<Anc
     out << "transition_time" << separator;
     out << "transition_type" << std::endl; 
 
-//    std::vector<size_t> start_states( summary_nodes.size() );
-//    std::vector<size_t> end_states( summary_nodes.size() );
-
     // loop through all nodes in the summary tree
     for (size_t i = 0; i < summary_nodes.size(); ++i)
     {
@@ -2994,20 +2991,13 @@ void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<Anc
                 double start_time = sample_tree.getNode( sample_clade_index ).getAge() + sample_tree.getNode( sample_clade_index ).getBranchLength();
                 double end_time = sample_tree.getNode( sample_clade_index ).getAge();
 
-                // sanity check
-                double t = 0.0;
-                for (size_t k = 0; k < this_branch_map.size(); k++)
-                {
-                    t += this_branch_map[k].second;
-                }
-
                 double current_time = start_time;
                 size_t current_state;
+                size_t end_state;
                 if ( this_branch_map.size() > 0 )
                 {
                     current_state = this_branch_map[0].first;
- //                   start_states[ sample_clade_index ] = current_state;
- //                   end_states[ sample_clade_index ] = this_branch_map[ this_branch_map.size() ].first;
+                    end_state = this_branch_map[ this_branch_map.size() - 1 ].first;
                 }
                 else
                 {
@@ -3041,44 +3031,58 @@ void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<Anc
                     current_state = this_branch_map[k].first;
                     current_time = current_time - this_branch_map[k - 1].second;
                 }   
+
+                // now check this node's children's start states to see if there were any cladogenetic transitions
+                std::vector<int> children_indices = sample_tree.getNode( sample_clade_index ).getChildrenIndices();
+
+                for (int k = 0; k < children_indices.size(); k++)
+                {
+                    size_t child_index = children_indices[k];
+
+                    for (size_t l = 0; l < ancestralstate_traces.size(); l++)
+                    {
+                        if (ancestralstate_traces[l].getParameterName() == StringUtilities::toString(child_index + 1))
+                        {
+                            character_map_trace = ancestralstate_traces[l];
+                            break;
+                        }
+                    }
+                
+                    // get the sampled character history for the child for this iteration
+                    const std::vector<std::string>& ancestralstate_vector_child = character_map_trace.getValues();
+                    std::string character_history_child = ancestralstate_vector_child[j];
+
+                    // parse sampled SIMMAP string
+                    std::vector< std::pair<size_t, double> > child_branch_map = parseSIMMAPForNode(character_history_child);
+                   
+                    // get child's start state
+                    size_t child_start_state = child_branch_map[0].first;
+
+                    if (end_state != child_start_state)
+                    {
+                        // write node index
+                        out << summary_nodes[i]->getIndex() + 1 << separator; 
+                        
+                        // write branch start/end times
+                        out << start_time << separator;
+                        out << end_time << separator;
+                        
+                        // write start state
+                        out << end_state << separator;
+                        
+                        // write end state
+                        out << child_start_state << separator;
+                        
+                        // write transition time
+                        out << end_time << separator;
+
+                        out << "cladogenetic" << std::endl; 
+                    }
+                }
+                        
             }
         }
     }  
-    
-//    // loop through all nodes in the summary tree to output any cladogenetic transitions
-//    for (size_t i = 0; i < summary_nodes.size(); ++i)
-//    {
-//
-//        double start_time = summary_nodes[i]->getAge() + summary_nodes[i]->getBranchLength();
-//        double end_time = summary_nodes[i]->getAge();
-//
-//        std::vector<int> children_indices = summary_nodes[i]->getChildrenIndices();
-//
-//        for (int j = 0; j < children_indices.size(); j++)
-//        {
-//
-//            if (end_states[i] != start_states[children_indices[j]])
-//            {
-//                // write node index
-//                out << i + 1 << separator; 
-//                
-//                // write branch start/end times
-//                out << start_time << separator;
-//                out << end_time << separator;
-//                
-//                // write start state
-//                out << end_states[i] << separator;
-//                
-//                // write end state
-//                out << start_states[children_indices[j]] << separator;
-//                
-//                // write transition time
-//                out << end_time << separator;
-//
-//                out << "cladogenetic" << std::endl; 
-//            }
-//        }
-//    }
    
     out.close();
 
