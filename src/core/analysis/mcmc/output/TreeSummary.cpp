@@ -59,6 +59,25 @@ TreeSummary* TreeSummary::clone(void) const
 
 /**
  *
+ * Helper function for ancestralStateTree() and cladoAncestralStateTree() that collects and sorts joint ancestral state samples.
+ *
+ */
+void TreeSummary::collectJointAncestralStateSamples(std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, bool verbose)
+{
+    // loop through all ancestral state samples
+    
+        // check if sampled tree topology matches the summary tree
+    
+        // if so collect sampled states
+    
+    // done looping through samples, now sort them
+    
+    // save the top 3 in start/end_states and pp vectors
+}
+
+
+/**
+ *
  * Helper function for ancestralStateTree() and cladoAncestralStateTree() that traverses the tree from root to tips collecting ancestral state samples.
  *
  */
@@ -334,9 +353,14 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
  * When summarizing conditional ancestral states the posterior probabilities of each state are conditioned on the parent node being
  * in the MAP state.
  */
-Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool conditional, bool verbose )
+Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool conditional, bool joint, bool verbose )
 {
-    
+
+    if ( summary_stat != "MAP" && (conditional == true || joint == true) )
+    {
+        throw RbException("Invalid reconstruction type: mean ancestral states can only be calculated with a marginal reconstruction.");
+    }
+
     // get the number of ancestral state samples and the number of tree samples
     size_t num_sampled_states = ancestralstate_traces[0].getValues().size();
     size_t num_sampled_trees;
@@ -383,10 +407,18 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
         progress.start();
     }
     
-    // recurse through summary tree and collect ancestral state samples
-    size_t node_index = final_summary_tree->getRoot().getIndex();
-    recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, states, states, false, progress, num_finished_nodes, verbose);
-    
+    if ( joint == true )
+    {
+        // collect and sort the joint samples
+        collectJointAncestralStateSamples(ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, states, states, false, progress, verbose);
+    }
+    else
+    {
+        // recurse through summary tree and collect ancestral state samples
+        size_t node_index = final_summary_tree->getRoot().getIndex();
+        recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, states, states, false, progress, num_finished_nodes, verbose);
+    }
+
     if ( verbose == true )
     {
         progress.finish();
@@ -587,8 +619,13 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
  * a cladogenetic event, so for each node the MAP state includes the end state and the starting states for 
  * the two daughter lineages.
  */
-Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool conditional, bool verbose )
+Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool conditional, bool joint, bool verbose )
 {
+    
+    if ( summary_stat != "MAP" && (conditional == true || joint == true) )
+    {
+        throw RbException("Invalid reconstruction type: mean ancestral states can only be calculated with a marginal reconstruction.");
+    }
     
     // get the number of ancestral state samples and the number of tree samples
     size_t num_sampled_states = ancestralstate_traces[0].getValues().size();
@@ -637,9 +674,17 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
         progress.start();
     }
     
-    // recurse through summary tree and collect ancestral state samples
-    size_t node_index = final_summary_tree->getRoot().getIndex();
-    recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, end_states, start_states, true, progress, num_finished_nodes, verbose);
+    if ( joint == true )
+    {
+        // collect and sort the joint samples
+        collectJointAncestralStateSamples(ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, end_states, start_states, false, progress, verbose);
+    }
+    else
+    {
+        // recurse through summary tree and collect ancestral state samples
+        size_t node_index = final_summary_tree->getRoot().getIndex();
+        recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, end_states, start_states, true, progress, num_finished_nodes, verbose);
+    }
     
     if ( verbose == true )
     {

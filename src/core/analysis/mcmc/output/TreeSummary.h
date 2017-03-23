@@ -67,11 +67,11 @@ namespace RevBayesCore {
         
         TreeSummary*                                                            clone(void) const;
 
-        Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool conditional, bool verbose);
+        Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool conditional, bool joint, bool verbose);
         void                                                                    annotateTree(Tree &inputTree, AnnotationReport report, bool verbose );
         Tree*                                                                   characterMapTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, int NUM_TIME_SLICES = 500, bool verbose = true);
         double                                                                  cladeProbability(const Clade &c, bool verbose);
-        Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool conditional, bool verbose);
+        Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool conditional, bool joint, bool verbose);
         int                                                                     getBurnin(void) const;
         std::vector<Tree>                                                       getUniqueTrees(double ci=0.95, bool verbose=true);
         int                                                                     getTopologyFrequency(const Tree &t, bool verbose);
@@ -88,6 +88,7 @@ namespace RevBayesCore {
 
     private:
 
+        void                                                                    collectJointAncestralStateSamples(std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, bool verbose); 
         void                                                                    recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool conditional, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, size_t &num_finished_nodes, bool verbose);
         void                                                                    enforceNonnegativeBranchLengths(TopologyNode& tree) const;
         Clade                                                                   fillConditionalClades(const TopologyNode &n, std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> &cc);
