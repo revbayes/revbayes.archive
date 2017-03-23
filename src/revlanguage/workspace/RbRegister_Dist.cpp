@@ -161,6 +161,7 @@
 #include "Dist_norm.h"
 #include "Dist_normalTruncated.h"
 #include "Dist_normalTruncatedPositive.h"
+#include "Dist_scaledDirichlet.h"
 #include "Dist_softBoundUniformNormal.h"
 #include "Dist_studentT.h"
 #include "Dist_unif.h"
@@ -331,7 +332,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // half-Cauchy distribution
         AddContinuousDistribution< Real             >( new Dist_halfCauchy() );
-//        AddContinuousDistribution< RealPos          >( new Dist_halfCauchyPositive() );
+        AddContinuousDistribution< RealPos          >( new Dist_halfCauchyPositive() );
         
         // poisson distribution
         AddDistribution< Natural                    >( new Dist_poisson() );
@@ -372,6 +373,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< Natural                    >( new Dist_UniformNatural() );
         AddContinuousDistribution< Real             >( new Dist_varianceGamma() );
         
+        // scaled dirichlet distribution
+        AddDistribution< Simplex                    >( new Dist_scaledDirichlet() );
+
         // Wishart distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_wishart() );
         

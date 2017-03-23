@@ -241,8 +241,8 @@ const MemberRules& Dist_halfCauchy::getParameterRules(void) const
     
     if ( !rules_set ) 
     {
-        distHalfCauchyMemberRules.push_back( new ArgumentRule( "location", Real::getClassTypeSpec()   , "The location parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
-        distHalfCauchyMemberRules.push_back( new ArgumentRule( "scale"  , RealPos::getClassTypeSpec(), "The scale parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        distHalfCauchyMemberRules.push_back( new ArgumentRule( "location", Real::getClassTypeSpec()   , "The location parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distHalfCauchyMemberRules.push_back( new ArgumentRule( "scale"  , RealPos::getClassTypeSpec(), "The scale parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     
         rules_set = true;
     }

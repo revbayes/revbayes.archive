@@ -66,7 +66,7 @@ double RbStatistics::HalfCauchy::cdf(double x)
 double RbStatistics::HalfCauchy::cdf(double location, double scale, double x)
 {
     double y = (x - location) / scale;
-    return ( 2.0 / RbConstants::PI * (atan(x)) );
+    return ( 2.0 / RbConstants::PI * (atan(y)) );
 }
 
 double RbStatistics::HalfCauchy::quantile(double p)
