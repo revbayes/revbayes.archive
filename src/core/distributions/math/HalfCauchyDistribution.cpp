@@ -36,6 +36,15 @@ HalfCauchyDistribution* HalfCauchyDistribution::clone( void ) const {
 
 
 double HalfCauchyDistribution::computeLnProbability( void ) {
+    
+    double v = *value;
+    
+    // check that the value is inside the boundaries
+    if ( v < location->getValue() )
+    {
+        return RbConstants::Double::neginf;
+    }
+
     return RbStatistics::HalfCauchy::lnPdf(location->getValue(), scale->getValue(), *value);
 }
 
