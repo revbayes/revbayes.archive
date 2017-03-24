@@ -50,14 +50,14 @@ namespace RevBayesCore {
 
     protected:
         // Parameter management functions
+        double                                          computeLnProbabilityDivergenceTimes(void) const;                            //!< Compute the log-transformed probability of the current value.
         void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         
         // helper functions
         double                                          computeLnProbabilityTimes(void) const;                     //!< Compute the log-transformed probability of the current value.
-        size_t                                          l(double t) const;                                         //!< Find the max index so that rateChangeTimes[index] < t < rateChangeTimes[index+1]
-        size_t                                          l(double t, size_t min, size_t max) const;
+        size_t                                          l(double t) const;                                         //!< Find the index so that times[index-1] < t < times[index]
         double                                          lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         double                                          pSurvival(double start, double end) const;                 //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                          p(size_t i, double t) const;
@@ -67,18 +67,18 @@ namespace RevBayesCore {
         int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
         
         // members
-        const TypedDagNode<double >*                    homogeneous_lambda;                                        //!< The homogeneous speciation rates.
-        const TypedDagNode<RbVector<double> >*          heterogeneous_lambda;                                      //!< The heterogeneous speciation rates.
+        const TypedDagNode<double >*                    homogeneous_lambda;                                    //!< The homogeneous speciation rates.
+        const TypedDagNode<RbVector<double> >*          heterogeneous_lambda;                                  //!< The heterogeneous speciation rates.
         const TypedDagNode<double >*                    homogeneous_mu;                                        //!< The homogeneous speciation rates.
         const TypedDagNode<RbVector<double> >*          heterogeneous_mu;                                      //!< The heterogeneous speciation rates.
-        const TypedDagNode<double >*                    homogeneous_psi;                                        //!< The homogeneous speciation rates.
-        const TypedDagNode<RbVector<double> >*          heterogeneous_psi;                                      //!< The heterogeneous speciation rates.
-        const TypedDagNode<double >*                    homogeneous_rho;                                        //!< The homogeneous speciation rates.
-        const TypedDagNode<RbVector<double> >*          times;                                                  //!< The times of the instantaneous sampling events.
+        const TypedDagNode<double >*                    homogeneous_psi;                                       //!< The homogeneous speciation rates.
+        const TypedDagNode<RbVector<double> >*          heterogeneous_psi;                                     //!< The heterogeneous speciation rates.
+        const TypedDagNode<double >*                    homogeneous_rho;                                       //!< The homogeneous speciation rates.
+        const TypedDagNode<RbVector<double> >*          sampling_times;                                        //!< The times of the instantaneous sampling events.
         
         bool                                            useOrigin;
 
-        mutable std::vector<double>                     rateChangeTimes;
+        mutable std::vector<double>                     times;
         mutable std::vector<double>                     birth;
         mutable std::vector<double>                     death;
         mutable std::vector<double>                     fossil;

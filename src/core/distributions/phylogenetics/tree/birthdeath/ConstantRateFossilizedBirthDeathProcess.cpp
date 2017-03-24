@@ -81,6 +81,36 @@ double ConstantRateFossilizedBirthDeathProcess::getRootAge( void ) const
         return getOriginTime();
 }
 
+
+/**
+ * Compute the log-transformed probability of the current value under the current parameter values.
+ *
+ */
+double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) const
+{
+    // prepare the probability computation
+    prepareProbComputation();
+
+    // variable declarations and initialization
+    double lnProbTimes = 0;
+
+    // present time
+    double present_time = value->getRoot().getAge();
+
+    // what do we condition on?
+    // did we condition on survival?
+    if ( condition == "nTaxa" )
+    {
+        lnProbTimes = -lnProbNumTaxa( num_taxa, 0, present_time, true );
+    }
+
+    // multiply the probability of a descendant of the initial species
+    lnProbTimes += computeLnProbabilityTimes();
+
+    return lnProbTimes;
+}
+
+
 /**
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
@@ -202,6 +232,11 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
         lnProbTimes -= log(i);
     }
 
+    for(size_t i = 2; i <= num_extant_taxa; i++)
+    {
+        lnProbTimes -= log(i);
+    }
+
     return lnProbTimes;
     
 }
@@ -218,20 +253,7 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
  */
 double ConstantRateFossilizedBirthDeathProcess::pSurvival(double start, double end) const
 {
-    // variable declarations and initialization
-    double birth_rate = lambda->getValue();
-    double death_rate = mu->getValue();
-    double fossil_rate = psi->getValue();
-    double sampling_prob = rho->getValue();
-    
-    // get helper variables
-    double a = birth_rate - death_rate - fossil_rate;
-    double c1 = sqrt(a * a + 4 * birth_rate * fossil_rate);
-    double c2 = -(a - 2 * birth_rate * sampling_prob) / c1;
-	
-    double p0 = pZero(end, c1, c2);
-    
-    return 1.0 - p0;
+    return 1.0 - pHatZero(end);
 }
 
 
