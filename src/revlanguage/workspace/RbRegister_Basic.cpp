@@ -359,15 +359,11 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
         
         // division
-        addFunction( new Func__div< Natural                            , RealPos               , RealPos                   >(  )  );
         addFunction( new Func__div< RealPos                            , Natural               , RealPos                   >(  )  );
-        addFunction( new Func__div< Integer                            , Real                  , Real                      >(  )  );
         addFunction( new Func__div< Real                               , Integer               , Real                      >(  )  );
         addFunction( new Func__div< Real                               , Real                  , Real                      >(  )  );
         addFunction( new Func__div< RealPos                            , RealPos               , RealPos                   >(  )  );
-        addFunction( new Func__div< ModelVector<Natural>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
         addFunction( new Func__div< ModelVector<RealPos>               , ModelVector<Natural>  , ModelVector<RealPos>      >(  )  );
-        addFunction( new Func__div< ModelVector<Integer>               , ModelVector<Real>     , ModelVector<Real>         >(  )  );
         addFunction( new Func__div< ModelVector<Real>                  , ModelVector<Integer>  , ModelVector<Real>         >(  )  );
         addFunction( new Func__div< ModelVector<RealPos>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
         addFunction( new Func__div< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<RealPos>      >(  )  );

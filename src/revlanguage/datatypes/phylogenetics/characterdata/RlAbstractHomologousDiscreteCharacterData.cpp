@@ -131,12 +131,12 @@ AbstractHomologousDiscreteCharacterData& AbstractHomologousDiscreteCharacterData
 
 
 
-AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d, std::string type) const
+void AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d, std::string type) const
 {
     const AbstractHomologousDiscreteCharacterData* tmp = dynamic_cast<const AbstractHomologousDiscreteCharacterData*>( &d );
     if ( tmp != NULL )
     {
-        return concatenate( *tmp, type );
+        concatenate( *tmp, type );
     }
     else
     {
@@ -147,19 +147,32 @@ AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData
 
 
 
-AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type) const
-{
-    AbstractHomologousDiscreteCharacterData* cloneObj = clone();
+//AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type) const
+//{
+//    AbstractHomologousDiscreteCharacterData* clone_obj = clone();
+//
+//    // we need to make this a constant DAG node so that we can actually modify the value
+//    // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
+//    clone_obj->makeConstantValue();
+//    
+//    // now concatenate
+//    clone_obj->getDagNode()->getValue().concatenate( d.getValue(), type );
+//    
+//    // return the copy
+//    return clone_obj;
+//}
 
+
+void AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type) const
+{
+    
     // we need to make this a constant DAG node so that we can actually modify the value
     // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
-    cloneObj->makeConstantValue();
+//    clone_obj->makeConstantValue();
     
     // now concatenate
-    cloneObj->getDagNode()->getValue().concatenate( d.getValue(), type );
+    getDagNode()->getValue().concatenate( d.getValue(), type );
     
-    // return the copy
-    return cloneObj;
 }
 
 
@@ -246,6 +259,14 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         size_t n = this->dagNode->getValue().getNumberOfInvariantSites( excl );
         
         return new RevVariable( new Natural(n) );
+    }
+    else if ( name == "getStateDescriptions" )
+    {
+        found = true;
+        
+        std::vector<std::string> descriptions = this->dagNode->getValue().getTaxonData(0).getCharacter(0).getStateDescriptions();        
+        
+        return new RevVariable( new ModelVector<RlString>(descriptions) );
     }
     else if (name == "isHomologous")
     {
@@ -659,7 +680,8 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     
     ArgumentRules* translateCharactersArgRules          = new ArgumentRules();
     ArgumentRules* expandCharactersArgRules             = new ArgumentRules();
-    
+    ArgumentRules* getStateDescriptionsArgRules         = new ArgumentRules();
+
     
     setCodonPartitionArgRules->push_back(       new ArgumentRule("",        Natural::getClassTypeSpec()              , "The index of the codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setCodonPartitionArgRules2->push_back(      new ArgumentRule("",        ModelVector<Natural>::getClassTypeSpec() , "The indicies of the codon positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -704,6 +726,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     methods.addFunction( new MemberProcedure( "meanGcContentByCodonPosition",   Probability::getClassTypeSpec(),    meanGcContentByCodonPositionArgRules                ) );
     methods.addFunction( new MemberProcedure( "numInvariableBlocks",            Natural::getClassTypeSpec(),        numInvariableBlocksArgRules         ) );
     methods.addFunction( new MemberProcedure( "numTaxaMissingSequence",         Natural::getClassTypeSpec(),        numTaxaMissingSequenceArgRules         ) );
+    methods.addFunction( new MemberProcedure( "getStateDescriptions",           ModelVector<RlString>::getClassTypeSpec(), getStateDescriptionsArgRules ) );
     methods.addFunction( new MemberProcedure( "translateCharacters",            AbstractHomologousDiscreteCharacterData::getClassTypeSpec(),        translateCharactersArgRules         ) );
     methods.addFunction( new MemberProcedure( "varGcContent",                   Probability::getClassTypeSpec(),    varGcContentArgRules                ) );
     methods.addFunction( new MemberProcedure( "varGcContentByCodonPosition",    Probability::getClassTypeSpec(),    varGcContentByCodonPositionArgRules                ) );

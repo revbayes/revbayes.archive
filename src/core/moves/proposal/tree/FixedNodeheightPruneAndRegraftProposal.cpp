@@ -104,6 +104,12 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
     
     Tree& tau = variable->getValue();
     
+    if ( tau.getNumberOfTips() < 3)
+    {
+        failed = true;
+        return RbConstants::Double::neginf;
+    }
+    
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
     do {

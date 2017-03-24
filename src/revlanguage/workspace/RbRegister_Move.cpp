@@ -94,6 +94,9 @@
 #include "Move_ConjugateInverseWishartBrownian.h"
 #include "Move_CorrelationMatrixUpdate.h"
 
+/* Moves on continuous character data (real valued matrices) */
+#include "Move_ContinuousCharacterDataSlide.h"
+
 
 ///* Moves on covariance matrices */
 #include "Move_MatrixRealSymmetricSlide.h"
@@ -216,6 +219,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_ConjugateInverseWishartBrownian() );
+        
+        /* Moves on continuous character data (matrices of real values) */
+        addTypeWithConstructor( new Move_ContinuousCharacterDataSlide() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor( new Move_DPPTableValueUpdate<RealPos>( new RevBayesCore::ScaleProposal( NULL, 1.0 ) ) );

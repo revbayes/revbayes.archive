@@ -1,6 +1,10 @@
 #include "DiscreteCharacterState.h"
 #include "RbException.h"
 
+#include <string>
+#include <vector>
+
+
 using namespace RevBayesCore;
 
 
@@ -182,7 +186,6 @@ void DiscreteCharacterState::addState(const std::string &symbol)
     index_single_state = pos;
 }
 
-
 size_t DiscreteCharacterState::getNumberObservedStates(void) const
 {
     return num_observed_states;
@@ -198,6 +201,24 @@ size_t DiscreteCharacterState::getNumberOfStates(void) const
 const RbBitSet& DiscreteCharacterState::getState(void) const
 {
     return state;
+}
+
+std::string DiscreteCharacterState::getStateDescription(void) const
+{
+    return getStringValue();
+}
+
+std::vector<std::string> DiscreteCharacterState::getStateDescriptions(void) const
+{
+    std::string state_labels = getStateLabels();
+    
+    std::vector<std::string> state_descriptions(state_labels.size());
+    for (size_t i = 0; i < state_labels.size(); i++)
+    {
+        state_descriptions[i] = state_labels[i];
+    }
+    
+    return state_descriptions;
 }
 
 

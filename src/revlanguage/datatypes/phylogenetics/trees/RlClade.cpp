@@ -38,7 +38,8 @@ Clade::Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n) : ModelObject<R
 
 
 /** Construct */
-Clade::Clade(const Clade &t) : ModelObject<RevBayesCore::Clade>( t ) {
+Clade::Clade(const Clade &t) : ModelObject<RevBayesCore::Clade>( t )
+{
     
 }
 

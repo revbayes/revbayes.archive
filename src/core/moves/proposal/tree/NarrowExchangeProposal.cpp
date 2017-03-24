@@ -79,6 +79,12 @@ double NarrowExchangeProposal::doProposal( void )
     
     Tree& tau = variable->getValue();
     
+    if ( tau.getNumberOfTips() < 3)
+    {
+        failed = true;
+        return RbConstants::Double::neginf;
+    }
+    
     // pick a random node which is not the root and neithor a direct descendant of the root
     TopologyNode* node;
     do {
@@ -162,7 +168,7 @@ void NarrowExchangeProposal::printParameterSummary(std::ostream &o) const
 void NarrowExchangeProposal::undoProposal( void )
 {
     // we undo the proposal only if it didn't fail
-    if ( !failed )
+    if ( failed == false )
     {
         // undo the proposal
         TopologyNode& parent = storedUncle->getParent();

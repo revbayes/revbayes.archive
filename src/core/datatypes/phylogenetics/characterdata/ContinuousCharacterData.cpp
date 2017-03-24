@@ -5,6 +5,7 @@
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbFileManager.h"
+#include "TypedDagNode.h"
 
 #include <string>
 #include <algorithm>
@@ -22,6 +23,21 @@ ContinuousCharacterData::ContinuousCharacterData()
 
 
 
+/**
+ * Index (const) operator to access a TaxonData object at position i.
+ *
+ * \param[in]    i    The position of the TaxonData object.
+ *
+ * \return            The TaxonData object at position i.
+ */
+ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i )
+{
+    
+    return getTaxonData( i );
+}
+
+
+
 /** 
  * Index (const) operator to access a TaxonData object at position i.
  *
@@ -32,7 +48,7 @@ ContinuousCharacterData::ContinuousCharacterData()
 const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i ) const 
 {
     
-    return static_cast<const ContinuousTaxonData&>( getTaxonData( i ) );
+    return getTaxonData( i );
 }
 
 
@@ -41,7 +57,7 @@ const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i )
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd, std::string type)
+void ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd, std::string type)
 {
     std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
@@ -50,8 +66,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractChar
         throw RbException("Adding wrong character data type into ContinuousCharacterData!!!");
     }
     
-    
-    return concatenate( *rhs, type );
+    concatenate( *rhs, type );
 }
 
 
@@ -60,7 +75,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractChar
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd, std::string type)
+void ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd, std::string type)
 {
     std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
@@ -69,8 +84,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCh
         throw RbException("Adding wrong character data type into ContinuousCharacterData!!!");
     }
     
-    
-    return concatenate( *rhs, type );
+    concatenate( *rhs, type );
 }
 
 
@@ -79,7 +93,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCh
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, std::string type)
+void ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, std::string type)
 {
     
     // check if both have the same number of taxa
@@ -101,11 +115,11 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCh
             taxon.concatenate( obsd.getTaxonData( n ) );
 
         }
-        else if (type == "intersection")
+        else if ( type == "intersection" )
         {
             toDelete.push_back(n);
         }
-        else if (type == "union")
+        else if ( type == "union" )
         {
             AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
             taxon_data->setAllCharactersMissing();
@@ -126,7 +140,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCh
     {
         if ( used[i] == false )
         {
-            if(type=="union")
+            if ( type=="union" )
             {
                 std::string n = obsd.getTaxonNameWithIndex(i);
                 addMissingTaxon( n );
@@ -136,14 +150,13 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCh
 
                 taxon.concatenate( taxon_data );
             }
-            else if(type != "intersection")
+            else if ( type != "intersection" )
             {
                 throw RbException("Cannot concatenate two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
             }
         }
     }
     
-    return *this;
 }
 
 
@@ -195,6 +208,23 @@ void ContinuousCharacterData::excludeCharacter(size_t i)
     deletedCharacters.insert( i );
     
 }
+
+void ContinuousCharacterData::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
+{
+    
+    if ( n == "get" )
+    {
+        int index_taxon = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        int index_site = static_cast<const TypedDagNode<int> *>( args[1] )->getValue()-1;
+        rv = getTaxonData(index_taxon)[index_site];
+    }
+    else
+    {
+        throw RbException("A continuous character data object does not have a member method called '" + n + "'.");
+    }
+    
+}
+
 
 
 /** 

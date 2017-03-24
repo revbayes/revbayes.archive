@@ -220,6 +220,10 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     
     // create the directory if necessary
     RbFileManager fm = RbFileManager(filename);
+    if(fm.getFileName() == "")
+    {
+        throw(RbException("Please provide a filename with an extension"));
+    }
     std::string stoneFileName = fm.getFileNameWithoutExtension() + "_stone_" + idx + "." + fm.getFileExtension();
 
     RbFileManager f = RbFileManager(fm.getFilePath(), stoneFileName);

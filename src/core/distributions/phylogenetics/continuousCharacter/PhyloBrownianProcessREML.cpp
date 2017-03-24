@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "StochasticNode.h"
 #include "TopologyNode.h"
 
 #include <cmath>
@@ -112,10 +113,10 @@ double PhyloBrownianProcessREML::computeLnProbability( void )
         
         
         // sum the partials up
-        this->lnProb = sumRootLikelihood();
+        this->ln_prob = sumRootLikelihood();
         
     }
-    return this->lnProb;
+    return this->ln_prob;
 }
 
 
@@ -478,6 +479,12 @@ void PhyloBrownianProcessREML::touchSpecialization( DagNode* affecter, bool touc
     else if ( affecter != this->tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     {
         touchAll = true;
+        
+        if ( affecter == this->dag_node )
+        {
+            resetValue();
+        }
+        
     }
     
     if ( touchAll )
