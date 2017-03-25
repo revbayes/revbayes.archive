@@ -297,39 +297,6 @@ double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double or
 }
 
 
-/**
- * Swap the parameters held by this distribution.
- *
- * 
- * \param[in]    oldP      Pointer to the old parameter.
- * \param[in]    newP      Pointer to the new parameter.
- */
-void ConstantRateFossilizedBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
-{
-    if (oldP == lambda)
-    {
-        lambda = static_cast<const TypedDagNode<double>* >( newP );
-    }
-    else if (oldP == mu) 
-    {
-        mu = static_cast<const TypedDagNode<double>* >( newP );
-    }
-    else if (oldP == psi) 
-    {
-        psi = static_cast<const TypedDagNode<double>* >( newP );
-    }
-    else if (oldP == rho) 
-    {
-        rho = static_cast<const TypedDagNode<double>* >( newP );
-    }
-    else 
-    {
-        // delegate the super-class
-        AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
-    }
-    
-}
-
 double ConstantRateFossilizedBirthDeathProcess::pZero(double t, double c1, double c2) const
 {
 	double b = lambda->getValue();
@@ -410,6 +377,39 @@ void ConstantRateFossilizedBirthDeathProcess::setValue(Tree *v, bool f )
 
 }
 
+
+/**
+ * Swap the parameters held by this distribution.
+ *
+ *
+ * \param[in]    oldP      Pointer to the old parameter.
+ * \param[in]    newP      Pointer to the new parameter.
+ */
+void ConstantRateFossilizedBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
+    if (oldP == lambda)
+    {
+        lambda = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == mu)
+    {
+        mu = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == psi)
+    {
+        psi = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == rho)
+    {
+        rho = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else
+    {
+        // delegate the super-class
+        AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
+    }
+
+}
 
 
 /**

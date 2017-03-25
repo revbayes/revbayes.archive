@@ -43,6 +43,7 @@ namespace RevBayesCore {
         // public member functions
         PiecewiseConstantFossilizedBirthDeathProcess*   clone(void) const;                                         //!< Create an independent clone
         virtual double                                  getRootAge(void) const;
+        virtual void                                    setValue(Tree *v, bool f=false);
 
         double                                          getExtinctionRate( size_t index = 0 ) const;
         double                                          getFossilizationRate( size_t index = 0 ) const;
@@ -51,7 +52,12 @@ namespace RevBayesCore {
     protected:
         // Parameter management functions
         double                                          computeLnProbabilityDivergenceTimes(void) const;                            //!< Compute the log-transformed probability of the current value.
-        void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        // Parameter management functions
+        void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
+
+        // virtual methods that may be overwritten, but then the derived class should call this methods
+        virtual void                                    restoreSpecialization(DagNode *restorer);
+        virtual void                                    touchSpecialization(DagNode *toucher, bool touchAll);
         
     private:
         

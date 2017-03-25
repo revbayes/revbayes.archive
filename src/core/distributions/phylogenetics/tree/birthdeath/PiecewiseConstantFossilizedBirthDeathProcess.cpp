@@ -4,6 +4,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbMathLogic.h"
+#include "StochasticNode.h"
 
 #include <algorithm>
 #include <cmath>
@@ -591,6 +592,56 @@ int PiecewiseConstantFossilizedBirthDeathProcess::survivors(double t) const
 }
 
 
+/**
+ * Restore the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void PiecewiseConstantFossilizedBirthDeathProcess::restoreSpecialization(DagNode *affecter)
+{
+
+    if ( affecter == root_age )
+    {
+        if( useOrigin )
+        {
+            if ( dag_node != NULL )
+            {
+                dag_node->touchAffected();
+            }
+        }
+        else
+        {
+            AbstractRootedTreeDistribution::restoreSpecialization(affecter);
+        }
+    }
+
+}
+
+
+/**
+ * Set the current value.
+ */
+void PiecewiseConstantFossilizedBirthDeathProcess::setValue(Tree *v, bool f )
+{
+
+    // delegate to super class
+    TypedDistribution<Tree>::setValue(v, f);
+
+
+    if ( root_age != NULL && !useOrigin )
+    {
+        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);
+        if ( stoch_root_age != NULL )
+        {
+            const_cast<StochasticNode<double> *>(stoch_root_age)->setValue( new double( value->getRoot().getAge() ), f);
+        }
+        else
+        {
+            value->getRoot().setAge( root_age->getValue() );
+        }
+
+    }
+
+}
 
 
 /**
@@ -638,4 +689,29 @@ void PiecewiseConstantFossilizedBirthDeathProcess::swapParameterInternal(const D
         // delegate the super-class
         AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
+}
+
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void PiecewiseConstantFossilizedBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
+{
+
+    if ( affecter == root_age )
+    {
+        if( useOrigin )
+        {
+            if ( dag_node != NULL )
+            {
+                dag_node->touchAffected();
+            }
+        }
+        else
+        {
+            AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
+        }
+    }
+
 }
