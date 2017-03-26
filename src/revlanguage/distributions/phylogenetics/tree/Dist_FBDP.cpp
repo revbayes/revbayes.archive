@@ -88,9 +88,9 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_FBDP::createDistribution( void ) c
 
     bool piecewise = piecewiseLambda || piecewiseMu || piecewisePsi;
 
-    if ( piecewise && (times == NULL || times->getRevObject() == RevNullObject::getInstance() ) )
+    if ( piecewise && (intervals == NULL || intervals->getRevObject() == RevNullObject::getInstance() ) )
     {
-        throw(RbException("No epoch times provided for piecewise constant fossilized birth death process"));
+        throw(RbException("No time intervals provided for piecewise constant fossilized birth death process"));
     }
 
 
@@ -136,7 +136,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_FBDP::createDistribution( void ) c
         RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
 
         // rate change times
-        RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt       = static_cast<const ModelVector<RealPos> &>( times->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt       = static_cast<const ModelVector<RealPos> &>( intervals->getRevObject() ).getDagNode();
 
         d = new RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess(sa, l, m, p, r, rt, uo, cond, t);
     }
@@ -246,10 +246,10 @@ const MemberRules& Dist_FBDP::getParameterRules(void) const
         paramTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         dist_member_rules.push_back( new ArgumentRule( "lambda",  paramTypes, "The speciation rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "mu",      paramTypes, "The extinction rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        dist_member_rules.push_back( new ArgumentRule( "psi",     paramTypes, "The fossilization rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        dist_member_rules.push_back( new ArgumentRule( "rho",     Probability::getClassTypeSpec(), "The taxon sampling fraction(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "psi",     paramTypes, "The fossil sampling rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "rho",     Probability::getClassTypeSpec(), "The extant taxon sampling fraction.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
-        dist_member_rules.push_back( new ArgumentRule( "times",   ModelVector<RealPos>::getClassTypeSpec(), "The rate change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "intervals",   ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
@@ -312,9 +312,9 @@ void Dist_FBDP::setConstParameter(const std::string& name, const RevPtr<const Re
     {
         psi = var;
     }
-    else if ( name == "times" )
+    else if ( name == "intervals" )
     {
-        times = var;
+        intervals = var;
     }
     else
     {

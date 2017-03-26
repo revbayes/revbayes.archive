@@ -61,7 +61,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
         if(heterogeneous_lambda->getValue().size() != sampling_times->getValue().size() + 1)
         {
             std::stringstream ss;
-            ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of epochs (" << sampling_times->getValue().size() + 1 << ")";
+            ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of time intervals (" << sampling_times->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
 
@@ -86,7 +86,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
         if(heterogeneous_mu->getValue().size() != sampling_times->getValue().size() + 1)
         {
             std::stringstream ss;
-            ss << "Number of extinction rates (" << heterogeneous_mu->getValue().size() << ") does not match number of epochs (" << sampling_times->getValue().size() + 1 << ")";
+            ss << "Number of extinction rates (" << heterogeneous_mu->getValue().size() << ") does not match number of time intervals (" << sampling_times->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
 
@@ -98,7 +98,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
 
     if(tmp_v == NULL && tmp_c == NULL)
     {
-        throw(RbException("Fossil recovery rate must be of type RealPos or RealPos[]"));
+        throw(RbException("Fossil sampling rate must be of type RealPos or RealPos[]"));
     }
     else if(tmp_v == NULL)
     {
@@ -111,7 +111,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
         if(heterogeneous_psi->getValue().size() != sampling_times->getValue().size() + 1)
         {
             std::stringstream ss;
-            ss << "Number of fossilization rates (" << heterogeneous_psi->getValue().size() << ") does not match number of epochs (" << sampling_times->getValue().size() + 1 << ")";
+            ss << "Number of fossil sampling rates (" << heterogeneous_psi->getValue().size() << ") does not match number of time intervals (" << sampling_times->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
 

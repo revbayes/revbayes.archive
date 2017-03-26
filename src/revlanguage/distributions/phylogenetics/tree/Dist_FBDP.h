@@ -50,7 +50,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                               lambda;                                                                                 //!< The speciation rate(s)
         RevPtr<const RevVariable>                               mu;                                                                                     //!< The extinction rate(s)
         RevPtr<const RevVariable>                               psi;                                                                                    //!< The fossilization rate(s)
-        RevPtr<const RevVariable>                               times;                                                                                  //!< The epoch times
+        RevPtr<const RevVariable>                               intervals;                                                                                  //!< The epoch times
         
     };
     
