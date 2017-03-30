@@ -89,6 +89,11 @@ double AbstractPhyloContinuousCharacterProcess::computeSiteRate(size_t siteIdx)
     return sr;
 }
 
+void AbstractPhyloContinuousCharacterProcess::recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<ContinuousTaxonData> >& startStates, std::vector<std::vector<ContinuousTaxonData> >& endStates, const std::vector<size_t>& sampledSiteRates)
+{
+    throw RbException("Ancestral states are not available for this distribution.");
+}
+
 
 
 void AbstractPhyloContinuousCharacterProcess::redrawValue( void )
