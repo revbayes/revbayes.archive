@@ -151,6 +151,8 @@
 #include "Dist_geom.h"
 #include "Dist_halfCauchy.h"
 #include "Dist_halfCauchyPositive.h"
+#include "Dist_halfNormal.h"
+#include "Dist_halfNormalPositive.h"
 #include "Dist_poisson.h"
 #include "Dist_lnorm.h"
 #include "Dist_lnormOffset.h"
@@ -333,6 +335,10 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // half-Cauchy distribution
         AddContinuousDistribution< Real             >( new Dist_halfCauchy() );
         AddContinuousDistribution< RealPos          >( new Dist_halfCauchyPositive() );
+
+        // half-Normal distribution
+        AddContinuousDistribution< Real             >( new Dist_halfNormal() );
+        AddContinuousDistribution< RealPos          >( new Dist_halfNormalPositive() );
         
         // poisson distribution
         AddDistribution< Natural                    >( new Dist_poisson() );

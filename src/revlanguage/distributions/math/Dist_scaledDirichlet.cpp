@@ -84,7 +84,7 @@ std::vector<std::string> Dist_scaledDirichlet::getHelpAuthor(void) const
 {
     // create a vector of authors for this function
     std::vector<std::string> authors;
-    authors.push_back( "Andy Magee" );
+    authors.push_back( "Andrew Magee" );
     
     return authors;
 }
@@ -195,7 +195,7 @@ const MemberRules& Dist_scaledDirichlet::getParameterRules(void) const
     if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "alpha", ModelVector<RealPos>::getClassTypeSpec(), "The concentration parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "beta", ModelVector<RealPos>::getClassTypeSpec(), "The scale parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "beta", ModelVector<RealPos>::getClassTypeSpec(), "The rate parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }

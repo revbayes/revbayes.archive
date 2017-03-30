@@ -119,7 +119,7 @@ std::vector<std::string> Dist_halfCauchy::getHelpAuthor(void) const
 {
     // create a vector of authors for this function
     std::vector<std::string> authors;
-    authors.push_back( "Andy Magee" );
+    authors.push_back( "Andrew Magee" );
     
     return authors;
 }
@@ -227,7 +227,7 @@ std::string Dist_halfCauchy::getHelpTitle(void) const
 /** 
  * Get the member rules used to create the constructor of this object.
  *
- * The member rules of the branch rate jump process are:
+ * The member rules of the half-Cauchy distribution are:
  * (1) the mean of the distribution.
  * (2) the standard deviation.
  *

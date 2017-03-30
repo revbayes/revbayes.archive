@@ -15,7 +15,7 @@ namespace RevLanguage {
      *
      *
      * @copyright Copyright 2009-
-     * @author Andy Magee
+     * @author Andrew Magee
      * @since 2017-02-04, version 1.0
      *
      */

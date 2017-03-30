@@ -26,9 +26,9 @@ using namespace RevBayesCore;
  * This function calculates the probability density 
  * for a scaled Dirichlet-distributed random variable.
  *
- * \brief Scaled Dirichlet probability density.
+ * \brief Scaled Dirichlet probability density, as in Aitchison (1986).
  * \param a is a reference to a vector of doubles containing the alpha parameters.
- * \param b is a reference to a vector of doubles containing the scale parameters.
+ * \param b is a reference to a vector of doubles containing the beta parameters.
  * \param z is a reference to a vector of doubles containing the random variables.
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
