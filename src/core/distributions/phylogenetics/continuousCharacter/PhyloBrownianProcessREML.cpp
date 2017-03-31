@@ -120,6 +120,120 @@ double PhyloBrownianProcessREML::computeLnProbability( void )
 }
 
 
+void PhyloBrownianProcessREML::drawJointConditionalAncestralStates(std::vector< ContinuousTaxonData >& startStates, std::vector< ContinuousTaxonData >& endStates)
+{
+    
+    // draw the root state
+    const TopologyNode &root = this->tau->getValue().getRoot();
+    size_t root_index = root.getIndex();
+    
+    // get the distribution of states at the root
+    std::vector<double> &mu_node     = this->contrasts[this->active_likelihood[root_index]][root_index];
+    double delta                     = this->contrast_uncertainty[this->active_likelihood[root_index]][root_index];
+    
+    ContinuousTaxonData &root_states_start = startStates[ root_index ];
+    ContinuousTaxonData &root_states_end   = endStates[ root_index ];
+    
+    // add the characters to the root taxon data
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    for ( size_t i = 0; i < num_sites; ++i )
+    {
+        // create the character
+        double c = RbStatistics::Normal::rv( mu_node[i], sqrt(delta), *rng);
+        
+        // add the character to the sequence
+        root_states_end.addCharacter( c );
+        root_states_start.addCharacter( c );
+    }
+
+    // recurse up the tree, drawing new node states
+    recursivelyDrawJointConditionalAncestralStates(root, startStates, endStates);
+    
+}
+
+void PhyloBrownianProcessREML::recursivelyDrawJointConditionalAncestralStates(const TopologyNode& node, std::vector< ContinuousTaxonData >& startStates, std::vector< ContinuousTaxonData >& endStates)
+{
+    
+    // get the children of the node
+    const std::vector<TopologyNode*>& children = node.getChildren();
+    
+    // get the sequence of this node
+    size_t node_index = node.getIndex();
+    const ContinuousTaxonData &parent = endStates[ node_index ];
+    
+    // simulate the sequence for each child
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+
+    for (std::vector< TopologyNode* >::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
+        const TopologyNode &child = *(*it);
+        size_t child_index = child.getIndex();
+        
+        if ( child.isTip() == true )
+        {
+            // get the states for this node
+            ContinuousTaxonData &child_states_start = startStates[ child_index ];
+            ContinuousTaxonData &child_states_end   = endStates[ child_index ];
+            std::vector<double> &mu_child = this->contrasts[this->active_likelihood[child_index]][child_index];
+            
+            for ( size_t i = 0; i < num_sites; ++i )
+            {
+                // get the ancestral character for this site
+                double parent_state = parent.getCharacter( i );
+                
+                // add the ancestral state as the starting state for this branch.
+                child_states_start.addCharacter( parent_state );
+                
+                // add the tip state as the ending state for this branch
+                child_states_end.addCharacter( mu_child[i] );
+            }
+
+        }
+        else
+        {
+            // get the conditional density at this node
+            std::vector<double> &mu_child = this->contrasts[this->active_likelihood[child_index]][child_index];
+            double delta                  = this->contrast_uncertainty[this->active_likelihood[child_index]][child_index];
+            
+            // get the branch length for this child
+            double branch_length = child.getBranchLength();
+            
+            // get the branch specific rate
+            double branch_sigma = sqrt(computeBranchTime( child_index, branch_length ));
+            
+            // get the states for this node
+            ContinuousTaxonData &child_states_start = startStates[ child_index ];
+            ContinuousTaxonData &child_states_end   = endStates[ child_index ];
+            
+            for ( size_t i = 0; i < num_sites; ++i )
+            {
+                // get the ancestral character for this site
+                double parent_state = parent.getCharacter( i );
+                
+                // add the ancestral state as the starting state for this branch.
+                child_states_start.addCharacter( parent_state );
+                
+                // compute the distribution for the ending state
+                double branch_var = pow(branch_sigma * computeSiteRate( i ), 2);
+                double mu_prime   = ( mu_child[i] * branch_var + parent_state * delta ) / (branch_var + delta);
+                double v_prime    = (delta * branch_var) / (delta + branch_var);
+
+                // create the character
+                double c = RbStatistics::Normal::rv( mu_prime, sqrt(v_prime), *rng);
+                child_states_end.addCharacter( c );
+            }
+            
+            // recursively simulate the sequences
+            recursivelyDrawJointConditionalAncestralStates(child, startStates, endStates);
+
+        }
+        
+    }
+    
+    
+    
+}
+
 
 void PhyloBrownianProcessREML::fireTreeChangeEvent( const TopologyNode &n, const unsigned& m )
 {

@@ -36,7 +36,7 @@ namespace RevBayesCore {
         void                                                                setSiteRate(const TypedDagNode< double >* s);
         void                                                                setSiteRate(const TypedDagNode< RbVector< double > >* s);
         void                                                                setValue(ContinuousCharacterData *v, bool f=false);                                     //!< Set the current value, e.g. attach an observation (clamp)
-        virtual void                                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<ContinuousTaxonData> >& startStates, std::vector<std::vector<ContinuousTaxonData> >& endStates, const std::vector<size_t>& sampledSiteRates);
+        virtual void                                                        drawJointConditionalAncestralStates(std::vector< ContinuousTaxonData >& startStates, std::vector< ContinuousTaxonData >& endStates);
         virtual void                                                        redrawValue(void);
         void                                                                reInitialized(void);
         

@@ -11,6 +11,7 @@
 
 
 #include "JointConditionalAncestralStateMonitor.h"
+#include "JointConditionalContinuousAncestralStateMonitor.h"
 #include "RlMonitor.h"
 
 #include <ostream>
@@ -43,6 +44,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       printgen;
 		RevPtr<const RevVariable>                       tree;
 		RevPtr<const RevVariable>                       ctmc;
+        RevPtr<const RevVariable>                       ccpm;
         RevPtr<const RevVariable>                       cdbdp;
         RevPtr<const RevVariable>                       separator;
         RevPtr<const RevVariable>                       append;

@@ -29,6 +29,8 @@ namespace RevBayesCore {
         // non-virtual
         void                                                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                             //!< The tree has changed and we want to know which part.
         double                                                              computeLnProbability(void);
+        virtual void                                                        drawJointConditionalAncestralStates(std::vector< ContinuousTaxonData >& startStates, std::vector< ContinuousTaxonData >& endStates);
+        virtual void                                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode& node, std::vector< ContinuousTaxonData >& startStates, std::vector< ContinuousTaxonData >& endStates);
         
     protected:
         

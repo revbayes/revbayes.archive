@@ -2,6 +2,7 @@
 
 #include "BinaryState.h"
 #include "AbstractCharacterData.h"
+#include "AbstractPhyloContinuousCharacterProcess.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "OptionRule.h"
@@ -13,6 +14,7 @@
 #include "RbException.h"
 #include "RevObject.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
+#include "RlContinuousCharacterData.h"
 #include "RlModel.h"
 #include "RlTimeTree.h"
 #include "RlBranchLengthTree.h"
@@ -59,6 +61,9 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* cdbdp_tdn = NULL;
     RevBayesCore::StochasticNode<RevBayesCore::Tree>* cdbdp_sn = NULL;
     
+    RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData>* ccpm_tdn = NULL;
+    RevBayesCore::StochasticNode<RevBayesCore::ContinuousCharacterData>* ccpm_sn = NULL;
+    
     if ( static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).isModelObject() )
     {
         ctmc_tdn = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
@@ -69,9 +74,14 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
         cdbdp_tdn = static_cast<const RevLanguage::Tree&>( cdbdp->getRevObject() ).getDagNode();
         cdbdp_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree>* >( cdbdp_tdn );
     }
+    else if ( static_cast<const RevLanguage::ContinuousCharacterData&>( ccpm->getRevObject() ).isModelObject() )
+    {
+        ccpm_tdn = static_cast<const RevLanguage::ContinuousCharacterData&>( ccpm->getRevObject() ).getDagNode();
+        ccpm_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::ContinuousCharacterData>* >(ccpm_tdn);
+    }
     else
     {
-        throw RbException("mnJointConditionalAncestralStateMonitor requires either a CTMC or a character-dependent birth death process (CDBDP).");
+        throw RbException("mnJointConditionalAncestralStateMonitor requires either a CTMC, continous-character process model (CCPM), or a character-dependent birth death process (CDBDP).");
     }
     
     bool                                ap      = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
@@ -143,9 +153,16 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
         m->setAppend( ap );
         value = m;
     }
+    else if (character == "Continuous")
+    {
+        RevBayesCore::JointConditionalContinuousAncestralStateMonitor *m;
+        m = new RevBayesCore::JointConditionalContinuousAncestralStateMonitor(t, ccpm_sn, (unsigned long)g, fn, sep, wt, wss);
+        m->setAppend( ap );
+        value = m;
+    }
     else
     {
-        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard, Binary/Restriction" );
+        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard, Binary/Restriction, and Continuous." );
     }
     
 }
@@ -196,6 +213,7 @@ const MemberRules& Mntr_JointConditionalAncestralState::getParameterRules(void) 
     {
         asMonitorMemberRules.push_back( new ArgumentRule("tree"           , Tree::getClassTypeSpec() , "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         asMonitorMemberRules.push_back( new ArgumentRule("ctmc"           , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("ccpm"          ,  ContinuousCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
         asMonitorMemberRules.push_back( new ArgumentRule("cdbdp"          , TimeTree::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
         asMonitorMemberRules.push_back( new ArgumentRule("filename"       , RlString::getClassTypeSpec() , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         asMonitorMemberRules.push_back( new ArgumentRule("type"           , RlString::getClassTypeSpec() , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -255,6 +273,10 @@ void Mntr_JointConditionalAncestralState::setConstParameter(const std::string& n
     else if ( name == "ctmc" )
     {
         ctmc = var;
+    }
+    else if ( name == "ccpm" )
+    {
+        ccpm = var;
     }
     else if ( name == "cdbdp" )
     {
