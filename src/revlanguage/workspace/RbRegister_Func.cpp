@@ -204,6 +204,7 @@
 #include "Func_readAncestralStateTreeTrace.h"
 #include "Func_readAncestralStateTrace.h"
 #include "Func_source.h"
+#include "Func_summarizeCharacterMaps.h"
 #include "Func_TaxonReader.h"
 #include "Func_treeTrace.h"
 #include "Func_write.h"

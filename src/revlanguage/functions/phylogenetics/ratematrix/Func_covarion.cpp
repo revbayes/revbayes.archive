@@ -18,7 +18,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_covarion::Func_covarion( void ) : TypedFunction<RateGenerator>( )
+Func_covarion::Func_covarion( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

@@ -11,6 +11,7 @@ mac="false"
 win="false"
 mpi="false"
 help="false"
+jupyter="false"
 
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
@@ -29,6 +30,8 @@ Command line options are:
 -win            <true|false>    : set to true if you are building on a Windows system. Defaults to false.
 -mpi            <true|false>    : set to true if you want to build the MPI version. Defaults to false.
 '
+# secret test option
+# -jupyter        <true|false>    : set to true if you want ot buikd the jupyter version. Defaults to false.
 exit
 fi
 
@@ -142,6 +145,13 @@ add_definitions(-DRB_WIN)
 fi
 
 
+if [ "$jupyter" = "true" ]
+then
+echo "JUPYTER!"
+echo '
+add_definitions(-DRB_XCODE)
+'  >> "$HERE/CMakeLists.txt"
+fi
 
 echo '
 # Add extra CMake libraries into ./CMake
@@ -212,6 +222,15 @@ add_executable(rb ${PROJECT_SOURCE_DIR}/tool/help/HtmlHelpGenerator.cpp)
 
 target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
 set_target_properties(rb PROPERTIES PREFIX "../")
+' >> $HERE/CMakeLists.txt
+elif [ "$jupyter" = "true" ]
+then
+echo "more jupyter!"
+echo '
+add_executable(rb-jupyter ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
+
+target_link_libraries(rb-jupyter rb-parser rb-core libs ${Boost_LIBRARIES})
+set_target_properties(rb-jupyter PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
 else
 echo '

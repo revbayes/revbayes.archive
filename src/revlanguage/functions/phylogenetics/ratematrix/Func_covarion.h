@@ -19,7 +19,7 @@
 
 namespace RevLanguage {
     
-    class Func_covarion : public TypedFunction<RateGenerator> {
+    class Func_covarion : public TypedFunction<RateMatrix> {
         
     public:
         Func_covarion( void );
