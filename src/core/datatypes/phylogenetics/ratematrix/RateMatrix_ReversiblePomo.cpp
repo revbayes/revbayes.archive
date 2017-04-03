@@ -121,10 +121,11 @@ double RateMatrix_ReversiblePomo::mutCoeff(int nt1, int nt2) {
     //     nt1=nt2;
     //     nt2=tmp;
     // }
-    if (nt1==0) return Q_mut.getRate(nt1, nt2);//mutation_prob[nt2-1];
+    //if (nt1==0)
+    return Q_mut.getRate(nt1, nt2);//mutation_prob[nt2-1];
     //if (nt1==1) return mutation_prob[nt2+1];
     //if (nt1==2) return mutation_prob[5];
-    assert(0);
+    //assert(0);
 }
 
 
