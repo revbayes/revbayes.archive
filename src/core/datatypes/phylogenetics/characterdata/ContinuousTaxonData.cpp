@@ -223,7 +223,7 @@ std::string ContinuousTaxonData::getStringRepresentation(size_t idx) const
     }
     
     char tempCStr[20];
-    sprintf(tempCStr, "%1.2lf", sequence[idx]);
+    sprintf(tempCStr, "%1.6lf", sequence[idx]);
     std::string tempStr = tempCStr;
     return tempStr;
 }

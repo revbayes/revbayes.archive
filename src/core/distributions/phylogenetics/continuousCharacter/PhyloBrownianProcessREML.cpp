@@ -122,7 +122,7 @@ double PhyloBrownianProcessREML::computeLnProbability( void )
 
 void PhyloBrownianProcessREML::drawJointConditionalAncestralStates(std::vector< ContinuousTaxonData >& startStates, std::vector< ContinuousTaxonData >& endStates)
 {
-    
+
     // draw the root state
     const TopologyNode &root = this->tau->getValue().getRoot();
     size_t root_index = root.getIndex();
@@ -163,7 +163,6 @@ void PhyloBrownianProcessREML::recursivelyDrawJointConditionalAncestralStates(co
     
     // simulate the sequence for each child
     RandomNumberGenerator* rng = GLOBAL_RNG;
-
     for (std::vector< TopologyNode* >::const_iterator it = children.begin(); it != children.end(); ++it)
     {
         const TopologyNode &child = *(*it);
