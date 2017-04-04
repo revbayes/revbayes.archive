@@ -151,6 +151,7 @@
 #include "Func_mtMam.h"
 #include "Func_orderedRateMatrix.h"
 #include "Func_pomo.h"
+#include "Func_reversiblePomo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_t92.h"
@@ -303,6 +304,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_mtRev()                    );
         addFunction( new Func_orderedRateMatrix()        );
         addFunction( new Func_pomo()                     );
+        addFunction( new Func_reversiblePomo()           );
         addFunction( new Func_rtRev()                    );
         addFunction( new Func_t92()                      );
         addFunction( new Func_TamuraNei()                );
@@ -440,7 +442,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // geographical distance function
         addFunction( new Func_geographicalDistance() );
-        
+
         // hyperbolic tangent function
         addFunction( new Func_hyperbolicTangent() );
 
