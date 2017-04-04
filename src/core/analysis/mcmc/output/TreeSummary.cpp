@@ -223,19 +223,20 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
             std::string ancestral_state_end = getSiteState( ancestral_state_vector_end[j], site );
             
             // get the sampled ancestral state from the parent node
+            bool count_sample = false;
             std::string sampled_parent_state = "";
-            if ( conditional == true && root == false )
+            if ( conditional == true && root == false && parent_trace_found == true )
             {
                 const std::vector<std::string>& parent_ancestral_state_vector = parent_ancestral_state_trace.getValues();
                 sampled_parent_state = getSiteState( parent_ancestral_state_vector[j], site );
+                
+                // condition on the parent state?
+                if ( sampled_parent_state == map_parent_state )
+                {
+                    count_sample = true;
+                }
             }
                 
-            // first check if we need to condition on the parent state
-            bool count_sample = false;
-            if ( conditional == true && sampled_parent_state == map_parent_state )
-            {
-                count_sample = true;
-            }
             if ( conditional == false || root == true )
             {
                 count_sample = true;
@@ -997,7 +998,292 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
 }
 
 
-Tree* TreeSummary::characterMapTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, int NUM_TIME_SLICES, bool verbose)
+/**
+ *
+ * Helper function for characterMapTree() that traverses the tree from root to tips collecting stochastic character map samples.
+ *
+ */
+void TreeSummary::recursivelyCollectCharacterMapSamples(size_t node_index, size_t map_parent_state, bool root, bool conditional, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::string*> &map_character_history, std::vector<std::string*> &map_character_history_posteriors, ProgressBar &progress, size_t &num_finished_nodes, int NUM_TIME_SLICES, bool verbose)
+{
+    
+    double dt = final_summary_tree.getRoot().getAge() / double(NUM_TIME_SLICES);
+        
+    size_t sample_clade_index;
+    bool trace_found = false;
+    bool parent_trace_found = false;
+    AncestralStateTrace ancestralstate_trace;
+    AncestralStateTrace parent_trace;
+    
+    std::vector< std::vector< std::pair<size_t, double> > > branch_maps_all = std::vector< std::vector< std::pair<size_t, double> > >();
+    std::vector< std::vector< std::pair<size_t, double> > > branch_maps_conditional = std::vector< std::vector< std::pair<size_t, double> > >();
+    
+    // loop through all the sampled character histories for this branch
+    for (size_t j = burnin; j < num_sampled_states; ++j)
+    {
+        
+        if ( verbose == true )
+        {
+            progress.update( num_finished_nodes * num_sampled_states + num_sampled_states * (j - burnin) / (num_sampled_states - burnin) );
+        }
+        
+        // if necessary, get the sampled tree from the tree trace
+        const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : final_summary_tree;
+        const TopologyNode& sample_root = sample_tree.getRoot();
+        
+        if ( use_tree_trace == true )
+        {
+            // check if the clade in the summary tree is also in the sampled tree
+            sample_clade_index = sample_root.getCladeIndex( summary_nodes[node_index] );
+            
+            // and we must also find the trace for this node index
+            trace_found = false;
+        }
+        else
+        {
+            sample_clade_index = summary_nodes[node_index]->getIndex();
+        }
+        
+        if ( RbMath::isFinite( sample_clade_index ) == true )
+        {
+   
+            bool use_sample = true;
+
+            // check if we must condition on the parent's end state
+            if ( conditional == true && root == false )
+            {
+                size_t sample_parent_index;
+                if ( use_tree_trace == true )
+                {
+                    sample_parent_index = sample_tree.getNode( sample_clade_index ).getParent().getIndex();
+                    parent_trace_found = false;
+                }
+                else
+                {
+                    sample_parent_index = summary_nodes[sample_clade_index]->getParent().getIndex();
+                }
+
+                if ( RbMath::isFinite( sample_parent_index ) == false )
+                {
+                    use_sample = false;
+                }
+                else
+                {
+                    
+                    if ( parent_trace_found == false )
+                    {
+                        for (size_t k = 0; k < ancestral_state_traces.size(); ++k)
+                        {
+                            if (ancestral_state_traces[k].getParameterName() == StringUtilities::toString(sample_parent_index + 1))
+                            {
+                                parent_trace = ancestral_state_traces[k];
+                                parent_trace_found = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // get the sampled character history for the parent for this iteration
+                    const std::vector<std::string>& parent_vector = parent_trace.getValues();
+                    std::string character_history = parent_vector[j];
+                    
+                    // parse sampled SIMMAP string
+                    std::vector< std::pair<size_t, double> > parent_branch_map = parseSIMMAPForNode(character_history);
+
+                    // finally check against the map state of the parent
+                    size_t parent_end_state = parent_branch_map[ parent_branch_map.size() - 1 ].first;
+                    if ( parent_end_state != map_parent_state )
+                    {
+                        use_sample = false;
+                    }
+                }
+            }
+
+            // if necessary find the AncestralStateTrace for the sampled node
+            if ( trace_found == false )
+            {
+                for (size_t k = 0; k < ancestral_state_traces.size(); ++k)
+                {
+                    if (ancestral_state_traces[k].getParameterName() == StringUtilities::toString(sample_clade_index + 1))
+                    {
+                        ancestralstate_trace = ancestral_state_traces[k];
+                        trace_found = true;
+                        break;
+                    }
+                }
+            }
+            
+            // get the sampled character history for this iteration
+            const std::vector<std::string>& ancestralstate_vector = ancestralstate_trace.getValues();
+            std::string character_history = ancestralstate_vector[j];
+            
+            // parse sampled SIMMAP string
+            std::vector< std::pair<size_t, double> > this_branch_map = parseSIMMAPForNode(character_history);
+            
+            if ( use_sample == true )
+            {
+                branch_maps_conditional.push_back(this_branch_map);
+            } 
+            branch_maps_all.push_back(this_branch_map);
+        }
+    }
+    
+    // now summarize maximum a posteriori states in each time slice along the branch
+    
+    double branch_len = summary_nodes[node_index]->getBranchLength();
+    
+    // strings to hold the SIMMAP strings for the summarized character history
+    std::string branch_map_history = "}";
+    std::string branch_map_history_posteriors = "}";
+    
+    // loop through each time slice along this branch
+    double current_time = 0.0;
+    size_t current_dt = 1;
+    bool finished_branch = false;
+    size_t map_state = 0;
+    size_t old_map_state = 0;
+    while ( finished_branch == false )
+    {
+        std::vector< std::vector< std::pair<size_t, double> > > branch_maps;
+        if ( current_dt == 1 && conditional == true && root == false )
+        {
+            branch_maps = branch_maps_conditional;
+        }
+        else
+        {
+            branch_maps = branch_maps_all;
+        }
+
+        current_time = current_dt * dt;
+        if ( current_time >= branch_len )
+        {
+            current_time = branch_len;
+            finished_branch = true;
+        }
+        
+        std::vector<size_t> states = std::vector<size_t>();
+        std::vector<double> posteriors = std::vector<double>();
+       
+        // loop through all sampled character histories for this branch
+        // and compile each state sampled in this time slice
+        for (size_t k = 0; k < branch_maps.size(); k++)
+        {
+            double sample_time = 0.0;
+            
+            bool use_sample = true;
+            if ( conditional == true && current_dt > 1 && root == false )
+            {
+                use_sample = false;
+            }
+
+            // find this time slice in this sampled character history
+            for (size_t l = 0; l < branch_maps[k].size(); l++)
+            {
+                sample_time += branch_maps[k][l].second;
+                
+                // if we are conditioning on the previous time slice's MAP state
+                // check whether or not we should use this sample by checking
+                // the state in the last time slice
+                // for current_dt == 1 we have already excluded branch_maps whose
+                // parent didn't end with the parent MAP end state
+                if ( conditional == true && current_dt > 1 )
+                {
+                    size_t window_size = 1;
+                    if ( current_time - (window_size * dt) <= sample_time || l == branch_maps[k].size() - 1)
+                    {
+                        if ( branch_maps[k][l].first == old_map_state )
+                        {
+                            use_sample = true;
+                        }
+                    }
+                }
+
+                if ( use_sample == true && ( current_time <= sample_time || l == branch_maps[k].size() - 1 ) )
+                {
+                    bool state_found = false;
+                    for (size_t m = 0; m < states.size(); m++)
+                    {
+                        if (states[m] == branch_maps[k][l].first)
+                        {
+                            state_found = true;
+                            posteriors[m] += 1.0;
+                            break;
+                        }
+                    }
+                    if (state_found == false)
+                    {
+                        states.push_back(branch_maps[k][l].first);
+                        posteriors.push_back(1.0);
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        // scale posteriors
+        double sum_posteriors = 0.0;
+        for (size_t i = 0; i < posteriors.size(); i++)
+        {
+            sum_posteriors += posteriors[i];
+        }
+        for (size_t i = 0; i < posteriors.size(); i++)
+        {
+            posteriors[i] /= sum_posteriors;
+        }
+        
+        // find the MAP state for this time slice
+        double map_state_pp = 0.0;
+        for (size_t k = 0; k < states.size(); k++)
+        {
+            if (posteriors[k] > map_state_pp)
+            {
+                map_state = states[k];
+                map_state_pp = posteriors[k];
+            }
+        }
+        old_map_state = map_state;
+        
+        // now add this time slice to the SIMMAP strings
+        
+        double time_slice_length = current_time - ((current_dt - 1) * dt);
+        
+        branch_map_history = "," + StringUtilities::toString(time_slice_length) + branch_map_history;
+        branch_map_history_posteriors = "," + StringUtilities::toString(time_slice_length) + branch_map_history_posteriors;
+        
+        branch_map_history = StringUtilities::toString(map_state) + branch_map_history;
+        branch_map_history_posteriors = StringUtilities::toString(int(map_state_pp * 100)) + branch_map_history_posteriors;
+        
+        if (finished_branch == false )
+        {
+            branch_map_history = ":" + branch_map_history;
+            branch_map_history_posteriors = ":" + branch_map_history_posteriors;
+        }
+
+        current_dt++;
+    }
+    
+    // finally finish the SIMMAP strings for this node
+    branch_map_history = "{" + branch_map_history;
+    branch_map_history_posteriors = "{" + branch_map_history_posteriors;
+    map_character_history[node_index] = new std::string(branch_map_history);
+    map_character_history_posteriors[node_index] = new std::string(branch_map_history_posteriors);
+
+    // update nodes finished for the progress bar
+    num_finished_nodes += 1;
+             
+    // recurse through tree
+    std::vector<int> children_indices = summary_nodes[node_index]->getChildrenIndices();
+    for (size_t i = 0; i < children_indices.size(); i++)
+    {
+        recursivelyCollectCharacterMapSamples(children_indices[i], map_state, false, conditional, ancestral_state_traces, b, num_sampled_states, num_sampled_trees, final_summary_tree, summary_nodes, map_character_history, map_character_history_posteriors, progress, num_finished_nodes, NUM_TIME_SLICES, verbose);
+    }
+}
+
+
+/*
+ * This method summarizes marginal, joint and conditional character histories over a give summary tree from a distribution of stochastic character map samples. 
+ */
+Tree* TreeSummary::characterMapTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, int NUM_TIME_SLICES, bool conditional, bool joint, bool verbose)
 {
     
     // get the number of ancestral state samples and the number of tree samples
@@ -1036,15 +1322,12 @@ Tree* TreeSummary::characterMapTree(const Tree &input_summary_tree, std::vector<
     
     RBOUT("Compiling character maps...\n");
     
-    double dt = input_summary_tree.getRoot().getAge() / double(NUM_TIME_SLICES);
-    
     // allocate memory for the new summary tree
     Tree* final_summary_tree = new Tree( input_summary_tree );
     const std::vector<TopologyNode*> &summary_nodes = final_summary_tree->getNodes();
     
-    double weight = 1.0 / ( num_sampled_states - burnin );
-    std::vector<std::string*> map_character_history;
-    std::vector<std::string*> map_character_history_posteriors;
+    std::vector<std::string*> map_character_history( summary_nodes.size(), new std::string() );
+    std::vector<std::string*> map_character_history_posteriors( summary_nodes.size(), new std::string() );
     
     bool process_active = true;
     ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, 0 );
@@ -1052,165 +1335,11 @@ Tree* TreeSummary::characterMapTree(const Tree &input_summary_tree, std::vector<
     {
         progress.start();
     }
-    
-    // loop through all nodes in the summary tree
-    for (size_t i = 0; i < summary_nodes.size(); ++i)
-    {
-        size_t sample_clade_index;
-        bool trace_found = false;
-        AncestralStateTrace ancestralstate_trace;
-        
-        std::vector< std::vector< std::pair<size_t, double> > > branch_maps = std::vector< std::vector< std::pair<size_t, double> > >();
-        
-        // loop through all the sampled character histories for this branch
-        for (size_t j = burnin; j < num_sampled_states; ++j)
-        {
-            
-            if ( verbose == true && process_active == true )
-            {
-                progress.update( i * num_sampled_states + num_sampled_states * (j - burnin) / (num_sampled_states - burnin) );
-            }
-            
-            // if necessary, get the sampled tree from the tree trace
-            const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : *final_summary_tree;
-            const TopologyNode& sample_root = sample_tree.getRoot();
-            
-            if ( use_tree_trace == true )
-            {
-                // check if the clade in the summary tree is also in the sampled tree
-                sample_clade_index = sample_root.getCladeIndex( summary_nodes[i] );
-                
-                // and we must also find the trace for this node index
-                trace_found = false;
-            }
-            else
-            {
-                sample_clade_index = summary_nodes[i]->getIndex();
-            }
-            
-            if ( RbMath::isFinite( sample_clade_index ) == true )
-            {
-                
-                // if necessary find the AncestralStateTrace for the sampled node
-                if ( trace_found == false )
-                {
-                    for (size_t k = 0; k < ancestralstate_traces.size(); ++k)
-                    {
-                        if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sample_clade_index + 1))
-                        {
-                            ancestralstate_trace = ancestralstate_traces[k];
-                            trace_found = true;
-                            break;
-                        }
-                    }
-                }
-                
-                // get the sampled character history for this iteration
-                const std::vector<std::string>& ancestralstate_vector = ancestralstate_trace.getValues();
-                std::string character_history = ancestralstate_vector[j];
-                
-                // parse sampled SIMMAP string
-                std::vector< std::pair<size_t, double> > this_branch_map = parseSIMMAPForNode(character_history);
-                
-                branch_maps.push_back(this_branch_map);
-                
-            }
-        }
-        
-        // now summarize maximum a posteriori states along the branch
-        
-        double branch_len = summary_nodes[i]->getBranchLength();
-        
-        // strings to hold the SIMMAP strings for the summarized character history
-        std::string branch_map_history = "}";
-        std::string branch_map_history_posteriors = "}";
-        
-        // loop through each time slice along this branch
-        double current_time = 0.0;
-        size_t current_dt = 1;
-        bool finished_branch = false;
-        while ( finished_branch == false )
-        {
-            
-            current_time = current_dt * dt;
-            if (current_time >= branch_len)
-            {
-                current_time = branch_len;
-                finished_branch = true;
-            }
-            
-            std::vector<size_t> states = std::vector<size_t>();
-            std::vector<double> posteriors = std::vector<double>();
-            
-            // loop through all sampled character histories for this branch
-            // and compile each state sampled in this time slice
-            for (size_t k = 0; k < branch_maps.size(); k++)
-            {
-                double sample_time = 0.0;
-                // find this time slice in this sampled character history
-                for (size_t l = 0; l < branch_maps[k].size(); l++)
-                {
-                    sample_time += branch_maps[k][l].second;
-                    if (current_time <= sample_time || l == branch_maps[k].size() - 1)
-                    {
-                        bool state_found = false;
-                        for (size_t m = 0; m < states.size(); m++)
-                        {
-                            if (states[m] == branch_maps[k][l].first)
-                            {
-                                state_found = true;
-                                posteriors[m] += weight;
-                                break;
-                            }
-                        }
-                        if (state_found == false)
-                        {
-                            states.push_back(branch_maps[k][l].first);
-                            posteriors.push_back(weight);
-                        }
-                        break;
-                    }
-                }
-            }
-            
-            // find the MAP state for this time slice
-            size_t map_state = 0;
-            double map_state_pp = 0.0;
-            for (size_t k = 0; k < states.size(); k++)
-            {
-                if (posteriors[k] > map_state_pp)
-                {
-                    map_state = states[k];
-                    map_state_pp = posteriors[k];
-                }
-            }
-            
-            // now add this time slice to the SIMMAP strings
-            
-            double time_slice_length = current_time - ((current_dt - 1) * dt);
-            
-            branch_map_history = "," + StringUtilities::toString(time_slice_length) + branch_map_history;
-            branch_map_history_posteriors = "," + StringUtilities::toString(time_slice_length) + branch_map_history_posteriors;
-            
-            branch_map_history = StringUtilities::toString(map_state) + branch_map_history;
-            branch_map_history_posteriors = StringUtilities::toString(int(map_state_pp * 100)) + branch_map_history_posteriors;
-            
-            if (finished_branch == false )
-            {
-                branch_map_history = ":" + branch_map_history;
-                branch_map_history_posteriors = ":" + branch_map_history_posteriors;
-            }
 
-            current_dt++;
-        }
-        
-        // finally finish the SIMMAP strings for this node
-        branch_map_history = "{" + branch_map_history;
-        branch_map_history_posteriors = "{" + branch_map_history_posteriors;
-        map_character_history.push_back(new std::string(branch_map_history));
-        map_character_history_posteriors.push_back(new std::string(branch_map_history_posteriors));
-
-    }
+    // recurse through summary tree and collect ancestral state samples
+    size_t node_index = final_summary_tree->getRoot().getIndex();
+    size_t num_finished_nodes = 0;
+    recursivelyCollectCharacterMapSamples(node_index, 0, true, conditional, ancestralstate_traces, b, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, map_character_history, map_character_history_posteriors, progress, num_finished_nodes, NUM_TIME_SLICES, verbose);
     
     if ( verbose == true && process_active == true )
     {
