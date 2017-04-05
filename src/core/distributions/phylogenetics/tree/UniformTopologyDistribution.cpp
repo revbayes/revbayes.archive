@@ -92,37 +92,36 @@ UniformTopologyDistribution* UniformTopologyDistribution::clone( void ) const
 }
 
 
-double UniformTopologyDistribution::computeLnProbability( void )
-{
+double UniformTopologyDistribution::computeLnProbability( void ) {
     
 	// first check if the current tree matches the clade constraints
     if ( matchesConstraints() == false )
-    {
+        {
         return RbConstants::Double::neginf;
-    }
+        }
     
     if(outgroup.size() > 0)
-    {
+        {
 		// now we check that the outgroup is correct
 		const TopologyNode &root = value->getRoot();
 		const std::vector<TopologyNode*> &children = root.getChildren();
 		bool contains_outgroup = false;
 		for (size_t i=0; i<children.size(); ++i)
-		{
+            {
 			const TopologyNode &child = *(children[i]);
 			Clade c = child.getClade();
 			if ( c == outgroup )
-			{
+                {
 				contains_outgroup = true;
 				break;
-			}
-		}
+                }
+            }
 
 		if ( contains_outgroup == false )
-		{
+            {
 			return RbConstants::Double::neginf;
-		}
-	}
+            }
+        }
     
     return logTreeTopologyProb;
 }
