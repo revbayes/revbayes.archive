@@ -40,8 +40,8 @@ namespace RevBayesCore {
         
         // protected members available for derived classes
         size_t                          active_PID;
-        size_t                          num_processes;
-        size_t                          pid;
+        int                             num_processes;
+        int                             pid;
         bool                            process_active;
         
         

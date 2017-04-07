@@ -46,9 +46,9 @@ namespace RevLanguage {
         
     private:
         
-        RevPtr<const RevVariable>                              geneTrees;                                                                                     //!< The population size
-        RevPtr<const RevVariable>                              speciesTree;                                                                            //!< The species tree
-        RevPtr<const RevVariable>                              useSpecies;                                                                                 //!< The taxons
+        RevPtr<const RevVariable>                              geneTrees;                                                                           //!< The population size
+        RevPtr<const RevVariable>                              speciesTree;                                                                         //!< The species tree
+        RevPtr<const RevVariable>                              useSpecies;                                                                          //!< The taxons
         
         
     };

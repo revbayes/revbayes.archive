@@ -367,7 +367,8 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
             matchScore->clear();
             if ( (*it).second->checkArguments(args, matchScore, once) == true )
             {
-                if ( bestMatch == NULL ) 
+                std::sort(matchScore->begin(), matchScore->end(), std::greater<double>());
+                if ( bestMatch == NULL )
                 {
                     bestScore = *matchScore;
                     bestMatch = it->second;

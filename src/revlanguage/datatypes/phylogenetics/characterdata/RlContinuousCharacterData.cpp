@@ -1,8 +1,10 @@
 #include "RlContinuousCharacterData.h"
 
 #include "ConstantNode.h"
-#include "Natural.h"
+#include "RlMemberFunction.h"
 #include "ModelVector.h"
+#include "Natural.h"
+#include "Real.h"
 #include "RlContinuousTaxonData.h"
 #include "RlString.h"
 #include "RbUtil.h"
@@ -18,18 +20,7 @@ ContinuousCharacterData::ContinuousCharacterData(void) :
     dagNode( NULL )
 {
     
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
-    
-    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
-
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
+    initMethods();
 
 }
 
@@ -39,21 +30,12 @@ ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousC
     dagNode( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d.clone()) )
 {
     
+    
+    initMethods();
+    
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
     
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
-    
-    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
-    
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
 }
 
 /** Construct from core data type */
@@ -62,21 +44,11 @@ ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharact
     dagNode( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d) )
 {
     
+    
+    initMethods();
+    
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
-    
-    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
-
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
 }
 
 
@@ -88,23 +60,7 @@ ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<Rev
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
     
-    // add the DAG node member methods
-    // note that this is a sage case because all DAG nodes are member objects
-    const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
-    methods.insertInheritedMethods( dagMethods );
-    
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
-    
-    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
-
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
+    initMethods();
     
 }
 
@@ -323,6 +279,38 @@ RevBayesCore::ContinuousCharacterData& ContinuousCharacterData::getValue( void )
     return dagNode->getValue();
 }
 
+
+void ContinuousCharacterData::initMethods( void )
+{
+    
+    // add the DAG node member methods
+    // note that this is a sage case because all DAG nodes are member objects
+    if ( dagNode != NULL )
+    {
+        const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
+        methods.insertInheritedMethods( dagMethods );
+    }
+    
+    // insert the character data specific methods
+    MethodTable charDataMethods = getCharacterDataMethods();
+    methods.insertInheritedMethods( charDataMethods );
+    
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+    
+    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
+    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
+    
+    // member functions
+    ArgumentRules* get_element_arg_rules = new ArgumentRules();
+    get_element_arg_rules->push_back( new ArgumentRule( "i", Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    get_element_arg_rules->push_back( new ArgumentRule( "j", Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<ContinuousCharacterData, Real>( "get", this, get_element_arg_rules   ) );
+
+}
 
 /**
  * Is the object or any of its upstream members or elements

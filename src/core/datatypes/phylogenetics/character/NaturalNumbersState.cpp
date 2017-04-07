@@ -44,6 +44,12 @@ void NaturalNumbersState::addState(int s)
     ++num_observed_states;
 }
 
+void NaturalNumbersState::addStateDescriptions(const std::vector<std::string>& d)
+{
+    state_descriptions = d;
+}
+
+
 
 std::string NaturalNumbersState::getDataType( void ) const
 {
@@ -51,6 +57,23 @@ std::string NaturalNumbersState::getDataType( void ) const
     return "NaturalNumbers";
 }
 
+
+std::string NaturalNumbersState::getStateDescription( void ) const
+{
+    if (state_descriptions.size() > index_single_state)
+    {
+        return state_descriptions[ index_single_state ];
+    }
+    else
+    {
+        return getStringValue();
+    }
+}
+
+std::vector<std::string> NaturalNumbersState::getStateDescriptions( void ) const
+{
+    return state_descriptions;
+}
 
 std::string NaturalNumbersState::getStateLabels( void ) const
 {

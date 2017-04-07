@@ -1250,7 +1250,6 @@ int EigenSystem::luDecompose(MatrixReal& a, double* vv, int* indx, double* pd) {
  *
  * \brief Update eigensystem
  * \parameter m Matrix for which we should calculate eigensystem
- * \return MbError(MbError::ERROR)
  */
 void EigenSystem::update(void)
 {
@@ -1277,14 +1276,6 @@ void EigenSystem::update(void)
 	
 	// compute eigenvalues and eigenvectors
 	hqr2(low, high, A, realEigenvalues, imaginaryEigenvalues, eigenvectors);
-    
-    for (std::vector<double>::iterator it = realEigenvalues.begin(); it != realEigenvalues.end(); ++it)
-    {
-        if ( *it > 0.0 )
-        {
-            *it = 0.0;
-        }
-    }
 	
 	// reverse balancing to obtain eigenvectors
 	balback(low, high, scale, eigenvectors);

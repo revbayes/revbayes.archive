@@ -162,6 +162,18 @@ void RbBitSet::flip(size_t i)
 }
 
 
+size_t RbBitSet::getFirstSetBit( void ) const
+{
+    size_t index = 0;
+    while ( index < value.size() && value[index] == false )
+    {
+        ++index;
+    }
+    
+    return index;
+}
+
+
 size_t RbBitSet::getNumberSetBits( void ) const
 {
     // get the internal value

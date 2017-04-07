@@ -102,6 +102,7 @@ namespace RevBayesCore {
         bool                                                isUltrametric(void) const;                                                                          //!< Is this tree ultrametric?
         void                                                makeInternalNodesBifurcating(bool reindex);                                                                 //!< Make all the internal nodes bifurcating.
         void                                                orderNodesByIndex();
+        void                                                reroot(const Clade &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
         void                                                reroot(const std::string &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
         void                                                reroot(TopologyNode &n, bool reindex);
         void                                                renameNodeParameter(const std::string &old_name, const std::string &new_name);

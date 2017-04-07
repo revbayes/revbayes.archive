@@ -322,7 +322,7 @@ HomologousDiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatri
                 aaState.setGapState(true);
 //                aaState.setState("-");
             }
-            else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
+            else if ( charblock->IsMissingState(origTaxIndex, *cit) == true || charblock->GetNumStates(origTaxIndex, *cit) >= 20 )
             {
 //                aaState.setState("?");
                 aaState.setMissingState(true);

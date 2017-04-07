@@ -224,7 +224,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
     MPI_Comm_free(&analysis_comm);
 
     // wait until all chains complete
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier(MPI_COMM_WORLD);
 #endif
     
 }

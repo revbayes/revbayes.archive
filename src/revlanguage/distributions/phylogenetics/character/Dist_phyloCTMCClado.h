@@ -43,6 +43,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       p_inv;
         RevPtr<const RevVariable>                       nSites;
         RevPtr<const RevVariable>                       nStates;
+        RevPtr<const RevVariable>                       storeInternalNodes;
         RevPtr<const RevVariable>                       type;
         RevPtr<const RevVariable>                       treatAmbiguousAsGap;
         

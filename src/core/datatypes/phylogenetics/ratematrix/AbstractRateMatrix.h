@@ -50,6 +50,7 @@ namespace RevBayesCore {
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrix
         virtual AbstractRateMatrix*         clone(void) const = 0;
         virtual std::vector<double>         getStationaryFrequencies(void) const = 0;                                                   //!< Return the stationary frequencies
+        MatrixReal                          getRateMatrix(void) const;
         virtual void                        update(void) = 0;                                                                           //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         
 

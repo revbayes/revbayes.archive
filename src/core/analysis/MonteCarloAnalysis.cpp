@@ -697,7 +697,8 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
     // before we start printing (e.g., the headers) anything.
 #ifdef RB_MPI
     // wait until all chains opened the monitor
-    MPI::COMM_WORLD.Barrier();
+//    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier(MPI_COMM_WORLD);
 #endif
     
     // Write headers and print first line
