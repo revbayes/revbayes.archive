@@ -50,7 +50,7 @@ double HalfNormalDistribution::computeLnProbability( void )
         return RbConstants::Double::neginf;
     }
     
-    return 2.0 * RbStatistics::Normal::lnPdf(offset->getValue(), stDev->getValue(), *value);
+    return RbConstants::LN2 + RbStatistics::Normal::lnPdf(offset->getValue(), stDev->getValue(), *value);
 }
 
 
