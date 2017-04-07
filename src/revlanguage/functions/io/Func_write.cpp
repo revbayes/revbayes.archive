@@ -17,10 +17,11 @@ using namespace RevLanguage;
 
 
 Func_write::Func_write( void ) :
-    processID( 0 )
+    process_ID( 0 )
 {
 #if defined (RB_MPI)
-    processID = MPI::COMM_WORLD.Get_rank();
+//    processID = MPI::COMM_WORLD.Get_rank();
+    MPI_Comm_rank(MPI_COMM_WORLD, &process_ID);
 #endif
 }
 
@@ -48,7 +49,7 @@ RevPtr<RevVariable> Func_write::execute( void )
     bool  append = static_cast<const RlBoolean&>( args[2].getVariable()->getRevObject() ).getValue();
     const std::string& separator = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
     
-    if ( processID == 0 )
+    if ( process_ID == 0 )
     {
     if ( fn != "" ) 
     {

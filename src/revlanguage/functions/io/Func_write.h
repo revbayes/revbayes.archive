@@ -41,7 +41,7 @@ namespace RevLanguage {
         
     private:
         
-        int                         processID;
+        int                                     process_ID;
     };
     
 }

@@ -89,19 +89,30 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
 
     std::string summary_stat = static_cast<const RlString&>( args[6].getVariable()->getRevObject() ).getValue();
     
-    int site = static_cast<const Integer &>(args[7].getVariable()->getRevObject()).getValue() - 1;
+    std::string reconstruction = static_cast<const RlString &>(args[7].getVariable()->getRevObject()).getValue();
+    bool conditional = false;
+    if ( reconstruction == "conditional" )
+    {
+        conditional = true;
+    }
+    if ( reconstruction == "joint" )
+    {
+        throw RbException("Joint ancestral state summaries are not yet implemented. Coming soon!");
+    }
     
-    bool verbose = static_cast<const RlBoolean &>(args[8].getVariable()->getRevObject()).getValue();
+    int site = static_cast<const Integer &>(args[8].getVariable()->getRevObject()).getValue() - 1;
+    
+    bool verbose = static_cast<const RlBoolean &>(args[9].getVariable()->getRevObject()).getValue();
     
     // get the tree with ancestral states
     RevBayesCore::Tree* tree;
     if (start_states)
     {
-        tree = summary.cladoAncestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, verbose);
+        tree = summary.cladoAncestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, conditional, false, verbose);
     }
     else
     {
-        tree = summary.ancestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, verbose);
+        tree = summary.ancestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, conditional, false, verbose);
     }
     
     // return the tree
@@ -150,6 +161,11 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
         summary_stats.push_back( "MAP" );
         summary_stats.push_back( "mean" );
         argumentRules.push_back( new OptionRule( "summary_statistic", new RlString("MAP"), summary_stats, "The statistic used to summarize ancestral states. 'MAP' displays the 3 states with highest posterior probabilities. 'mean' displays the mean value and 95% CI." ) );
+        std::vector<std::string> reconstruction;
+        reconstruction.push_back( "conditional" );
+        reconstruction.push_back( "joint" );
+        reconstruction.push_back( "marginal" );
+        argumentRules.push_back( new OptionRule( "reconstruction", new RlString("marginal"), reconstruction, "'joint' and 'conditional' should only be used to summarize ancestral states sampled from the joint distribution. 'marginal' can be used for states sampled from the joint or marginal distribution." ) );
         argumentRules.push_back( new ArgumentRule( "site"     , Integer::getClassTypeSpec()  , "The character site to be summarized.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(1) ) );
         argumentRules.push_back( new ArgumentRule( "verbose"   , RlBoolean::getClassTypeSpec()  , "Printing verbose output", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         

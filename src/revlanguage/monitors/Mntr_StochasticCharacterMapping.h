@@ -1,15 +1,15 @@
 //
-//  Mntr_JointConditionalCharacterMapping.h
+//  Mntr_StochasticCharacterMapping.h
 //  RevBayes_development_branch
 //
 //  Created by will freyman on 12/13/16.
 //  Copyright (c) 2016 will freyman. All rights reserved.
 //
 
-#ifndef __RevBayes_development_branch__Mntr_JointConditionalCharacterMapping__
-#define __RevBayes_development_branch__Mntr_JointConditionalCharacterMapping__
+#ifndef __RevBayes_development_branch__Mntr_StochasticCharacterMapping__
+#define __RevBayes_development_branch__Mntr_StochasticCharacterMapping__
 
-#include "JointConditionalCharacterMappingMonitor.h"
+#include "StochasticCharacterMappingMonitor.h"
 #include "RlMonitor.h"
 
 #include <ostream>
@@ -18,14 +18,14 @@
 
 namespace RevLanguage {
     
-    class Mntr_JointConditionalCharacterMapping : public Monitor {
+    class Mntr_StochasticCharacterMapping : public Monitor {
         
     public:
         
-        Mntr_JointConditionalCharacterMapping(void);                                                                                            //!< Default constructor
+        Mntr_StochasticCharacterMapping(void);                                                                                            //!< Default constructor
         
         // Basic utility functions
-        virtual Mntr_JointConditionalCharacterMapping*  clone(void) const;                                                                      //!< Clone object
+        virtual Mntr_StochasticCharacterMapping*  clone(void) const;                                                                      //!< Clone object
         void                                            constructInternalObject(void);                                                          //!< We construct the a new internal monitor.
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
@@ -42,6 +42,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       filename;
         RevPtr<const RevVariable>                       printgen;
         RevPtr<const RevVariable>                       cdbdp;
+        RevPtr<const RevVariable>                       ctmc;
         RevPtr<const RevVariable>                       separator;
         RevPtr<const RevVariable>                       append;
         RevPtr<const RevVariable>                       include_simmap;

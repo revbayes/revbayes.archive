@@ -745,7 +745,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
 }
 
 
-void StateDependentSpeciationExtinctionProcess::drawJointConditionalCharacterMap(std::vector<std::string*>& character_histories)
+void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string*>& character_histories)
 {
     // first populate partial likelihood vectors along all the branches
     sample_character_history = true;
@@ -859,15 +859,15 @@ void StateDependentSpeciationExtinctionProcess::drawJointConditionalCharacterMap
     character_histories[node_index] = simmap_string;
     
     // recurse towards tips
-    recursivelyDrawJointConditionalCharacterMap(left, l, character_histories);
-    recursivelyDrawJointConditionalCharacterMap(right, r, character_histories);
+    recursivelyDrawStochasticCharacterMap(left, l, character_histories);
+    recursivelyDrawStochasticCharacterMap(right, r, character_histories);
     
     // turn off sampling until we need it again
     sample_character_history = false;
 }
 
 
-void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories)
+void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories)
 {
     
     size_t node_index = node.getIndex();
@@ -1175,8 +1175,8 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
         character_histories[node_index] = new std::string(simmap_string);
         
         // recurse towards tips
-        recursivelyDrawJointConditionalCharacterMap(left, l, character_histories);
-        recursivelyDrawJointConditionalCharacterMap(right, r, character_histories);
+        recursivelyDrawStochasticCharacterMap(left, l, character_histories);
+        recursivelyDrawStochasticCharacterMap(right, r, character_histories);
     }
 }
 
