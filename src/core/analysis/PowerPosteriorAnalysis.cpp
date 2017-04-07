@@ -164,7 +164,7 @@ void PowerPosteriorAnalysis::initMPI( void )
     
 #ifdef RB_MPI
     // wait until all processes are complete
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier(MPI_COMM_WORLD);
 #endif
     
 }
@@ -204,7 +204,7 @@ void PowerPosteriorAnalysis::runAll(size_t gen)
     
 #ifdef RB_MPI
     // wait until all chains complete
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier(MPI_COMM_WORLD);
 #endif
     if ( process_active == true )
     {
