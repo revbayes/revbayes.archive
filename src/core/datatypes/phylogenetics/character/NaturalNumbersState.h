@@ -34,11 +34,16 @@ namespace RevBayesCore {
         
         // Discrete character observation functions
         void                            addState(int s);                                    //!< Add the state with the given index.
+        void                            addStateDescriptions(const std::vector<std::string>& d);
         std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
+        std::string                     getStateDescription(void) const;
+        std::vector<std::string>        getStateDescriptions(void) const;
         std::string                     getStateLabels(void) const;                         //!< Get valid state labels
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
         void                            setState(const std::string &symbol);                //!< Compute the internal state value for this character.
         
+    private:
+        std::vector<std::string>        state_descriptions;
     };
 //	extern size_t						g_MAX_NAT_NUM_STATES;
 }

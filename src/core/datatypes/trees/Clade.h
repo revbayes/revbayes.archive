@@ -1,6 +1,7 @@
 #ifndef Clade_H
 #define Clade_H
 
+#include <map>
 #include <vector>
 #include <string>
 
@@ -50,7 +51,7 @@ namespace RevBayesCore {
         void                                        addTaxon(const Taxon &t);                                   //!< Add a taxon to our list.
         double                                      getAge(void) const;                                         //!< Get the age of this clade.
         const RbBitSet&                             getBitRepresentation(void) const;                           //!< Get the clade as a bit representation.
-        void                                        setBitRepresentation(RbBitSet);
+        void                                        setBitRepresentation(const RbBitSet &b);
         const std::vector<Taxon>&                   getMrca(void) const;                                        //!< Get the mrca taxon.
         int                                         getNumberMissingTaxa(void) const;                           //!< Get the number of missing taxa.
         size_t                                      getNumberOfTaxa(void) const;                                //!< Get the number of taxa.
@@ -58,6 +59,7 @@ namespace RevBayesCore {
         const std::vector<Taxon>&                   getTaxa(void) const;                                        //!< Get the taxon names.
         const Taxon&                                getTaxon(size_t i) const;                                   //!< Get a single taxon name.
         const std::string&                          getTaxonName(size_t i) const;                               //!< Get a single taxon name.
+        void                                        resetTaxonBitset(const std::map<std::string, size_t> map);
         void                                        setAge(double a);                                           //!< Set the age of the clade.
         void                                        setMrca(const std::vector<Taxon>&);                         //!< Set the mrca taxon, if applicable.
         void                                        setNumberMissingTaxa(int n);                                //!< Set the number of missing taxa in this clade.

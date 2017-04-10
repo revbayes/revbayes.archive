@@ -16,12 +16,12 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 UpDownScaleProposal::UpDownScaleProposal( double l ) : Proposal(),
-    upScalarVariables(  ),
-    upVectorVariables(  ),
-    upTreeVariables(  ),
-    downScalarVariables(  ),
-    downVectorVariables(  ),
-    downTreeVariables(  ),
+    up_scalar_variables(  ),
+    up_vector_variables(  ),
+    up_tree_variables(  ),
+    down_scalar_variables(  ),
+    down_vector_variables(  ),
+    down_tree_variables(  ),
     lambda( l )
 {
     
@@ -41,11 +41,11 @@ void UpDownScaleProposal::addVariable( StochasticNode<double> *v, bool up)
     // add it to my internal vector
     if ( up == true )
     {
-        upScalarVariables.push_back( v );
+        up_scalar_variables.push_back( v );
     }
     else
     {
-        downScalarVariables.push_back( v );
+        down_scalar_variables.push_back( v );
     }
     
 }
@@ -64,11 +64,11 @@ void UpDownScaleProposal::addVariable( StochasticNode<RbVector<double> > *v, boo
     // add it to my internal vector
     if ( up == true )
     {
-        upVectorVariables.push_back( v );
+        up_vector_variables.push_back( v );
     }
     else
     {
-        downVectorVariables.push_back( v );
+        down_vector_variables.push_back( v );
     }
     
 }
@@ -87,11 +87,11 @@ void UpDownScaleProposal::addVariable( StochasticNode<Tree> *v, bool up )
     // add it to my internal vector
     if ( up == true )
     {
-        upTreeVariables.push_back( v );
+        up_tree_variables.push_back( v );
     }
     else
     {
-        downTreeVariables.push_back( v );
+        down_tree_variables.push_back( v );
     }
     
 }
@@ -155,41 +155,41 @@ double UpDownScaleProposal::doProposal( void )
     
     double scalingCount = 0.0;
     
-    storedUpScalarValues = std::vector<double>(upScalarVariables.size(), 0.0);
+    stored_up_scalar_values = std::vector<double>(up_scalar_variables.size(), 0.0);
     // scale all the single variable up
-    for (size_t i=0; i<upScalarVariables.size(); ++i)
+    for (size_t i=0; i<up_scalar_variables.size(); ++i)
     {
-        storedUpScalarValues[i] = upScalarVariables[i]->getValue();
-        upScalarVariables[i]->getValue() *= scaling_factor;
+        stored_up_scalar_values[i] = up_scalar_variables[i]->getValue();
+        up_scalar_variables[i]->getValue() *= scaling_factor;
         ++scalingCount;
     }
     
-    storedUpVectorValues = std::vector<std::vector<double> >(upVectorVariables.size(), std::vector<double>());
+    stored_up_vector_values = std::vector<std::vector<double> >(up_vector_variables.size(), std::vector<double>());
     // scale all the vector variables up
-    for (size_t i=0; i<upVectorVariables.size(); ++i)
+    for (size_t i=0; i<up_vector_variables.size(); ++i)
     {
-        RbVector<double> &v = upVectorVariables[i]->getValue();
+        RbVector<double> &v = up_vector_variables[i]->getValue();
 
-        storedUpVectorValues[i] = std::vector<double>(v.size(), 0.0);
+        stored_up_vector_values[i] = std::vector<double>(v.size(), 0.0);
         for (size_t j=0; j<v.size(); ++j)
         {
-            storedUpVectorValues[i][j] = v[j];
+            stored_up_vector_values[i][j] = v[j];
             v[j] *= scaling_factor;
         }
         scalingCount += v.size();
     }
     
-    storedUpTreeValues = std::vector<std::vector<double> >(upTreeVariables.size(), std::vector<double>());
+    stored_up_tree_values = std::vector<std::vector<double> >(up_tree_variables.size(), std::vector<double>());
     // scale all the tree variables up
-    for (size_t i=0; i<upTreeVariables.size(); ++i)
+    for (size_t i=0; i<up_tree_variables.size(); ++i)
     {
         
-        Tree& tau = upTreeVariables[i]->getValue();
+        Tree& tau = up_tree_variables[i]->getValue();
         
         TopologyNode& node = tau.getRoot();
 
-        storedUpTreeValues[i] = std::vector<double>(tau.getNumberOfNodes(), 0.0);
-        TreeUtilities::getAges(&tau, &node, storedUpTreeValues[i]);
+        stored_up_tree_values[i] = std::vector<double>(tau.getNumberOfNodes(), 0.0);
+        TreeUtilities::getAges(&tau, &node, stored_up_tree_values[i]);
         
         // rescale the subtrees
         TreeUtilities::rescaleSubtree(&tau, &node, scaling_factor );
@@ -197,41 +197,41 @@ double UpDownScaleProposal::doProposal( void )
         scalingCount += tau.getNumberOfInteriorNodes();
     }
     
-    storedDownScalarValues = std::vector<double>(downScalarVariables.size(), 0.0);
+    stored_down_scalar_values = std::vector<double>(down_scalar_variables.size(), 0.0);
     // scale all the single variable down
-    for (size_t i=0; i<downScalarVariables.size(); ++i)
+    for (size_t i=0; i<down_scalar_variables.size(); ++i)
     {
-        storedDownScalarValues[i] = downScalarVariables[i]->getValue();
-        downScalarVariables[i]->getValue() /= scaling_factor;
+        stored_down_scalar_values[i] = down_scalar_variables[i]->getValue();
+        down_scalar_variables[i]->getValue() /= scaling_factor;
         --scalingCount;
     }
     
-    storedDownVectorValues = std::vector<std::vector<double> >(downVectorVariables.size(), std::vector<double>());
+    stored_down_vector_values = std::vector<std::vector<double> >(down_vector_variables.size(), std::vector<double>());
     // scale all the vector variables down
-    for (size_t i=0; i<downVectorVariables.size(); ++i)
+    for (size_t i=0; i<down_vector_variables.size(); ++i)
     {
-        RbVector<double> &v = downVectorVariables[i]->getValue();
+        RbVector<double> &v = down_vector_variables[i]->getValue();
 
-        storedDownVectorValues[i] = std::vector<double>(v.size(), 0.0);
+        stored_down_vector_values[i] = std::vector<double>(v.size(), 0.0);
         for (size_t j=0; j<v.size(); ++j)
         {
-            storedDownVectorValues[i][j] = v[j];
+            stored_down_vector_values[i][j] = v[j];
             v[j] /= scaling_factor;
         }
         scalingCount -= v.size();
     }
     
-    storedDownTreeValues = std::vector<std::vector<double> >(downTreeVariables.size(), std::vector<double>());
+    stored_down_tree_values = std::vector<std::vector<double> >(down_tree_variables.size(), std::vector<double>());
     // scale all the tree variables down
-    for (size_t i=0; i<downTreeVariables.size(); ++i)
+    for (size_t i=0; i<down_tree_variables.size(); ++i)
     {
         
-        Tree& tau = downTreeVariables[i]->getValue();
+        Tree& tau = down_tree_variables[i]->getValue();
         
         TopologyNode& node = tau.getRoot();
         
-        storedDownTreeValues[i] = std::vector<double>(tau.getNumberOfNodes(), 0.0);
-        TreeUtilities::getAges(&tau, &node, storedDownTreeValues[i]);
+        stored_down_tree_values[i] = std::vector<double>(tau.getNumberOfNodes(), 0.0);
+        TreeUtilities::getAges(&tau, &node, stored_down_tree_values[i]);
 
         // rescale the subtrees
         TreeUtilities::rescaleSubtree(&tau, &node, 1.0/scaling_factor );
@@ -285,11 +285,11 @@ void UpDownScaleProposal::removeVariable( StochasticNode<double> *v, bool up)
     // add it to my internal vector
     if ( up == true )
     {
-        upScalarVariables.erase(std::remove(upScalarVariables.begin(), upScalarVariables.end(), v), upScalarVariables.end());
+        up_scalar_variables.erase(std::remove(up_scalar_variables.begin(), up_scalar_variables.end(), v), up_scalar_variables.end());
     }
     else
     {
-        downScalarVariables.erase(std::remove(downScalarVariables.begin(), downScalarVariables.end(), v), downScalarVariables.end());
+        down_scalar_variables.erase(std::remove(down_scalar_variables.begin(), down_scalar_variables.end(), v), down_scalar_variables.end());
     }
     
 }
@@ -308,11 +308,11 @@ void UpDownScaleProposal::removeVariable( StochasticNode<RbVector<double> > *v, 
     // add it to my internal vector
     if ( up == true )
     {
-        upVectorVariables.erase(std::remove(upVectorVariables.begin(), upVectorVariables.end(), v), upVectorVariables.end());
+        up_vector_variables.erase(std::remove(up_vector_variables.begin(), up_vector_variables.end(), v), up_vector_variables.end());
     }
     else
     {
-        downVectorVariables.erase(std::remove(downVectorVariables.begin(), downVectorVariables.end(), v), downVectorVariables.end());
+        down_vector_variables.erase(std::remove(down_vector_variables.begin(), down_vector_variables.end(), v), down_vector_variables.end());
     }
     
 }
@@ -331,11 +331,11 @@ void UpDownScaleProposal::removeVariable( StochasticNode<Tree> *v, bool up )
     // add it to my internal vector
     if ( up == true )
     {
-        upTreeVariables.erase(std::remove(upTreeVariables.begin(), upTreeVariables.end(), v), upTreeVariables.end());
+        up_tree_variables.erase(std::remove(up_tree_variables.begin(), up_tree_variables.end(), v), up_tree_variables.end());
     }
     else
     {
-        downTreeVariables.erase(std::remove(downTreeVariables.begin(), downTreeVariables.end(), v), downTreeVariables.end());
+        down_tree_variables.erase(std::remove(down_tree_variables.begin(), down_tree_variables.end(), v), down_tree_variables.end());
     }
     
 }
@@ -352,59 +352,59 @@ void UpDownScaleProposal::undoProposal( void )
 {
     
     // scale all the single variable up
-    for (size_t i=0; i<upScalarVariables.size(); ++i)
+    for (size_t i=0; i<up_scalar_variables.size(); ++i)
     {
-        upScalarVariables[i]->getValue() = storedUpScalarValues[i];
+        up_scalar_variables[i]->getValue() = stored_up_scalar_values[i];
     }
     
     // scale all the vector variables up
-    for (size_t i=0; i<upVectorVariables.size(); ++i)
+    for (size_t i=0; i<up_vector_variables.size(); ++i)
     {
-        RbVector<double> &v = upVectorVariables[i]->getValue();
+        RbVector<double> &v = up_vector_variables[i]->getValue();
         for (size_t j=0; j<v.size(); ++j)
         {
-            v[j] = storedUpVectorValues[i][j];
+            v[j] = stored_up_vector_values[i][j];
         }
     }
     
     // scale all the tree variables up
-    for (size_t i=0; i<upTreeVariables.size(); ++i)
+    for (size_t i=0; i<up_tree_variables.size(); ++i)
     {
         
-        Tree& tau = upTreeVariables[i]->getValue();
+        Tree& tau = up_tree_variables[i]->getValue();
         
         TopologyNode& node = tau.getRoot();
         
         // rescale the subtrees
-        TreeUtilities::setAges(&tau, &node, storedUpTreeValues[i] );
+        TreeUtilities::setAges(&tau, &node, stored_up_tree_values[i] );
     }
     
     // scale all the single variable down
-    for (size_t i=0; i<downScalarVariables.size(); ++i)
+    for (size_t i=0; i<down_scalar_variables.size(); ++i)
     {
-        downScalarVariables[i]->getValue() = storedDownScalarValues[i];
+        down_scalar_variables[i]->getValue() = stored_down_scalar_values[i];
     }
     
     // scale all the vector variables down
-    for (size_t i=0; i<downVectorVariables.size(); ++i)
+    for (size_t i=0; i<down_vector_variables.size(); ++i)
     {
-        RbVector<double> &v = downVectorVariables[i]->getValue();
+        RbVector<double> &v = down_vector_variables[i]->getValue();
         for (size_t j=0; j<v.size(); ++j)
         {
-            v[j] = storedDownVectorValues[i][j];
+            v[j] = stored_down_vector_values[i][j];
         }
     }
     
     // scale all the tree variables down
-    for (size_t i=0; i<downTreeVariables.size(); ++i)
+    for (size_t i=0; i<down_tree_variables.size(); ++i)
     {
         
-        Tree& tau = downTreeVariables[i]->getValue();
+        Tree& tau = down_tree_variables[i]->getValue();
         
         TopologyNode& node = tau.getRoot();
         
         // rescale the subtrees
-        TreeUtilities::setAges(&tau, &node, storedDownTreeValues[i] );
+        TreeUtilities::setAges(&tau, &node, stored_down_tree_values[i] );
     }
     
 }
@@ -419,51 +419,51 @@ void UpDownScaleProposal::undoProposal( void )
 void UpDownScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    for (size_t i = 0; i < upScalarVariables.size(); ++i)
+    for (size_t i = 0; i < up_scalar_variables.size(); ++i)
     {
-        if ( upScalarVariables[i] == oldN )
+        if ( up_scalar_variables[i] == oldN )
         {
-            upScalarVariables[i] = static_cast<StochasticNode<double> *>(newN);
+            up_scalar_variables[i] = static_cast<StochasticNode<double> *>(newN);
         }
     }
     
-    for (size_t i = 0; i < upVectorVariables.size(); ++i)
+    for (size_t i = 0; i < up_vector_variables.size(); ++i)
     {
-        if ( upVectorVariables[i] == oldN )
+        if ( up_vector_variables[i] == oldN )
         {
-            upVectorVariables[i] = static_cast<StochasticNode<RbVector<double> > *>(newN);
+            up_vector_variables[i] = static_cast<StochasticNode<RbVector<double> > *>(newN);
         }
     }
     
-    for (size_t i = 0; i < upTreeVariables.size(); ++i)
+    for (size_t i = 0; i < up_tree_variables.size(); ++i)
     {
-        if ( upTreeVariables[i] == oldN )
+        if ( up_tree_variables[i] == oldN )
         {
-            upTreeVariables[i] = static_cast<StochasticNode<Tree> *>(newN);
+            up_tree_variables[i] = static_cast<StochasticNode<Tree> *>(newN);
         }
     }
     
-    for (size_t i = 0; i < downScalarVariables.size(); ++i)
+    for (size_t i = 0; i < down_scalar_variables.size(); ++i)
     {
-        if ( downScalarVariables[i] == oldN )
+        if ( down_scalar_variables[i] == oldN )
         {
-            downScalarVariables[i] = static_cast<StochasticNode<double> *>(newN);
+            down_scalar_variables[i] = static_cast<StochasticNode<double> *>(newN);
         }
     }
     
-    for (size_t i = 0; i < downVectorVariables.size(); ++i)
+    for (size_t i = 0; i < down_vector_variables.size(); ++i)
     {
-        if ( downVectorVariables[i] == oldN )
+        if ( down_vector_variables[i] == oldN )
         {
-            downVectorVariables[i] = static_cast<StochasticNode<RbVector<double> > *>(newN);
+            down_vector_variables[i] = static_cast<StochasticNode<RbVector<double> > *>(newN);
         }
     }
     
-    for (size_t i = 0; i < downTreeVariables.size(); ++i)
+    for (size_t i = 0; i < down_tree_variables.size(); ++i)
     {
-        if ( downTreeVariables[i] == oldN )
+        if ( down_tree_variables[i] == oldN )
         {
-            downTreeVariables[i] = static_cast<StochasticNode<Tree> *>(newN);
+            down_tree_variables[i] = static_cast<StochasticNode<Tree> *>(newN);
         }
     }
     

@@ -52,7 +52,7 @@ AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNod
     std::set<std::string> found;
     for(size_t i = 0; i < taxa.size(); i++)
     {
-        if(found.find(taxa[i].getName()) == found.end())
+        if (found.find(taxa[i].getName()) == found.end())
         {
             found.insert(taxa[i].getName());
         }

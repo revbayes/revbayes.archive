@@ -44,10 +44,10 @@ namespace RevBayesCore {
 
         // CharacterData functions
         MatrixReal                                          computeStateFrequencies(void) const;
-        HomologousDiscreteCharacterData&                    concatenate(const HomologousDiscreteCharacterData &d, std::string type = "");                      //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                    concatenate(const AbstractCharacterData &d, std::string type = "");                                //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                    concatenate(const HomologousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                    concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type = "");              //!< Concatenate data matrices
+        void                                                concatenate(const HomologousDiscreteCharacterData &d, std::string type = "");                       //!< Concatenate data matrices
+        void                                                concatenate(const AbstractCharacterData &d, std::string type = "");                                 //!< Concatenate data matrices
+        void                                                concatenate(const HomologousCharacterData &d, std::string type = "");                               //!< Concatenate data matrices
+        void                                                concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type = "");               //!< Concatenate data matrices
         void                                                excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                                excludeCharacter(size_t i);                                                 //!< Exclude character
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
@@ -57,12 +57,12 @@ namespace RevBayesCore {
         size_t                                              getMaxObservedStateIndex(void) const;                                              //!< Get the number of observed states for the characters in this matrix
         size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                              getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
-        size_t                                              getNumberOfInvariantSites(bool excl) const;                                      //!< Number of invariant sites
-        size_t                                              getNumberOfSegregatingSites(bool excl) const;                                    //!< Compute the number of segregating sites
+        size_t                                              getNumberOfInvariantSites(bool excl) const;                                 //!< Number of invariant sites
+        size_t                                              getNumberOfSegregatingSites(bool excl) const;                               //!< Compute the number of segregating sites
         size_t                                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
-        double                                              getAveragePaiwiseSequenceDifference(bool excl) const;                            //!< Get the average pairwise sequence distance.
-        size_t                                              getMaxPaiwiseSequenceDifference(bool excl) const;                                //!< Get the average pairwise sequence distance.
-        size_t                                              getMinPaiwiseSequenceDifference(bool excl) const;                                //!< Get the average pairwise sequence distance.
+        double                                              getAveragePaiwiseSequenceDifference(bool excl) const;                       //!< Get the average pairwise sequence distance.
+        size_t                                              getMaxPaiwiseSequenceDifference(bool excl) const;                           //!< Get the average pairwise sequence distance.
+        size_t                                              getMinPaiwiseSequenceDifference(bool excl) const;                           //!< Get the average pairwise sequence distance.
         DiscreteTaxonData<charType>&                        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
@@ -252,7 +252,7 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractCharacterData &obsd, std::string type)
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractCharacterData &obsd, std::string type)
 {
     
     const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
@@ -261,8 +261,7 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
         throw RbException("Adding wrong character data type into CharacterData!!!");
     }
     
-    
-    return concatenate( *rhs, type );
+    concatenate( *rhs, type );
 }
 
 
@@ -272,7 +271,7 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousCharacterData &obsd, std::string type)
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousCharacterData &obsd, std::string type)
 {
     
     const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
@@ -281,8 +280,7 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
         throw RbException("Adding wrong character data type into CharacterData!!!");
     }
     
-    
-    return concatenate( *rhs, type );
+    concatenate( *rhs, type );
 }
 
 
@@ -292,7 +290,7 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractHomologousDiscreteCharacterData &obsd, std::string type)
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractHomologousDiscreteCharacterData &obsd, std::string type)
 {
     
     const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
@@ -301,8 +299,7 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
         throw RbException("Adding wrong character data type into CharacterData!!!");
     }
     
-    
-    return concatenate( *rhs, type );
+    concatenate( *rhs, type );
 }
 
 
@@ -312,7 +309,7 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousDiscreteCharacterData<charType> &obsd, std::string type)
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousDiscreteCharacterData<charType> &obsd, std::string type)
 {
     
     size_t sequenceLength = getNumberOfCharacters();
@@ -322,17 +319,37 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
     {
         throw RbException("Cannot concatenate two character data objects with different number of taxa!");
     }
+    
     std::vector<string> toDelete;
-    std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
+    //    std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
+    
+    for (size_t i=0; i<obsd.getNumberOfTaxa(); ++i)
+    {
+        const std::string &n = obsd.getTaxonNameWithIndex( i );
+        size_t idx = getIndexOfTaxon( n );
+        if ( idx == RbConstants::Size_t::inf )
+        {
+            if ( type == "union" )
+            {
+                addMissingTaxon( n );
+            }
+//            else if ( type != "intersection" )
+//            {
+//                toDelete.push_back( n );
+//                throw RbException("Cannot concatenate two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
+//            }
+        }
+    }
+    
     for (size_t i=0; i<taxa.size(); i++ )
     {
         const std::string &n = taxa[i].getName();
         DiscreteTaxonData<charType>& taxon = getTaxonData( n );
         
         size_t idx = obsd.getIndexOfTaxon( n );
-        if ( idx != RbConstants::Size_t::inf)
+        if ( idx != RbConstants::Size_t::inf )
         {
-            used[idx] = true;
+//            used[idx] = true;
             taxon.concatenate( obsd.getTaxonData( n ) );
         }
         else if (type == "intersection")
@@ -356,35 +373,12 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
         deleteTaxon(toDelete[i]);
     }
     
-    for (size_t i=0; i<used.size(); i++)
-    {
-        if ( used[i] == false)
-        {
-            if(type=="union")
-            {
-                std::string n = obsd.getTaxonNameWithIndex(i);
-                addMissingTaxon( n );
-                
-                AbstractTaxonData& taxon = getTaxonData( n );
-                const AbstractTaxonData& taxon_data = obsd.getTaxonData(i);
-                
-                taxon.concatenate( taxon_data );
-            }
-            else if(type != "intersection")
-            {
-                throw RbException("Cannot concatenate two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
-            }
-        }
-    }
-    
     const std::set<size_t> &exclChars = obsd.getExcludedCharacters();
     for (std::set<size_t>::const_iterator it = exclChars.begin(); it != exclChars.end(); ++it)
     {
         deletedCharacters.insert( *it + sequenceLength );
     }
     
-    // return a reference to this object
-    return *this;
 }
 
 
@@ -454,33 +448,41 @@ RevBayesCore::AbstractHomologousDiscreteCharacterData* RevBayesCore::HomologousD
             
             size_t num_states = org_char.getNumberOfStates();
             NaturalNumbersState number_state = NaturalNumbersState(0,int(num_states*n));
-            
-            bool first = true;
-            for (size_t k=0; k < num_states; ++k)
+           
+            if ( org_char.isMissingState() == true )
             {
-                
-                if ( org_char.isStateSet( k ) == true )
+                number_state.setMissingState( true );
+            }
+            else
+            {
+
+                bool first = true;
+                for (size_t k=0; k < num_states; ++k)
                 {
                     
-                    // set the initial state
-                    if ( first == true )
+                    if ( org_char.isStateSet( k ) == true )
                     {
-                        first = false;
-                        number_state.setStateByIndex( k );
-                    }
-                    else
-                    {
-                        number_state.addState( int(k) );
-                    }
-                    
-                    // now we set also the expanded states
-                    for (size_t l=1; l<n; ++l)
-                    {
-                        number_state.addState( int(k)+int(num_states*l) );
+                        
+                        // set the initial state
+                        if ( first == true )
+                        {
+                            first = false;
+                            number_state.setStateByIndex( k );
+                        }
+                        else
+                        {
+                            number_state.addState( int(k) );
+                        }
+                        
+                        // now we set also the expanded states
+                        for (size_t l=1; l<n; ++l)
+                        {
+                            number_state.addState( int(k)+int(num_states*l) );
+                        }
+                        
                     }
                     
                 }
-                
             }
             
             expanded_seq.addCharacter( number_state );

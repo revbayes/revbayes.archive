@@ -46,7 +46,8 @@ void RevBayesCore::DiscretizeGammaFunction::swapParameterInternal(const DagNode 
     
 }
 
-void RevBayesCore::DiscretizeGammaFunction::update( void ) {
+void RevBayesCore::DiscretizeGammaFunction::update( void )
+{
     
     double a = shape->getValue();
     double b = rate->getValue();

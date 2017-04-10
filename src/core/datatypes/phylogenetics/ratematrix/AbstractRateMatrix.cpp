@@ -256,6 +256,10 @@ double AbstractRateMatrix::getRate(size_t from, size_t to, double age, double ra
     return (*the_rate_matrix)[from][to] * rate;
 }
 
+MatrixReal AbstractRateMatrix::getRateMatrix() const
+{
+    return *the_rate_matrix;
+}
 
 /** Rescale the rates such that the average rate is r */
 void AbstractRateMatrix::rescaleToAverageRate(double r)

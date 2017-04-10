@@ -15,6 +15,7 @@
 #include "CladogeneticProbabilityMatrix.h"
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
 #include "BiogeographicCladoEvent.h"
+#include "DistributionExponential.h"
 #include "RateMatrix.h"
 #include "RbException.h"
 #include "RbVector.h"
@@ -24,6 +25,7 @@
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "TypedDistribution.h"
+#include "RandomNumberGenerator.h"
 
 namespace RevBayesCore {
     
@@ -41,7 +43,7 @@ namespace RevBayesCore {
         virtual std::vector<charType>						drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
         virtual void                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
-
+        
         virtual void                                        redrawValue(void);
         void                                                setCladogenesisMatrix(const TypedDagNode< CladogeneticProbabilityMatrix > *r);
         void                                                setCladogenesisMatrix(const TypedDagNode< RbVector< CladogeneticProbabilityMatrix > >* r);
@@ -1165,6 +1167,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::recursivelyDrawJointConditionalAnce
     }
     
 }
+
 
 template<class charType>
 void RevBayesCore::PhyloCTMCClado<charType>::resizeLikelihoodVectors( void )

@@ -1,11 +1,3 @@
-//
-//  MatrixReal.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 11/17/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "EigenSystem.h"
 #include "MatrixReal.h"
 #include "RbException.h"

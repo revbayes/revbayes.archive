@@ -302,9 +302,10 @@ int printFunctionParameters(const char *buf, size_t len, char c)
 void RevClient::startInterpretor( void )
 {
     
-    size_t pid = 0;
+    int pid = 0;
 #ifdef RB_MPI
-    pid = MPI::COMM_WORLD.Get_rank();
+//    pid = MPI::COMM_WORLD.Get_rank();
+    MPI_Comm_rank(MPI_COMM_WORLD, &pid);
 #endif
     
     /* Set tab completion callback */
@@ -385,7 +386,8 @@ void RevClient::startInterpretor( void )
         
         size_t bsz = commandLine.size();
 #ifdef RB_MPI
-        MPI::COMM_WORLD.Bcast(&bsz, 1, MPI_INT, 0);
+//        MPI::COMM_WORLD.Bcast(&bsz, 1, MPI_INT, 0);
+        MPI_Bcast(&bsz, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #endif
             
         char * buffer = new char[bsz+1];
@@ -393,7 +395,8 @@ void RevClient::startInterpretor( void )
         for (int i = 0; i < bsz; i++)
             buffer[i] = commandLine[i];
 #ifdef RB_MPI
-        MPI::COMM_WORLD.Bcast(buffer, (int)bsz, MPI_CHAR, 0);
+//        MPI::COMM_WORLD.Bcast(buffer, (int)bsz, MPI_CHAR, 0);
+        MPI_Bcast(buffer, (int)bsz, MPI_CHAR, 0, MPI_COMM_WORLD);
 #endif
             
         std::string tmp = std::string( buffer );

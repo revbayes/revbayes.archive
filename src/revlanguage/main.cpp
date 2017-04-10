@@ -16,24 +16,28 @@
 int main(int argc, char* argv[]) {
     
 #   ifdef RB_MPI
-    int processId = 0;
+    int process_id = 0;
     int num_processes = 0;
     try
     {
-        MPI::Init(argc, argv);
-        processId = MPI::COMM_WORLD.Get_rank();
-        num_processes = MPI::COMM_WORLD.Get_size();
+//        MPI::Init(argc, argv);
+        MPI_Init(&argc, &argv);
+//        process_id = MPI::COMM_WORLD.Get_rank();
+        MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
+//        num_processes = MPI::COMM_WORLD.Get_size();
+        MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
         
         unsigned int seed = 0;
         
         // sync the random number generators
-        if ( processId == 0 )
+        if ( process_id == 0 )
         {
             seed = RevBayesCore::GLOBAL_RNG->getSeed();
             
         }
         
-        MPI::COMM_WORLD.Bcast(&seed, 1, MPI_INT, 0);
+//        MPI::COMM_WORLD.Bcast(&seed, 1, MPI_INT, 0);
+        MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
         
         RevBayesCore::GLOBAL_RNG->setSeed( seed );
         
@@ -59,7 +63,7 @@ int main(int argc, char* argv[]) {
 #   ifdef RB_XCODE
 
 #   ifndef RB_MPI
-    int processId = 0;
+    int process_id = 0;
 #   endif
     /* Declare things we need */
     int result = 0;
@@ -69,7 +73,7 @@ int main(int argc, char* argv[]) {
     for (;;)
     {
         /* Print prompt based on state after previous iteration */
-        if ( processId == 0 )
+        if ( process_id == 0 )
         {
             if (result == 0 || result == 2)
             {
@@ -102,7 +106,8 @@ int main(int argc, char* argv[]) {
         
         size_t bsz = commandLine.size();
 #       ifdef RB_MPI
-        MPI::COMM_WORLD.Bcast(&bsz, 1, MPI_INT, 0);
+//        MPI::COMM_WORLD.Bcast(&bsz, 1, MPI_INT, 0);
+        MPI_Bcast(&bsz, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #       endif
         
         char * buffer = new char[bsz+1];
@@ -112,7 +117,8 @@ int main(int argc, char* argv[]) {
             buffer[i] = commandLine[i];
         }
 #       ifdef RB_MPI
-        MPI::COMM_WORLD.Bcast(buffer, (int)bsz, MPI_CHAR, 0);
+//        MPI::COMM_WORLD.Bcast(buffer, (int)bsz, MPI_CHAR, 0);
+        MPI_Bcast(buffer, (int)bsz, MPI_CHAR, 0, MPI_COMM_WORLD);
 #       endif
         
         std::string tmp = std::string( buffer );
@@ -128,7 +134,8 @@ int main(int argc, char* argv[]) {
 #   endif
 
 #   ifdef RB_MPI
-    MPI::Finalize();
+//    MPI::Finalize();
+    MPI_Finalize();
 #   endif
     
     return 0;

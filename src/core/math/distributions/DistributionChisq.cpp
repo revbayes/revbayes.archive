@@ -164,8 +164,8 @@ double RbStatistics::ChiSquare::quantile(double prob, double df)
 		ch += t*(1+0.5*t*s1-b*c*(s1-b*(s2-b*(s3-b*(s4-b*(s5-b*s6))))));
 		if (fabs(q/ch-1.0) > e && fabs(q - ch) - fabs(last_improv) < e /* <- against flip-flop */) 
 			goto l4;
+    
 		return (ch);
-	
 }
 
 double RbStatistics::ChiSquare::rv(double df, RandomNumberGenerator& rng)
