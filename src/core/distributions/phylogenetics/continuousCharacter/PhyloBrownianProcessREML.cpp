@@ -119,7 +119,6 @@ double PhyloBrownianProcessREML::computeLnProbability( void )
     return this->ln_prob;
 }
 
-
 void PhyloBrownianProcessREML::drawJointConditionalAncestralStates(std::vector< ContinuousTaxonData >& startStates, std::vector< ContinuousTaxonData >& endStates)
 {
 
@@ -228,8 +227,6 @@ void PhyloBrownianProcessREML::recursivelyDrawJointConditionalAncestralStates(co
         }
         
     }
-    
-    
     
 }
 
