@@ -331,6 +331,55 @@ void PhyloMultivariateBrownianProcessREML::restoreSpecialization( DagNode* affec
 }
 
 
+void PhyloMultivariateBrownianProcessREML::simulateRecursively( const TopologyNode &node, std::vector< ContinuousTaxonData > &taxa)
+{
+    
+    // get the children of the node
+    const std::vector<TopologyNode*>& children = node.getChildren();
+    
+    // get the sequence of this node
+    size_t node_index = node.getIndex();
+    const ContinuousTaxonData &parent = taxa[ node_index ];
+    
+    std::vector<double> parent_state(num_sites, 0.0);
+    for(size_t i = 0; i < num_sites; ++i)
+    {
+        parent_state[i] = parent.getCharacter(i);
+    }
+    
+    // simulate the sequence for each child
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    for (std::vector< TopologyNode* >::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
+        const TopologyNode &child = *(*it);
+        
+        // get the branch length for this child
+        double branch_length = child.getBranchLength();
+        
+        ContinuousTaxonData &taxon = taxa[ child.getIndex() ];
+        std::vector<double> c = RbStatistics::MultivariateNormal::rvPrecision(parent_state, precision_matrix, *rng, branch_length);
+        
+        for ( size_t i = 0; i < num_sites; ++i )
+        {
+            // add the character to the sequence
+            taxon.addCharacter( c[i] );
+        }
+        
+        if ( child.isTip() )
+        {
+            taxon.setTaxon( child.getTaxon() );
+        }
+        else
+        {
+            // recursively simulate the sequences
+            simulateRecursively( child, taxa );
+        }
+        
+    }
+    
+}
+
+
 std::vector<double> PhyloMultivariateBrownianProcessREML::simulateRootCharacters(size_t n)
 {
     
