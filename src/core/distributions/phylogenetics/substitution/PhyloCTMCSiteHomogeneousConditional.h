@@ -219,17 +219,21 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
                     gap = true;
                 }
 
-                if(gap)
+                if ( gap == true )
                 {
-                    if(coding != AscertainmentBias::ALL)
+                    if (coding != AscertainmentBias::ALL)
+                    {
                         mask += "-";
+                    }
                     numGap++;
                 }
                 else if (c.isAmbiguous())
                 {
-                    if(coding != AscertainmentBias::ALL)
+                    if (coding != AscertainmentBias::ALL)
+                    {
                         mask += " ";
-                    RbBitSet b = c.getState();
+                    }
+                    const RbBitSet &b = c.getState();
                     for (size_t k = 0; k < b.size(); k++)
                     {
                         if (b[k] != 0)

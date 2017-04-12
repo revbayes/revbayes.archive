@@ -7,33 +7,37 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-RnaState::RnaState( size_t n ) : DiscreteCharacterState( 4 ) {
+RnaState::RnaState( size_t n ) : DiscreteCharacterState( 4 )
+{
     
 }
 
 
 /** Constructor that sets the observation */
-RnaState::RnaState(const std::string &s) : DiscreteCharacterState( 4 ) {
+RnaState::RnaState(const std::string &s) : DiscreteCharacterState( 4 )
+{
     
     setState(s);
 }
 
 
-RnaState* RnaState::clone( void ) const {
+RnaState* RnaState::clone( void ) const
+{
     
     return new RnaState( *this );
 }
 
 
-void RnaState::setState(const std::string &symbol) {
+void RnaState::setState(const std::string &symbol)
+{
     
     // we need to clear the bits first
-    state.clear();
+    state.clearBits();
     
     char s = char( toupper( symbol[0] ) );
     
     switch ( s )
-        {
+    {
         case '-':
             break;
         case 'A':
@@ -124,46 +128,49 @@ void RnaState::setState(const std::string &symbol) {
             state.set(2);
             state.set(3);
             num_observed_states = 4;
-        }
+    }
 }
 
-std::string RnaState::getDataType( void ) const {
+std::string RnaState::getDataType( void ) const
+{
     
     return "RNA";
 }
 
 
-std::string RnaState::getStateLabels( void ) const {
+std::string RnaState::getStateLabels( void ) const
+{
     
     static std::string labels = "ACGU";
     
     return labels;
 }
 
-std::string RnaState::getStringValue(void) const {
+std::string RnaState::getStringValue(void) const
+{
     
     if ( isMissingState() )
-        {
+    {
         return "?";
-        }
+    }
     
     if ( isGapState() )
-        {
+    {
         return "-";
-        }
+    }
     
     unsigned int val = 0x0;
     for ( int i=int(state.size())-1; i>=0; --i )
-        {
+    {
         val <<= 1;
         if ( state.isSet(i) == true )
-            {
+        {
             val |= 1;
-            }
         }
+    }
     
     switch ( val )
-        {
+    {
         case 0x0:
             return "-";
         case 0x1:
@@ -199,6 +206,6 @@ std::string RnaState::getStringValue(void) const {
             
         default:
             return "?";
-        }
+    }
 }
 

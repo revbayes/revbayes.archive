@@ -40,6 +40,8 @@ namespace RevBayesCore {
 
         // Discrete character observation functions
         std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
+        RbBitSet&                       getState(void);                                     //!< Get the state (as the bitset)
+        const RbBitSet&                 getState(void) const;                               //!< Get the state (as the bitset)
         std::string                     getStateLabels(void) const;                         //!< Get valid state labels
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
         void                            setVirtualPopulationSize(size_t populationSize);    //!< Set the virtual population size for the state space
@@ -53,11 +55,14 @@ namespace RevBayesCore {
 
 
     private:
+    
         std::string                     chromosome_;                                        //!< The chromosome on which the state lies
         size_t                          position_;                                          //!< The position of the state in the chromosome
         size_t                          virtualPopulationSize_;                             //!< The virtual population size of the Pomo model (by default, 10)
         std::vector<double>             weights_;                                           //!< Weights are used when the "average" option is used
         bool                            pomoRandomSampling_;                                //!< Do we perform random sampling? Otherwise we would do average.
+        RbBitSetGeneral                 state;
+
     };
 
 }

@@ -44,13 +44,20 @@ namespace RevBayesCore {
         void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
         void                                    setAllCharactersMissing(void);                                      //!< Set all characters as missing
         
-        size_t memorySize() { return getCharacter(0).memorySize(); };
-
+//        size_t memorySize() const { return getCharacter(0).memorySize(); };
+        virtual size_t memorySize() const {
+            size_t size = AbstractDiscreteTaxonData::memorySize();
+            size += sizeof(sequence);
+            for (size_t i=0; i<sequence.size(); ++i) size += sequence[i].memorySize();
+            size += sizeof(is_resolved);
+            size += sizeof(bool) * is_resolved.size();
+            
+            return size; }
         
     private:
 
         std::vector<charType>                   sequence;
-        std::vector<bool>                       isResolved;
+        std::vector<bool>                       is_resolved;
     
     };
 
@@ -239,7 +246,7 @@ void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const charType &ne
 {
     
     sequence.push_back( newChar );
-    isResolved.push_back(true);
+    is_resolved.push_back(true);
 }
 
 
@@ -294,7 +301,7 @@ void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const charType &ne
 {
     
     sequence.push_back( newChar );
-    isResolved.push_back(tf);
+    is_resolved.push_back(tf);
 }
 
 
@@ -401,12 +408,12 @@ template<class charType>
 bool RevBayesCore::DiscreteTaxonData<charType>::isCharacterResolved(size_t idx) const
 {
 
-    if (idx >= isResolved.size())
+    if (idx >= is_resolved.size())
     {
         throw RbException("Index out of bounds");
     }
     
-    return isResolved[idx];
+    return is_resolved[idx];
 }
 
 

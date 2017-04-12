@@ -18,6 +18,8 @@
 #define NaturalNumbersState_H
 
 #include "DiscreteCharacterState.h"
+#include "RbBitSetGeneral.h"
+
 #include <ostream>
 #include <set>
 
@@ -36,6 +38,8 @@ namespace RevBayesCore {
         void                            addState(int s);                                    //!< Add the state with the given index.
         void                            addStateDescriptions(const std::vector<std::string>& d);
         std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
+        RbBitSet&                       getState(void);                                     //!< Get the state (as the bitset)
+        const RbBitSet&                 getState(void) const;                               //!< Get the state (as the bitset)
         std::string                     getStateDescription(void) const;
         std::vector<std::string>        getStateDescriptions(void) const;
         std::string                     getStateLabels(void) const;                         //!< Get valid state labels
@@ -43,7 +47,9 @@ namespace RevBayesCore {
         void                            setState(const std::string &symbol);                //!< Compute the internal state value for this character.
         
     private:
+        
         std::vector<std::string>        state_descriptions;
+        RbBitSetGeneral                 state;
     };
 //	extern size_t						g_MAX_NAT_NUM_STATES;
 }

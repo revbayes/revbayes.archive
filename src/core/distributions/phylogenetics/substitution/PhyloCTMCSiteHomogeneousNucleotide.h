@@ -559,7 +559,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
     
     const std::vector<bool> &gap_node = this->gap_matrix[node_index];
     const std::vector<unsigned long> &char_node = this->char_matrix[node_index];
-    const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[node_index];
+    const std::vector<charType> &amb_char_node = this->ambiguous_char_matrix[node_index];
     
     // compute the transition probabilities
     this->updateTransitionProbabilities( node_index, node.getBranchLength() );
@@ -595,7 +595,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
                 if ( this->using_ambiguous_characters == true )
                 {
                     // get the original character
-                    const RbBitSet &org_val = amb_char_node[site];
+                    const RbBitSet &org_val = amb_char_node[site].getState();
                     
                     double p0 = 0.0;
                     double p1 = 0.0;

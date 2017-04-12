@@ -17,6 +17,8 @@
 #define StandardState_H
 
 #include "DiscreteCharacterState.h"
+#include "RbBitSetGeneral.h"
+
 #include <ostream>
 #include <set>
 
@@ -33,11 +35,14 @@ namespace RevBayesCore {
     
         // Discrete character observation functions
         std::string                     getDataType(void) const;                                    //!< Get the datatype as a common string.
+        RbBitSet&                       getState(void);                                             //!< Get the state (as the bitset)
+        const RbBitSet&                 getState(void) const;                                       //!< Get the state (as the bitset)
         std::string                     getStateLabels(void) const;                                 //!< Get valid state labels
     
     private:
                 
         std::string                     labels;
+        RbBitSetGeneral                 state;
         
     };
 

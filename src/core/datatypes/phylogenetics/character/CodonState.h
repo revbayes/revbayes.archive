@@ -18,6 +18,8 @@
 
 #include "AminoAcidState.h"
 #include "DiscreteCharacterState.h"
+#include "RbBitSetGeneral.h"
+
 #include <ostream>
 #include <set>
 
@@ -35,12 +37,18 @@ namespace RevBayesCore {
         // Discrete character observation functions
         AminoAcidState                  getAminoAcidState() const;
         std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
+        RbBitSet&                       getState(void);                                     //!< Get the state (as the bitset)
+        const RbBitSet&                 getState(void) const;                               //!< Get the state (as the bitset)
         std::string                     getStateLabels(void) const;                         //!< Get valid state labels
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
         std::vector<unsigned int>       getTripletStates() const;
         bool                            isStopCodon(void) const;                            //!< Is the codon a stop codon
         void                            setState(const std::string &symbol);                //!< Compute the internal state value for this character.
         
+        
+    private:
+        
+        RbBitSetGeneral                 state;
         
     };
     

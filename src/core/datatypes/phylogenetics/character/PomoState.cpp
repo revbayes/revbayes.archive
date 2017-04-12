@@ -292,7 +292,7 @@ void PomoState::setState(const std::string &symbol)
 
     }
 
-    state.clear();
+    state.clearBits();
     state.set( index );
     index_single_state = index;
     num_observed_states = 1;

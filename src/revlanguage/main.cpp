@@ -49,16 +49,16 @@ int main(int argc, char* argv[]) {
 #   endif
     
     /* seek out files from command line */
-    std::vector<std::string> sourceFiles;
-    int argIndex = 1;
-    while (argIndex < argc)
+    std::vector<std::string> source_files;
+    int arg_index = 1;
+    while (arg_index < argc)
     {
-        sourceFiles.push_back(std::string(argv[argIndex++]));
+        source_files.push_back( std::string(argv[arg_index++]) );
     }
     
     /* initialize environment */
     RevLanguageMain rl = RevLanguageMain();
-    rl.startRevLanguageEnvironment(sourceFiles);
+    rl.startRevLanguageEnvironment(source_files);
     
 #   ifdef RB_XCODE
 
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
 #   endif
     /* Declare things we need */
     int result = 0;
-    std::string commandLine = "";
+    std::string command_line = "";
     std::string line = "";
         
     for (;;)
@@ -83,10 +83,12 @@ int main(int argc, char* argv[]) {
             {
                 std::cout << "+ ";
             }
+            std::flush( std::cout );
+            
 
             /* Get the line */
-            std::istream& retStream = std::getline(std::cin, line);
-            if (!retStream)
+            std::istream& ret_stream = std::getline(std::cin, line);
+            if (!ret_stream)
             {
 #               ifdef RB_MPI
                 MPI::Finalize();
@@ -96,15 +98,15 @@ int main(int argc, char* argv[]) {
             
             if (result == 0 || result == 2)
             {
-                commandLine = line;
+                command_line = line;
             }
             else if (result == 1)
             {
-                commandLine += ";" + line;
+                command_line += ";" + line;
             }
         }
         
-        size_t bsz = commandLine.size();
+        size_t bsz = command_line.size();
 #       ifdef RB_MPI
 //        MPI::COMM_WORLD.Bcast(&bsz, 1, MPI_INT, 0);
         MPI_Bcast(&bsz, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -114,7 +116,7 @@ int main(int argc, char* argv[]) {
         buffer[bsz] = 0;
         for (int i = 0; i < bsz; i++)
         {
-            buffer[i] = commandLine[i];
+            buffer[i] = command_line[i];
         }
 #       ifdef RB_MPI
 //        MPI::COMM_WORLD.Bcast(buffer, (int)bsz, MPI_CHAR, 0);

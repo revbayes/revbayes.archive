@@ -7,14 +7,16 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-DnaState::DnaState( size_t n ) : DiscreteCharacterState( 4 )
+DnaState::DnaState( size_t n ) : DiscreteCharacterState( 4 ),
+    state( 4 )
 {
     
 }
 
 
 /** Constructor that sets the observation */
-DnaState::DnaState(const std::string &s) : DiscreteCharacterState( 4 )
+DnaState::DnaState(const std::string &s) : DiscreteCharacterState( 4 ),
+    state( 4 )
 {
     
     setState(s);
@@ -32,7 +34,7 @@ void DnaState::setState(const std::string &symbol)
 {
     
     // we need to clear the bits first
-    state.clear();
+    state.clearBits();
     
     char s = char( toupper( symbol[0] ) );
     

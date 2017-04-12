@@ -120,7 +120,7 @@ void NaturalNumbersState::setState(const std::string &symbol)
     {
         try
         {
-            state.clear();
+            state.clearBits();
             size_t pos = boost::lexical_cast<size_t>( symbol );
             state.set( pos );
             num_observed_states = 1;

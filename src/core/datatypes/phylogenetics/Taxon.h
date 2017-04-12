@@ -43,6 +43,15 @@ namespace RevBayesCore {
         void                                setName(const std::string &n);              //!< Set the name.
         void                                setSpeciesName(const std::string &n);       //!< Set the name of the species.
         
+        virtual size_t memorySize() const {
+            size_t size = 0;
+            size += sizeof(age);
+            size += sizeof(date);
+            size += sizeof(name);
+            size += sizeof(species_name);
+            
+            return size; }
+        
     private:
         
         // private members

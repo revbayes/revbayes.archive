@@ -7,6 +7,7 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include <iostream>
 
 namespace RevBayesCore {
 
@@ -26,12 +27,14 @@ namespace RevBayesCore {
         void                                    operator-=(int i);                                  //!< Decrement
 
         virtual DiscreteCharacterState*         clone(void) const = 0;                              //!< Get a copy of this object
+        virtual std::string                     getStateLabels(void) const = 0;                     //!< Get valid state labels
+        virtual RbBitSet&                       getState(void) = 0;                                 //!< Get the state (as the bitset)
+        virtual const RbBitSet&                 getState(void) const = 0;                           //!< Get the state (as the bitset)
 
 
         void                                    addState(const std::string &symbol);                //!< Add a character state to the set of character states
         size_t                                  getNumberObservedStates(void) const;                //!< How many states are observed for the character
         size_t                                  getNumberOfStates(void) const;                      //!< Get the number of discrete states for the character
-        const RbBitSet&                         getState(void) const;                               //!< Get the state (as the bitset)
         size_t                                  getStateIndex(void) const;                          //!< Get the state index
         virtual std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
         virtual std::string                     getStateDescription(void) const;
@@ -45,20 +48,11 @@ namespace RevBayesCore {
 //        virtual unsigned long                   getState(void) const = 0;                         //!< Get the discrete observation
 
         // Discrete character observation functions
-        virtual std::string                     getStateLabels(void) const = 0;                     //!< Get valid state labels
 //      virtual void                            setState(size_t pos, bool val) = 0;                 //!< Set the discrete observation
         virtual const std::vector<double>       getWeights() const ;                                //!< Get the weights of the state
         bool                                    isWeighted() const ;                                //!< Is the state weighted?
         void                                    setWeighted(bool wd) ;                              //!< Set whether the state is weighted
 
-        size_t memorySize() {
-            size_t size = 0;
-            size += sizeof(index_single_state);
-            size += sizeof(num_observed_states);
-            size += sizeof(state);
-            size += sizeof(weighted);
-            
-            return size; };
 
     protected:
                                                 DiscreteCharacterState(size_t n);                   //!< Constructor
@@ -66,7 +60,7 @@ namespace RevBayesCore {
 
         size_t                                  index_single_state;
         size_t                                  num_observed_states;
-        RbBitSet                                state;
+//        RbBitSet                                state;
         bool                                    weighted;
 
     };

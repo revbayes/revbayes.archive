@@ -590,7 +590,7 @@ std::string TopologyNode::computeSimmapNewick( void )
  */
 bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
 {
-    RbBitSet your_taxa = RbBitSet( tree->getNumberOfTips() );
+    RbBitSetGeneral your_taxa = RbBitSetGeneral( tree->getNumberOfTips() );
     c->getTaxa( your_taxa );
     
     return containsClade( your_taxa, strict );
@@ -615,7 +615,7 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
 bool TopologyNode::containsClade(const RbBitSet &your_taxa, bool strict) const
 {
     size_t n = tree->getNumberOfTips();
-    RbBitSet my_taxa   = RbBitSet( n );
+    RbBitSetGeneral my_taxa   = RbBitSetGeneral( n );
     getTaxa( my_taxa );
     
     if ( your_taxa.size() != my_taxa.size() )
@@ -758,8 +758,8 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
 {
     
     size_t n = tree->getNumberOfTips();
-    RbBitSet my_taxa   = RbBitSet( n );
-    RbBitSet your_taxa = RbBitSet( n );
+    RbBitSetGeneral my_taxa   = RbBitSetGeneral( n );
+    RbBitSetGeneral your_taxa = RbBitSetGeneral( n );
     getTaxa( my_taxa );
     c->getTaxa( your_taxa );
     
@@ -863,7 +863,7 @@ Clade TopologyNode::getClade( void ) const
     if( tree != NULL )
     {
         // initialize the clade bitset
-        RbBitSet bitset( tree->getNumberOfTips() );
+        RbBitSetGeneral bitset( tree->getNumberOfTips() );
         getTaxa(taxa, bitset);
 
         c = Clade(taxa, bitset);
@@ -964,7 +964,7 @@ TopologyNode* TopologyNode::getNode(const Clade &c, bool strict)
 TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict)
 {
     size_t n = tree->getNumberOfTips();
-    RbBitSet my_taxa   = RbBitSet( n );
+    RbBitSetGeneral my_taxa   = RbBitSetGeneral( n );
     getTaxa( my_taxa );
     
     if ( your_taxa.size() != my_taxa.size() )
@@ -1040,7 +1040,7 @@ const TopologyNode* TopologyNode::getNode(const Clade &c, bool strict) const
 const TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict) const
 {
     size_t n = tree->getNumberOfTips();
-    RbBitSet my_taxa   = RbBitSet( n );
+    RbBitSetGeneral my_taxa   = RbBitSetGeneral( n );
     getTaxa( my_taxa );
     
     if ( your_taxa.size() != my_taxa.size() )

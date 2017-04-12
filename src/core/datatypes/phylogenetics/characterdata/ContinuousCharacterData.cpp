@@ -312,9 +312,9 @@ const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn ) co
     }
     
     const std::string& name = taxa[tn].getName();
-    const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
+    const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxon_map.find( name );
     
-    if (i != taxonMap.end() ) 
+    if (i != taxon_map.end() ) 
     {
         return static_cast<const ContinuousTaxonData& >(*i->second);
     }
@@ -340,9 +340,9 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn )
     }
     
     const std::string& name = taxa[tn].getName();
-    const std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );
+    const std::map<std::string, AbstractTaxonData* >::iterator& i = taxon_map.find( name );
     
-    if (i != taxonMap.end() ) 
+    if (i != taxon_map.end() ) 
     {
         return static_cast< ContinuousTaxonData& >(*i->second);
     }
@@ -367,9 +367,9 @@ const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::str
         throw RbException("Ambiguous taxon name.");
     }
     
-    const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find(tn);
+    const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxon_map.find(tn);
     
-    if (i != taxonMap.end() ) 
+    if (i != taxon_map.end() ) 
     {
         return static_cast<const ContinuousTaxonData& >(*i->second);
     }
@@ -395,9 +395,9 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &t
         throw RbException("Ambiguous taxon name.");
     }
     
-    const std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find(tn);
+    const std::map<std::string, AbstractTaxonData* >::iterator& i = taxon_map.find(tn);
     
-    if (i != taxonMap.end() ) 
+    if (i != taxon_map.end() ) 
     {
         return static_cast< ContinuousTaxonData& >(*i->second);
     }
@@ -502,7 +502,7 @@ bool ContinuousCharacterData::isCharacterResolved(const std::string &tn, size_t 
 void ContinuousCharacterData::removeExcludedCharacters( void )
 {
     
-    for (std::map<std::string, AbstractTaxonData*>::iterator it = taxonMap.begin(); it != taxonMap.end(); ++it)
+    for (std::map<std::string, AbstractTaxonData*>::iterator it = taxon_map.begin(); it != taxon_map.end(); ++it)
     {
         it->second->removeCharacters( deletedCharacters );
     }

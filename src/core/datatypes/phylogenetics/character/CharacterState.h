@@ -45,12 +45,19 @@ namespace RevBayesCore {
         bool                            isMissingState(void) const;                         //!< Get whether this is a missing character state
         void                            setGapState(bool tf);                               //!< set whether this is a gapped character
         void                            setMissingState(bool tf);                           //!< set whether this is a missing character
-
+        
+        virtual size_t memorySize() const {
+            size_t size = 0;
+            size += sizeof(is_gap);
+            size += sizeof(is_missing);
+            
+            return size; }
+        
     protected:
                                         CharacterState(void);                               //!< Default constructor
     
-        bool                            isGap;
-        bool                            isMissing;
+        bool                            is_gap;
+        bool                            is_missing;
         
     };
 

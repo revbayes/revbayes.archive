@@ -37,7 +37,7 @@
 #define TopologyNode_H
 
 #include "Clade.h"
-#include "RbBitSet.h"
+#include "RbBitSetGeneral.h"
 //#include "RevPtr.h"
 #include "Taxon.h"
 #include "TaxonMap.h"
@@ -158,7 +158,7 @@ namespace RevBayesCore {
         TopologyNode*                               parent;                                                                             //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
         Tree*                                       tree;                                                                               //!< A pointer to the tree for convinience access
         Taxon                                       taxon;                                                                              //!< Taxon of the node, i.e. identifier/taxon name, plus species it comes from
-        RbBitSet                                    node_bitset;
+        RbBitSetGeneral                             node_bitset;
         size_t                                      index;                                                                              //!< Node index
         bool                                        interior_node;
         bool                                        root_node;

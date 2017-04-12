@@ -340,7 +340,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
 
     const std::vector<bool> &gap_node = this->gap_matrix[node_index];
     const std::vector<unsigned long> &char_node = this->char_matrix[node_index];
-    const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[node_index];
+    const std::vector<charType> &amb_char_node = this->ambiguous_char_matrix[node_index];
 
     // compute the transition probabilities
     this->updateTransitionProbabilities( node_index, node.getBranchLength() );
@@ -385,7 +385,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
                     {
                         // compute the likelihood that we had a transition from state c1 to the observed state org_val
                         // note, the observed state could be ambiguous!
-                        const RbBitSet &val = amb_char_node[site];
+                        const RbBitSet &val = amb_char_node[site].getState();
 
                         // get the pointer to the transition probabilities for the terminal states
                         const double* d  = tp_begin+(this->num_chars*c1);
@@ -413,7 +413,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
                     {
                       // compute the likelihood that we had a transition from state c1 to the observed state org_val
                       // note, the observed state could be ambiguous!
-                      const RbBitSet &val = amb_char_node[site];
+                      const RbBitSet &val = amb_char_node[site].getState();
 
                       // get the pointer to the transition probabilities for the terminal states
                       const double* d  = tp_begin+(this->num_chars*c1);

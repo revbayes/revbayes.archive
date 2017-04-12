@@ -169,7 +169,7 @@ namespace RevBayesCore {
         std::vector< std::vector< std::vector<double> > >                   perNodeSiteLogScalingFactors;
 
         // the data
-        std::vector<std::vector<RbBitSet> >                                 ambiguous_char_matrix;
+        std::vector<std::vector<charType> >                                 ambiguous_char_matrix;
         std::vector<std::vector<unsigned long> >                            char_matrix;
         std::vector<std::vector<bool> >                                     gap_matrix;
         std::vector<size_t>                                                 pattern_counts;
@@ -685,7 +685,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 if ( using_ambiguous_characters == true )
                 {
                     // we use the actual state
-                    ambiguous_char_matrix[node_index][patternIndex] = c.getState();
+                    ambiguous_char_matrix[node_index][patternIndex] = c;
                 }
                 else if ( c.isGapState() == false )
                 {
@@ -717,7 +717,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
 
         if ( using_ambiguous_characters == true )
         {
-            const RbBitSet &val = ambiguous_char_matrix[0][i];
+            const RbBitSet &val = ambiguous_char_matrix[0][i].getState();
 
             if ( val.getNumberSetBits() > 1 )
             {
@@ -729,7 +729,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
 
                 for (size_t j=1; j<length; ++j)
                 {
-                    if ( val != ambiguous_char_matrix[j][i] || gap_matrix[j][i] == true )
+                    if ( val != ambiguous_char_matrix[j][i].getState() || gap_matrix[j][i] == true )
                     {
                         inv = false;
                         break;

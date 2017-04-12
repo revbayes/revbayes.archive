@@ -84,6 +84,21 @@ namespace RevBayesCore {
         virtual std::string                         getDataType(void) const = 0;                                                //!< Return the data type of this character data matrix
         virtual bool                                isHomologyEstablished(void) const = 0;                                      //!< Returns whether the homology of the characters has been established
         
+        virtual size_t memorySize() const {
+            size_t size = 0;
+            size += sizeof(deleted_taxa);
+            size += sizeof(size_t) * deleted_taxa.size();
+            size += sizeof(file_name);
+            size += sizeof(file_path);
+            size += sizeof(taxa);
+            for (size_t i=0; i<taxa.size(); ++i) size += taxa[i].memorySize();
+            size += sizeof(taxon_map);
+            for (std::map<std::string, AbstractTaxonData* >::const_iterator it=taxon_map.begin(); it!=taxon_map.end(); ++it) size += (it->second)->memorySize();
+            
+            return size; }
+        
+        static size_t instances;
+        
     protected:
                                                     AbstractCharacterData(void);                                                //!< Constructor requires character type
                                                     AbstractCharacterData(const AbstractCharacterData &d);                      //!< Constructor requires character type
@@ -95,11 +110,12 @@ namespace RevBayesCore {
         size_t                                      indexOfTaxonWithName(const std::string& s) const;                           //!< Get the index of the taxon
         
         // Member variables
-        std::set<size_t>                            deletedTaxa;                                                                //!< Set of deleted taxa
-        std::string                                 fileName;                                                                   //!< The path/filename from where this matrix originated
-        std::string                                 filePath;                                                                   //!< The path/filename from where this matrix originated
+        std::set<size_t>                            deleted_taxa;                                                                //!< Set of deleted taxa
+        std::string                                 file_name;                                                                   //!< The path/filename from where this matrix originated
+        std::string                                 file_path;                                                                   //!< The path/filename from where this matrix originated
         std::vector<Taxon>                          taxa;                                                                       //!< names of the sequences
-        std::map<std::string, AbstractTaxonData* >  taxonMap;
+        std::map<std::string, AbstractTaxonData* >  taxon_map;
+        
     };
     
     // Global functions using the class

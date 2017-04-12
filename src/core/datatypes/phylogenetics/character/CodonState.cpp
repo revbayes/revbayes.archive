@@ -533,7 +533,7 @@ void CodonState::setState(const std::string &symbol)
             current_state = 65;
     }
     
-    state.clear();
+    state.clearBits();
     state.set( current_state );
     index_single_state = current_state;
     num_observed_states = 1;

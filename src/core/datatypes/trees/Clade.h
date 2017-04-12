@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-#include "RbBitSet.h"
+#include "RbBitSetGeneral.h"
 #include "RbException.h"
 #include "Taxon.h"
 
@@ -25,9 +25,9 @@ namespace RevBayesCore {
     class Clade  {
         
     public:
-                                                    Clade(void);                                                            //! Default constructor: empty clade of age 0.0
-                                                    Clade(const Taxon &t, const RbBitSet &b = RbBitSet() );                 //!< Default constructor with optional index
-                                                    Clade(const std::vector<Taxon> &n, const RbBitSet &b = RbBitSet() );    //!< Default constructor with optional index
+                                                    Clade(void);                                                                    //! Default constructor: empty clade of age 0.0
+                                                    Clade(const Taxon &t, const RbBitSet &b = RbBitSetGeneral() );                  //!< Default constructor with optional index
+                                                    Clade(const std::vector<Taxon> &n, const RbBitSet &b = RbBitSetGeneral() );     //!< Default constructor with optional index
         
         virtual                                    ~Clade() {}
         
@@ -73,7 +73,7 @@ namespace RevBayesCore {
         
         // members
         double                                      age;
-        RbBitSet                                    bitset;
+        RbBitSetGeneral                             bitset;
         int                                         num_missing;
         std::vector<Taxon>                          mrca;
         std::vector<Taxon>                          taxa;

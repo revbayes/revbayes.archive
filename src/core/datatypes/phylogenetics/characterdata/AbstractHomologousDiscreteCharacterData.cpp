@@ -20,7 +20,8 @@ void AbstractHomologousDiscreteCharacterData::writeToFile(const std::string &dir
     
 }
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractHomologousDiscreteCharacterData& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractHomologousDiscreteCharacterData& x)
+{
     
     std::stringstream s;
     
@@ -40,6 +41,12 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractHomologous
     o << "Number of included characters: " << x.getNumberOfIncludedCharacters() << std::endl;
     o << "Datatype:                      " << x.getDataType() << std::endl;
     o << std::endl;
+    o << "Size:                          " << x.getTaxonData(0).memorySize() << std::endl;
+    o << "Size:                          " << x.memorySize() << std::endl;
+    o << std::endl;
+    o << "Instances:                     " << x.instances << std::endl;
+    o << std::endl;
+    
     
     return o;
 }

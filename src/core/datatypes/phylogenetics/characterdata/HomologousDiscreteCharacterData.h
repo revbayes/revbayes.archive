@@ -88,6 +88,12 @@ namespace RevBayesCore {
         void                                                restoreCharacter(size_t i);                                                 //!< Restore character
         AbstractHomologousDiscreteCharacterData*            translateCharacters(const std::string &type) const;
         
+        virtual size_t memorySize() const {
+            size_t size = AbstractHomologousDiscreteCharacterData::memorySize();
+            size += sizeof(deleted_characters);
+            size += sizeof(size_t) * deleted_characters.size();
+            
+            return size; }
     
     protected:
         // Utility functions
@@ -97,7 +103,7 @@ namespace RevBayesCore {
         size_t                                              numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
         
         // Member variables
-        std::set<size_t>                                    deletedCharacters;                                                          //!< Set of deleted characters
+        std::set<size_t>                                    deleted_characters;                                                          //!< Set of deleted characters
         
     };
     
@@ -113,6 +119,7 @@ namespace RevBayesCore {
 #include "NclReader.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbBitSetGeneral.h"
 
 #include <cmath>
 #include <fstream>
@@ -376,7 +383,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
     const std::set<size_t> &exclChars = obsd.getExcludedCharacters();
     for (std::set<size_t>::const_iterator it = exclChars.begin(); it != exclChars.end(); ++it)
     {
-        deletedCharacters.insert( *it + sequenceLength );
+        deleted_characters.insert( *it + sequenceLength );
     }
     
 }
@@ -394,7 +401,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::excludeAllCharacte
     
     for (size_t i = 0; i < getTaxonData( 0 ).getNumberOfCharacters(); ++i)
     {
-        deletedCharacters.insert( i );
+        deleted_characters.insert( i );
     }
     
 }
@@ -418,7 +425,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::excludeCharacter(s
     }
     
     
-    deletedCharacters.insert( i );
+    deleted_characters.insert( i );
     
 }
 
@@ -552,7 +559,7 @@ template<class charType>
 const std::set<size_t>& RevBayesCore::HomologousDiscreteCharacterData<charType>::getExcludedCharacters(void) const
 {
     
-    return deletedCharacters;
+    return deleted_characters;
 }
 
 
@@ -630,7 +637,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getNumberOfInclu
     
     if (getNumberOfTaxa() > 0) 
     {
-        return getTaxonData(0).getNumberOfCharacters() - deletedCharacters.size();
+        return getTaxonData(0).getNumberOfCharacters() - deleted_characters.size();
     }
     return 0;
 }
@@ -651,14 +658,14 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
         return 0;
     }
 
-    RbBitSet observed( getNumberOfStates() );
+    RbBitSetGeneral observed( getNumberOfStates() );
 
-    for(size_t j = 0; j < getNumberOfCharacters(); j++)
+    for (size_t j = 0; j < getNumberOfCharacters(); j++)
     {
-        if( isCharacterExcluded(j) )
+        if ( isCharacterExcluded(j) )
             continue;
 
-        for(size_t i = 0; i < getNumberOfTaxa(); i++)
+        for (size_t i = 0; i < getNumberOfTaxa(); i++)
         {
             const DiscreteTaxonData<charType>& sequence = getTaxonData( i );
             observed |= sequence[j].getState();
@@ -666,9 +673,9 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
     }
 
     int max;
-    for(max = observed.size() - 1; max >= 0; max--)
+    for (max = observed.size() - 1; max >= 0; max--)
     {
-        if(observed.isSet(max))
+        if (observed.isSet(max))
         {
             break;
         }
@@ -938,9 +945,9 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscret
     }
     
     const std::string& name = taxa[tn].getName();
-    const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
+    const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxon_map.find( name );
     
-    if (i != taxonMap.end() ) 
+    if (i != taxon_map.end() )
     {
         return static_cast<const DiscreteTaxonData<charType>&>(*i->second);
     }
@@ -967,9 +974,9 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteChara
     }
     
     const std::string& name = taxa[tn].getName();
-    const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );
+    const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxon_map.find( name );
     
-    if (i != taxonMap.end() ) 
+    if (i != taxon_map.end() ) 
     {
         return static_cast<DiscreteTaxonData<charType>&>(*i->second);
     }
@@ -995,9 +1002,9 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscret
         throw RbException("Ambiguous taxon name.");
     }
     
-    const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find(tn);
+    const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxon_map.find(tn);
     
-    if (i != taxonMap.end() ) 
+    if (i != taxon_map.end() ) 
     {
         return static_cast<const DiscreteTaxonData<charType>&>(*i->second);
     }
@@ -1024,9 +1031,9 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteChara
         throw RbException("Ambiguous taxon name.");
     }
 	
-    const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find(tn);
+    const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxon_map.find(tn);
     
-    if (i != taxonMap.end() ) 
+    if (i != taxon_map.end() ) 
     {
         return static_cast< DiscreteTaxonData<charType>& >( *i->second );
     }
@@ -1057,7 +1064,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::includeCharacter(s
     }
     
     
-    deletedCharacters.erase( i );
+    deleted_characters.erase( i );
     
 }
 
@@ -1162,8 +1169,8 @@ template<class charType>
 bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterExcluded(size_t i) const 
 {
     
-	std::set<size_t>::const_iterator it = deletedCharacters.find( i );
-	if ( it != deletedCharacters.end() )
+	std::set<size_t>::const_iterator it = deleted_characters.find( i );
+	if ( it != deleted_characters.end() )
     {
 		return true;
     }
@@ -1635,12 +1642,12 @@ template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::removeExcludedCharacters( void )
 {
     
-    for (typename std::map<std::string, AbstractTaxonData* >::iterator it = taxonMap.begin(); it != taxonMap.end(); ++it)
+    for (typename std::map<std::string, AbstractTaxonData* >::iterator it = taxon_map.begin(); it != taxon_map.end(); ++it)
     {
-        it->second->removeCharacters( deletedCharacters );
+        it->second->removeCharacters( deleted_characters );
     }
     
-    deletedCharacters.clear();
+    deleted_characters.clear();
     
 }
 
@@ -1657,7 +1664,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::restoreCharacter(s
     if (i >= getNumberOfCharacters() )
         throw RbException( "Character index out of range" );
     
-    deletedCharacters.erase( i );
+    deleted_characters.erase( i );
     
 }
 

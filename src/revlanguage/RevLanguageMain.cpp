@@ -21,7 +21,7 @@ RevLanguageMain::RevLanguageMain(void)
 }
 
 
-void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles)
+void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> source_files)
 {
     
     int pid = 0;
@@ -50,12 +50,12 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
 
     // process the command line arguments as source file names    
     std::string line;
-    std::string commandLine;
+    std::string command_line;
     int result = 0;
 
-    for (unsigned int i =0 ; i < sourceFiles.size(); i++)
+    for (unsigned int i =0 ; i < source_files.size(); i++)
     {
-        line = "source(\"" + sourceFiles[i] + "\")";
+        line = "source(\"" + source_files[i] + "\")";
         
         // let only the master process print to the screen
         if ( pid == 0 )
@@ -64,19 +64,19 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
         }
         
         // Process the command line
-        if (result == 1)
+        if ( result == 1 )
         {
-            commandLine += line;
+            command_line += line;
         }
         else
         {
-            commandLine = line;
+            command_line = line;
         }
         
-        result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
+        result = RevLanguage::Parser::getParser().processCommand(command_line, &RevLanguage::Workspace::userWorkspace());
 
         // We just hope for better input next time
-        if (result == 2)
+        if ( result == 2 )
         {
             result = 0;
         }

@@ -45,10 +45,10 @@ namespace RevBayesCore {
         virtual std::string                     getStringRepresentation(size_t idx) const = 0;
         virtual std::string                     getStateLabels(void) = 0;                                           //!< Get the possible state labels
     
-        virtual size_t memorySize() { return 0; }
+        virtual size_t memorySize() const { return taxon.memorySize(); }
         
     protected:
-        AbstractTaxonData(const Taxon &t);                                                                                      //!< Default constructor
+        AbstractTaxonData(const Taxon &t);                                                                          //!< Default constructor
 
         Taxon                                   taxon;                                                              //!< Name of the taxon for this vector of characters
 

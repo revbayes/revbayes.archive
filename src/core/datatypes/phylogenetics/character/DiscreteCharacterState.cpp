@@ -13,7 +13,7 @@ using namespace RevBayesCore;
 DiscreteCharacterState::DiscreteCharacterState(size_t n) : CharacterState(),
     index_single_state( 0 ),
     num_observed_states( 0 ),
-    state(n),
+//    state(n),
     weighted( false )
 {
 
@@ -28,7 +28,7 @@ bool DiscreteCharacterState::operator==(const CharacterState& x) const
 
     if (derivedX != NULL)
     {
-        return derivedX->state == state;
+        return derivedX->getState() == getState();
     }
 
     return false;
@@ -49,8 +49,8 @@ bool DiscreteCharacterState::operator<(const CharacterState &x) const
     const DiscreteCharacterState* derivedX = static_cast<const DiscreteCharacterState*>(&x);
     if ( derivedX != NULL )
     {
-        RbBitSet myState = state;
-        RbBitSet yourState = derivedX->state;
+        const RbBitSet& myState = getState();
+        const RbBitSet& yourState = derivedX->getState();
         return ( myState < yourState );
     }
 
@@ -67,13 +67,13 @@ void DiscreteCharacterState::operator++( void )
     }
 
     // unset the current state
-    state.unset( index_single_state );
+    getState().unset( index_single_state );
 
     // incremement our state index;
     ++index_single_state;
 
     // now set the bit of the state
-    state.set(index_single_state);
+    getState().set(index_single_state);
 
 }
 
@@ -295,7 +295,8 @@ void DiscreteCharacterState::setToFirstState(void)
 {
     num_observed_states = 1;
     index_single_state = 0;
-    state.clear();
+    
+    state.clearBits();
     state.set( 0 );
 }
 
@@ -305,7 +306,7 @@ void DiscreteCharacterState::setStateByIndex(size_t index)
 
     num_observed_states = 1;
     index_single_state = index;
-    state.clear();
+    state.clearBits();
     state.set( index );
 }
 
@@ -317,7 +318,7 @@ void DiscreteCharacterState::setState(const std::string &s)
     std::string labels = getStateLabels();
 
     num_observed_states = 0;
-    state.clear();
+    state.clearBits();
 
     for (size_t i = 0; i < s.size(); i++)
     {

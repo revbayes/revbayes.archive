@@ -258,9 +258,9 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDisc
     }
     
     const std::string& name = taxa[tn].getName();
-    const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
+    const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxon_map.find( name );
     
-    if (i != taxonMap.end() )
+    if (i != taxon_map.end() )
     {
         return static_cast<const DiscreteTaxonData<charType>& >(*i->second);
     }
@@ -287,9 +287,9 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDiscreteCh
     }
     
     const std::string& name = taxa[tn].getName();
-    const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );
+    const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxon_map.find( name );
     
-    if (i != taxonMap.end() )
+    if (i != taxon_map.end() )
     {
         return static_cast< DiscreteTaxonData<charType>& >(*i->second);
     }
@@ -315,9 +315,9 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDisc
         throw RbException("Ambiguous taxon name.");
     }
     
-    const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find(tn);
+    const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxon_map.find(tn);
     
-    if (i != taxonMap.end() )
+    if (i != taxon_map.end() )
     {
         return static_cast<const DiscreteTaxonData<charType>& >(*i->second);
     }
@@ -344,9 +344,9 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDiscreteCh
         throw RbException("Ambiguous taxon name.");
     }
     
-    const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find(tn);
+    const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxon_map.find(tn);
     
-    if (i != taxonMap.end() )
+    if (i != taxon_map.end() )
     {
         return static_cast< DiscreteTaxonData<charType>& >(*i->second);
     }

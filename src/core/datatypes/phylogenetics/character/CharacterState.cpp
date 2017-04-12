@@ -5,8 +5,8 @@ using namespace RevBayesCore;
 
 
 CharacterState::CharacterState() :
-    isGap( false ),
-    isMissing( false )
+    is_gap( false ),
+    is_missing( false )
 {
     
 }
@@ -14,25 +14,25 @@ CharacterState::CharacterState() :
 
 bool CharacterState::isGapState( void ) const
 {
-    return isGap;
+    return is_gap;
 }
 
 
 bool CharacterState::isMissingState( void ) const
 {
-    return isMissing;
+    return is_missing;
 }
 
 
 void CharacterState::setGapState( bool tf )
 {
-    isGap = tf;
+    is_gap = tf;
 }
 
 
 void CharacterState::setMissingState( bool tf )
 {
-    isMissing = tf;
+    is_missing = tf;
 }
 
 
