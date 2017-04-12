@@ -51,6 +51,14 @@ namespace RevBayesCore {
         bool                                    isWeighted() const ;                                //!< Is the state weighted?
         void                                    setWeighted(bool wd) ;                              //!< Set whether the state is weighted
 
+        size_t memorySize() {
+            size_t size = 0;
+            size += sizeof(index_single_state);
+            size += sizeof(num_observed_states);
+            size += sizeof(state);
+            size += sizeof(weighted);
+            
+            return size; };
 
     protected:
                                                 DiscreteCharacterState(size_t n);                   //!< Constructor

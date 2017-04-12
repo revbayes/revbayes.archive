@@ -45,6 +45,8 @@ namespace RevBayesCore {
         virtual std::string                     getStringRepresentation(size_t idx) const = 0;
         virtual std::string                     getStateLabels(void) = 0;                                           //!< Get the possible state labels
     
+        virtual size_t memorySize() { return 0; }
+        
     protected:
         AbstractTaxonData(const Taxon &t);                                                                                      //!< Default constructor
 

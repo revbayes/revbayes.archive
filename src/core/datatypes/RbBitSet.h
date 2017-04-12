@@ -19,40 +19,43 @@ namespace RevBayesCore {
         
     public:
         RbBitSet(void);                                                                                         //!< Constructor requires character type
-        RbBitSet(size_t n, bool def = false);                                                                   //!< Constructor requires character type
-        virtual                        ~RbBitSet(void) {}
+        virtual                        ~RbBitSet(void);
         
-        bool                            operator[](size_t i) const;
-
-        bool                            operator==(const RbBitSet &bs) const;
-        bool                            operator!=(const RbBitSet &bs) const;
-        bool                            operator<(const RbBitSet &bs) const;
+        RbBitSet&                       operator=(const RbBitSet &bs);
         
-        RbBitSet                        operator&(const RbBitSet &bs) const;
-        RbBitSet                        operator|(const RbBitSet &bs) const;
-        RbBitSet                        operator^(const RbBitSet &bs) const;
-        RbBitSet&                       operator~();
-        RbBitSet&                       operator&=(const RbBitSet &bs);
-        RbBitSet&                       operator|=(const RbBitSet &bs);
-
-
-        void                            clear(void);
-        bool                            empty(void) const;
-        void                            flip(size_t i);
-        size_t                          getNumberSetBits(void) const;                                           //!< Get the number of bits set.
-        size_t                          getFirstSetBit(void) const;                                             //!< Get the number of bits set.
-        bool                            isSet(size_t i) const;
-        void                            resize(size_t size);
-        void                            set(size_t i);
-        size_t                          size(void) const;
-        void                            unset(size_t i);
-
+        virtual bool                            operator[](size_t i) const;
         
-    private:
-
-        std::vector<bool>               value;
-        size_t                          num_set_bits;
-
+        virtual bool                            operator==(const RbBitSet &bs) const = 0;
+        virtual bool                            operator!=(const RbBitSet &bs) const = 0;
+        virtual bool                            operator<(const RbBitSet &bs) const = 0;
+        
+//        virtual RbBitSet                        operator&(const RbBitSet &bs) const = 0;
+//        virtual RbBitSet                        operator|(const RbBitSet &bs) const = 0;
+//        virtual RbBitSet                        operator^(const RbBitSet &bs) const = 0;
+        virtual RbBitSet&                       operator~() = 0;
+        virtual RbBitSet&                       operator&=(const RbBitSet &bs) = 0;
+        virtual RbBitSet&                       operator|=(const RbBitSet &bs) = 0;
+        
+        
+        //        void                            clear(void);
+        virtual void                            clearBits(void) = 0;
+        virtual bool                            empty(void) const = 0;
+        virtual void                            flip(size_t i) = 0;
+        virtual size_t                          getNumberSetBits(void) const = 0;                                           //!< Get the number of bits set.
+        virtual size_t                          getFirstSetBit(void) const = 0;                                             //!< Get the number of bits set.
+        virtual bool                            isSet(size_t i) const = 0;
+        virtual void                            resize(size_t size) = 0;
+        virtual void                            set(size_t i) = 0;
+        virtual size_t                          size(void) const = 0;
+        virtual void                            unset(size_t i) = 0;
+        
+        virtual size_t memorySize() const {
+            size_t size = 0;
+            
+            return size; }
+        
+        
+        
         
     };
     

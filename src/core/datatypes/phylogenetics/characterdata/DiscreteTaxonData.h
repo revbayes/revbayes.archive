@@ -44,6 +44,9 @@ namespace RevBayesCore {
         void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
         void                                    setAllCharactersMissing(void);                                      //!< Set all characters as missing
         
+        size_t memorySize() { return getCharacter(0).memorySize(); };
+
+        
     private:
 
         std::vector<charType>                   sequence;

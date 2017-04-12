@@ -1,18 +1,18 @@
-#include "RbBitSet.h"
+#include "RbBitSetGeneral.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
 
 
 
-RbBitSet::RbBitSet(void) :
-    num_set_bits( 0 )
+RbBitSetGeneral::RbBitSetGeneral(void) :
+num_set_bits( 0 )
 {
     
 }
 
 
-RbBitSet::RbBitSet(size_t n, bool def) :
+RbBitSetGeneral::RbBitSetGeneral(size_t n, bool def) :
     value(n, def),
     num_set_bits( 0 )
 {
@@ -20,7 +20,7 @@ RbBitSet::RbBitSet(size_t n, bool def) :
 }
 
 
-bool RbBitSet::operator[](size_t i) const
+bool RbBitSetGeneral::operator[](size_t i) const
 {
     // get the internal value
     return value[i];
@@ -28,14 +28,14 @@ bool RbBitSet::operator[](size_t i) const
 
 
 /** Equals comparison */
-bool RbBitSet::operator==(const RbBitSet& x) const
+bool RbBitSetGeneral::operator==(const RbBitSetGeneral& x) const
 {
     
     return x.value == value;
 }
 
 /** Not-Equals comparison */
-bool RbBitSet::operator!=(const RbBitSet& x) const
+bool RbBitSetGeneral::operator!=(const RbBitSetGeneral& x) const
 {
     
     return operator==(x) == false;
@@ -43,20 +43,20 @@ bool RbBitSet::operator!=(const RbBitSet& x) const
 
 
 /** Smaller than comparison */
-bool RbBitSet::operator<(const RbBitSet& x) const
+bool RbBitSetGeneral::operator<(const RbBitSetGeneral& x) const
 {
     
     return x.value < value;
 }
 
 /** Bitwise and */
-RbBitSet RbBitSet::operator&(const RbBitSet& x) const
+RbBitSetGeneral RbBitSetGeneral::operator&(const RbBitSetGeneral& x) const
 {
     if(x.value.size() != value.size())
     {
-        throw(RbException("Cannot and RbBitSets of unequal size"));
+        throw(RbException("Cannot and RbBitSetGenerals of unequal size"));
     }
-    RbBitSet r(value.size());
+    RbBitSetGeneral r(value.size());
     for(size_t i = 0; i < value.size(); i++)
     {
         if( value[i] && x.value[i] )
@@ -68,13 +68,13 @@ RbBitSet RbBitSet::operator&(const RbBitSet& x) const
 }
 
 /** Bitwise or */
-RbBitSet RbBitSet::operator|(const RbBitSet& x) const
+RbBitSetGeneral RbBitSetGeneral::operator|(const RbBitSetGeneral& x) const
 {
     if(x.value.size() != value.size())
     {
-        throw(RbException("Cannot or RbBitSets of unequal sizes"));
+        throw(RbException("Cannot or RbBitSetGenerals of unequal sizes"));
     }
-    RbBitSet r(value.size());
+    RbBitSetGeneral r(value.size());
     for(size_t i = 0; i < value.size(); i++)
     {
         if( value[i] || x.value[i] )
@@ -86,13 +86,13 @@ RbBitSet RbBitSet::operator|(const RbBitSet& x) const
 }
 
 /** Bitwise xor */
-RbBitSet RbBitSet::operator^(const RbBitSet& x) const
+RbBitSetGeneral RbBitSetGeneral::operator^(const RbBitSetGeneral& x) const
 {
     if(x.value.size() != value.size())
     {
-        throw(RbException("Cannot xor RbBitSets of unequal size"));
+        throw(RbException("Cannot xor RbBitSetGenerals of unequal size"));
     }
-    RbBitSet r(value.size());
+    RbBitSetGeneral r(value.size());
     for(size_t i = 0; i < value.size(); i++)
     {
         if( value[i] != x.value[i] )
@@ -104,95 +104,83 @@ RbBitSet RbBitSet::operator^(const RbBitSet& x) const
 }
 
 /** Unary not */
-RbBitSet& RbBitSet::operator~()
+RbBitSetGeneral& RbBitSetGeneral::operator~()
 {
     for(size_t i = 0; i < value.size(); i++)
     {
         value[i] = !value[i];
     }
-
+    
     num_set_bits = value.size() - num_set_bits;
-
+    
     return *this;
 }
 
 /** Bitwise and assignment */
-RbBitSet& RbBitSet::operator&=(const RbBitSet& x)
+RbBitSetGeneral& RbBitSetGeneral::operator&=(const RbBitSetGeneral& x)
 {
     if(x.value.size() != value.size())
     {
-        throw(RbException("Cannot and RbBitSets of unequal size"));
+        throw(RbException("Cannot and RbBitSetGenerals of unequal size"));
     }
-
+    
     *this = *this & x;
-
+    
     return *this;
 }
 
 /** Bitwise or assignment */
-RbBitSet& RbBitSet::operator|=(const RbBitSet& x)
+RbBitSetGeneral& RbBitSetGeneral::operator|=(const RbBitSetGeneral& x)
 {
     if(x.value.size() != value.size())
     {
-        throw(RbException("Cannot or RbBitSets of unequal size"));
+        throw(RbException("Cannot or RbBitSetGenerals of unequal size"));
     }
-
+    
     *this = *this | x;
-
+    
     return *this;
 }
 
 
-void RbBitSet::clear(void)
+void RbBitSetGeneral::clear(void)
 {
     // reset the bitset
     value = std::vector<bool>(value.size(),false);
     num_set_bits = 0;
 }
 
-bool RbBitSet::empty(void) const
+bool RbBitSetGeneral::empty(void) const
 {
     return value.empty();
 }
 
-void RbBitSet::flip(size_t i)
+void RbBitSetGeneral::flip(size_t i)
 {
     value[i] = ( value[i] == false );
     num_set_bits += ( value[i] ? 1 : -1 );
 }
 
 
-size_t RbBitSet::getFirstSetBit( void ) const
-{
-    size_t index = 0;
-    while ( index < value.size() && value[index] == false )
-    {
-        ++index;
-    }
-    
-    return index;
-}
-
-
-size_t RbBitSet::getNumberSetBits( void ) const
+size_t RbBitSetGeneral::getNumberSetBits( void ) const
 {
     // get the internal value
     return num_set_bits;
 }
 
 
-bool RbBitSet::isSet(size_t i) const
+bool RbBitSetGeneral::isSet(size_t i) const
 {
     // get the internal value
     return value[i];
 }
 
-void RbBitSet::resize(size_t size)
+void RbBitSetGeneral::resize(size_t size)
 {
     value.resize(size);
 }
 
-void RbBitSet::set(size_t i)
+void RbBitSetGeneral::set(size_t i)
 {
     // set the internal value
     value[i] = true;
@@ -200,14 +188,14 @@ void RbBitSet::set(size_t i)
 }
 
 
-size_t RbBitSet::size(void) const
+size_t RbBitSetGeneral::size(void) const
 {
     // get the size from the actual bitset
     return value.size();
 }
 
 
-void RbBitSet::unset(size_t i)
+void RbBitSetGeneral::unset(size_t i)
 {
     // set the internal value
     value[i] = false;
@@ -215,7 +203,7 @@ void RbBitSet::unset(size_t i)
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::RbBitSet& x)
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::RbBitSetGeneral& x)
 {
     
     o << "[";

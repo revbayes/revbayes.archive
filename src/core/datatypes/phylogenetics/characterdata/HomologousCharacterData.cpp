@@ -26,6 +26,8 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const HomologousCharacte
     o << "Number of included characters: " << x.getNumberOfIncludedCharacters() << std::endl;
     o << "Datatype:                      " << x.getDataType() << std::endl;
     o << std::endl;
+    o << "Size:                   " << x.getTaxonData(0).memorySize() << std::endl;
+    o << std::endl;
     
     return o;
 }
