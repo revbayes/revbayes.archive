@@ -29,11 +29,11 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     
     // compute the inverse variance-covariance matrix (the precision matrix)
     precision_matrix = rate_matrix->getValue().computeInverse();
-
+    
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
 
-    // now we need to reset the valuz
+    // now we need to reset the values
     this->redrawValue();
     
     // we need to reset the contrasts
@@ -104,7 +104,13 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
 
 void PhyloMultivariateBrownianProcessREML::drawJointConditionalAncestralStates(std::vector< ContinuousTaxonData >& startStates, std::vector< ContinuousTaxonData >& endStates)
 {
+   
+    // make sure the rate matrix is inverted using Cholesky decomposition
+    rate_matrix->getValue().setCholesky(true);
     
+    // compute the inverse variance-covariance matrix (the precision matrix)
+    precision_matrix = rate_matrix->getValue().computeInverse();
+
     // draw the root state
     const TopologyNode &root = this->tau->getValue().getRoot();
     size_t root_index = root.getIndex();
@@ -118,7 +124,9 @@ void PhyloMultivariateBrownianProcessREML::drawJointConditionalAncestralStates(s
     
     // add the characters to the root taxon data
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    std::vector<double> sim_states = RbStatistics::MultivariateNormal::rvPrecision(mu_node, precision_matrix, *rng, delta);
+    std::vector<double> sim_states = RbStatistics::MultivariateNormal::rvCovarianceCholesky(mu_node, rate_matrix->getValue(), *rng, delta);
+    
+    
     for ( size_t i = 0; i < num_sites; ++i )
     {
         // create the character
@@ -183,7 +191,7 @@ void PhyloMultivariateBrownianProcessREML::recursivelyDrawJointConditionalAncest
             double delta                  = this->contrast_uncertainty[this->active_likelihood[child_index]][child_index];
             
             // get the branch length for this child
-            double branch_length = child.getBranchLength();
+            double branch_length = this->computeBranchTime(child.getIndex(), child.getBranchLength());
             
             // get the states for this node
             ContinuousTaxonData &child_states_start = startStates[ child_index ];
@@ -206,7 +214,7 @@ void PhyloMultivariateBrownianProcessREML::recursivelyDrawJointConditionalAncest
             }
             
             // simulate the new characters
-            std::vector<double> new_states = RbStatistics::MultivariateNormal::rvPrecision(mu_prime, precision_matrix, *rng, v_prime);
+            std::vector<double> new_states = RbStatistics::MultivariateNormal::rvCovarianceCholesky(mu_prime, rate_matrix->getValue(), *rng, v_prime);
         
             // add the new characters to the data
             for ( size_t i = 0; i < num_sites; ++i )
@@ -474,10 +482,10 @@ void PhyloMultivariateBrownianProcessREML::simulateRecursively( const TopologyNo
         const TopologyNode &child = *(*it);
         
         // get the branch length for this child
-        double branch_length = child.getBranchLength();
+        double branch_length = this->computeBranchTime( child.getIndex(), child.getBranchLength());
         
         ContinuousTaxonData &taxon = taxa[ child.getIndex() ];
-        std::vector<double> c = RbStatistics::MultivariateNormal::rvPrecision(parent_state, precision_matrix, *rng, branch_length);
+        std::vector<double> c = RbStatistics::MultivariateNormal::rvCovarianceCholesky(parent_state, rate_matrix->getValue(), *rng, branch_length);
         
         for ( size_t i = 0; i < num_sites; ++i )
         {
@@ -502,7 +510,7 @@ void PhyloMultivariateBrownianProcessREML::simulateRecursively( const TopologyNo
 
 std::vector<double> PhyloMultivariateBrownianProcessREML::simulateRootCharacters(size_t n)
 {
-    
+
     std::vector<double> chars = std::vector<double>(num_sites, 0);
     for (size_t i=0; i<num_sites; ++i)
     {

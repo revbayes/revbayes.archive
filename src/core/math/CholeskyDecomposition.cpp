@@ -50,7 +50,6 @@ void CholeskyDecomposition::computeInverse( void )
     
     // now, multiply the two matrices together
     inverseMatrix = inverseLowerFactorTranspose * inverseLowerFactor;
-//    inverseMatrix.getLogDet(); // this is just for debugging purposes: I want to force the matrix to update
     
 }
 

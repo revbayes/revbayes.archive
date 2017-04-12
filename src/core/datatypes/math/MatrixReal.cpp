@@ -270,6 +270,24 @@ const EigenSystem& MatrixReal::getEigenSystem( void ) const
     return *eigensystem;
 }
 
+CholeskyDecomposition& MatrixReal::getCholeskyDecomposition( void )
+{
+    // update the eigensystem if necessary
+    update();
+    
+    return *choleskyDecomp;
+}
+
+
+const CholeskyDecomposition& MatrixReal::getCholeskyDecomposition( void ) const
+{
+    // update the eigensystem if necessary
+    update();
+    
+    return *choleskyDecomp;
+}
+
+
 double MatrixReal::getDet() const {
     
     double logDet = 0.0;

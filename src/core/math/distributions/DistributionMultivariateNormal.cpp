@@ -10,6 +10,7 @@
 #include "DistributionMultivariateNormal.h"
 #include "DistributionNormal.h"
 #include "EigenSystem.h"
+#include "CholeskyDecomposition.h"
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathFunctions.h"
@@ -223,6 +224,46 @@ std::vector<double> RbStatistics::MultivariateNormal::rvPrecision(const std::vec
         v[i] = tmp + mu[i];
     }
 
+    
+    return v;
+}
+
+
+/*!
+ * This function generates a MultivariateNormal-distributed random variable.
+ *
+ * \brief MultivariateNormal random variable.
+ * \param mu is a reference to a vector of doubles containing the mean
+ * \param sigma is a reference to a variance-covariance matrix
+ * \param rng is a pointer to a random number object.
+ * \return Returns a vector containing the MultivariateNormal random variable.
+ * \throws Does not throw an error.
+ */
+std::vector<double> RbStatistics::MultivariateNormal::rvCovarianceCholesky(const std::vector<double>& mu, const MatrixReal& sigma, RandomNumberGenerator& rng, double scale)
+{
+    
+    double sqrtScale = sqrt(scale);
+    size_t dim = sigma.getDim();
+    const MatrixReal L = sigma.getCholeskyDecomposition().getMatrix();
+    
+//    std::vector<double> w(dim, 0.0);
+    MatrixReal w(dim, 1);
+    // draw the normal variable
+    for(size_t i = 0; i < dim; ++i)
+    {
+        w[i][0] = RbStatistics::Normal::rv(rng);
+    }
+
+    // change the normal variables to correlated normals
+//    std::vector<double> v = L * w;
+    MatrixReal x = L * w;
+    
+    std::vector<double> v(dim, 0.0);
+    // de-standardize the normals
+    for(size_t i = 0; i < dim; ++i)
+    {
+        v[i] = mu[i] + x[i][0] * sqrtScale;
+    }
     
     return v;
 }

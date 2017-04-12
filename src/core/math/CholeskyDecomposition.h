@@ -16,6 +16,7 @@ namespace RevBayesCore {
 
         void                                    update(void);
         const MatrixReal                        getInverse(void) const { return inverseMatrix; }
+        const MatrixReal                        getMatrix(void) const { return L; }
 
     private:
 
