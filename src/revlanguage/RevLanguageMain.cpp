@@ -24,9 +24,10 @@ RevLanguageMain::RevLanguageMain(void)
 void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles)
 {
     
-    size_t pid = 0;
+    int pid = 0;
 #ifdef RB_MPI
-    pid = MPI::COMM_WORLD.Get_rank();
+//    pid = MPI::COMM_WORLD.Get_rank();
+    MPI_Comm_rank(MPI_COMM_WORLD, &pid);
 #endif
     
     // load the modules
