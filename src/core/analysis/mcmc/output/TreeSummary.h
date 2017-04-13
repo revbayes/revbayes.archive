@@ -84,7 +84,7 @@ namespace RevBayesCore {
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05, bool verbose=true);
         void                                                                    setBurnin(int b);
         int                                                                     size(bool post = false) const;
-        void                                                                    summarizeCharacterMaps(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, std::string filename, int burnin, bool verbose, std::string separator);
+        void                                                                    summarizeCharacterMaps(Tree inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, std::string filename, int burnin, bool verbose, std::string separator);
 
     private:
 

@@ -3049,10 +3049,12 @@ void TreeSummary::summarize( bool verbose )
  * Summarizes sampled character histories for a vector of stochastic character map traces for each node of a given summary tree.
  *
  */
-void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, std::string filename, int burnin, bool verbose, std::string separator)
+void TreeSummary::summarizeCharacterMaps(Tree input_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, std::string filename, int burnin, bool verbose, std::string separator)
 {
-    // get the number of ancestral state samples and the number of tree samples
+    // get the number of ancestral state samples
     size_t num_sampled_states = ancestralstate_traces[0].getValues().size();
+    
+    // get the number of sampled trees
     size_t num_sampled_trees;
     if (use_tree_trace == false)
     {
@@ -3076,13 +3078,36 @@ void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<Anc
         throw RbException("The tree trace and the ancestral state trace must contain the same number of samples.");
     }
     
+    std::vector<TopologyNode*> summary_nodes;
+    bool condition_on_tree = false;
+
+    if ( input_tree.getNumberOfTips() != 0 )
+    {
+        summary_nodes = input_tree.getNodes();
+        condition_on_tree = true;
+    }
+
+    if ( condition_on_tree == false && use_tree_trace == false )
+    {
+        throw RbException("You must enter a tree trace, a tree, or both to summarize stochastic character maps.");
+    }
+    
+    // get the number of nodes
+    size_t num_nodes = 0;
+    if (condition_on_tree == true)
+    {
+        num_nodes = input_tree.getNumberOfNodes();
+    }
+    else
+    {
+        num_nodes = trace.objectAt(0).getNumberOfNodes();
+    }
+    
     std::stringstream ss;
     ss << "Compiling stochastic character maps from " << num_sampled_states << " samples in the character map trace, using a burnin of " << burnin << " samples.\n";
     RBOUT(ss.str());
-    
-    const std::vector<TopologyNode*> &summary_nodes = input_tree.getNodes();
-    
-    ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, 0 );
+
+    ProgressBar progress = ProgressBar( num_nodes * num_sampled_states, 0 );
     if ( verbose == true )
     {
         progress.start();
@@ -3095,6 +3120,7 @@ void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<Anc
     out.open( filename.c_str(), std::fstream::out);
     
     // write column headers
+    out << "iteration" << separator; 
     out << "node_index" << separator; 
     out << "branch_start_time" << separator;
     out << "branch_end_time" << separator;
@@ -3103,11 +3129,29 @@ void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<Anc
     out << "transition_time" << separator;
     out << "transition_type" << std::endl; 
 
-    // loop through all nodes in the summary tree
-    for (size_t i = 0; i < summary_nodes.size(); ++i)
+    // get the iteration trace
+    AncestralStateTrace iteration_trace;
+    bool trace_found = false;
+    for (size_t k = 0; k < ancestralstate_traces.size(); k++)
     {
-        size_t sample_clade_index;
-        bool trace_found = false;
+        if (ancestralstate_traces[k].getParameterName() == "Iteration")
+        {
+            iteration_trace = ancestralstate_traces[k];
+            trace_found = true;
+            break;
+        }
+    }
+    const std::vector<std::string>& iteration_vector = iteration_trace.getValues();
+    if ( trace_found == false )
+    {
+        throw RbException("The ancestral state trace is missing the 'Iteration' column.");
+    }
+
+    // loop through all nodes
+    for (size_t i = 0; i < num_nodes; ++i)
+    {
+        size_t sample_clade_index = i;
+        trace_found = false;
         AncestralStateTrace character_map_trace;
         
         // loop through all the stochastic character map samples
@@ -3120,24 +3164,25 @@ void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<Anc
             }
             
             // if necessary, get the sampled tree from the tree trace
-            //const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : input_tree;
-            //const TopologyNode& sample_root = sample_tree.getRoot();
             const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : input_tree;
-            const TopologyNode& sample_root = sample_tree.getRoot();
-            
-            if ( use_tree_trace == true )
-            {
-                // check if the clade in the summary tree is also in the sampled tree
-                sample_clade_index = sample_root.getCladeIndex( summary_nodes[i] );
 
-                // and we must also find the trace for this node index
-                trace_found = false;
-            }
-            else
+            if ( condition_on_tree == true )
             {
-                sample_clade_index = summary_nodes[i]->getIndex();
+                if ( use_tree_trace == true )
+                {
+                    // check if the clade in the summary tree is also in the sampled tree
+                    const TopologyNode& sample_root = sample_tree.getRoot();
+                    sample_clade_index = sample_root.getCladeIndex( summary_nodes[i] );
+
+                    // and we must also find the trace for this node index
+                    trace_found = false;
+                }
+                else
+                {
+                    sample_clade_index = summary_nodes[i]->getIndex();
+                }
             }
-            
+
             if ( RbMath::isFinite( sample_clade_index ) == true )
             {
                 
@@ -3158,6 +3203,9 @@ void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<Anc
                 // get the sampled character history for this node for this iteration
                 const std::vector<std::string>& ancestralstate_vector = character_map_trace.getValues();
                 std::string character_history = ancestralstate_vector[j];
+
+                // get the iteration
+                std::string iteration = iteration_vector[j];
 
                 // parse sampled SIMMAP string
                 std::vector< std::pair<size_t, double> > this_branch_map = parseSIMMAPForNode(character_history);
@@ -3184,8 +3232,18 @@ void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<Anc
                     if (this_branch_map[k].first != current_state)
                     {
                         // write node index
-                        out << summary_nodes[i]->getIndex() + 1 << separator; 
+                        out << iteration << separator; 
                         
+                        // write node index
+                        if (condition_on_tree && use_tree_trace)
+                        {
+                            out << summary_nodes[i]->getIndex() + 1 << separator;
+                        }
+                        else
+                        {
+                            out << sample_clade_index + 1 << separator; 
+                        }
+
                         // write branch start/end times
                         out << start_time << separator;
                         out << end_time << separator;
@@ -3235,7 +3293,17 @@ void TreeSummary::summarizeCharacterMaps(const Tree &input_tree, std::vector<Anc
                     if (end_state != child_start_state)
                     {
                         // write node index
-                        out << summary_nodes[i]->getIndex() + 1 << separator; 
+                        out << iteration << separator; 
+                        
+                        // write node index
+                        if (condition_on_tree && use_tree_trace)
+                        {
+                            out << summary_nodes[i]->getIndex() + 1 << separator;
+                        }
+                        else
+                        {
+                            out << sample_clade_index + 1 << separator; 
+                        }
                         
                         // write branch start/end times
                         out << start_time << separator;
