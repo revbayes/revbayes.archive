@@ -161,7 +161,7 @@ std::vector<RevBayesCore::AncestralStateTrace*> Func_readAncestralStateTrace::re
     
     std::vector<RevBayesCore::AncestralStateTrace*> data;
 	
-	bool hasHeaderBeenRead = false;
+	bool has_header_been_read = false;
 
 	
 	/* Open file */
@@ -198,11 +198,13 @@ std::vector<RevBayesCore::AncestralStateTrace*> Func_readAncestralStateTrace::re
 		
 		// we should provide other delimiters too
 		StringUtilities::stringSplit(line, delimitter, columns);
-		
+	
 		// we assume a header at the first line of the file
-		if (!hasHeaderBeenRead) {
+		if (has_header_been_read == false) 
+        {
 			
-			for (size_t j=1; j<columns.size(); j++) {
+			for (size_t j = 0; j < columns.size(); j++) 
+            {
 								
 				// set up AncestralStateTrace objects for each node
 				RevBayesCore::AncestralStateTrace *t = new RevBayesCore::AncestralStateTrace();
@@ -212,14 +214,17 @@ std::vector<RevBayesCore::AncestralStateTrace*> Func_readAncestralStateTrace::re
 				data.push_back( t );
 			}
 			
-			hasHeaderBeenRead = true;
+			has_header_been_read = true;
 			
-		} else {
+		} 
+        else 
+        {
 			
-			for (size_t j=1; j<columns.size(); j++) {
+			for (size_t j = 0; j < columns.size(); j++) 
+            {
 				
 				// add values to the AncestralStateTrace objects
-				RevBayesCore::AncestralStateTrace *t = data[j-1];
+				RevBayesCore::AncestralStateTrace *t = data[j];
 				std::string anc_state = columns[j];
 				t->addObject( anc_state );
 
