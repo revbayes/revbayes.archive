@@ -1,0 +1,534 @@
+#include "DistributionExponential.h"
+#include "PiecewiseConstantFossilizedBirthDeathRangeProcess.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
+#include "RbConstants.h"
+#include "RbMathLogic.h"
+#include "StochasticNode.h"
+#include "TypedDistribution.h"
+
+#include <algorithm>
+#include <cmath>
+
+using namespace RevBayesCore;
+
+/**
+ * Constructor. 
+ * We delegate most parameters to the base class and initialize the members.
+ *
+ * \param[in]    s              Speciation rates.
+ * \param[in]    e              Extinction rates.
+ * \param[in]    p              Fossil sampling rates.
+ * \param[in]    r              Instantaneous sampling probabilities.
+ * \param[in]    t              Rate change times.
+ * \param[in]    cdt            Condition of the process (none/survival/#Taxa).
+ * \param[in]    tn             Taxa.
+ * \param[in]    c              Clades conditioned to be present.
+ */
+PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBirthDeathRangeProcess(const DagNode *inspeciation,
+                                                                                                     const DagNode *inextinction,
+                                                                                                     const DagNode *inpsi,
+                                                                                                     const TypedDagNode<double> *inrho,
+                                                                                                     const TypedDagNode< RbVector<double> > *intimes,
+                                                                                                     const TypedDagNode< RbVector<int> > *incounts,
+                                                                                                     const std::string &incondition,
+                                                                                                     const std::vector<Taxon> &intaxa ) : TypedDistribution<MatrixReal>(new MatrixReal(intaxa.size(), 2)),
+    homogeneous_rho(inrho), sampling_times( intimes ), fossil_counts(incounts), condition(incondition), taxa(intaxa)
+{
+    // initialize all the pointers to NULL
+    homogeneous_lambda   = NULL;
+    homogeneous_mu       = NULL;
+    homogeneous_psi      = NULL;
+    heterogeneous_lambda = NULL;
+    heterogeneous_mu     = NULL;
+    heterogeneous_psi    = NULL;
+
+    const TypedDagNode<RbVector<double> > *tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
+    const TypedDagNode<double> *tmp_c = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
+
+    if(tmp_v == NULL && tmp_c == NULL)
+    {
+        throw(RbException("Speciation rate must be of type RealPos or RealPos[]"));
+    }
+    else if(tmp_v == NULL)
+    {
+        homogeneous_lambda = tmp_c;
+        addParameter( homogeneous_lambda );
+    }
+    else
+    {
+        heterogeneous_lambda = tmp_v;
+        if(heterogeneous_lambda->getValue().size() != sampling_times->getValue().size() + 1)
+        {
+            std::stringstream ss;
+            ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of time intervals (" << sampling_times->getValue().size() + 1 << ")";
+            throw(RbException(ss.str()));
+        }
+
+        addParameter( heterogeneous_lambda );
+    }
+
+    tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inextinction);
+    tmp_c = dynamic_cast<const TypedDagNode<double >*>(inextinction);
+
+    if(tmp_v == NULL && tmp_c == NULL)
+    {
+        throw(RbException("Extinction rate must be of type RealPos or RealPos[]"));
+    }
+    else if(tmp_v == NULL)
+    {
+        homogeneous_mu = tmp_c;
+        addParameter( homogeneous_mu );
+    }
+    else
+    {
+        heterogeneous_mu = tmp_v;
+        if(heterogeneous_mu->getValue().size() != sampling_times->getValue().size() + 1)
+        {
+            std::stringstream ss;
+            ss << "Number of extinction rates (" << heterogeneous_mu->getValue().size() << ") does not match number of time intervals (" << sampling_times->getValue().size() + 1 << ")";
+            throw(RbException(ss.str()));
+        }
+
+        addParameter( heterogeneous_mu );
+    }
+
+    tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inpsi);
+    tmp_c = dynamic_cast<const TypedDagNode<double >*>(inpsi);
+
+    if(tmp_v == NULL && tmp_c == NULL)
+    {
+        throw(RbException("Fossil sampling rate must be of type RealPos or RealPos[]"));
+    }
+    else if(tmp_v == NULL)
+    {
+        homogeneous_psi = tmp_c;
+        addParameter( homogeneous_psi );
+    }
+    else
+    {
+        heterogeneous_psi = tmp_v;
+        if(heterogeneous_psi->getValue().size() != sampling_times->getValue().size() + 1)
+        {
+            std::stringstream ss;
+            ss << "Number of fossil sampling rates (" << heterogeneous_psi->getValue().size() << ") does not match number of time intervals (" << sampling_times->getValue().size() + 1 << ")";
+            throw(RbException(ss.str()));
+        }
+
+        addParameter( heterogeneous_psi );
+    }
+
+    addParameter( homogeneous_rho );
+    addParameter( sampling_times );
+    addParameter( fossil_counts );
+    
+    redrawValue();
+}
+
+
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ *
+ * \return A new copy of myself 
+ */
+PiecewiseConstantFossilizedBirthDeathRangeProcess* PiecewiseConstantFossilizedBirthDeathRangeProcess::clone( void ) const
+{
+    return new PiecewiseConstantFossilizedBirthDeathRangeProcess( *this );
+}
+
+
+/**
+ * Compute the log-transformed probability of the current value under the current parameter values.
+ *
+ */
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( void )
+{
+    // prepare the probability computation
+    prepareProbComputation();
+
+    // variable declarations and initialization
+    double lnProbTimes = 0.0;
+    
+    size_t num_extant_sampled = 0;
+    size_t num_extant_unsampled = 0;
+
+    double maxb = 0;
+    double maxl = 0;
+    // add the fossil tip age terms
+    for (size_t i = 0; i < taxa.size(); ++i)
+    {
+        if ( RbMath::isFinite(lnProbTimes) == false )
+        {
+            return RbConstants::Double::nan;
+        }
+        
+        double b = (*this->value)[i][0];
+        double d = (*this->value)[i][1];
+        double o = taxa[i].getAgeRange().getStart();
+        double y = taxa[i].getAgeRange().getEnd();
+
+        // check constraints
+        if ( !( b > o && o >= y && (y > d || (y == d && y == 0.0)) ) )
+        {
+            return RbConstants::Double::nan;
+        }
+
+        num_extant_sampled  += (d == 0.0 && y == 0.0);  // l
+        num_extant_unsampled += (d == 0.0 && y != 0.0); // n - m - l
+
+        size_t bi = l(b);
+        size_t di = l(d);
+        size_t oi = l(o);
+
+        if(b > maxb)
+        {
+            maxb = b;
+            maxl = birth[ bi - 1 ];
+        }
+
+        if(d > 0.0) lnProbTimes += log( death[ di - 1] );
+
+        lnProbTimes += log(birth[bi - 1]);
+        lnProbTimes += log(gamma(b));
+        lnProbTimes += log(q_tilde(oi, o)) + log(q(bi, b)) - log(q_tilde(di, d)) - log(q(oi, o));
+    }
+    
+    // the origin is not a speciation event
+    lnProbTimes -= log(maxl);
+
+    for (size_t i = 0; i < fossil.size(); ++i)
+    {
+        lnProbTimes += fossil_counts->getValue()[i]*log(fossil[i]);
+    }
+
+    // add the extant tip age term
+    lnProbTimes += num_extant_sampled * log( homogeneous_rho->getValue() );
+    lnProbTimes += num_extant_unsampled * log( 1.0 - homogeneous_rho->getValue() );
+
+    
+
+    // condition on survival
+    if ( condition == "survival" )
+    {
+        lnProbTimes -= log( pSurvival(maxb,0) );
+    }
+    
+    if ( RbMath::isFinite(lnProbTimes) == false )
+    {
+        return RbConstants::Double::nan;
+    }
+
+
+    return lnProbTimes;
+}
+
+
+/**
+ * return the index i so that t_{i-1} > t >= t_i
+ * where t_i is the instantaneous sampling time (i = 0,...,l)
+ * t_0 is origin
+ * t_l = 0.0
+ */
+size_t PiecewiseConstantFossilizedBirthDeathRangeProcess::l(double t) const
+{
+    return times.rend() - std::lower_bound( times.rbegin(), times.rend(), t) + 1;
+}
+
+
+/**
+ * Compute the probability of survival if the process starts with one species at time start and ends at time end.
+ *
+ * \param[in]    start      Start time of the process.
+ * \param[in]    end        End/stopping time of the process.
+ *
+ * \return Probability of survival.
+ */
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::pSurvival(double start, double end) const
+{
+    double t = start;
+    
+    std::vector<double> fossil_bak = fossil;
+
+    std::fill(fossil.begin(), fossil.end(), 0.0);
+
+    double p0 = p(l(t), t);
+    
+    fossil = fossil_bak;
+
+    return 1.0 - p0;
+}
+
+
+/**
+ * p_i(t)
+ */
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::p( size_t i, double t ) const
+{
+    if ( t == 0)
+        return 1.0;
+
+    // get the parameters
+    double b = birth[i-1];
+    double d = death[i-1];
+    double f = fossil[i-1];
+    double r = (i == times.size() ? homogeneous_rho->getValue() : 0.0);
+    double ti = times[i-1];
+    
+    double diff = b - d - f;
+    double bp   = b*f;
+    double dt   = t - ti;
+    
+    double A = sqrt( diff*diff + 4.0*bp);
+    double B = ( (1.0 - 2.0*(1.0-r)*p(i+1,ti) )*b + d + f ) / A;
+    
+    double e = exp(-A*dt);
+    double tmp = b + d + f - A * ((1.0+B)-e*(1.0-B))/((1.0+B)+e*(1.0-B));
+    
+    return tmp / (2.0*b);
+}
+
+
+/**
+ *
+ *
+ */
+void PiecewiseConstantFossilizedBirthDeathRangeProcess::prepareProbComputation( void ) const
+{
+    // clean all the sets
+    birth.clear();
+    death.clear();
+    fossil.clear();
+    
+    times = sampling_times->getValue();
+
+    times.push_back(0.0);
+
+    for (size_t i = 0; i < times.size(); i++)
+    {
+        birth.push_back( getSpeciationRate(i) );
+
+        death.push_back( getExtinctionRate(i) );
+
+        fossil.push_back( getFossilizationRate(i) );
+    }
+}
+
+
+/**
+ * q_i(t)
+ */
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::q( size_t i, double t ) const
+{
+    
+    if ( t == 0.0 ) 
+    {
+        return 1.0;
+    }
+    
+    // get the parameters
+    double b = birth[i-1];
+    double d = death[i-1];
+    double f = fossil[i-1];
+    double r = (i == times.size() ? homogeneous_rho->getValue() : 0.0);
+    double ti = times[i-1];
+    
+    double diff = b - d - f;
+    double bp   = b*f;
+    double dt   = t - ti;
+
+    double A = sqrt( diff*diff + 4.0*bp);
+    double B = ( (1.0 - 2.0*(1.0-r)*p(i+1,ti) )*b + d + f ) / A;
+
+    double e = exp(-A*dt);
+    double tmp = (1.0+B) + e*(1.0-B);
+
+    return 4.0 / (e*tmp*tmp);
+}
+
+
+/**
+ * q_i(t)
+ */
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::q_tilde( size_t i, double t ) const
+{
+
+    // get the parameters
+    double b = birth[i-1];
+    double d = death[i-1];
+    double f = fossil[i-1];
+    double r = (i == times.size() ? homogeneous_rho->getValue() : 0.0);
+    double ti = times[i-1];
+
+    double diff = b - d - f;
+    double bp   = b*f;
+    double dt   = t - ti;
+    
+    double A = sqrt( diff*diff + 4.0*bp);
+    double B = ( (1.0 - 2.0*(1.0-r)*p(i+1,ti) )*b + d + f ) / A;
+    
+    double e = exp(-A*dt);
+    double tmp1 = ((1.0+B)*e+(1.0-B))/((1.0+B)+e*(1.0-B));
+    double tmp2 = 4*exp(-(b + d + f)*dt)*e/(4*e+(1-B*B)*(1-e)*(1-e));
+    
+    return sqrt(tmp1*tmp2);
+}
+
+
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::getExtinctionRate( size_t index ) const
+{
+
+    // remove the old parameter first
+    if ( homogeneous_mu != NULL )
+    {
+        return homogeneous_mu->getValue();
+    }
+    else
+    {
+        if(index > heterogeneous_mu->getValue().size())
+        {
+            throw(RbException("Extinction rate index out of bounds"));
+        }
+        return heterogeneous_mu->getValue()[index];
+    }
+}
+
+
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilizationRate( size_t index ) const
+{
+
+    // remove the old parameter first
+    if ( homogeneous_psi != NULL )
+    {
+        return homogeneous_psi->getValue();
+    }
+    else
+    {
+        if(index > heterogeneous_psi->getValue().size())
+        {
+            throw(RbException("Fossil recovery rate index out of bounds"));
+        }
+        return heterogeneous_psi->getValue()[index];
+    }
+}
+
+
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::getSpeciationRate( size_t index ) const
+{
+
+    // remove the old parameter first
+    if ( homogeneous_lambda != NULL )
+    {
+        return homogeneous_lambda->getValue();
+    }
+    else
+    {
+        if(index > heterogeneous_lambda->getValue().size())
+        {
+            throw(RbException("Speciation rate index out of bounds"));
+        }
+        return heterogeneous_lambda->getValue()[index];
+    }
+}
+
+
+/**
+ * Simulate new speciation times.
+ */
+void PiecewiseConstantFossilizedBirthDeathRangeProcess::redrawValue(void)
+{
+    // incorrect placeholder
+    
+    // Get the rng
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    
+    double max = 0;
+    // get the max first occurence
+    for(size_t i = 0; i < taxa.size(); i++)
+    {
+        double o = taxa[i].getAgeRange().getStart();
+        if( o > max ) max = o;
+    }
+    
+    max *= 2;
+    
+    // get random uniform draws
+    for(size_t i = 0; i < taxa.size(); i++)
+    {
+        double b = taxa[i].getAgeRange().getStart() + rng->uniform01()*(max - taxa[i].getAgeRange().getStart());
+        double d = rng->uniform01()*taxa[i].getAgeRange().getEnd();
+
+        (*this->value)[i][0] = b;
+        (*this->value)[i][1] = d;
+    }
+}
+
+
+/**
+ * Compute the diversity of the tree at time t.
+ *
+ * \param[in]    t      time at which we want to know the diversity.
+ *
+ * \return The diversity (number of species in the reconstructed tree).
+ */
+int PiecewiseConstantFossilizedBirthDeathRangeProcess::gamma(double t) const
+{
+    int g = 0;
+    for(size_t i = 0; i < taxa.size(); i++)
+    {
+        if(t < (*this->value)[i][0] && t > (*this->value)[i][1] )
+        {
+            g++;
+        }
+    }
+    
+    return g;
+}
+
+
+/**
+ * Swap the parameters held by this distribution.
+ * 
+ * \param[in]    oldP      Pointer to the old parameter.
+ * \param[in]    newP      Pointer to the new parameter.
+ */
+void PiecewiseConstantFossilizedBirthDeathRangeProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
+    if (oldP == heterogeneous_lambda)
+    {
+        heterogeneous_lambda = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    else if (oldP == heterogeneous_mu)
+    {
+        heterogeneous_mu = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    else if (oldP == heterogeneous_psi)
+    {
+        heterogeneous_psi = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    else if (oldP == homogeneous_lambda)
+    {
+        homogeneous_lambda = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == homogeneous_mu)
+    {
+        homogeneous_mu = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == homogeneous_psi)
+    {
+        homogeneous_psi = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == homogeneous_rho)
+    {
+        homogeneous_rho = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == sampling_times)
+    {
+        sampling_times = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    else
+    {
+        // delegate the super-class
+        TypedDistribution<MatrixReal>::swapParameterInternal(oldP, newP);
+    }
+}
