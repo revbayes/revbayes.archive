@@ -202,8 +202,6 @@ namespace RevBayesCore {
         bool                                                                useMarginalLikelihoods;
         bool                                                                inMcmcMode;
 
-        bool                                                                store_internal_nodes;
-        
         // members
         const TypedDagNode< double >*                                       homogeneous_clock_rate;
         const TypedDagNode< RbVector< double > >*                           heterogeneous_clock_rates;
@@ -225,6 +223,8 @@ namespace RevBayesCore {
         size_t                                                              pattern_block_start;
         size_t                                                              pattern_block_end;
         size_t                                                              pattern_block_size;
+
+        bool                                                                store_internal_nodes;
 
         charType                                                            template_state;                                 //!< Template state used for ancestral state estimation. This makes sure that the state labels are preserved.
 
@@ -719,14 +719,21 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
         {
             const RbBitSet &val = ambiguous_char_matrix[0][i];
 
-            invariant_site_index[i] = val.size();
-
-            for (size_t j=1; j<length; ++j)
+            if ( val.getNumberSetBits() > 1 )
             {
-                if ( val != ambiguous_char_matrix[j][i] || gap_matrix[j][i] == true )
+                inv = false;
+            }
+            else
+            {
+                invariant_site_index[i] = val.getFirstSetBit();
+
+                for (size_t j=1; j<length; ++j)
                 {
-                    inv = false;
-                    break;
+                    if ( val != ambiguous_char_matrix[j][i] || gap_matrix[j][i] == true )
+                    {
+                        inv = false;
+                        break;
+                    }
                 }
             }
         }
@@ -1673,7 +1680,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getRootFrequencie
 template<class charType>
 std::vector<double> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getRootFrequencies( size_t mixture ) const
 {
-    if(mixture > this->num_site_mixtures)
+    if (mixture > this->num_site_mixtures)
     {
         throw(RbException("Site mixture index out of bounds"));
     }
@@ -2855,7 +2862,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
     {
         // get the mean root frequency vector
         std::vector<double> f;
-        if(this->branch_heterogeneous_substitution_matrices == true)
+        if (this->branch_heterogeneous_substitution_matrices == true)
         {
             f = this->getRootFrequencies(0);
         }
@@ -2866,19 +2873,19 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
 
             std::vector<double> matrix_probs(num_matrices, 1.0/num_matrices);
 
-            if(site_matrix_probs != NULL)
+            if (site_matrix_probs != NULL)
             {
                 matrix_probs = site_matrix_probs->getValue();
             }
 
             f = std::vector<double>(ff[0].size(), 0.0);
 
-            for(size_t matrix = 0; matrix < ff.size(); matrix++)
+            for (size_t matrix = 0; matrix < ff.size(); matrix++)
             {
                 // get the root frequencies
                 const std::vector<double> &fm = ff[matrix];
 
-                for(size_t i = 0; i < fm.size(); i++)
+                for (size_t i = 0; i < fm.size(); i++)
                 {
                     f[i] += fm[i] * matrix_probs[matrix];
                 }
@@ -2964,7 +2971,8 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         if ( process_active == false )
         {
             // send from the workers the log-likelihood to the master
-            MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
+//            MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
+            MPI_Send(&sum_partial_probs, 1, MPI_DOUBLE, active_PID, 0, MPI_COMM_WORLD);
         }
 
         // receive the likelihoods from the helpers
@@ -2973,7 +2981,9 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
                 double tmp = 0;
-                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
+//                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
+                MPI_Status status;
+                MPI_Recv(&tmp, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD, &status);
                 sum_partial_probs += tmp;
             }
         }
@@ -2983,12 +2993,15 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         {
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
-                MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, int(i), 0);
+//                MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, int(i), 0);
+                MPI_Send(&sum_partial_probs, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD);
             }
         }
         else
         {
-            MPI::COMM_WORLD.Recv(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
+//            MPI::COMM_WORLD.Recv(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
+            MPI_Status status;
+            MPI_Recv(&sum_partial_probs, 1, MPI_DOUBLE, active_PID, 0, MPI_COMM_WORLD, &status);
         }
 
     }
@@ -3051,7 +3064,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::swapParameterInte
 }
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::touchSpecialization( DagNode* affecter, bool touchAll )
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::touchSpecialization( DagNode* affecter, bool touch_all )
 {
 
     if ( touched == false )
@@ -3070,7 +3083,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::touchSpecializati
         if ( indices.size() == 0 )
         {
             // just flag everyting for recomputation
-            touchAll = true;
+            touch_all = true;
         }
         else
         {
@@ -3090,7 +3103,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::touchSpecializati
         if ( indices.size() == 0 )
         {
             // just flag everyting for recomputation
-            touchAll = true;
+            touch_all = true;
         }
         else
         {
@@ -3108,12 +3121,16 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::touchSpecializati
         const TopologyNode &root = this->tau->getValue().getRoot();
         this->recursivelyFlagNodeDirty( root );
     }
+    else if ( affecter == p_inv )
+    {
+        touch_all = true;
+    }
     else if ( affecter != tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     {
-        touchAll = true;
+        touch_all = true;
     }
 
-    if ( touchAll )
+    if ( touch_all == true )
     {
 
         for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
@@ -3171,7 +3188,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
     }
     
     // we rescale the rate by the inverse of the proportion of invariant sites
-    rate /= ( 1.0 - getPInv() );
+//    rate /= ( 1.0 - getPInv() );
 
     double end_age = node->getAge();
 

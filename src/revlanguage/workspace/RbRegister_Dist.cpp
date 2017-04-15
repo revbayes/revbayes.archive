@@ -125,6 +125,7 @@
 #include "Dist_WeightedConstrainedNodeOrder.h"
 #include "Dist_FBDP.h"
 #include "Dist_constPopMultispCoal.h"
+#include "Dist_constSSBDP.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
 #include "Dist_episodicBirthDeath.h"
@@ -153,6 +154,10 @@
 #include "Dist_exponentialOffsetPositive.h"
 #include "Dist_gamma.h"
 #include "Dist_geom.h"
+#include "Dist_halfCauchy.h"
+#include "Dist_halfCauchyPositive.h"
+#include "Dist_halfNormal.h"
+#include "Dist_halfNormalPositive.h"
 #include "Dist_inverseGamma.h"
 #include "Dist_inverseWishart.h"
 #include "Dist_lnorm.h"
@@ -256,6 +261,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // constant rate fossil-birth-death process
         AddDistribution< TimeTree                   >( new Dist_FBDP());
         
+        // constant rate serial-sampled-birth-death process
+        AddDistribution< TimeTree                   >( new Dist_constSSBDP());
+        
         // diversity-dependent pure-birth process
         AddDistribution< TimeTree                   >( new Dist_divDepYuleProcess() );
         
@@ -334,6 +342,14 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // geometric distribution
         AddDistribution< Natural                    >( new Dist_geom() );
         
+        // half-Cauchy distribution
+        AddContinuousDistribution< Real             >( new Dist_halfCauchy() );
+        AddContinuousDistribution< RealPos          >( new Dist_halfCauchyPositive() );
+        
+        // half-Normal distribution
+        AddContinuousDistribution< Real             >( new Dist_halfNormal() );
+        AddContinuousDistribution< RealPos          >( new Dist_halfNormalPositive() );
+
         // inverse-gamma distribution
         AddContinuousDistribution< RealPos          >( new Dist_inverseGamma() );
         
@@ -402,7 +418,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< RealPos                    >( new Dist_mixture<RealPos>() );
 		AddDistribution< Natural                    >( new Dist_mixture<Natural>() );
 		AddDistribution< Integer                    >( new Dist_mixture<Integer>() );
-		AddDistribution< Probability                >( new Dist_mixture<Probability>() );
+        AddDistribution< Probability                >( new Dist_mixture<Probability>() );
+        AddDistribution< Simplex                    >( new Dist_mixture<Simplex>() );
 //        AddDistribution< RateGenerator              >( new Dist_mixture<RateGenerator>() );
         addDistribution( new Dist_mixture<RateGenerator>() );
         AddDistribution< TimeTree                   >( new Dist_mixture<TimeTree>() );

@@ -129,6 +129,7 @@
 /* Rate matrix functions (in folder "functions/phylogenetics/ratematrix") */
 #include "Func_blosum62.h"
 #include "Func_chromosomes.h"
+#include "Func_covarionRateMatrix.h"
 #include "Func_covarion.h"
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
@@ -151,6 +152,7 @@
 #include "Func_mtMam.h"
 #include "Func_orderedRateMatrix.h"
 #include "Func_pomo.h"
+#include "Func_reversiblePomo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_t92.h"
@@ -203,6 +205,7 @@
 #include "Func_readAncestralStateTreeTrace.h"
 #include "Func_readAncestralStateTrace.h"
 #include "Func_source.h"
+#include "Func_summarizeCharacterMaps.h"
 #include "Func_TaxonReader.h"
 #include "Func_treeTrace.h"
 #include "Func_write.h"
@@ -280,6 +283,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( new Func_blosum62()                 );
         addFunction( new Func_chromosomes()              );
+        addFunction( new Func_covarionRateMatrix()       );
         addFunction( new Func_covarion()                 );
         addFunction( new Func_cpRev()                    );
         addFunction( new Func_dayhoff()                  );
@@ -302,6 +306,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_mtRev()                    );
         addFunction( new Func_orderedRateMatrix()        );
         addFunction( new Func_pomo()                     );
+        addFunction( new Func_reversiblePomo()           );
         addFunction( new Func_rtRev()                    );
         addFunction( new Func_t92()                      );
         addFunction( new Func_TamuraNei()                );
@@ -439,7 +444,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // geographical distance function
         addFunction( new Func_geographicalDistance() );
-        
+
         // hyperbolic tangent function
         addFunction( new Func_hyperbolicTangent() );
 
