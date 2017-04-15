@@ -1,7 +1,9 @@
-#ifndef Dist_FBDP_H
-#define Dist_FBDP_H
+#ifndef Dist_FBDPRange_H
+#define Dist_FBDPRange_H
 
-#include "RlBirthDeathProcess.h"
+#include "PiecewiseConstantFossilizedBirthDeathRangeProcess.h"
+#include "RlMatrixReal.h"
+#include "RlTypedDistribution.h"
 
 namespace RevLanguage {
     
@@ -18,13 +20,13 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *c
      */
-    class Dist_FBDP : public BirthDeathProcess {
+    class Dist_FBDPRange : public TypedDistribution<MatrixReal> {
         
     public:
-        Dist_FBDP( void );
+        Dist_FBDPRange( void );
         
         // Basic utility functions
-        Dist_FBDP*                                              clone(void) const;                                                                      //!< Clone the object
+        Dist_FBDPRange*                                         clone(void) const;                                                                      //!< Clone the object
         static const std::string&                               getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                  getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::vector<std::string>                                getDistributionFunctionAliases(void) const;                                             //!< Get the alternative names used for the constructor function in Rev.
@@ -34,7 +36,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::AbstractBirthDeathProcess*                createDistribution(void) const;
+        RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess*                createDistribution(void) const;
         
     protected:
         
@@ -43,13 +45,14 @@ namespace RevLanguage {
         
     private:
 
-        std::string                                             startCondition;                                                                         //!< The process start condition
-        RevPtr<const RevVariable>                               startAge;                                                                               //!< The process start age
         RevPtr<const RevVariable>                               lambda;                                                                                 //!< The speciation rate(s)
         RevPtr<const RevVariable>                               mu;                                                                                     //!< The extinction rate(s)
         RevPtr<const RevVariable>                               psi;                                                                                    //!< The fossilization rate(s)
-        RevPtr<const RevVariable>                               timeline;                                                                                  //!< The epoch times
-        
+        RevPtr<const RevVariable>                               rho;                                                                                    //!< The extant sampling proportion
+        RevPtr<const RevVariable>                               timeline;                                                                               //!< The interval times
+        RevPtr<const RevVariable>                               fossil_counts;                                                                          //!< The fossil counts
+        RevPtr<const RevVariable>                               taxa;                                                                                   //!< The taxa
+        RevPtr<const RevVariable>                               condition;                                                                              //!< The condition of the process
     };
     
 }

@@ -1,8 +1,10 @@
 #ifndef PiecewiseConstantFossilizedBirthDeathRangeProcess_H
 #define PiecewiseConstantFossilizedBirthDeathRangeProcess_H
 
-#include "AbstractBirthDeathProcess.h"
+#include "MatrixReal.h"
 #include "RbVector.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
 #include <vector>
 #include <set>
@@ -36,9 +38,9 @@ namespace RevBayesCore {
         PiecewiseConstantFossilizedBirthDeathRangeProcess (const DagNode *speciation,
                                                       const DagNode *extinction,
                                                       const DagNode *psi,
-                                                      const TypedDagNode<double >* rho,
+                                                      const DagNode *counts,
+                                                      const TypedDagNode<double>* rho,
                                                       const TypedDagNode<RbVector<double> > *times,
-                                                      const TypedDagNode<RbVector<int> > *counts,
                                                       const std::string &condition,
                                                       const std::vector<Taxon> &taxa);  //!< Constructor
         
@@ -46,6 +48,7 @@ namespace RevBayesCore {
         PiecewiseConstantFossilizedBirthDeathRangeProcess*   clone(void) const;                                         //!< Create an independent clone
 
         double                                          getExtinctionRate( size_t index = 0 ) const;
+        int                                             getFossilCount( size_t index = 0 ) const;
         double                                          getFossilizationRate( size_t index = 0 ) const;
         double                                          getSpeciationRate( size_t index = 0 ) const;
 
@@ -77,13 +80,15 @@ namespace RevBayesCore {
         const TypedDagNode<double >*                    homogeneous_psi;                                       //!< The homogeneous speciation rates.
         const TypedDagNode<RbVector<double> >*          heterogeneous_psi;                                     //!< The heterogeneous speciation rates.
         const TypedDagNode<double >*                    homogeneous_rho;                                       //!< The homogeneous speciation rates.
-        const TypedDagNode<RbVector<double> >*          sampling_times;                                        //!< The times of the instantaneous sampling events.
-        const TypedDagNode<RbVector<int> >*             fossil_counts;                                         //!< The number of fossil observations, per interval.
+        const TypedDagNode<RbVector<double> >*          timeline;                                              //!< The times of the instantaneous sampling events.
+        const TypedDagNode<int>*                        homogeneous_fossil_counts;                             //!< The number of fossil observations, per interval.
+        const TypedDagNode<RbVector<int> >*             heterogeneous_fossil_counts;                           //!< The number of fossil observations, per interval.
 
         mutable std::vector<double>                     times;
         mutable std::vector<double>                     birth;
         mutable std::vector<double>                     death;
         mutable std::vector<double>                     fossil;
+        mutable std::vector<int>                        counts;
 
         std::string                                     condition;
         std::vector<Taxon>                              taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.

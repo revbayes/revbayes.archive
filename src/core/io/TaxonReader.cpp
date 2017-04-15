@@ -4,6 +4,7 @@
 #include "TaxonReader.h"
 #include <sstream>
 #include <set>
+#include <map>
 
 using namespace RevBayesCore;
 
@@ -20,54 +21,89 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
     
     //Reading the header
     std::vector<std::string>& line = chars[0];
-    int column_taxon = -1;
-    int column_age = -1;
-    int column_species = -1;
+    std::map<std::string, int> column_map;
+
+    std::string arr[] = {"taxon","age","species","minage","maxage"};
+    std::vector<std::string> fields (arr, arr + sizeof(arr) / sizeof(arr[0]) );
     
     for (size_t i = 0 ; i < line.size() ; ++i)
     {
         std::string tmp = line[i];
         StringUtilities::toLower( tmp );
-        if ( tmp == "taxon" )
+        if(std::find(fields.begin(), fields.end(), tmp) != fields.end())
         {
-            column_taxon = int(i);
-        }
-        else if ( tmp == "age" )
-        {
-            column_age = int(i);
-        }
-        else if ( tmp == "species" )
-        {
-            column_species = int(i);
+            column_map[tmp] = int(i);
         }
         else
         {
-            throw RbException("Wrong header in the taxa definition file. It can only contain 'taxon', 'species' and 'age' fields.");
+            std::stringstream field_stream;
+            for(size_t j = 0; j < fields.size(); j++)
+            {
+                field_stream << "\"" << fields[j] << "\"";
+                if(j < fields.size() - 1)
+                {
+                    field_stream << ", ";
+                }
+            }
+            throw RbException("Wrong header in the taxa definition file. Required field: \"taxon\". Other fields: "+field_stream.str());
         }
     }
     
-    if (column_taxon == -1)
+    if (column_map.find("taxon") == column_map.end())
     {
-        throw RbException("Missing header in the taxa definition file. It has to contain 'taxon' field.");
+        throw RbException("Missing header in the taxa definition file. It has to contain \"taxon\" field.");
     }
     
+    std::map<std::string,int>::iterator minit = column_map.find("minage");
+    std::map<std::string,int>::iterator maxit = column_map.find("maxage");
+
+    if ( (minit == column_map.end() || maxit == column_map.end()) && minit != maxit)
+    {
+        throw RbException("Taxon header file must contain both \"minage\" and \"maxage\" age fields");
+    }
+    if ( (minit != column_map.end() || maxit != column_map.end()) && column_map.find("age") != column_map.end())
+    {
+        throw RbException("Taxon header file cannot contain both \"age\" and \"minage\" or \"maxage\" fields");
+    }
+
     for (size_t i = 1; i < chars.size(); ++i) //going through all the lines
     {
         const std::vector<std::string>& line = chars[i];
-        Taxon t = Taxon( line[ column_taxon ] );
+        Taxon t = Taxon( line[ column_map["taxon"] ] );
         
-        double age = 0.0;
-        if ( column_age >= 0 )
+        if ( column_map.find("minage") != column_map.end() )
         {
+            double min,max;
+            TimeInterval interval;
             std::stringstream ss;
-            ss.str( line[ column_age ] );
-            ss >> age;
+
+            ss.str( line[ column_map["minage"] ] );
+            ss >> min;
+            interval.setStart(min);
+
+            ss.str( line[ column_map["maxage"] ] );
+            ss >> max;
+            interval.setEnd(max);
+
+            t.setAgeRange(interval);
         }
-        t.setAge( age );
-        
-        if ( column_species >= 0 )
+        else if ( column_map.find("age") != column_map.end() )
         {
-            t.setSpeciesName( line[ column_species ] );
+            double age = 0.0;
+            std::stringstream ss;
+            ss.str( line[ column_map["age"] ] );
+            ss >> age;
+            t.setAge( age );
+        }
+        else
+        {
+            t.setAge( 0.0 );
+        }
+
+        
+        if ( column_map.find("species") != column_map.end() )
+        {
+            t.setSpeciesName( line[ column_map["species"] ] );
         }
         
         taxa.push_back( t );
