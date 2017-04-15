@@ -30,6 +30,7 @@ namespace RevBayesCore {
     public:
         // constructor(s)
         DirichletProcessPriorDistribution(TypedDistribution<valueType> *g, const TypedDagNode< double > *cp, int n);
+        DirichletProcessPriorDistribution(const DirichletProcessPriorDistribution &d);
         
         // public member functions
         DirichletProcessPriorDistribution*                  clone(void) const;                                                                      //!< Create an independent clone
@@ -105,6 +106,35 @@ RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPrio
 
     this->value = simulate();
                                                                                                   
+}
+
+
+template <class valueType>
+RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPriorDistribution( const DirichletProcessPriorDistribution &d ) : TypedDistribution< RbVector<valueType> >( d ),
+    baseDistribution( d.baseDistribution->clone() ),
+    concentration( d.concentration ),
+    numElements( d.numElements ),
+    numTables( d.numTables ),
+    denominator( d.denominator ),
+    concentrationHasChanged( d.concentrationHasChanged )
+{
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    this->addParameter( concentration );
+    
+    // add the parameters of the distribution
+    const std::vector<const DagNode*>& pars = baseDistribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
+    {
+        this->addParameter( *it );
+    }
+    
+    delete this->value;
+    
+    this->value = simulate();
+    
 }
 
 
@@ -324,7 +354,8 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::redrawValue( vo
 
 /** Swap a parameter of the distribution */
 template <class valueType>
-void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
 //    if (oldP == baseDistribution){
 //        baseDistribution = static_cast<const TypedDagNode< TypedDistribution<valueType> >* >( newP );

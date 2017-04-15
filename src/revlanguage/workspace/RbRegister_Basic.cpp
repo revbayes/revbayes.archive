@@ -114,7 +114,7 @@
 #include "Func_printSeed.h"
 #include "Func_quit.h"
 #include "Func_range.h"
-#include "Func_rep.h"
+#include "Func_replicate.h"
 #include "Func_seed.h"
 #include "Func_seq.h"
 #include "Func_setOption.h"
@@ -190,6 +190,7 @@
 #include "Func_readAncestralStateTreeTrace.h"
 #include "Func_readAncestralStateTrace.h"
 #include "Func_source.h"
+#include "Func_summarizeCharacterMaps.h"
 #include "Func_TaxonReader.h"
 #include "Func_treeTrace.h"
 #include "Func_write.h"
@@ -270,12 +271,12 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_ls()                       );
         addFunction( new Func_printSeed()                );
         addFunction( new Func_quit()                     );
-        addFunction( new Func_rep<Integer>()             );
-        addFunction( new Func_rep<Real>()                );
-        addFunction( new Func_rep<Natural>()             );
-        addFunction( new Func_rep<RealPos>()             );
-        addFunction( new Func_rep<RlString>()            );
-        addFunction( new Func_rep<RlBoolean>()           );
+        addFunction( new Func_replicate<Integer>()       );
+        addFunction( new Func_replicate<Real>()          );
+        addFunction( new Func_replicate<Natural>()       );
+        addFunction( new Func_replicate<RealPos>()       );
+        addFunction( new Func_replicate<RlString>()      );
+        addFunction( new Func_replicate<RlBoolean>()     );
         addFunction( new Func_seed()                     );
         addFunction( new Func_seq<Integer>()             );
         addFunction( new Func_seq<Real>()                );
@@ -468,6 +469,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
 		addFunction( new Func_readCharacterDataDelimited()              );
         addFunction( new Func_readDataDelimitedFile()                   );
         addFunction( new Func_source()                                  );
+        addFunction( new Func_summarizeCharacterMaps()                  );
         addFunction( new Func_treeTrace()                               );
         addFunction( new Func_write()                                   );
         addFunction( new Func_writeCharacterDataDelimited()             );

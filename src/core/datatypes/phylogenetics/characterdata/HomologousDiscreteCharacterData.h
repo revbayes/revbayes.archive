@@ -448,33 +448,41 @@ RevBayesCore::AbstractHomologousDiscreteCharacterData* RevBayesCore::HomologousD
             
             size_t num_states = org_char.getNumberOfStates();
             NaturalNumbersState number_state = NaturalNumbersState(0,int(num_states*n));
-            
-            bool first = true;
-            for (size_t k=0; k < num_states; ++k)
+           
+            if ( org_char.isMissingState() == true )
             {
-                
-                if ( org_char.isStateSet( k ) == true )
+                number_state.setMissingState( true );
+            }
+            else
+            {
+
+                bool first = true;
+                for (size_t k=0; k < num_states; ++k)
                 {
                     
-                    // set the initial state
-                    if ( first == true )
+                    if ( org_char.isStateSet( k ) == true )
                     {
-                        first = false;
-                        number_state.setStateByIndex( k );
-                    }
-                    else
-                    {
-                        number_state.addState( int(k) );
-                    }
-                    
-                    // now we set also the expanded states
-                    for (size_t l=1; l<n; ++l)
-                    {
-                        number_state.addState( int(k)+int(num_states*l) );
+                        
+                        // set the initial state
+                        if ( first == true )
+                        {
+                            first = false;
+                            number_state.setStateByIndex( k );
+                        }
+                        else
+                        {
+                            number_state.addState( int(k) );
+                        }
+                        
+                        // now we set also the expanded states
+                        for (size_t l=1; l<n; ++l)
+                        {
+                            number_state.addState( int(k)+int(num_states*l) );
+                        }
+                        
                     }
                     
                 }
-                
             }
             
             expanded_seq.addCharacter( number_state );

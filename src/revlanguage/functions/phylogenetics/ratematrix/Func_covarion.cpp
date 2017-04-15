@@ -1,18 +1,14 @@
-//
-//  Func_covarion.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/4/17.
-//  Copyright © 2017 Michael Landis. All rights reserved.
-//
-
 #include "Func_covarion.h"
-#include "CovarionRateMatrixFunction.h"
+#include "CovarionFunction.h"
+#include "Natural.h"
+#include "RateMatrix_JC.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlBoolean.h"
 #include "RlDeterministicNode.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
+#include "TransitionProbabilityMatrix.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -40,28 +36,21 @@ Func_covarion* Func_covarion::clone( void ) const
 RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_covarion::createFunction( void ) const
 {
     
-//    argumentRules.push_back( new ArgumentRule( "Q"                    , ModelVector<RateGenerator>::getClassTypeSpec(), "The rate matrix classes", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-//    argumentRules.push_back( new ArgumentRule( "switch_rates"         , RateMatrix::getClassTypeSpec(), "The class-switching rate matrix", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-//    argumentRules.push_back( new ArgumentRule( "clock_rates"          , ModelVector<RealPos>::getClassTypeSpec(), "The rate multipliers per class", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-
+    bool rescale = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getDagNode()->getValue();
+    RevBayesCore::CovarionFunction* f = new RevBayesCore::CovarionFunction( rescale );
+    
+    // set transition rates for observed character states
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* sr = static_cast<const RateMatrix&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* cr = static_cast<const ModelVector<RealPos> &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+    f->setRateMatrices( rm );
     
+    // set transition rates for hidden character states
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rs = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    f->setRateScalars( rs );
     
-    RevBayesCore::AbstractRateMatrix* asr = dynamic_cast<RevBayesCore::AbstractRateMatrix*>( &sr->getValue() );
-    if (asr == NULL)
-    {
-        throw RbException( "This type of RateMatrix cannot be properly converted to AbstractRateMatrix (unexpected bug, contact Michael Landis)." );
-    }
+    // set transition rates for hidden character states
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* sr = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+    f->setSwitchRates( sr );
     
-    // sanity check
-    if ( sr->getValue().size() != cr->getValue().size() )
-    {
-        throw RbException( "switch_rates and clock_rates have different numbers of classes." );
-    }
-    
-    RevBayesCore::CovarionRateMatrixFunction* f = new RevBayesCore::CovarionRateMatrixFunction( rm, sr, cr );
     
     return f;
 }
@@ -76,9 +65,10 @@ const ArgumentRules& Func_covarion::getArgumentRules( void ) const
     
     if ( !rules_set )
     {
-        argumentRules.push_back( new ArgumentRule( "Q"                    , ModelVector<RateGenerator>::getClassTypeSpec(), "The rate matrix classes", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "switch_rates"         , RateMatrix::getClassTypeSpec(), "The class-switching rate matrix", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "clock_rates"          , ModelVector<RealPos>::getClassTypeSpec(), "The rate multipliers per class", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "RateMatrices", ModelVector<RateGenerator>::getClassTypeSpec(), "Rate matrices for the characters per state.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "RateScalars", ModelVector<RealPos>::getClassTypeSpec(),         "Rate multipliers per state.",   ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "SwitchRates", ModelVector<ModelVector<RealPos> >::getClassTypeSpec(),         "Rates between state.",   ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rescaled",                    RlBoolean::getClassTypeSpec(), "Should the matrix be normalized?",          ArgumentRule::BY_VALUE,              ArgumentRule::ANY, new RlBoolean(true) ) );
         rules_set = true;
     }
     
@@ -110,7 +100,7 @@ const TypeSpec& Func_covarion::getClassTypeSpec(void)
 std::string Func_covarion::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnCovarionRateMatrix";
+    std::string f_name = "fnCovarion";
     
     return f_name;
 }
