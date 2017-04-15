@@ -62,13 +62,13 @@ namespace RevBayesCore {
         std::fstream                                    outStream;
         
         // parameters
-        bool                                            include_simmaps;                                                    //!< Should we print out SIMMAP/phytools compatible character histories?
         std::string                                     filename;                                                           //!< Filename to which we print the values
         std::string                                     separator;                                                          //!< Seperator between monitored values (between columns)
         bool                                            append;                                                             //!< Flag if to append to existing file
         TypedDagNode<Tree>*                             tree;
         StochasticNode<Tree>*                           cdbdp;                                                              //!< The character dependent birth death process we are monitoring
         StochasticNode<AbstractHomologousDiscreteCharacterData>*            ctmc;
+        bool                                            include_simmaps;                                                    //!< Should we print out SIMMAP/phytools compatible character histories?
     };
     
 }
@@ -134,9 +134,9 @@ outStream(),
 filename( m.filename ),
 separator( m.separator ),
 append( m.append ),
+tree( m.tree ),
 cdbdp( m.cdbdp ),
 ctmc( m.ctmc ),
-tree( m.tree ),
 include_simmaps( m.include_simmaps )
 {
     

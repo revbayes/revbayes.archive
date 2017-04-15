@@ -69,6 +69,7 @@ namespace RevBayesCore {
 
         virtual double                                      sumRootLikelihood( void );
         virtual bool                                        isSitePatternCompatible( std::map<size_t, size_t> );
+        virtual bool                                        isSitePatternCompatible( std::map<RbBitSet, size_t> );
         std::vector<size_t>                                 getIncludedSiteIndices( void );
         void                                                updateCorrections( const TopologyNode& node, size_t nodeIndex );
 
@@ -195,7 +196,8 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
             }
         }
 
-        std::map<size_t, size_t> charCounts;
+        std::map<size_t,size_t> charCounts;
+        std::map<RbBitSet,size_t> bitCounts;
         size_t numGap = 0;
 
         std::string mask = "";
@@ -225,19 +227,13 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
                         mask += "-";
                     numGap++;
                 }
-                else if (c.isAmbiguous())
+                else if (this->using_ambiguous_characters)
                 {
                     if(coding != AscertainmentBias::ALL)
                         mask += " ";
+
                     RbBitSet b = c.getState();
-                    for (size_t k = 0; k < b.size(); k++)
-                    {
-                        if (b[k] != 0)
-                        {
-                            charCounts[k]++;
-                        }
-                        
-                    }
+                    bitCounts[b]++;
                 }
                 else
                 {
@@ -251,7 +247,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
             }
         }
 
-        if( !isSitePatternCompatible(charCounts) )
+        if( (this->using_ambiguous_characters && !isSitePatternCompatible(bitCounts)) || (!this->using_ambiguous_characters && !isSitePatternCompatible(charCounts)))
         {
             incompatible++;
         }
@@ -340,6 +336,64 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternC
     
     return true;
 }
+
+// Thanks to MH
+template<class charType>
+bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternCompatible( std::map<RbBitSet, size_t> charCounts )
+{
+    // if the pattern is constant, then it is incompatible with the variable coding
+    if(charCounts.size() == 1) return !(coding & AscertainmentBias::VARIABLE);
+
+    // find the common_state
+    std::map<size_t,size_t> stateCounts;
+    size_t max = 0;
+    size_t common_state = 0;
+
+    for(std::map<RbBitSet, size_t>::iterator it = charCounts.begin(); it != charCounts.end(); it++)
+    {
+        RbBitSet r = it->first;
+        for(size_t i = 0; i < r.size(); i++)
+        {
+            stateCounts[i] += r.isSet(i);
+            if(stateCounts[i] > max)
+            {
+                max = stateCounts[i];
+                common_state = i;
+            }
+        }
+    }
+
+    // if the pattern is uninformative, then it is incompatible with the informative coding
+    if(max <= 1) return (coding != AscertainmentBias::INFORMATIVE);
+
+    // find characters not intersecting common state
+    // then get state counts
+    stateCounts.clear();
+    for(std::map<RbBitSet, size_t>::iterator it = charCounts.begin(); it != charCounts.end(); it++)
+    {
+        RbBitSet r = it->first;
+
+        if(r.isSet(common_state)) continue;
+
+        for(size_t i = 0; i < r.size(); i++)
+        {
+            // if a state is found more than once among characters lacking the common state
+            // then this site pattern is parsimony informative
+            if(stateCounts.find(i) != stateCounts.end() )
+            {
+                return true;
+            }
+            else if( r.isSet(i) )
+            {
+                stateCounts[i]++;
+            }
+        }
+    }
+
+    // if the pattern is uninformative, then it is incompatible with the informative coding
+    return (coding != AscertainmentBias::INFORMATIVE);
+}
+
 
 template<class charType>
 void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLikelihood( size_t root, size_t left, size_t right)

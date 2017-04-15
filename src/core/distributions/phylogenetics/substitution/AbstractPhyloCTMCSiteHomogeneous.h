@@ -202,8 +202,6 @@ namespace RevBayesCore {
         bool                                                                useMarginalLikelihoods;
         bool                                                                inMcmcMode;
 
-        bool                                                                store_internal_nodes;
-        
         // members
         const TypedDagNode< double >*                                       homogeneous_clock_rate;
         const TypedDagNode< RbVector< double > >*                           heterogeneous_clock_rates;
@@ -225,6 +223,8 @@ namespace RevBayesCore {
         size_t                                                              pattern_block_start;
         size_t                                                              pattern_block_end;
         size_t                                                              pattern_block_size;
+
+        bool                                                                store_internal_nodes;
 
         charType                                                            template_state;                                 //!< Template state used for ancestral state estimation. This makes sure that the state labels are preserved.
 
