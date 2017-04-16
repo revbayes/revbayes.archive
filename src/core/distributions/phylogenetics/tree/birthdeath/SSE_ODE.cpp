@@ -80,6 +80,11 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
             }
         }
         
+        if(psi.empty() == false)
+        {
+            no_event_rate += psi[i];
+        }
+
         dxdt[i] -= no_event_rate * safe_x[i];
         
         // speciation event
@@ -189,5 +194,12 @@ void SSE_ODE::setSpeciationRate( const std::vector<double> &s )
     use_speciation_from_event_map = false;
     lambda = s;
     
+}
+
+void SSE_ODE::setFossilizationRate( const std::vector<double> &s )
+{
+
+    psi = s;
+
 }
 
