@@ -33,7 +33,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
                                                                                            bool uo,
                                                                                            const std::string &cdt,
                                                                                            const std::vector<Taxon> &tn ) : AbstractBirthDeathProcess( ra, cdt, tn ),
-    homogeneous_rho(r), sampling_times( t ), useOrigin(uo)
+    homogeneous_rho(r), timeline( t ), useOrigin(uo)
 {
     // initialize all the pointers to NULL
     homogeneous_lambda   = NULL;
@@ -58,10 +58,10 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     else
     {
         heterogeneous_lambda = tmp_v;
-        if(heterogeneous_lambda->getValue().size() != sampling_times->getValue().size() + 1)
+        if(heterogeneous_lambda->getValue().size() != timeline->getValue().size() + 1)
         {
             std::stringstream ss;
-            ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of time intervals (" << sampling_times->getValue().size() + 1 << ")";
+            ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
 
@@ -83,10 +83,10 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     else
     {
         heterogeneous_mu = tmp_v;
-        if(heterogeneous_mu->getValue().size() != sampling_times->getValue().size() + 1)
+        if(heterogeneous_mu->getValue().size() != timeline->getValue().size() + 1)
         {
             std::stringstream ss;
-            ss << "Number of extinction rates (" << heterogeneous_mu->getValue().size() << ") does not match number of time intervals (" << sampling_times->getValue().size() + 1 << ")";
+            ss << "Number of extinction rates (" << heterogeneous_mu->getValue().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
 
@@ -108,10 +108,10 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     else
     {
         heterogeneous_psi = tmp_v;
-        if(heterogeneous_psi->getValue().size() != sampling_times->getValue().size() + 1)
+        if(heterogeneous_psi->getValue().size() != timeline->getValue().size() + 1)
         {
             std::stringstream ss;
-            ss << "Number of fossil sampling rates (" << heterogeneous_psi->getValue().size() << ") does not match number of time intervals (" << sampling_times->getValue().size() + 1 << ")";
+            ss << "Number of fossil sampling rates (" << heterogeneous_psi->getValue().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
 
@@ -119,7 +119,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     }
 
     addParameter( homogeneous_rho );
-    addParameter( sampling_times );
+    addParameter( timeline );
     
     simulateTree();
 }
@@ -353,7 +353,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
  */
 size_t PiecewiseConstantFossilizedBirthDeathProcess::l(double t) const
 {
-    return times.rend() - std::lower_bound( times.rbegin(), times.rend(), t) + 1;
+    return times.rend() - std::upper_bound( times.rbegin(), times.rend(), t) + 1;
 }
 
 
@@ -421,9 +421,13 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
     death.clear();
     fossil.clear();
     
-    times = sampling_times->getValue();
+    if(timeline != NULL)
+        times = timeline->getValue();
 
     times.push_back(0.0);
+
+    // put times in descending order
+    std::sort(times.rbegin(), times.rend());
 
     for (size_t i = 0; i < times.size(); i++)
     {
@@ -680,9 +684,9 @@ void PiecewiseConstantFossilizedBirthDeathProcess::swapParameterInternal(const D
     {
         homogeneous_rho = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == sampling_times)
+    else if (oldP == timeline)
     {
-        sampling_times = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        timeline = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else
     {

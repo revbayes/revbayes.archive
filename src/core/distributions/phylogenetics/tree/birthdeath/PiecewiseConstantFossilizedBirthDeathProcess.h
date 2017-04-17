@@ -80,7 +80,7 @@ namespace RevBayesCore {
         const TypedDagNode<double >*                    homogeneous_psi;                                       //!< The homogeneous speciation rates.
         const TypedDagNode<RbVector<double> >*          heterogeneous_psi;                                     //!< The heterogeneous speciation rates.
         const TypedDagNode<double >*                    homogeneous_rho;                                       //!< The homogeneous speciation rates.
-        const TypedDagNode<RbVector<double> >*          sampling_times;                                        //!< The times of the instantaneous sampling events.
+        const TypedDagNode<RbVector<double> >*          timeline;                                              //!< The times of the instantaneous sampling events.
         
         bool                                            useOrigin;
 

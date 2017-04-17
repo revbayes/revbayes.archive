@@ -1,8 +1,9 @@
 #ifndef Dist_FBDPRange_H
 #define Dist_FBDPRange_H
 
+#include "ModelVector.h"
 #include "PiecewiseConstantFossilizedBirthDeathRangeProcess.h"
-#include "RlMatrixReal.h"
+#include "Real.h"
 #include "RlTypedDistribution.h"
 
 namespace RevLanguage {
@@ -20,7 +21,7 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *c
      */
-    class Dist_FBDPRange : public TypedDistribution<MatrixReal> {
+    class Dist_FBDPRange : public TypedDistribution<ModelVector<ModelVector<RealPos> > > {
         
     public:
         Dist_FBDPRange( void );

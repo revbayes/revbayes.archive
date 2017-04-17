@@ -32,7 +32,7 @@ namespace RevBayesCore {
      * @since 2014-03-18, version 1.0
      *
      */
-    class PiecewiseConstantFossilizedBirthDeathRangeProcess : public TypedDistribution<MatrixReal> {
+    class PiecewiseConstantFossilizedBirthDeathRangeProcess : public TypedDistribution<RbVector<RbVector<double> > > {
         
     public:
         PiecewiseConstantFossilizedBirthDeathRangeProcess (const DagNode *speciation,

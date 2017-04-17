@@ -1,11 +1,11 @@
 /* 
- * File:   Move_MatrixSingleElementSlide.cpp
+ * File:   Move_MatrixSingleElementScale.cpp
  * Author: nl
  * 
  * Created on 13 juillet 2014, 18:13
  */
 
-#include "Move_MatrixSingleElementSlide.h"
+#include "Move_MatrixSingleElementScale.h"
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
@@ -26,7 +26,7 @@
 
 using namespace RevLanguage;
 
-Move_MatrixSingleElementSlide::Move_MatrixSingleElementSlide() : Move()
+Move_MatrixSingleElementScale::Move_MatrixSingleElementScale() : Move()
 {
     
 }
@@ -37,20 +37,20 @@ Move_MatrixSingleElementSlide::Move_MatrixSingleElementSlide() : Move()
  *
  * \return A new copy of the process.
  */
-Move_MatrixSingleElementSlide* Move_MatrixSingleElementSlide::clone(void) const
+Move_MatrixSingleElementScale* Move_MatrixSingleElementScale::clone(void) const
 {
     
-	return new Move_MatrixSingleElementSlide(*this);
+	return new Move_MatrixSingleElementScale(*this);
 }
 
 
-void Move_MatrixSingleElementSlide::constructInternalObject( void )
+void Move_MatrixSingleElementScale::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
-    double l = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
+    double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* tmp = static_cast<const MatrixReal &>( v->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( tmp );
@@ -63,15 +63,15 @@ void Move_MatrixSingleElementSlide::constructInternalObject( void )
 
 
 /** Get class name of object */
-const std::string& Move_MatrixSingleElementSlide::getClassType(void) {
+const std::string& Move_MatrixSingleElementScale::getClassType(void) {
     
-    static std::string revClassType = "Move_MatrixElementSlide";
+    static std::string revClassType = "Move_MatrixElementScale";
     
 	return revClassType; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_MatrixSingleElementSlide::getClassTypeSpec(void)
+const TypeSpec& Move_MatrixSingleElementScale::getClassTypeSpec(void)
 {
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -85,10 +85,10 @@ const TypeSpec& Move_MatrixSingleElementSlide::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_MatrixSingleElementSlide::getMoveName( void ) const
+std::string Move_MatrixSingleElementScale::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "MatrixElementSlide";
+    std::string c_name = "MatrixElementScale";
     
     return c_name;
 }
@@ -96,7 +96,7 @@ std::string Move_MatrixSingleElementSlide::getMoveName( void ) const
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_MatrixSingleElementSlide::getParameterRules(void) const
+const MemberRules& Move_MatrixSingleElementScale::getParameterRules(void) const
 {
     
     static MemberRules move_member_rules;
@@ -109,7 +109,7 @@ const MemberRules& Move_MatrixSingleElementSlide::getParameterRules(void) const
         matTypes.push_back( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() );
         matTypes.push_back( MatrixReal::getClassTypeSpec() );
         move_member_rules.push_back( new ArgumentRule( "x"     , matTypes, "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        move_member_rules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()   , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
+        move_member_rules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()   , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
         move_member_rules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec() , "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
@@ -123,7 +123,7 @@ const MemberRules& Move_MatrixSingleElementSlide::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_MatrixSingleElementSlide::getTypeSpec( void ) const
+const TypeSpec& Move_MatrixSingleElementScale::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -133,10 +133,10 @@ const TypeSpec& Move_MatrixSingleElementSlide::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_MatrixSingleElementSlide::printValue(std::ostream &o) const
+void Move_MatrixSingleElementScale::printValue(std::ostream &o) const
 {
     
-    o << "Move_MatrixElementSlide(";
+    o << "Move_MatrixElementScale(";
     if (v != NULL)
     {
         o << v->getName();
@@ -150,15 +150,15 @@ void Move_MatrixSingleElementSlide::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Move_MatrixSingleElementSlide::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_MatrixSingleElementScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" )
     {
         v = var;
     }
-    else if ( name == "delta" )
+    else if ( name == "lambda" )
     {
-        delta = var;
+        lambda = var;
     }
     else if ( name == "weight" ) {
         weight = var;

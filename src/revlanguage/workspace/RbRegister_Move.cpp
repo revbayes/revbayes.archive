@@ -90,6 +90,7 @@
 #include "Move_VectorSlide.h"
 
 /* Moves on real valued matrices */
+#include "Move_MatrixSingleElementScale.h"
 #include "Move_MatrixSingleElementSlide.h"
 #include "Move_ConjugateInverseWishartBrownian.h"
 #include "Move_CorrelationMatrixUpdate.h"
@@ -211,6 +212,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_SynchronizedVectorFixedSingleElementSlide() );
         
         /* Moves on matrices of real values */
+        addTypeWithConstructor( new Move_MatrixSingleElementScale() );
         addTypeWithConstructor( new Move_MatrixSingleElementSlide() );
         addTypeWithConstructor( new Move_CorrelationMatrixUpdate() );
 

@@ -124,6 +124,7 @@
 #include "Dist_ConstrainedNodeOrder.h"
 #include "Dist_WeightedConstrainedNodeOrder.h"
 #include "Dist_FBDP.h"
+#include "Dist_FBDPRange.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_constSSBDP.h"
 #include "Dist_divDepYuleProcess.h"
@@ -258,8 +259,10 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_sampledSpeciationBirthDeathProcess() );
         
         
-        // constant rate fossil-birth-death process
+        // fossilized-birth-death process
         AddDistribution< TimeTree                   >( new Dist_FBDP());
+        // fossilized-birth-death stratigraphic range process
+        AddDistribution< ModelVector<ModelVector<RealPos> > >( new Dist_FBDPRange());
         
         // constant rate serial-sampled-birth-death process
         AddDistribution< TimeTree                   >( new Dist_constSSBDP());

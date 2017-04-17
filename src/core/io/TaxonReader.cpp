@@ -45,13 +45,13 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
                     field_stream << ", ";
                 }
             }
-            throw RbException("Wrong header in the taxa definition file. Required field: \"taxon\". Other fields: "+field_stream.str());
+            throw RbException("Unrecognized field: "+tmp+" in the taxon definition file. Allowed fields: "+field_stream.str());
         }
     }
     
     if (column_map.find("taxon") == column_map.end())
     {
-        throw RbException("Missing header in the taxa definition file. It has to contain \"taxon\" field.");
+        throw RbException("Missing header in the taxon definition file. It has to contain \"taxon\" field.");
     }
     
     std::map<std::string,int>::iterator minit = column_map.find("minage");
@@ -59,21 +59,27 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
 
     if ( (minit == column_map.end() || maxit == column_map.end()) && minit != maxit)
     {
-        throw RbException("Taxon header file must contain both \"minage\" and \"maxage\" age fields");
+        throw RbException("Taxon definition file header must contain both \"minage\" and \"maxage\" age fields");
     }
     if ( (minit != column_map.end() || maxit != column_map.end()) && column_map.find("age") != column_map.end())
     {
-        throw RbException("Taxon header file cannot contain both \"age\" and \"minage\" or \"maxage\" fields");
+        throw RbException("Taxon definition file header cannot contain both \"age\" and (\"minage\" or \"maxage\") fields");
     }
 
     for (size_t i = 1; i < chars.size(); ++i) //going through all the lines
     {
         const std::vector<std::string>& line = chars[i];
+        if(line.size() != column_map.size())
+        {
+            std::stringstream err;
+            err << "Line " << i+1 << " in taxon definition file does not contain "<<column_map.size()<<" elements";
+            throw RbException(err.str());
+        }
         Taxon t = Taxon( line[ column_map["taxon"] ] );
         
         if ( column_map.find("minage") != column_map.end() )
         {
-            double min,max;
+            double min = 0,max = 0;
             TimeInterval interval;
             std::stringstream ss;
 
@@ -81,6 +87,7 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
             ss >> min;
             interval.setStart(min);
 
+            ss.clear();
             ss.str( line[ column_map["maxage"] ] );
             ss >> max;
             interval.setEnd(max);
@@ -120,10 +127,12 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         else
         {
             std::stringstream ss;
-            ss << "Duplicate taxon name '" << taxa[i].getName() << "' encountered when reading taxa";
+            ss << "Duplicate taxon name '" << taxa[i].getName() << "' encountered when reading taxon definition file";
             throw(RbException(ss.str()));
         }
     }
+
+    std::cerr << std::endl;
 }
 
 

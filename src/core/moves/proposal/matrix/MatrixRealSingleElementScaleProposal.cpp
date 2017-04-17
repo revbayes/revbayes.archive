@@ -1,4 +1,4 @@
-#include "MatrixRealSingleElementSlidingProposal.h"
+#include "MatrixRealSingleElementScaleProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-MatrixRealSingleElementSlidingProposal::MatrixRealSingleElementSlidingProposal( StochasticNode<MatrixReal> *n, double l) : Proposal(),
+MatrixRealSingleElementScaleProposal::MatrixRealSingleElementScaleProposal( StochasticNode<MatrixReal> *n, double l) : Proposal(),
     variable( n ),
     lambda( l ),
     storedValue( 0.0 )
@@ -30,7 +30,7 @@ MatrixRealSingleElementSlidingProposal::MatrixRealSingleElementSlidingProposal( 
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void MatrixRealSingleElementSlidingProposal::cleanProposal( void )
+void MatrixRealSingleElementScaleProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -41,10 +41,10 @@ void MatrixRealSingleElementSlidingProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-MatrixRealSingleElementSlidingProposal* MatrixRealSingleElementSlidingProposal::clone( void ) const
+MatrixRealSingleElementScaleProposal* MatrixRealSingleElementScaleProposal::clone( void ) const
 {
     
-    return new MatrixRealSingleElementSlidingProposal( *this );
+    return new MatrixRealSingleElementScaleProposal( *this );
 }
 
 
@@ -53,9 +53,9 @@ MatrixRealSingleElementSlidingProposal* MatrixRealSingleElementSlidingProposal::
  *
  * \return The Proposals' name.
  */
-const std::string& MatrixRealSingleElementSlidingProposal::getProposalName( void ) const
+const std::string& MatrixRealSingleElementScaleProposal::getProposalName( void ) const
 {
-    static std::string name = "MatrixRealSingleElementSlidingMove";
+    static std::string name = "MatrixRealSingleElementScaleMove";
     
     return name;
 }
@@ -71,7 +71,7 @@ const std::string& MatrixRealSingleElementSlidingProposal::getProposalName( void
  *
  * \return The hastings ratio.
  */
-double MatrixRealSingleElementSlidingProposal::doProposal( void )
+double MatrixRealSingleElementScaleProposal::doProposal( void )
 {
     
     // Get random number generator
@@ -87,26 +87,21 @@ double MatrixRealSingleElementSlidingProposal::doProposal( void )
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
-    double slidingFactor = lambda * ( u - 0.5 );
-    v[indexa][indexb] += slidingFactor;
-    
-    if ( indexa != indexb )
-    {
-        v[indexb][indexa] = v[indexa][indexb];
-    }
+    double scalingFactor = exp( lambda * ( u - 0.5 ) );
+    v[indexa][indexb] *= scalingFactor;
     
     variable->addTouchedElementIndex(indexa);
     variable->addTouchedElementIndex(indexb);
     
     // this is a symmetric proposal so the hasting ratio is 0.0
-    return 0.0;
+    return log(scalingFactor);
 }
 
 
 /**
  *
  */
-void MatrixRealSingleElementSlidingProposal::prepareProposal( void )
+void MatrixRealSingleElementScaleProposal::prepareProposal( void )
 {
     
 }
@@ -120,10 +115,10 @@ void MatrixRealSingleElementSlidingProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void MatrixRealSingleElementSlidingProposal::printParameterSummary(std::ostream &o) const
+void MatrixRealSingleElementScaleProposal::printParameterSummary(std::ostream &o) const
 {
     
-    o << "delta = " << lambda;
+    o << "lambda = " << lambda;
     
 }
 
@@ -135,12 +130,11 @@ void MatrixRealSingleElementSlidingProposal::printParameterSummary(std::ostream 
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void MatrixRealSingleElementSlidingProposal::undoProposal( void )
+void MatrixRealSingleElementScaleProposal::undoProposal( void )
 {
     
     MatrixReal& v = variable->getValue();
     v[indexa][indexb] = storedValue;
-    v[indexb][indexa] = storedValue;
     variable->clearTouchedElementIndices();
     
 }
@@ -152,7 +146,7 @@ void MatrixRealSingleElementSlidingProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void MatrixRealSingleElementSlidingProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void MatrixRealSingleElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
@@ -167,7 +161,7 @@ void MatrixRealSingleElementSlidingProposal::swapNodeInternal(DagNode *oldN, Dag
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void MatrixRealSingleElementSlidingProposal::tune( double rate )
+void MatrixRealSingleElementScaleProposal::tune( double rate )
 {
     
     if ( rate > 0.44 )

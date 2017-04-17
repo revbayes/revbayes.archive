@@ -32,7 +32,7 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
                                                                                                      const TypedDagNode<double> *inrho,
                                                                                                      const TypedDagNode< RbVector<double> > *intimes,
                                                                                                      const std::string &incondition,
-                                                                                                     const std::vector<Taxon> &intaxa ) : TypedDistribution<MatrixReal>(new MatrixReal(intaxa.size(), 2)),
+                                                                                                     const std::vector<Taxon> &intaxa ) : TypedDistribution<RbVector<RbVector<double> > >(new RbVector<RbVector<double> > (intaxa.size(), RbVector<double>(2))),
     homogeneous_rho(inrho), timeline( intimes ), condition(incondition), taxa(intaxa)
 {
     // initialize all the pointers to NULL
@@ -220,7 +220,10 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 
     // add the extant tip age term
     lnProbTimes += num_extant_sampled * log( homogeneous_rho->getValue() );
-    lnProbTimes += num_extant_unsampled * log( 1.0 - homogeneous_rho->getValue() );
+    if( homogeneous_rho->getValue() < 1.0)
+    {
+        lnProbTimes += num_extant_unsampled * log( 1.0 - homogeneous_rho->getValue() );
+    }
 
     
 
@@ -248,7 +251,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
  */
 size_t PiecewiseConstantFossilizedBirthDeathRangeProcess::l(double t) const
 {
-    return times.rend() - std::lower_bound( times.rbegin(), times.rend(), t) + 1;
+    return times.rend() - std::upper_bound( times.rbegin(), times.rend(), t) + 1;
 }
 
 
@@ -315,10 +318,15 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::prepareProbComputation( 
     death.clear();
     fossil.clear();
     counts.clear();
+    times.clear();
     
-    times = timeline->getValue();
+    if(timeline != NULL)
+        times = timeline->getValue();
 
     times.push_back(0.0);
+
+    // put times in descending order
+    std::sort(times.rbegin(), times.rend());
 
     for (size_t i = 0; i < times.size(); i++)
     {
@@ -491,7 +499,7 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::redrawValue(void)
     for(size_t i = 0; i < taxa.size(); i++)
     {
         double b = taxa[i].getAgeRange().getEnd() + rng->uniform01()*(max - taxa[i].getAgeRange().getEnd());
-        double d = rng->uniform01()*taxa[i].getAgeRange().getEnd();
+        double d = rng->uniform01()*taxa[i].getAgeRange().getStart();
 
         (*this->value)[i][0] = b;
         (*this->value)[i][1] = d;
@@ -516,6 +524,7 @@ int PiecewiseConstantFossilizedBirthDeathRangeProcess::gamma(double t) const
             g++;
         }
     }
+    if(g == 0) g = 1;
     
     return g;
 }
@@ -568,10 +577,5 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::swapParameterInternal(co
     else if (oldP == heterogeneous_fossil_counts)
     {
         heterogeneous_fossil_counts = static_cast<const TypedDagNode< RbVector<int> >* >( newP );
-    }
-    else
-    {
-        // delegate the super-class
-        TypedDistribution<MatrixReal>::swapParameterInternal(oldP, newP);
     }
 }

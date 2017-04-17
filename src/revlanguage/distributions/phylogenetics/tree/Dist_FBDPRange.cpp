@@ -20,7 +20,7 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Dist_FBDPRange::Dist_FBDPRange() : TypedDistribution<MatrixReal>()
+Dist_FBDPRange::Dist_FBDPRange() : TypedDistribution<ModelVector<ModelVector<RealPos> > >()
 {
     
 }
@@ -132,7 +132,11 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
 
     // rate change times
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt       = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt = NULL;
+    if(piecewise)
+    {
+        rt = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
+    }
 
     RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* d = new RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess(l, m, p, c, r, rt, cond, t);
 
@@ -162,7 +166,7 @@ const std::string& Dist_FBDPRange::getClassType( void )
 const TypeSpec& Dist_FBDPRange::getClassTypeSpec( void )
 {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<MatrixReal>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<ModelVector<ModelVector<RealPos> > >::getClassTypeSpec() ) );
     
     return rev_type_spec;
 }
@@ -202,10 +206,11 @@ std::string Dist_FBDPRange::getDistributionFunctionName( void ) const
 /**
  * Get the member rules used to create the constructor of this object.
  *
- * The member rules of the constant-rate birth-death process are:
+ * The member rules of the fossilized birth-death process are:
  * (1) the speciation rate lambda which must be a positive real.
  * (2) the extinction rate mu that must be a positive real.
- * (3) all member rules specified by BirthDeathProcess.
+ * (3) the fossil sampling rate psi that must be a positive real.
+ * (4) the extant sampling rate rho that must be a positive real.
  *
  * \return The member rules.
  */
@@ -234,6 +239,7 @@ const MemberRules& Dist_FBDPRange::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "k",   intTypes, "The total number of fossil observations (in each time interval).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         std::vector<std::string> optionsCondition;
+        optionsCondition.push_back( "time" );
         optionsCondition.push_back( "survival" );
         dist_member_rules.push_back( new OptionRule( "condition", new RlString("time"), optionsCondition, "The condition of the process." ) );
         dist_member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa with stratigraphic ranges used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -305,7 +311,7 @@ void Dist_FBDPRange::setConstParameter(const std::string& name, const RevPtr<con
     }
     else
     {
-        TypedDistribution<MatrixReal>::setConstParameter(name, var);
+        TypedDistribution<ModelVector<ModelVector<RealPos> > >::setConstParameter(name, var);
     }
     
 }

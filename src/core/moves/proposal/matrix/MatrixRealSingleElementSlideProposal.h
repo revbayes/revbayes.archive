@@ -1,5 +1,5 @@
-#ifndef MatrixRealSingleElementSlidingProposal_H
-#define MatrixRealSingleElementSlidingProposal_H
+#ifndef MatrixRealSingleElementSlideProposal_H
+#define MatrixRealSingleElementSlideProposal_H
 
 #include <set>
 #include <string>
@@ -25,14 +25,14 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class MatrixRealSingleElementSlidingProposal : public Proposal {
+    class MatrixRealSingleElementSlideProposal : public Proposal {
         
     public:
-        MatrixRealSingleElementSlidingProposal( StochasticNode<MatrixReal> *n, double l);                                                                      //!<  constructor
+        MatrixRealSingleElementSlideProposal( StochasticNode<MatrixReal> *n, double l);                                                                      //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
-        MatrixRealSingleElementSlidingProposal* clone(void) const;                                                                  //!< Clone object
+        MatrixRealSingleElementSlideProposal* clone(void) const;                                                                  //!< Clone object
         double                                  doProposal(void);                                                                   //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                    printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
@@ -48,7 +48,7 @@ namespace RevBayesCore {
         
         StochasticNode<MatrixReal >*            variable;
         
-        double                                  lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
+        double                                  delta;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
         //!< The two indices of the last modified element.
         size_t                                  indexa;
         size_t                                  indexb;
