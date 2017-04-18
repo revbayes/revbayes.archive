@@ -62,7 +62,7 @@ namespace RevBayesCore {
     private:
         
         // helper functions
-        int                                             gamma(double t) const;                                 //!< Number of species alive at time t.
+        int                                             gamma(size_t index) const;                                 //!< Number of species alive at time t.
         size_t                                          l(double t) const;                                     //!< Find the index so that times[index-1] < t < times[index]
         double                                          pSurvival(double start, double end) const;             //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                          p(size_t i, double t) const;

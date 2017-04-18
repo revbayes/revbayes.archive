@@ -206,7 +206,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         if(d > 0.0) lnProbTimes += log( death[ di - 1] );
 
         lnProbTimes += log(birth[bi - 1]);
-        lnProbTimes += log(gamma(b));
+        lnProbTimes += log(gamma(i));
         lnProbTimes += log(q_tilde(oi, o)) + log(q(bi, b)) - log(q_tilde(di, d)) - log(q(oi, o));
     }
     
@@ -218,12 +218,12 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         lnProbTimes += counts[i]*log(fossil[i]);
     }
 
-    // add the extant tip age term
-    lnProbTimes += num_extant_sampled * log( homogeneous_rho->getValue() );
+    // add the sampled extant tip age term
+    if( homogeneous_rho->getValue() > 0.0)
+        lnProbTimes += num_extant_sampled * log( homogeneous_rho->getValue() );
+    // add the unsampled extant tip age term
     if( homogeneous_rho->getValue() < 1.0)
-    {
         lnProbTimes += num_extant_unsampled * log( 1.0 - homogeneous_rho->getValue() );
-    }
 
     
 
@@ -244,6 +244,109 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 
 
 /**
+ * Compute the diversity of the tree at time t.
+ *
+ * \param[in]    t      time at which we want to know the diversity.
+ *
+ * \return The diversity (number of species in the reconstructed tree).
+ */
+int PiecewiseConstantFossilizedBirthDeathRangeProcess::gamma(size_t index) const
+{
+    int g = 0;
+    for(size_t i = 0; i < taxa.size(); i++)
+    {
+        if(i == index) continue;
+
+        double b = (*this->value)[index][0];
+
+        if(b < (*this->value)[i][0] && b > (*this->value)[i][1] )
+        {
+            g++;
+        }
+    }
+    if(g == 0) g = 1;
+
+    return g;
+}
+
+
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::getExtinctionRate( size_t index ) const
+{
+
+    // remove the old parameter first
+    if ( homogeneous_mu != NULL )
+    {
+        return homogeneous_mu->getValue();
+    }
+    else
+    {
+        if(index > heterogeneous_mu->getValue().size())
+        {
+            throw(RbException("Extinction rate index out of bounds"));
+        }
+        return heterogeneous_mu->getValue()[index];
+    }
+}
+
+
+int PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t index ) const
+{
+
+    // remove the old parameter first
+    if ( homogeneous_fossil_counts != NULL )
+    {
+        return homogeneous_fossil_counts->getValue();
+    }
+    else
+    {
+        if(index > heterogeneous_fossil_counts->getValue().size())
+        {
+            throw(RbException("Fossil count index out of bounds"));
+        }
+        return heterogeneous_fossil_counts->getValue()[index];
+    }
+}
+
+
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilizationRate( size_t index ) const
+{
+
+    // remove the old parameter first
+    if ( homogeneous_psi != NULL )
+    {
+        return homogeneous_psi->getValue();
+    }
+    else
+    {
+        if(index > heterogeneous_psi->getValue().size())
+        {
+            throw(RbException("Fossil sampling rate index out of bounds"));
+        }
+        return heterogeneous_psi->getValue()[index];
+    }
+}
+
+
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::getSpeciationRate( size_t index ) const
+{
+
+    // remove the old parameter first
+    if ( homogeneous_lambda != NULL )
+    {
+        return homogeneous_lambda->getValue();
+    }
+    else
+    {
+        if(index > heterogeneous_lambda->getValue().size())
+        {
+            throw(RbException("Speciation rate index out of bounds"));
+        }
+        return heterogeneous_lambda->getValue()[index];
+    }
+}
+
+
+/**
  * return the index i so that t_{i-1} > t >= t_i
  * where t_i is the instantaneous sampling time (i = 0,...,l)
  * t_0 is origin
@@ -252,30 +355,6 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 size_t PiecewiseConstantFossilizedBirthDeathRangeProcess::l(double t) const
 {
     return times.rend() - std::upper_bound( times.rbegin(), times.rend(), t) + 1;
-}
-
-
-/**
- * Compute the probability of survival if the process starts with one species at time start and ends at time end.
- *
- * \param[in]    start      Start time of the process.
- * \param[in]    end        End/stopping time of the process.
- *
- * \return Probability of survival.
- */
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::pSurvival(double start, double end) const
-{
-    double t = start;
-    
-    std::vector<double> fossil_bak = fossil;
-
-    std::fill(fossil.begin(), fossil.end(), 0.0);
-
-    double p0 = p(l(t), t);
-    
-    fossil = fossil_bak;
-
-    return 1.0 - p0;
 }
 
 
@@ -304,6 +383,30 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::p( size_t i, double t 
     double tmp = b + d + f - A * ((1.0+B)-e*(1.0-B))/((1.0+B)+e*(1.0-B));
     
     return tmp / (2.0*b);
+}
+
+
+/**
+ * Compute the probability of survival if the process starts with one species at time start and ends at time end.
+ *
+ * \param[in]    start      Start time of the process.
+ * \param[in]    end        End/stopping time of the process.
+ *
+ * \return Probability of survival.
+ */
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::pSurvival(double start, double end) const
+{
+    double t = start;
+
+    std::vector<double> fossil_bak = fossil;
+
+    //std::fill(fossil.begin(), fossil.end(), 0.0);
+
+    double p0 = p(l(t), t);
+
+    //fossil = fossil_bak;
+
+    return 1.0 - p0;
 }
 
 
@@ -399,82 +502,6 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::q_tilde( size_t i, dou
 }
 
 
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::getExtinctionRate( size_t index ) const
-{
-
-    // remove the old parameter first
-    if ( homogeneous_mu != NULL )
-    {
-        return homogeneous_mu->getValue();
-    }
-    else
-    {
-        if(index > heterogeneous_mu->getValue().size())
-        {
-            throw(RbException("Extinction rate index out of bounds"));
-        }
-        return heterogeneous_mu->getValue()[index];
-    }
-}
-
-
-int PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t index ) const
-{
-
-    // remove the old parameter first
-    if ( homogeneous_fossil_counts != NULL )
-    {
-        return homogeneous_fossil_counts->getValue();
-    }
-    else
-    {
-        if(index > heterogeneous_fossil_counts->getValue().size())
-        {
-            throw(RbException("Fossil count index out of bounds"));
-        }
-        return heterogeneous_fossil_counts->getValue()[index];
-    }
-}
-
-
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilizationRate( size_t index ) const
-{
-
-    // remove the old parameter first
-    if ( homogeneous_psi != NULL )
-    {
-        return homogeneous_psi->getValue();
-    }
-    else
-    {
-        if(index > heterogeneous_psi->getValue().size())
-        {
-            throw(RbException("Fossil sampling rate index out of bounds"));
-        }
-        return heterogeneous_psi->getValue()[index];
-    }
-}
-
-
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::getSpeciationRate( size_t index ) const
-{
-
-    // remove the old parameter first
-    if ( homogeneous_lambda != NULL )
-    {
-        return homogeneous_lambda->getValue();
-    }
-    else
-    {
-        if(index > heterogeneous_lambda->getValue().size())
-        {
-            throw(RbException("Speciation rate index out of bounds"));
-        }
-        return heterogeneous_lambda->getValue()[index];
-    }
-}
-
-
 /**
  * Simulate new speciation times.
  */
@@ -504,29 +531,6 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::redrawValue(void)
         (*this->value)[i][0] = b;
         (*this->value)[i][1] = d;
     }
-}
-
-
-/**
- * Compute the diversity of the tree at time t.
- *
- * \param[in]    t      time at which we want to know the diversity.
- *
- * \return The diversity (number of species in the reconstructed tree).
- */
-int PiecewiseConstantFossilizedBirthDeathRangeProcess::gamma(double t) const
-{
-    int g = 0;
-    for(size_t i = 0; i < taxa.size(); i++)
-    {
-        if(t < (*this->value)[i][0] && t > (*this->value)[i][1] )
-        {
-            g++;
-        }
-    }
-    if(g == 0) g = 1;
-    
-    return g;
 }
 
 
