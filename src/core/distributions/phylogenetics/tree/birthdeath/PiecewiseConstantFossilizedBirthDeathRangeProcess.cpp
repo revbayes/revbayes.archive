@@ -39,9 +39,11 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
     homogeneous_lambda   = NULL;
     homogeneous_mu       = NULL;
     homogeneous_psi      = NULL;
+    homogeneous_fossil_counts   = NULL;
     heterogeneous_lambda = NULL;
     heterogeneous_mu     = NULL;
     heterogeneous_psi    = NULL;
+    heterogeneous_fossil_counts = NULL;
 
     const TypedDagNode<RbVector<double> > *tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
     const TypedDagNode<double> *tmp_c = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
@@ -93,46 +95,54 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
         addParameter( heterogeneous_mu );
     }
 
-    tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inpsi);
-    tmp_c = dynamic_cast<const TypedDagNode<double >*>(inpsi);
+    const TypedDagNode<RbVector<int> > *tmp_cv = dynamic_cast<const TypedDagNode<RbVector<int> >*>(incounts);
+    const TypedDagNode<int > *tmp_cc = dynamic_cast<const TypedDagNode<int >*>(incounts);
 
-    if(tmp_v == NULL && tmp_c == NULL)
+    if(tmp_cv == NULL && tmp_cc == NULL)
     {
-        throw(RbException("Fossil sampling rate must be of type RealPos or RealPos[]"));
+        throw(RbException("Fossil counts rate must be of type Int or Int[]"));
     }
-    else if(tmp_v == NULL)
+    else if(tmp_cv == NULL)
     {
-        homogeneous_psi = tmp_c;
-        addParameter( homogeneous_psi );
-
-        homogeneous_fossil_counts = static_cast<const TypedDagNode<int >*>(incounts);
+        homogeneous_fossil_counts = tmp_cc;
         addParameter( homogeneous_fossil_counts );
+
+
+        homogeneous_psi = dynamic_cast<const TypedDagNode<double >*>(inpsi);
+        if( homogeneous_psi == NULL )
+        {
+            throw(RbException("Heterogeneous fossil sampling rates provided, but homogeneous fossil counts"));
+        }
+        addParameter( homogeneous_psi );
     }
     else
     {
-        heterogeneous_psi = tmp_v;
-        if(heterogeneous_psi->getValue().size() != timeline->getValue().size() + 1)
+        heterogeneous_fossil_counts = tmp_cv;
+        if(heterogeneous_fossil_counts->getValue().size() != timeline->getValue().size() + 1)
         {
             std::stringstream ss;
-            ss << "Number of fossil sampling rates (" << heterogeneous_psi->getValue().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
+            ss << "Number of fossil counts (" << heterogeneous_fossil_counts->getValue().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
-
-        addParameter( heterogeneous_psi );
-
-        heterogeneous_fossil_counts = dynamic_cast<const TypedDagNode<RbVector<int> >*>(incounts);
-        if( heterogeneous_fossil_counts == NULL )
-        {
-            throw(RbException("Heterogeneous fossil sampling rates provided, but not heterogeneous fossil counts"));
-        }
-        else if(heterogeneous_fossil_counts->getValue().size() != heterogeneous_psi->getValue().size())
-        {
-            std::stringstream ss;
-            ss << "Number of fossil sampling rates (" << heterogeneous_psi->getValue().size() << ") does not match number of fossil counts (" << heterogeneous_fossil_counts->getValue().size() << ")";
-            throw(RbException(ss.str()));
-        }
-
         addParameter( heterogeneous_fossil_counts );
+
+
+        heterogeneous_psi = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inpsi);
+        if( heterogeneous_psi == NULL )
+        {
+            homogeneous_psi = static_cast<const TypedDagNode<double >*>(inpsi);
+            addParameter( homogeneous_psi );
+        }
+        else
+        {
+            if(heterogeneous_psi->getValue().size() != timeline->getValue().size() + 1)
+            {
+                std::stringstream ss;
+                ss << "Number of fossil sampling rates (" << heterogeneous_psi->getValue().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
+                throw(RbException(ss.str()));
+            }
+            addParameter( heterogeneous_psi );
+        }
     }
 
     addParameter( homogeneous_rho );
@@ -208,6 +218,15 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         lnProbTimes += log(birth[bi - 1]);
         lnProbTimes += log(gamma(i));
         lnProbTimes += log(q_tilde(oi, o)) + log(q(bi, b)) - log(q_tilde(di, d)) - log(q(oi, o));
+
+        for(size_t j = bi; j < oi; j++)
+        {
+            lnProbTimes += log(q(j+1, times[j-1]));
+        }
+        for(size_t j = oi; j < di; j++)
+        {
+            lnProbTimes += log(q_tilde(j+1, times[j-1]));
+        }
     }
     
     // the origin is not a speciation event

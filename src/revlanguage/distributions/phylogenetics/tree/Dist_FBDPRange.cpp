@@ -85,7 +85,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
 
     bool piecewise = piecewiseLambda || piecewiseMu || piecewisePsi;
 
-    if ( piecewise && (timeline == NULL || timeline->getRevObject() == RevNullObject::getInstance() ) )
+    if ( piecewise && timeline->getRevObject() == RevNullObject::getInstance() )
     {
         throw(RbException("No time intervals provided for piecewise constant fossilized birth death process"));
     }
@@ -133,7 +133,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
 
     // rate change times
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt = NULL;
-    if(piecewise)
+    if(piecewise || timeline->getRevObject() != RevNullObject::getInstance())
     {
         rt = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
     }
