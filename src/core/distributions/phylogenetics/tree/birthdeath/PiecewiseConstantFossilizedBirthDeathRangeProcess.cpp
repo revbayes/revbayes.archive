@@ -469,7 +469,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::q( size_t i, double t 
     double e = exp(-A*dt);
     double tmp = (1.0+B) + e*(1.0-B);
 
-    return 4.0 / (e*tmp*tmp);
+    return 4.0*e / (tmp*tmp);
 }
 
 
