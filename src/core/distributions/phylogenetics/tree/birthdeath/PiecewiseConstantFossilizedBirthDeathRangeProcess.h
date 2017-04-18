@@ -67,8 +67,7 @@ namespace RevBayesCore {
         double                                          pSurvival(double start, double end) const;             //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                          p(size_t i, double t) const;
         void                                            prepareProbComputation(void) const;
-        double                                          q(size_t i, double t) const;
-        double                                          q_tilde(size_t i, double t) const;
+        double                                          q(size_t i, double t, bool tilde = false) const;
         
         void                                            redrawValue(void);
 

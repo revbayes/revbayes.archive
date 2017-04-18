@@ -217,7 +217,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 
         lnProbTimes += log(birth[bi - 1]);
         lnProbTimes += log(gamma(i));
-        lnProbTimes += log(q_tilde(oi, o)) + log(q(bi, b)) - log(q_tilde(di, d)) - log(q(oi, o));
+        lnProbTimes += log(q(oi, o, true)) + log(q(bi, b)) - log(q(di, d, true)) - log(q(oi, o));
 
         for(size_t j = bi; j < oi; j++)
         {
@@ -225,7 +225,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         }
         for(size_t j = oi; j < di; j++)
         {
-            lnProbTimes += log(q_tilde(j+1, times[j-1]));
+            lnProbTimes += log(q(j+1, times[j-1], true));
         }
     }
     
@@ -466,7 +466,7 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::prepareProbComputation( 
 /**
  * q_i(t)
  */
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::q( size_t i, double t ) const
+double PiecewiseConstantFossilizedBirthDeathRangeProcess::q( size_t i, double t, bool tilde ) const
 {
     
     if ( t == 0.0 ) return 1.0;
@@ -488,36 +488,11 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::q( size_t i, double t 
     double e = exp(-A*dt);
     double tmp = (1.0+B) + e*(1.0-B);
 
-    return 4.0*e / (tmp*tmp);
-}
+    double q = 4.0*e / (tmp*tmp);
 
-
-/**
- * \tilde q_i(t)
- */
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::q_tilde( size_t i, double t ) const
-{
-    if ( t == 0.0 ) return 1.0;
-
-    // get the parameters
-    double b = birth[i-1];
-    double d = death[i-1];
-    double f = fossil[i-1];
-    double r = (i == times.size() ? homogeneous_rho->getValue() : 0.0);
-    double ti = times[i-1];
-
-    double diff = b - d - f;
-    double bp   = b*f;
-    double dt   = t - ti;
+    if(tilde) q = sqrt(q*exp(-(b+d+f)*dt));
     
-    double A = sqrt( diff*diff + 4.0*bp);
-    double B = ( (1.0 - 2.0*(1.0-r)*p(i+1,ti) )*b + d + f ) / A;
-    
-    double e = exp(-A*dt);
-    double tmp1 = ((1.0+B)*e+(1.0-B))/((1.0+B)+e*(1.0-B));
-    double tmp2 = 4*exp(-(b + d + f)*dt)*e/(4*e+(1-B*B)*(1-e)*(1-e));
-    
-    return sqrt(tmp1*tmp2);
+    return q;
 }
 
 
