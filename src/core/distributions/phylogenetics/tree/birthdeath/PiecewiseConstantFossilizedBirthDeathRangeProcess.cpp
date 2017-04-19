@@ -197,8 +197,7 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess* PiecewiseConstantFossilizedBi
 double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( void )
 {
     // prepare the probability computation
-
-    recursivelyUpdateIntervals();
+    updateIntervals();
 
     // variable declarations and initialization
     double lnProbTimes = 0.0;
@@ -246,7 +245,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         if(d > 0.0) lnProbTimes += log( mu );
 
         lnProbTimes += log(lambda);
-        //lnProbTimes += log(gamma(i));
+        lnProbTimes += log(gamma(i));
         lnProbTimes += log(q(oi, o, true)) + log(q(bi, b)) - log(q(di, d, true)) - log(q(oi, o));
 
         for(size_t j = bi; j < oi; j++)
@@ -426,13 +425,6 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::getSpeciationRate( siz
  */
 size_t PiecewiseConstantFossilizedBirthDeathRangeProcess::l(double t) const
 {
-    if(num_intervals == 1)
-    {
-        return 0;
-    }
-
-    std::vector<double> times = timeline->getValue();
-
     return times.rend() - std::upper_bound( times.rbegin(), times.rend(), t);
 }
 
@@ -444,7 +436,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::p( size_t i, double t 
 {
     if ( t == 0) return 1.0;
 
-    if ( i >= num_intervals ) throw(RbException("Interval index out of bounds"));
+    //if ( i >= num_intervals ) throw(RbException("Interval index out of bounds"));
 
     // get the parameters
     double b = birth[i];
@@ -499,7 +491,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::q( size_t i, double t,
     
     if ( t == 0.0 ) return 1.0;
     
-    if ( i >= num_intervals ) throw(RbException("Interval index out of bounds"));
+    //if ( i >= num_intervals ) throw(RbException("Interval index out of bounds"));
 
     // get the parameters
     double b = birth[i];
@@ -561,9 +553,9 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::redrawValue(void)
  *
  *
  */
-void PiecewiseConstantFossilizedBirthDeathRangeProcess::recursivelyUpdateIntervals( size_t i )
+void PiecewiseConstantFossilizedBirthDeathRangeProcess::updateIntervals( )
 {
-    if(i < num_intervals)
+    for(int i = num_intervals - 1; i >= 0; i--)
     {
         double b = getSpeciationRate(i);
         double d = getExtinctionRate(i);
@@ -575,8 +567,6 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::recursivelyUpdateInterva
         fossil[i] = f;
         times[i] = ti;
 
-        recursivelyUpdateIntervals(i+1);
-
         if(i > 0)
         {
 
@@ -584,10 +574,9 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::recursivelyUpdateInterva
             double t = getIntervalTime(i-1);
 
             double diff = b - d - f;
-            double bp   = b*f;
             double dt   = t - ti;
 
-            double A = sqrt( diff*diff + 4.0*bp);
+            double A = sqrt( diff*diff + 4.0*b*f);
             double B = ( (1.0 - 2.0*(1.0-r)*p_i[i+1] )*b + d + f ) / A;
 
             double e = exp(-A*dt);

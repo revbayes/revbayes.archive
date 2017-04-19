@@ -69,7 +69,7 @@ namespace RevBayesCore {
         double                                          p(size_t i, double t) const;
         double                                          q(size_t i, double t, bool tilde = false) const;
 
-        void                                            recursivelyUpdateIntervals(size_t index = 0);
+        void                                            updateIntervals();
         void                                            redrawValue(void);
 
         size_t                                          num_intervals;
