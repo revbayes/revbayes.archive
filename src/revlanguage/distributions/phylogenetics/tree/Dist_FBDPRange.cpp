@@ -62,6 +62,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
     bool piecewiseLambda = false;
     bool piecewiseMu = false;
     bool piecewisePsi = false;
+    bool piecewiseCounts = false;
 
     if( lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
@@ -83,7 +84,12 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
         }
     }
 
-    bool piecewise = piecewiseLambda || piecewiseMu || piecewisePsi;
+    if( fossil_counts->getRevObject().isType( ModelVector<Integer>::getClassTypeSpec() ) )
+    {
+        piecewiseCounts = true;
+    }
+
+    bool piecewise = piecewiseLambda || piecewiseMu || piecewisePsi || piecewiseCounts;
 
     if ( piecewise && timeline->getRevObject() == RevNullObject::getInstance() )
     {
@@ -125,7 +131,14 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
     else
     {
         p = static_cast<const RealPos &>( psi->getRevObject() ).getDagNode();
-        c = static_cast<const Integer &>( fossil_counts->getRevObject() ).getDagNode();
+        if( piecewiseCounts == true )
+        {
+            c = static_cast<const ModelVector<Integer> &>( fossil_counts->getRevObject() ).getDagNode();
+        }
+        else
+        {
+            c = static_cast<const Integer &>( fossil_counts->getRevObject() ).getDagNode();
+        }
     }
 
     // sampling probability
@@ -133,7 +146,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
 
     // rate change times
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt = NULL;
-    if(piecewise || timeline->getRevObject() != RevNullObject::getInstance())
+    if( piecewise == true )
     {
         rt = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
     }
@@ -231,7 +244,7 @@ const MemberRules& Dist_FBDPRange::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "psi",     paramTypes, "The fossil sampling rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         dist_member_rules.push_back( new ArgumentRule( "rho",     Probability::getClassTypeSpec(), "The extant taxon sampling fraction.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
-        dist_member_rules.push_back( new ArgumentRule( "timeline",   ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "timeline",   ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the piecewise constant process (from oldest to youngest).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         std::vector<TypeSpec> intTypes;
         intTypes.push_back( Integer::getClassTypeSpec() );
