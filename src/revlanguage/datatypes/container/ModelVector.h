@@ -267,7 +267,38 @@ template <typename rlType>
 RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
 {
     
-    if ( name == "contains" )
+    
+    if ( name == "append" )
+    {
+        found = true;
+        
+        // Check whether the DAG node is actually a constant node
+        if ( this->dagNode->isConstant() == false )
+        {
+            throw RbException( "Only constant variables can be appended." );
+        }
+        
+        RevBayesCore::RbVector<typename rlType::valueType> &v = this->dagNode->getValue();
+        
+        if ( args[0].getVariable()->getRevObject().isType( ModelVector<rlType>::getClassTypeSpec() ) )
+        {
+            const ModelVector<rlType> &v_x = static_cast<const ModelVector<rlType>&>( args[0].getVariable()->getRevObject() );
+            const RevBayesCore::RbVector<typename rlType::valueType> &x = v_x.getValue();
+            for (size_t i = 0; i < x.size(); ++i )
+            {
+                v.push_back( x[i] );
+            }
+        }
+        else
+        {
+            const rlType &rl_x = static_cast<const rlType&>( args[0].getVariable()->getRevObject() );
+            const typename rlType::valueType &x = rl_x.getValue();
+            v.push_back( x );
+        }
+        
+        return NULL;
+    }
+    else if ( name == "contains" )
     {
         found = true;
         
@@ -380,6 +411,14 @@ const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
 template <typename rlType>
 void ModelVector<rlType>::initMethods( void )
 {
+
+    ArgumentRules* append_arg_rules = new ArgumentRules();
+    
+    std::vector<TypeSpec> appendValueTypes;
+    appendValueTypes.push_back( rlType::getClassTypeSpec() );
+    appendValueTypes.push_back( ModelVector<rlType>::getClassTypeSpec() );
+    append_arg_rules->push_back( new ArgumentRule( "x", appendValueTypes, "The element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "append", RlUtils::Void, append_arg_rules ) );
 
     ArgumentRules* contains_arg_rules = new ArgumentRules();
     contains_arg_rules->push_back( new ArgumentRule( "x", rlType::getClassTypeSpec(), "The element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );

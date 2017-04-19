@@ -2874,7 +2874,7 @@ int TreeSummary::size( bool post ) const
 
     double total_samples = trace.size();
 
-    if(post) total_samples -= burnin;
+    if (post) total_samples -= burnin;
 
     return total_samples;
 }
