@@ -248,7 +248,7 @@ void TraceTree::initMethods( void )
     this->methods.addFunction( new MemberProcedure( "cladeProbability", Probability::getClassTypeSpec(), cladeProbArgRules) );
     
     ArgumentRules* getNumberSamplesArgRules = new ArgumentRules();
-    getNumberSamplesArgRules->push_back( new ArgumentRule("post", RlBoolean::getClassTypeSpec(), "Get the post-burnin number of samples?.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false)) );
+    getNumberSamplesArgRules->push_back( new ArgumentRule("post", RlBoolean::getClassTypeSpec(), "Get the post-burnin number of samples?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false)) );
     this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), getNumberSamplesArgRules) );
     this->methods.addFunction( new MemberProcedure( "getNumberSamples", Natural::getClassTypeSpec(), getNumberSamplesArgRules) );
 
