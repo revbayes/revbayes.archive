@@ -1,11 +1,3 @@
-//
-//  EmpiricalQuantileFunction.cpp
-//  revbayes
-//
-//  Created by Lyndon Coghill on 9/22/16.
-//  Copyright © 2016 Lyndon Coghill. All rights reserved.
-//
-
 #include "EmpiricalQuantileFunction.h"
 
 #include <cmath>
@@ -16,8 +8,8 @@ using namespace RevBayesCore;
  * Constructor. Here we simply set up the parameter dependencies.
  */
 EmpiricalQuantileFunction::EmpiricalQuantileFunction(const TypedDagNode< RbVector<double> > *v, const TypedDagNode<double>* k) : TypedFunction<double>( new double(0.0) ),
-vals( v ),
-kth_quantile( k )
+    vals( v ),
+    kth_quantile( k )
 {
     // add the parameters as parents
     this->addParameter( vals );
@@ -30,7 +22,8 @@ kth_quantile( k )
 /**
  * Empty destructor.
  */
-EmpiricalQuantileFunction::~EmpiricalQuantileFunction( void ) {
+EmpiricalQuantileFunction::~EmpiricalQuantileFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
@@ -54,7 +47,7 @@ void EmpiricalQuantileFunction::update( void )
     std::vector<double> v = vals->getValue();
     std::sort(v.begin(),v.end());
     
-    std::size_t index = round(v.size() * kth_quantile->getValue());
+    std::size_t index = round( (v.size()-1) * kth_quantile->getValue());
     
     *this->value = v[index];
     
