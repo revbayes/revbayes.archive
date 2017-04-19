@@ -169,6 +169,11 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
     q_i       = std::vector<double>(num_intervals+1, 1.0);
     q_tilde_i = std::vector<double>(num_intervals+1, 1.0);
 
+    birth     = std::vector<double>(num_intervals, 0.0);
+    death     = std::vector<double>(num_intervals, 0.0);
+    fossil    = std::vector<double>(num_intervals, 0.0);
+    times     = std::vector<double>(num_intervals, 0.0);
+
     redrawValue();
 }
 
@@ -193,7 +198,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 {
     // prepare the probability computation
 
-    recursivelyUpdateIntervals(1);
+    recursivelyUpdateIntervals();
 
     // variable declarations and initialization
     double lnProbTimes = 0.0;
@@ -229,8 +234,8 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         size_t di = l(d);
         size_t oi = l(o);
 
-        double lambda = getSpeciationRate(bi);
-        double mu = getExtinctionRate(di);
+        double lambda = birth[bi];
+        double mu = death[di];
 
         if(b > maxb)
         {
@@ -442,11 +447,11 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::p( size_t i, double t 
     if ( i >= num_intervals ) throw(RbException("Interval index out of bounds"));
 
     // get the parameters
-    double b = getSpeciationRate(i);
-    double d = getExtinctionRate(i);
-    double f = getFossilizationRate(i);
+    double b = birth[i];
+    double d = death[i];
+    double f = fossil[i];
     double r = (i == num_intervals - 1 ? homogeneous_rho->getValue() : 0.0);
-    double ti = getIntervalTime(i);
+    double ti = times[i];
     
     double diff = b - d - f;
     double bp   = b*f;
@@ -497,11 +502,11 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::q( size_t i, double t,
     if ( i >= num_intervals ) throw(RbException("Interval index out of bounds"));
 
     // get the parameters
-    double b = getSpeciationRate(i);
-    double d = getExtinctionRate(i);
-    double f = getFossilizationRate(i);
+    double b = birth[i];
+    double d = death[i];
+    double f = fossil[i];
     double r = (i == num_intervals - 1 ? homogeneous_rho->getValue() : 0.0);
-    double ti = getIntervalTime(i);
+    double ti = times[i];
     
     double diff = b - d - f;
     double bp   = b*f;
@@ -560,32 +565,39 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::recursivelyUpdateInterva
 {
     if(i < num_intervals)
     {
-        recursivelyUpdateIntervals(i+1);
-
         double b = getSpeciationRate(i);
         double d = getExtinctionRate(i);
         double f = getFossilizationRate(i);
-
-        double r = (i == num_intervals - 1 ? homogeneous_rho->getValue() : 0.0);
         double ti = getIntervalTime(i);
-        double t = getIntervalTime(i-1);
 
-        double diff = b - d - f;
-        double bp   = b*f;
-        double dt   = t - ti;
+        birth[i] = b;
+        death[i] = d;
+        fossil[i] = f;
+        times[i] = ti;
 
-        double A = sqrt( diff*diff + 4.0*bp);
-        double B = ( (1.0 - 2.0*(1.0-r)*p_i[i+1] )*b + d + f ) / A;
+        recursivelyUpdateIntervals(i+1);
 
-        double e = exp(-A*dt);
+        if(i > 0)
+        {
 
-        double tmp = (1.0 + B) + e*(1.0 - B);
+            double r = (i == num_intervals - 1 ? homogeneous_rho->getValue() : 0.0);
+            double t = getIntervalTime(i-1);
 
-        q_i[i]       = 4.0*e / (tmp*tmp);
-        q_tilde_i[i] = sqrt(q_i[i]*exp(-(b+d+f)*dt));
-        p_i[i]       = b + d + f - A * ((1.0+B)-e*(1.0-B))/tmp;
+            double diff = b - d - f;
+            double bp   = b*f;
+            double dt   = t - ti;
 
-        //dirty_intervals[i] = false;
+            double A = sqrt( diff*diff + 4.0*bp);
+            double B = ( (1.0 - 2.0*(1.0-r)*p_i[i+1] )*b + d + f ) / A;
+
+            double e = exp(-A*dt);
+
+            double tmp = (1.0 + B) + e*(1.0 - B);
+
+            q_i[i]       = 4.0*e / (tmp*tmp);
+            q_tilde_i[i] = sqrt(q_i[i]*exp(-(b+d+f)*dt));
+            p_i[i]       = (b + d + f - A * ((1.0+B)-e*(1.0-B))/tmp)/(2.0*b);
+        }
     }
 }
 

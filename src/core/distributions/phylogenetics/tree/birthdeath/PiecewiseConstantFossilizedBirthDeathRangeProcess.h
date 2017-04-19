@@ -69,7 +69,7 @@ namespace RevBayesCore {
         double                                          p(size_t i, double t) const;
         double                                          q(size_t i, double t, bool tilde = false) const;
 
-        void                                            recursivelyUpdateIntervals(size_t index);
+        void                                            recursivelyUpdateIntervals(size_t index = 0);
         void                                            redrawValue(void);
 
         size_t                                          num_intervals;
@@ -86,6 +86,11 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*          timeline;                                              //!< The times of the instantaneous sampling events.
         const TypedDagNode<int>*                        homogeneous_fossil_counts;                             //!< The number of fossil observations, per interval.
         const TypedDagNode<RbVector<int> >*             heterogeneous_fossil_counts;                           //!< The number of fossil observations, per interval.
+
+        std::vector<double>                             birth;
+        std::vector<double>                             death;
+        std::vector<double>                             fossil;
+        std::vector<double>                             times;
 
         std::vector<double>                             q_i;
         std::vector<double>                             q_tilde_i;
