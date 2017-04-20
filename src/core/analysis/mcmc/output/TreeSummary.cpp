@@ -2174,6 +2174,37 @@ double TreeSummary::cladeProbability(const RevBayesCore::Clade &c, bool verbose 
 }
 
 
+double TreeSummary::computeEntropy( double credible_interval_size, bool verbose )
+{
+    summarize( verbose );
+    
+    NewickConverter converter;
+    double total_prob = 0;
+    double total_samples = trace.size();
+    double entropy = 0.0;
+    double tree_count = 0.0;
+    for (std::vector<Sample<std::string> >::const_reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    {
+        double freq = it->getFrequency();
+        double p = freq/(total_samples-burnin);
+        total_prob += p;
+        
+        ++tree_count;
+        entropy += (p * log(p));
+        
+        if ( total_prob >= credible_interval_size )
+        {
+            break;
+        }
+        
+    }
+    
+    entropy += log( tree_count );
+    
+    return entropy;
+}
+
+
 std::vector<double> TreeSummary::computePairwiseRFDistance( double credible_interval_size, bool verbose )
 {
     summarize( verbose );
