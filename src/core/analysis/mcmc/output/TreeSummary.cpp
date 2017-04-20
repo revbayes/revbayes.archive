@@ -2174,13 +2174,83 @@ double TreeSummary::cladeProbability(const RevBayesCore::Clade &c, bool verbose 
 }
 
 
+std::vector<double> TreeSummary::computePairwiseRFDistance( double credible_interval_size, bool verbose )
+{
+    summarize( verbose );
+    
+    std::vector<Tree> unique_trees;
+    std::vector<size_t> sample_count;
+    NewickConverter converter;
+    double total_prob = 0;
+    double total_samples = trace.size();
+    for (std::vector<Sample<std::string> >::const_reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    {
+        double freq = it->getFrequency();
+        double p = freq/(total_samples-burnin);
+        total_prob += p;
+        
+        Tree* current_tree = converter.convertFromNewick( it->getValue() );
+        unique_trees.push_back( *current_tree );
+        sample_count.push_back( freq );
+        delete current_tree;
+        if ( total_prob >= credible_interval_size )
+        {
+            break;
+        }
+        
+    }
+    
+    std::vector<double> rf_distances;
+    for (size_t i=0; i<unique_trees.size(); ++i)
+    {
+        // first we need to compare the tree to 'itself'
+        for (size_t k=0; k<(sample_count[i]*(sample_count[i]-1)); ++k )
+        {
+            rf_distances.push_back( 0.0 );
+        }
+        
+        for (size_t j=i+1; j<unique_trees.size(); ++j)
+        {
+            const Tree &a = unique_trees[i];
+            const Tree &b = unique_trees[j];
+            double rf = TreeUtilities::computeRobinsonFouldDistance(a, b);
+            
+            for (size_t k=0; k<(sample_count[i]*sample_count[j]); ++k )
+            {
+                rf_distances.push_back( rf );
+            }
+        }
+    }
+    
+    return rf_distances;
+}
+
+
+std::vector<double> TreeSummary::computeTreeLengths( void )
+{
+    
+    std::vector<double> tree_lengths;
+    NewickConverter converter;
+
+    for (size_t i = burnin; i < trace.size(); ++i)
+    {
+        
+        const Tree &tree = trace.objectAt(i);
+        tree_lengths.push_back( tree.getTreeLength() );
+        
+    }
+    
+    return tree_lengths;
+}
+
+
 void TreeSummary::enforceNonnegativeBranchLengths(TopologyNode& node) const
 {
     std::vector<TopologyNode*> children = node.getChildren();
 
-    for(size_t i = 0; i < children.size(); i++)
+    for (size_t i = 0; i < children.size(); i++)
     {
-        if(children[i]->getAge() > node.getAge())
+        if (children[i]->getAge() > node.getAge())
         {
             children[i]->setAge( node.getAge() );
         }

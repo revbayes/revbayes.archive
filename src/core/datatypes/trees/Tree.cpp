@@ -19,7 +19,7 @@ Tree::Tree(void) :
     root( NULL ),
     binary( true ),
     rooted( false ),
-    numTips( 0 ),
+    num_tips( 0 ),
     num_nodes( 0 )
 {
     
@@ -32,7 +32,7 @@ Tree::Tree(const Tree& t) :
     root( NULL ),
     binary( t.binary ),
     rooted( t.rooted ),
-    numTips( t.numTips ),
+    num_tips( t.num_tips ),
     num_nodes( t.num_nodes ),
     taxon_bitset_map( t.taxon_bitset_map )
 {
@@ -80,8 +80,8 @@ Tree& Tree::operator=(const Tree &t)
         root = NULL;
         
         binary      = t.binary;
-        numTips     = t.numTips;
-        num_nodes    = t.num_nodes;
+        num_tips    = t.num_tips;
+        num_nodes   = t.num_nodes;
         rooted      = t.rooted;
         
         TopologyNode* newRoot = t.root->clone();
@@ -226,7 +226,7 @@ void Tree::dropTipNodeWithName( const std::string &n )
     num_nodes = nodes.size();
     
     // count the number of tips
-    numTips = 0;
+    num_tips = 0;
     for (size_t i = 0; i < num_nodes; ++i)
     {
         if ( nodes[i] == NULL )
@@ -235,7 +235,7 @@ void Tree::dropTipNodeWithName( const std::string &n )
             std::cerr << i << " - " << nodes[i] << std::endl;
             throw RbException("Problem while reading in tree.");
         }
-        numTips += ( nodes[i]->isTip() ? 1 : 0);
+        num_tips += ( nodes[i]->isTip() ? 1 : 0);
     }
     
 }
@@ -282,7 +282,8 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     else if ( n == "numSampledAncestors")
     {
         rv = 0;
-        for(size_t i=0; i< numTips; i++){
+        for (size_t i=0; i< num_tips; i++)
+        {
             rv += nodes[i]->isSampledAncestor();
         }
     }
@@ -442,6 +443,27 @@ const std::vector<TopologyNode*>& Tree::getNodes(void) const
 
 
 
+std::vector<RbBitSet> Tree::getNodesAsBitset(void) const
+{
+    
+    std::vector<RbBitSet> bs;
+    
+    for ( size_t i=0; i<nodes.size(); ++i )
+    {
+        TopologyNode *n = nodes[i];
+        if ( n->isTip() == false )
+        {
+            RbBitSet taxa_this_node = RbBitSet(num_tips);
+            n->getTaxa(taxa_this_node);
+            bs.push_back( taxa_this_node );
+        }
+    }
+    
+    return bs;
+}
+
+
+
 
 /** 
  * Calculate the number of interior nodes in the BranchLengthTree by deducing the number of
@@ -477,7 +499,7 @@ size_t Tree::getNumberOfNodes(void) const
 size_t Tree::getNumberOfTips( void ) const
 {
     
-    return numTips;
+    return num_tips;
 }
 
 
@@ -1023,7 +1045,7 @@ void Tree::setRoot( TopologyNode* r, bool reindex )
     num_nodes = nodes.size();
     
     // count the number of tips
-    numTips = 0;
+    num_tips = 0;
     for (size_t i = 0; i < num_nodes; ++i)
     {
         if ( nodes[i] == NULL )
@@ -1036,7 +1058,7 @@ void Tree::setRoot( TopologyNode* r, bool reindex )
         {
             found = true;
         }
-        numTips += ( nodes[i]->isTip() ? 1 : 0);
+        num_tips += ( nodes[i]->isTip() ? 1 : 0);
     }
     
     

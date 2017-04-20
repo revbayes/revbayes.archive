@@ -96,6 +96,37 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         return new RevVariable( new Probability( p ) );
 
     }
+    else if ( name == "computePairwiseRFDistances" )
+    {
+        found = true;
+        
+        double tree_CI       = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
+        bool verbose = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
+        
+        std::vector<double> distances = this->value->computePairwiseRFDistance(tree_CI, verbose);
+        
+        ModelVector<RealPos> *rl_dist = new ModelVector<RealPos>;
+        for (size_t i=0; i<distances.size(); ++i)
+        {
+            rl_dist->push_back( distances[i] );
+        }
+        
+        return new RevVariable( rl_dist );
+    }
+    else if ( name == "computeTreeLengths" )
+    {
+        found = true;
+        
+        std::vector<double> tree_lengths = this->value->computeTreeLengths();
+        
+        ModelVector<RealPos> *rl_tree_lengths = new ModelVector<RealPos>;
+        for (size_t i=0; i<tree_lengths.size(); ++i)
+        {
+            rl_tree_lengths->push_back( tree_lengths[i] );
+        }
+        
+        return new RevVariable( rl_tree_lengths );
+    }
     else if ( name == "size" || name == "getNumberSamples" )
     {
         found = true;
@@ -266,8 +297,15 @@ void TraceTree::initMethods( void )
     getTopologyFrequencyArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), "Printing verbose output.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true)) );
     this->methods.addFunction( new MemberProcedure( "getTopologyFrequency", Natural::getClassTypeSpec(), getTopologyFrequencyArgRules) );
     
-    
-    
+
+    ArgumentRules* computePairwiseRFDistanceArgRules = new ArgumentRules();
+    computePairwiseRFDistanceArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
+    computePairwiseRFDistanceArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), "Printing verbose output.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true)) );
+    this->methods.addFunction( new MemberProcedure( "computePairwiseRFDistances", ModelVector<RealPos>::getClassTypeSpec(), computePairwiseRFDistanceArgRules) );
+
+    ArgumentRules* computeTreeLengthsArgRules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "computeTreeLengths", ModelVector<RealPos>::getClassTypeSpec(), computeTreeLengthsArgRules) );
+
 }
 
 
