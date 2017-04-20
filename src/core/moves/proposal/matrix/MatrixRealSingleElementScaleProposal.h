@@ -29,7 +29,8 @@ namespace RevBayesCore {
         
     public:
         MatrixRealSingleElementScaleProposal( StochasticNode<MatrixReal> *n, double l);                                                                      //!<  constructor
-        
+        MatrixRealSingleElementScaleProposal( StochasticNode<RbVector<RbVector<double> > > *n, double l);                                                                      //!<  constructor
+
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
         MatrixRealSingleElementScaleProposal* clone(void) const;                                                                  //!< Clone object
@@ -46,7 +47,8 @@ namespace RevBayesCore {
     private:
         // parameters
         
-        StochasticNode<MatrixReal >*            variable;
+        StochasticNode<RbVector<RbVector<double> > >* array;
+        StochasticNode<MatrixReal>*                   matrix;
         
         double                                  lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
         //!< The two indices of the last modified element.

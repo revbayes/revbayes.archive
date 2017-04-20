@@ -52,11 +52,29 @@ void Move_MatrixSingleElementScale::constructInternalObject( void )
     // now allocate a new sliding move
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* tmp = static_cast<const MatrixReal &>( v->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
+
+    RevBayesCore::Proposal *p = NULL;
+
+    if(v->getRevObject().isType( MatrixReal::getClassTypeSpec() ))
+    {
+        RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* tmp = static_cast<const MatrixReal &>( v->getRevObject() ).getDagNode();
+        RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( tmp );
+        p = new RevBayesCore::MatrixRealSingleElementScaleProposal(n,l);
+    }
+    else if(v->getRevObject().isType( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() ))
+    {
+        RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* tmp = static_cast<const ModelVector<ModelVector<RealPos> > &>( v->getRevObject() ).getDagNode();
+        RevBayesCore::StochasticNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > > *>( tmp );
+        p = new RevBayesCore::MatrixRealSingleElementScaleProposal(n,l);
+    }
+    else if(v->getRevObject().isType( ModelVector<ModelVector<Real> >::getClassTypeSpec() ))
+    {
+        RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* tmp = static_cast<const ModelVector<ModelVector<Real> > &>( v->getRevObject() ).getDagNode();
+        RevBayesCore::StochasticNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > > *>( tmp );
+        p = new RevBayesCore::MatrixRealSingleElementScaleProposal(n,l);
+    }
     
-    RevBayesCore::Proposal *p = new RevBayesCore::MatrixRealSingleElementScaleProposal(n,l);
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
 
 }
@@ -105,6 +123,7 @@ const MemberRules& Move_MatrixSingleElementScale::getParameterRules(void) const
     if ( !rules_set )
     {
         std::vector<TypeSpec> matTypes;
+        matTypes.push_back( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() );
         matTypes.push_back( ModelVector<ModelVector<Real> >::getClassTypeSpec() );
         matTypes.push_back( MatrixReal::getClassTypeSpec() );
         move_member_rules.push_back( new ArgumentRule( "x"     , matTypes, "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );

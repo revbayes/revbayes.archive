@@ -29,6 +29,7 @@ namespace RevBayesCore {
         
     public:
         MatrixRealSingleElementSlideProposal( StochasticNode<MatrixReal> *n, double l);                                                                      //!<  constructor
+        MatrixRealSingleElementSlideProposal( StochasticNode<RbVector<RbVector<double> > > *n, double l);
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
@@ -46,7 +47,8 @@ namespace RevBayesCore {
     private:
         // parameters
         
-        StochasticNode<MatrixReal >*            variable;
+        StochasticNode<RbVector<RbVector<double> > >* array;
+        StochasticNode<MatrixReal>*                   matrix;
         
         double                                  delta;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
         //!< The two indices of the last modified element.

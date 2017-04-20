@@ -412,7 +412,7 @@ void ModelVector<rlType>::initMethods( void )
 template <typename rlType>
 double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
-    
+
     if ( once == true && type.getParentType() == getClassTypeSpec().getParentType() )
     {
         // We want to convert to another model vector

@@ -15,12 +15,34 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 MatrixRealSingleElementSlideProposal::MatrixRealSingleElementSlideProposal( StochasticNode<MatrixReal> *n, double l) : Proposal(),
-    variable( n ),
+    array(NULL),
+    matrix( n ),
     delta( l ),
+    indexa(0),
+    indexb(0),
     storedValue( 0.0 )
 {
     // tell the base class to add the node
-    addNode( variable );
+    addNode( matrix );
+
+}
+
+
+/**
+ * Constructor
+ *
+ * Here we simply allocate and initialize the Proposal object.
+ */
+MatrixRealSingleElementSlideProposal::MatrixRealSingleElementSlideProposal( StochasticNode<RbVector<RbVector<double> > > *n, double l) : Proposal(),
+    array( n ),
+    matrix(NULL),
+    delta( l ),
+    indexa(0),
+    indexb(0),
+    storedValue( 0.0 )
+{
+    // tell the base class to add the node
+    addNode( array );
     
 }
 
@@ -77,21 +99,40 @@ double MatrixRealSingleElementSlideProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    MatrixReal& v = variable->getValue();
-    // choose an index
-    indexa = size_t( rng->uniform01() * v.getNumberOfRows() );
-    indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
-    
-    // copy value
-    storedValue = v[indexa][indexb];
-    
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
     double scalingFactor = delta * ( u - 0.5 );
-    v[indexa][indexb] += scalingFactor;
     
-    variable->addTouchedElementIndex(indexa);
-    variable->addTouchedElementIndex(indexb);
+    if(array != NULL)
+    {
+        RbVector<RbVector<double> >& v = array->getValue();
+        // choose an index
+        indexa = size_t( rng->uniform01() * v.size() );
+        indexb = size_t( rng->uniform01() * v.front().size() );
+
+        // copy value
+        storedValue = v[indexa][indexb];
+
+        v[indexa][indexb] += scalingFactor;
+
+        array->addTouchedElementIndex(indexa);
+        array->addTouchedElementIndex(indexb);
+    }
+    else
+    {
+        MatrixReal& v = matrix->getValue();
+        // choose an index
+        indexa = size_t( rng->uniform01() * v.getNumberOfRows() );
+        indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
+
+        // copy value
+        storedValue = v[indexa][indexb];
+
+        v[indexa][indexb] += scalingFactor;
+
+        matrix->addTouchedElementIndex(indexa);
+        matrix->addTouchedElementIndex(indexb);
+    }
     
     // this is a symmetric proposal so the hasting ratio is 0.0
     return 0.0;
@@ -132,10 +173,18 @@ void MatrixRealSingleElementSlideProposal::printParameterSummary(std::ostream &o
  */
 void MatrixRealSingleElementSlideProposal::undoProposal( void )
 {
-    
-    MatrixReal& v = variable->getValue();
-    v[indexa][indexb] = storedValue;
-    variable->clearTouchedElementIndices();
+    if(array != NULL)
+    {
+        RbVector<RbVector<double> >& v = array->getValue();
+        v[indexa][indexb] = storedValue;
+        array->clearTouchedElementIndices();
+    }
+    else
+    {
+        MatrixReal& v = matrix->getValue();
+        v[indexa][indexb] = storedValue;
+        matrix->clearTouchedElementIndices();
+    }
     
 }
 
@@ -148,8 +197,14 @@ void MatrixRealSingleElementSlideProposal::undoProposal( void )
  */
 void MatrixRealSingleElementSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    
-    variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
+    if(oldN == array)
+    {
+        array = static_cast< StochasticNode<RbVector<RbVector<double> > >* >(newN) ;
+    }
+    else
+    {
+        matrix = static_cast< StochasticNode<MatrixReal>* >(newN) ;
+    }
     
 }
 
