@@ -179,6 +179,27 @@ Tree* Tree::clone(void) const
 }
 
 
+void Tree::collapseNegativeBranchLengths(double l)
+{
+    double age = 0.0;
+    double parent_age = 0.0;
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        if ( nodes[i]->isRoot() == false )
+        {
+            age = nodes[i]->getAge();
+            parent_age = nodes[i]->getParent().getAge();
+
+            if ( parent_age < age )
+            {
+                nodes[i]->setAge( parent_age - l, false );
+            }
+        }
+    }
+
+}
+
+
 /**
  * Drop the tip node with the given name.
  * The name should correspond to the taxon name, not the species name.
