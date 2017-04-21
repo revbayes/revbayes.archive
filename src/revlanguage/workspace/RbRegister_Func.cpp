@@ -238,6 +238,7 @@
 #include "Func_median.h"
 #include "Func_min.h"
 #include "Func_normalize.h"
+#include "Func_posteriorPredictiveProbability.h"
 #include "Func_power.h"
 #include "Func_powerVector.h"
 #include "Func_probability.h"
@@ -469,6 +470,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // get ln Probability function
         addFunction( new Func_lnProbability() );
+        
+        // empirical cummulative probability function
+        addFunction( new Func_posteriorPredictiveProbability()  );
 
 
  		/* Statistics functions (in folder "functions/statistics") */
