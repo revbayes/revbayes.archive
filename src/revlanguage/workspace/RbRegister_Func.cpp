@@ -234,6 +234,7 @@
 #include "Func_logistic.h"
 #include "Func_max.h"
 #include "Func_mean.h"
+#include "Func_meanPositive.h"
 #include "Func_median.h"
 #include "Func_min.h"
 #include "Func_normalize.h"
@@ -411,6 +412,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // mean function
         addFunction( new Func_mean()  );
+        addFunction( new Func_meanPositive()  );
         
         // median function
         addFunction( new Func_median()  );
