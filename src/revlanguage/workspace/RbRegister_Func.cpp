@@ -234,8 +234,11 @@
 #include "Func_logistic.h"
 #include "Func_max.h"
 #include "Func_mean.h"
+#include "Func_meanPositive.h"
+#include "Func_median.h"
 #include "Func_min.h"
 #include "Func_normalize.h"
+#include "Func_posteriorPredictiveProbability.h"
 #include "Func_power.h"
 #include "Func_powerVector.h"
 #include "Func_probability.h"
@@ -409,7 +412,11 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_max()  );
 
         // mean function
-		addFunction( new Func_mean()  );
+        addFunction( new Func_mean()  );
+        addFunction( new Func_meanPositive()  );
+        
+        // median function
+        addFunction( new Func_median()  );
 
         // min function
 		addFunction( new Func_min()  );
@@ -455,7 +462,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_trunc<Real,Integer>()  );
         addFunction( new Func_trunc<RealPos,Natural>()  );
 
-        // mean function
+        // variance function
         addFunction( new Func_variance()  );
 
         // vector flatten
@@ -463,6 +470,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // get ln Probability function
         addFunction( new Func_lnProbability() );
+        
+        // empirical cummulative probability function
+        addFunction( new Func_posteriorPredictiveProbability()  );
 
 
  		/* Statistics functions (in folder "functions/statistics") */

@@ -88,6 +88,27 @@ RevPtr<RevVariable> MatrixReal::executeMethod(std::string const &name, const std
         RevBayesCore::RbVector<double> m = this->dagNode->getValue().getColumn( i );
         return new RevVariable( new ModelVector<Real>( m ) );
     }
+    else if (name == "nrows")
+    {
+        found = true;
+        
+        size_t s = this->dagNode->getValue().getNumberOfRows();
+        return new RevVariable( new Natural( s ) );
+    }
+    else if (name == "ncolumns")
+    {
+        found = true;
+        
+        size_t s = this->dagNode->getValue().getNumberOfColumns();
+        return new RevVariable( new Natural( s ) );
+    }
+    else if (name == "size")
+    {
+        found = true;
+        
+        size_t s = this->dagNode->getValue().size();
+        return new RevVariable( new Natural( s ) );
+    }
     
     return ModelObject<RevBayesCore::MatrixReal>::executeMethod( name, args, found );
 }
@@ -163,6 +184,18 @@ void MatrixReal::initializeMethods( void )
     columnArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "column", ModelVector<Real>::getClassTypeSpec(), columnArgRules ) );
     
+    // add method for call "size" as a function
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
+
+    // add method for call "size" as a function
+    ArgumentRules* nRowsArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "nrows", Natural::getClassTypeSpec(), nRowsArgRules) );
+
+    // add method for call "size" as a function
+    ArgumentRules* nColumnsArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "ncolumns", Natural::getClassTypeSpec(), nColumnsArgRules) );
+
 }
 
 
