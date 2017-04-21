@@ -70,9 +70,9 @@ void PosteriorPredictiveProbabilityFunction::update( void )
         
     }
     
-    this->value[0] = lower  / double(size);
-    this->value[1] = equal  / double(size);
-    this->value[2] = larger / double(size);
+    (*this->value)[0] = lower  / double(size);
+    (*this->value)[1] = equal  / double(size);
+    (*this->value)[2] = larger / double(size);
     
 }
 
