@@ -43,6 +43,7 @@ namespace RevBayesCore {
         const AbstractHomologousDiscreteCharacterData&                  getCharacterData() const;
         virtual void                                                    redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
         void                                                            setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
+        void                                                            setFossilizationRates(const TypedDagNode< RbVector<double> > *r);
         void                                                            setSampleCharacterHistory(bool sample_history);                                                     //!< Set whether or not we are sampling the character history along branches.
         void                                                            setSpeciationRates(const TypedDagNode< RbVector<double> > *r);
         void                                                            setNumberOfTimeSlices(double n);                                                                    //!< Set the number of time slices for the numerical ODE.
@@ -68,6 +69,7 @@ namespace RevBayesCore {
         
         // helper functions
         void                                                            buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
+        std::vector<double>                                             pExtinction(double start, double end) const;                                                        //!< Compute the probability of extinction of the process (without incomplete taxon sampling).
         virtual double                                                  pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         void                                                            simulateTree(void);
         void                                                            computeNodeProbability(const TopologyNode &n, size_t nIdx) const;
@@ -96,6 +98,7 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                                     root_age;                                                                                           //!< Time since the origin.
         const TypedDagNode<RbVector<double> >*                          mu;
         const TypedDagNode<RbVector<double> >*                          lambda;
+        const TypedDagNode<RbVector<double> >*                          psi;
         const TypedDagNode<RbVector< double > >*                        pi;                                                                                                 //!< The root frequencies (probabilities of the root states).
         const TypedDagNode<RateGenerator>*                              Q;
         const TypedDagNode<double>*                                     rate;                                                                                               //!< Sampling probability of each species.
