@@ -234,6 +234,7 @@
 #include "Func_logistic.h"
 #include "Func_max.h"
 #include "Func_mean.h"
+#include "Func_median.h"
 #include "Func_min.h"
 #include "Func_normalize.h"
 #include "Func_power.h"
@@ -409,7 +410,10 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_max()  );
 
         // mean function
-		addFunction( new Func_mean()  );
+        addFunction( new Func_mean()  );
+        
+        // median function
+        addFunction( new Func_median()  );
 
         // min function
 		addFunction( new Func_min()  );
@@ -455,7 +459,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_trunc<Real,Integer>()  );
         addFunction( new Func_trunc<RealPos,Natural>()  );
 
-        // mean function
+        // variance function
         addFunction( new Func_variance()  );
 
         // vector flatten
