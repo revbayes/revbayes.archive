@@ -87,6 +87,14 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         std::vector<RevBayesCore::Taxon> t = this->dagNode->getValue().getFossilTaxa();
         return new RevVariable( new ModelVector<Taxon>( t ) );
     }
+    else if (name == "collapseNegativeBranches")
+    {
+        found = true;
+        
+        double length = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
+        this->dagNode->getValue().collapseNegativeBranchLengths(length);
+        return NULL;
+    }
     
     return Tree::executeMethod( name, args, found );
 }
@@ -130,6 +138,10 @@ void TimeTree::initMethods( void )
 
     ArgumentRules* getFossilsArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "getFossils", ModelVector<Taxon>::getClassTypeSpec(), getFossilsArgRules ) );
+
+    ArgumentRules* collapseNegativeBranchesRules = new ArgumentRules();
+    collapseNegativeBranchesRules->push_back( new ArgumentRule( "length", RealPos::getClassTypeSpec(), "The new length of all negative branches.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ));
+    methods.addFunction( new MemberProcedure( "collapseNegativeBranches", RlUtils::Void, collapseNegativeBranchesRules ) );
 
     ArgumentRules* nSampledAncestorsArgRules = new ArgumentRules();
     methods.addFunction( new MemberFunction<TimeTree, Natural>( "numSampledAncestors", this, nSampledAncestorsArgRules ) );
