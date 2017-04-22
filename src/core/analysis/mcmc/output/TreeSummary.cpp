@@ -2219,10 +2219,11 @@ std::vector<double> TreeSummary::computePairwiseRFDistance( double credible_inte
         double freq = it->getFrequency();
         double p = freq/(total_samples-burnin);
         total_prob += p;
-        
+
+        sample_count.push_back( freq );
+
         Tree* current_tree = converter.convertFromNewick( it->getValue() );
         unique_trees.push_back( *current_tree );
-        sample_count.push_back( freq );
         delete current_tree;
         if ( total_prob >= credible_interval_size )
         {

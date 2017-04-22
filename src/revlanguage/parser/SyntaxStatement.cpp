@@ -194,7 +194,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
         forLoop->initializeLoop( env );
 
         // Now loop over statements inside the for loop
-        while ( !forLoop->isFinished() )
+        while ( forLoop->isFinished() == false )
         {
             // Get next loop state. This will update the value of the loop variable
             forLoop->getNextLoopState();
@@ -226,7 +226,10 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
 
                 // Catch signal
                 if ( !Signals::getSignals().isGood() )
+                {
                     break;
+                }
+                
             }
             
             // Catch signals

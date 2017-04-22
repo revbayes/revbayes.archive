@@ -44,8 +44,9 @@ EmpiricalQuantileFunction* EmpiricalQuantileFunction::clone( void ) const
 void EmpiricalQuantileFunction::update( void )
 {
     
-    std::vector<double> v = vals->getValue();
-    std::sort(v.begin(),v.end());
+    RbVector<double> v = vals->getValue();
+    v.sort();
+//    std::sort(v.begin(),v.end());
     
     std::size_t index = round( (v.size()-1) * kth_quantile->getValue());
     

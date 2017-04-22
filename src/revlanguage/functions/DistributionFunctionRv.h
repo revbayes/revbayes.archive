@@ -153,6 +153,8 @@ RevLanguage::RevPtr<RevVariable> RevLanguage::DistributionFunctionRv<valueType>:
         delete value;
     }
     
+    delete copyObject;
+    
     return new RevVariable( values );
 }
 
