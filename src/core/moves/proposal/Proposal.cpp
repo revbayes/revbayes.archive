@@ -144,17 +144,17 @@ void Proposal::removeNode( RevBayesCore::DagNode *n )
         }
     }
     
-    if ( n->decrementReferenceCount() == 0 )
-    {
-        delete n;
-    }
-    
     // delegate to the move
     if ( move != NULL )
     {
         move->removeNode( n );
     }
-    
+
+    if ( n->decrementReferenceCount() == 0 )
+    {
+        delete n;
+    }
+
 }
 
 
