@@ -50,7 +50,8 @@ namespace RevLanguage {
 #include "TypedDistribution.h"
 
 template <typename rlType>
-RevLanguage::TypedDistribution<rlType>::TypedDistribution() : Distribution()
+RevLanguage::TypedDistribution<rlType>::TypedDistribution() : Distribution(),
+    variable( NULL )
 {
     
 }
@@ -58,7 +59,8 @@ RevLanguage::TypedDistribution<rlType>::TypedDistribution() : Distribution()
 
 
 template <typename rlType>
-RevLanguage::TypedDistribution<rlType>::TypedDistribution( const TypedDistribution<rlType> &d ) : Distribution(d)
+RevLanguage::TypedDistribution<rlType>::TypedDistribution( const TypedDistribution<rlType> &d ) : Distribution(d),
+    variable( NULL )
 {
     
 }
@@ -68,7 +70,7 @@ RevLanguage::TypedDistribution<rlType>::TypedDistribution( const TypedDistributi
 template <typename rlType>
 RevLanguage::TypedDistribution<rlType>::~TypedDistribution()
 {
-    
+    delete variable;
 }
 
 

@@ -778,6 +778,9 @@ void FunctionTable::testFunctionValidity( const std::string& name, Function* fun
             fxn.printValue(msg);
             msg << " : return types differ" << std::endl;
             
+            // free function memory
+            delete fxn;
+            
             // throw the error message
             throw RbException(msg.str());
         }
