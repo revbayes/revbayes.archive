@@ -84,12 +84,12 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::DiscreteTaxonData<rlT
         // get the member with give index
         const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
             
-        if (this->dagNode->getValue().getNumberOfCharacters() < (size_t)(index.getValue()) )
+        if (this->dag_node->getValue().getNumberOfCharacters() < (size_t)(index.getValue()) )
         {
             throw RbException("Index out of bounds in []");
         }
             
-        RevObject* element = new rlType( this->dagNode->getValue().getCharacter( size_t(index.getValue()) - 1) );
+        RevObject* element = new rlType( this->dag_node->getValue().getCharacter( size_t(index.getValue()) - 1) );
         return new RevVariable( element );
     } 
     

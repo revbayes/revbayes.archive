@@ -76,11 +76,11 @@ Taxon* Taxon::clone(void) const
 void Taxon::constructInternalObject( void ) 
 {
     // we free the memory first
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
     }
     
@@ -89,12 +89,12 @@ void Taxon::constructInternalObject( void )
     std::string taxonSpecies = static_cast<const RlString &>( (species)->getRevObject() ).getValue() ;
     double taxonAge = static_cast<const Real &>( age->getRevObject() ).getValue();
     
-    dagNode = new RevBayesCore::ConstantNode<RevBayesCore::Taxon>("", new RevBayesCore::Taxon( taxonName ) );
+    dag_node = new RevBayesCore::ConstantNode<RevBayesCore::Taxon>("", new RevBayesCore::Taxon( taxonName ) );
     
-    dagNode->getValue().setSpeciesName( taxonSpecies );
-    dagNode->getValue().setAge( taxonAge );
+    dag_node->getValue().setSpeciesName( taxonSpecies );
+    dag_node->getValue().setAge( taxonAge );
     
-    dagNode->incrementReferenceCount();
+    dag_node->incrementReferenceCount();
     
 }
 
@@ -107,14 +107,14 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Taxon::executeMethod(std::string c
     {
         found = true;
         
-        std::string n = this->dagNode->getValue().getSpeciesName();
+        std::string n = this->dag_node->getValue().getSpeciesName();
         return RevPtr<RevVariable>( new RevVariable( new RlString( n ) ) );
     }
     if (name == "getAge")
     {
         found = true;
         
-        double a = this->dagNode->getValue().getAge();
+        double a = this->dag_node->getValue().getAge();
         return RevPtr<RevVariable>( new RevVariable( new Real( a ) ) );
     }
     

@@ -77,14 +77,14 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         
         int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         
-        bool tf = this->dagNode->getValue().getNode((size_t)index).isRoot();
+        bool tf = this->dag_node->getValue().getNode((size_t)index).isRoot();
         return new RevVariable( new RlBoolean( tf ) );
     }
     else if (name == "getFossils")
     {
         found = true;
         
-        std::vector<RevBayesCore::Taxon> t = this->dagNode->getValue().getFossilTaxa();
+        std::vector<RevBayesCore::Taxon> t = this->dag_node->getValue().getFossilTaxa();
         return new RevVariable( new ModelVector<Taxon>( t ) );
     }
     else if (name == "collapseNegativeBranches")
@@ -92,7 +92,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         found = true;
         
         double length = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
-        this->dagNode->getValue().collapseNegativeBranchLengths(length);
+        this->dag_node->getValue().collapseNegativeBranchLengths(length);
         return NULL;
     }
     

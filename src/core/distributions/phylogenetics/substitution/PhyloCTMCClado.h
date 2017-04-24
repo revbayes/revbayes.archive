@@ -1300,7 +1300,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisTimes(const TypedDag
     this->addParameter( cladogenesisTimes );
     
     // redraw the current value
-    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    if ( this->dagNode == NULL || !this->dag_node->isClamped() )
     {
         this->redrawValue();
     }

@@ -63,14 +63,14 @@ RevPtr<RevVariable> RateMap::executeMethod(std::string const &name, const std::v
     {
         found = true;
         
-        int n = (int)this->dagNode->getValue().getNumberOfCharacters();
+        int n = (int)this->dag_node->getValue().getNumberOfCharacters();
         return new RevVariable( new Natural(n) );
     }
     else if (name == "nStates")
     {
         found = true;
         
-        int n = (int)this->dagNode->getValue().getNumberOfStates();
+        int n = (int)this->dag_node->getValue().getNumberOfStates();
         return new RevVariable( new Natural(n) );
     }
 

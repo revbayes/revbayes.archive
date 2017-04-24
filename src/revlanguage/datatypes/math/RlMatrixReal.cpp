@@ -68,14 +68,14 @@ RevPtr<RevVariable> MatrixReal::executeMethod(std::string const &name, const std
         
         found = true;
         
-        double m = this->dagNode->getValue().getMin();
+        double m = this->dag_node->getValue().getMin();
         return new RevVariable( new Real( m ) );
     }
     else if (name == "max")
     {
         found = true;
         
-        double m = this->dagNode->getValue().getMax();
+        double m = this->dag_node->getValue().getMax();
         return new RevVariable( new Real( m ) );
     }
     else if (name == "column")
@@ -85,28 +85,28 @@ RevPtr<RevVariable> MatrixReal::executeMethod(std::string const &name, const std
         const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
         int i = index.getValue() - 1;
         
-        RevBayesCore::RbVector<double> m = this->dagNode->getValue().getColumn( i );
+        RevBayesCore::RbVector<double> m = this->dag_node->getValue().getColumn( i );
         return new RevVariable( new ModelVector<Real>( m ) );
     }
     else if (name == "nrows")
     {
         found = true;
         
-        size_t s = this->dagNode->getValue().getNumberOfRows();
+        size_t s = this->dag_node->getValue().getNumberOfRows();
         return new RevVariable( new Natural( s ) );
     }
     else if (name == "ncolumns")
     {
         found = true;
         
-        size_t s = this->dagNode->getValue().getNumberOfColumns();
+        size_t s = this->dag_node->getValue().getNumberOfColumns();
         return new RevVariable( new Natural( s ) );
     }
     else if (name == "size")
     {
         found = true;
         
-        size_t s = this->dagNode->getValue().size();
+        size_t s = this->dag_node->getValue().size();
         return new RevVariable( new Natural( s ) );
     }
     

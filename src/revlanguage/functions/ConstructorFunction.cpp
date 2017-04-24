@@ -30,7 +30,8 @@ ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : Proce
 
 ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c) {
     
-    if (this != &c) {
+    if (this != &c)
+    {
         Function::operator=(c);
         
         // delete the old object
