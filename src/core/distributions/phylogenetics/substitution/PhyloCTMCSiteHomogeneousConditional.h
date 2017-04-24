@@ -227,7 +227,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
                         mask += "-";
                     numGap++;
                 }
-                else if (this->using_ambiguous_characters)
+                else// if (this->using_ambiguous_characters)
                 {
                     if(coding != AscertainmentBias::ALL)
                         mask += " ";
@@ -235,19 +235,20 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
                     RbBitSet b = c.getState();
                     bitCounts[b]++;
                 }
-                else
+                /*else
                 {
                     if(coding != AscertainmentBias::ALL)
                         mask += " ";
                     charCounts[c.getStateIndex()]++;
-                }
+                }*/
 
                 if(coding != AscertainmentBias::ALL)
                     maskData.push_back(gap);
             }
         }
 
-        if( (this->using_ambiguous_characters && !isSitePatternCompatible(bitCounts)) || (!this->using_ambiguous_characters && !isSitePatternCompatible(charCounts)))
+        if( !isSitePatternCompatible(bitCounts) )
+        //if( (this->using_ambiguous_characters && !isSitePatternCompatible(bitCounts)) || (!this->using_ambiguous_characters && !isSitePatternCompatible(charCounts)))
         {
             incompatible++;
         }
