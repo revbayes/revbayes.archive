@@ -36,6 +36,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* removeTaxaArgRules           = new ArgumentRules();
     ArgumentRules* removeTaxaArgRules2          = new ArgumentRules();
     ArgumentRules* setTaxonNameArgRules         = new ArgumentRules();
+    ArgumentRules* taxaArgRules                 = new ArgumentRules();
     ArgumentRules* taxonIndexArgRules           = new ArgumentRules();
     
     std::vector<TypeSpec> taxon_types;
@@ -71,7 +72,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules2 ) );
     methods.addFunction( new MemberProcedure( "setTaxonName", RlUtils::Void, setTaxonNameArgRules ) );
-    methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), namesArgRules ) );
+    methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), taxaArgRules ) );
     methods.addFunction( new MemberProcedure( "taxonIndex", Natural::getClassTypeSpec(), taxonIndexArgRules ) );
     
     // Add method for call "size" as a function

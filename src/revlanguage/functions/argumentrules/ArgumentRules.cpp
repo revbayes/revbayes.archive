@@ -25,33 +25,41 @@ ArgumentRules::ArgumentRules(void) {
     
 }
 
-ArgumentRules::ArgumentRules(const ArgumentRules& ar) {
+ArgumentRules::ArgumentRules(const ArgumentRules& ar)
+{
     
     // get a copy of the argument rules
-    for (std::vector<ArgumentRule*>::const_iterator it = ar.rules.begin(); it != ar.rules.end(); it++) {
+    for (std::vector<ArgumentRule*>::const_iterator it = ar.rules.begin(); it != ar.rules.end(); it++)
+    {
         rules.push_back( (*it)->clone() );
     }
+    
 }
 
 
-ArgumentRules::~ArgumentRules(void) {
+ArgumentRules::~ArgumentRules(void)
+{
     clear();
 }
 
 
-std::vector<ArgumentRule*>::iterator ArgumentRules::begin(void) {
+std::vector<ArgumentRule*>::iterator ArgumentRules::begin(void)
+{
     return rules.begin();
 }
 
 
-std::vector<ArgumentRule*>::const_iterator ArgumentRules::begin(void) const {
+std::vector<ArgumentRule*>::const_iterator ArgumentRules::begin(void) const
+{
     return rules.begin();
 }
 
 
-ArgumentRules& ArgumentRules::operator=(const ArgumentRules &a) {
+ArgumentRules& ArgumentRules::operator=(const ArgumentRules &a)
+{
     
-    if (this != &a) {
+    if (this != &a)
+    {
         // first we clear ourselves
         clear();
         
@@ -89,18 +97,21 @@ void ArgumentRules::clear(void)
     rules.clear();
 }
 
-std::vector<ArgumentRule*>::iterator ArgumentRules::end(void) {
+std::vector<ArgumentRule*>::iterator ArgumentRules::end(void)
+{
     return rules.end();
 }
 
 
-std::vector<ArgumentRule*>::const_iterator ArgumentRules::end(void) const {
+std::vector<ArgumentRule*>::const_iterator ArgumentRules::end(void) const
+{
     return rules.end();
 }
 
 
 
-void ArgumentRules::insert(std::vector<ArgumentRule *>::iterator it, ArgumentRule *rule) {
+void ArgumentRules::insert(std::vector<ArgumentRule *>::iterator it, ArgumentRule *rule)
+{
     rules.insert(it, rule);
 }
 
@@ -108,7 +119,8 @@ void ArgumentRules::insert(std::vector<ArgumentRule *>::iterator it, ArgumentRul
 void ArgumentRules::insert(std::vector<ArgumentRule *>::iterator it, std::vector<ArgumentRule *>::const_iterator first, std::vector<ArgumentRule *>::const_iterator last) {
     
     std::vector<ArgumentRule*> tmp;
-    for (std::vector<ArgumentRule *>::const_iterator org = first; org != last; org++) {
+    for (std::vector<ArgumentRule *>::const_iterator org = first; org != last; org++)
+    {
         ArgumentRule* theOriginalRule = *org;
         ArgumentRule* theClone = theOriginalRule->clone();
         tmp.push_back(theClone);
@@ -119,13 +131,15 @@ void ArgumentRules::insert(std::vector<ArgumentRule *>::iterator it, std::vector
 
 
 /** Push back a new rule. We just delegate it to our member variable. */
-void ArgumentRules::push_back(ArgumentRule *rule) {
+void ArgumentRules::push_back(ArgumentRule *rule)
+{
     rules.push_back(rule);
 }
 
 
 /** Push back a new rule. We just delegate it to our member variable. */
-void ArgumentRules::push_front(ArgumentRule *rule) {
+void ArgumentRules::push_front(ArgumentRule *rule)
+{
     std::vector<ArgumentRule*>::iterator it = rules.begin();
     rules.insert(it,rule);
 }
@@ -133,7 +147,8 @@ void ArgumentRules::push_front(ArgumentRule *rule) {
 
 
 /** Get the size of the vector. We delegate to the member. */
-size_t ArgumentRules::size(void) const {
+size_t ArgumentRules::size(void) const
+{
     return rules.size();
 }
 

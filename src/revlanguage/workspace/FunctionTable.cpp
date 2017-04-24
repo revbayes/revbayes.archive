@@ -132,7 +132,8 @@ void FunctionTable::clear(void)
     
     for ( std::multimap<std::string, Function *>::const_iterator i = begin(); i != end(); i++ )
     {
-        delete( i->second );
+        Function *f = i->second;
+        delete( f );
     }
     
     std::multimap<std::string, Function*>::clear();
