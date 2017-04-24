@@ -612,7 +612,7 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
  * Is the argument clade contained in the clade descending from this node?
  * By strict we mean that the contained clade has to be monophyletic in the containing clade.
  */
-bool TopologyNode::containsClade(const RbBitSet &your_taxa, bool strict) const
+bool TopologyNode::containsClade(const RbBitSetGeneral &your_taxa, bool strict) const
 {
     size_t n = tree->getNumberOfTips();
     RbBitSetGeneral my_taxa   = RbBitSetGeneral( n );
@@ -961,7 +961,7 @@ TopologyNode* TopologyNode::getNode(const Clade &c, bool strict)
  * Is the argument clade contained in the clade descending from this node?
  * By strict we mean that the contained clade has to be monophyletic in the containing clade.
  */
-TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict)
+TopologyNode* TopologyNode::getNode(const RbBitSetGeneral &your_taxa, bool strict)
 {
     size_t n = tree->getNumberOfTips();
     RbBitSetGeneral my_taxa   = RbBitSetGeneral( n );
@@ -1037,7 +1037,7 @@ const TopologyNode* TopologyNode::getNode(const Clade &c, bool strict) const
  * Is the argument clade contained in the clade descending from this node?
  * By strict we mean that the contained clade has to be monophyletic in the containing clade.
  */
-const TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict) const
+const TopologyNode* TopologyNode::getNode(const RbBitSetGeneral &your_taxa, bool strict) const
 {
     size_t n = tree->getNumberOfTips();
     RbBitSetGeneral my_taxa   = RbBitSetGeneral( n );
@@ -1177,7 +1177,7 @@ void TopologyNode::getTaxa(std::vector<Taxon> &taxa) const
 }
 
 
-void TopologyNode::getTaxa(RbBitSet &taxa) const
+void TopologyNode::getTaxa(RbBitSetGeneral &taxa) const
 {
     
     if ( isTip() == true )
@@ -1202,7 +1202,7 @@ void TopologyNode::getTaxa(RbBitSet &taxa) const
 }
 
 
-void TopologyNode::getTaxa(std::vector<Taxon> &taxa, RbBitSet &bitset) const
+void TopologyNode::getTaxa(std::vector<Taxon> &taxa, RbBitSetGeneral &bitset) const
 {
 
     if ( isTip() )

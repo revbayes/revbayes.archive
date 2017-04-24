@@ -140,6 +140,19 @@ std::string DnaState::getDataType( void ) const
 }
 
 
+RbBitSet& DnaState::getState( void )
+{
+    return state;
+}
+
+
+const RbBitSet& DnaState::getState( void ) const
+{
+    return state;
+}
+
+
+
 std::string DnaState::getStateLabels( void ) const
 {
     

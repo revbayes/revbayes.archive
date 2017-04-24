@@ -18,12 +18,11 @@ namespace RevBayesCore {
     class RbBitSet {
         
     public:
-        RbBitSet(void);                                                                                         //!< Constructor requires character type
-        virtual                        ~RbBitSet(void);
+        RbBitSet(void) {}                                                                                         //!< Constructor requires character type
+        virtual                        ~RbBitSet(void) {}
         
-        RbBitSet&                       operator=(const RbBitSet &bs);
-        
-        virtual bool                            operator[](size_t i) const;
+//        
+        virtual bool                            operator[](size_t i) const = 0;
         
         virtual bool                            operator==(const RbBitSet &bs) const = 0;
         virtual bool                            operator!=(const RbBitSet &bs) const = 0;

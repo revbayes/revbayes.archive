@@ -83,7 +83,7 @@ namespace RevBayesCore {
         std::string                                 computeSimmapNewick(void);                                                          //!< Compute the newick string compatible with SIMMAP and phytools
         bool                                        containsClade(const TopologyNode* c, bool strict) const;
         bool                                        containsClade(const Clade &c, bool strict) const;
-        bool                                        containsClade(const RbBitSet &c, bool strict) const;
+        bool                                        containsClade(const RbBitSetGeneral &c, bool strict) const;
         double                                      getAge(void) const;                                                                 //!< Get the age (time ago from present) for this node
         const std::vector<std::string>&             getBranchParameters(void) const;                                                        //!< Get the branch length leading towards this node
         double                                      getBranchLength(void) const;                                                        //!< Get the branch length leading towards this node
@@ -97,9 +97,9 @@ namespace RevBayesCore {
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
         const std::string&                          getName() const;                                                                    //!< Get name of node
         TopologyNode*                               getNode(const Clade &c, bool strict);
-        TopologyNode*                               getNode(const RbBitSet &c, bool strict);
+        TopologyNode*                               getNode(const RbBitSetGeneral &c, bool strict);
         const TopologyNode*                         getNode(const Clade &c, bool strict) const;
-        const TopologyNode*                         getNode(const RbBitSet &c, bool strict) const;
+        const TopologyNode*                         getNode(const RbBitSetGeneral &c, bool strict) const;
         const std::vector<std::string>&             getNodeParameters(void) const;                                                      //!< Get the branch length leading towards this node
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
         size_t                                      getNumberOfNodesInSubtree(bool tips) const;
@@ -112,8 +112,8 @@ namespace RevBayesCore {
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
         std::string                                 getSpeciesName() const;                                                             //!< Get the species name for the node
         void                                        getTaxa(std::vector<Taxon> &taxa) const;                                            //!< Fill the vector of taxa
-        void                                        getTaxa(RbBitSet &taxa) const;                                                      //!< Fill the taxon bitset
-        void                                        getTaxa(std::vector<Taxon> &taxa, RbBitSet &bitset) const;                          //!< Fill the vector of taxa and the taxon bitset
+        void                                        getTaxa(RbBitSetGeneral &taxa) const;                                               //!< Fill the taxon bitset
+        void                                        getTaxa(std::vector<Taxon> &taxa, RbBitSetGeneral &bitset) const;                   //!< Fill the vector of taxa and the taxon bitset
         const Taxon&                                getTaxon() const;                                                                   //!< Get the taxon for this node
         double                                      getTmrca(const Clade &c) const;
         double                                      getTmrca(const TopologyNode &n) const;

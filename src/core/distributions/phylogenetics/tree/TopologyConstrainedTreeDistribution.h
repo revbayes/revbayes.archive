@@ -53,9 +53,9 @@ namespace RevBayesCore {
         // helper functions
         bool                                                matchesBackbone(void);
         bool                                                matchesConstraints(void);
-        RbBitSet                                            recursivelyAddBackboneConstraints(const TopologyNode& node);
+        RbBitSetGeneral                                     recursivelyAddBackboneConstraints(const TopologyNode& node);
         void                                                recursivelyFlagNodesDirty(const TopologyNode& n);
-        RbBitSet                                            recursivelyUpdateClades(const TopologyNode& node);
+        RbBitSetGeneral                                     recursivelyUpdateClades(const TopologyNode& node);
         Tree*                                               simulateTree(void);
         
 

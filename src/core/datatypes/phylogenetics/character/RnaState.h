@@ -17,6 +17,8 @@
 #define RnaState_H
 
 #include "DiscreteCharacterState.h"
+#include "RbBitSetByte.h"
+
 #include <ostream>
 #include <set>
 

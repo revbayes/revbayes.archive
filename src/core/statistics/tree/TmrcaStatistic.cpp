@@ -1,6 +1,7 @@
 #include "TmrcaStatistic.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbBitSetGeneral.h"
 
 using namespace RevBayesCore;
 
@@ -11,7 +12,7 @@ TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, cons
     index( -RbConstants::Integer::max )
 {
 
-    RbBitSet bitset( tree->getValue().getNumberOfTips() );
+    RbBitSetGeneral bitset( tree->getValue().getNumberOfTips() );
 
     // initialize bitset for clade
     std::map<std::string, size_t> taxon_bitset_map; // = tree->getValue().getTaxonBitSetMap();
@@ -89,9 +90,10 @@ void TmrcaStatistic::initialize( void )
 }
 
 
-void TmrcaStatistic::initializeBitSet(void) {
+void TmrcaStatistic::initializeBitSet(void)
+{
     
-    RbBitSet bitset( tree->getValue().getNumberOfTips() );
+    RbBitSetGeneral bitset( tree->getValue().getNumberOfTips() );
     
     // initialize bitset for clade
     std::map<std::string, size_t> taxon_bitset_map;

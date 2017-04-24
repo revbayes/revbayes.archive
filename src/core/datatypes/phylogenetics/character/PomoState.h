@@ -18,6 +18,8 @@
 #define PomoState_H
 
 #include "DiscreteCharacterState.h"
+#include "RbBitSetGeneral.h"
+
 #include <ostream>
 #include <set>
 

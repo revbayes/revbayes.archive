@@ -48,14 +48,32 @@ bool RbBitSetByte::operator[](size_t i) const
 
 
 /** Equals comparison */
-bool RbBitSetByte::operator==(const RbBitSetByte& x) const
+bool RbBitSetByte::operator==(const RbBitSet& x) const
 {
     
-    return x.value == value;
+    if ( num_bits != x.size() )
+    {
+        return false;
+    }
+    
+    if ( num_set_bits != x.getNumberSetBits() )
+    {
+        return false;
+    }
+    
+    for (size_t i=0; i<num_bits; ++i)
+    {
+        if ( isSet(i) != x.isSet(i) )
+        {
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 /** Not-Equals comparison */
-bool RbBitSetByte::operator!=(const RbBitSetByte& x) const
+bool RbBitSetByte::operator!=(const RbBitSet& x) const
 {
     
     return operator==(x) == false;
@@ -63,49 +81,97 @@ bool RbBitSetByte::operator!=(const RbBitSetByte& x) const
 
 
 /** Smaller than comparison */
-bool RbBitSetByte::operator<(const RbBitSetByte& x) const
+bool RbBitSetByte::operator<(const RbBitSet& x) const
 {
+    if ( num_bits < x.size() )
+    {
+        return true;
+    }
+    else if ( num_bits > x.size() )
+    {
+        return false;
+    }
     
-    return x.value < value;
+    if ( num_set_bits < x.getNumberSetBits() )
+    {
+        return true;
+    }
+    else if ( num_set_bits > x.getNumberSetBits() )
+    {
+        return false;
+    }
+    
+    for (size_t i=0; i<num_bits; ++i)
+    {
+        if ( isSet(i) != x.isSet(i) )
+        {
+            if ( isSet(i) )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+    
+    return false;
 }
 
 /** Bitwise and */
-RbBitSetByte RbBitSetByte::operator&(const RbBitSetByte& x) const
+RbBitSetByte RbBitSetByte::operator&(const RbBitSet& x) const
 {
-    if ( x.num_bits != num_bits )
+    if ( x.size() != num_bits )
     {
         throw RbException("Cannot and RbBitSetBytes of unequal size");
     }
     RbBitSetByte bs(num_bits);
-    bs.value = value & x.value;
-    
+    for (size_t i = 0; i < num_bits; i++)
+    {
+        if ( isSet(i) && x.isSet(i) )
+        {
+            bs.set(i);
+        }
+    }
     return bs;
 }
 
 /** Bitwise or */
-RbBitSetByte RbBitSetByte::operator|(const RbBitSetByte& x) const
+RbBitSetByte RbBitSetByte::operator|(const RbBitSet& x) const
 {
-    if ( x.num_bits != num_bits )
+    if ( x.size() != num_bits )
     {
         throw RbException("Cannot or RbBitSetBytes of unequal sizes");
     }
     RbBitSetByte bs(num_bits);
-    
-    bs.value = x.value | value;
+    for (size_t i = 0; i < num_bits; i++)
+    {
+        if ( isSet(i) || x.isSet(i) )
+        {
+            bs.set(i);
+        }
+    }
 
     return bs;
 }
 
 /** Bitwise xor */
-RbBitSetByte RbBitSetByte::operator^(const RbBitSetByte& x) const
+RbBitSetByte RbBitSetByte::operator^(const RbBitSet& x) const
 {
-    if ( x.num_bits != num_bits )
+    if ( x.size() != num_bits )
     {
         throw RbException("Cannot xor RbBitSetBytes of unequal size");
     }
     RbBitSetByte bs(num_bits);
     
-    bs.value = value ^ x.value;
+    for (size_t i = 0; i < num_bits; i++)
+    {
+        if ( isSet(i) != x.isSet(i) )
+        {
+            bs.set(i);
+        }
+    }
 
     return bs;
 }
@@ -121,9 +187,9 @@ RbBitSetByte& RbBitSetByte::operator~()
 }
 
 /** Bitwise and assignment */
-RbBitSetByte& RbBitSetByte::operator&=(const RbBitSetByte& x)
+RbBitSetByte& RbBitSetByte::operator&=(const RbBitSet& x)
 {
-    if ( x.num_bits != num_bits )
+    if ( x.size() != num_bits )
     {
         throw RbException("Cannot and RbBitSetBytes of unequal size");
     }
@@ -134,9 +200,9 @@ RbBitSetByte& RbBitSetByte::operator&=(const RbBitSetByte& x)
 }
 
 /** Bitwise or assignment */
-RbBitSetByte& RbBitSetByte::operator|=(const RbBitSetByte& x)
+RbBitSetByte& RbBitSetByte::operator|=(const RbBitSet& x)
 {
-    if (x.num_bits != num_bits)
+    if (x.size() != num_bits)
     {
         throw RbException("Cannot or RbBitSetBytes of unequal size");
     }

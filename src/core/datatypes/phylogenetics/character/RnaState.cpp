@@ -138,6 +138,19 @@ std::string RnaState::getDataType( void ) const
 }
 
 
+RbBitSet& RnaState::getState( void )
+{
+    return state;
+}
+
+
+const RbBitSet& RnaState::getState( void ) const
+{
+    return state;
+}
+
+
+
 std::string RnaState::getStateLabels( void ) const
 {
     

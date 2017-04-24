@@ -22,10 +22,10 @@ namespace RevBayesCore {
     public:
         RbBitSetGeneral(void);                                                                                         //!< Constructor requires character type
         RbBitSetGeneral(size_t n, bool set=false);                                                                     //!< Constructor requires character type
-        RbBitSetGeneral(const RbBitSetGeneral &bs);                                                                           //!< Constructor requires character type
-        virtual                        ~RbBitSetGeneral(void);
-
-        RbBitSetGeneral&                operator=(const RbBitSetGeneral &bs);
+//        RbBitSetGeneral(const RbBitSetGeneral &bs);                                                                           //!< Constructor requires character type
+//        virtual                        ~RbBitSetGeneral(void);
+//
+//        RbBitSetGeneral&                operator=(const RbBitSetGeneral &bs);
 
         bool                            operator[](size_t i) const;
 

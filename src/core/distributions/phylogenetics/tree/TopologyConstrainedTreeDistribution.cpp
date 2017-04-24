@@ -25,8 +25,8 @@ using namespace RevBayesCore;
  * \param[in]    c         Clade constraints.
  */
 TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDistribution<Tree>* base_dist, const std::vector<Clade> &c, const TypedDagNode<Tree>* bb) : TypedDistribution<Tree>( NULL ),
-    active_backbone_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSet() ),
-    active_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSet() ),
+    active_backbone_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSetGeneral() ),
+    active_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSetGeneral() ),
     backbone_mask( base_dist->getValue().getNumberOfTips() ),
     backbone_topology( bb ),
     base_distribution( base_dist ),
@@ -147,7 +147,7 @@ void TopologyConstrainedTreeDistribution::initializeBitSets(void)
     // fill the monophyly constraints bitsets
     for (size_t i = 0; i < monophyly_constraints.size(); i++)
     {
-        RbBitSet b( value->getNumberOfTips() );
+        RbBitSetGeneral b( value->getNumberOfTips() );
         for(size_t j = 0; j < monophyly_constraints[i].size(); j++)
         {
             size_t k = value->getTaxonBitSetMap()[ monophyly_constraints[i].getTaxonName(j) ];
@@ -160,7 +160,7 @@ void TopologyConstrainedTreeDistribution::initializeBitSets(void)
 
     // reset the backbone constraints and mask
     backbone_constraints.clear();
-    backbone_mask = RbBitSet( value->getNumberOfTips() );
+    backbone_mask = RbBitSetGeneral( value->getNumberOfTips() );
 
     // add the backbone constraints
     if( backbone_topology != NULL )
@@ -242,9 +242,9 @@ void TopologyConstrainedTreeDistribution::recursivelyFlagNodesDirty(const Topolo
 }
 
 
-RbBitSet TopologyConstrainedTreeDistribution::recursivelyAddBackboneConstraints( const TopologyNode& node )
+RbBitSetGeneral TopologyConstrainedTreeDistribution::recursivelyAddBackboneConstraints( const TopologyNode& node )
 {
-    RbBitSet tmp( value->getNumberOfTips() );
+    RbBitSetGeneral tmp( value->getNumberOfTips() );
 
     if( node.isTip() )
     {
@@ -268,11 +268,11 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyAddBackboneConstraints(
 }
 
 
-RbBitSet TopologyConstrainedTreeDistribution::recursivelyUpdateClades( const TopologyNode& node )
+RbBitSetGeneral TopologyConstrainedTreeDistribution::recursivelyUpdateClades( const TopologyNode& node )
 {
     if( node.isTip() )
     {
-        RbBitSet tmp( value->getNumberOfTips() );
+        RbBitSetGeneral tmp( value->getNumberOfTips() );
         tmp.set( value->getTaxonBitSetMap()[node.getName()] );
         return tmp;
     }
@@ -288,13 +288,13 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyUpdateClades( const Top
             dirty_nodes[node.getIndex()] = false;
         }
 
-        return RbBitSet( value->getNumberOfTips(), true );
+        return RbBitSetGeneral( value->getNumberOfTips(), true );
     }
     else
     {
         if( dirty_nodes[node.getIndex()] == true )
         {
-            RbBitSet tmp( value->getNumberOfTips() );
+            RbBitSetGeneral tmp( value->getNumberOfTips() );
             for(size_t i = 0; i < node.getNumberOfChildren(); i++)
             {
                 tmp |= recursivelyUpdateClades( node.getChild(i) );

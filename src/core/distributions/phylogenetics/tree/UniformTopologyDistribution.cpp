@@ -50,7 +50,7 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
         taxon_bitset_map[ordered_taxa[i]] = i;
     }
 
-    RbBitSet b( num_taxa );
+    RbBitSetGeneral b( num_taxa );
     for (size_t j = 0; j < outgroup.size(); j++)
     {
         size_t k = taxon_bitset_map[ outgroup.getTaxonName(j) ];
@@ -60,9 +60,9 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
 
     outgroup.setBitRepresentation( b );
 
-    for(size_t i = 0; i < constraints.size(); i++)
+    for (size_t i = 0; i < constraints.size(); i++)
     {
-        RbBitSet b( num_taxa );
+        RbBitSetGeneral b( num_taxa );
         for(size_t j = 0; j < constraints[i].size(); j++)
         {
             size_t k = taxon_bitset_map[ constraints[i].getTaxonName(j) ];

@@ -26,7 +26,7 @@ Clade::Clade( void ) :
 /**
  * Constructor with a single taxon.
  */
-Clade::Clade( const Taxon &t, const RbBitSet &b ) :
+Clade::Clade( const Taxon &t, const RbBitSetGeneral &b ) :
     age( 0.0 ),
     bitset( b ),
     num_missing( b.size() > 1 ? b.size() - 1 : 0 ),
@@ -43,7 +43,7 @@ Clade::Clade( const Taxon &t, const RbBitSet &b ) :
  *
  * \param[in]   n    The vector containing the taxon names.
  */
-Clade::Clade(const std::vector<Taxon> &n, const RbBitSet &b) :
+Clade::Clade(const std::vector<Taxon> &n, const RbBitSetGeneral &b) :
     age( 0.0 ),
     bitset( b ),
     num_missing( b.size() > n.size() ? b.size() - n.size() : 0 ),
@@ -233,7 +233,7 @@ double Clade::getAge( void ) const
   *
   * \return       The bitset.
   */
-const RbBitSet& Clade::getBitRepresentation( void ) const
+const RbBitSetGeneral& Clade::getBitRepresentation( void ) const
 {
     return bitset;
 }
@@ -329,7 +329,7 @@ const std::string& Clade::getTaxonName(size_t i) const
 void Clade::resetTaxonBitset(const std::map<std::string, size_t> map)
 {
     
-    bitset = RbBitSet( map.size() );
+    bitset = RbBitSetGeneral( map.size() );
     
     for (size_t i = 0; i < taxa.size(); ++i)
     {
@@ -370,7 +370,7 @@ void Clade::setAge(double a)
  * \param[in]    b  The bitset representation of this clade.
  *
  */
-void Clade::setBitRepresentation( const RbBitSet &b )
+void Clade::setBitRepresentation( const RbBitSetGeneral &b )
 {
     bitset = b;
 }

@@ -2328,12 +2328,12 @@ const Sample<Clade>& TreeSummary::findCladeSample(const Clade &n) const
 }
 
 
-TopologyNode* TreeSummary::findParentNode(TopologyNode& n, const Clade& tmp, std::vector<TopologyNode*>& children, RbBitSet& child_b ) const
+TopologyNode* TreeSummary::findParentNode(TopologyNode& n, const Clade& tmp, std::vector<TopologyNode*>& children, RbBitSetGeneral& child_b ) const
 {
-    const RbBitSet& node = n.getClade().getBitRepresentation();
+    const RbBitSetGeneral& node = n.getClade().getBitRepresentation();
 
     Clade c = tmp;
-    const RbBitSet& clade  = c.getBitRepresentation();
+    const RbBitSetGeneral& clade  = c.getBitRepresentation();
 
     RbBitSetGeneral mask  = node | clade;
 
@@ -2343,7 +2343,7 @@ TopologyNode* TreeSummary::findParentNode(TopologyNode& n, const Clade& tmp, std
     // check if the flipped unrooted split is compatible
     if ( !rooted && !compatible && !child)
     {
-        RbBitSet clade_flip = clade; ~clade_flip;
+        RbBitSetGeneral clade_flip = clade; ~clade_flip;
         mask  = node | clade_flip;
 
         compatible = (mask == node);
@@ -2694,7 +2694,7 @@ Tree* TreeSummary::mrTree(AnnotationReport report, double cutoff, bool verbose)
 
         //find parent node
         std::vector<TopologyNode*> children;
-        RbBitSet tmp;
+        RbBitSetGeneral tmp;
         TopologyNode* parentNode = findParentNode(*root, clade, children, tmp );
 
         if(parentNode != NULL )
@@ -3443,8 +3443,8 @@ void TreeSummary::summarizeCharacterMaps(Tree input_tree, std::vector<AncestralS
  */
 bool CladeComparator::operator()(const Clade& a, const Clade& b) const
 {
-    const RbBitSet& ab = a.getBitRepresentation();
-    const RbBitSet& bb = b.getBitRepresentation();
+    const RbBitSetGeneral& ab = a.getBitRepresentation();
+    const RbBitSetGeneral& bb = b.getBitRepresentation();
 
     // If clades are rooted or clades are from different sized trees,
     // do taxon-wise comparison, taking mrcas into account.
@@ -3499,8 +3499,8 @@ bool CladeComparator::operator()(const Sample<Clade>& s) const
 {
     const Clade& a = s.getValue();
 
-    const RbBitSet& ab = a.getBitRepresentation();
-    const RbBitSet& bb = clade.getBitRepresentation();
+    const RbBitSetGeneral& ab = a.getBitRepresentation();
+    const RbBitSetGeneral& bb = clade.getBitRepresentation();
 
     // If clades are rooted or clades are from different sized trees,
     // do taxon-wise comparison, taking mrcas into account.

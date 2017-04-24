@@ -87,13 +87,13 @@ void DiscreteCharacterState::operator++( int i )
     }
 
     // unset the current state
-    state.unset( index_single_state );
+    getState().unset( index_single_state );
 
     // incremement our state index;
     ++index_single_state;
 
     // now set the bit of the state
-    state.set(index_single_state);
+    getState().set(index_single_state);
 
 }
 
@@ -106,13 +106,13 @@ void DiscreteCharacterState::operator+=( int i )
     }
 
     // unset the current state
-    state.unset( index_single_state );
+    getState().unset( index_single_state );
 
     // incremement our state index;
     index_single_state += i;
 
     // now set the bit of the state
-    state.set(index_single_state);
+    getState().set(index_single_state);
 
 }
 
@@ -125,13 +125,13 @@ void DiscreteCharacterState::operator--( void )
     }
 
     // unset the current state
-    state.unset( index_single_state );
+    getState().unset( index_single_state );
 
     // incremement our state index;
     --index_single_state;
 
     // now set the bit of the state
-    state.set(index_single_state);
+    getState().set(index_single_state);
 
 }
 
@@ -145,13 +145,13 @@ void DiscreteCharacterState::operator--( int i )
     }
 
     // unset the current state
-    state.unset( index_single_state );
+    getState().unset( index_single_state );
 
     // incremement our state index;
     --index_single_state;
 
     // now set the bit of the state
-    state.set(index_single_state);
+    getState().set(index_single_state);
 
 }
 
@@ -164,13 +164,13 @@ void DiscreteCharacterState::operator-=( int i )
     }
 
     // unset the current state
-    state.unset( index_single_state );
+    getState().unset( index_single_state );
 
     // incremement our state index;
     index_single_state -= i;
 
     // now set the bit of the state
-    state.set(index_single_state);
+    getState().set(index_single_state);
 
 }
 
@@ -182,7 +182,7 @@ void DiscreteCharacterState::addState(const std::string &symbol)
     std::string labels = getStateLabels();
     size_t pos = labels.find(symbol);
 
-    state.set( pos );
+    getState().set( pos );
     index_single_state = pos;
 }
 
@@ -194,13 +194,7 @@ size_t DiscreteCharacterState::getNumberObservedStates(void) const
 
 size_t DiscreteCharacterState::getNumberOfStates(void) const
 {
-    return state.size();
-}
-
-
-const RbBitSet& DiscreteCharacterState::getState(void) const
-{
-    return state;
+    return getState().size();
 }
 
 std::string DiscreteCharacterState::getStateDescription(void) const
@@ -252,7 +246,7 @@ std::string DiscreteCharacterState::getStringValue(void) const
     size_t size = labels.size();
     for (size_t i = 0; i < size; ++i)
     {
-        bool isSet = state.isSet( i );
+        bool isSet = getState().isSet( i );
         if (isSet)
         {
             tmp_val += labels[i];
@@ -287,7 +281,7 @@ bool DiscreteCharacterState::isAmbiguous( void ) const
 
 bool DiscreteCharacterState::isStateSet(size_t index) const
 {
-    return state.isSet(index);
+    return getState().isSet(index);
 }
 
 
@@ -296,8 +290,8 @@ void DiscreteCharacterState::setToFirstState(void)
     num_observed_states = 1;
     index_single_state = 0;
     
-    state.clearBits();
-    state.set( 0 );
+    getState().clearBits();
+    getState().set( 0 );
 }
 
 
@@ -306,8 +300,8 @@ void DiscreteCharacterState::setStateByIndex(size_t index)
 
     num_observed_states = 1;
     index_single_state = index;
-    state.clearBits();
-    state.set( index );
+    getState().clearBits();
+    getState().set( index );
 }
 
 
@@ -318,14 +312,14 @@ void DiscreteCharacterState::setState(const std::string &s)
     std::string labels = getStateLabels();
 
     num_observed_states = 0;
-    state.clearBits();
+    getState().clearBits();
 
     for (size_t i = 0; i < s.size(); i++)
     {
         ++num_observed_states;
 
         size_t pos = labels.find(s[i]);
-        state.set(pos);
+        getState().set(pos);
         index_single_state = pos;
     }
 

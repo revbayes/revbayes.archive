@@ -25,9 +25,9 @@ namespace RevBayesCore {
     class Clade  {
         
     public:
-                                                    Clade(void);                                                                    //! Default constructor: empty clade of age 0.0
-                                                    Clade(const Taxon &t, const RbBitSet &b = RbBitSetGeneral() );                  //!< Default constructor with optional index
-                                                    Clade(const std::vector<Taxon> &n, const RbBitSet &b = RbBitSetGeneral() );     //!< Default constructor with optional index
+                                                    Clade(void);                                                                        //! Default constructor: empty clade of age 0.0
+                                                    Clade(const Taxon &t, const RbBitSetGeneral &b = RbBitSetGeneral() );               //!< Default constructor with optional index
+                                                    Clade(const std::vector<Taxon> &n, const RbBitSetGeneral &b = RbBitSetGeneral() );  //!< Default constructor with optional index
         
         virtual                                    ~Clade() {}
         
@@ -50,8 +50,8 @@ namespace RevBayesCore {
         // public methods
         void                                        addTaxon(const Taxon &t);                                   //!< Add a taxon to our list.
         double                                      getAge(void) const;                                         //!< Get the age of this clade.
-        const RbBitSet&                             getBitRepresentation(void) const;                           //!< Get the clade as a bit representation.
-        void                                        setBitRepresentation(const RbBitSet &b);
+        const RbBitSetGeneral&                      getBitRepresentation(void) const;                           //!< Get the clade as a bit representation.
+        void                                        setBitRepresentation(const RbBitSetGeneral &b);
         const std::vector<Taxon>&                   getMrca(void) const;                                        //!< Get the mrca taxon.
         int                                         getNumberMissingTaxa(void) const;                           //!< Get the number of missing taxa.
         size_t                                      getNumberOfTaxa(void) const;                                //!< Get the number of taxa.

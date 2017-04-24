@@ -44,6 +44,19 @@ StandardState* StandardState::clone( void ) const
 }
 
 
+RbBitSet& StandardState::getState( void )
+{
+    return state;
+}
+
+
+const RbBitSet& StandardState::getState( void ) const
+{
+    return state;
+}
+
+
+
 std::string StandardState::getStateLabels( void ) const
 {
     

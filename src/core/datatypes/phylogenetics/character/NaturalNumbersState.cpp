@@ -58,6 +58,19 @@ std::string NaturalNumbersState::getDataType( void ) const
 }
 
 
+RbBitSet& NaturalNumbersState::getState( void )
+{
+    return state;
+}
+
+
+const RbBitSet& NaturalNumbersState::getState( void ) const
+{
+    return state;
+}
+
+
+
 std::string NaturalNumbersState::getStateDescription( void ) const
 {
     if (state_descriptions.size() > index_single_state)

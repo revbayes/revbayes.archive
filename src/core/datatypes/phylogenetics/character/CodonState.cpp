@@ -321,6 +321,18 @@ std::string CodonState::getDataType( void ) const
 }
 
 
+RbBitSet& CodonState::getState( void )
+{
+    return state;
+}
+
+
+const RbBitSet& CodonState::getState( void ) const
+{
+    return state;
+}
+
+
 std::string CodonState::getStateLabels( void ) const
 {
     

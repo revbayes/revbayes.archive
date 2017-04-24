@@ -34,6 +34,18 @@ std::string AminoAcidState::getDataType( void ) const
 }
 
 
+RbBitSet& AminoAcidState::getState( void )
+{
+    return state;
+}
+
+
+const RbBitSet& AminoAcidState::getState( void ) const
+{
+    return state;
+}
+
+
 std::string AminoAcidState::getStateLabels( void ) const
 {
     

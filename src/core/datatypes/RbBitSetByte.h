@@ -31,9 +31,9 @@ namespace RevBayesCore {
         bool                            operator!=(const RbBitSet &bs) const;
         bool                            operator<(const RbBitSet &bs) const;
         
-        RbBitSetByte                    operator&(const RbBitSetByte &bs) const;
-        RbBitSetByte                    operator|(const RbBitSetByte &bs) const;
-        RbBitSetByte                    operator^(const RbBitSetByte &bs) const;
+        RbBitSetByte                    operator&(const RbBitSet &bs) const;
+        RbBitSetByte                    operator|(const RbBitSet &bs) const;
+        RbBitSetByte                    operator^(const RbBitSet &bs) const;
         RbBitSetByte&                   operator~();
         RbBitSetByte&                   operator&=(const RbBitSet &bs);
         RbBitSetByte&                   operator|=(const RbBitSet &bs);

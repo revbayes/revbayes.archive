@@ -306,6 +306,19 @@ std::string PomoState::getDataType( void ) const
 }
 
 
+RbBitSet& PomoState::getState( void )
+{
+    return state;
+}
+
+
+const RbBitSet& PomoState::getState( void ) const
+{
+    return state;
+}
+
+
+
 std::string PomoState::getStateLabels( void ) const
 {
 

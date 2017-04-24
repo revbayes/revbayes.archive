@@ -97,7 +97,7 @@ namespace RevBayesCore {
         void                                                                    enforceNonnegativeBranchLengths(TopologyNode& tree) const;
         Clade                                                                   fillConditionalClades(const TopologyNode &n, std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> &cc);
         const Sample<Clade>&                                                    findCladeSample(const Clade &n) const;
-        TopologyNode*                                                           findParentNode(TopologyNode&, const Clade &, std::vector<TopologyNode*>&, RbBitSet& ) const;
+        TopologyNode*                                                           findParentNode(TopologyNode&, const Clade &, std::vector<TopologyNode*>&, RbBitSetGeneral& ) const;
         std::string                                                             getSiteState( const std::string &site_sample, size_t site );
         std::vector< std::pair<size_t, double> >                                parseSIMMAPForNode(std::string character_history);
         void                                                                    mapContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, bool np=true ) const;

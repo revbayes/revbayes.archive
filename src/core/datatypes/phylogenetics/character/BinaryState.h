@@ -24,15 +24,15 @@ namespace RevBayesCore {
     class BinaryState : public StandardState {
     
     public:
-                                        BinaryState(size_t n=2);                                        //!< Default constructor
+                                        BinaryState(size_t n=2);                            //!< Default constructor
                                         BinaryState(const std::string &s);
 
-        RbBitSet&                       getState(void);                                     //!< Get the state (as the bitset)
-        const RbBitSet&                 getState(void) const;                               //!< Get the state (as the bitset)
-        
-    private:
-        
-        RbBitSetByte                    state;
+//        RbBitSet&                       getState(void);                                     //!< Get the state (as the bitset)
+//        const RbBitSet&                 getState(void) const;                               //!< Get the state (as the bitset)
+//        
+//    private:
+//        
+//        RbBitSetByte                    state;
         
     };
 
