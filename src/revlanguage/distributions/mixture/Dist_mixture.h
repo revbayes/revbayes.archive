@@ -23,7 +23,7 @@ namespace RevLanguage {
      *
      */
     template <typename valType>
-    class Dist_mixture :  public TypedDistribution< valType >{
+    class Dist_mixture : public TypedDistribution< valType >{
         
     public:
                                                         Dist_mixture( void );

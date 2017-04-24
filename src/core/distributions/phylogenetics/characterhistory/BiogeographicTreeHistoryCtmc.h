@@ -486,7 +486,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::drawInitValue( void )
     std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType>::tau->getValue().getNodes();
     
     //    if (this->tipsInitialized == false)
-//    if (this->dagNode->isClamped())
+//    if (this->dag_node->isClamped())
         initializeTipValues();
     
     std::set<size_t> indexSet;
@@ -547,7 +547,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::redrawValue( void )
 //    {
 //        
 //        //    if (this->tipsInitialized == false)
-//        if (this->dagNode->isClamped())
+//        if (this->dag_node->isClamped())
 //            initializeTipValues();
 //        
 //        std::set<size_t> indexSet;
@@ -1003,7 +1003,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setRateMap(const Type
     this->addParameter( heterogeneousRateMaps );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    if ( this->dagNode != NULL && !this->dag_node->isClamped() )
     {
         this->redrawValue();
     }
@@ -1034,7 +1034,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setRootFrequencies(co
     this->addParameter( root_frequencies );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    if ( this->dagNode != NULL && !this->dag_node->isClamped() )
     {
         this->redrawValue();
     }
@@ -1070,7 +1070,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setSiteRates(const Ty
     this->addParameter( site_rates );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    if ( this->dagNode != NULL && !this->dag_node->isClamped() )
     {
         this->redrawValue();
     }

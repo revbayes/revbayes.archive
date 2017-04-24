@@ -1,4 +1,5 @@
 #include "MatrixReal.h"
+#include "RbBitSet.h"
 #include "RbException.h"
 #include "StringUtilities.h"
 #include "Tree.h"
@@ -8,6 +9,53 @@
 #include <iostream>
 
 using namespace RevBayesCore;
+
+
+double RevBayesCore::TreeUtilities::computeRobinsonFouldDistance(const RevBayesCore::Tree &a, const RevBayesCore::Tree &b)
+{
+
+    //const TopologyNode& r = tree->getValue().getRoot();
+    std::vector<RbBitSetGeneral> bipartitions_a = a.getNodesAsBitset();
+    std::vector<RbBitSetGeneral> bipartitions_b = b.getNodesAsBitset();
+    bool found = false;
+    double distance = 0.0;
+    for (size_t i = 0; i< bipartitions_a.size(); ++i)
+    {
+        found = false;
+        for (size_t j = 0; j < bipartitions_b.size(); ++j)
+        {
+            if (bipartitions_a[i] == bipartitions_b[j])
+            {
+                found = true;
+                break;
+            }
+        }
+        if (found == false)
+        {
+            distance += 1.0;
+        }
+    }
+    for (size_t i = 0; i< bipartitions_b.size(); ++i)
+    {
+        found = false;
+        for (size_t j = 0; j < bipartitions_b.size(); ++j)
+        {
+            if (bipartitions_b[i] == bipartitions_a[j])
+            {
+                found = true;
+                break;
+            }
+        }
+        
+        if (found == false)
+        {
+            distance += 1.0;
+        }
+    }
+
+    return distance;
+}
+
 
 void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn, const TopologyNode &n, std::vector<TopologyNode*> &nodes, std::vector<double> &ages, double depth)
 {

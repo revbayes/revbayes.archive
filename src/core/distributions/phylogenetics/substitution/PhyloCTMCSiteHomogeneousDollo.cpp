@@ -560,7 +560,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeTipLikelihood(const Top
 
     const std::vector<bool> &gap_node = gap_matrix[node_index];
     const std::vector<unsigned long> &char_node = char_matrix[node_index];
-    const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[node_index];
+    const std::vector<StandardState> &amb_char_node = this->ambiguous_char_matrix[node_index];
 
     // compute the transition probabilities
     updateTransitionProbabilities( node_index, node.getBranchLength() );
@@ -604,13 +604,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeTipLikelihood(const Top
                 {
                     // compute the likelihood that we had a transition from state c1 to the observed state org_val
                     // note, the observed state could be ambiguous!
-                    const RbBitSet &val = amb_char_node[site];
+                    const RbBitSet &val = amb_char_node[site].getState();
 
-                    for(size_t c = 0; c < dim + 1; c++)
+                    for (size_t c = 0; c < dim + 1; c++)
                     {
                         double tmp = 0.0;
 
-                        for( size_t i=0; i<val.size(); ++i )
+                        for ( size_t i=0; i<val.size(); ++i )
                         {
                             // check whether we observed this state
                             if ( val.isSet(i) == true )

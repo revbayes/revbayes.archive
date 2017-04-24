@@ -145,7 +145,7 @@ double TopologyConstrainedTreeDistribution::computeLnProbability( void )
 void TopologyConstrainedTreeDistribution::initializeBitSets(void)
 {
     // fill the monophyly constraints bitsets
-    for(size_t i = 0; i < monophyly_constraints.size(); i++)
+    for (size_t i = 0; i < monophyly_constraints.size(); i++)
     {
         RbBitSet b( value->getNumberOfTips() );
         for(size_t j = 0; j < monophyly_constraints[i].size(); j++)
@@ -191,7 +191,7 @@ bool TopologyConstrainedTreeDistribution::matchesBackbone( void )
     
     for(size_t i = 0; i < backbone_constraints.size(); i++)
     {
-        std::vector<RbBitSet>::iterator it = std::find(active_backbone_clades.begin(), active_backbone_clades.end(), backbone_constraints[i] );
+        std::vector<RbBitSetGeneral>::iterator it = std::find(active_backbone_clades.begin(), active_backbone_clades.end(), backbone_constraints[i] );
 //        std::cout << backbone_constraints[i] << "\n";
         if(it == active_backbone_clades.end())
         {
@@ -215,7 +215,7 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
 {
     for(size_t i = 0; i < monophyly_constraints.size(); i++)
     {
-        std::vector<RbBitSet>::iterator it = std::find(active_clades.begin(), active_clades.end(), monophyly_constraints[i].getBitRepresentation() );
+        std::vector<RbBitSetGeneral>::iterator it = std::find(active_clades.begin(), active_clades.end(), monophyly_constraints[i].getBitRepresentation() );
         if(it == active_clades.end())
         {
             return false;

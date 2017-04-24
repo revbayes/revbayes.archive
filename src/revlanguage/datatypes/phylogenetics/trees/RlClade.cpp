@@ -60,11 +60,11 @@ Clade* Clade::clone(void) const
 void Clade::constructInternalObject( void ) 
 {
     // we free the memory first
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
     }
     
@@ -119,8 +119,8 @@ void Clade::constructInternalObject( void )
         c->setNumberMissingTaxa( n );
     }
 
-    dagNode = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", c);
-    dagNode->incrementReferenceCount();
+    dag_node = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", c);
+    dag_node->incrementReferenceCount();
     
 }
 

@@ -11,7 +11,12 @@
 
 using namespace RevBayesCore;
 
-SimplexScaleFunction::SimplexScaleFunction(const TypedDagNode< RbVector< double > > *s, const TypedDagNode< double > *f, const TypedDagNode< int > *i) : TypedFunction< RbVector<double> >( new RbVector<double>() ), simplex( s ), factor( f ), index( i ) {
+SimplexScaleFunction::SimplexScaleFunction(const TypedDagNode< RbVector< double > > *s, const TypedDagNode< double > *f, const TypedDagNode< int > *i) : TypedFunction< RbVector<double> >( new RbVector<double>() ),
+    simplex( s ),
+    factor( f ),
+    index( i )
+{
+    
     // add the parameters as a parent
     addParameter( simplex );
     addParameter( factor );
@@ -21,25 +26,32 @@ SimplexScaleFunction::SimplexScaleFunction(const TypedDagNode< RbVector< double 
 }
 
 
-SimplexScaleFunction::SimplexScaleFunction(const SimplexScaleFunction &n) : TypedFunction< RbVector<double> >( n ), simplex( n.simplex ), factor( n.factor ), index( n.index ) {
+SimplexScaleFunction::SimplexScaleFunction(const SimplexScaleFunction &n) : TypedFunction< RbVector<double> >( n ),
+    simplex( n.simplex ),
+    factor( n.factor ),
+    index( n.index )
+{
     // no need to add parameters, happens automatically
     
     update();
 }
 
 
-SimplexScaleFunction::~SimplexScaleFunction( void ) {
+SimplexScaleFunction::~SimplexScaleFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-SimplexScaleFunction* SimplexScaleFunction::clone( void ) const {
+SimplexScaleFunction* SimplexScaleFunction::clone( void ) const
+{
     return new SimplexScaleFunction( *this );
 }
 
 
-void SimplexScaleFunction::update( void ) {
+void SimplexScaleFunction::update( void )
+{
     
     // replace the current values by the simplex
     *value = simplex->getValue();

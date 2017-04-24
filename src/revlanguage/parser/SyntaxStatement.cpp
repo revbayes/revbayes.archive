@@ -129,7 +129,9 @@ SyntaxStatement& SyntaxStatement::operator=( const SyntaxStatement& x )
         if ( statements1 != NULL )
         {
             for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
+            {
                 delete *it;
+            }
             delete statements1;
             statements1 = NULL;
         }
@@ -137,7 +139,9 @@ SyntaxStatement& SyntaxStatement::operator=( const SyntaxStatement& x )
         if ( statements2 != NULL )
         {
             for ( std::list<SyntaxElement*>::iterator it = statements2->begin(); it != statements2->end(); ++it )
+            {
                 delete *it;
+            }
             delete statements2;
             statements2 = NULL;
         }
@@ -145,18 +149,27 @@ SyntaxStatement& SyntaxStatement::operator=( const SyntaxStatement& x )
         statementType   = x.statementType;
 
         if ( x.expression != NULL )
+        {
             expression = x.expression->clone();
-
+        }
+        
         if ( x.statements1 != NULL )
         {
+            statements1 = new std::list<SyntaxElement*>();
             for ( std::list<SyntaxElement*>::const_iterator it = x.statements1->begin(); it != x.statements1->end(); ++it )
+            {
                 statements1->push_back( (*it)->clone() );
+            }
         }
 
         if ( x.statements2 != NULL )
         {
+            statements2 = new std::list<SyntaxElement*>();
             for ( std::list<SyntaxElement*>::const_iterator it = x.statements2->begin(); it != x.statements2->end(); ++it )
+            {
                 statements2->push_back( (*it)->clone() );
+            }
+            
         }
     }
 
@@ -194,7 +207,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
         forLoop->initializeLoop( env );
 
         // Now loop over statements inside the for loop
-        while ( !forLoop->isFinished() )
+        while ( forLoop->isFinished() == false )
         {
             // Get next loop state. This will update the value of the loop variable
             forLoop->getNextLoopState();
@@ -226,7 +239,10 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
 
                 // Catch signal
                 if ( !Signals::getSignals().isGood() )
+                {
                     break;
+                }
+                
             }
             
             // Catch signals

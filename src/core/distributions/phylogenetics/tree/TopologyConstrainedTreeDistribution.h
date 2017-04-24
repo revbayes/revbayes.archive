@@ -60,16 +60,16 @@ namespace RevBayesCore {
         
 
         // members
-        std::vector<RbBitSet>                               active_backbone_clades;
-        std::vector<RbBitSet>                               active_clades;
-        std::vector<RbBitSet>                               backbone_constraints;
-        RbBitSet                                            backbone_mask;
+        std::vector<RbBitSetGeneral>                        active_backbone_clades;
+        std::vector<RbBitSetGeneral>                        active_clades;
+        std::vector<RbBitSetGeneral>                        backbone_constraints;
+        RbBitSetGeneral                                     backbone_mask;
         const TypedDagNode<Tree>*                           backbone_topology;
         TypedDistribution<Tree>*                            base_distribution;
         std::vector<bool>                                   dirty_nodes;
         std::vector<Clade>                                  monophyly_constraints;
-        std::vector<RbBitSet>                               stored_backbone_clades;
-        std::vector<RbBitSet>                               stored_clades;
+        std::vector<RbBitSetGeneral>                        stored_backbone_clades;
+        std::vector<RbBitSetGeneral>                        stored_clades;
     };
     
 }

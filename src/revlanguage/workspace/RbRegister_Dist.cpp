@@ -154,6 +154,10 @@
 #include "Dist_exponentialOffsetPositive.h"
 #include "Dist_gamma.h"
 #include "Dist_geom.h"
+#include "Dist_halfCauchy.h"
+#include "Dist_halfCauchyPositive.h"
+#include "Dist_halfNormal.h"
+#include "Dist_halfNormalPositive.h"
 #include "Dist_inverseGamma.h"
 #include "Dist_inverseWishart.h"
 #include "Dist_lnorm.h"
@@ -338,6 +342,14 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // geometric distribution
         AddDistribution< Natural                    >( new Dist_geom() );
         
+        // half-Cauchy distribution
+        AddContinuousDistribution< Real             >( new Dist_halfCauchy() );
+        AddContinuousDistribution< RealPos          >( new Dist_halfCauchyPositive() );
+        
+        // half-Normal distribution
+        AddContinuousDistribution< Real             >( new Dist_halfNormal() );
+        AddContinuousDistribution< RealPos          >( new Dist_halfNormalPositive() );
+
         // inverse-gamma distribution
         AddContinuousDistribution< RealPos          >( new Dist_inverseGamma() );
         

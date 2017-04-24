@@ -17,6 +17,7 @@
 #define BinaryState_H
 
 #include "StandardState.h"
+#include "RbBitSetByte.h"
 
 namespace RevBayesCore {
 

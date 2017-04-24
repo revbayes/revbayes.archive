@@ -81,7 +81,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
             taxon_name = static_cast<const Taxon&>( taxon ).getValue().getSpeciesName();
         }
 
-        this->dagNode->getValue().dropTipNodeWithName( taxon_name );
+        this->dag_node->getValue().dropTipNodeWithName( taxon_name );
         
         return NULL;
     }
@@ -91,28 +91,28 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         
         int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         
-        bool tf = this->dagNode->getValue().getNode((size_t)index).isInternal();
+        bool tf = this->dag_node->getValue().getNode((size_t)index).isInternal();
         return new RevVariable( new RlBoolean( tf ) );
     }
     else if (name == "nnodes")
     {
         found = true;
         
-        size_t n = this->dagNode->getValue().getNumberOfNodes();
+        size_t n = this->dag_node->getValue().getNumberOfNodes();
         return new RevVariable( new Natural( n ) );
     }
     else if (name == "ntips")
     {
         found = true;
         
-        size_t n = this->dagNode->getValue().getNumberOfTips();
+        size_t n = this->dag_node->getValue().getNumberOfTips();
         return new RevVariable( new Natural( n ) );
     }
     else if (name == "names" || name == "taxa")
     {
         found = true;
         
-        std::vector<RevBayesCore::Taxon> t = this->dagNode->getValue().getTaxa();
+        std::vector<RevBayesCore::Taxon> t = this->dag_node->getValue().getTaxa();
         return new RevVariable( new ModelVector<Taxon>( t ) );
     }
     else if (name == "nodeName")
@@ -120,7 +120,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         found = true;
         
         int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
-        const std::string& n = this->dagNode->getValue().getNode((size_t)index).getName();
+        const std::string& n = this->dag_node->getValue().getNode((size_t)index).getName();
         return new RevVariable( new RlString( n ) );
     }
     else if (name == "rescale")
@@ -128,7 +128,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         found = true;
         
         double f = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
-        RevBayesCore::Tree &tree = dagNode->getValue();
+        RevBayesCore::Tree &tree = dag_node->getValue();
         RevBayesCore::TreeUtilities::rescaleTree(&tree, &tree.getRoot(), f);
         
         return NULL;

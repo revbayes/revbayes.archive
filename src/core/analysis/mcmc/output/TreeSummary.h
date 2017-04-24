@@ -72,6 +72,9 @@ namespace RevBayesCore {
         Tree*                                                                   characterMapTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, int NUM_TIME_SLICES = 500, bool conditional = false, bool joint = false, bool verbose = true);
         double                                                                  cladeProbability(const Clade &c, bool verbose);
         Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool conditional, bool joint, bool verbose);
+        double                                                                  computeEntropy( double credible_interval_size, bool verbose );
+        std::vector<double>                                                     computePairwiseRFDistance( double credible_interval_size, bool verbose );
+        std::vector<double>                                                     computeTreeLengths(void);
         int                                                                     getBurnin(void) const;
         std::vector<Tree>                                                       getUniqueTrees(double ci=0.95, bool verbose=true);
         int                                                                     getTopologyFrequency(const Tree &t, bool verbose);
@@ -84,7 +87,7 @@ namespace RevBayesCore {
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05, bool verbose=true);
         void                                                                    setBurnin(int b);
         int                                                                     size(bool post = false) const;
-        void                                                                    summarizeCharacterMaps(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, std::string filename, int burnin, bool verbose, std::string separator);
+        void                                                                    summarizeCharacterMaps(Tree inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, std::string filename, int burnin, bool verbose, std::string separator);
 
     private:
 

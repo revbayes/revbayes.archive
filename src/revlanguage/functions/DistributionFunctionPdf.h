@@ -31,7 +31,9 @@ namespace RevLanguage {
     public:
         DistributionFunctionPdf(TypedDistribution<valueType> *d);                                                                       //!< Object constructor
         DistributionFunctionPdf(const DistributionFunctionPdf& obj);                                                                    //!< Copy constructor
-        
+
+        virtual                                         ~DistributionFunctionPdf(void);                                                                    //!< Copy constructor
+
         // overloaded operators
         DistributionFunctionPdf&                        operator=(const DistributionFunctionPdf& c);
         
@@ -95,12 +97,24 @@ RevLanguage::DistributionFunctionPdf<valueType>::DistributionFunctionPdf(const D
 }
 
 
+/** Destructor */
+template <class valueType>
+RevLanguage::DistributionFunctionPdf<valueType>::~DistributionFunctionPdf( void ) 
+{
+    
+    delete templateObject;
+    
+}
+
+
 template <class valueType>
 RevLanguage::DistributionFunctionPdf<valueType>& RevLanguage::DistributionFunctionPdf<valueType>::operator=(const DistributionFunctionPdf &c) {
     
-    if (this != &c) {
+    if (this != &c)
+    {
         Function::operator=(c);
         
+        delete templateObject;
         templateObject = c.templateObject->clone();
         
         argRules = c.argRules;

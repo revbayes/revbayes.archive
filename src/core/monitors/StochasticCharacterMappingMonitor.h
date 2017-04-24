@@ -11,7 +11,7 @@
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
-#include "Monitor.h"
+#include "AbstractFileMonitor.h"
 #include "TypedDagNode.h"
 #include "StochasticNode.h"
 
@@ -33,7 +33,7 @@ namespace RevBayesCore {
      *
      */
     template<class characterType>
-    class StochasticCharacterMappingMonitor : public Monitor {
+    class StochasticCharacterMappingMonitor : public AbstractFileMonitor {
         
     public:
         
@@ -44,31 +44,22 @@ namespace RevBayesCore {
         StochasticCharacterMappingMonitor(const StochasticCharacterMappingMonitor &m);
         virtual ~StochasticCharacterMappingMonitor(void);
         
-        StochasticCharacterMappingMonitor*        clone(void) const;                                                  //!< Clone the object
+        StochasticCharacterMappingMonitor*              clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-        void                                            monitor(unsigned long gen);                                         //!< Monitor at generation gen
-        void                                            closeStream(void);                                                  //!< Close stream after finish writing
-        void                                            openStream(bool reopen);                                            //!< Open the stream for writing
-        void                                            printHeader(void);                                                  //!< Print header
+        void                                            monitorVariable(unsigned long gen);                                 //!< Monitor at generation gen
+        void                                            printFileHeader(void);                                              //!< Print header
         
         // getters and setters
-        void                                            setAppend(bool tf);                                                 //!< Set if the monitor should append to an existing file
         void                                            swapNode(DagNode *oldN, DagNode *newN);
         
     private:
         
         // members
-        std::fstream                                    outStream;
-        
-        // parameters
-        bool                                            include_simmaps;                                                    //!< Should we print out SIMMAP/phytools compatible character histories?
-        std::string                                     filename;                                                           //!< Filename to which we print the values
-        std::string                                     separator;                                                          //!< Seperator between monitored values (between columns)
-        bool                                            append;                                                             //!< Flag if to append to existing file
         TypedDagNode<Tree>*                             tree;
         StochasticNode<Tree>*                           cdbdp;                                                              //!< The character dependent birth death process we are monitoring
         StochasticNode<AbstractHomologousDiscreteCharacterData>*            ctmc;
+        bool                                            include_simmaps;                                                    //!< Should we print out SIMMAP/phytools compatible character histories?
     };
     
 }
@@ -87,13 +78,9 @@ using namespace RevBayesCore;
 
 /* Constructor for state dependent birth death process */
 template<class characterType>
-StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, bool is, const std::string &del) : Monitor(g),
-outStream(),
-filename( fname ),
-separator( del ),
-append( false ),
-cdbdp( ch ),
-include_simmaps( is )
+StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, bool is, const std::string &del) : AbstractFileMonitor(ch, g, fname, del, false, false, false),
+    cdbdp( ch ),
+    include_simmaps( is )
 {
     ctmc = NULL;
     
@@ -106,13 +93,9 @@ include_simmaps( is )
 //StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor(TypedDagNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, bool is, const std::string &del) : Monitor(g),
 /* Constructor for CTMC */
 template<class characterType>
-StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, bool is, const std::string &del) : Monitor(g),
-outStream(),
-filename( fname ),
-separator( del ),
-append( false ),
-ctmc( ch ),
-include_simmaps( is )
+StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, bool is, const std::string &del) : AbstractFileMonitor(ch, g, fname, del, false, false, false),
+    ctmc( ch ),
+    include_simmaps( is )
 {
     cdbdp = NULL;
     
@@ -129,21 +112,12 @@ include_simmaps( is )
  * Copy constructor.
  */
 template<class characterType>
-StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor( const StochasticCharacterMappingMonitor &m) : Monitor( m ),
-outStream(),
-filename( m.filename ),
-separator( m.separator ),
-append( m.append ),
-cdbdp( m.cdbdp ),
-ctmc( m.ctmc ),
-tree( m.tree ),
-include_simmaps( m.include_simmaps )
+StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor( const StochasticCharacterMappingMonitor &m) : AbstractFileMonitor( m ),
+    tree( m.tree ),
+    cdbdp( m.cdbdp ),
+    ctmc( m.ctmc ),
+    include_simmaps( m.include_simmaps )
 {
-    
-    if (m.outStream.is_open() == true )
-    {
-        openStream( true );
-    }
     
 }
 
@@ -154,11 +128,6 @@ include_simmaps( m.include_simmaps )
 template<class characterType>
 StochasticCharacterMappingMonitor<characterType>::~StochasticCharacterMappingMonitor()
 {
-    
-    if ( outStream.is_open() )
-    {
-        closeStream();
-    }
     
 }
 
@@ -177,112 +146,67 @@ StochasticCharacterMappingMonitor<characterType>* StochasticCharacterMappingMoni
 }
 
 
-
-/**
- * Close the stream. This means that we are finished with monitoring and we close the filestream.
- */
-template<class characterType>
-void StochasticCharacterMappingMonitor<characterType>::closeStream()
-{
-    
-    outStream.close();
-    
-}
-
-
 /**
  * Monitor value at given generation.
  *
  * \param[in]   gen    The current generation.
  */
 template<class characterType>
-void StochasticCharacterMappingMonitor<characterType>::monitor(unsigned long gen)
+void StochasticCharacterMappingMonitor<characterType>::monitorVariable(unsigned long gen)
 {
     
-    if (gen % printgen == 0)
+    size_t num_nodes;
+    
+    // get the distribution for the character
+    StateDependentSpeciationExtinctionProcess *sse_process = NULL;
+    AbstractPhyloCTMCSiteHomogeneous<characterType> *ctmc_dist = NULL;
+    if ( ctmc != NULL )
     {
-        // print the iteration number first
-        outStream << gen;
-        
-        size_t num_nodes;
-        
-        
-        // get the distribution for the character
-        StateDependentSpeciationExtinctionProcess *sse_process = NULL;
-        AbstractPhyloCTMCSiteHomogeneous<characterType> *ctmc_dist = NULL;
-        if ( ctmc != NULL )
-        {
-            ctmc_dist = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType>* >( &ctmc->getDistribution() );
-            num_nodes = tree->getValue().getNumberOfNodes();
-        }
-        else
-        {
-            sse_process = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &nodes[0]->getDistribution() );
-            num_nodes = tree->getValue().getNumberOfNodes();
-        }
-        
-        std::vector<std::string*> character_histories( num_nodes );
-        
-        // draw stochastic character map
-        if ( ctmc != NULL )
-        {
-            ctmc_dist->drawStochasticCharacterMap( character_histories, 0 );
-        }
-        else
-        {
-            sse_process->drawStochasticCharacterMap( character_histories );
-        }
-        
-        // print to monitor file
-        const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
-        for (int i = 0; i < nds.size(); i++)
-        {
-            
-            size_t node_index = nds[i]->getIndex();
-            
-            // add a separator before every new element
-            outStream << separator;
-            
-            // print out this branch's character history in the format
-            // used by SIMMAP and phytools
-            outStream << *character_histories[ node_index ];
-            
-        }
-        
-        if ( include_simmaps == true )
-        {
-            // print out the SIMMAP/phytools compatible newick string as the last column of the log file
-            outStream << separator;
-            Tree t = Tree(tree->getValue());
-            t.clearNodeParameters();
-            t.addNodeParameter( "character_history", character_histories, false );
-            outStream << t.getSimmapNewickRepresentation();
-        }
-        
-        outStream << std::endl;
-    
-    }
-}
-
-
-/**
- * Open the CharacterMapping stream for printing.
- */
-template<class characterType>
-void StochasticCharacterMappingMonitor<characterType>::openStream( bool reopen )
-{
-    
-    RbFileManager f = RbFileManager(filename);
-    f.createDirectoryForFile();
-    
-    // open the stream to the CharacterMapping
-    if ( append == true || reopen == true )
-    {
-        outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+        ctmc_dist = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType>* >( &ctmc->getDistribution() );
+        num_nodes = tree->getValue().getNumberOfNodes();
     }
     else
     {
-        outStream.open( filename.c_str(), std::fstream::out);
+        sse_process = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &nodes[0]->getDistribution() );
+        num_nodes = tree->getValue().getNumberOfNodes();
+    }
+        
+    std::vector<std::string*> character_histories( num_nodes );
+    
+    // draw stochastic character map
+    if ( ctmc != NULL )
+    {
+        ctmc_dist->drawStochasticCharacterMap( character_histories, 0 );
+    }
+    else
+    {
+        sse_process->drawStochasticCharacterMap( character_histories );
+    }
+        
+    // print to monitor file
+    const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
+    for (int i = 0; i < nds.size(); i++)
+    {
+            
+        size_t node_index = nds[i]->getIndex();
+        
+        // add a separator before every new element
+        out_stream << separator;
+            
+        // print out this branch's character history in the format
+        // used by SIMMAP and phytools
+        out_stream << *character_histories[ node_index ];
+        
+    }
+        
+    if ( include_simmaps == true )
+    {
+        // print out the SIMMAP/phytools compatible newick string as the last column of the log file
+        out_stream << separator;
+        Tree t = Tree(tree->getValue());
+        t.clearNodeParameters();
+        t.addNodeParameter( "character_history", character_histories, false );
+        out_stream << t.getSimmapNewickRepresentation();
     }
     
 }
@@ -292,11 +216,8 @@ void StochasticCharacterMappingMonitor<characterType>::openStream( bool reopen )
  * Print header for monitored values
  */
 template<class characterType>
-void StochasticCharacterMappingMonitor<characterType>::printHeader()
+void StochasticCharacterMappingMonitor<characterType>::printFileHeader()
 {
-    // print one column for the iteration number
-    outStream << "Iteration";
-    
     std::vector<TopologyNode*> nodes = tree->getValue().getNodes();
     
     // iterate through all tree nodes and make header with node index
@@ -305,32 +226,16 @@ void StochasticCharacterMappingMonitor<characterType>::printHeader()
         TopologyNode* nd = nodes[i];
         size_t node_index = nd->getIndex();
         
-        outStream << separator;
-        outStream << node_index + 1;
+        out_stream << separator;
+        out_stream << node_index + 1;
         
     }
 
     if ( include_simmaps == true )
     {
-        outStream << separator;
-        outStream << "simmap";
+        out_stream << separator;
+        out_stream << "simmap";
     }
-    
-    outStream << std::endl;
-}
-
-
-
-/**
- * Set flag about whether to append to an existing file.
- *
- * \param[in]   tf   Flag if to append.
- */
-template<class characterType>
-void StochasticCharacterMappingMonitor<characterType>::setAppend(bool tf)
-{
-    
-    append = tf;
     
 }
 
@@ -353,7 +258,7 @@ void StochasticCharacterMappingMonitor<characterType>::swapNode(DagNode *oldN, D
         tree = static_cast< StochasticNode<Tree> *>( newN );
     }
     
-    Monitor::swapNode( oldN, newN );
+    AbstractFileMonitor::swapNode( oldN, newN );
     
 }
 

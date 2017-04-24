@@ -269,7 +269,7 @@ RevPtr<RevVariable> WorkspaceVector<rlType>::executeMethod( std::string const &n
 //        found = true;
 //        
 //        // Check whether the DAG node is actually a constant node
-//        if ( !this->dagNode->isConstant() )
+//        if ( !this->dag_node->isConstant() )
 //        {
 //            throw RbException( "Only constant variables can be sorted." );
 //        }
@@ -282,7 +282,7 @@ RevPtr<RevVariable> WorkspaceVector<rlType>::executeMethod( std::string const &n
 //        found = true;
 //        
 //        // Check whether the DAG node is actually a constant node
-//        if ( !this->dagNode->isConstant() )
+//        if ( !this->dag_node->isConstant() )
 //        {
 //            throw RbException( "Only constant variables can be made unique." );
 //        }

@@ -71,6 +71,7 @@ Workspace& Workspace::operator=(const Workspace& x)
             RevObject *the_object = it->second;
             delete the_object;
         }
+        typeTable.clear();
         
         // copy all the types
         for (TypeTable::const_iterator it=x.typeTable.begin(); it!=x.typeTable.end(); ++it)
@@ -95,6 +96,7 @@ Workspace::~Workspace(void)
         RevObject *the_object = it->second;
         delete the_object;
     }
+    typeTable.clear();
     
 }
 
@@ -107,6 +109,7 @@ bool Workspace::addDistribution( Distribution *dist )
 
     if ( typeTable.find( dist->getDistributionFunctionName() ) != typeTable.end() )
     {
+        delete dist;
         throw RbException("There is already a type named '" + dist->getType() + "' in the workspace");
     }
     
@@ -149,15 +152,22 @@ bool Workspace::addTypeWithConstructor( RevObject *templ )
 {
     const std::string& name = templ->getConstructorFunctionName();
 
-    if (typeTable.find( name ) != typeTable.end())
+
+    if (typeTable.find( name ) != typeTable.end() )
     {
+        
         // free memory
         delete templ;
         
         throw RbException("There is already a type named '" + name + "' in the workspace");
     }
     
-    typeTable.insert(std::pair<std::string, RevObject*>(templ->getType(), templ->clone()));
+    // only add the type to the table if we haven't gotten one with this signature already
+    if (typeTable.find( templ->getType() ) == typeTable.end())
+    {
+        typeTable.insert(std::pair<std::string, RevObject*>(templ->getType(), templ->clone()));
+    }
+    
     
     functionTable.addFunction( new ConstructorFunction(templ) );
     
