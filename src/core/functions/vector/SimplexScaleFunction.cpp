@@ -28,18 +28,21 @@ SimplexScaleFunction::SimplexScaleFunction(const SimplexScaleFunction &n) : Type
 }
 
 
-SimplexScaleFunction::~SimplexScaleFunction( void ) {
+SimplexScaleFunction::~SimplexScaleFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-SimplexScaleFunction* SimplexScaleFunction::clone( void ) const {
+SimplexScaleFunction* SimplexScaleFunction::clone( void ) const
+{
     return new SimplexScaleFunction( *this );
 }
 
 
-void SimplexScaleFunction::update( void ) {
+void SimplexScaleFunction::update( void )
+{
     
     // replace the current values by the simplex
     *value = simplex->getValue();
