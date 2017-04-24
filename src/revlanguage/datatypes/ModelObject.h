@@ -48,6 +48,9 @@ namespace RevLanguage {
         virtual void                            printValue(std::ostream& o, bool user) const;                                          //!< Print value
         virtual void                            printValue(std::ostream& o) const { printValue(o, true); };                 //!< Print value overload
 
+        virtual std::string                     getGuiName(void) = 0;
+        virtual std::string                     getGuiSymbol(void) = 0;
+        
     protected:
         ModelObject(void);
         ModelObject(rbType *v);

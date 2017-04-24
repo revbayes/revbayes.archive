@@ -16,6 +16,9 @@
 #include <sstream>
 #include <vector>
 
+#include "AbstractModelObject.h"
+#include "RlContainer.h"
+
 using namespace RevLanguage;
 
 /**
@@ -168,6 +171,81 @@ bool Workspace::addTypeWithConstructor( RevObject *templ )
 }
 
 
+void Workspace::checkForProperlyInitializedGuiInformation(void) {
+
+    // get a pointer to the global workspace in the core and then
+    // extract the list of variables and moves stored there
+    RevLanguage::Workspace& myWorkspace = RevLanguage::Workspace::globalWorkspace();
+    std::map<std::string, RevLanguage::RevObject*> list = myWorkspace.getTypeTable();
+
+#   if 0
+    // construct the list of variables for the random variable and constants pallets
+    for (std::map<std::string, RevLanguage::RevObject*>::iterator it = list.begin(); it != list.end(); it++)
+        {
+        RevLanguage::AbstractModelObject* varPtr = dynamic_cast<RevLanguage::AbstractModelObject*>(it->second);
+        if (varPtr != NULL)
+            {
+
+            // it's a variable!
+            std::cout << "Variable: " << (it)->first << std::endl;
+            std::cout << "Ptr:      " << varPtr << std::endl;
+            std::cout << "Type:     " << varPtr->getType() << std::endl;
+
+            if ((it)->first[(it)->first.size()-1] == ']')
+                {
+                std::cout << "    Add:   \"" << &varPtr[0] << "\"" << std::endl;
+                }
+            std::cout << "   Name:   \"" << varPtr->getGuiVariableName() << "\"" << std::endl;
+            std::cout << "   Symbol: \"" << varPtr->getGuiLatexSymbol()  << "\"" << std::endl;
+
+            // determine the dimensions of the variable
+            std::string s = varPtr->getType();
+            size_t n = std::count(s.begin(), s.end(), '[');
+            std::cout << "      Dim: \"" << n  << "\"" << std::endl;
+
+            RevLanguage::Container* containerPtr = dynamic_cast<RevLanguage::Container*>(it->second);
+            if (containerPtr != NULL)
+                {
+                std::cout << "   It's a container!" << std::endl;
+                }
+            }
+        }
+#   endif
+
+#   if 0
+    // construct the list of moves
+    for (std::map<std::string, RevLanguage::RevObject*>::iterator it = list.begin(); it != list.end(); it++)
+        {
+        RevLanguage::Move* movePtr = dynamic_cast<RevLanguage::Move*>(it->second);
+        if (movePtr != NULL)
+            {
+            // it's a move!
+            std::cout << "Move: " << (it)->first << std::endl;
+            }
+
+        }
+    
+    // construct the list of distributions
+    RevLanguage::FunctionTable& funcList = myWorkspace.getFunctionTable();
+    for (RevLanguage::FunctionTable::iterator it = funcList.begin(); it != funcList.end(); it++)
+        {
+        RevLanguage::ConstructorFunction* conFunc = dynamic_cast<RevLanguage::ConstructorFunction*>(it->second);
+        if (conFunc != NULL)
+            {
+            RevLanguage::RevObject* revObj = conFunc->getRevObject();
+            RevLanguage::Distribution* distPtr = dynamic_cast<RevLanguage::Distribution*>(revObj);
+            if (distPtr != NULL)
+                {
+                // it's a distribution!
+                std::cout << "Distribution: " << (it)->first << std::endl;
+                std::cout << "   Name: \"" << distPtr->getGuiDistributionName() << "\"" << std::endl;
+                }
+            }
+       }
+#   endif
+}
+
+
 /** clone */
 Workspace* Workspace::clone() const
 {
@@ -258,6 +336,8 @@ void Workspace::initializeGlobalWorkspace( void )
     initializeBasicGlobalWorkspace();
     
     initializeExtraHelp();
+    
+    checkForProperlyInitializedGuiInformation();
 
 }
 

@@ -12,8 +12,6 @@ using namespace RevLanguage;
 /** Default constructor */
 RealPos::RealPos( void ) : Real( 1.0 ) {
 
-    setGuiVariableName("Positive Real Number");
-    setGuiLatexSymbol("R+");
 }
 
 
@@ -21,8 +19,6 @@ RealPos::RealPos( void ) : Real( 1.0 ) {
 RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x )
 {
     
-    setGuiVariableName("Positive Real Number");
-    setGuiLatexSymbol("R+");
     if ( x->getValue() < 0.0 )
     {
         throw RbException( "Nonpositive value for " + getClassType() );
@@ -34,8 +30,6 @@ RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x )
 RealPos::RealPos( double x ) : Real( x )
 {
 
-    setGuiVariableName("Positive Real Number");
-    setGuiLatexSymbol("R+");
     if ( x < 0.0 )
     {
         throw RbException( "Nonpositive value for " + getClassType() );
@@ -48,9 +42,6 @@ RealPos::RealPos( double x ) : Real( x )
 RealPos::RealPos( int x ) : Real( x )
 {
 
-    setGuiVariableName("Positive Real Number");
-    setGuiLatexSymbol("R+");
-    
     if ( x < 0 )
     {
         throw RbException( "Nonpositive value for " + getClassType() );

@@ -17,6 +17,7 @@
     BOOL                                          possibleInlets[4];
     NSModalSession                                mySession;
     DistributionListGui*                          distributionList;
+    NSMutableArray*                               variableList;
 }
 
 @property (nonatomic,strong) NSMutableArray*      dataMatrices;

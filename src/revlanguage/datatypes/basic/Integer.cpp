@@ -17,16 +17,12 @@ using namespace RevLanguage;
 Integer::Integer(void) : ModelObject<int>()
 {
     
-    setGuiVariableName("Integer");
-    setGuiLatexSymbol("Z");
 }
 
 
 Integer::Integer( RevBayesCore::TypedDagNode<int> *v ) : ModelObject<int>( v )
 {
     
-    setGuiVariableName("Integer");
-    setGuiLatexSymbol("Z");
 }
 
 
@@ -35,8 +31,6 @@ Integer::Integer( RevBayesCore::TypedDagNode<int> *v ) : ModelObject<int>( v )
 Integer::Integer(int v) : ModelObject<int>( new int(v) )
 {
 
-    setGuiVariableName("Integer");
-    setGuiLatexSymbol("Z");
 }
 
 
@@ -44,8 +38,6 @@ Integer::Integer(int v) : ModelObject<int>( new int(v) )
 Integer::Integer(unsigned int v) : ModelObject<int>( new int( int(v) ) )
 {
     
-    setGuiVariableName("Integer");
-    setGuiLatexSymbol("Z");
 }
 
 

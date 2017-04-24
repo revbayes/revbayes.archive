@@ -37,8 +37,6 @@ using namespace RevLanguage;
 Real::Real(void) : ModelObject<double>( new double(0.0) )
 {
 
-    setGuiVariableName("Real Number");
-    setGuiLatexSymbol("R");
 }
 
 
@@ -46,8 +44,6 @@ Real::Real(void) : ModelObject<double>( new double(0.0) )
 Real::Real(double v) : ModelObject<double>( new double(v) )
 {
 
-    setGuiVariableName("Real Number");
-    setGuiLatexSymbol("R");
 }
 
 
@@ -55,8 +51,6 @@ Real::Real(double v) : ModelObject<double>( new double(v) )
 Real::Real( RevBayesCore::TypedDagNode<double> *v ) : ModelObject<double>( v )
 {
 
-    setGuiVariableName("Real Number");
-    setGuiLatexSymbol("R");
 }
 
 
@@ -64,8 +58,6 @@ Real::Real( RevBayesCore::TypedDagNode<double> *v ) : ModelObject<double>( v )
 Real::Real(int v) : ModelObject<double>( new double(v) )
 {
 
-    setGuiVariableName("Real Number");
-    setGuiLatexSymbol("R");
 }
 
 
@@ -73,8 +65,6 @@ Real::Real(int v) : ModelObject<double>( new double(v) )
 Real::Real(const Real& x) : ModelObject<double>( x )
 {
     
-    setGuiVariableName("Real Number");
-    setGuiLatexSymbol("R");
 }
 
 

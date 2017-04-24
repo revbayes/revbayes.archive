@@ -17,58 +17,57 @@ namespace RevLanguage {
     class ModelVector : public ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >, public Container {
         
     public:
+        typedef typename rlType::valueType                      elementType;
+        typedef typename RevBayesCore::RbVector<elementType>    valueType;
+        typedef typename valueType::iterator                    iterator;
+        typedef typename valueType::const_iterator              const_iterator;
         
-        typedef typename rlType::valueType          elementType;
-        typedef typename RevBayesCore::RbVector<elementType>      valueType;
-        typedef typename valueType::iterator        iterator;
-        typedef typename valueType::const_iterator  const_iterator;
-        
-                                                    ModelVector(void);                                          //!< Default constructor
-                                                    ModelVector(const valueType& v);                            //!< Constructor from vector of values
-                                                    ModelVector(RevBayesCore::TypedDagNode<valueType>* n);      //!< Constructor from value node
+                                                                ModelVector(void);                                          //!< Default constructor
+                                                                ModelVector(const valueType& v);                            //!< Constructor from vector of values
+                                                                ModelVector(RevBayesCore::TypedDagNode<valueType>* n);      //!< Constructor from value node
 
         // STL-like vector functions provided here
-        const elementType&                          operator[](size_t index) const;                             //!< Subscript operator to internal value of Rev element, not allowing assignment
-        void                                        push_back(const rlType& x);                                 //!< Push Rev object element onto back
-        void                                        push_back(const RevObject &x);                              //!< Append element to end
-        void                                        push_back(const elementType& x);                            //!< Push internal value of Rev object element onto back
+        const elementType&                                      operator[](size_t index) const;                             //!< Subscript operator to internal value of Rev element, not allowing assignment
+        void                                                    push_back(const rlType& x);                                 //!< Push Rev object element onto back
+        void                                                    push_back(const RevObject &x);                              //!< Append element to end
+        void                                                    push_back(const elementType& x);                            //!< Push internal value of Rev object element onto back
         
         // Basic utility functions you have to override
-        virtual ModelVector<rlType>*                clone(void) const;                                          //!< Clone object
-        static const std::string&                   getClassType(void);                                         //!< Get Rev type
-        static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class type spec
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                    //!< Get the object type spec of the instance
-
+        virtual ModelVector<rlType>*                            clone(void) const;                                          //!< Clone object
+        static const std::string&                               getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                                  getClassTypeSpec(void);                                     //!< Get class type spec
+        virtual const TypeSpec&                                 getTypeSpec(void) const;                                    //!< Get the object type spec of the instance
+        
  
         // Type conversion functions
-        RevObject*                                  convertTo(const TypeSpec& type) const;                      //!< Convert to requested type
-        virtual double                              isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
+        RevObject*                                              convertTo(const TypeSpec& type) const;                      //!< Convert to requested type
+        virtual double                                          isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
 
         // Member object functions
-        virtual RevPtr<RevVariable>                 executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
+        virtual RevPtr<RevVariable>                             executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
         
         // Container functions provided here
-        virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
+        virtual rlType*                                         getElement(size_t idx) const;                                                   //!< Get element variable (single index)
 
         // ModelVector functions: override if you do not want to support these in-place algorithms
-        virtual void                                clear(void);                                                                    //!< Clear the vector
-        virtual size_t                              size(void) const;                                                               //!< Size of the vector
-        virtual void                                sort(void);                                                                     //!< Sort vector
-        virtual void                                unique(void);                                                                   //!< Remove consecutive duplicates
+        virtual void                                            clear(void);                                                                    //!< Clear the vector
+        virtual size_t                                          size(void) const;                                                               //!< Size of the vector
+        virtual void                                            sort(void);                                                                     //!< Sort vector
+        virtual void                                            unique(void);                                                                   //!< Remove consecutive duplicates
 
-        void                                        printValue(std::ostream& o, bool user) const;                          //!< Print value for user
+        void                                                    printValue(std::ostream& o, bool user) const;                          //!< Print value for user
 
-        
+        std::string                                             getGuiName(void) { return ""; }
+        std::string                                             getGuiSymbol(void) { return ""; }
+
     private:
-        
-        void                                        initMethods(void);
+        void                                                    initMethods(void);
         
         struct comparator {
             bool operator() (elementType & A, elementType & B) const { return ( A < B ); }
         } myComparator;
     
     };
-    
 }
 
 

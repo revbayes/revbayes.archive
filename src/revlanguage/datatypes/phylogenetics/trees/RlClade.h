@@ -45,7 +45,10 @@ namespace RevLanguage {
         std::string                             getConstructorFunctionName(void) const;                                                 //!< Get the name used for the constructor function in Rev.
         const MemberRules&                      getParameterRules(void) const;                                                          //!< Get member rules (const)
         const TypeSpec&                         getTypeSpec(void) const;                                                                //!< Get language type of the object
-               
+
+        std::string                             getGuiName(void) { return ""; }
+        std::string                             getGuiSymbol(void) { return ""; }
+        
     protected:
         void                                    setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         

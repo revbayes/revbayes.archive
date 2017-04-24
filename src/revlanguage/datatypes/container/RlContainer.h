@@ -36,13 +36,11 @@ namespace RevLanguage {
         virtual RevObject*                          getElement(size_t idx) const = 0;                                   //!< Get element variable (vector of indices)
         virtual size_t                              size(void) const = 0;                                               //!< Get number of elements in container
         
-        virtual bool                                allowsModificationToCompositeContainer(void) const { return true;} //!< Does an object of this type allow transformation into a composite container?
+        virtual bool                                allowsModificationToCompositeContainer(void) const { return true;}  //!< Does an object of this type allow transformation into a composite container?
 
     protected:
-        Container(void) {}                                                                                                //!< Default constructor
-        
-//        Container&                                  operator=(const Container& x);                                      //!< Assignment operator
-        
+        Container(void) {}                                                                                              //!< Default constructor
+      //Container&                                  operator=(const Container& x);                                      //!< Assignment operator
     };
     
 }

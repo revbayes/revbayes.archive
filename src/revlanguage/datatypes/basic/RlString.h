@@ -28,6 +28,9 @@ namespace RevLanguage {
             static const TypeSpec&          getClassTypeSpec(void);                                 //!< Get class type spec
             const TypeSpec&                 getTypeSpec(void) const;                                //!< Get language type of the object
         
+            std::string                     getGuiName(void) { return "String"; }
+            std::string                     getGuiSymbol(void) { return "S"; }
+
         protected:
 
         private:

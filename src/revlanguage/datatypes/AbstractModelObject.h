@@ -26,17 +26,10 @@ namespace RevLanguage {
     
     public:
         
-        virtual                                ~AbstractModelObject(void) {}                                                          //!< Virtual destructor
-        
-        // public GUI methods
-        std::string                             getGuiVariableName(void) { return guiVariableName; }
-        std::string                             getGuiLatexSymbol(void) { return guiLatexSymbol; }
-        void                                    setGuiVariableName(std::string s) { guiVariableName = s; }
-        void                                    setGuiLatexSymbol(std::string s) { guiLatexSymbol = s; }
+        virtual                                ~AbstractModelObject(void) {}                                                    //!< Virtual destructor
 
         // public methods
         bool                                    isModelObject(void) const;
-        
         
         // pure virtual methods
         virtual AbstractModelObject*            clone(void) const = 0;                                                          //!< Clone object
@@ -44,12 +37,11 @@ namespace RevLanguage {
         virtual void                            setDagNode(RevBayesCore::DagNode *newNode) = 0;                                 //!< Set or replace the internal dag node (and keep me)
         virtual void                            setName(const std::string &n) = 0;                                              //!< Set the name of the variable (if applicable)
         
+        virtual std::string                     getGuiName(void) = 0;
+        virtual std::string                     getGuiSymbol(void) = 0;
         
      private:
         
-        std::string                             guiVariableName;
-        std::string                             guiLatexSymbol;
-
     };
     
 }

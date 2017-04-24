@@ -9,6 +9,7 @@
 #import "ToolMatrixFilter.h"
 #import "ToolModel.h"
 #import "ToolReadData.h"
+#import "Variable.h"
 #import "WindowControllerModelBrowser.h"
 #import "WindowControllerModel.h"
 #import "WindowControllerModelSubmission.h"
@@ -33,6 +34,32 @@
 @synthesize dataMatrices;
 @synthesize distributionList;
 @synthesize parms;
+
+- (BOOL)addVariableNamed:(std::string)vName withAddress:(RevLanguage::AbstractModelObject*)varPtr {
+
+    std::string vType     = varPtr->getType();
+    size_t n              = std::count(vType.begin(), vType.end(), '[');
+    std::string guiName   = varPtr->getGuiName();
+    std::string guiSymbol = varPtr->getGuiSymbol();
+    
+    // add the variable
+    Variable* newV = [[Variable alloc] init];
+    [newV setDimensions:n];
+    [newV setName:[NSString stringWithCString:vName.c_str() encoding:NSASCIIStringEncoding]];
+    [newV setInterfaceName:[NSString stringWithCString:guiName.c_str() encoding:NSASCIIStringEncoding]];
+    [newV setInterfaceSymbol:[NSString stringWithCString:guiSymbol.c_str() encoding:NSASCIIStringEncoding]];
+    
+    [variableList addObject:newV];
+
+    RevLanguage::Container* containerPtr = dynamic_cast<RevLanguage::Container*>(varPtr);
+    if (containerPtr != NULL)
+        {
+        std::cout << "   It's a container!" << std::endl;
+        }
+
+
+    return YES;
+}
 
 - (NSMutableArray*)allocateParms {
 
@@ -100,6 +127,7 @@
     [aCoder encodeBool:possibleInlets[1] forKey:@"possibleInlets1"];
     [aCoder encodeBool:possibleInlets[2] forKey:@"possibleInlets2"];
     [aCoder encodeBool:possibleInlets[3] forKey:@"possibleInlets3"];
+    [aCoder encodeObject:variableList    forKey:@"variableList"];
 }
 
 - (BOOL)execute {
@@ -242,6 +270,7 @@
         [self setInletLocations];
         [self setOutletLocations];
         
+        variableList = [[NSMutableArray alloc] init];
         [self initializePallet];
 
 		// allcoate the mutable array holding the parameters
@@ -275,8 +304,9 @@
         possibleInlets[1] = [aDecoder decodeBoolForKey:@"possibleInlets1"];
         possibleInlets[2] = [aDecoder decodeBoolForKey:@"possibleInlets2"];
         possibleInlets[3] = [aDecoder decodeBoolForKey:@"possibleInlets3"];
-
-        [self initializePallet];
+    
+        variableList = [aDecoder decodeObjectForKey:@"variableList"];
+        //[self initializePallet];
 
 		// initialize the control window
 		controlWindow = [[WindowControllerModel alloc] initWithTool:self andParms:parms];
@@ -318,6 +348,9 @@
         RevLanguage::AbstractModelObject* varPtr = dynamic_cast<RevLanguage::AbstractModelObject*>(it->second);
         if (varPtr != NULL)
             {
+            [self addVariableNamed:(it->first) withAddress:varPtr];
+
+#           if 0
             // it's a variable!
             std::cout << "Variable: " << (it)->first << std::endl;
             std::cout << "Ptr:      " << varPtr << std::endl;
@@ -325,16 +358,22 @@
 
             if ((it)->first[(it)->first.size()-1] == ']')
                 {
-                std::cout << "   xxxx:   \"" << &varPtr[0] << "\"" << std::endl;
+                std::cout << "    Add:   \"" << &varPtr[0] << "\"" << std::endl;
                 }
             std::cout << "   Name:   \"" << varPtr->getGuiVariableName() << "\"" << std::endl;
             std::cout << "   Symbol: \"" << varPtr->getGuiLatexSymbol()  << "\"" << std::endl;
+
+            // determine the dimensions of the variable
+            std::string s = varPtr->getType();
+            size_t n = std::count(s.begin(), s.end(), '[');
+            std::cout << "      Dim: \"" << n  << "\"" << std::endl;
 
             RevLanguage::Container* containerPtr = dynamic_cast<RevLanguage::Container*>(it->second);
             if (containerPtr != NULL)
                 {
                 std::cout << "   It's a container!" << std::endl;
                 }
+#           endif
             }
         }
 
@@ -367,7 +406,9 @@
                 }
             }
        }
-
+    
+    
+    [self printPallet];
 }
 
 - (BOOL)isInletActiveWithIndex:(int)idx {
@@ -466,6 +507,13 @@
 }
 
 - (void)prepareForExecution {
+
+}
+
+- (void)printPallet {
+
+    for (Variable* v in variableList)
+        [v print];
 
 }
 

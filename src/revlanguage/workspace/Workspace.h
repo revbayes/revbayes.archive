@@ -92,6 +92,7 @@ namespace RevLanguage {
 
         Workspace&                          operator=(const Workspace& w);                                              //!< Prevent assignment
 
+        void                                checkForProperlyInitializedGuiInformation(void);
         void                                initializeBasicGlobalWorkspace(void);                                       //!< Initialize global workspace for basic procedures and IO
         void                                initializeBasicTypeGlobalWorkspace(void);                                        //!< Initialize global workspace for types
         void                                initializeDistGlobalWorkspace(void);                                        //!< Initialize global workspace for distributions
