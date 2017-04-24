@@ -32,6 +32,8 @@ namespace RevLanguage {
         DistributionFunctionRv(TypedDistribution<valueType> *d);                                                                //!< Object constructor
         DistributionFunctionRv(const DistributionFunctionRv& obj);                                                              //!< Copy constructor
         
+        virtual                                 ~DistributionFunctionRv(void);
+        
         // overloaded operators
         DistributionFunctionRv&                 operator=(const DistributionFunctionRv& c);
         
@@ -96,13 +98,24 @@ RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv(const Dis
 }
 
 
+/** Destructor */
+template <class valueType>
+RevLanguage::DistributionFunctionRv<valueType>::~DistributionFunctionRv( void )
+{
+    
+    delete templateObject;
+    
+}
+
+
 template <class valueType>
 RevLanguage::DistributionFunctionRv<valueType>& RevLanguage::DistributionFunctionRv<valueType>::operator=(const DistributionFunctionRv &c)
 {
     
     if (this != &c)
     {
-        Function::operator=(c);
+        Procedure::operator=(c);
+        delete templateObject;
         
         templateObject = c.templateObject->clone();
         

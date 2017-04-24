@@ -89,10 +89,10 @@ ArgumentRule& ArgumentRules::operator[](size_t index)
 void ArgumentRules::clear(void)
 {
     // delete the argument rules
-    for (std::vector<ArgumentRule*>::iterator it = rules.begin(); it != rules.end(); it++)
+    for (size_t i = 0; i != rules.size(); ++i)
     {
-        ArgumentRule* theRule = (*it);
-        delete theRule;
+        ArgumentRule* the_rule = rules[i];
+        delete the_rule;
     }
     rules.clear();
 }

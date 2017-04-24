@@ -126,6 +126,8 @@ const RevLanguage::TypeSpec& RevLanguage::TypedDistribution<rlType>::getVariable
 template <typename rlType>
 void RevLanguage::TypedDistribution<rlType>::setVariable(rlType *v)
 {
+    delete variable;
+    
     variable = v;
 }
 

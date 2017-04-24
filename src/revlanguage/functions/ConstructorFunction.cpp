@@ -28,7 +28,8 @@ ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : Proce
 }
 
 
-ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c) {
+ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c)
+{
     
     if (this != &c)
     {

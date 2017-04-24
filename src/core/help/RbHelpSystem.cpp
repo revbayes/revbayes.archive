@@ -45,7 +45,8 @@ RbHelpSystem::~RbHelpSystem( void )
     // free the pointers to the help types
     for ( std::map<std::string, RbHelpType*>::const_iterator it = helpForTypes.begin(); it != helpForTypes.end(); ++it)
     {
-        delete it->second;
+        RbHelpType *ht = it->second;
+        delete ht;
     }
     helpForTypes.clear();
     
