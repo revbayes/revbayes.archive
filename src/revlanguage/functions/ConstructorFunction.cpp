@@ -33,7 +33,7 @@ ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c
     
     if (this != &c)
     {
-        Function::operator=(c);
+        Procedure::operator=(c);
         
         // delete the old object
         delete templateObject;

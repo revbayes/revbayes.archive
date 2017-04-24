@@ -71,6 +71,7 @@ Workspace& Workspace::operator=(const Workspace& x)
             RevObject *the_object = it->second;
             delete the_object;
         }
+        typeTable.clear();
         
         // copy all the types
         for (TypeTable::const_iterator it=x.typeTable.begin(); it!=x.typeTable.end(); ++it)
@@ -95,6 +96,7 @@ Workspace::~Workspace(void)
         RevObject *the_object = it->second;
         delete the_object;
     }
+    typeTable.clear();
     
 }
 
@@ -107,6 +109,7 @@ bool Workspace::addDistribution( Distribution *dist )
 
     if ( typeTable.find( dist->getDistributionFunctionName() ) != typeTable.end() )
     {
+        delete dist;
         throw RbException("There is already a type named '" + dist->getType() + "' in the workspace");
     }
     
