@@ -158,7 +158,8 @@ const MemberRules& Taxon::getParameterRules(void) const
 
 
 /** Get Rev type of object */
-const std::string& Taxon::getClassType(void) { 
+const std::string& Taxon::getClassType(void)
+{
     
     static std::string rev_type = "Taxon";
     
@@ -166,7 +167,8 @@ const std::string& Taxon::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Taxon::getClassTypeSpec(void) { 
+const TypeSpec& Taxon::getClassTypeSpec(void)
+{
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -175,7 +177,8 @@ const TypeSpec& Taxon::getClassTypeSpec(void) {
 
 
 /** Get type spec */
-const TypeSpec& Taxon::getTypeSpec( void ) const {
+const TypeSpec& Taxon::getTypeSpec( void ) const
+{
     
     static TypeSpec type_spec = getClassTypeSpec();
     
@@ -184,7 +187,8 @@ const TypeSpec& Taxon::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Taxon::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Taxon::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "taxonName") 
     {
@@ -201,6 +205,7 @@ void Taxon::setConstParameter(const std::string& name, const RevPtr<const RevVar
     else {
         RevObject::setConstParameter(name, var);
     }
+    
 }
 
 

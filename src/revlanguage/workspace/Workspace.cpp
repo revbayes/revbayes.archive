@@ -152,15 +152,22 @@ bool Workspace::addTypeWithConstructor( RevObject *templ )
 {
     const std::string& name = templ->getConstructorFunctionName();
 
-    if (typeTable.find( name ) != typeTable.end())
+
+    if (typeTable.find( name ) != typeTable.end() )
     {
+        
         // free memory
         delete templ;
         
         throw RbException("There is already a type named '" + name + "' in the workspace");
     }
     
-    typeTable.insert(std::pair<std::string, RevObject*>(templ->getType(), templ->clone()));
+    // only add the type to the table if we haven't gotten one with this signature already
+    if (typeTable.find( templ->getType() ) == typeTable.end())
+    {
+        typeTable.insert(std::pair<std::string, RevObject*>(templ->getType(), templ->clone()));
+    }
+    
     
     functionTable.addFunction( new ConstructorFunction(templ) );
     
