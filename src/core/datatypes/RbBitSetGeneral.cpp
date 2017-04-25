@@ -199,7 +199,7 @@ RbBitSetGeneral& RbBitSetGeneral::operator|=(const RbBitSet& x)
 void RbBitSetGeneral::clearBits( void )
 {
     // reset the bitset
-    value = std::vector<bool>(value.size(),false);
+    value = std::vector<bool>(num_bits,false);
     num_set_bits = 0;
 }
 

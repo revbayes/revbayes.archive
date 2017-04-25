@@ -87,7 +87,8 @@ RevLanguage::RevPtr<ptrType>& RevLanguage::RevPtr<ptrType>::operator=(const RevP
 
 
 template <typename ptrType>
-void RevLanguage::RevPtr<ptrType>::initializePointer(ptrType* inPtr) {
+void RevLanguage::RevPtr<ptrType>::initializePointer(ptrType* inPtr)
+{
     
     mPtr = inPtr;
     
@@ -98,7 +99,7 @@ template <typename ptrType>
 void RevLanguage::RevPtr<ptrType>::finalizePointer(void)
 {
     
-    if ( decrementCountForAddress(mPtr) )
+    if ( decrementCountForAddress(mPtr) == true )
     {
         delete mPtr;
     }
