@@ -10,11 +10,7 @@ using namespace RevBayesCore;
 
 
 /** Constructor */
-DiscreteCharacterState::DiscreteCharacterState(size_t n) : CharacterState(),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(n),
-    weighted( false )
+DiscreteCharacterState::DiscreteCharacterState(size_t n) : CharacterState()
 {
 
 
@@ -28,7 +24,7 @@ bool DiscreteCharacterState::operator==(const CharacterState& x) const
 
     if (derivedX != NULL)
     {
-        return derivedX->state == state;
+        return derivedX->getState() == getState();
     }
 
     return false;
@@ -49,8 +45,8 @@ bool DiscreteCharacterState::operator<(const CharacterState &x) const
     const DiscreteCharacterState* derivedX = static_cast<const DiscreteCharacterState*>(&x);
     if ( derivedX != NULL )
     {
-        RbBitSet myState = state;
-        RbBitSet yourState = derivedX->state;
+        const RbBitSet& myState = getState();
+        const RbBitSet& yourState = derivedX->getState();
         return ( myState < yourState );
     }
 
@@ -66,14 +62,17 @@ void DiscreteCharacterState::operator++( void )
         throw RbException("Cannot increment an ambiguous character.");
     }
 
+    size_t index = getStateIndex();
+    ++index;
+    
     // unset the current state
-    state.unset( index_single_state );
-
-    // incremement our state index;
-    ++index_single_state;
-
-    // now set the bit of the state
-    state.set(index_single_state);
+    setStateByIndex( index );
+//
+//    // incremement our state index;
+//    ++index_single_state;
+//
+//    // now set the bit of the state
+//    state.set(index_single_state);
 
 }
 
@@ -85,15 +84,12 @@ void DiscreteCharacterState::operator++( int i )
     {
         throw RbException("Cannot increment an ambiguous character.");
     }
-
+    
+    size_t index = getStateIndex();
+    ++index;
+    
     // unset the current state
-    state.unset( index_single_state );
-
-    // incremement our state index;
-    ++index_single_state;
-
-    // now set the bit of the state
-    state.set(index_single_state);
+    setStateByIndex( index );
 
 }
 
@@ -104,15 +100,21 @@ void DiscreteCharacterState::operator+=( int i )
     {
         throw RbException("Cannot increment an ambiguous character.");
     }
-
+    
+    size_t index = getStateIndex();
+    index += i;
+    
     // unset the current state
-    state.unset( index_single_state );
+    setStateByIndex( index );
 
-    // incremement our state index;
-    index_single_state += i;
-
-    // now set the bit of the state
-    state.set(index_single_state);
+//    // unset the current state
+//    state.unset( index_single_state );
+//
+//    // incremement our state index;
+//    index_single_state += i;
+//
+//    // now set the bit of the state
+//    state.set(index_single_state);
 
 }
 
@@ -123,15 +125,13 @@ void DiscreteCharacterState::operator--( void )
     {
         throw RbException("Cannot decrement an ambiguous character.");
     }
-
+    
+    
+    size_t index = getStateIndex();
+    --index;
+    
     // unset the current state
-    state.unset( index_single_state );
-
-    // incremement our state index;
-    --index_single_state;
-
-    // now set the bit of the state
-    state.set(index_single_state);
+    setStateByIndex( index );
 
 }
 
@@ -143,15 +143,13 @@ void DiscreteCharacterState::operator--( int i )
     {
         throw RbException("Cannot decrement an ambiguous character.");
     }
-
+    
+    
+    size_t index = getStateIndex();
+    --index;
+    
     // unset the current state
-    state.unset( index_single_state );
-
-    // incremement our state index;
-    --index_single_state;
-
-    // now set the bit of the state
-    state.set(index_single_state);
+    setStateByIndex( index );
 
 }
 
@@ -162,51 +160,22 @@ void DiscreteCharacterState::operator-=( int i )
     {
         throw RbException("Cannot decrement an ambiguous character.");
     }
-
+    
+    size_t index = getStateIndex();
+    index -= i;
+    
     // unset the current state
-    state.unset( index_single_state );
-
-    // incremement our state index;
-    index_single_state -= i;
-
-    // now set the bit of the state
-    state.set(index_single_state);
+    setStateByIndex( index );
 
 }
 
 
-void DiscreteCharacterState::addState(const std::string &symbol)
-{
-    ++num_observed_states;
-
-    std::string labels = getStateLabels();
-    size_t pos = labels.find(symbol);
-
-    state.set( pos );
-    index_single_state = pos;
-}
-
-size_t DiscreteCharacterState::getNumberObservedStates(void) const
-{
-    return num_observed_states;
-}
-
-
-size_t DiscreteCharacterState::getNumberOfStates(void) const
-{
-    return state.size();
-}
-
-
-const RbBitSet& DiscreteCharacterState::getState(void) const
-{
-    return state;
-}
 
 std::string DiscreteCharacterState::getStateDescription(void) const
 {
     return getStringValue();
 }
+
 
 std::vector<std::string> DiscreteCharacterState::getStateDescriptions(void) const
 {
@@ -220,18 +189,6 @@ std::vector<std::string> DiscreteCharacterState::getStateDescriptions(void) cons
     
     return state_descriptions;
 }
-
-
-size_t DiscreteCharacterState::getStateIndex(void) const
-{
-    if ( isAmbiguous() == true )
-    {
-        throw RbException("Cannot get the index of an ambiguous state.");
-    }
-
-    return index_single_state;
-}
-
 
 
 std::string DiscreteCharacterState::getStringValue(void) const
@@ -252,8 +209,8 @@ std::string DiscreteCharacterState::getStringValue(void) const
     size_t size = labels.size();
     for (size_t i = 0; i < size; ++i)
     {
-        bool isSet = state.isSet( i );
-        if (isSet)
+        bool is_set = isStateSet( i );
+        if ( is_set == true )
         {
             tmp_val += labels[i];
         }
@@ -285,70 +242,60 @@ bool DiscreteCharacterState::isAmbiguous( void ) const
 }
 
 
+size_t DiscreteCharacterState::getStateIndex(void) const
+{
+    if ( isAmbiguous() == true )
+    {
+        throw RbException("Cannot get the index of an ambiguous state.");
+    }
+    
+    RbBitSet bs = getState();
+    
+    return bs.getFirstSetBit();
+}
+
+
 bool DiscreteCharacterState::isStateSet(size_t index) const
 {
-    return state.isSet(index);
+    RbBitSet bs = getState();
+    
+    return bs.isSet(index);
 }
 
 
-void DiscreteCharacterState::setToFirstState(void)
+size_t DiscreteCharacterState::getNumberObservedStates(void) const
 {
-    num_observed_states = 1;
-    index_single_state = 0;
-    state.clear();
-    state.set( 0 );
+    RbBitSet bs = getState();
+    return bs.getNumberSetBits();
 }
 
 
-void DiscreteCharacterState::setStateByIndex(size_t index)
+size_t DiscreteCharacterState::getNumberOfStates(void) const
 {
-
-    num_observed_states = 1;
-    index_single_state = index;
-    state.clear();
-    state.set( index );
+    RbBitSet bs = getState();
+    return bs.size();
 }
 
-
-
-void DiscreteCharacterState::setState(const std::string &s)
-{
-
-    std::string labels = getStateLabels();
-
-    num_observed_states = 0;
-    state.clear();
-
-    for (size_t i = 0; i < s.size(); i++)
-    {
-        ++num_observed_states;
-
-        size_t pos = labels.find(s[i]);
-        state.set(pos);
-        index_single_state = pos;
-    }
-
-}
 
 
 const std::vector<double> DiscreteCharacterState::getWeights() const {
     
     // @Bastien: Change this function as needed!beta
-    return std::vector<double>(num_observed_states, 1.0);
+    return std::vector<double>(getNumberObservedStates(), 1.0);
 }
-
-
-
-bool DiscreteCharacterState::isWeighted() const {
-
-  return weighted;
-
-}
-
-
-void DiscreteCharacterState::setWeighted(bool wd) {
-
-  weighted = wd;
-  return ;
-
-}
+//
+//
+//
+//bool DiscreteCharacterState::isWeighted() const {
+//
+//  return weighted;
+//
+//}
+//
+//
+//void DiscreteCharacterState::setWeighted(bool wd) {
+//
+//  weighted = wd;
+//  return ;
+//
+//}

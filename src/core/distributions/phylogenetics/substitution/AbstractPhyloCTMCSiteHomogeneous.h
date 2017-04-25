@@ -567,7 +567,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
                 DiscreteCharacterState &c = taxon.getCharacter(site_indices[site]);
 
-                if (c.isWeighted() )
+                if ( c.isWeighted() )
                 {
                   weightedCharacters = true;
                   break;
