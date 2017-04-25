@@ -156,10 +156,10 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         addTypeWithConstructor( new Clade() );
        // addTypeWithConstructor( "rootedTripletDist", new RootedTripletDistribution() );
 
-        
+
         /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
         addTypeWithConstructor( new Taxon() );
-        
+
         /* Add math types (in folder "datatypes/math") */
         addTypeWithConstructor( new CorrespondenceAnalysis()                    );
         addType( new RateMap()                                                  );

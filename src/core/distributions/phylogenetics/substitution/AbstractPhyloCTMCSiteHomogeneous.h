@@ -510,7 +510,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
 
     // create a vector with the correct site indices
     // some of the sites may have been excluded
-    std::vector<size_t> siteIndices = getIncludedSiteIndices();
+    std::vector<size_t> site_indices = getIncludedSiteIndices();
 
     // check whether there are ambiguous characters (besides gaps)
     bool ambiguousCharacters = false;
@@ -525,7 +525,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
             if ( (*it)->isTip() )
             {
                 AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                DiscreteCharacterState &c = taxon.getCharacter(siteIndices[site]);
+                DiscreteCharacterState &c = taxon.getCharacter(site_indices[site]);
 
                 // if we treat unknown characters as gaps and this is an unknown character then we change it
                 // because we might then have a pattern more
@@ -566,7 +566,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
             if ( (*it)->isTip() )
             {
                 AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                DiscreteCharacterState &c = taxon.getCharacter(siteIndices[site]);
+                DiscreteCharacterState &c = taxon.getCharacter(site_indices[site]);
 
                 if (c.isWeighted() )
                 {
@@ -603,7 +603,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 if ( (*it)->isTip() )
                 {
                     AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                    CharacterState &c = taxon.getCharacter(siteIndices[site]);
+                    CharacterState &c = taxon.getCharacter(site_indices[site]);
                     pattern += c.getStringValue();
                 }
             }
@@ -679,7 +679,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 // set the counts for this patter
                 process_pattern_counts[patternIndex] = pattern_counts[patternIndex+pattern_block_start];
 
-                charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[indexOfSitePattern[patternIndex+pattern_block_start]]) );
+                charType &c = static_cast<charType &>( taxon.getCharacter(site_indices[indexOfSitePattern[patternIndex+pattern_block_start]]) );
                 gap_matrix[node_index][patternIndex] = c.isGapState();
 
                 if ( using_ambiguous_characters == true )
@@ -1586,38 +1586,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fireTreeChangeEve
 
 
 template<class charType>
-std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getIncludedSiteIndices( void )
-{
-    // create a vector with the correct site indices
-    // some of the sites may have been excluded
-    std::vector<size_t> siteIndices;
-    size_t siteIndex = 0;
-    for (size_t i = 0; i < num_sites; ++i)
-    {
-        while ( this->value->isCharacterExcluded(siteIndex) )
-        {
-            siteIndex++;
-            if ( siteIndex >= this->value->getNumberOfCharacters()  )
-            {
-                throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
-            }
-        }
-
-        siteIndices.push_back(siteIndex);
-        siteIndex++;
-    }
-
-    // test if there were additional sites that we did not use
-    while ( siteIndex < this->value->getNumberOfCharacters() )
-    {
-        if ( !this->value->isCharacterExcluded(siteIndex)  )
-        {
-            throw RbException( "The character matrix cannot set to this variable because it has too many included characters." );
-        }
-        siteIndex++;
-    }
-
-    return siteIndices;
+ std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getIncludedSiteIndices( void )
+ {
+     return this->value->getIncludedSiteIndices();
 }
 
 

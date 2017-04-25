@@ -154,28 +154,28 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RootedTripletDistribution::execute
     {
         found = true;
         
-        size_t n = this->dagNode->getValue().getNumberOfTriplets();
+        size_t n = this->dag_node->getValue().getNumberOfTriplets();
         return new RevVariable( new Natural( n ) );
     }
     else if (name == "nTrees")
     {
         found = true;
         
-        size_t n = this->dagNode->getValue().getNumberOfTrees();
+        size_t n = this->dag_node->getValue().getNumberOfTrees();
         return new RevVariable( new Natural( n ) );
     }
     else if (name == "species")
     {
         found = true;
         
-        const std::vector<std::string>& n = this->dagNode->getValue().getSpecies();
+        const std::vector<std::string>& n = this->dag_node->getValue().getSpecies();
         return new RevVariable( new ModelVector<RlString>( n ) );
     }
     else if (name == "taxa")
     {
         found = true;
         
-        const std::vector<RevBayesCore::Taxon>& n = this->dagNode->getValue().getTaxa();
+        const std::vector<RevBayesCore::Taxon>& n = this->dag_node->getValue().getTaxa();
         return new RevVariable( new ModelVector<Taxon>( n ) );
     }
     else if (name == "setTaxa")
@@ -183,7 +183,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RootedTripletDistribution::execute
         found = true;
         
         std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon>  &>( args[0].getVariable()->getRevObject() ).getValue();
-        RevBayesCore::RootedTripletDistribution &dist = dagNode->getValue();
+        RevBayesCore::RootedTripletDistribution &dist = dag_node->getValue();
         dist.setTaxa(t);
         
         return NULL;
@@ -193,7 +193,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RootedTripletDistribution::execute
         found = true;
         
         std::vector<std::string> t = static_cast<const ModelVector<RlString>  &>( args[0].getVariable()->getRevObject() ).getValue();
-        RevBayesCore::RootedTripletDistribution &dist = dagNode->getValue();
+        RevBayesCore::RootedTripletDistribution &dist = dag_node->getValue();
         dist.setSpecies(t);
         
         return NULL;

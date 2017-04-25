@@ -359,7 +359,6 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternC
             if(stateCounts[i] > max)
             {
                 max = stateCounts[i];
-                common_state = i;
             }
         }
     }
@@ -367,26 +366,40 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternC
     // if the pattern is uninformative, then it is incompatible with the informative coding
     if(max <= 1) return (coding != AscertainmentBias::INFORMATIVE);
 
+    std::vector<size_t> common_states;
+    for(std::map<size_t, size_t>::iterator it = stateCounts.begin(); it != stateCounts.end(); it++)
+    {
+        if(it->second == max)
+        {
+            common_states.push_back(it->first);
+        }
+    }
+
     // find characters not intersecting common state
     // then get state counts
     stateCounts.clear();
-    for(std::map<RbBitSet, size_t>::iterator it = charCounts.begin(); it != charCounts.end(); it++)
+    for(size_t i = 0; i < common_states.size(); i++)
     {
-        RbBitSet r = it->first;
+        size_t common_state = common_states[i];
 
-        if(r.isSet(common_state)) continue;
-
-        for(size_t i = 0; i < r.size(); i++)
+        for(std::map<RbBitSet, size_t>::iterator it = charCounts.begin(); it != charCounts.end(); it++)
         {
-            // if a state is found more than once among characters lacking the common state
-            // then this site pattern is parsimony informative
-            if(stateCounts.find(i) != stateCounts.end() )
+            RbBitSet r = it->first;
+
+            if(r.isSet(common_state)) continue;
+
+            for(size_t i = 0; i < r.size(); i++)
             {
-                return true;
-            }
-            else if( r.isSet(i) )
-            {
-                stateCounts[i]++;
+                // if a state is found more than once among characters lacking the common state
+                // then this site pattern is parsimony informative
+                if(stateCounts.find(i) != stateCounts.end() )
+                {
+                    return true;
+                }
+                else if( r.isSet(i) )
+                {
+                    stateCounts[i]++;
+                }
             }
         }
     }

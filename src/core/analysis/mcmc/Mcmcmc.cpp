@@ -541,12 +541,10 @@ void Mcmcmc::synchronizeValues(void)
 #ifdef RB_MPI
     if ( active_PID != pid )
     {
-//        MPI::COMM_WORLD.Send(&results, int(num_chains), MPI::DOUBLE, (int)active_PID, 0);
         for (size_t i=0; i<num_chains; ++i)
         {
             if ( pid == pid_per_chain[i] )
             {
-//                MPI::COMM_WORLD.Send(&results[i], 1, MPI::DOUBLE, (int)active_PID, 0);
                 MPI_Send(&results[i], 1, MPI_DOUBLE, (int)active_PID, 0, MPI_COMM_WORLD);
             }
             
@@ -565,7 +563,6 @@ void Mcmcmc::synchronizeValues(void)
             // ignore self
             if (pid != pid_per_chain[j])
             {
-//                MPI::COMM_WORLD.Recv(&results[j], 1, MPI::DOUBLE, int(pid_per_chain[j]), 0);
                 MPI_Status status;
                 MPI_Recv(&results[j], 1, MPI_DOUBLE, int(pid_per_chain[j]), 0, MPI_COMM_WORLD, &status);
             }

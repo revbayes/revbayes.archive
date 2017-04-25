@@ -1,16 +1,15 @@
-#include "EmpiricalQuantileFunction.h"
-#include "Func_empiricalQuantile.h"
+#include "MedianFunction.h"
+#include "Func_median.h"
 #include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
-#include "Probability.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-Func_empiricalQuantile::Func_empiricalQuantile( void ) : TypedFunction<Real>( )
+Func_median::Func_median( void ) : TypedFunction<Real>( )
 {
     
 }
@@ -22,26 +21,25 @@ Func_empiricalQuantile::Func_empiricalQuantile( void ) : TypedFunction<Real>( )
  *
  * \return A new copy of the process.
  */
-Func_empiricalQuantile* Func_empiricalQuantile::clone( void ) const
+Func_median* Func_median::clone( void ) const
 {
     
-    return new Func_empiricalQuantile( *this );
+    return new Func_median( *this );
 }
 
 
-RevBayesCore::TypedFunction<double>* Func_empiricalQuantile::createFunction( void ) const
+RevBayesCore::TypedFunction<double>* Func_median::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* arg = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* k = static_cast<const Probability &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::EmpiricalQuantileFunction* f = new RevBayesCore::EmpiricalQuantileFunction( arg, k );
+    RevBayesCore::MedianFunction* f = new RevBayesCore::MedianFunction( arg );
     
     return f;
 }
 
 
 /* Get argument rules */
-const ArgumentRules& Func_empiricalQuantile::getArgumentRules( void ) const
+const ArgumentRules& Func_median::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -51,8 +49,6 @@ const ArgumentRules& Func_empiricalQuantile::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "x", ModelVector<Real>::getClassTypeSpec(), "A vector of numbers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-
-        argumentRules.push_back( new ArgumentRule( "k", Probability::getClassTypeSpec(), "The kth quantile of vector x.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }
@@ -61,17 +57,17 @@ const ArgumentRules& Func_empiricalQuantile::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_empiricalQuantile::getClassType(void)
+const std::string& Func_median::getClassType(void)
 {
     
-    static std::string rev_type = "Func_empiricalQuantile";
+    static std::string rev_type = "Func_median";
     
     return rev_type;
 }
 
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_empiricalQuantile::getClassTypeSpec(void)
+const TypeSpec& Func_median::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -83,16 +79,16 @@ const TypeSpec& Func_empiricalQuantile::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_empiricalQuantile::getFunctionName( void ) const
+std::string Func_median::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "quantile";
+    std::string f_name = "median";
     
     return f_name;
 }
 
 
-const TypeSpec& Func_empiricalQuantile::getTypeSpec( void ) const
+const TypeSpec& Func_median::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();

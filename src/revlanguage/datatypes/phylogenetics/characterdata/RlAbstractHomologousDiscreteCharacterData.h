@@ -66,7 +66,7 @@ namespace RevLanguage {
 
     protected:
 
-        RevBayesCore::TypedDagNode<valueType>*                  dagNode;
+        RevBayesCore::TypedDagNode<valueType>*                  dag_node;
 
     private:
         

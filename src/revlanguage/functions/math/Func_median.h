@@ -1,5 +1,5 @@
-#ifndef Func_mean_H
-#define Func_mean_H
+#ifndef Func_median_H
+#define Func_median_H
 
 #include "Real.h"
 #include "RlTypedFunction.h"
@@ -9,11 +9,11 @@
 namespace RevLanguage {
     
     /**
-     * The RevLanguage wrapper of the arithmetic mean function.
+     * The RevLanguage wrapper of the arithmetic median function.
      *
-     * The RevLanguage wrapper of the mean function connects
-     * the variables/parameters of the function and creates the internal MeanFunction object.
-     * Please read the MeanFunction.h for more info.
+     * The RevLanguage wrapper of the median function connects
+     * the variables/parameters of the function and creates the internal medianFunction object.
+     * Please read the medianFunction.h for more info.
      *
      *
      * @copyright Copyright 2009-
@@ -21,13 +21,13 @@ namespace RevLanguage {
      * @since 2014-07-27, version 1.0
      *
      */
-    class Func_mean : public TypedFunction<Real> {
+    class Func_median : public TypedFunction<Real> {
         
     public:
-        Func_mean( void );
+        Func_median( void );
         
         // Basic utility functions
-        Func_mean*                                      clone(void) const;                                          //!< Clone the object
+        Func_median*                                    clone(void) const;                                          //!< Clone the object
         static const std::string&                       getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                     //!< Get class type spec
         std::string                                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
