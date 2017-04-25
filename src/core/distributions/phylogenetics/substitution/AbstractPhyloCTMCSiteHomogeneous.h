@@ -3151,7 +3151,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
     }
     
     // we rescale the rate by the inverse of the proportion of invariant sites
-//    rate /= ( 1.0 - getPInv() );
+    rate /= ( 1.0 - getPInv() );
 
     double end_age = node->getAge();
 
