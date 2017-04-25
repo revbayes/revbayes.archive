@@ -152,7 +152,6 @@ bool Workspace::addTypeWithConstructor( RevObject *templ )
 {
     const std::string& name = templ->getConstructorFunctionName();
 
-
     if (typeTable.find( name ) != typeTable.end() )
     {
         

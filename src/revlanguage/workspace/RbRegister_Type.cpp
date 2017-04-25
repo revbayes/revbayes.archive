@@ -131,7 +131,10 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
         AddWorkspaceVectorType<Tree,3>::addTypeToWorkspace( *this, new Tree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
-		
+
+        addTypeWithConstructor( new Clade() );
+        addTypeWithConstructor( new Taxon() );
+
         
         //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
 //        addFunction( new Func_workspaceVector<AbstractModelObject>() );

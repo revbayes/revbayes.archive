@@ -41,8 +41,7 @@ Simplex::Simplex( const RevBayesCore::RbVector<double>& v ) : ModelVector<RealPo
  * @todo Make sure we actually have a simplex stored in n (or an
  *       NA value)
  */
-Simplex::Simplex( RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* n ) :
-    ModelVector<RealPos>( n )
+Simplex::Simplex( RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* n ) : ModelVector<RealPos>( n )
 {
 
 }
@@ -66,7 +65,8 @@ Simplex* Simplex::clone( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Simplex::getClassType(void) { 
+const std::string& Simplex::getClassType(void)
+{
     
     static std::string rev_type = "Simplex";
     
