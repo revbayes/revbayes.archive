@@ -57,9 +57,6 @@ namespace RevLanguage {
 
         void                                                    printValue(std::ostream& o, bool user) const;                          //!< Print value for user
 
-        std::string                                             getGuiName(void) { return ""; }
-        std::string                                             getGuiSymbol(void) { return ""; }
-
     private:
         void                                                    initMethods(void);
         

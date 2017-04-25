@@ -37,9 +37,9 @@ namespace RevLanguage {
         virtual void                            setDagNode(RevBayesCore::DagNode *newNode) = 0;                                 //!< Set or replace the internal dag node (and keep me)
         virtual void                            setName(const std::string &n) = 0;                                              //!< Set the name of the variable (if applicable)
         
-        virtual std::string                     getGuiName(void) = 0;
-        virtual std::string                     getGuiSymbol(void) = 0;
-        
+        //virtual std::string                     getGuiName(void) = 0;
+        //virtual std::string                     getGuiSymbol(void) = 0;
+
      private:
         
     };
