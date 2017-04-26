@@ -65,6 +65,11 @@ void DiscreteCharacterState::operator++( void )
     size_t index = getStateIndex();
     ++index;
     
+    if ( index >= getNumberOfStates() )
+    {
+        throw RbException("Cannot increment character state any further; we are already at the last state.");
+    }
+    
     // unset the current state
     setStateByIndex( index );
 //
@@ -88,6 +93,12 @@ void DiscreteCharacterState::operator++( int i )
     size_t index = getStateIndex();
     ++index;
     
+    if ( index >= getNumberOfStates() )
+    {
+        throw RbException("Cannot increment character state any further; we are already at the last state.");
+    }
+
+    
     // unset the current state
     setStateByIndex( index );
 
@@ -103,6 +114,12 @@ void DiscreteCharacterState::operator+=( int i )
     
     size_t index = getStateIndex();
     index += i;
+
+    if ( index >= getNumberOfStates() )
+    {
+        throw RbException("Cannot increment character state any further; we are already at the last state.");
+    }
+
     
     // unset the current state
     setStateByIndex( index );
@@ -128,6 +145,12 @@ void DiscreteCharacterState::operator--( void )
     
     
     size_t index = getStateIndex();
+    
+    if ( index == 0 )
+    {
+        throw RbException("Cannot decrement character state any further; we are already at the first state.");
+    }
+
     --index;
     
     // unset the current state
@@ -146,6 +169,12 @@ void DiscreteCharacterState::operator--( int i )
     
     
     size_t index = getStateIndex();
+    
+    if ( index == 0 )
+    {
+        throw RbException("Cannot decrement character state any further; we are already at the first state.");
+    }
+    
     --index;
     
     // unset the current state
@@ -162,6 +191,12 @@ void DiscreteCharacterState::operator-=( int i )
     }
     
     size_t index = getStateIndex();
+    
+    if ( index < i )
+    {
+        throw RbException("Cannot decrement character state any further; we are already at the first state.");
+    }
+    
     index -= i;
     
     // unset the current state
