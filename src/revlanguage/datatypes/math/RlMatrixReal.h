@@ -48,13 +48,10 @@ namespace RevLanguage {
         // Member method functions
         virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
 
-<<<<<<< HEAD
         std::string                         getGuiName(void) { return ""; }
         std::string                         getGuiSymbol(void) { return ""; }
         std::string                         getGuiInfo(void) { return ""; }
 
-=======
->>>>>>> c54d844d6bccb46f193d8e4b18ac6f817cb88097
     private:
         void                                initializeMethods(void);
     };

@@ -47,16 +47,12 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                            //!< Get language type of the object
         
         // Member method inits
-<<<<<<< HEAD
         virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f); //!< Map member methods to internal functions
 
         std::string                         getGuiName(void) { return "Taxon"; }
         std::string                         getGuiSymbol(void) { return "OTU"; }
         std::string                         getGuiInfo(void) { return ""; }
-=======
-        virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
->>>>>>> c54d844d6bccb46f193d8e4b18ac6f817cb88097
-        
+
     protected:
         void                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);   //!< Set member variable
         RevPtr<const RevVariable>           taxon;

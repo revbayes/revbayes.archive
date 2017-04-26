@@ -31,25 +31,21 @@ namespace RevLanguage {
     class RnaState : public ModelObject<RevBayesCore::RnaState> {
         
     public:
-        RnaState(void);                                                                                         //!< Default constructor
-        RnaState(const RevBayesCore::RnaState &d);                                                              //!< Construct from Rna
+                                        RnaState(void);                                 //!< Default constructor
+                                        RnaState(const RevBayesCore::RnaState &d);      //!< Construct from Rna
         
         // Operators
         
         // Basic utility functions
-        RnaState*                       clone(void) const;                                                      //!< Clone object
-        static const std::string&       getClassType(void);                                                     //!< Get Rev type
-        static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
-        const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
+        RnaState*                       clone(void) const;                              //!< Clone object
+        static const std::string&       getClassType(void);                             //!< Get Rev type
+        static const TypeSpec&          getClassTypeSpec(void);                         //!< Get class type spec
+        const TypeSpec&                 getTypeSpec(void) const;                        //!< Get language type of the object
         
-<<<<<<< HEAD
         std::string                     getGuiName(void) { return "RNA State"; }
         std::string                     getGuiSymbol(void) { return "S(RNA)"; }
         std::string                     getGuiInfo(void) { return ""; }
-=======
->>>>>>> c54d844d6bccb46f193d8e4b18ac6f817cb88097
     };
-    
 }
 
 #endif
