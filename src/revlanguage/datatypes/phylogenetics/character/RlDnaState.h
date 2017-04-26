@@ -42,9 +42,12 @@ namespace RevLanguage {
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         
+<<<<<<< HEAD
         std::string                     getGuiName(void) { return "DNA State"; }
         std::string                     getGuiSymbol(void) { return "S(DNA)"; }
         std::string                     getGuiInfo(void) { return ""; }
+=======
+>>>>>>> c54d844d6bccb46f193d8e4b18ac6f817cb88097
     };
     
 }

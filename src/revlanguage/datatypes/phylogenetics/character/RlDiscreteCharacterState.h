@@ -44,9 +44,12 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
         double                              isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         
+<<<<<<< HEAD
         std::string                         getGuiName(void) { return ""; }
         std::string                         getGuiSymbol(void) { return ""; }
         std::string                         getGuiInfo(void) { return ""; }
+=======
+>>>>>>> c54d844d6bccb46f193d8e4b18ac6f817cb88097
     };
     
 }

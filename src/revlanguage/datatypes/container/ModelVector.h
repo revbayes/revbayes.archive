@@ -50,6 +50,7 @@ namespace RevLanguage {
         virtual rlType*                                         getElement(size_t idx) const;                               //!< Get element variable (single index)
 
         // ModelVector functions: override if you do not want to support these in-place algorithms
+<<<<<<< HEAD
         virtual void                                            clear(void);                                                //!< Clear the vector
         virtual size_t                                          size(void) const;                                           //!< Size of the vector
         virtual void                                            sort(void);                                                 //!< Sort vector
@@ -59,6 +60,14 @@ namespace RevLanguage {
         std::string                                             getGuiName(void) { return "Vector"; }
         std::string                                             getGuiSymbol(void) { return "v"; }
         std::string                                             getGuiInfo(void) { return ""; }
+=======
+        virtual void                                            clear(void);                                                                    //!< Clear the vector
+        virtual size_t                                          size(void) const;                                                               //!< Size of the vector
+        virtual void                                            sort(void);                                                                     //!< Sort vector
+        virtual void                                            unique(void);                                                                   //!< Remove consecutive duplicates
+
+        void                                                    printValue(std::ostream& o, bool user) const;                          //!< Print value for user
+>>>>>>> c54d844d6bccb46f193d8e4b18ac6f817cb88097
 
     private:
         void                                                    initMethods(void);

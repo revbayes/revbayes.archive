@@ -28,6 +28,7 @@ namespace RevLanguage {
     */
     class Clade : public ModelObject<RevBayesCore::Clade> {
         
+<<<<<<< HEAD
         public:
                                                     Clade(void);                                                                        //!< Constructor requires character type
                                                     Clade(RevBayesCore::Clade *v);                                                      //!< Constructor requires character type
@@ -45,6 +46,34 @@ namespace RevLanguage {
             std::string                             getConstructorFunctionName(void) const;                                             //!< Get the name used for the constructor function in Rev.
             const MemberRules&                      getParameterRules(void) const;                                                      //!< Get member rules (const)
             const TypeSpec&                         getTypeSpec(void) const;                                                            //!< Get language type of the object
+=======
+    public:
+        Clade(void);                                                                                                                    //!< Constructor requires character type
+        Clade(RevBayesCore::Clade *v);                                                                                                  //!< Constructor requires character type
+        Clade(const RevBayesCore::Clade &v);                                                                                            //!< Constructor requires character type
+        Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n);                                                                      //!< Constructor requires character type
+        Clade(const Clade& d);                                                                                                          //!< Constructor requires character type
+        
+        typedef RevBayesCore::Clade valueType;
+        
+        // Basic utility functions
+        Clade*                                  clone(void) const;                                                                      //!< Clone object
+        void                                    constructInternalObject(void);                                                          //!< We construct the a new internal MCMC object.
+        static const std::string&               getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&                  getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                             getConstructorFunctionName(void) const;                                                 //!< Get the name used for the constructor function in Rev.
+        const MemberRules&                      getParameterRules(void) const;                                                          //!< Get member rules (const)
+        const TypeSpec&                         getTypeSpec(void) const;                                                                //!< Get language type of the object
+               
+    protected:
+        void                                    setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
+        
+        std::vector<RevPtr<const RevVariable> > names;
+        std::vector<RevPtr<const RevVariable> > names_vector;
+        std::vector<RevPtr<const RevVariable> > clades;
+        RevPtr<const RevVariable>               age;
+        RevPtr<const RevVariable>               missing;
+>>>>>>> c54d844d6bccb46f193d8e4b18ac6f817cb88097
 
             std::string                             getGuiName(void) { return "Clade"; }
             std::string                             getGuiSymbol(void) { return "\\tau(S)"; }
