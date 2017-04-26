@@ -16,7 +16,7 @@ using namespace RevLanguage;
  */
 Simplex::Simplex( void ) : ModelObject<RevBayesCore::Simplex>()
 {
-    
+    initMethods();
 }
 
 
@@ -31,6 +31,8 @@ Simplex::Simplex( const RevBayesCore::Simplex& v ) : ModelObject<RevBayesCore::S
     // Now set the constant value of the simplex
     RevBayesCore::ConstantNode< RevBayesCore::Simplex >* newNode = new RevBayesCore::ConstantNode< RevBayesCore::Simplex >( "", v.clone() );
     this->setDagNode( newNode );
+    
+    initMethods();
 }
 
 
@@ -44,6 +46,7 @@ Simplex::Simplex( const RevBayesCore::Simplex& v ) : ModelObject<RevBayesCore::S
 Simplex::Simplex( RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* n ) : ModelObject<RevBayesCore::Simplex>( n )
 {
 
+    initMethods();
 }
 
 
@@ -62,6 +65,33 @@ Simplex* Simplex::clone( void ) const
 {
     return new Simplex( *this );
 }
+
+
+/**
+ * Map calls to member methods.
+ */
+RevPtr<RevVariable> Simplex::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
+{
+    
+    
+    if ( name == "size" )
+    {
+        found = true;
+        
+        // return a new RevVariable with the size of this container
+        return RevPtr<RevVariable>( new RevVariable( new Natural( size() ), "" ) );
+    }
+    else if ( name == "[]" )
+    {
+        found = true;
+        
+        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        return RevPtr<RevVariable>( new RevVariable( getElement( index ) ) );
+    }
+    
+    return ModelObject<RevBayesCore::Simplex>::executeMethod( name, args, found );
+}
+
 
 
 /** Get Rev type of object */
@@ -124,7 +154,7 @@ double Simplex::isConvertibleTo( const TypeSpec& type, bool once ) const
         // We want to convert to another model vector
         
         // Simply check whether our elements can convert to the desired element type
-        typename RevBayesCore::RbConstIterator<double> i;
+        RevBayesCore::RbConstIterator<double> i;
         double penalty = 0.0;
         for ( i = this->getValue().begin(); i != this->getValue().end(); ++i )
         {
