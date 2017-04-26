@@ -114,12 +114,10 @@
 
 
 /** Initialize global workspace */
-void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
-{
+void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void) {
     
     try
-    {
-
+        {
         AddWorkspaceVectorType<Taxon,4>::addTypeToWorkspace( *this, new Taxon() );
         AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
         AddWorkspaceVectorType<CladogeneticProbabilityMatrix,3>::addTypeToWorkspace( *this, new CladogeneticProbabilityMatrix() );
@@ -133,15 +131,15 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
 		
         
-        //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
-//        addFunction( new Func_workspaceVector<AbstractModelObject>() );
+     // AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
+     // addFunction( new Func_workspaceVector<AbstractModelObject>() );
         
 		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
         
-//        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );
+     // AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );
         addFunction( new Func_workspaceVector<Monitor>() );
         
-        //        AddVectorizedWorkspaceType<Move,3>::addTypeToWorkspace( *this, new Move() );
+     // AddVectorizedWorkspaceType<Move,3>::addTypeToWorkspace( *this, new Move() );
         addFunction( new Func_workspaceVector<Move>() );
         
         addFunction( new Func_workspaceVector<StoppingRule>() );
@@ -154,16 +152,15 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 
         /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
         addTypeWithConstructor( new Clade() );
-       // addTypeWithConstructor( "rootedTripletDist", new RootedTripletDistribution() );
+     // addTypeWithConstructor( "rootedTripletDist", new RootedTripletDistribution() );
 
         
         /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
         addTypeWithConstructor( new Taxon() );
         
         /* Add math types (in folder "datatypes/math") */
-        addTypeWithConstructor( new CorrespondenceAnalysis()                    );
-        addType( new RateMap()                                                  );
-//        addType( new MatrixReal()                                               );
+        addTypeWithConstructor( new CorrespondenceAnalysis()                        );
+        addType( new RateMap()                                                      );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
         addTypeWithConstructor( new BootstrapAnalysis()                             );
@@ -180,16 +177,15 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         addTypeWithConstructor( new ValidationAnalysis()                            );
 
         /* Add stopping rules (in folder "analysis/stoppingRules") (alphabetic order) */
-        addTypeWithConstructor( new GelmanRubinStoppingRule()                   );
-        addTypeWithConstructor( new GewekeStoppingRule()                        );
-        addTypeWithConstructor( new MaxIterationStoppingRule()                  );
-        addTypeWithConstructor( new MaxTimeStoppingRule()                       );
-        addTypeWithConstructor( new MinEssStoppingRule()                        );
-        addTypeWithConstructor( new StationarityStoppingRule()                  );
-    }
+        addTypeWithConstructor( new GelmanRubinStoppingRule()                       );
+        addTypeWithConstructor( new GewekeStoppingRule()                            );
+        addTypeWithConstructor( new MaxIterationStoppingRule()                      );
+        addTypeWithConstructor( new MaxTimeStoppingRule()                           );
+        addTypeWithConstructor( new MinEssStoppingRule()                            );
+        addTypeWithConstructor( new StationarityStoppingRule()                      );
+        }
     catch(RbException& rbException)
-    {
-        
+        {
         RBOUT("Caught an exception while initializing types in the workspace\n");
         std::ostringstream msg;
         rbException.print(msg);
@@ -201,7 +197,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         RBOUT("Press any character to exit the program.");
         getchar();
         exit(1);
-    }
+        }
 }
 
 

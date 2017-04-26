@@ -52,7 +52,7 @@ namespace RevLanguage {
 
     class Workspace : public Environment {
     public:
-        virtual ~Workspace(void);                                                                                                     //!< Destrcutor
+        virtual                            ~Workspace(void);                                                            //!< Destrcutor
         
 
         // Environment (frame) functions you have to override
@@ -60,10 +60,10 @@ namespace RevLanguage {
         void                                printValue(std::ostream& o) const;                                          //!< Print table for user
 
         // Workspace functions
-        bool                                addDistribution(Distribution *dist);               //!< Add distribution
+        bool                                addDistribution(Distribution *dist);                                        //!< Add distribution
         bool                                addType(RevObject *exampleObj);                                             //!< Add type (auto-generated name = rlType)
-//        bool                    addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
-        bool                                addTypeWithConstructor(RevObject *templ);          //!< Add type with constructor
+     // bool                                addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
+        bool                                addTypeWithConstructor(RevObject *templ);                                   //!< Add type with constructor
         bool                                areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
         bool                                existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
         const TypeSpec&                     getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
@@ -73,28 +73,26 @@ namespace RevLanguage {
         void                                updateVectorVariables(void);
         
         static Workspace&                   globalWorkspace(void) //!< Get global workspace
-        {
-            static Workspace globalSpace = Workspace("GlobalWorkspace");
-            return globalSpace;
-        }
+                                                {
+                                                static Workspace globalSpace = Workspace("GlobalWorkspace");
+                                                return globalSpace;
+                                                }
 
         static Workspace&                   userWorkspace(void) //!< Get user workspace
-        {
-            static Workspace userSpace = Workspace(&Workspace::globalWorkspace(),"UserWorkspace");
-            return userSpace;
-        }
+                                                {
+                                                static Workspace userSpace = Workspace(&Workspace::globalWorkspace(),"UserWorkspace");
+                                                return userSpace;
+                                                }
         
 
     private:
                                             Workspace(const std::string &n);                                            //!< Workspace without parent
                                             Workspace(Environment* parentSpace, const std::string &n);                  //!< Workspace with parent
                                             Workspace(const Workspace& w);                                              //!< Prevent copy
-
         Workspace&                          operator=(const Workspace& w);                                              //!< Prevent assignment
 
-        void                                checkForProperlyInitializedGuiInformation(void);
         void                                initializeBasicGlobalWorkspace(void);                                       //!< Initialize global workspace for basic procedures and IO
-        void                                initializeBasicTypeGlobalWorkspace(void);                                        //!< Initialize global workspace for types
+        void                                initializeBasicTypeGlobalWorkspace(void);                                   //!< Initialize global workspace for types
         void                                initializeDistGlobalWorkspace(void);                                        //!< Initialize global workspace for distributions
         void                                initializeExtraHelp(void);                                                  //!< Initialize the extra help entries
         void                                initializeFuncGlobalWorkspace(void);                                        //!< Initialize global workspace for functions (fnXXX)

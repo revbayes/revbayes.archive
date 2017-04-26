@@ -21,12 +21,13 @@
 
 using namespace RevLanguage;
 
+
+
+
 /**
  * Constructor of global workspace 
  */
-Workspace::Workspace(const std::string &n) : Environment( n ),
-    typesInitialized(false)
-{
+Workspace::Workspace(const std::string &n) : Environment( n ), typesInitialized(false) {
 
 }
 
@@ -34,23 +35,20 @@ Workspace::Workspace(const std::string &n) : Environment( n ),
 /**
  * Constructor of workspace 
  */
-Workspace::Workspace(Environment* parentSpace, const std::string &n) : Environment(parentSpace, n),
-    typesInitialized(false)
-{
+Workspace::Workspace(Environment* parentSpace, const std::string &n) : Environment(parentSpace, n), typesInitialized(false) {
     
 }
 
 /**
  * Copy constructor of workspace 
  */
-Workspace::Workspace(const Workspace& x) : Environment(x),
-    typesInitialized(x.typesInitialized)
-{
+Workspace::Workspace(const Workspace& x) : Environment(x), typesInitialized(x.typesInitialized) {
+
     // copy all the types
     for (TypeTable::const_iterator it=x.typeTable.begin(); it!=x.typeTable.end(); ++it)
-    {
+        {
         typeTable.insert(std::pair<std::string, RevObject*>(it->first, it->second->clone()));
-    }
+        }
 
 }
 
@@ -60,58 +58,55 @@ Workspace::Workspace(const Workspace& x) : Environment(x),
  * Assignment operator.
  * Manage the the types because we hold the memory.
  */
-Workspace& Workspace::operator=(const Workspace& x)
-{
+Workspace& Workspace::operator=(const Workspace& x) {
 
     if (this != &x) 
-    {
+        {
         // first we need to delegate to the base class assignment operator
         Environment::operator=(x);
         
         // free all the types
         for (TypeTable::iterator it=typeTable.begin(); it!=typeTable.end(); ++it)
-        {
-            RevObject *the_object = it->second;
+            {
+            RevObject* the_object = it->second;
             delete the_object;
-        }
+            }
         
         // copy all the types
         for (TypeTable::const_iterator it=x.typeTable.begin(); it!=x.typeTable.end(); ++it)
-        {
+            {
             typeTable.insert(std::pair<std::string, RevObject*>(it->first, it->second->clone()));
+            }
         }
-    }
-
     return (*this);
 }
+
+
 
 /**
  * Destructor of workspace.
  * We need to free all the allocated types.
  */
-Workspace::~Workspace(void)
-{
+Workspace::~Workspace(void) {
     
     // free all the types
     for (TypeTable::iterator it=typeTable.begin(); it!=typeTable.end(); ++it)
-    {
-        RevObject *the_object = it->second;
+        {
+        RevObject* the_object = it->second;
         delete the_object;
-    }
-    
+        }
 }
 
 
 /**
  * Add a distribution to this workspace
  */
-bool Workspace::addDistribution( Distribution *dist )
-{
+bool Workspace::addDistribution( Distribution *dist ) {
 
     if ( typeTable.find( dist->getDistributionFunctionName() ) != typeTable.end() )
-    {
+        {
         throw RbException("There is already a type named '" + dist->getType() + "' in the workspace");
-    }
+        }
     
     functionTable.addFunction( new ConstructorFunction( dist ) );
     
@@ -126,21 +121,17 @@ bool Workspace::addDistribution( Distribution *dist )
 /** 
  * Add a type to the workspace 
  */
-bool Workspace::addType(RevObject *exampleObj)
-{
+bool Workspace::addType(RevObject* exampleObj) {
 
     std::string name = exampleObj->getType();
-
     if (typeTable.find(name) != typeTable.end())
-    {
+        {
         // free memory
         delete exampleObj;
-        
         throw RbException("There is already a type named '" + name + "' in the workspace");
-    }
-    
+        }
+ // std::cout << "Adding \"" << name << "\" to the workspace" << std::endl;
     typeTable.insert(std::pair<std::string, RevObject*>(name, exampleObj));
-
     return true;
 }
 
@@ -148,20 +139,17 @@ bool Workspace::addType(RevObject *exampleObj)
 /** 
  * Add a type with constructor to the workspace
  */
-bool Workspace::addTypeWithConstructor( RevObject *templ )
-{
-    const std::string& name = templ->getConstructorFunctionName();
+bool Workspace::addTypeWithConstructor( RevObject* templ ) {
 
+    const std::string& name = templ->getConstructorFunctionName();
     if (typeTable.find( name ) != typeTable.end())
-    {
+        {
         // free memory
         delete templ;
-        
         throw RbException("There is already a type named '" + name + "' in the workspace");
-    }
-    
+        }
+ // std::cout << "Adding \"" << name << "\" (with constructor) to the workspace" << std::endl;
     typeTable.insert(std::pair<std::string, RevObject*>(templ->getType(), templ->clone()));
-    
     functionTable.addFunction( new ConstructorFunction(templ) );
     
     // add the help entry for this type to the global help system instance
@@ -171,144 +159,62 @@ bool Workspace::addTypeWithConstructor( RevObject *templ )
 }
 
 
-void Workspace::checkForProperlyInitializedGuiInformation(void) {
-
-    // get a pointer to the global workspace in the core and then
-    // extract the list of variables and moves stored there
-    RevLanguage::Workspace& myWorkspace = RevLanguage::Workspace::globalWorkspace();
-    std::map<std::string, RevLanguage::RevObject*> list = myWorkspace.getTypeTable();
-
-#   if 0
-    // construct the list of variables for the random variable and constants pallets
-    for (std::map<std::string, RevLanguage::RevObject*>::iterator it = list.begin(); it != list.end(); it++)
-        {
-        RevLanguage::AbstractModelObject* varPtr = dynamic_cast<RevLanguage::AbstractModelObject*>(it->second);
-        if (varPtr != NULL)
-            {
-
-            // it's a variable!
-            std::cout << "Variable: " << (it)->first << std::endl;
-            std::cout << "Ptr:      " << varPtr << std::endl;
-            std::cout << "Type:     " << varPtr->getType() << std::endl;
-
-            if ((it)->first[(it)->first.size()-1] == ']')
-                {
-                std::cout << "    Add:   \"" << &varPtr[0] << "\"" << std::endl;
-                }
-            std::cout << "   Name:   \"" << varPtr->getGuiVariableName() << "\"" << std::endl;
-            std::cout << "   Symbol: \"" << varPtr->getGuiLatexSymbol()  << "\"" << std::endl;
-
-            // determine the dimensions of the variable
-            std::string s = varPtr->getType();
-            size_t n = std::count(s.begin(), s.end(), '[');
-            std::cout << "      Dim: \"" << n  << "\"" << std::endl;
-
-            RevLanguage::Container* containerPtr = dynamic_cast<RevLanguage::Container*>(it->second);
-            if (containerPtr != NULL)
-                {
-                std::cout << "   It's a container!" << std::endl;
-                }
-            }
-        }
-#   endif
-
-#   if 0
-    // construct the list of moves
-    for (std::map<std::string, RevLanguage::RevObject*>::iterator it = list.begin(); it != list.end(); it++)
-        {
-        RevLanguage::Move* movePtr = dynamic_cast<RevLanguage::Move*>(it->second);
-        if (movePtr != NULL)
-            {
-            // it's a move!
-            std::cout << "Move: " << (it)->first << std::endl;
-            }
-
-        }
-    
-    // construct the list of distributions
-    RevLanguage::FunctionTable& funcList = myWorkspace.getFunctionTable();
-    for (RevLanguage::FunctionTable::iterator it = funcList.begin(); it != funcList.end(); it++)
-        {
-        RevLanguage::ConstructorFunction* conFunc = dynamic_cast<RevLanguage::ConstructorFunction*>(it->second);
-        if (conFunc != NULL)
-            {
-            RevLanguage::RevObject* revObj = conFunc->getRevObject();
-            RevLanguage::Distribution* distPtr = dynamic_cast<RevLanguage::Distribution*>(revObj);
-            if (distPtr != NULL)
-                {
-                // it's a distribution!
-                std::cout << "Distribution: " << (it)->first << std::endl;
-                std::cout << "   Name: \"" << distPtr->getGuiDistributionName() << "\"" << std::endl;
-                }
-            }
-       }
-#   endif
-}
-
-
 /** clone */
-Workspace* Workspace::clone() const
-{
+Workspace* Workspace::clone(void) const {
+
     return new Workspace(*this);
 }
 
 
-const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const
-{
+const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const {
     
     std::map<std::string, RevObject*>::const_iterator it = typeTable.find( type );
     if ( it == typeTable.end() ) 
-    {
+        {
         if ( parentEnvironment != NULL )
-        {
+            {
             return static_cast<Workspace*>( parentEnvironment )->getClassTypeSpecOfType( type );
-        }
+            }
         else
-        {
+            {
             throw RbException( "Type '" + type + "' does not exist in environment" );;
+            }
         }
-        
-    }
     else
-    {
+        {
         return it->second->getTypeSpec();
-    }
-    
+        }
 }
 
 
 /**
  * Does a type with this name exists in the workspace?
  */
-bool Workspace::existsType( const std::string& name ) const
-{
+bool Workspace::existsType( const std::string& name ) const {
 
     std::map<std::string, RevObject *>::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) 
-    {
+        {
         if ( parentEnvironment != NULL )
-        {
+            {
             return static_cast<Workspace*>( parentEnvironment )->existsType( name );
-        }
+            }
         else
-        {
+            {
             return false;
+            }
         }
-        
-    }
     else
-    {
+        {
         return true;
-    }
-    
+        }
 }
 
 
 /**
  * Get the table with the types.
  */
-const TypeTable& Workspace::getTypeTable( void ) const
-{
+const TypeTable& Workspace::getTypeTable( void ) const {
     
     return typeTable;
 }
@@ -324,8 +230,7 @@ const TypeTable& Workspace::getTypeTable( void ) const
  * - functions
  * - basics
  */
-void Workspace::initializeGlobalWorkspace( void )
-{
+void Workspace::initializeGlobalWorkspace( void ) {
     
     initializeBasicTypeGlobalWorkspace();
     initializeTypeGlobalWorkspace();
@@ -336,9 +241,6 @@ void Workspace::initializeGlobalWorkspace( void )
     initializeBasicGlobalWorkspace();
     
     initializeExtraHelp();
-    
-    checkForProperlyInitializedGuiInformation();
-
 }
 
 
@@ -348,101 +250,93 @@ void Workspace::initializeGlobalWorkspace( void )
  * object of a non-abstract derived type by using the RevAbstractType
  * functionality.
  */
-RevObject* Workspace::makeNewDefaultObject(const std::string& type) const
-{
+RevObject* Workspace::makeNewDefaultObject(const std::string& type) const {
     
     std::map<std::string, RevObject*>::const_iterator it = typeTable.find( type );
     
     if ( it == typeTable.end() )
-    {
+        {
         if ( parentEnvironment != NULL )
-        {
+            {
             return static_cast<Workspace*>( parentEnvironment )->makeNewDefaultObject( type );
-        }
+            }
         else
-        {
+            {
             throw RbException( "Type '" + type + "' does not exist in environment" );
+            }
         }
-    }
     else
-    {
-        if ( it->second->isAbstract() )
         {
+        if ( it->second->isAbstract() )
+            {
             RevAbstractType* theAbstractType = static_cast< RevAbstractType* >( it->second );
             return theAbstractType->makeExampleObject();
-        }
-        
+            }
         return it->second->clone();
-    }
-    
+        }
 }
 
 
 
 /** Print the frame content, not the entire environment. */
-void Workspace::printValue(std::ostream& o) const
-{
+void Workspace::printValue(std::ostream& o) const {
 
     if ( variableTable.size() > 0 )
-    {
+        {
         o << "Variable table:" << std::endl;
         o << "===============" << std::endl << std::endl;
 
         VariableTable::const_iterator it;
         for ( it = variableTable.begin(); it != variableTable.end(); it++)
-        {
+            {
             std::ostringstream s;
             s << (*it).first << " = ";
             std::ostringstream t;
             (*it).second->printValue( t, true );
             o << StringUtilities::oneLiner( t.str(), 75 - s.str().length() ) << std::endl;
-        }
+            }
         o << std::endl;
-    }
+        }
 
     std::stringstream s;
     functionTable.printValue(s, false);
 
     if (s.str().size() > 0 )
-    {
+        {
         o << "Function table:" << std::endl;
         o << "===============" << std::endl << std::endl;
         o << s.str() << std::endl;
-    }
+        }
 
     if ( typeTable.size() > 0 )
-    {
+        {
         o << "Type table:" << std::endl;
         o << "===========" << std::endl << std::endl;
         std::map<std::string, RevObject *>::const_iterator i;
         for (i=typeTable.begin(); i!=typeTable.end(); i++)
-        {
-            
+            {
             if ( (*i).second != NULL )
-            {
+                {
                 o << (*i).first << " = " << (*i).second->getTypeSpec() << std::endl;
-            }
+                }
             else
-            {
+                {
                 o << (*i).first << " = " << "unknown class vector" << std::endl;
+                }
             }
-            
         }
-        
-    }
-    
 }
 
 
-void Workspace::updateVectorVariables( void )
-{
+void Workspace::updateVectorVariables( void ) {
+
     VariableTable::const_iterator it;
     for ( it = variableTable.begin(); it != variableTable.end(); it++)
-    {
+        {
         const RevPtr<RevVariable>& var = it->second;
         if ( var->isVectorVariable() == true )
-        {
+            {
             var->getRevObject();
+            }
         }
-    }
 }

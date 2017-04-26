@@ -54,6 +54,7 @@ namespace RevLanguage {
     
         std::string                     getGuiName(void) { return "Real"; }
         std::string                     getGuiSymbol(void) { return "R"; }
+        std::string                     getGuiInfo(void) { return ""; }
     };
     
 }

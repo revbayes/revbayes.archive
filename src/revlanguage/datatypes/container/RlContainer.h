@@ -29,7 +29,7 @@ namespace RevLanguage {
     class Container {
         
     public:
-        virtual                                     ~Container(void) {}
+        virtual                                    ~Container(void) {}
         
         // Container functions you have to override
         virtual void                                push_back(const RevObject &x) = 0;                                  //!< Append element to end

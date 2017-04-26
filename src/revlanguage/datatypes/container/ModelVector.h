@@ -47,18 +47,18 @@ namespace RevLanguage {
         virtual RevPtr<RevVariable>                             executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
         
         // Container functions provided here
-        virtual rlType*                                         getElement(size_t idx) const;                                                   //!< Get element variable (single index)
+        virtual rlType*                                         getElement(size_t idx) const;                               //!< Get element variable (single index)
 
         // ModelVector functions: override if you do not want to support these in-place algorithms
-        virtual void                                            clear(void);                                                                    //!< Clear the vector
-        virtual size_t                                          size(void) const;                                                               //!< Size of the vector
-        virtual void                                            sort(void);                                                                     //!< Sort vector
-        virtual void                                            unique(void);                                                                   //!< Remove consecutive duplicates
+        virtual void                                            clear(void);                                                //!< Clear the vector
+        virtual size_t                                          size(void) const;                                           //!< Size of the vector
+        virtual void                                            sort(void);                                                 //!< Sort vector
+        virtual void                                            unique(void);                                               //!< Remove consecutive duplicates
+        void                                                    printValue(std::ostream& o, bool user) const;               //!< Print value for user
 
-        void                                                    printValue(std::ostream& o, bool user) const;                          //!< Print value for user
-
-        std::string                                             getGuiName(void) { return ""; }
-        std::string                                             getGuiSymbol(void) { return ""; }
+        std::string                                             getGuiName(void) { return "Vector"; }
+        std::string                                             getGuiSymbol(void) { return "v"; }
+        std::string                                             getGuiInfo(void) { return ""; }
 
     private:
         void                                                    initMethods(void);

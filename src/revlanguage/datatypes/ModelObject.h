@@ -50,6 +50,7 @@ namespace RevLanguage {
 
         virtual std::string                     getGuiName(void) = 0;
         virtual std::string                     getGuiSymbol(void) = 0;
+        virtual std::string                     getGuiInfo(void) = 0;
         
     protected:
         ModelObject(void);

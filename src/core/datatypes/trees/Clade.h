@@ -29,7 +29,7 @@ namespace RevBayesCore {
                                                     Clade(const Taxon &t, const RbBitSet &b = RbBitSet() );                 //!< Default constructor with optional index
                                                     Clade(const std::vector<Taxon> &n, const RbBitSet &b = RbBitSet() );    //!< Default constructor with optional index
         
-        virtual                                    ~Clade() {}
+        virtual                                    ~Clade(void) {}
         
         std::vector<Taxon>::const_iterator          begin(void) const;
         std::vector<Taxon>::iterator                begin(void);
@@ -81,7 +81,7 @@ namespace RevBayesCore {
     };
     
     // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const Clade& x);                                         //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const Clade& x);                             //!< Overloaded output operator
 
 }
 

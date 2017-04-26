@@ -159,11 +159,10 @@
 #include "Move_NarrowExchangeRateMatrix.h"
 
 /** Initialize global workspace */
-void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
-{
+void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void) {
     
     try
-    {  
+        {
         ///////////////////////////////////////////////////////////////////////////////////
         /* Add moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
         ///////////////////////////////////////////////////////////////////////////////////
@@ -179,7 +178,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BetaProbability() );
 		
         /* compound moves */
-//        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
+     // addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
         addTypeWithConstructor( new Move_UpDownTreeScale() );
         addTypeWithConstructor( new Move_UpDownSlide() );
         
@@ -227,31 +226,28 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_DPPTableValueUpdate<RealPos>( new RevBayesCore::ScaleProposal( NULL, 1.0 ) ) );
         addTypeWithConstructor( new Move_DPPTableValueUpdate<Simplex>( new RevBayesCore::BetaSimplexProposal( NULL, 10.0 ) ) );
 
-//        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
-//        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
-        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Real>() );
-        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<RealPos>() );
-        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Probability>() );
-        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Integer>() );
-        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Natural>() );
-        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Simplex>() );
-        addTypeWithConstructor( new Move_DPPGibbsConcentration( ) );
-        addTypeWithConstructor( new Move_MixtureAllocation<Real>( ) );
-        addTypeWithConstructor( new Move_MixtureAllocation<RealPos>( ) );
-        addTypeWithConstructor( new Move_MixtureAllocation<Natural>( ) );
-        addTypeWithConstructor( new Move_MixtureAllocation<Integer>( ) );
-        addTypeWithConstructor( new Move_MixtureAllocation<Probability>( ) );
-        addTypeWithConstructor( new Move_MixtureAllocation<Simplex>( ) );
-        addTypeWithConstructor( new Move_MixtureAllocation<RateGenerator>( ) );
-        addTypeWithConstructor( new Move_MixtureAllocation<Tree>( ) );
-        addTypeWithConstructor( new Move_GibbsMixtureAllocation<Real>( ) );
-        addTypeWithConstructor( new Move_GibbsMixtureAllocation<RealPos>( ) );
-        addTypeWithConstructor( new Move_GibbsMixtureAllocation<Natural>( ) );
-        addTypeWithConstructor( new Move_GibbsMixtureAllocation<Integer>( ) );
-        addTypeWithConstructor( new Move_GibbsMixtureAllocation<Probability>( ) );
-        addTypeWithConstructor( new Move_GibbsMixtureAllocation<Simplex>( ) );
-        addTypeWithConstructor( new Move_GibbsMixtureAllocation<RateGenerator>( ) );
-        
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Real>()                );
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<RealPos>()             );
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Probability>()         );
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Integer>()             );
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Natural>()             );
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Simplex>()             );
+        addTypeWithConstructor( new Move_DPPGibbsConcentration( )                       );
+        addTypeWithConstructor( new Move_MixtureAllocation<Real>( )                     );
+        addTypeWithConstructor( new Move_MixtureAllocation<RealPos>( )                  );
+        addTypeWithConstructor( new Move_MixtureAllocation<Natural>( )                  );
+        addTypeWithConstructor( new Move_MixtureAllocation<Integer>( )                  );
+        addTypeWithConstructor( new Move_MixtureAllocation<Probability>( )              );
+        addTypeWithConstructor( new Move_MixtureAllocation<Simplex>( )                  );
+        addTypeWithConstructor( new Move_MixtureAllocation<RateGenerator>( )            );
+        addTypeWithConstructor( new Move_MixtureAllocation<Tree>( )                     );
+        addTypeWithConstructor( new Move_GibbsMixtureAllocation<Real>( )                );
+        addTypeWithConstructor( new Move_GibbsMixtureAllocation<RealPos>( )             );
+        addTypeWithConstructor( new Move_GibbsMixtureAllocation<Natural>( )             );
+        addTypeWithConstructor( new Move_GibbsMixtureAllocation<Integer>( )             );
+        addTypeWithConstructor( new Move_GibbsMixtureAllocation<Probability>( )         );
+        addTypeWithConstructor( new Move_GibbsMixtureAllocation<Simplex>( )             );
+        addTypeWithConstructor( new Move_GibbsMixtureAllocation<RateGenerator>( )       );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Real>( )                  );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<RealPos>( )               );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Natural>( )               );
@@ -260,20 +256,18 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Simplex>( )               );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Tree>( )                  );
-        
-        
-        addTypeWithConstructor( new Move_BirthDeathEvent()                      );
-        addTypeWithConstructor( new Move_DiscreteEventCategoryRandomWalk()      );
-        addTypeWithConstructor( new Move_EventTimeBeta()                        );
-//        addTypeWithConstructor( new Move_EventTimeSlide()                       );
-        addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
+        addTypeWithConstructor( new Move_BirthDeathEvent()                              );
+        addTypeWithConstructor( new Move_DiscreteEventCategoryRandomWalk()              );
+        addTypeWithConstructor( new Move_EventTimeBeta()                                );
+     // addTypeWithConstructor( new Move_EventTimeSlide()                               );
+        addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()                       );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-        //addTypeWithConstructor( new Move_AddRemoveFossil()     );
+     // addTypeWithConstructor( new Move_AddRemoveFossil()                );
         addTypeWithConstructor( new Move_CollapseExpandFossilBranch()     );
 		addTypeWithConstructor( new Move_EmpiricalTree()                  );
         addTypeWithConstructor( new Move_FNPR()                           );
-        addTypeWithConstructor( new Move_FossilTimeSlideUniform()           );
+        addTypeWithConstructor( new Move_FossilTimeSlideUniform()         );
         addTypeWithConstructor( new Move_GibbsPruneAndRegraft()           );
         addTypeWithConstructor( new Move_NarrowExchange()                 );
         addTypeWithConstructor( new Move_NNIClock()                       );
@@ -292,21 +286,15 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_TreeNodeAgeUpdate()              );
         addTypeWithConstructor( new Move_SpeciesTreeScale()               );
         addTypeWithConstructor( new Move_TreeScale()                      );
-//        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
-//        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
-        
         addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()         );
 
-        
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor( new Move_CharacterHistory() );
         addTypeWithConstructor( new Move_NodeCharacterHistoryRejectionSample() );
         addTypeWithConstructor( new Move_PathCharacterHistoryRejectionSample() );
-
-    }
+        }
     catch(RbException& rbException)
-    {
-        
+        {
         RBOUT("Caught an exception while initializing moves in the workspace\n");
         std::ostringstream msg;
         rbException.print(msg);
@@ -318,8 +306,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         RBOUT("Press any character to exit the program.");
         getchar();
         exit(1);
-    }
-    
+        }
 }
 
 

@@ -33,6 +33,7 @@ namespace RevLanguage {
         
         std::string                         getGuiName(void) { return "Taxon Data"; }
         std::string                         getGuiSymbol(void) { return "S"; }
+        std::string                         getGuiInfo(void) { return ""; }
     };
     
 }

@@ -35,12 +35,16 @@
 @synthesize distributionList;
 @synthesize parms;
 
-- (BOOL)addVariableNamed:(std::string)vName withAddress:(RevLanguage::AbstractModelObject*)varPtr {
+- (BOOL)addVariableNamed:(std::string)vName withAddress:(RevLanguage::AbstractModelObject*)varPtr andType:(RevLanguage::AbstractModelObject*)baseObj{
 
+    RevLanguage::AbstractModelObject* bo = varPtr;
+    if (baseObj != NULL)
+        bo = baseObj;
+    
     std::string vType     = varPtr->getType();
     size_t n              = std::count(vType.begin(), vType.end(), '[');
-    std::string guiName   = varPtr->getGuiName();
-    std::string guiSymbol = varPtr->getGuiSymbol();
+    std::string guiName   = bo->getGuiName();
+    std::string guiSymbol = bo->getGuiSymbol();
     
     // add the variable
     Variable* newV = [[Variable alloc] init];
@@ -54,9 +58,8 @@
     RevLanguage::Container* containerPtr = dynamic_cast<RevLanguage::Container*>(varPtr);
     if (containerPtr != NULL)
         {
-        std::cout << "   It's a container!" << std::endl;
+        //std::cout << "   It's a container! " << containerPtr->getClassType() << std::endl;
         }
-
 
     return YES;
 }
@@ -348,7 +351,26 @@
         RevLanguage::AbstractModelObject* varPtr = dynamic_cast<RevLanguage::AbstractModelObject*>(it->second);
         if (varPtr != NULL)
             {
-            [self addVariableNamed:(it->first) withAddress:varPtr];
+            // is it a vector of a scalar?
+            bool isVector = false;
+            RevLanguage::Container* containerPtr = dynamic_cast<RevLanguage::Container*>(it->second);
+            if (containerPtr != NULL)
+                isVector = true;
+
+            // if it's a vector, find the base class
+            std::string baseName = "";
+            for (size_t i=0; i<it->first.size(); i++)
+                {
+                if (it->first[i] != '[' && it->first[i] != ']')
+                    baseName += it->first[i];
+                }
+            RevLanguage::AbstractModelObject* baseObj = NULL;
+            std::map<std::string, RevLanguage::RevObject*>::iterator itf = list.find(baseName);
+            if (itf != list.end())
+                baseObj = dynamic_cast<RevLanguage::AbstractModelObject*>(itf->second);
+            
+            
+            [self addVariableNamed:(it->first) withAddress:varPtr andType:baseObj];
 
 #           if 0
             // it's a variable!

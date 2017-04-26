@@ -40,6 +40,7 @@ namespace RevLanguage {
 
         std::string                     getGuiName(void) { return "Probability"; }
         std::string                     getGuiSymbol(void) { return "P"; }
+        std::string                     getGuiInfo(void) { return ""; }
     };
     
 }

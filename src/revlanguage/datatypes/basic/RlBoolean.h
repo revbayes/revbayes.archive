@@ -47,6 +47,7 @@ namespace RevLanguage {
 
         std::string                     getGuiName(void) { return "Boolean"; }
         std::string                     getGuiSymbol(void) { return "B"; }
+        std::string                     getGuiInfo(void) { return ""; }
         
     protected:
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
