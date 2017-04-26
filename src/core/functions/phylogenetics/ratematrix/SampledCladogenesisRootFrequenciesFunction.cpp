@@ -1,11 +1,3 @@
-//
-//  SampledCladogenesisRootFrequenciesFunction.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 8/11/16.
-//  Copyright © 2016 Michael Landis. All rights reserved.
-//
-
 #include "AbstractCladogenicStateFunction.h"
 #include "AbstractCharacterHistoryBirthDeathProcess.h"
 #include "DeterministicNode.h"
@@ -20,7 +12,7 @@ SampledCladogenesisRootFrequenciesFunction::SampledCladogenesisRootFrequenciesFu
                                                                    const TypedDagNode<MatrixReal> *cp,
                                                                    const TypedDagNode<Tree> *t,
                                                                    const TypedDagNode<double> *r)
-: TypedFunction<RbVector<double> >(new RbVector<double>(rm->getValue().getNumberOfStates(), (1.0/rm->getValue().getNumberOfStates()))),
+: TypedFunction<Simplex>(new Simplex(rm->getValue().getNumberOfStates(), (1.0/rm->getValue().getNumberOfStates()))),
     rateMatrix(rm),
     cladogenesisProbabilities(cp),
     tree(t),

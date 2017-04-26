@@ -52,7 +52,7 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentClad
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ex     = static_cast<const ModelVector<Real> &>( extinction_rates->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* q          = static_cast<const RateGenerator &>( event_rate_matrix->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>*  r                              = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rf     = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* rf               = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* rh                              = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     std::vector<RevBayesCore::Taxon> t                                  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     const std::string& cond                                             = static_cast<const RlString &>( condition->getRevObject() ).getValue();

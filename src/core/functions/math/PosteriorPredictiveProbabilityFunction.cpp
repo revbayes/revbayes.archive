@@ -7,7 +7,7 @@ using namespace RevBayesCore;
 /**
  * Constructor. Here we simply set up the parameter dependencies.
  */
-PosteriorPredictiveProbabilityFunction::PosteriorPredictiveProbabilityFunction(const TypedDagNode< RbVector<double> > *v, const TypedDagNode<double>* k) : TypedFunction< RbVector<double> >( new RbVector<double>(3,0.0) ),
+PosteriorPredictiveProbabilityFunction::PosteriorPredictiveProbabilityFunction(const TypedDagNode< RbVector<double> > *v, const TypedDagNode<double>* k) : TypedFunction<Simplex>( new Simplex(3,1.0) ),
     vals( v ),
     x( k )
 {
@@ -44,7 +44,7 @@ PosteriorPredictiveProbabilityFunction* PosteriorPredictiveProbabilityFunction::
 void PosteriorPredictiveProbabilityFunction::update( void )
 {
     
-    const RbVector<double> &v = vals->getValue();
+    const Simplex &v = vals->getValue();
     
     double val = x->getValue();
     size_t size = v.size();

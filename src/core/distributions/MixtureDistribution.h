@@ -3,6 +3,7 @@
 
 #include "MemberObject.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -27,7 +28,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< RbVector<double> > *p);
+        MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< Simplex > *p);
         
         // public member functions
         MixtureDistribution*                                clone(void) const;                                                                      //!< Create an independent clone
@@ -57,7 +58,7 @@ namespace RevBayesCore {
         
         // private members
         const TypedDagNode< RbVector<mixtureType> >*        parameterValues;
-        const TypedDagNode< RbVector<double> >*             probabilities;
+        const TypedDagNode< Simplex >*                      probabilities;
         
         size_t                                              index;
     };
@@ -72,7 +73,7 @@ namespace RevBayesCore {
 #include <cmath>
 
 template <class mixtureType>
-RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< RbVector<double> > *p) : TypedDistribution<mixtureType>( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( v->getValue()[0] ) ),
+RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< Simplex > *p) : TypedDistribution<mixtureType>( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( v->getValue()[0] ) ),
     parameterValues( v ),
     probabilities( p ),
     index( 0 )
@@ -216,7 +217,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::swapParameterInternal( cons
     }
     else if (oldP == probabilities)
     {
-        probabilities = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        probabilities = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
 }
 

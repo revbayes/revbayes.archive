@@ -4,6 +4,7 @@
 #include "AbstractBirthDeathProcess.h"
 #include "CDSE.h"
 #include "RateMatrix.h"
+#include "Simplex.h"
 #include "Taxon.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
@@ -29,7 +30,7 @@ namespace RevBayesCore {
     public:
         MultiRateBirthDeathProcess(const TypedDagNode<double> *ro,
                             const TypedDagNode<RbVector<double> >* l, const TypedDagNode<RbVector<double> >* m, const TypedDagNode<RateGenerator>* q,
-                            const TypedDagNode< double >* r, const TypedDagNode< RbVector< double > >* p,
+                            const TypedDagNode< double >* r, const TypedDagNode< Simplex >* p,
                             const TypedDagNode<double> *rh, const std::string &cdt, const std::vector<Taxon> &tn);
         
         // pure virtual member functions
@@ -50,7 +51,7 @@ namespace RevBayesCore {
         
         const TypedDagNode<RbVector<double> >*              lambda;
         const TypedDagNode<RbVector<double> >*              mu;
-        const TypedDagNode< RbVector< double > >*           pi;                                                                                                 //!< The root frequencies (probabilities of the root states).
+        const TypedDagNode<Simplex>*                        pi;                                                                                                 //!< The root frequencies (probabilities of the root states).
         const TypedDagNode<RateGenerator>*                  Q;
         const TypedDagNode<double>*                         rate;                                                                                                //!< Sampling probability of each species.
         const TypedDagNode<double>*                         rho;                                                                                                //!< Sampling probability of each species.

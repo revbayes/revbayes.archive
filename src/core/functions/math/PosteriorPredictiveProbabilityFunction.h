@@ -2,6 +2,7 @@
 #define PosteriorPredictiveProbabilityFunction_H
 
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -22,7 +23,7 @@ namespace RevBayesCore {
      * @since Version 1.0, 2014-07-04
      *
      */
-    class PosteriorPredictiveProbabilityFunction : public TypedFunction< RbVector<double> > {
+    class PosteriorPredictiveProbabilityFunction : public TypedFunction< Simplex > {
         
     public:
         PosteriorPredictiveProbabilityFunction(const TypedDagNode< RbVector<double> > * v, const TypedDagNode<double>* k);

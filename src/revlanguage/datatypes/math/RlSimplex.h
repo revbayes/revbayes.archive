@@ -1,11 +1,13 @@
-#ifndef Simplex_H
-#define Simplex_H
+#ifndef RlSimplex_H
+#define RlSimplex_H
 
 
-#include "ModelVector.h"
+#include "Probability.h"
+#include "Simplex.h"
 #include "RealPos.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "RlContainer.h"
 
 #include <iostream>
 #include <vector>
@@ -23,12 +25,12 @@ namespace RevLanguage {
      * abilities to the parser (findOrCreateElement, getElement).
      */
     
-    class Simplex : public ModelVector<RealPos> {
+    class Simplex : public ModelObject<RevBayesCore::Simplex>, public Container {
         
     public:
-        Simplex(void);                                                                                  //!< Construct empty simplex
-        Simplex(const RevBayesCore::RbVector<double>& v);                                                          //!< Construct simplex from double (real) vector
-        Simplex(RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* c);                                   //!< Construct simplex from DAG node
+        Simplex(void);                                                                                                  //!< Construct empty simplex
+        Simplex(const RevBayesCore::Simplex& v);                                                                        //!< Construct simplex from double (real) vector
+        Simplex(RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* c);                                                  //!< Construct simplex from DAG node
 
         virtual                                    ~Simplex(void);                                                      //!< Destructor        
 
@@ -37,16 +39,21 @@ namespace RevLanguage {
         static const std::string&                   getClassType(void);                                                 //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
-        
+        virtual Probability*                        getElement(size_t idx) const;                                       //!< Get element variable (vector of indices)
+        double                                      isConvertibleTo( const TypeSpec& type, bool once ) const;
+        void                                        initMethods(void);
+        void                                        printValue( std::ostream& o, bool user ) const;
+        virtual void                                push_back(const double &x);                                      //!< Append element to end
+        virtual void                                push_back(const Probability &x);                                      //!< Append element to end
+        virtual void                                push_back(const RevObject &x);                                      //!< Append element to end
+        virtual size_t                              size(void) const;                                                   //!< Get number of elements in container
+
         // ModelVector functions that we override here to stop inappropriate actions
         void                                        sort(void);                                                         //!< Sort vector
         void                                        unique(void);                                                       //!< Remove consecutive duplicates
         
         virtual bool                                allowsModificationToCompositeContainer(void) const { return false;} //!< Does an object of this type allow transformation into a composite container?
-
-    private:
         
-        RevBayesCore::RbVector<double>*             makeNormalizedValue(const RevBayesCore::RbVector<double>& v);                  //!< Help function
         
     };
     

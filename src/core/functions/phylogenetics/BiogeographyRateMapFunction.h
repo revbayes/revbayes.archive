@@ -1,13 +1,5 @@
-//
-//  BiogeographyRateMapFunction.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/3/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__BiogeographyRateMapFunction__
-#define __rb_mlandis__BiogeographyRateMapFunction__
+#ifndef BiogeographyRateMapFunction_H
+#define BiogeographyRateMapFunction_H
 
 //#include "CountRateModifier.h"
 #include "GeographyRateModifier.h"
@@ -38,7 +30,7 @@ namespace RevBayesCore {
 //        void                                                setCountRateModifier(const TypedDagNode<double>* rsrm);
         void                                                setGainLossRates(const TypedDagNode< RbVector<double> >* glr);
         void                                                setRateMatrix(const TypedDagNode<RateGenerator>* rm);
-        void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
+        void                                                setRootFrequencies(const TypedDagNode< Simplex > *f);
         void                                                update(void);
         
     protected:
@@ -55,7 +47,7 @@ namespace RevBayesCore {
         const TypedDagNode<GeographyRateModifier>*          geographyRateModifier;
 //      const TypedDagNode<CountRateModifier>*              countRateModifier;
         const TypedDagNode<Tree>*                           tau;
-        const TypedDagNode< RbVector<double> >*             root_frequencies;
+        const TypedDagNode<Simplex>*                        root_frequencies;
         
         // geography epochs
         // rate epochs

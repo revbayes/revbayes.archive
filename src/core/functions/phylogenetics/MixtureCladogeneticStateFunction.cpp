@@ -1,11 +1,3 @@
-//
-//  MixtureCladogeneticStateFunction.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 10/22/16.
-//  Copyright © 2016 Michael Landis. All rights reserved.
-//
-
 #include "MixtureCladogeneticStateFunction.h"
 #include "RbException.h"
 
@@ -13,7 +5,7 @@
 
 using namespace RevBayesCore;
 
-MixtureCladogeneticStateFunction::MixtureCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *mw, const TypedDagNode< RbVector<CladogeneticProbabilityMatrix> > *cp, unsigned nc, unsigned ns) : TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix(0) ),
+MixtureCladogeneticStateFunction::MixtureCladogeneticStateFunction(const TypedDagNode< Simplex > *mw, const TypedDagNode< RbVector<CladogeneticProbabilityMatrix> > *cp, unsigned nc, unsigned ns) : TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix(0) ),
 mixtureWeights( mw ),
 cladoProbs( cp ),
 numCharacters(nc),
@@ -148,7 +140,7 @@ void MixtureCladogeneticStateFunction::swapParameterInternal(const DagNode *oldP
     
     if (oldP == mixtureWeights)
     {
-        mixtureWeights = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        mixtureWeights = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     else if (oldP == cladoProbs)
     {

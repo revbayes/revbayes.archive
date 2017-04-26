@@ -1,6 +1,7 @@
 #ifndef CategoricalDistribution_H
 #define CategoricalDistribution_H
 
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -27,7 +28,7 @@ namespace RevBayesCore {
     class CategoricalDistribution : public TypedDistribution<int> {
         
     public:
-        CategoricalDistribution(const TypedDagNode< RbVector<double> >* p);
+        CategoricalDistribution(const TypedDagNode< Simplex >* p);
         virtual                                            ~CategoricalDistribution(void);                                              //!< Virtual destructor
         
         // public member functions
@@ -43,7 +44,7 @@ namespace RevBayesCore {
     private:
         
         // member
-        const TypedDagNode< RbVector<double> >*             probs;                                                                      //!< Simplex with category probabilities
+        const TypedDagNode< Simplex >*                      probs;                                                                      //!< Simplex with category probabilities
     };
     
 }

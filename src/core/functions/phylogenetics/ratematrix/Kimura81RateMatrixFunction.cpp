@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-Kimura81RateMatrixFunction::Kimura81RateMatrixFunction(const TypedDagNode<double> *k1, const TypedDagNode<double> *k2, const TypedDagNode< RbVector<double> > *bf) : TypedFunction<RateGenerator>( new RateMatrix_Kimura81(bf->getValue().size()) ),
+Kimura81RateMatrixFunction::Kimura81RateMatrixFunction(const TypedDagNode<double> *k1, const TypedDagNode<double> *k2, const TypedDagNode< Simplex > *bf) : TypedFunction<RateGenerator>( new RateMatrix_Kimura81(bf->getValue().size()) ),
     kappa_1( k1 ),
     kappa_2( k2 ),
     base_frequencies( bf )
@@ -53,7 +53,7 @@ void Kimura81RateMatrixFunction::swapParameterInternal(const DagNode *oldP, cons
     
     if (oldP == base_frequencies)
     {
-        base_frequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        base_frequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     
     if (oldP == kappa_1)

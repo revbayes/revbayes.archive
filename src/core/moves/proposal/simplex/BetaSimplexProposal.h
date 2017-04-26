@@ -5,6 +5,7 @@
 #include <string>
 
 #include "SimpleProposal.h"
+#include "Simplex.h"
 #include "StochasticNode.h"
 
 namespace RevBayesCore {
@@ -23,15 +24,15 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class BetaSimplexProposal : public SimpleProposal<RbVector<double> > {
+    class BetaSimplexProposal : public SimpleProposal<Simplex> {
         
     public:
-        BetaSimplexProposal( StochasticNode<RbVector<double> > *n, double a, double p=0.44);                                                                    //!<  constructor
+        BetaSimplexProposal( StochasticNode<Simplex> *n, double a, double p=0.44);                                                                    //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
         BetaSimplexProposal*                    clone(void) const;                                                                  //!< Clone object
-        double                                  propose(RbVector<double> &v);                                                                   //!< Perform proposal
+        double                                  propose(Simplex &v);                                                                //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                                              //!< Prepare the proposal
         void                                    printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
@@ -46,7 +47,7 @@ namespace RevBayesCore {
     private:
         // parameters
         
-        RbVector<double>                        storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
+        Simplex                                 storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
         double                                  alpha;                                                                             //!< The scaling parameter of the Proposal
 //        double                              proposedValue;                                                                      //!< The value we propose.
     };

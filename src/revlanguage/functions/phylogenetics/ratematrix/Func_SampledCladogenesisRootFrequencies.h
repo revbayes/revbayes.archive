@@ -1,11 +1,3 @@
-//
-//  Func_SampledCladogenesisRootFrequencies.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 8/11/16.
-//  Copyright © 2016 Michael Landis. All rights reserved.
-//
-
 #ifndef Func_SampledCladogenesisRootFrequencies_h
 #define Func_SampledCladogenesisRootFrequencies_h
 
@@ -32,7 +24,7 @@ namespace RevLanguage {
         const TypeSpec&                                                 getTypeSpec(void) const;                                    //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >*      createFunction(void) const;                                 //!< Create internal function object
+        RevBayesCore::TypedFunction< RevBayesCore::Simplex >*           createFunction(void) const;                                 //!< Create internal function object
         const ArgumentRules&                                            getArgumentRules(void) const;                               //!< Get argument rules
         
     };

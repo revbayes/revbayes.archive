@@ -34,7 +34,7 @@ MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double
                                                        const TypedDagNode<RbVector<double> > *m,
                                                        const TypedDagNode<RateGenerator>* q,
                                                        const TypedDagNode< double >* r,
-                                                       const TypedDagNode< RbVector< double > >* p,
+                                                       const TypedDagNode< Simplex >* p,
                                                        const TypedDagNode<double> *rh,
                                                        const std::string &cdt,
                                                        const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
@@ -285,7 +285,7 @@ void MultiRateBirthDeathProcess::swapParameterInternal(const DagNode *oldP, cons
     }
     if ( oldP == pi )
     {
-        pi = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+        pi = static_cast<const TypedDagNode<Simplex>* >( newP );
     }
     
     if ( oldP == rho )

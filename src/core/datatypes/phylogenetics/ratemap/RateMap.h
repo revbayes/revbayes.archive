@@ -7,6 +7,7 @@
 #include "RateGenerator.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include <vector>
@@ -47,7 +48,7 @@ namespace RevBayesCore {
         const RbVector<RateGenerator>&      getHeterogeneousRateMatrices(void) const;
         void                                setHeterogeneousRateMatrices(const RbVector<RateGenerator>& r);
         const std::vector<double>&          getRootFrequencies(void) const;
-        void                                setRootFrequencies(const RevBayesCore::RbVector<double>& r);
+        void                                setRootFrequencies(const Simplex& r);
 
 
         
@@ -57,7 +58,7 @@ namespace RevBayesCore {
         std::vector<double>                 heterogeneous_clock_rates;
         RateGenerator*                      homogeneous_rate_matrix;
         RbVector<RateGenerator>             heterogeneous_rate_matrices;
-        std::vector<double>                 root_frequencies;
+        Simplex                             root_frequencies;
         
         size_t                              num_states;                                          //!< The number of character states
         size_t                              numCharacters;                                      //!< The number of characters

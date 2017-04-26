@@ -2,6 +2,7 @@
 #define ScaledDirichletDistribution_H
 
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -19,14 +20,14 @@ namespace RevBayesCore {
      *
      *
      */
-    class ScaledDirichletDistribution : public TypedDistribution< RbVector<double> > {
+    class ScaledDirichletDistribution : public TypedDistribution<Simplex> {
         
     public:
         ScaledDirichletDistribution(const TypedDagNode< RbVector<double> > *a, const TypedDagNode< RbVector<double> > *b );
         virtual                                            ~ScaledDirichletDistribution(void);                                                //!< Virtual destructor
         
         // public member functions
-        ScaledDirichletDistribution*                              clone(void) const;                                                          //!< Create an independent clone
+        ScaledDirichletDistribution*                        clone(void) const;                                                          //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
         

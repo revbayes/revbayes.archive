@@ -5,7 +5,7 @@
 
 using namespace RevBayesCore;
 
-PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< RbVector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< int > *ps) : TypedFunction< RbVector<double> > ( new RbVector<double> () ),
+PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< int > *ps) : TypedFunction< Simplex > ( new Simplex() ),
     fixedNucleotideRootFrequencies( fnrf ),
     frequencyOfPolymorphismsAtTheRoot( fopar ),
     mutationRates(mr), populationSize(ps)
@@ -25,7 +25,12 @@ PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< RbV
 }
 
 
-PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< RbVector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< int > *ps): TypedFunction< RbVector<double> > ( new RbVector<double> () ), fixedNucleotideRootFrequencies( fnrf ), frequencyOfPolymorphismsAtTheRoot( fopar ), mutationMatrix( mm ), populationSize(ps)  {
+PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< int > *ps): TypedFunction< Simplex > ( new Simplex() ),
+    fixedNucleotideRootFrequencies( fnrf ),
+    frequencyOfPolymorphismsAtTheRoot( fopar ),
+    mutationMatrix( mm ),
+    populationSize(ps)
+{
     useMutationMatrix = true;
     for (size_t i = 0; i < 4+6* (populationSize->getValue()-1); ++i) {
         static_cast< std::vector<double>* >(value)->push_back(0.0);
@@ -107,7 +112,7 @@ void PomoRootFrequenciesFunction::swapParameterInternal(const DagNode *oldP, con
     
     if (oldP == fixedNucleotideRootFrequencies)
     {
-        fixedNucleotideRootFrequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        fixedNucleotideRootFrequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     else if (oldP == frequencyOfPolymorphismsAtTheRoot)
     {

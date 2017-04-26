@@ -3,6 +3,7 @@
 
 #include "RateMatrix_TamuraNei.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -25,7 +26,7 @@ namespace RevBayesCore {
     class TamuraNeiRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        TamuraNeiRateMatrixFunction(const TypedDagNode<double> *k1, const TypedDagNode<double> *k2, const TypedDagNode< RbVector<double> > *bf);
+        TamuraNeiRateMatrixFunction(const TypedDagNode<double> *k1, const TypedDagNode<double> *k2, const TypedDagNode< Simplex > *bf);
         virtual                                            ~TamuraNeiRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -41,7 +42,7 @@ namespace RevBayesCore {
         
         const TypedDagNode<double>*                         kappa_1;
         const TypedDagNode<double>*                         kappa_2;
-        const TypedDagNode< RbVector<double> >*             base_frequencies;
+        const TypedDagNode<Simplex>*                        base_frequencies;
         
     };
     

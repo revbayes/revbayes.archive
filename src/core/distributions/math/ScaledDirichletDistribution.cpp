@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-ScaledDirichletDistribution::ScaledDirichletDistribution(const TypedDagNode< RbVector<double> > *a, const TypedDagNode< RbVector<double> > *b) : TypedDistribution< RbVector<double> >( new RbVector<double>() ),
+ScaledDirichletDistribution::ScaledDirichletDistribution(const TypedDagNode< RbVector<double> > *a, const TypedDagNode< RbVector<double> > *b) : TypedDistribution< Simplex >( new Simplex() ),
     alpha( a ),
     beta( b )
 {

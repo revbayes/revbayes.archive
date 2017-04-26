@@ -65,13 +65,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
 
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
-    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
+    const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *rf = NULL;
     if ( root_frequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     }
 
-    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *sp = NULL;
+    const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *sp = NULL;
 
     bool siteMatrices = false;
 

@@ -1,5 +1,6 @@
 #include "ChromosomesRateMatrixFunction.h"
 #include "Func_chromosomes.h"
+#include "Natural.h"
 #include "RateMatrix_Chromosomes.h"
 #include "Real.h"
 #include "RealPos.h"

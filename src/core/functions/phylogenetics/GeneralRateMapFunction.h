@@ -33,10 +33,10 @@ namespace RevBayesCore {
         
         // set parameters
         void                                                setClockRate(const TypedDagNode< double > *r);
-        void                                                setClockRate(const TypedDagNode< RevBayesCore::RbVector< double > > *r);
+        void                                                setClockRate(const TypedDagNode< RbVector< double > > *r);
         void                                                setRateMatrix(const TypedDagNode<RateGenerator>* rm);
 //        void                                                setRateMatrix(const TypedDagNode<RbVector<RateGenerator> > >* rm);
-        void                                                setRootFrequencies(const TypedDagNode< RevBayesCore::RbVector< double > > *f);
+        void                                                setRootFrequencies(const TypedDagNode< Simplex > *f);
         void                                                update(void);
         
     protected:
@@ -50,7 +50,7 @@ namespace RevBayesCore {
         const TypedDagNode<RateGenerator>*                             homogeneous_rate_matrix;
         const TypedDagNode<RbVector<RateGenerator> >*                  heterogeneous_rate_matrices;
 //        const TypedDagNode<TimeTree>*                               tau;
-        const TypedDagNode<RevBayesCore::RbVector<double> >*        root_frequencies;
+        const TypedDagNode<Simplex>*                        root_frequencies;
         
         // geography epochs
         bool                                                branch_heterogeneous_clock_rates;
