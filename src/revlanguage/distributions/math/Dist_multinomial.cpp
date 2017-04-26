@@ -35,7 +35,7 @@ RevBayesCore::MultinomialDistribution* Dist_multinomial::createDistribution( voi
     
     // get the parameters
     RevBayesCore::TypedDagNode<int>*                              vn = static_cast<const Natural     &>( n->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* vp = static_cast<const Simplex &>( p->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::Simplex >*          vp = static_cast<const Simplex &>( p->getRevObject() ).getDagNode();
     RevBayesCore::MultinomialDistribution*                        d  = new RevBayesCore::MultinomialDistribution( vp, vn );
     return d;
 }

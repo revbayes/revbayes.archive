@@ -1,13 +1,5 @@
-
-//  PhyloCTMCClado.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 10/30/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __revbayes_proj__PhyloCTMCClado__
-#define __revbayes_proj__PhyloCTMCClado__
+#ifndef PhyloCTMCClado_H
+#define PhyloCTMCClado_H
 
 #include "AbstractCladogenicStateFunction.h"
 #include "CharacterHistory.h"
@@ -19,6 +11,7 @@
 #include "RateMatrix.h"
 #include "RbException.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "MatrixReal.h"
 #include "Taxon.h"
 #include "Tree.h"
@@ -131,7 +124,7 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
     et.push_back("a");
     homogeneousCladogenesisMatrix            = new DeterministicNode<CladogeneticProbabilityMatrix>( "cladogenesisMatrix",
                                                new DECCladogeneticStateFunction(
-                                                    new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
+                                                    new ConstantNode<Simplex >( "", new Simplex(2, 0.5)),
                                                     new ConstantNode<RbVector<RbVector<double> > >("", new RbVector<RbVector<double> >(nChars, RbVector<double>(nChars, 1))),
                                                     new ConstantNode<RbVector<RbVector<double> > >("", new RbVector<RbVector<double> >(nChars, RbVector<double>(nChars, 1))),
                                                     numReducedChar,

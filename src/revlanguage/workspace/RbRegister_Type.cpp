@@ -131,7 +131,10 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
         AddWorkspaceVectorType<Tree,3>::addTypeToWorkspace( *this, new Tree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
-		
+
+        addTypeWithConstructor( new Clade() );
+        addTypeWithConstructor( new Taxon() );
+
         
         //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
 //        addFunction( new Func_workspaceVector<AbstractModelObject>() );
@@ -153,12 +156,9 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
 
         /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
-        addTypeWithConstructor( new Clade() );
        // addTypeWithConstructor( "rootedTripletDist", new RootedTripletDistribution() );
 
 
-        /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
-        addTypeWithConstructor( new Taxon() );
 
         /* Add math types (in folder "datatypes/math") */
         addTypeWithConstructor( new CorrespondenceAnalysis()                    );

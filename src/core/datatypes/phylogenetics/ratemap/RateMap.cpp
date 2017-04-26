@@ -154,7 +154,7 @@ void RateMap::setHomogeneousClockRate(double r)
     homogeneous_clock_rate = r;
 }
 
-void RateMap::setRootFrequencies(const RevBayesCore::RbVector<double>& r)
+void RateMap::setRootFrequencies(const Simplex& r)
 {
     root_frequencies = r;
 }

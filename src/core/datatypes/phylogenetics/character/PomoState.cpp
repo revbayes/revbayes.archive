@@ -13,14 +13,30 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 PomoState::PomoState(void) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
-    chromosome_ (""), position_(0), virtualPopulationSize_ ( 10 ), pomoRandomSampling_ (true)
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(4 + 6 * (10 - 1)),
+    chromosome_ (""),
+    position_(0),
+    virtualPopulationSize_ ( 10 ),
+    pomoRandomSampling_ (true)
 {
 
 }
 
 /** Constructor with virtual population size */
 PomoState::PomoState(size_t vps): DiscreteCharacterState( 4 + 6 * (vps - 1) ),
-    chromosome_ (""), position_(0), virtualPopulationSize_ ( vps ), pomoRandomSampling_ (true)
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(4 + 6 * (10 - 1)),
+    chromosome_ (""),
+    position_(0),
+    virtualPopulationSize_( vps ),
+    pomoRandomSampling_ (true)
 {
 
 
@@ -29,7 +45,15 @@ PomoState::PomoState(size_t vps): DiscreteCharacterState( 4 + 6 * (vps - 1) ),
 
 /** Constructor that sets the observation */
 PomoState::PomoState(const std::string &s) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
-    chromosome_ ( "" ), position_( 0 ), virtualPopulationSize_ ( 10 ), pomoRandomSampling_ (true)
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(4 + 6 * (10 - 1)),
+    chromosome_( "" ),
+    position_( 0 ),
+    virtualPopulationSize_( 10 ),
+    pomoRandomSampling_(true)
 {
 
     //assert( s <= 15 );
@@ -41,7 +65,16 @@ PomoState::PomoState(const std::string &s) : DiscreteCharacterState( 4 + 6 * (10
 
 /** Constructor that sets the observation and the other fields */
 PomoState::PomoState(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize, std::vector<double> weights ) : DiscreteCharacterState( 4 + 6 * (virtualPopulationSize - 1) ),
-    chromosome_ ( chromosome ), position_( position ), virtualPopulationSize_ ( virtualPopulationSize ), weights_(weights), pomoRandomSampling_ (true)
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(4 + 6 * (virtualPopulationSize - 1)),
+    chromosome_( chromosome ),
+    position_( position ),
+    virtualPopulationSize_( virtualPopulationSize ),
+    weights_(weights),
+    pomoRandomSampling_(true)
 {
 
     setState(s);
@@ -50,7 +83,16 @@ PomoState::PomoState(const std::string &s, const std::string chromosome, const s
 
 /** Constructor that sets the observation and the other fields */
 PomoState::PomoState(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize) : DiscreteCharacterState( 4 + 6 * (virtualPopulationSize - 1) ),
-    chromosome_ ( chromosome ), position_( position ), virtualPopulationSize_ ( virtualPopulationSize ), weights_(4 + 6 * (virtualPopulationSize - 1), 0.0), pomoRandomSampling_ (true)
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(4 + 6 * (virtualPopulationSize - 1)),
+    chromosome_( chromosome ),
+    position_( position ),
+    virtualPopulationSize_( virtualPopulationSize ),
+    weights_(4 + 6 * (virtualPopulationSize - 1), 0.0),
+    pomoRandomSampling_ (true)
 {
 
     setState(s);
@@ -404,18 +446,84 @@ void PomoState::setVirtualPopulationSize(size_t populationSize)
 void PomoState::setChromosome(std::string chromosome){
   chromosome_ = chromosome;
 }
+
 void PomoState::setPosition(size_t position){
   position_ = position;
 }
 
-const std::string PomoState::getChromosome( void ){
+const std::string PomoState::getChromosome( void )
+{
   return chromosome_;
 }
 
-const size_t PomoState::getPosition( void ){
+const size_t PomoState::getPosition( void )
+{
   return position_;
 }
 
-const std::vector<double> PomoState::getWeights( void ) const{
+const std::vector<double> PomoState::getWeights( void ) const
+{
   return weights_;
 }
+
+
+void PomoState::addState(const std::string &symbol)
+{
+    ++num_observed_states;
+    
+    std::string labels = getStateLabels();
+    size_t pos = labels.find(symbol);
+    
+    state.set( pos );
+    index_single_state = pos;
+}
+
+
+RbBitSet PomoState::getState(void) const
+{
+    return state;
+}
+
+
+bool PomoState::isGapState( void ) const
+{
+    return is_gap;
+}
+
+
+bool PomoState::isMissingState( void ) const
+{
+    return is_missing;
+}
+
+
+void PomoState::setGapState( bool tf )
+{
+    is_gap = tf;
+}
+
+
+void PomoState::setMissingState( bool tf )
+{
+    is_missing = tf;
+}
+
+
+void PomoState::setToFirstState(void)
+{
+    num_observed_states = 1;
+    index_single_state = 0;
+    state.clear();
+    state.set( 0 );
+}
+
+
+void PomoState::setStateByIndex(size_t index)
+{
+    
+    num_observed_states = 1;
+    index_single_state = index;
+    state.clear();
+    state.set( index );
+}
+

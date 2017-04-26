@@ -10,6 +10,7 @@
 #include "RbSettings.h"
 #include "RbVector.h"
 #include "RateGenerator.h"
+#include "Simplex.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "Tree.h"
@@ -103,10 +104,10 @@ namespace RevBayesCore {
         void                                                                setPInv(const TypedDagNode< double > *);
         void                                                                setRateMatrix(const TypedDagNode< RateGenerator > *rm);
         void                                                                setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm);
-        void                                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
+        void                                                                setRootFrequencies(const TypedDagNode< Simplex > *f);
         void                                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         void                                                                setUseMarginalLikelihoods(bool tf);
-        void                                                                setUseSiteMatrices(bool sm, const TypedDagNode< RbVector< double > > *s = NULL);
+        void                                                                setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s = NULL);
 
 
     protected:
@@ -207,9 +208,9 @@ namespace RevBayesCore {
         const TypedDagNode< RbVector< double > >*                           heterogeneous_clock_rates;
         const TypedDagNode< RateGenerator >*                                homogeneous_rate_matrix;
         const TypedDagNode< RbVector< RateGenerator > >*                    heterogeneous_rate_matrices;
-        const TypedDagNode< RbVector< double > >*                           root_frequencies;
+        const TypedDagNode< Simplex >*                                      root_frequencies;
         const TypedDagNode< RbVector< double > >*                           site_rates;
-        const TypedDagNode< RbVector< double > >*                           site_matrix_probs;
+        const TypedDagNode< Simplex >*                                      site_matrix_probs;
         const TypedDagNode< RbVector< double > >*                           site_rates_probs;
         const TypedDagNode< double >*                                       p_inv;
 
@@ -568,7 +569,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
                 DiscreteCharacterState &c = taxon.getCharacter(site_indices[site]);
 
-                if (c.isWeighted() )
+                if ( c.isWeighted() )
                 {
                   weightedCharacters = true;
                   break;
@@ -1875,7 +1876,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
 
     }
 
-    std::vector<std::vector<double> > freqs;    getRootFrequencies(freqs);
+    std::vector<std::vector<double> > freqs;
+    getRootFrequencies(freqs);
     // simulate the root sequence
     DiscreteTaxonData< charType > &root = taxa[ tau->getValue().getRoot().getIndex() ];
     for ( size_t i = 0; i < num_sites; ++i )
@@ -1885,13 +1887,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
         // create the character
         charType c = charType( num_chars );
         c.setToFirstState();
+
         // draw the state
         double u = rng->uniform01();
         std::vector< double >::const_iterator freq = stationary_freqs.begin();
         while ( true )
         {
             u -= *freq;
-
             if ( u > 0.0 )
             {
                 ++c;
@@ -2607,7 +2609,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(con
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRootFrequencies(const TypedDagNode< Simplex > *f)
 {
 
     // remove the old parameter first
@@ -2684,7 +2686,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseMarginalLik
 }
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrices(bool sm, const TypedDagNode< RbVector< double > > *s)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s)
 {
 
     if( sm == false && s != NULL)
@@ -3007,7 +3009,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::swapParameterInte
     }
     else if (oldP == root_frequencies)
     {
-        root_frequencies = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+        root_frequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     else if (oldP == site_rates)
     {
@@ -3159,7 +3161,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
     }
     
     // we rescale the rate by the inverse of the proportion of invariant sites
-//    rate /= ( 1.0 - getPInv() );
+    rate /= ( 1.0 - getPInv() );
 
     double end_age = node->getAge();
 

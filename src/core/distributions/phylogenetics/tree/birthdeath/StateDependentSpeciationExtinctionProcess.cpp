@@ -32,7 +32,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    const TypedDagNode<RbVector<double> > *ext,
                                                                                    const TypedDagNode<RateGenerator>* q,
                                                                                    const TypedDagNode<double>* r,
-                                                                                   const TypedDagNode< RbVector< double > >* p,
+                                                                                   const TypedDagNode< Simplex >* p,
                                                                                    const TypedDagNode<double> *rh,
                                                                                    const std::string &cdt,
                                                                                    const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
@@ -1473,7 +1473,7 @@ void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagN
     }
     if ( oldP == pi )
     {
-        pi = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+        pi = static_cast<const TypedDagNode<Simplex>* >( newP );
     }
     if ( oldP == rho )
     {

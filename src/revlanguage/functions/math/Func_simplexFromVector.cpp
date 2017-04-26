@@ -1,5 +1,6 @@
 #include "ArgumentRule.h"
 #include "Func_simplexFromVector.h"
+#include "ModelVector.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "RlSimplex.h"
@@ -31,7 +32,7 @@ Func_simplexFromVector* Func_simplexFromVector::clone( void ) const
 
 
 /** Execute function: Compute simplex from vector of RealPos values */
-RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_simplexFromVector::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::Simplex >* Func_simplexFromVector::createFunction( void ) const
 {
     
     const RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* vec;

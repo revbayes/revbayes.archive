@@ -28,7 +28,7 @@ Func_posteriorPredictiveProbability* Func_posteriorPredictiveProbability::clone(
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >* Func_posteriorPredictiveProbability::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::Simplex >* Func_posteriorPredictiveProbability::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* v = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();

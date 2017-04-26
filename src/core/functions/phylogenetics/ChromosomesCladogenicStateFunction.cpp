@@ -1,10 +1,3 @@
-//
-//  ChromosomesCladogenicStateFunction.cpp
-//
-//  Created by will freyman on 12/13/15.
-//  Copyright (c) 2015 will freyman. All rights reserved.
-//
-
 #include "ChromosomesCladogenicStateFunction.h"
 #include "MatrixReal.h"
 #include "RbException.h"
@@ -13,7 +6,7 @@
 using namespace RevBayesCore;
 
 
-ChromosomesCladogenicStateFunction::ChromosomesCladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, unsigned mc):
+ChromosomesCladogenicStateFunction::ChromosomesCladogenicStateFunction(const TypedDagNode< Simplex > *ep, unsigned mc):
     TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix( mc + 1 ) ),
     eventProbs( ep ),
     maxChromo(mc),
@@ -251,7 +244,7 @@ void ChromosomesCladogenicStateFunction::swapParameterInternal(const DagNode *ol
     
     if (oldP == eventProbs)
     {
-        eventProbs = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        eventProbs = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     
 }

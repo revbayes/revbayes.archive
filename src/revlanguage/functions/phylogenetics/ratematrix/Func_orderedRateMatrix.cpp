@@ -1,5 +1,6 @@
 #include "OrderedRateMatrixFunction.h"
 #include "Func_orderedRateMatrix.h"
+#include "Natural.h"
 #include "RateMatrix_Ordered.h"
 #include "Real.h"
 #include "RealPos.h"

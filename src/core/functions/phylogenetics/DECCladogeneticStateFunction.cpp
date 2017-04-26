@@ -1,11 +1,3 @@
-//
-//  DECCladogeneticStateFunction.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 1/19/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
 //#define DEBUG_DEC
 
 #include "DECCladogeneticStateFunction.h"
@@ -19,7 +11,7 @@
 
 using namespace RevBayesCore;
 
-DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *ep,
+DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< Simplex > *ep,
                                                            const TypedDagNode<RbVector<RbVector<double> > >* cg,
                                                            const TypedDagNode<RbVector<RbVector<double> > >* vg,
                                                            unsigned nc,
@@ -672,7 +664,7 @@ void DECCladogeneticStateFunction::swapParameterInternal(const DagNode *oldP, co
     
     if (oldP == eventProbs)
     {
-        eventProbs = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        eventProbs = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     else if (oldP == connectivityGraph)
     {

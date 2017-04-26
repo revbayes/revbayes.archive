@@ -42,19 +42,19 @@ Func_DECRoot* Func_DECRoot::clone( void ) const
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_DECRoot::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::Simplex >* Func_DECRoot::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rf = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rs = NULL;
+    RevBayesCore::TypedDagNode<RevBayesCore::Simplex >* rs = NULL;
     if ( this->args[1].getVariable() != NULL && this->args[1].getVariable()->getRevObject() != RevNullObject::getInstance()) {
         rs = static_cast<const Simplex&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     }
     else {
         size_t n = log2(rf->getValue().size());
         double p = 1.0 / n;
-        rs = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("", new RevBayesCore::RbVector<double>(n,p));
+        rs = new RevBayesCore::ConstantNode<RevBayesCore::Simplex>("", new RevBayesCore::Simplex(n,p));
     }
     
 //    RevBayesCore::TypedDagNode<int>* mrs = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getDagNode();

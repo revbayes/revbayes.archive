@@ -30,7 +30,7 @@ namespace RevLanguage {
         virtual ~Dist_scaledDirichlet();
         
         // Basic utility functions
-        Dist_scaledDirichlet*                                 clone(void) const;                                                                      //!< Clone the object
+        Dist_scaledDirichlet*                           clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
@@ -40,7 +40,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::ScaledDirichletDistribution*            createDistribution(void) const;
+        RevBayesCore::ScaledDirichletDistribution*      createDistribution(void) const;
         
     protected:
         

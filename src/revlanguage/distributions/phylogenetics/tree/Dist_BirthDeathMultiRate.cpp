@@ -69,7 +69,7 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
     // rate
     RevBayesCore::TypedDagNode<double>* rat      = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
     // root frequencies
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* p       = static_cast<const Simplex &>( pi->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Simplex >* p       = static_cast<const Simplex &>( pi->getRevObject() ).getDagNode();
     // sampling probability
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     // condition
