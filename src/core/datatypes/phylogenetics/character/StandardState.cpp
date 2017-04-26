@@ -38,7 +38,7 @@ StandardState::StandardState(const std::string& s, const std::string &l) : Discr
     is_missing( false ),
     index_single_state( 0 ),
     num_observed_states( 0 ),
-    state(s.size()),
+    state(l.size()),
     labels( l )
 {
     setState(s);
