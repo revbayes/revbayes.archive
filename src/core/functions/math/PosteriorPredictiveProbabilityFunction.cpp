@@ -44,7 +44,7 @@ PosteriorPredictiveProbabilityFunction* PosteriorPredictiveProbabilityFunction::
 void PosteriorPredictiveProbabilityFunction::update( void )
 {
     
-    const Simplex &v = vals->getValue();
+    const RbVector<double> &v = vals->getValue();
     
     double val = x->getValue();
     size_t size = v.size();
