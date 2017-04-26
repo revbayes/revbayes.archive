@@ -431,6 +431,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()     );
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()        );
         addFunction( new Func__conversion<Simplex, ModelVector<Real> >()                         );
+        addFunction( new Func__conversion<Simplex, ModelVector<RealPos> >()                      );
         addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Integer> > >()         );
 //        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Real> > >()            );
 //        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<RealPos> > >()         );
