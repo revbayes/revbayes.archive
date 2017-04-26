@@ -147,6 +147,7 @@ namespace RevBayesCore {
         virtual std::vector< std::vector< double > >*                       sumMarginalLikelihoods(size_t node_index);
         virtual void                                                        computeRootLikelihoods( std::vector< double > &rv ) const;
         virtual double                                                      sumRootLikelihood( void );
+        virtual std::vector<size_t>                                         getIncludedSiteIndices();
 
 
         // members
@@ -510,7 +511,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
 
     // create a vector with the correct site indices
     // some of the sites may have been excluded
-    std::vector<size_t> site_indices = this->value->getIncludedSiteIndices();
+    std::vector<size_t> site_indices = getIncludedSiteIndices();
 
     // check whether there are ambiguous characters (besides gaps)
     bool ambiguousCharacters = false;
@@ -1585,6 +1586,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fireTreeChangeEve
 }
 
 
+template<class charType>
+ std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getIncludedSiteIndices( void )
+ {
+     return this->value->getIncludedSiteIndices();
+}
+
+
 
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getRootFrequencies( std::vector<std::vector<double> >& rf ) const
@@ -1784,7 +1792,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     // therefore we create our own mask
     if ( do_mask == true )
     {
-        std::vector<size_t> site_indices = this->value->getIncludedSiteIndices();
+        std::vector<size_t> site_indices = getIncludedSiteIndices();
 
         // set the gap states as in the clamped data
         for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
