@@ -196,7 +196,7 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
                     }
                     else
                     {
-                        m[i][j] = dynamic_cast<const RealPos&>(matrix[i][j]).getValue();
+                        m[i][j] = dynamic_cast<const Real&>(matrix[i][j]).getValue();
 //                        r.push_back(matrix[i][j]);
                     }
                 }
