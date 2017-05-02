@@ -5,6 +5,7 @@
 #include "CDCladoSE.h"
 #include "MatrixReal.h"
 #include "RateMatrix.h"
+#include "RateMatrix_JC.h"
 #include "Simplex.h"
 #include "Taxon.h"
 #include "Tree.h"
@@ -39,7 +40,7 @@ namespace RevBayesCore {
         
         // pure virtual member functions
         virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;                                                                                  //!< Create an independent clone
-        
+
         double                                                          computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
         const AbstractHomologousDiscreteCharacterData&                  getCharacterData() const;
         virtual void                                                    redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
@@ -58,6 +59,10 @@ namespace RevBayesCore {
         
     protected:
         
+        double                                                          getEventRate(void) const;
+        const RateGenerator&                                            getEventRateMatrix(void) const;
+        std::vector<double>                                             getRootFrequencies(void) const;
+
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                    getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                  //!< get affected nodes
         virtual void                                                    keepSpecialization(DagNode* affecter);
@@ -105,6 +110,7 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                                     rate;                                                                                               //!< Sampling probability of each species.
         const TypedDagNode<double>*                                     rho;                                                                                                //!< Sampling probability of each species.
         
+        RateMatrix_JC                                                   Q_default;
         double                                                          NUM_TIME_SLICES;
     };
     

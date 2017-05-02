@@ -105,7 +105,10 @@ const MemberRules& Dist_CharacterDependentFossilizedBirthDeathProcess::getParame
     {
         memberRules = Dist_CharacterDependentBirthDeathProcess::getParameterRules();
         
-        memberRules.push_back( new ArgumentRule( "psi"       , ModelVector<RealPos>::getClassTypeSpec()          , "The vector of fossil sampling rates."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, NULL ) );
+        std::vector<std::string> elabels;
+        elabels.push_back("fossilizationRates");
+        elabels.push_back("psi");
+        memberRules.push_back( new ArgumentRule( elabels, ModelVector<RealPos>::getClassTypeSpec(), "The vector of fossil sampling rates.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         rules_set = true;
     }
@@ -118,7 +121,7 @@ const MemberRules& Dist_CharacterDependentFossilizedBirthDeathProcess::getParame
 void Dist_CharacterDependentFossilizedBirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "psi" )
+    if ( name == "fossilizationRates" || name == "psi" )
     {
         fossilization_rates = var;
     }
