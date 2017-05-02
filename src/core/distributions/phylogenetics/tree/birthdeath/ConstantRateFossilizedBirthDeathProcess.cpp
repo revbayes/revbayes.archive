@@ -259,7 +259,7 @@ double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double or
     else
     {
         t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
-    }    
+    }
     
     //    return present - t;
     return orig + t;
