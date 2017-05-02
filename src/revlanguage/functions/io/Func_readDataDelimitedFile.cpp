@@ -152,16 +152,15 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
     {
         if (matrix_type == REALPOS)
         {
-//            ModelVector<ModelVector<RealPos> > m;
+
             RevBayesCore::MatrixReal m = RevBayesCore::MatrixReal(matrix.size(),matrix[0].size());
             for (size_t i = 0; i<matrix.size(); i++)
             {
-//                ModelVector<RealPos> r;
+
                 for (size_t j = 0; j < matrix[i].size(); j++)
                 {
                     if ( matrix[i][j].isType(RealPos::getClassTypeSpec()) == false )
                     {
-//                        r.push_back( *(RealPos*)(matrix[i][j].convertTo(RealPos::getClassTypeSpec())) );
                         RealPos *tmp = (RealPos*)(matrix[i][j].convertTo(RealPos::getClassTypeSpec()));
                         m[i][j] = (tmp)->getValue();
                         delete tmp;
@@ -169,26 +168,23 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
                     else
                     {
                         m[i][j] = dynamic_cast<const RealPos&>(matrix[i][j]).getValue();
-//                        r.push_back(matrix[i][j]);
                     }
                 }
-//                m.push_back(r);
             }
-//            return new RevVariable( new ModelVector<ModelVector<RealPos> >(m) );
+
             return new RevVariable( new MatrixReal(m) );
         }
         else if (matrix_type == REAL)
         {
-//            ModelVector<ModelVector<Real> > m;
+
             RevBayesCore::MatrixReal m = RevBayesCore::MatrixReal(matrix.size(),matrix[0].size());
             for (size_t i = 0; i<matrix.size(); i++)
             {
-//                ModelVector<Real> r;
+
                 for (size_t j = 0; j < matrix[i].size(); j++)
                 {
                     if ( matrix[i][j].isType(Real::getClassTypeSpec()) == false )
                     {
-//                        r.push_back( *(Real*)(matrix[i][j].convertTo(Real::getClassTypeSpec())) );
                         
                         RealPos *tmp = (RealPos*)(matrix[i][j].convertTo(RealPos::getClassTypeSpec()));
                         m[i][j] = (tmp)->getValue();
@@ -197,12 +193,11 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
                     else
                     {
                         m[i][j] = dynamic_cast<const Real&>(matrix[i][j]).getValue();
-//                        r.push_back(matrix[i][j]);
                     }
                 }
-//                m.push_back(r);
+
             }
-            //            return new RevVariable( new ModelVector<ModelVector<Real> >(m) );
+
             return new RevVariable( new MatrixReal(m) );
         }
         else if (matrix_type == NATURAL)
