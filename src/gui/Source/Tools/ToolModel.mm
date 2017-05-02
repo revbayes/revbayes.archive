@@ -47,7 +47,7 @@
     std::string guiSymbol = bo->getGuiSymbol();
     
     // add the variable
-    Variable* newV = [[Variable alloc] init];
+    Variable* newV = [[Variable alloc] initWithFrame:NSMakeRect(0.0, 0.0, 81.6, 81.6)];
     [newV setDimensions:n];
     [newV setName:[NSString stringWithCString:vName.c_str() encoding:NSASCIIStringEncoding]];
     [newV setInterfaceName:[NSString stringWithCString:guiName.c_str() encoding:NSASCIIStringEncoding]];
@@ -398,7 +398,7 @@
 #           endif
             }
         }
-
+    
     // construct the list of moves
     for (std::map<std::string, RevLanguage::RevObject*>::iterator it = list.begin(); it != list.end(); it++)
         {
@@ -651,6 +651,11 @@
     else if (possibleInlets[3] == NO && numNumberInlets == 1)
         [self removeInletOfColor:[NSColor orangeColor]];
 
+}
+
+- (NSMutableArray*)variables {
+
+    return variableList;
 }
 
 @end

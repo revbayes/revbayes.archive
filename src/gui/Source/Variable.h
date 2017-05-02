@@ -8,6 +8,7 @@
     NSString*           name;
     NSString*           interfaceName;
     NSString*           interfaceSymbol;
+    float               parmSize;
 }
 
 @property (nonatomic,strong) NSString* name;

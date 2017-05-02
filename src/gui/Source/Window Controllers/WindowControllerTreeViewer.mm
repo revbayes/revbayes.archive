@@ -80,6 +80,7 @@
             }
         }
     [carousel reloadData];
+    [carousel setNeedsDisplay:YES];
     [treePeeker updateTreePeekView];
 }
 
@@ -108,9 +109,9 @@
                 }
             }
         }
-    
-    [carousel reloadData];
+
     [treePeeker updateTreePeekView];
+    [carousel reloadData];
 }
 
 - (IBAction)closeButtonAction:(id)sender {

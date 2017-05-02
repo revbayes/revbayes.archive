@@ -48,5 +48,6 @@
 - (void)showControlPanel;
 - (void)touchAllParameters;
 - (void)updateInlets;
+- (NSMutableArray*)variables;
 
 @end
