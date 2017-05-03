@@ -2,7 +2,6 @@
 #define JointConditionalJointConditionalAncestralStateMonitor_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
-#include "CharacterDependentCladoBirthDeathProcess.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
 #include "Monitor.h"
 #include "Tree.h"
@@ -79,7 +78,6 @@ namespace RevBayesCore {
 #include "StochasticNode.h"
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
-#include "CharacterDependentCladoBirthDeathProcess.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
 
 using namespace RevBayesCore;
@@ -221,8 +219,6 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
         }
         else
         {
-            //dist_bd = dynamic_cast<CharacterDependentCladoBirthDeathProcess*>( &cdbdp->getDistribution() ); // this doesn't work?
-            //dist_bd = dynamic_cast<CharacterDependentCladoBirthDeathProcess*>( &nodes[0]->getDistribution() ); // this does!
             dist_bd = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &nodes[0]->getDistribution() ); // this does!
             num_sites = 1;
             num_nodes = tree->getValue().getNumberOfNodes();

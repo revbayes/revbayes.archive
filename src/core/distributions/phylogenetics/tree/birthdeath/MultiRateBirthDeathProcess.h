@@ -2,9 +2,9 @@
 #define MultiRateBirthDeathProcess_H
 
 #include "AbstractBirthDeathProcess.h"
-#include "CDSE.h"
 #include "RateMatrix.h"
 #include "Simplex.h"
+#include "SSE_ODE.h"
 #include "Taxon.h"
 #include "Tree.h"
 #include "TypedDagNode.h"

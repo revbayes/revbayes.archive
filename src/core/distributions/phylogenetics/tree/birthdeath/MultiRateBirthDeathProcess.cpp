@@ -1,4 +1,4 @@
-#include "CDSE.h"
+#include "SSE_ODE.h"
 #include "Clade.h"
 #include "MultiRateBirthDeathProcess.h"
 #include "RandomNumberFactory.h"
@@ -143,7 +143,9 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
 
         }
         
-        CDSE ode = CDSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
+        SSE_ODE ode = SSE_ODE(mu->getValue(), &Q->getValue(), rate->getValue(), true, false);
+        ode.setSpeciationRate( lambda->getValue() );
+        
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
         double dt = root_age->getValue() / NUM_TIME_SLICES;
@@ -215,7 +217,9 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
     }
     
     double dt = root_age->getValue() / NUM_TIME_SLICES;
-    CDSE ode = CDSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
+    SSE_ODE ode = SSE_ODE(mu->getValue(), &Q->getValue(), rate->getValue(), true, false);
+    ode.setSpeciationRate( lambda->getValue() );
+    
     boost::numeric::odeint::integrate( ode , initialState , start , end , dt );
     
     
