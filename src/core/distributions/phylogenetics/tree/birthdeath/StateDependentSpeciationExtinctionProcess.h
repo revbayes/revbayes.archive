@@ -2,11 +2,11 @@
 #define StateDependentSpeciationExtinctionProcess_H
 
 #include "TreeDiscreteCharacterData.h"
-#include "CDCladoSE.h"
 #include "MatrixReal.h"
 #include "RateMatrix.h"
 #include "RateMatrix_JC.h"
 #include "Simplex.h"
+#include "SSE_ODE.h"
 #include "Taxon.h"
 #include "Tree.h"
 #include "TypedDagNode.h"

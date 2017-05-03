@@ -1,7 +1,6 @@
-#ifndef Dist_CharacterDependentCladoBirthDeathProcess_H
-#define Dist_CharacterDependentCladoBirthDeathProcess_H
+#ifndef Dist_StateDependentSpeciationExtinctionProcess_H
+#define Dist_StateDependentSpeciationExtinctionProcess_H
 
-#include "CharacterDependentCladoBirthDeathProcess.h"
 #include "RlTimeTree.h"
 #include "RlTypedDistribution.h"
 
@@ -14,14 +13,14 @@ namespace RevLanguage {
      *
      * @author Will Freyman
      */
-    class Dist_CharacterDependentCladoBirthDeathProcess : public TypedDistribution<TimeTree> {
+    class Dist_StateDependentSpeciationExtinctionProcess : public TypedDistribution<TimeTree> {
         
     public:
-        Dist_CharacterDependentCladoBirthDeathProcess( void );      //!< Constructor
-        virtual ~Dist_CharacterDependentCladoBirthDeathProcess();   //!< Virtual destructor
+        Dist_StateDependentSpeciationExtinctionProcess( void );      //!< Constructor
+        virtual ~Dist_StateDependentSpeciationExtinctionProcess();   //!< Virtual destructor
         
         // Basic utility functions
-        Dist_CharacterDependentCladoBirthDeathProcess*              clone(void) const;                                                                      //!< Clone the object
+        Dist_StateDependentSpeciationExtinctionProcess*             clone(void) const;                                                                      //!< Clone the object
         static const std::string&                                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                      getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                                 getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.

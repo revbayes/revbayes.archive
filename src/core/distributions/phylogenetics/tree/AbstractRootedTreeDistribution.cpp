@@ -606,7 +606,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
     }
     if ( ra <= max_node_age )
     {
-        if(ra > 0.0)
+        if (ra > 0.0)
         {
             throw(RbException("Root age younger than oldest taxon age"));
         }

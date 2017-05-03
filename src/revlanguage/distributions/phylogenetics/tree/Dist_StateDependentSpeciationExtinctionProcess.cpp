@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "Dist_CharacterDependentCladoBirthDeathProcess.h"
+#include "Dist_StateDependentSpeciationExtinctionProcess.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
@@ -18,33 +18,32 @@
 #include "RlTaxon.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
-#include "CharacterDependentCladoBirthDeathProcess.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
 
 using namespace RevLanguage;
 
 
-Dist_CharacterDependentCladoBirthDeathProcess::Dist_CharacterDependentCladoBirthDeathProcess() : TypedDistribution<TimeTree>()
+Dist_StateDependentSpeciationExtinctionProcess::Dist_StateDependentSpeciationExtinctionProcess() : TypedDistribution<TimeTree>()
 {
     
 }
 
 
-Dist_CharacterDependentCladoBirthDeathProcess::~Dist_CharacterDependentCladoBirthDeathProcess()
+Dist_StateDependentSpeciationExtinctionProcess::~Dist_StateDependentSpeciationExtinctionProcess()
 {
     
 }
 
 
 
-Dist_CharacterDependentCladoBirthDeathProcess* Dist_CharacterDependentCladoBirthDeathProcess::clone( void ) const
+Dist_StateDependentSpeciationExtinctionProcess* Dist_StateDependentSpeciationExtinctionProcess::clone( void ) const
 {
     
-    return new Dist_CharacterDependentCladoBirthDeathProcess( *this );
+    return new Dist_StateDependentSpeciationExtinctionProcess( *this );
 }
 
 
-RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentCladoBirthDeathProcess::createDistribution( void ) const
+RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_StateDependentSpeciationExtinctionProcess::createDistribution( void ) const
 {
     
     // Get the parameters
@@ -57,7 +56,6 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentClad
     std::vector<RevBayesCore::Taxon> t                                  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     const std::string& cond                                             = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     
-    //RevBayesCore::CharacterDependentCladoBirthDeathProcess* d = new RevBayesCore::CharacterDependentCladoBirthDeathProcess( ra, ex, q, r, rf, rh, cond, t );
     RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, rf, rh, cond, t );
     
     // set the cladogenetic speciation rate event map
@@ -74,17 +72,17 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentClad
 
 
 /* Get Rev type of object */
-const std::string& Dist_CharacterDependentCladoBirthDeathProcess::getClassType(void)
+const std::string& Dist_StateDependentSpeciationExtinctionProcess::getClassType(void)
 {
     
-    static std::string rev_type = "Dist_CharacterDependentCladoBirthDeathProcess";
+    static std::string rev_type = "Dist_StateDependentSpeciationExtinctionProcess";
     
     return rev_type;
 }
 
 
 /* Get class type spec describing type of object. TODO: Check if the correct parent is TypedDistribution or Distribution */
-const TypeSpec& Dist_CharacterDependentCladoBirthDeathProcess::getClassTypeSpec(void)
+const TypeSpec& Dist_StateDependentSpeciationExtinctionProcess::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
@@ -100,7 +98,7 @@ const TypeSpec& Dist_CharacterDependentCladoBirthDeathProcess::getClassTypeSpec(
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_CharacterDependentCladoBirthDeathProcess::getDistributionFunctionName( void ) const
+std::string Dist_StateDependentSpeciationExtinctionProcess::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "CDCladoBDP";
@@ -109,7 +107,7 @@ std::string Dist_CharacterDependentCladoBirthDeathProcess::getDistributionFuncti
 }
 
 
-MethodTable Dist_CharacterDependentCladoBirthDeathProcess::getDistributionMethods( void ) const
+MethodTable Dist_StateDependentSpeciationExtinctionProcess::getDistributionMethods( void ) const
 {
     
     MethodTable methods = TypedDistribution<TimeTree>::getDistributionMethods();
@@ -124,7 +122,7 @@ MethodTable Dist_CharacterDependentCladoBirthDeathProcess::getDistributionMethod
 
 
 /* Return member rules */
-const MemberRules& Dist_CharacterDependentCladoBirthDeathProcess::getParameterRules(void) const
+const MemberRules& Dist_StateDependentSpeciationExtinctionProcess::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -155,7 +153,7 @@ const MemberRules& Dist_CharacterDependentCladoBirthDeathProcess::getParameterRu
 }
 
 
-const TypeSpec& Dist_CharacterDependentCladoBirthDeathProcess::getTypeSpec( void ) const
+const TypeSpec& Dist_StateDependentSpeciationExtinctionProcess::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -165,7 +163,7 @@ const TypeSpec& Dist_CharacterDependentCladoBirthDeathProcess::getTypeSpec( void
 
 
 /** Set a member variable */
-void Dist_CharacterDependentCladoBirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Dist_StateDependentSpeciationExtinctionProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "rootAge" )
