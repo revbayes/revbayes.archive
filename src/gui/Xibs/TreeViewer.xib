@@ -33,6 +33,7 @@
                         <rect key="frame" x="0.0" y="55" width="911" height="625"/>
                         <connections>
                             <outlet property="dataSource" destination="-2" id="kKK-bp-d7W"/>
+                            <outlet property="delegate" destination="aAG-Fx-glR" id="6rL-Je-oBL"/>
                             <outlet property="windowControllerTreeViewPtr" destination="-2" id="cui-ly-VTL"/>
                         </connections>
                     </customView>

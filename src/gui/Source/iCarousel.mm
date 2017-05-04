@@ -246,6 +246,7 @@ NSComparisonResult compareViewDepth(UIView *view1, UIView *view2, iCarousel *sel
 
 - (void)setDelegate:(id<iCarouselDelegate>)delegate
 {
+    NSLog(@"delegate = %@", delegate);
     if (_delegate != delegate)
     {
         _delegate = delegate;
@@ -1339,19 +1340,19 @@ NSComparisonResult compareViewDepth(UIView *view1, UIView *view2, iCarousel *sel
     }
 }
 
-- (void)reloadData
-{
+- (void)reloadData {
+
     //remove old views
-    for (UIView *view in [_itemViews allValues])
-    {
+    for (UIView* view in [_itemViews allValues])
+        {
         [view.superview removeFromSuperview];
-    }
+        }
     
     //bail out if not set up yet
     if (!_dataSource || !_contentView)
-    {
+        {
         return;
-    }
+        }
     
     //get number of items and placeholders
     _numberOfVisibleItems = 0;
@@ -1368,9 +1369,10 @@ NSComparisonResult compareViewDepth(UIView *view1, UIView *view2, iCarousel *sel
     
     //fix scroll offset
     if (_numberOfItems > 0 && _scrollOffset < 0.0)
-    {
+        {
         [self scrollToItemAtIndex:0 animated:(_numberOfPlaceholders > 0)];
-    }
+        }
+    [self loadUnloadViews];   // JPH: I had to add this to get the views to refresh
 }
 
 
