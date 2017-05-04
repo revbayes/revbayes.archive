@@ -344,7 +344,7 @@ void Clade::resetTaxonBitset(const std::map<std::string, size_t> map)
             {
                 std::cerr << it->first << " -- " << it->second << std::endl;
             }
-            throw RbException("Missing taxon.");
+            throw RbException("Missing taxon with name '" + taxa[i].getName() + "'.");
         }
     }
     

@@ -322,7 +322,8 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     if ( n == "isContainedInClade" )
     {
         int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
-        const Clade &clade = static_cast<const TypedDagNode<Clade> *>( args[1] )->getValue();
+        Clade clade = static_cast<const TypedDagNode<Clade> *>( args[1] )->getValue();
+        clade.resetTaxonBitset( getTaxonBitSetMap() );
         
         if ( index < 0 || index >= nodes.size() )
         {
@@ -333,20 +334,20 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         
         
         size_t clade_index = RbConstants::Size_t::nan;
-        size_t minCladeSize = nodes.size() + 2;
-        size_t taxaCount = clade.size();
+        size_t min_clade_size = nodes.size() + 2;
+        size_t taxa_count = clade.size();
 
         for (size_t i = getNumberOfTips(); i < nodes.size(); ++i)
         {
             
             TopologyNode *node = nodes[i];
-            size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
-            if ( cladeSize < minCladeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
+            size_t clade_size = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+            if ( clade_size < min_clade_size && clade_size >= taxa_count && node->containsClade( clade, false ) )
             {
                 
                 clade_index = node->getIndex();
-                minCladeSize = cladeSize;
-                if ( taxaCount == cladeSize )
+                min_clade_size = clade_size;
+                if ( taxa_count == clade_size )
                 {
                     break;
                 }
@@ -587,7 +588,7 @@ std::vector<Taxon> Tree::getTaxa() const
  * The taxa are ordered alphabetically in the BitSet.
  * Eventually this should be refactored with the TaxonMap class.
  */
-std::map<std::string, size_t> Tree::getTaxonBitSetMap()
+const std::map<std::string, size_t>& Tree::getTaxonBitSetMap( void ) const
 {
     if (taxon_bitset_map.size() == 0)
     {
