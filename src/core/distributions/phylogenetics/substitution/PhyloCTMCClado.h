@@ -865,7 +865,6 @@ std::vector<charType> RevBayesCore::PhyloCTMCClado<charType>::drawAncestralState
 				if ( u > 0.0 )
                 {
 					
-					c++;
 					stateIndex++;
 					
 					if ( stateIndex == c.getNumberOfStates() )
@@ -873,6 +872,10 @@ std::vector<charType> RevBayesCore::PhyloCTMCClado<charType>::drawAncestralState
 						stateIndex = 0;
 						c.setToFirstState();
 					}
+                    else
+                    {
+                        c++;
+                    }
 					
 				}
                 else
@@ -1414,8 +1417,15 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
                 
                 if ( u > 0.0 && stateIndex < this->num_chars)
                 {
-                    ++c;
                     ++freqs;
+                     if (c.getStateIndex() + 1 >= c.getNumberOfStates())
+                     {
+                         c.setToFirstState();
+                     }
+                     else
+                     {
+                        ++c;
+                     }
                 }
                 else
                 {
@@ -1894,7 +1904,15 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
             
             if ( u > 0.0 )
             {
-                ++c;
+         
+                 if (c.getStateIndex() + 1 >= c.getNumberOfStates())
+                 {
+                     c.setToFirstState();
+                 }
+                 else
+                 {
+                    ++c;
+                 }
                 ++freq;
             }
             else
