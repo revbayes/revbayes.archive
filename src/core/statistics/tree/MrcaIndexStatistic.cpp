@@ -34,8 +34,8 @@ MrcaIndexStatistic* MrcaIndexStatistic::clone( void ) const
 
 void MrcaIndexStatistic::initialize( void )
 {
-    
-    taxaCount = clade.size();
+    clade.resetTaxonBitset( tree->getValue().getTaxonBitSetMap() );
+    taxa_count = clade.size();
     index = RbConstants::Size_t::nan;
     
 }
@@ -45,7 +45,7 @@ void MrcaIndexStatistic::update( void )
 {
     
     const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
-    size_t minCladeSize = n.size() + 2;
+    size_t min_clade_size = n.size() + 2;
     
     bool found = false;
     if ( index != RbConstants::Size_t::nan )
@@ -56,13 +56,13 @@ void MrcaIndexStatistic::update( void )
         if ( node->containsClade( clade, false ) == true )
         {
             
-            if ( taxaCount == cladeSize )
+            if ( taxa_count == cladeSize )
             {
                 found = true;
             }
             else
             {
-                minCladeSize = cladeSize;
+                min_clade_size = cladeSize;
             }
             
         }
@@ -77,13 +77,13 @@ void MrcaIndexStatistic::update( void )
         {
             
             TopologyNode *node = n[i];
-            size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
-            if ( cladeSize < minCladeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
+            size_t clade_size = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+            if ( clade_size < min_clade_size && clade_size >= taxa_count && node->containsClade( clade, false ) )
             {
                 
                 index = node->getIndex();
-                minCladeSize = cladeSize;
-                if ( taxaCount == cladeSize )
+                min_clade_size = clade_size;
+                if ( taxa_count == clade_size )
                 {
                     break;
                 }
