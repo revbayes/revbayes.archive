@@ -205,6 +205,33 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
  */
 std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescentAges( size_t n ) const
 {
+    
+    // retrieve the times of any serially sampled tips
+    std::vector<double> serialTimes;
+    size_t numTaxaAtPresent = 0;
+    for (size_t i = 0; i < value->getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = value->getTipNode( i );
+        double a = n.getAge();
+        if ( a > 0.0 ) {
+            serialTimes.push_back(a);
+        } else {
+            ++numTaxaAtPresent;
+        }
+    }
+    
+    double nextSerialTime;
+    size_t atSerialTime = 0;
+    if ( n > numTaxaAtPresent ) {
+        // sort the vector of serial sampling times in ascending order
+        std::sort(serialTimes.begin(), serialTimes.end());
+        // get the first serial time
+        nextSerialTime = serialTimes[atSerialTime];
+    } else {
+        // If all taxa are at present, we will never hit the next serial time
+        serialTimes = RbConstants::Double::inf;
+    }
+
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
