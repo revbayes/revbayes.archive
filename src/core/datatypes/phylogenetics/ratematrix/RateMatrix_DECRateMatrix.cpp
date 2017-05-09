@@ -339,39 +339,25 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
     if (t != 0.0) {
         double digits = 8;
         double factor = std::pow(10.0, digits - std::ceil(std::log10(std::fabs(t))));
-        
-//        std::cout << t << " -> ";
         t = round(t * factor) / factor;
-//        std::cout << t << "\n";
     }
     
     
     // Do we already have P(t)?
     std::map<double, TransitionProbabilityMatrix>::const_iterator it = storedTransitionProbabilities.find(t);
     bool found = it != storedTransitionProbabilities.end();
-    
-//    TransitionProbabilityMatrix P2(P.getNumberOfStates());
     if (found) {
         
-        
-//        P2 = it->second;
         // update the transition probs
         P = it->second;
         
         // this time was most recently accessed
         accessedTransitionProbabilities.remove(it->first);
         accessedTransitionProbabilities.push_front(it->first);
-
-        
-//        std::cout << "Found...\n";
-//        std::cout << "P(" << it->first << ")=\n" << P2 << "\n";
-//        std::cout << "t = " << it->first << "\n";
-//        
-//        std::cout << "----\n\n";
     }
-
     else {
-        if (useSquaring) {
+        
+        if (useSquaring || true ) {
             //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
             exponentiateMatrixByScalingAndSquaring(t, P);
         }
@@ -388,22 +374,28 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
         if (conditionSurvival)
         {
             for (size_t i = 1; i < num_states; i++) {
-    //            std::cout << log(P[i][0]) << "\n";
-                double oneMinusPi0 = 1.0 - P[i][0];
+//                std::cout << log(P[i][0]) << "\n";
+//                double oneMinusPi0 = 1.0 - P[i][0];
+//                
+//                // underflow
+//                if (oneMinusPi0 < 0.0)
+//                {
+//                    oneMinusPi0 = 0.0;
+//                    if (oneMinusPi0 < -1E-3)
+//                    {
+//                        std::cout << "oneMinusPi0 " << oneMinusPi0 << "\n";
+//                    }
+//                }
                 
+//                std::cout << oneMinusPi0 << "\n";
+                double row_sum = 0.0;
                 for (size_t j = 1; j < num_states; j++) {
+//                    P[i][j] = P[i][j] / oneMinusPi0;
+                    row_sum += P[i][j];
                     
-    //                if (P[i][j] / oneMinusPi0 > 1.0 + 1e-6)
-    //                {
-    //                    std::cout << "ERROR!\n";
-    //                    std::cout << i << " " << j << " " << oneMinusPi0 << "\t" << P[i][j] << "\n";
-    //                    for (size_t k = 0; k < num_states; k++) {
-    //                        std::cout << P[i][k] << "  ";
-    //                    }
-    //                    
-    //                    std::cout << "\n";
-    //                }
-                    P[i][j] = P[i][j] / oneMinusPi0;
+                }
+                for (size_t j = 1; j < num_states; j++) {
+                    P[i][j] = P[i][j] / row_sum;
                 }
                 
                 // zeroes out the first column
@@ -414,6 +406,29 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
             }
             P[0][0] = 1.0;
             
+        }
+        
+        
+        // check that rows add to 1 +/- 1e-6
+        for (size_t i = 0; i < num_states; i++)
+        {
+            double row_sum = 0.0;
+            for (size_t j = 0; j < num_states; j++)
+            {
+                row_sum += P[i][j];
+            }
+//            for (size_t j = 0; j < num_states; j++)
+//            {
+//                P[i][j] /= row_sum;
+//            }
+            if ( fabs(row_sum - 1.0) > 1e-3 || row_sum > 1.2 ) {
+                
+                std::cout << i << " " << row_sum << "\n";
+                std::cout << P << "\n";
+                std::cout << "\n";
+                
+                
+            }
         }
 
         if (useStoredTransitionProbabilities) {
@@ -428,33 +443,6 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
         }
 //        std::cout << storedTransitionProbabilities.size() << "\n";
     }
-    
-
-    
-//    if (found) {
-//        double err = 0.0;
-//        for (size_t i = 0; i < P.getNumberOfStates(); i++) {
-//            for (size_t j = 0; j < P.getNumberOfStates(); j++) {
-//                err += pow(P[i][j] - P2[i][j], 2);
-//            }
-//        }
-//        
-//        if (err > 1e-10) {
-//            
-//
-//            std::cout << "error!\n";
-//            
-//            std::cout << "P-new\n";
-//            std::cout << P << "\n";
-//            
-//            std::cout << "----\n";
-//            std::cout << "P-stored\n";
-//            std::cout << P2 << "\n";
-//            std::cout << "\n";
-//            
-//            std::cout << storedTransitionProbabilities.size() << "\n";
-//        }
-//    }
     
     return;
 }
@@ -511,9 +499,9 @@ void RateMatrix_DECRateMatrix::exponentiateMatrixByScalingAndSquaring(double t, 
     }
     
     // now perform the repeated squaring
+    TransitionProbabilityMatrix r(num_states);
     for (size_t i = 0; i < s; i++)
     {
-        TransitionProbabilityMatrix r(num_states);
         multiplyMatrices(p, p, r);
         p = r;
 

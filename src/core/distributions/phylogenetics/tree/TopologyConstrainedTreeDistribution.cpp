@@ -145,12 +145,15 @@ double TopologyConstrainedTreeDistribution::computeLnProbability( void )
 void TopologyConstrainedTreeDistribution::initializeBitSets(void)
 {
     // fill the monophyly constraints bitsets
-    for(size_t i = 0; i < monophyly_constraints.size(); i++)
+    for (size_t i = 0; i < monophyly_constraints.size(); i++)
     {
         RbBitSet b( value->getNumberOfTips() );
-        for(size_t j = 0; j < monophyly_constraints[i].size(); j++)
+        for (size_t j = 0; j < monophyly_constraints[i].size(); j++)
         {
-            size_t k = value->getTaxonBitSetMap()[ monophyly_constraints[i].getTaxonName(j) ];
+            const std::map<std::string, size_t> &taxon_map = value->getTaxonBitSetMap();
+            const std::string &name = monophyly_constraints[i].getTaxonName(j);
+            std::map<std::string, size_t>::const_iterator it = taxon_map.find( name );
+            size_t k = it->second;
 
             b.set(k);
         }
@@ -163,7 +166,7 @@ void TopologyConstrainedTreeDistribution::initializeBitSets(void)
     backbone_mask = RbBitSet( value->getNumberOfTips() );
 
     // add the backbone constraints
-    if( backbone_topology != NULL )
+    if ( backbone_topology != NULL )
     {
         backbone_mask = recursivelyAddBackboneConstraints( backbone_topology->getValue().getRoot() );
     }
@@ -246,19 +249,22 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyAddBackboneConstraints(
 {
     RbBitSet tmp( value->getNumberOfTips() );
 
-    if( node.isTip() )
+    if ( node.isTip() )
     {
-        tmp.set( value->getTaxonBitSetMap()[node.getName()] );
+        const std::map<std::string, size_t>& taxon_map = value->getTaxonBitSetMap();
+        const std::string& name = node.getName();
+        std::map<std::string, size_t>::const_iterator it = taxon_map.find(name);
+        tmp.set( it->second );
     }
     else
     {
         // get the child names
-        for(size_t i = 0; i < node.getNumberOfChildren(); i++)
+        for (size_t i = 0; i < node.getNumberOfChildren(); i++)
         {
             tmp |= recursivelyAddBackboneConstraints( node.getChild(i) );
         }
 
-        if ( !node.isRoot() )
+        if ( node.isRoot() == false )
         {
             backbone_constraints.push_back(tmp);
         }
@@ -270,17 +276,20 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyAddBackboneConstraints(
 
 RbBitSet TopologyConstrainedTreeDistribution::recursivelyUpdateClades( const TopologyNode& node )
 {
-    if( node.isTip() )
+    if ( node.isTip() )
     {
-        RbBitSet tmp( value->getNumberOfTips() );
-        tmp.set( value->getTaxonBitSetMap()[node.getName()] );
+        RbBitSet tmp = RbBitSet( value->getNumberOfTips() );
+        const std::map<std::string, size_t>& taxon_map = value->getTaxonBitSetMap();
+        const std::string& name = node.getName();
+        std::map<std::string, size_t>::const_iterator it = taxon_map.find(name);
+        tmp.set( it->second );
         return tmp;
     }
-    else if( node.isRoot() )
+    else if ( node.isRoot() )
     {
-        if( dirty_nodes[node.getIndex()] == true )
+        if ( dirty_nodes[node.getIndex()] == true )
         {
-            for(size_t i = 0; i < node.getNumberOfChildren(); i++)
+            for (size_t i = 0; i < node.getNumberOfChildren(); i++)
             {
                 recursivelyUpdateClades( node.getChild(i) );
             }
@@ -292,10 +301,10 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyUpdateClades( const Top
     }
     else
     {
-        if( dirty_nodes[node.getIndex()] == true )
+        if ( dirty_nodes[node.getIndex()] == true )
         {
-            RbBitSet tmp( value->getNumberOfTips() );
-            for(size_t i = 0; i < node.getNumberOfChildren(); i++)
+            RbBitSet tmp = RbBitSet( value->getNumberOfTips() );
+            for (size_t i = 0; i < node.getNumberOfChildren(); i++)
             {
                 tmp |= recursivelyUpdateClades( node.getChild(i) );
             }

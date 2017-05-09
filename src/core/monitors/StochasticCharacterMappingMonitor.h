@@ -47,7 +47,7 @@ namespace RevBayesCore {
         StochasticCharacterMappingMonitor*              clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-        void                                            monitorVariable(unsigned long gen);                                 //!< Monitor at generation gen
+        void                                            monitorVariables(unsigned long gen);                                 //!< Monitor at generation gen
         void                                            printFileHeader(void);                                              //!< Print header
         
         // getters and setters
@@ -152,7 +152,7 @@ StochasticCharacterMappingMonitor<characterType>* StochasticCharacterMappingMoni
  * \param[in]   gen    The current generation.
  */
 template<class characterType>
-void StochasticCharacterMappingMonitor<characterType>::monitorVariable(unsigned long gen)
+void StochasticCharacterMappingMonitor<characterType>::monitorVariables(unsigned long gen)
 {
     
     size_t num_nodes;

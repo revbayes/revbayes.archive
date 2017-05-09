@@ -227,20 +227,13 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
                         mask += "-";
                     numGap++;
                 }
-                else// if (this->using_ambiguous_characters)
+                else
                 {
                     if(coding != AscertainmentBias::ALL)
                         mask += " ";
 
-                    RbBitSet b = c.getState();
-                    bitCounts[b]++;
+                    bitCounts[c.getState()]++;
                 }
-                /*else
-                {
-                    if(coding != AscertainmentBias::ALL)
-                        mask += " ";
-                    charCounts[c.getStateIndex()]++;
-                }*/
 
                 if(coding != AscertainmentBias::ALL)
                     maskData.push_back(gap);
@@ -248,7 +241,6 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
         }
 
         if( !isSitePatternCompatible(bitCounts) )
-        //if( (this->using_ambiguous_characters && !isSitePatternCompatible(bitCounts)) || (!this->using_ambiguous_characters && !isSitePatternCompatible(charCounts)))
         {
             incompatible++;
         }
@@ -315,6 +307,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
     return siteIndices;
 }
 
+
 template<class charType>
 bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternCompatible( std::map<size_t, size_t> charCounts )
 {
@@ -334,9 +327,10 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternC
     {
         return false;
     }
-    
+
     return true;
 }
+
 
 // Thanks to MH
 template<class charType>
@@ -345,26 +339,22 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternC
     // if the pattern is constant, then it is incompatible with the variable coding
     if(charCounts.size() == 1) return !(coding & AscertainmentBias::VARIABLE);
 
-    // find the common_state
+    // find the common_states
     std::map<size_t,size_t> stateCounts;
     size_t max = 0;
-    size_t common_state = 0;
 
     for(std::map<RbBitSet, size_t>::iterator it = charCounts.begin(); it != charCounts.end(); it++)
     {
         RbBitSet r = it->first;
         for(size_t i = 0; i < r.size(); i++)
         {
-            stateCounts[i] += r.isSet(i);
+            stateCounts[i] += r.isSet(i) * it->second;
             if(stateCounts[i] > max)
             {
                 max = stateCounts[i];
             }
         }
     }
-
-    // if the pattern is uninformative, then it is incompatible with the informative coding
-    if(max <= 1) return (coding != AscertainmentBias::INFORMATIVE);
 
     std::vector<size_t> common_states;
     for(std::map<size_t, size_t>::iterator it = stateCounts.begin(); it != stateCounts.end(); it++)
@@ -380,13 +370,16 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternC
     stateCounts.clear();
     for(size_t i = 0; i < common_states.size(); i++)
     {
-        size_t common_state = common_states[i];
-
         for(std::map<RbBitSet, size_t>::iterator it = charCounts.begin(); it != charCounts.end(); it++)
         {
             RbBitSet r = it->first;
 
-            if(r.isSet(common_state)) continue;
+            if( r.isSet(common_states[i]) ) continue;
+
+            if( it->second > 1 )
+            {
+                return true;
+            }
 
             for(size_t i = 0; i < r.size(); i++)
             {
@@ -396,9 +389,9 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternC
                 {
                     return true;
                 }
-                else if( r.isSet(i) )
+                else
                 {
-                    stateCounts[i]++;
+                    stateCounts[i] += r.isSet(i);
                 }
             }
         }
