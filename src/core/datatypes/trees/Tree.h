@@ -84,7 +84,7 @@ namespace RevBayesCore {
         std::string                                         getSimmapNewickRepresentation() const;                                                              //!< Get the SIMMAP and phytools compatible newick representation of this Tree
         std::vector<std::string>                            getSpeciesNames() const;                                                                            //!< Get all the species represented in the tree
         std::vector<Taxon>                                  getTaxa() const;                                                                                    //!< Get all the taxa in the tree
-        std::map<std::string, size_t>                       getTaxonBitSetMap();                                                                                //!< Returns a map that holds the BitSet index for each taxon
+        const std::map<std::string, size_t>&                getTaxonBitSetMap(void) const;                                                                                //!< Returns a map that holds the BitSet index for each taxon
         size_t                                              getTipIndex(const std::string &name) const;
         std::vector<std::string>                            getTipNames() const;
         TopologyNode&                                       getTipNode(size_t indx);                                                                            //!< Get a pointer to tip node i
@@ -132,7 +132,7 @@ namespace RevBayesCore {
         bool                                                rooted;
         size_t                                              num_tips;
         size_t                                              num_nodes;
-        std::map<std::string, size_t>                       taxon_bitset_map;
+        mutable std::map<std::string, size_t>               taxon_bitset_map;
 
     };
 

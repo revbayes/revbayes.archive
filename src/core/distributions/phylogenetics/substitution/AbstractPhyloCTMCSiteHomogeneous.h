@@ -1256,6 +1256,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
         {
             rate_matrix = &this->heterogeneous_rate_matrices->getValue()[node_index];
         }
+        else if (this->homogeneous_rate_matrix != NULL)
+        {
+            rate_matrix = &this->homogeneous_rate_matrix->getValue();
+        }
     }
     else
     {
@@ -1264,7 +1268,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
             rate_matrix = &this->homogeneous_rate_matrix->getValue();
         }
     }
-    
+        
     // get the clock rate for the branch
     double clock_rate = 1.0;
     if ( this->branch_heterogeneous_clock_rates == true )
@@ -1288,30 +1292,56 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
     {
         branch_length = 1.0;
     }
+    
+    double start_age = node.getParent().getAge();
+    double end_age = node.getAge();
+    RbVector<double> epoch_ages = rate_matrix->getEpochTimesWithinInterval(start_age, end_age);
+    size_t epoch_idx = 0;
+    
     double current_time = 0.0;
     double last_transition_time = 0.0;
     size_t current_state = start_state;
     bool valid_history = false;
     RandomNumberGenerator* rng = GLOBAL_RNG;
+    
+
     while ( valid_history == false )
     {
         
-        // draw time of next transition
-        double rate_sum = -1 * rate_matrix->getRate( current_state, current_state, 0, clock_rate );
-        double transition_time = RbStatistics::Exponential::rv( 1/rate_sum, *rng );
-        current_time += transition_time;
+        // draw age of next transition
+        double rate_sum = -1 * rate_matrix->getRate( current_state, current_state, start_age-current_time, clock_rate );
+//        rate_sum -= rate_matrix->getRate( current_state, 0, start_age-current_time, clock_rate );
+        double transition_time = RbStatistics::Exponential::rv( rate_sum, *rng );
         
-        if ( current_time >= branch_length && ( current_state == end_state || ambiguous_end_state == true ) )
-        {
+        // does the sampled event occur in the next epoch?
+        bool no_event_in_epoch = false;
+        if (start_age - current_time - transition_time < epoch_ages[epoch_idx] ) {
+            no_event_in_epoch = true;
+            current_time = start_age - epoch_ages[epoch_idx];
+            epoch_idx++;
             
+        } else {
+            current_time += transition_time;
+        }
+        
+        // accept the sample if the sampled and observed end states match
+        bool accept_sample = ( current_time >= branch_length && ( current_state == end_state || ambiguous_end_state == true ) );
+        
+        // reject the sample if the sampled and observed end states do not match
+        bool reject_sample = ( current_time >= branch_length && current_state != end_state && ambiguous_end_state == false );
+        
+        // reject the sample path if it enters a state with rate_sum==0
+        if (rate_sum == 0.0)
+            reject_sample = true;
+        
+        if (accept_sample)
+        {
             // we've got a valid sample so we can move on
             transition_times.push_back(branch_length - last_transition_time);
             valid_history = true;
-            
         }
-        else if ( current_time >= branch_length && current_state != end_state && ambiguous_end_state == false )
+        else if (reject_sample)
         {
-            
             // reject this sample and get ready to draw a new one
             current_time = 0.0;
             last_transition_time = 0.0;
@@ -1319,7 +1349,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
             transition_states.clear();
             transition_times.clear();
             transition_states.push_back(start_state);
-            
+            epoch_idx = 0;
+        }
+        else if (no_event_in_epoch) {
+            ; // do nothing
         }
         else if ( current_time < branch_length )
         {
@@ -1327,15 +1360,20 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
             // draw state of next transition
             double u = rng->uniform01() * rate_sum;
             size_t new_state = current_state;
-            for (size_t i = 0; i < this->num_chars; i++)
+            
+            if (std::fabs(u) != 0.0)
             {
-                if (i != current_state)
+                for (size_t i = 0; i < this->num_chars; i++)
                 {
-                    u -= rate_matrix->getRate( current_state, i, 0, clock_rate );
-                    if (u < 0.0)
+                    if (i != current_state)
                     {
-                        new_state = i;
-                        break;
+                        
+                        u -= rate_matrix->getRate( current_state, i, start_age-current_time, clock_rate );
+                        if (u <= 0.0)
+                        {
+                            new_state = i;
+                            break;
+                        }
                     }
                 }
             }
@@ -1347,9 +1385,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
                 current_state = new_state;
                 last_transition_time = current_time;
             }
-            
         }
-        
     }
     
     // make SIMMAP string

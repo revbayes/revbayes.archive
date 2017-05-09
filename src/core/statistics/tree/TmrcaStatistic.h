@@ -53,9 +53,9 @@ namespace RevBayesCore {
         const TypedDagNode<Tree>*                   tree;
         Clade                                       clade;
         bool                                        initialized;
-        bool                                        stemAge;
+        bool                                        stem_age;
         int                                         index;
-        size_t                                      taxaCount;
+        size_t                                      taxa_count;
     };
     
 }

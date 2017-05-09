@@ -1005,9 +1005,9 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
  */
 void TreeSummary::recursivelyCollectCharacterMapSamples(size_t node_index, size_t map_parent_state, bool root, bool conditional, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::string*> &map_character_history, std::vector<std::string*> &map_character_history_posteriors, ProgressBar &progress, size_t &num_finished_nodes, int NUM_TIME_SLICES, bool verbose)
 {
-    
-    double dt = final_summary_tree.getRoot().getAge() / double(NUM_TIME_SLICES);
-        
+
+    double dt = final_summary_tree.getRoot().getMaxDepth() / double(NUM_TIME_SLICES);
+
     size_t sample_clade_index;
     bool trace_found = false;
     bool parent_trace_found = false;
@@ -1020,7 +1020,6 @@ void TreeSummary::recursivelyCollectCharacterMapSamples(size_t node_index, size_
     // loop through all the sampled character histories for this branch
     for (size_t j = burnin; j < num_sampled_states; ++j)
     {
-        
         if ( verbose == true )
         {
             progress.update( num_finished_nodes * num_sampled_states + num_sampled_states * (j - burnin) / (num_sampled_states - burnin) );
