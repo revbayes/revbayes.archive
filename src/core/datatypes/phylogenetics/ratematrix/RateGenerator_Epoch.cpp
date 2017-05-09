@@ -179,7 +179,18 @@ double RateGenerator_Epoch::getRate(size_t from, size_t to, double age, double r
     return r;
 }
 
-
+RbVector<double> RateGenerator_Epoch::getEpochTimesWithinInterval(double start_age, double end_age) const
+{
+    RbVector<double> v;
+    size_t epoch_idx = findEpochIndex(start_age);
+    while( epochTimes[epoch_idx] > end_age ) {
+        v.push_back( epochTimes[epoch_idx] );
+        epoch_idx++;
+    }
+    v.push_back(end_age);
+    
+    return v;
+}
 
 const RbVector<RateGenerator>& RateGenerator_Epoch::getRateGenerators(void) const
 {
