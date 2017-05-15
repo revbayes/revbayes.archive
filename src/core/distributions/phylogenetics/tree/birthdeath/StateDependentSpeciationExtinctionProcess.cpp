@@ -210,7 +210,15 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
         {
             // this is a tip node
             TreeDiscreteCharacterData* tree = static_cast<TreeDiscreteCharacterData*>( this->value );
-            double samplingProbability = rho->getValue();
+
+            std::vector<double> sampling(num_states, rho->getValue());
+            std::vector<double> extinction(num_states, 1.0 - rho->getValue());
+
+            if(psi != NULL && node.isFossil())
+            {
+                sampling = psi->getValue();
+                extinction = pExtinction(0.0, node.getAge());
+            }
             
             RbBitSet obs_state(num_states, true);
             bool gap = true;
@@ -222,21 +230,14 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                 gap = (state.isMissingState() == true || state.isGapState() == true);
             }
 
-            std::vector<double> extinction;
-
-            if(psi != NULL && node.isFossil())
-            {
-                extinction = pExtinction(0.0, node.getAge());
-            }
-
             for (size_t j = 0; j < num_states; ++j)
             {
                 
-                node_likelihood[j] = (node.isFossil() && psi != NULL) ? extinction[j] : 1.0 - samplingProbability;
+                node_likelihood[j] = extinction[j];
                 
                 if ( obs_state.isSet( j ) == true || gap )
                 {
-                    node_likelihood[num_states+j] = (node.isFossil() && psi != NULL) ? psi->getValue()[j] : samplingProbability;
+                    node_likelihood[num_states+j] = sampling[j];
                 }
                 else
                 {
