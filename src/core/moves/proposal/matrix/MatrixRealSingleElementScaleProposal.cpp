@@ -115,8 +115,7 @@ double MatrixRealSingleElementScaleProposal::doProposal( void )
 
         v[indexa][indexb] *= scalingFactor;
 
-        array->addTouchedElementIndex(indexa);
-        array->addTouchedElementIndex(indexb);
+        array->addTouchedElementIndex(indexa*v.size() + indexb);
     }
     else
     {
@@ -130,8 +129,7 @@ double MatrixRealSingleElementScaleProposal::doProposal( void )
 
         v[indexa][indexb] *= scalingFactor;
 
-        matrix->addTouchedElementIndex(indexa);
-        matrix->addTouchedElementIndex(indexb);
+        matrix->addTouchedElementIndex(indexa*v.getNumberOfRows() + indexb);
     }
     
     // this is a symmetric proposal so the hasting ratio is 0.0

@@ -95,8 +95,7 @@ double MatrixRealSymmetricSingleElementSlidingProposal::doProposal( void )
         v[indexb][indexa] += slidingFactor;
     }
 
-    variable->addTouchedElementIndex(indexa);
-    variable->addTouchedElementIndex(indexb);
+    variable->addTouchedElementIndex(indexa*v.getNumberOfRows() + indexb);
     
     // this is a symmetric proposal so the hasting ratio is 0.0
     return 0.0;
