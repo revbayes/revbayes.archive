@@ -53,11 +53,6 @@ void RateGenerator::calculateTransitionProbabilities(double t, TransitionProbabi
     calculateTransitionProbabilities(t, 0.0, 1.0, P);
 }
 
-RbVector<double> RateGenerator::getEpochTimesWithinInterval(double start_age, double end_age) const
-{
-    return RbVector<double>(1,end_age);
-}
-
 size_t RateGenerator::getNumberOfStates( void ) const
 {
     return num_states;

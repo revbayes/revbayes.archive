@@ -301,7 +301,9 @@ void RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
         double interval_end_age = breakpoint_times[i];
         double interval_rate = rate * epochRates[interval_index];
         
-        std::vector<size_t> interval_transition_states = { breakpoint_states[i-1], breakpoint_states[i] };
+        std::vector<size_t> interval_transition_states;
+        interval_transition_states.push_back(breakpoint_states[i-1]);
+        interval_transition_states.push_back(breakpoint_states[i]);
         std::vector<double> interval_transition_times;
         
         // generate stochastic mapping for interval
