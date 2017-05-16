@@ -32,6 +32,7 @@ namespace RevBayesCore {
         virtual void                        initFromString( const std::string &s ) { throw RbException("Sebastians (29/6/2016): Missing derived implementations!!!"); }                                                 //!< Serialize (resurrect) the object from a string value
 
         // virtual methods that may need to overwritten
+        virtual void                        simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times);
         virtual void                        update(void) {};
         
         // public methods

@@ -1286,6 +1286,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
         }
     }
     
+    
     // now sample a character history for the branch leading to this node
     double branch_length = node.getBranchLength();
     if (branch_length < 0.0)
@@ -1295,108 +1296,20 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
     
     double start_age = node.getParent().getAge();
     double end_age = node.getAge();
-    RbVector<double> epoch_ages = rate_matrix->getEpochTimesWithinInterval(start_age, end_age);
-    size_t epoch_idx = 0;
     
-    double current_time = 0.0;
-    double last_transition_time = 0.0;
-    size_t current_state = start_state;
-    bool valid_history = false;
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-    
-
-    while ( valid_history == false )
-    {
-        
-        // draw age of next transition
-        double rate_sum = -1 * rate_matrix->getRate( current_state, current_state, start_age-current_time, clock_rate );
-//        rate_sum -= rate_matrix->getRate( current_state, 0, start_age-current_time, clock_rate );
-        double transition_time = RbStatistics::Exponential::rv( rate_sum, *rng );
-        
-        // does the sampled event occur in the next epoch?
-        bool no_event_in_epoch = false;
-        if (start_age - current_time - transition_time < epoch_ages[epoch_idx] ) {
-            no_event_in_epoch = true;
-            current_time = start_age - epoch_ages[epoch_idx];
-            epoch_idx++;
-            
-        } else {
-            current_time += transition_time;
-        }
-        
-        // accept the sample if the sampled and observed end states match
-        bool accept_sample = ( current_time >= branch_length && ( current_state == end_state || ambiguous_end_state == true ) );
-        
-        // reject the sample if the sampled and observed end states do not match
-        bool reject_sample = ( current_time >= branch_length && current_state != end_state && ambiguous_end_state == false );
-        
-        // reject the sample path if it enters a state with rate_sum==0
-        if (rate_sum == 0.0)
-            reject_sample = true;
-        
-        if (accept_sample)
-        {
-            // we've got a valid sample so we can move on
-            transition_times.push_back(branch_length - last_transition_time);
-            valid_history = true;
-        }
-        else if (reject_sample)
-        {
-            // reject this sample and get ready to draw a new one
-            current_time = 0.0;
-            last_transition_time = 0.0;
-            current_state = start_state;
-            transition_states.clear();
-            transition_times.clear();
-            transition_states.push_back(start_state);
-            epoch_idx = 0;
-        }
-        else if (no_event_in_epoch) {
-            ; // do nothing
-        }
-        else if ( current_time < branch_length )
-        {
-            
-            // draw state of next transition
-            double u = rng->uniform01() * rate_sum;
-            size_t new_state = current_state;
-            
-            if (std::fabs(u) != 0.0)
-            {
-                for (size_t i = 0; i < this->num_chars; i++)
-                {
-                    if (i != current_state)
-                    {
-                        
-                        u -= rate_matrix->getRate( current_state, i, start_age-current_time, clock_rate );
-                        if (u <= 0.0)
-                        {
-                            new_state = i;
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            if (new_state != current_state)
-            {
-                transition_times.push_back(current_time - last_transition_time);
-                transition_states.push_back(new_state);
-                current_state = new_state;
-                last_transition_time = current_time;
-            }
-        }
-    }
+    // simulate stochastic map
+    transition_states.push_back(end_state);
+    const_cast<RateGenerator*>(rate_matrix)->simulateStochasticMapping(start_age, end_age, clock_rate, transition_states, transition_times);
     
     // make SIMMAP string
     std::string simmap_string = "{";
-    for (size_t i = transition_times.size(); i > 0; i--)
+    for (size_t i = 0; i < transition_times.size(); i++)
     {
-        simmap_string = simmap_string + StringUtilities::toString(transition_states[i - 1]) + "," + StringUtilities::toString(transition_times[i - 1]);
-        if (i != 1)
+        if (i != 0)
         {
             simmap_string = simmap_string + ":";
         }
+        simmap_string = simmap_string + StringUtilities::toString(transition_states[i]) + "," + StringUtilities::toString(transition_times[i]);
     }
     simmap_string = simmap_string + "}";
     

@@ -52,6 +52,9 @@ namespace RevBayesCore {
         virtual std::vector<double>         getStationaryFrequencies(void) const = 0;                                                   //!< Return the stationary frequencies
         MatrixReal                          getRateMatrix(void) const;
         virtual void                        update(void) = 0;                                                                           //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
+        virtual MatrixReal                  getStochasticMatrix(size_t n);
+        virtual double                      getDominatingRate(void) const;
+        virtual void                        simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times);
         
 
     protected:
@@ -61,12 +64,18 @@ namespace RevBayesCore {
         AbstractRateMatrix&                 operator=(const AbstractRateMatrix& r);                                                     //!< Assignment operator
         
         // protected methods available for derived classes
-        std::vector<double>                 calculateStationaryFrequencies(void) const;                                                  //!< Calculate the stationary frequencies for the rate matrix
+        std::vector<double>                 calculateStationaryFrequencies(void) const;                                                 //!< Calculate the stationary frequencies for the rate matrix
         bool                                checkTimeReversibity(double tolerance);
+        virtual void                        computeStochasticMatrix(size_t n);
+        virtual void                        computeDominatingRate(void);
         
         // protected members available for derived classes
-        MatrixReal*                         the_rate_matrix;                                                                              //!< Holds the rate matrix
+        MatrixReal*                         the_rate_matrix;                                                                            //!< Holds the rate matrix
         bool                                needs_update;
+        
+        // stochastic matrix
+        double                              dominating_rate;
+        std::vector<MatrixReal>             stochastic_matrix;                                                                          //!< Stochastic matrix raised to the power of n
         
     };
     
