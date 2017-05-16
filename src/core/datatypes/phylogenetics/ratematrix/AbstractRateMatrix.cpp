@@ -333,7 +333,7 @@ void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
     // transition probabilities
     TransitionProbabilityMatrix P(num_states);
     calculateTransitionProbabilities(startAge, endAge, rate, P);
-    stochastic_matrix.clear();
+    stochastic_matrix = std::vector<MatrixReal>();
     
     // dominating rate
     computeDominatingRate();
@@ -360,17 +360,20 @@ void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
         
         // update sampling prob
         double prob_total = prob_num_events * prob_transition_dtmc;
+        
         prob_total_sum += prob_total;
         g -= prob_total;
         if (g <= 0.0)
         {
             break;
         }
-        num_events += 1;
         
         if (num_events > 20) {
             throw RbException("AbstractRateMatrix::simulateStochasticMapping fails to converge when sampling num_events!");
         }
+        
+        num_events += 1;
+        
     }
     
     // sample event types per interval
@@ -413,20 +416,20 @@ void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
     transition_times.push_back(0.0);
     std::sort( transition_times.begin(), transition_times.end() );
 
+    
     // filter out the virtual events
-    std::vector<size_t>::iterator it_state = transition_states.begin() + 1;
-    std::vector<double>::iterator it_time = transition_times.begin();
+    std::vector<size_t> save_states(1, transition_states[0]);
+    std::vector<double> save_times(1, 0.0);
     size_t prev_state = transition_states[0];
-    while (it_state != transition_states.end()) {
-        if (prev_state == *it_state) {
-            transition_states.erase(it_state);
-            transition_times.erase(it_time);
-        } else {
-            prev_state = *it_state;
+    for (size_t i = 1; i < transition_states.size(); i++) {
+        if (prev_state != transition_states[i]) {
+            save_states.push_back(transition_states[i]);
+            save_times.push_back(transition_times[i]);
+            prev_state = transition_states[i];
         }
-        it_state++;
-        it_time++;
     }
+    transition_states = save_states;
+    transition_times = save_times;
     
     // convert relative times along branches into incremental times
     double sum_transition_times = 0.0;
