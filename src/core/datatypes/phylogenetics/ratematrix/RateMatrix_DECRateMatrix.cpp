@@ -532,6 +532,46 @@ RateMatrix_DECRateMatrix* RateMatrix_DECRateMatrix::clone( void ) const
     return new RateMatrix_DECRateMatrix( *this );
 }
 
+void RateMatrix_DECRateMatrix::computeStochasticMatrix(size_t n)
+{
+    MatrixReal r;
+    if (n == 0) {
+        // identity matrix, R^0
+        r = MatrixReal(num_states, num_states);
+        for (size_t i = 0; i < num_states; i++) {
+            r[i][i] = 1.0;
+        }
+    }
+    else if (n == 1) {
+        // stochastic matrix, R^1
+        r = (*the_rate_matrix) * (1.0/dominating_rate) + stochastic_matrix[0];
+        if (conditionSurvival)
+        {
+            for (size_t i = 1; i < num_states; i++)
+            {
+                double row_sum = 0.0;
+                for (size_t j = 1; j < num_states; j++)
+                {
+                    row_sum += r[i][j];
+                }
+                for (size_t j = 1; j < num_states; j++)
+                {
+                    r[i][j] /= row_sum;
+                }
+                r[i][0] = 0.0;
+                r[0][i] = 0.0;
+            }
+            r[0][0] = 1.0;
+        }
+    }
+    else {
+        // stochastic matrix, R^n = R^(n-1) * R^1
+        r = stochastic_matrix[n-1] * stochastic_matrix[1];
+    }
+    stochastic_matrix.push_back(r);
+}
+
+
 const RbVector<RbVector<double> >& RateMatrix_DECRateMatrix::getDispersalRates(void) const
 {
     return dispersalRates;
