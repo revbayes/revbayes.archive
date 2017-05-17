@@ -32,7 +32,7 @@ namespace RevBayesCore {
      * @since 2014-03-18, version 1.0
      *
      */
-    class PiecewiseConstantFossilizedBirthDeathRangeProcess : public TypedDistribution<RbVector<RbVector<double> > > {
+    class PiecewiseConstantFossilizedBirthDeathRangeProcess : public TypedDistribution<MatrixReal > {
         
     public:
         PiecewiseConstantFossilizedBirthDeathRangeProcess (const DagNode *speciation,
@@ -60,10 +60,14 @@ namespace RevBayesCore {
         // Parameter management functions
         void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
 
+        void                                            keepSpecialization(DagNode *toucher);
+        void                                            restoreSpecialization(DagNode *toucher);
+        void                                            touchSpecialization(DagNode *toucher, bool touchAll);
+
     private:
         
         // helper functions
-        int                                             gamma(size_t index) const;                                 //!< Number of species alive at time t.
+        size_t                                          gamma(size_t index, bool force = false);                             //!< Number of species alive at time t.
         size_t                                          l(double t) const;                                     //!< Find the index so that times[index-1] < t < times[index]
         double                                          pSurvival(double start, double end) const;             //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                          p(size_t i, double t) const;
@@ -95,6 +99,10 @@ namespace RevBayesCore {
         std::vector<double>                             q_i;
         std::vector<double>                             q_tilde_i;
         std::vector<double>                             p_i;
+
+        std::vector<size_t>                             gamma_i;
+        std::vector<std::vector<bool> >                 gamma_links;
+        std::vector<bool>                               dirty_gamma;
 
 
         std::string                                     condition;

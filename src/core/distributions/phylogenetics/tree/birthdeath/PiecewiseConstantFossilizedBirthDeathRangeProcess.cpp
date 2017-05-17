@@ -32,7 +32,7 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
                                                                                                      const TypedDagNode<double> *inrho,
                                                                                                      const TypedDagNode< RbVector<double> > *intimes,
                                                                                                      const std::string &incondition,
-                                                                                                     const std::vector<Taxon> &intaxa ) : TypedDistribution<RbVector<RbVector<double> > >(new RbVector<RbVector<double> > (intaxa.size(), RbVector<double>(2))),
+                                                                                                     const std::vector<Taxon> &intaxa ) : TypedDistribution<MatrixReal>(new MatrixReal(intaxa.size(), 2)),
     num_fossil_counts(1), homogeneous_rho(inrho), timeline( intimes ), condition(incondition), taxa(intaxa)
 {
     // initialize all the pointers to NULL
@@ -174,7 +174,16 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
     fossil    = std::vector<double>(num_intervals, 0.0);
     times     = std::vector<double>(num_intervals, 0.0);
 
+    dirty_gamma = std::vector<bool>(taxa.size(), true);
+    gamma_i     = std::vector<size_t>(taxa.size(), 0);
+    gamma_links = std::vector<std::vector<bool> >(taxa.size(), std::vector<bool>(taxa.size(), false));
+
     redrawValue();
+
+    for(size_t i = 0; i < taxa.size(); i++)
+    {
+        gamma(i,true);
+    }
 }
 
 
@@ -292,29 +301,48 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 
 
 /**
- * Compute the diversity of the tree at time t.
+ * Compute the number of ranges that intersect with range i
  *
- * \param[in]    t      time at which we want to know the diversity.
+ * \param[in]    i      index of range for which to compute gamma
  *
- * \return The diversity (number of species in the reconstructed tree).
+ * \return Small gamma
  */
-int PiecewiseConstantFossilizedBirthDeathRangeProcess::gamma(size_t index) const
+size_t PiecewiseConstantFossilizedBirthDeathRangeProcess::gamma(size_t i, bool force)
 {
-    int g = 0;
-    for(size_t i = 0; i < taxa.size(); i++)
+    if( dirty_gamma[i] || force )
     {
-        if(i == index) continue;
+        double ai = (*this->value)[i][0];
+        double bi = (*this->value)[i][1];
 
-        double b = (*this->value)[index][0];
+        if( force == true ) gamma_i[i] = 0;
 
-        if(b < (*this->value)[i][0] && b > (*this->value)[i][1] )
+        for(size_t j = 0; j < taxa.size(); j++)
         {
-            g++;
+            if(i == j) continue;
+
+            double aj = (*this->value)[j][0];
+            double bj = (*this->value)[j][1];
+
+            bool linki = ( ai < aj && ai > bj );
+            bool linkj = ( aj < ai && aj > bi );
+
+            if( gamma_links[i][j] != linki && force == false )
+            {
+                gamma_i[i] += linki ? 1 : -1;
+            }
+            if( gamma_links[j][i] != linkj && force == false )
+            {
+                gamma_i[j] += linkj ? 1 : -1;
+            }
+
+            if( force == true ) gamma_i[i] += linki;
+
+            gamma_links[i][j] = linki;
+            gamma_links[j][i] = linkj;
         }
     }
-    if(g == 0) g = 1;
 
-    return g;
+    return gamma_i[i] == 0 ? 1 : gamma_i[i];
 }
 
 
@@ -536,7 +564,7 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::redrawValue(void)
         if( o > max ) max = o;
     }
     
-    max *= 2;
+    max *= 1.1;
     
     // get random uniform draws
     for(size_t i = 0; i < taxa.size(); i++)
@@ -548,6 +576,35 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::redrawValue(void)
         (*this->value)[i][1] = d;
     }
 }
+
+
+void PiecewiseConstantFossilizedBirthDeathRangeProcess::keepSpecialization(DagNode *toucher)
+{
+    dirty_gamma = std::vector<bool>(taxa.size(), false);
+}
+
+
+void PiecewiseConstantFossilizedBirthDeathRangeProcess::restoreSpecialization(DagNode *toucher)
+{
+
+}
+
+
+void PiecewiseConstantFossilizedBirthDeathRangeProcess::touchSpecialization(DagNode *toucher, bool touchAll)
+{
+    if( toucher == dag_node )
+    {
+        std::set<size_t> touched_indices = dag_node->getTouchedElementIndices();
+
+        for( std::set<size_t>::iterator it = touched_indices.begin(); it != touched_indices.end(); it++)
+        {
+            size_t touched_range = (*it) / taxa.size();
+
+            dirty_gamma[touched_range] = true;
+        }
+    }
+}
+
 
 /**
  *

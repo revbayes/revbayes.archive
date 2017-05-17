@@ -20,7 +20,7 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Dist_FBDPRange::Dist_FBDPRange() : TypedDistribution<ModelVector<ModelVector<RealPos> > >()
+Dist_FBDPRange::Dist_FBDPRange() : TypedDistribution<MatrixReal >()
 {
     
 }
@@ -324,7 +324,7 @@ void Dist_FBDPRange::setConstParameter(const std::string& name, const RevPtr<con
     }
     else
     {
-        TypedDistribution<ModelVector<ModelVector<RealPos> > >::setConstParameter(name, var);
+        TypedDistribution<MatrixReal >::setConstParameter(name, var);
     }
     
 }

@@ -264,7 +264,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // fossilized-birth-death process
         AddDistribution< TimeTree                   >( new Dist_FBDP());
         // fossilized-birth-death stratigraphic range process
-        AddDistribution< ModelVector<ModelVector<RealPos> > >( new Dist_FBDPRange());
+        AddDistribution< MatrixReal                 >( new Dist_FBDPRange());
         
         // constant rate serial-sampled-birth-death process
         AddDistribution< TimeTree                   >( new Dist_constSSBDP());

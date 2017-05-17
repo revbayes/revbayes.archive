@@ -3,7 +3,7 @@
 
 #include "ModelVector.h"
 #include "PiecewiseConstantFossilizedBirthDeathRangeProcess.h"
-#include "Real.h"
+#include "RlMatrixReal.h"
 #include "RlTypedDistribution.h"
 
 namespace RevLanguage {
@@ -21,7 +21,7 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *c
      */
-    class Dist_FBDPRange : public TypedDistribution<ModelVector<ModelVector<RealPos> > > {
+    class Dist_FBDPRange : public TypedDistribution<MatrixReal > {
         
     public:
         Dist_FBDPRange( void );
