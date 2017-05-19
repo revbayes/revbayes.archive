@@ -288,7 +288,6 @@ void RateMatrix_BDR::setLambdaAI(double l_ai)
     
     // set flags
     needs_update = true;
-    
 }
 
 void RateMatrix_BDR::setLambdaIA(double l_ia)
@@ -301,7 +300,7 @@ void RateMatrix_BDR::setLambdaIA(double l_ia)
 
 void RateMatrix_BDR::setDenovoI(double d_i)
 {
-    denovo_a = d_i;
+    denovo_i = d_i;
     
     // set flags
     needs_update = true;
@@ -309,7 +308,7 @@ void RateMatrix_BDR::setDenovoI(double d_i)
 
 void RateMatrix_BDR::setDenovoA(double d_a)
 {
-    denovo_i = d_a;
+    denovo_a = d_a;
     
     // set flags
     needs_update = true;
