@@ -180,10 +180,7 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
 
     redrawValue();
 
-    for(size_t i = 0; i < taxa.size(); i++)
-    {
-        gamma(i,true);
-    }
+    updateGamma(true);
 }
 
 
@@ -207,6 +204,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 {
     // prepare the probability computation
     updateIntervals();
+    updateGamma();
 
     // variable declarations and initialization
     double lnProbTimes = 0.0;
@@ -216,6 +214,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 
     double maxb = 0;
     double maxl = 0;
+
     // add the fossil tip age terms
     for (size_t i = 0; i < taxa.size(); ++i)
     {
@@ -254,7 +253,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         if(d > 0.0) lnProbTimes += log( mu );
 
         lnProbTimes += log(lambda);
-        lnProbTimes += log(gamma(i));
+        lnProbTimes += log(gamma_i[i] == 0 ? 1 : gamma_i[i]);
         lnProbTimes += log(q(oi, o, true)) + log(q(bi, b)) - log(q(di, d, true)) - log(q(oi, o));
 
         for(size_t j = bi; j < oi; j++)
@@ -307,42 +306,43 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
  *
  * \return Small gamma
  */
-size_t PiecewiseConstantFossilizedBirthDeathRangeProcess::gamma(size_t i, bool force)
+void PiecewiseConstantFossilizedBirthDeathRangeProcess::updateGamma(bool force)
 {
-    if( dirty_gamma[i] || force )
+    for(size_t i = 0; i < taxa.size(); i++)
     {
-        double ai = (*this->value)[i][0];
-        double bi = (*this->value)[i][1];
-
-        if( force == true ) gamma_i[i] = 0;
-
-        for(size_t j = 0; j < taxa.size(); j++)
+        if( dirty_gamma[i] || force )
         {
-            if(i == j) continue;
+            double ai = (*this->value)[i][0];
+            double bi = (*this->value)[i][1];
 
-            double aj = (*this->value)[j][0];
-            double bj = (*this->value)[j][1];
+            if( force == true ) gamma_i[i] = 0;
 
-            bool linki = ( ai < aj && ai > bj );
-            bool linkj = ( aj < ai && aj > bi );
-
-            if( gamma_links[i][j] != linki && force == false )
+            for(size_t j = 0; j < taxa.size(); j++)
             {
-                gamma_i[i] += linki ? 1 : -1;
-            }
-            if( gamma_links[j][i] != linkj && force == false )
-            {
-                gamma_i[j] += linkj ? 1 : -1;
-            }
+                if(i == j) continue;
 
-            if( force == true ) gamma_i[i] += linki;
+                double aj = (*this->value)[j][0];
+                double bj = (*this->value)[j][1];
 
-            gamma_links[i][j] = linki;
-            gamma_links[j][i] = linkj;
+                bool linki = ( ai < aj && ai > bj );
+                bool linkj = ( aj < ai && aj > bi );
+
+                if( gamma_links[i][j] != linki && force == false )
+                {
+                    gamma_i[i] += linki ? 1 : -1;
+                }
+                if( gamma_links[j][i] != linkj && force == false )
+                {
+                    gamma_i[j] += linkj ? 1 : -1;
+                }
+
+                if( force == true ) gamma_i[i] += linki;
+
+                gamma_links[i][j] = linki;
+                gamma_links[j][i] = linkj;
+            }
         }
     }
-
-    return gamma_i[i] == 0 ? 1 : gamma_i[i];
 }
 
 
