@@ -51,7 +51,7 @@ void ChromosomesRateMatrixFunction::update( void ) {
     double de_l = delta_l->getValue();
     double e = eta->getValue();
 
-    static_cast< RateMatrix_Chromosomes* >(value)->setGamma( gamma );
+    static_cast< RateMatrix_Chromosomes* >(value)->setGamma( ga );
     static_cast< RateMatrix_Chromosomes* >(value)->setDelta( de );
     static_cast< RateMatrix_Chromosomes* >(value)->setRho( rh );
     static_cast< RateMatrix_Chromosomes* >(value)->setEta( e );
