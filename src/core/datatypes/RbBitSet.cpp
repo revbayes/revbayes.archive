@@ -194,9 +194,11 @@ void RbBitSet::resize(size_t size)
 
 void RbBitSet::set(size_t i)
 {
+    if(value[i] == false)
+        ++num_set_bits;
+
     // set the internal value
     value[i] = true;
-    ++num_set_bits;
 }
 
 
@@ -209,9 +211,11 @@ size_t RbBitSet::size(void) const
 
 void RbBitSet::unset(size_t i)
 {
+    if(value[i] == true)
+        --num_set_bits;
+
     // set the internal value
     value[i] = false;
-    --num_set_bits;
 }
 
 
