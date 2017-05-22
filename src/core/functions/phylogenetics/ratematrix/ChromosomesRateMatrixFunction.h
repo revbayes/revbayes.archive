@@ -27,7 +27,7 @@ namespace RevBayesCore {
     class ChromosomesRateMatrixFunction : public TypedFunction<RateGenerator> {
 
     public:
-        ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *m, const TypedDagNode<double> *l_l, const TypedDagNode<double> *d_l);
+        ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *g, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *e, const TypedDagNode<double> *g_l, const TypedDagNode<double> *d_l);
         
         virtual                                     ~ChromosomesRateMatrixFunction(void);                                                    //!< Virtual destructor
         
@@ -43,11 +43,11 @@ namespace RevBayesCore {
         // members
 
         const TypedDagNode<int>*                    n;
-        const TypedDagNode<double>*                 lambda;
+        const TypedDagNode<double>*                 gamma;
         const TypedDagNode<double>*                 delta;
         const TypedDagNode<double>*                 rho;
-        const TypedDagNode<double>*                 mu;
-        const TypedDagNode<double>*                 lambda_l;
+        const TypedDagNode<double>*                 eta;
+        const TypedDagNode<double>*                 gamma_l;
         const TypedDagNode<double>*                 delta_l;
 
     };
