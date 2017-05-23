@@ -21,9 +21,9 @@
 
 using namespace RevBayesCore;
 
-/** Construct rate matrix with n states */
-RateMatrix_ChromosomesPloidy::RateMatrix_ChromosomesPloidy(size_t n) : AbstractRateMatrix( 2 * n + 1 ),
-    matrix_size( 2 * n + 1 ),
+/** Construct rate matrix where n = max_chromo */
+RateMatrix_ChromosomesPloidy::RateMatrix_ChromosomesPloidy(size_t n) : AbstractRateMatrix( 2 * (n + 1) ),
+    matrix_size( 2 * (n + 1) ),
     max_chromo( n )
 {
     setGamma_d(1.0);
@@ -77,49 +77,49 @@ void RateMatrix_ChromosomesPloidy::buildRateMatrix(void)
                     }
                 }
                 // diploid to polyploid
-                else if ( i <= max_chromo && j > max_chromo )
+                else if ( i <= max_chromo && j > (max_chromo + 1) )
                 {
-                    if (j == (2 * i + max_chromo))
+                    if (j == ((2 * i) + (max_chromo + 1)))
                     {
                         (*the_rate_matrix)[i][j] += rho_d;
                     }
-                    if ( (i % 2 == 0) && (j == (size_t)(1.5 * i + max_chromo)) )
+                    if ( (i % 2 == 0) && (j == (size_t)((1.5 * i) + (max_chromo + 1))) )
                     {
                         (*the_rate_matrix)[i][j] += eta_d;
                     }
-                    if ( (i % 2 != 0) && ( (j == (size_t)(1.5 * i - 0.5 + max_chromo)) || (j == (size_t)(1.5 * i + 0.5 + max_chromo) ) ) )
+                    if ( (i % 2 != 0) && ( (j == (size_t)((1.5 * i) - (0.5 + max_chromo + 1))) || (j == (size_t)((1.5 * i) + (0.5 + max_chromo + 1)) ) ) )
                     {
                         (*the_rate_matrix)[i][j] += eta_d;
                     }
                 }
                 // polyploid chromosome evolution
-                else if ( i > max_chromo && j > max_chromo )
+                else if ( i > (max_chromo + 1) && j > (max_chromo + 1) )
                 {
                     if ( j == i + 1 )
                     {
-                        (*the_rate_matrix)[i][j] += gamma_p * exp( gamma_pl * (i - 1 - max_chromo) );
+                        (*the_rate_matrix)[i][j] += gamma_p * exp( gamma_pl * (i - 2 - max_chromo) );
                     }
                     if ( j == i - 1 )
                     {
-                        (*the_rate_matrix)[i][j] += delta_p * exp( delta_pl * (i - 1 - max_chromo) );
+                        (*the_rate_matrix)[i][j] += delta_p * exp( delta_pl * (i - 2 - max_chromo) );
                     }
-                    if ( (j - max_chromo) == (2 * (i - max_chromo)) )
+                    if ( (j - (max_chromo + 1)) == (2 * (i - (max_chromo + 1))) )
                     {
                         (*the_rate_matrix)[i][j] += rho_p;
                     }
-                    if ( (i % 2 == 0) && ( (j - max_chromo) == (size_t)(1.5 * (i - max_chromo)) ) )
+                    if ( ((i - (max_chromo + 1)) % 2 == 0) && ( (j - (max_chromo + 1)) == (size_t)(1.5 * (i - (max_chromo + 1))) ) )
                     {
                         (*the_rate_matrix)[i][j] += eta_p;
                     }
-                    if ( (i % 2 != 0) && ( ((j - max_chromo) == (size_t)(1.5 * (i - max_chromo) - 0.5)) || ( (j - max_chromo) == (size_t)(1.5 * (i - max_chromo) + 0.5) ) ) )
+                    if ( ((i - (max_chromo + 1)) % 2 != 0) && ( ((j - (max_chromo + 1)) == (size_t)(1.5 * (i - (max_chromo + 1)) - 0.5)) || ( (j - (max_chromo + 1)) == (size_t)(1.5 * (i - (max_chromo + 1)) + 0.5) ) ) )
                     {
                         (*the_rate_matrix)[i][j] += eta_p;
                     }
                 }
                 // rediploidization
-                else if (i > max_chromo && j <= max_chromo)
+                else if (i > (max_chromo + 1) && j <= max_chromo)
                 {
-                    if ( (i - max_chromo) == j )
+                    if ( (i - (max_chromo + 1)) == j )
                     {
                         (*the_rate_matrix)[i][j] += beta;
                     }
