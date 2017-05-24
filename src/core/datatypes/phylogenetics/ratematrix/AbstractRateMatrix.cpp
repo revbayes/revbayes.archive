@@ -1,7 +1,10 @@
-#include "MatrixReal.h"
 #include "AbstractRateMatrix.h"
+#include "MatrixReal.h"
+#include "RandomNumberGenerator.h"
+#include "RandomNumberFactory.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
+#include "DistributionPoisson.h"
 #include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
@@ -50,7 +53,6 @@ AbstractRateMatrix& AbstractRateMatrix::operator=(const AbstractRateMatrix &r)
         RateMatrix::operator=( r );
         
         delete the_rate_matrix;
-        
         
         the_rate_matrix       = new MatrixReal( *r.the_rate_matrix );
         needs_update         = true;
@@ -227,12 +229,23 @@ bool AbstractRateMatrix::checkTimeReversibity(double tolerance)
 }
 
 
-//size_t AbstractRateMatrix::getNumberOfStates( void ) const
-//{
-//    return num_states;
-//}
+double AbstractRateMatrix::getDominatingRate(void) const
+{
+    return dominating_rate;
+}
 
-
+void AbstractRateMatrix::computeDominatingRate(void)
+{
+    dominating_rate = 0.0;
+    for (size_t i = 0; i < num_states; i++)
+    {
+        double r = -(*the_rate_matrix)[i][i];
+        if ( r > dominating_rate)
+        {
+            dominating_rate = r;
+        }
+    }
+}
 
 double AbstractRateMatrix::getRate(size_t from, size_t to, double rate) const
 {
@@ -261,6 +274,35 @@ MatrixReal AbstractRateMatrix::getRateMatrix() const
     return *the_rate_matrix;
 }
 
+MatrixReal AbstractRateMatrix::getStochasticMatrix(size_t n)
+{
+    while (stochastic_matrix.size() < (n-1)) {
+        computeStochasticMatrix(stochastic_matrix.size());
+    }
+    return stochastic_matrix[n];
+}
+
+void AbstractRateMatrix::computeStochasticMatrix(size_t n)
+{
+    MatrixReal r;
+    if (n == 0) {
+        // identity matrix, R^0
+        r = MatrixReal(num_states, num_states);
+        for (size_t i = 0; i < num_states; i++) {
+            r[i][i] = 1.0;
+        }
+    }
+    else if (n == 1) {
+        // stochastic matrix, R^1
+        r = (*the_rate_matrix) * (1.0/dominating_rate) + stochastic_matrix[0];
+    }
+    else {
+        // stochastic matrix, R^n = R^(n-1) * R^1
+        r = stochastic_matrix[n-1] * stochastic_matrix[1];
+    }
+    stochastic_matrix.push_back(r);
+}
+
 /** Rescale the rates such that the average rate is r */
 void AbstractRateMatrix::rescaleToAverageRate(double r)
 {
@@ -279,6 +321,131 @@ void AbstractRateMatrix::rescaleToAverageRate(double r)
     needs_update = true;
     
 }
+
+
+void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times)
+{
+    // start and end states
+    size_t start_state = transition_states[0];
+    size_t end_state = transition_states[1];
+    double branch_length = (startAge - endAge);
+    
+    // transition probabilities
+    TransitionProbabilityMatrix P(num_states);
+    calculateTransitionProbabilities(startAge, endAge, rate, P);
+    stochastic_matrix = std::vector<MatrixReal>();
+    
+    // dominating rate
+    computeDominatingRate();
+    
+    // sample number of events
+    size_t num_events = 0;
+    double lambda = branch_length * rate * dominating_rate;
+    double prob_transition_ctmc = P[start_state][end_state];
+    double u = GLOBAL_RNG->uniform01();
+    double g = prob_transition_ctmc * u;
+    double prob_num_events_sum = 0.0;
+    double prob_total_sum = 0.0;
+    while (g > 0.0) {
+        
+        // probability for num_events
+        double prob_num_events = RbStatistics::Poisson::pdf(lambda, (int)num_events);
+        prob_num_events_sum += prob_num_events;
+        
+        // add the R^n stochastic matrix
+        computeStochasticMatrix(num_events);
+        
+        // probability of start_state -> end_state after num_events
+        double prob_transition_dtmc = stochastic_matrix[num_events][start_state][end_state];
+        
+        // update sampling prob
+        double prob_total = prob_num_events * prob_transition_dtmc;
+        
+        prob_total_sum += prob_total;
+        g -= prob_total;
+        if (g <= 0.0)
+        {
+            break;
+        }
+        
+        if (num_events > 20) {
+            throw RbException("AbstractRateMatrix::simulateStochasticMapping fails to converge when sampling num_events!");
+        }
+        
+        num_events += 1;
+        
+    }
+    
+    // sample event types per interval
+    transition_states = std::vector<size_t>(1, start_state);
+    for (size_t n = 0; n < num_events; n++)
+    {
+        size_t prev_state = transition_states[n];
+        size_t num_events_left = num_events - n - 1;
+
+        // get the normalization constant for sampling
+        double p_sum = 0.0;
+        for (size_t j = 0; j < num_states; j++)
+        {
+            p_sum += stochastic_matrix[1][prev_state][j] * stochastic_matrix[num_events_left][j][end_state];
+        }
+        
+        // sample transition to next state
+        size_t next_state = 0;
+        double u = GLOBAL_RNG->uniform01() * p_sum;
+        while (u > 0) {
+            
+            double p = stochastic_matrix[1][prev_state][next_state] * stochastic_matrix[num_events_left][next_state][end_state];
+            u -= p;
+            if (u <= 0) {
+                break;
+            }
+            next_state += 1;
+        }
+        
+        // sample the next state for the n+1 event
+        transition_states.push_back(next_state);
+        
+    }
+    
+    // sample event times
+    for (size_t i = 0; i < num_events; i++)
+    {
+        transition_times.push_back(GLOBAL_RNG->uniform01() * branch_length);
+    }
+    transition_times.push_back(0.0);
+    std::sort( transition_times.begin(), transition_times.end() );
+
+    
+    // filter out the virtual events
+    std::vector<size_t> save_states(1, transition_states[0]);
+    std::vector<double> save_times(1, 0.0);
+    size_t prev_state = transition_states[0];
+    for (size_t i = 1; i < transition_states.size(); i++) {
+        if (prev_state != transition_states[i]) {
+            save_states.push_back(transition_states[i]);
+            save_times.push_back(transition_times[i]);
+            prev_state = transition_states[i];
+        }
+    }
+    transition_states = save_states;
+    transition_times = save_times;
+    
+    // convert relative times along branches into incremental times
+    double sum_transition_times = 0.0;
+    for (size_t i = 0; i < transition_times.size()-1; i++)
+    {
+        transition_times[i] = transition_times[i+1] - sum_transition_times;
+        sum_transition_times += transition_times[i];
+    }
+    transition_times[transition_times.size()-1] = branch_length - sum_transition_times;
+    
+    // done!
+    return;
+}
+
+
+
 
 
 /** Set the diagonal of the rate matrix such that each row sums to zero */

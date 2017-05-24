@@ -197,7 +197,7 @@ bool AbstractFileMonitor::isFileMonitor( void ) const
  */
 void AbstractFileMonitor::monitorVariables(unsigned long gen)
 {
-        
+    
     for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
     {
         // add a separator before every new element

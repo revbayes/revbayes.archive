@@ -50,6 +50,9 @@ namespace RevBayesCore {
 
         void                                update(void);
         
+    protected:
+        virtual void                        computeStochasticMatrix(size_t n);
+
     private:
         std::string                         getRangeStr(const std::vector<unsigned>& v);
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
