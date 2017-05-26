@@ -260,12 +260,14 @@ void RateGenerator_Epoch::setEpochRates(const RbVector<double>& r)
     assignEpochDominatingRates();
 }
 
-void RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endAge, double rate, std::vector<size_t>& transition_states, std::vector<double>& transition_times)
+bool RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endAge, double rate, std::vector<size_t>& transition_states, std::vector<double>& transition_times)
 {
     if ( dynamic_cast<const RateMatrix*>( &epochRateGenerators[0] ) == NULL )
     {
         throw RbException("RateGenerator_Epoch::simulateStochasticMapping only supported when epoch rates are defined by RateMatrix objects");
     }
+    
+    bool success = false;
     
     // compute the breakpoint times
     std::vector<double> breakpoint_times;
@@ -308,7 +310,7 @@ void RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
         
         // generate stochastic mapping for interval
         const RateMatrix* rate_matrix = dynamic_cast<const RateMatrix*>( &epochRateGenerators[interval_index] );
-        const_cast<RateMatrix*>(rate_matrix)->simulateStochasticMapping(interval_start_age, interval_end_age, interval_rate, interval_transition_states, interval_transition_times);
+        success |= const_cast<RateMatrix*>(rate_matrix)->simulateStochasticMapping(interval_start_age, interval_end_age, interval_rate, interval_transition_states, interval_transition_times);
         
         
         // add the new events
@@ -337,7 +339,7 @@ void RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
     transition_states = save_states;
     transition_times = save_times;
     
-    return;
+    return success;
 }
 
 void RateGenerator_Epoch::sampleBreakpointStates(std::vector<size_t>& breakpoint_states, std::vector<double> breakpoint_times, std::vector<TransitionProbabilityMatrix>& breakpoint_probs, double rate) const

@@ -2,6 +2,7 @@
 #define TopologyConstrainedTreeDistribution_H
 
 #include "Clade.h"
+#include "RbVector.h"
 #include "Tree.h"
 #include "TreeChangeEventListener.h"
 #include "TypedDagNode.h"
@@ -23,7 +24,7 @@ namespace RevBayesCore {
     class TopologyConstrainedTreeDistribution : public TypedDistribution<Tree>, TreeChangeEventListener {
         
     public:
-        TopologyConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const std::vector<Clade> &c, const TypedDagNode<Tree>* bb = NULL);
+        TopologyConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const std::vector<Clade> &c, const TypedDagNode<RbVector<Tree> > *bb = NULL);
         TopologyConstrainedTreeDistribution(const TopologyConstrainedTreeDistribution &d);
         
         virtual ~TopologyConstrainedTreeDistribution(void);
@@ -60,16 +61,18 @@ namespace RevBayesCore {
         
 
         // members
-        std::vector<RbBitSet>                               active_backbone_clades;
+        std::vector<std::vector<RbBitSet> >                 active_backbone_clades;
         std::vector<RbBitSet>                               active_clades;
         std::vector<RbBitSet>                               backbone_constraints;
-        RbBitSet                                            backbone_mask;
-        const TypedDagNode<Tree>*                           backbone_topology;
+        std::vector<RbBitSet>                               backbone_mask;
+//        const TypedDagNode<Tree>*                           backbone_topology;
+        const TypedDagNode<RbVector<Tree> >*                backbone_topologies;
         TypedDistribution<Tree>*                            base_distribution;
         std::vector<bool>                                   dirty_nodes;
         std::vector<Clade>                                  monophyly_constraints;
-        std::vector<RbBitSet>                               stored_backbone_clades;
+        std::vector<std::vector<RbBitSet> >                 stored_backbone_clades;
         std::vector<RbBitSet>                               stored_clades;
+        size_t                                              num_backbones;
     };
     
 }

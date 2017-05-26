@@ -90,7 +90,7 @@ namespace RevBayesCore {
         void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
         void                                                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                                 //!< The tree has changed and we want to know which part.
         virtual void                                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
-        virtual void                                                        recursivelyDrawStochasticCharacterMap(const TopologyNode &node, std::vector<std::string*>& character_histories, std::vector<std::vector<charType> >& start_states, std::vector<std::vector<charType> >& end_states, size_t site, bool use_simmap_default);
+        virtual bool                                                        recursivelyDrawStochasticCharacterMap(const TopologyNode &node, std::vector<std::string*>& character_histories, std::vector<std::vector<charType> >& start_states, std::vector<std::vector<charType> >& end_states, size_t site, bool use_simmap_default);
         virtual void                                                        redrawValue(void);
         void                                                                reInitialized(void);
         void                                                                setMcmcMode(bool tf);                                                                       //!< Change the likelihood computation to or from MCMC mode.
@@ -1211,29 +1211,46 @@ template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawStochasticCharacterMap(std::vector<std::string*>& character_histories, size_t site, bool use_simmap_default)
 {
     
-    // first draw joint ancestral states
-    std::vector<std::vector<charType> > start_states(this->num_nodes, std::vector<charType>(this->num_sites));
-    std::vector<std::vector<charType> > end_states(this->num_nodes, std::vector<charType>(this->num_sites));
-    this->drawJointConditionalAncestralStates( start_states, end_states );
+    bool success = false;
+    size_t max_draws = 10;
+    size_t n_draws = 0;
     
-    // save the character history for the root
-    const TopologyNode &root = this->tau->getValue().getRoot();
-    size_t root_index = root.getIndex();
-    std::string* simmap_string = new std::string("{" + end_states[root_index][site].getStringValue() + "," + StringUtilities::toString( root.getBranchLength() ) + "}");
-    character_histories[root_index] = simmap_string;
+    while (!success && n_draws != max_draws) {
+        // first draw joint ancestral states
+        std::vector<std::vector<charType> > start_states(this->num_nodes, std::vector<charType>(this->num_sites));
+        std::vector<std::vector<charType> > end_states(this->num_nodes, std::vector<charType>(this->num_sites));
+        this->drawJointConditionalAncestralStates( start_states, end_states );
+        
+        // save the character history for the root
+        const TopologyNode &root = this->tau->getValue().getRoot();
+        size_t root_index = root.getIndex();
+        std::string* simmap_string = new std::string("{" + end_states[root_index][site].getStringValue() + "," + StringUtilities::toString( root.getBranchLength() ) + "}");
+        character_histories[root_index] = simmap_string;
+        
+        // recurse towards tips
+        const TopologyNode &right = root.getChild(0);
+        const TopologyNode &left = root.getChild(1);
+        success |= recursivelyDrawStochasticCharacterMap(left, character_histories, start_states, end_states, site, use_simmap_default);
+        success |= recursivelyDrawStochasticCharacterMap(right, character_histories, start_states, end_states, site, use_simmap_default);
+        
+        if (n_draws != 0) {
+            std::cout << "Warning: numerical instability in P(t)=exp(Qt) caused stochastic mapping to fail (attempt: " << n_draws << "/" << max_draws << ")\n";
+        }
+        n_draws++;
+    }
     
-    // recurse towards tips
-    const TopologyNode &right = root.getChild(0);
-    const TopologyNode &left = root.getChild(1);
-    recursivelyDrawStochasticCharacterMap(left, character_histories, start_states, end_states, site, use_simmap_default);
-    recursivelyDrawStochasticCharacterMap(right, character_histories, start_states, end_states, site, use_simmap_default);
+    if (n_draws == max_draws) {
+        throw RbException("Stochastic mapping failed due to numerical instability.");
+    }
     
 }
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, std::vector<std::string*>& character_histories, std::vector<std::vector<charType> >& start_states, std::vector<std::vector<charType> >& end_states, size_t site, bool use_simmap_default)
+bool RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, std::vector<std::string*>& character_histories, std::vector<std::vector<charType> >& start_states, std::vector<std::vector<charType> >& end_states, size_t site, bool use_simmap_default)
 {
+    
+    bool success = false;
     
     // get the start and end states
     size_t node_index = node.getIndex();
@@ -1317,7 +1334,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
 
     // simulate stochastic map
     transition_states.push_back(end_state);
-    const_cast<RateGenerator*>(rate_matrix)->simulateStochasticMapping(start_age, end_age, clock_rate, transition_states, transition_times);
+    success = const_cast<RateGenerator*>(rate_matrix)->simulateStochasticMapping(start_age, end_age, clock_rate, transition_states, transition_times);
     
     // make SIMMAP string
     std::string simmap_string = "{";
@@ -1354,10 +1371,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
     {
         const TopologyNode &right = node.getChild(0);
         const TopologyNode &left = node.getChild(1);
-        recursivelyDrawStochasticCharacterMap(left, character_histories, start_states, end_states, site, use_simmap_default);
-        recursivelyDrawStochasticCharacterMap(right, character_histories, start_states, end_states, site, use_simmap_default);
+        success |= recursivelyDrawStochasticCharacterMap(left, character_histories, start_states, end_states, site, use_simmap_default);
+        success |= recursivelyDrawStochasticCharacterMap(right, character_histories, start_states, end_states, site, use_simmap_default);
     }
     
+    return success;
 }
 
 

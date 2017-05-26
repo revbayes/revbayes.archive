@@ -54,11 +54,17 @@ RevBayesCore::TopologyConstrainedTreeDistribution* Dist_ConstrainedTopology::cre
     const RevBayesCore::RbVector<RevBayesCore::Clade>& c      = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     const Distribution& rlDistribution                        = static_cast<const Distribution &>( baseDistribution->getRevObject() );
     RevBayesCore::TypedDistribution<RevBayesCore::Tree>* base = static_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rlDistribution.createDistribution() );
-    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* bb        = NULL;
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::Tree> >* bb = NULL;
     if ( backbone != NULL && backbone->getRevObject() != RevNullObject::getInstance() )
     {
-        bb = static_cast<const TimeTree &>( backbone->getRevObject() ).getDagNode();
+        bb = static_cast<const ModelVector<TimeTree> &>( backbone->getRevObject() ).getDagNode();
     }
+    
+//    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sr = NULL;
+//    if ( lambda_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+//    {
+//        sr = static_cast<const ModelVector<RealPos> &>( lambda_rates->getRevObject() ).getDagNode();
+//    }
     
     // create the internal distribution object
     RevBayesCore::TopologyConstrainedTreeDistribution* d = new RevBayesCore::TopologyConstrainedTreeDistribution(base, c, bb);
@@ -135,10 +141,10 @@ const MemberRules& Dist_ConstrainedTopology::getParameterRules(void) const {
     static bool rules_set = false;
     if ( !rules_set )
         {
-        memberRules.push_back( new ArgumentRule( "treeDistribution", TypedDistribution<TimeTree>::getClassTypeSpec(), "The base distribution for the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "constraints",      ModelVector<Clade>::getClassTypeSpec(),          "The topological constraints.",        ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
-        memberRules.push_back( new ArgumentRule( "backbone",         TimeTree::getClassTypeSpec(),                    "The backbone topology.",              ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
-        memberRules.push_back( new ArgumentRule( "inverse",          RlBoolean::getClassTypeSpec(),                   "Should the constraint be inverted?",  ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        memberRules.push_back( new ArgumentRule( "treeDistribution", TypedDistribution<TimeTree>::getClassTypeSpec(), "The base distribution for the tree.",   ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "constraints",      ModelVector<Clade>::getClassTypeSpec(),          "The topological constraints.",          ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
+        memberRules.push_back( new ArgumentRule( "backbone",         ModelVector<TimeTree>::getClassTypeSpec(),       "The backbone topological constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+        memberRules.push_back( new ArgumentRule( "inverse",          RlBoolean::getClassTypeSpec(),                   "Should the constraint be inverted?",    ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         rules_set = true;
         }
     return memberRules;

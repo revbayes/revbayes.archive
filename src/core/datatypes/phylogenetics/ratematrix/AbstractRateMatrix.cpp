@@ -343,7 +343,7 @@ void AbstractRateMatrix::rescaleToAverageRate(double r)
 }
 
 
-void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times)
+bool AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times)
 {
     // start and end states
     size_t start_state = transition_states[0];
@@ -424,7 +424,8 @@ void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
         // make sure we simulate plenty of events
         size_t max_events = 20 + 5 * lambda;
         if (num_events > max_events) {
-            throw RbException("AbstractRateMatrix::simulateStochasticMapping fails to converge when sampling num_events!");
+            return false;
+            // throw RbException("AbstractRateMatrix::simulateStochasticMapping fails to converge when sampling num_events!");
         }
         
         num_events += 1;
@@ -499,7 +500,7 @@ void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
     transition_times[transition_times.size()-1] = branch_length - sum_transition_times;
     
     // done!
-    return;
+    return true;
 }
 
 

@@ -54,7 +54,7 @@ namespace RevBayesCore {
         virtual void                        update(void) = 0;                                                                           //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         virtual MatrixReal                  getStochasticMatrix(size_t n);
         virtual double                      getDominatingRate(void) const;
-        virtual void                        simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times);
+        virtual bool                        simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times);
         
 
     protected:
