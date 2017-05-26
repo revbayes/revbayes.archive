@@ -54,7 +54,7 @@ namespace RevBayesCore {
         // helper functions
         bool                                                matchesBackbone(void);
         bool                                                matchesConstraints(void);
-        RbBitSet                                            recursivelyAddBackboneConstraints(const TopologyNode& node);
+        RbBitSet                                            recursivelyAddBackboneConstraints(const TopologyNode& node, size_t backbone_idx);
         void                                                recursivelyFlagNodesDirty(const TopologyNode& n);
         RbBitSet                                            recursivelyUpdateClades(const TopologyNode& node);
         Tree*                                               simulateTree(void);
@@ -63,7 +63,7 @@ namespace RevBayesCore {
         // members
         std::vector<std::vector<RbBitSet> >                 active_backbone_clades;
         std::vector<RbBitSet>                               active_clades;
-        std::vector<RbBitSet>                               backbone_constraints;
+        std::vector<std::vector<RbBitSet> >                 backbone_constraints;
         std::vector<RbBitSet>                               backbone_mask;
 //        const TypedDagNode<Tree>*                           backbone_topology;
         const TypedDagNode<RbVector<Tree> >*                backbone_topologies;
