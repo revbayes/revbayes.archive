@@ -3254,6 +3254,7 @@ void TreeSummary::summarizeCharacterMaps(Tree input_tree, std::vector<AncestralS
         size_t sample_clade_index = i;
         trace_found = false;
         AncestralStateTrace character_map_trace;
+        std::vector<std::string> ancestralstate_vector;
         
         // loop through all the stochastic character map samples
         for (size_t j = burnin; j < num_sampled_states; ++j)
@@ -3295,18 +3296,18 @@ void TreeSummary::summarizeCharacterMaps(Tree input_tree, std::vector<AncestralS
                         if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sample_clade_index + 1))
                         {
                             character_map_trace = ancestralstate_traces[k];
+                            ancestralstate_vector = character_map_trace.getValues(); 
                             trace_found = true;
                             break;
                         }
                     }
                 }
                 
-                // get the sampled character history for this node for this iteration
-                const std::vector<std::string>& ancestralstate_vector = character_map_trace.getValues();
-                std::string character_history = ancestralstate_vector[j];
-
                 // get the iteration
                 std::string iteration = iteration_vector[j];
+                
+                // get the sampled character history for this node for this iteration
+                std::string character_history = ancestralstate_vector[j];
 
                 // parse sampled SIMMAP string
                 std::vector< std::pair<size_t, double> > this_branch_map = parseSIMMAPForNode(character_history);
