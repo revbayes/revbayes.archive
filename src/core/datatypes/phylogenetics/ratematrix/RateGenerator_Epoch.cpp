@@ -98,54 +98,16 @@ void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, doub
             
             // first, get the rate matrix for this branch
             const RateGenerator& rg = epochRateGenerators[epochIdx];
-            
             double r = epochRates[epochIdx];
-            
             rg.calculateTransitionProbabilities( currAge, nextAge, r * rate, P );
-            
-            double eps = 1e-4;
-
-            for (size_t i = 0; i < P.getNumberOfStates(); i++)
-            {
-                for (size_t j = 0; j < P.getNumberOfStates(); j++)
-                {
-                    if (P[i][j] > 1.0 + eps)
-                    {
-                        ;
-//                        std::cout << "error!\n";
-//                        std::cout << i << " " << j << " " << P[i][j] << "\n";
-//                        
-//                        std::cout << P << "\n";
-//                        
-//                        
-//                        // A = make_matrix_from_pointer(initialValues);
-//                        boost::numeric::ublas::matrix<double> input;
-//                        typedef boost::numeric::ublas::permutation_matrix<std::size_t> pmatrix;
-//                        boost::numeric::ublas::matrix<double> A(input);
-//                        
-//                        // create a permutation matrix for the LU-factorization
-//                        pmatrix pm(A.size1());
-//                        
-//                        // perform LU-factorization
-//                        int res = (unsigned)boost::numeric::ublas::lu_factorize(A, pm);
-//                        if (res != 0)
-//                            std::cout << "Error!\n";
-//                        
-//                        
-//                        
-//                        rg.calculateTransitionProbabilities( currAge, nextAge, r * rate, P );
-//
-//                        std::cout << "\n";
-                    }
-                }
-            }
-            
+//            for (size_t i1 = 0; i1 < rg.size(); i1++) {
+//                for (size_t i2 = 0; i2 < rg.size(); i2++) {
+//                    std::cout << rg.getRate(i1,i2,currAge,1.0) << "  ";
+//                }
+//                std::cout << "\n";
+//            }
             // epochs construct DTMC
             tp *= P;
-            
-//            std::cout << P << "\n\n";
-//            std::cout << tp << "\n";
-//            std::cout << "-------\n";
             
             // advance increment
             currAge = nextAge;
@@ -268,7 +230,8 @@ bool RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
     }
     
     bool success = false;
-    
+
+
     // compute the breakpoint times
     std::vector<double> breakpoint_times;
     std::vector<size_t> breakpoint_index;
@@ -277,7 +240,7 @@ bool RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
     for (size_t i = 0; i < epochTimes.size(); i++) {
         if (epochTimes[i] < startAge && epochTimes[i] >= endAge) {
             breakpoint_times.push_back(epochTimes[i]);
-            breakpoint_index.push_back(i);
+            breakpoint_index.push_back(i+1);
         }
         else if (epochTimes[i] < endAge)
             break;
@@ -286,12 +249,11 @@ bool RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
         breakpoint_times.push_back(endAge);
     }
     
-    
     // sample epoch breakpoint states
     std::vector<size_t> breakpoint_states = transition_states;
     std::vector<TransitionProbabilityMatrix> breakpoint_probs;
     sampleBreakpointStates(breakpoint_states, breakpoint_times, breakpoint_probs, rate);
-    
+
     // make stochastic map for each interval
     transition_states.clear();
     transition_times.clear();
@@ -311,7 +273,6 @@ bool RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
         // generate stochastic mapping for interval
         const RateMatrix* rate_matrix = dynamic_cast<const RateMatrix*>( &epochRateGenerators[interval_index] );
         success |= const_cast<RateMatrix*>(rate_matrix)->simulateStochasticMapping(interval_start_age, interval_end_age, interval_rate, interval_transition_states, interval_transition_times);
-        
         
         // add the new events
         transition_states.insert( transition_states.end(), interval_transition_states.begin(), interval_transition_states.end() );
@@ -338,7 +299,7 @@ bool RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
     }
     transition_states = save_states;
     transition_times = save_times;
-    
+
     return success;
 }
 
@@ -347,15 +308,15 @@ void RateGenerator_Epoch::sampleBreakpointStates(std::vector<size_t>& breakpoint
     size_t num_breaks = breakpoint_times.size() - 2;
     size_t num_intervals = num_breaks + 1;
     
+    
+    
     // transition probabilities for the interval (t_{i-1}, t_{i})
-//    std::vector<TransitionProbabilityMatrix> breakpoint_probs;
     for (size_t i = 1; i < breakpoint_times.size(); i++)
     {
         TransitionProbabilityMatrix P(this->num_states);
         calculateTransitionProbabilities(breakpoint_times[i-1], breakpoint_times[i], rate, P);
         breakpoint_probs.push_back(P);
     }
-    
     
     // transition probabilities for the interval (t_{i}, t_{n})
     std::vector<TransitionProbabilityMatrix> prob_n;
@@ -371,7 +332,7 @@ void RateGenerator_Epoch::sampleBreakpointStates(std::vector<size_t>& breakpoint
     for (size_t i = 1; i < num_intervals; i++)
     {
         // find the state that precedes interval i's state
-        size_t prev_state = breakpoint_states[ breakpoint_states.size()-1 ];
+        size_t prev_state = breakpoint_states[ breakpoint_states.size()-2 ];
         
         // compute probs of sampling intermediate state s
         std::vector<double> prob_curr_state(this->num_states, 0.0);
@@ -381,6 +342,7 @@ void RateGenerator_Epoch::sampleBreakpointStates(std::vector<size_t>& breakpoint
             double p_is = breakpoint_probs[i-1][prev_state][s];
             double p_sn = prob_n[i][s][end_state];
             double p_in = prob_n[i-1][prev_state][end_state];
+            // std::cout << prev_state << " -> " << s << " -> " << end_state << " " << p_is << " " << p_sn << " " << p_in << "\n";
             prob_curr_state[s] = p_is * p_sn / p_in;
             sum_curr_state += prob_curr_state[s];
         }

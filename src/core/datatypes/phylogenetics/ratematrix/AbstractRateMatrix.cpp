@@ -363,6 +363,10 @@ bool AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
     size_t num_events = 0;
     double lambda = branch_length * rate * dominating_rate;
     double prob_transition_ctmc = P[start_state][end_state];
+    
+//    if (prob_transition_ctmc < 1e-20) {
+//        std::cout << P << "\n";
+//    }
     double u = GLOBAL_RNG->uniform01() * (1.0 - 1e-3);
     double g = u * prob_transition_ctmc;
     double prob_num_events_sum = 0.0;
@@ -516,7 +520,7 @@ void AbstractRateMatrix::exponentiateMatrixByScalingAndSquaring(double t,  Trans
     // efficiency and returned the same results with about 10^-9 accuracy. The scaling parameter could be
     // increased for better accuracy.
     // -- Will Freyman 11/27/16
-    size_t s = 6;
+    size_t s = 8;
     
     // first scale the matrix
     double scale = t / pow(2, s);

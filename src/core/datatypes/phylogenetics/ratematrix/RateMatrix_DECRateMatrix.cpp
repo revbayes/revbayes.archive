@@ -107,7 +107,7 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 //    initializeStationaryMatrix();
     
-//    update();
+    update();
 
 }
 
@@ -163,7 +163,7 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 //        initializeStationaryMatrix();
         
-//        update();
+        update();
         
     }
     
@@ -390,7 +390,6 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
                 P[0][i] = 0.0;
             }
             P[0][0] = 1.0;
-            
         }
 
         if (useStoredTransitionProbabilities) {
