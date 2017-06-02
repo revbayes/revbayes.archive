@@ -26,9 +26,9 @@ using namespace RevBayesCore;
  */
 TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDistribution<Tree>* base_dist, const std::vector<Clade> &c) : TypedDistribution<Tree>( NULL ),
 //    active_backbone_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSet() ),
+    backbone_topology(NULL),
+    backbone_topologies(NULL),
     active_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSet() ),
-//    backbone_mask( base_dist->getValue().getNumberOfTips() ),
-//    backbone_topologies( bb ),
     base_distribution( base_dist ),
     dirty_nodes( base_dist->getValue().getNumberOfNodes(), true ),
     monophyly_constraints( c ),
@@ -46,15 +46,6 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     
-    // add the backbone topology
-//    this->addParameter( backbone_topologies );
-//    num_backbones = backbone_topologies->getValue().size();
-//    for (size_t i = 0; i < num_backbones; i++) {
-//        std::vector<RbBitSet>v( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSet() );
-//        active_backbone_clades.push_back(v);
-//    }
-//    backbone_mask = std::vector<RbBitSet>( num_backbones, base_dist->getValue().getNumberOfInteriorNodes() );
-
     // add the parameters of the distribution
     const std::vector<const DagNode*>& pars = base_distribution->getParameters();
     for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
