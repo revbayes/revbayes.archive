@@ -54,6 +54,7 @@ namespace RevLanguage {
         std::vector<RevPtr<const RevVariable> > clades;
         RevPtr<const RevVariable>               age;
         RevPtr<const RevVariable>               missing;
+        RevPtr<const RevVariable>               is_negative_constraint;
 
     };
     

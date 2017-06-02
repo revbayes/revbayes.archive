@@ -17,7 +17,8 @@ using namespace RevBayesCore;
 Clade::Clade( void ) :
     age( 0.0 ),
     num_missing( 0 ),
-    taxa()
+    taxa(),
+    is_negative_constraint(false)
 {
     
 }
@@ -30,7 +31,8 @@ Clade::Clade( const Taxon &t, const RbBitSet &b ) :
     age( 0.0 ),
     bitset( b ),
     num_missing( b.size() > 1 ? b.size() - 1 : 0 ),
-    taxa()
+    taxa(),
+    is_negative_constraint(false)
 {
     
     taxa.push_back( t );
@@ -47,7 +49,8 @@ Clade::Clade(const std::vector<Taxon> &n, const RbBitSet &b) :
     age( 0.0 ),
     bitset( b ),
     num_missing( b.size() > n.size() ? b.size() - n.size() : 0 ),
-    taxa( n )
+    taxa( n ),
+    is_negative_constraint(false)
 {
     
     // for identifiability we always keep the taxon names sorted
@@ -319,6 +322,16 @@ const std::string& Clade::getTaxonName(size_t i) const
     return taxa[i].getName();
 }
 
+/**
+ * Is this clade a negative clade constraint (used with e.g. dnConstrainedTopology).
+ *
+ * \return       The true/false value of whether the clade is a negative constraint.
+ */
+bool Clade::isNegativeConstraint(void) const
+{
+    return is_negative_constraint;
+}
+
 
 /**
  * Reset the bitset.
@@ -412,6 +425,17 @@ void Clade::setNumberMissingTaxa(int n)
 void Clade::setTaxonAge(size_t i, double age)
 {
     taxa[i].setAge(age);
+}
+
+/**
+ * Set flag for negative clade constraint,.
+ *
+ * \param[in]    tf   Flag indicating if clade is a negative constraint.
+ *
+ */
+void Clade::setNegativeConstraint(bool tf)
+{
+    is_negative_constraint = tf;
 }
 
 /**

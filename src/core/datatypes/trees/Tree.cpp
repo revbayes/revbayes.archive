@@ -20,7 +20,8 @@ Tree::Tree(void) :
     binary( true ),
     rooted( false ),
     num_tips( 0 ),
-    num_nodes( 0 )
+    num_nodes( 0 ),
+    is_negative_constraint( false )
 {
     
 }
@@ -34,7 +35,8 @@ Tree::Tree(const Tree& t) :
     rooted( t.rooted ),
     num_tips( t.num_tips ),
     num_nodes( t.num_nodes ),
-    taxon_bitset_map( t.taxon_bitset_map )
+    taxon_bitset_map( t.taxon_bitset_map ),
+    is_negative_constraint( t.is_negative_constraint )
 {
         
     // need to perform a deep copy of the BranchLengthTree nodes
@@ -79,10 +81,11 @@ Tree& Tree::operator=(const Tree &t)
         delete root;
         root = NULL;
         
-        binary      = t.binary;
-        num_tips    = t.num_tips;
-        num_nodes   = t.num_nodes;
-        rooted      = t.rooted;
+        binary                 = t.binary;
+        num_tips               = t.num_tips;
+        num_nodes              = t.num_nodes;
+        rooted                 = t.rooted;
+        is_negative_constraint = t.is_negative_constraint;
         
         TopologyNode* newRoot = t.root->clone();
         
@@ -864,6 +867,11 @@ bool Tree::isBroken( void ) const
     return false;
 }
 
+bool Tree::isNegativeConstraint(void) const
+{
+    
+    return is_negative_constraint;
+}
 
 bool Tree::isRooted(void) const 
 {
@@ -1029,6 +1037,10 @@ TopologyNode& Tree::reverseParentChild(TopologyNode &n)
     return *ret;
 }
 
+void Tree::setNegativeConstraint(bool tf)
+{
+    is_negative_constraint = tf;
+}
 
 void Tree::setRooted(bool tf)
 {

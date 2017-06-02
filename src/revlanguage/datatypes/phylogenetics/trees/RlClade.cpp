@@ -118,6 +118,10 @@ void Clade::constructInternalObject( void )
         int n = static_cast<const Natural &>( missing->getRevObject() ).getValue();
         c->setNumberMissingTaxa( n );
     }
+    
+    // set negative clade constraint
+    bool neg = static_cast<const RlBoolean &>( is_negative_constraint->getRevObject() ).getValue();
+    c->setNegativeConstraint( neg );
 
     dag_node = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", c);
     dag_node->incrementReferenceCount();
@@ -153,6 +157,7 @@ const MemberRules& Clade::getParameterRules(void) const
         memberRules.push_back( new Ellipsis( "Taxa as clade objects.", Clade::getClassTypeSpec() ) );
         memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule("missing", Natural::getClassTypeSpec(), "Number of missing taxa in the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule("negative", RlBoolean::getClassTypeSpec(), "Is this a negative clade constraint?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         
         rules_set = true;
     }
@@ -214,6 +219,10 @@ void Clade::setConstParameter(const std::string& name, const RevPtr<const RevVar
     else if ( name == "missing")
     {
         missing = var;
+    }
+    else if ( name == "negative" )
+    {
+        is_negative_constraint = var;
     }
     else
     {

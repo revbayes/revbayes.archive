@@ -209,13 +209,27 @@ bool TopologyConstrainedTreeDistribution::matchesBackbone( void )
     // ensure that each backbone constraint is found in the corresponding active_backbone_clades
     for (size_t i = 0; i < num_backbones; i++)
     {
+        bool is_negative_constraint = false;
+        if (backbone_topology != NULL) {
+            is_negative_constraint = backbone_topology->getValue().isNegativeConstraint();
+        }
+        else if (backbone_topologies != NULL) {
+            is_negative_constraint = ( backbone_topologies->getValue() )[i].isNegativeConstraint();
+        }
+        
         for (size_t j = 0; j < backbone_constraints[i].size(); j++)
         {
             std::vector<RbBitSet>::iterator it = std::find(active_backbone_clades[i].begin(), active_backbone_clades[i].end(), backbone_constraints[i][j] );
             
-            // the search fails if the backbone constraint is not found in the active_backbone_clades vector
-            if (it == active_backbone_clades[i].end())
+            // the search fails if the positive/negative backbone constraint is not satisfied
+            if (it == active_backbone_clades[i].end() && !is_negative_constraint )
             {
+                // match fails if positive constraint is not found
+                return false;
+            }
+            else if (it != active_backbone_clades[i].end() && is_negative_constraint )
+            {
+                // match fails if negative constraint is found
                 return false;
             }
         }
@@ -236,8 +250,15 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
     for(size_t i = 0; i < monophyly_constraints.size(); i++)
     {
         std::vector<RbBitSet>::iterator it = std::find(active_clades.begin(), active_clades.end(), monophyly_constraints[i].getBitRepresentation() );
-        if(it == active_clades.end())
+        
+        if (it == active_clades.end() && !monophyly_constraints[i].isNegativeConstraint() )
         {
+            // match fails if positive constraint is not found
+            return false;
+        }
+        else if (it != active_clades.end() && monophyly_constraints[i].isNegativeConstraint() )
+        {
+            // match fails if negative constraint is found
             return false;
         }
     }
@@ -503,6 +524,10 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
     int i = -1;
     for(std::set<Clade>::iterator it = sorted_clades.begin(); it != sorted_clades.end(); it++)
     {
+        // ignore negative clade constraints during simulation
+        if (it->isNegativeConstraint())
+            continue;
+        
         i++;
         const Clade &c = *it;
         std::vector<Taxon> taxa = c.getTaxa();
@@ -512,6 +537,10 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
         std::set<Clade>::reverse_iterator jt(it);
         for(; jt != sorted_clades.rend(); jt++)
         {
+            // ignore negative clade constraints during simulation
+            if (jt->isNegativeConstraint())
+                continue;
+            
             j--;
             const Clade &c_nested = *jt;
             const std::vector<Taxon> &taxa_nested = c_nested.getTaxa();

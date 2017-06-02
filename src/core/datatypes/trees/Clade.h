@@ -59,11 +59,13 @@ namespace RevBayesCore {
         const std::vector<Taxon>&                   getTaxa(void) const;                                        //!< Get the taxon names.
         const Taxon&                                getTaxon(size_t i) const;                                   //!< Get a single taxon name.
         const std::string&                          getTaxonName(size_t i) const;                               //!< Get a single taxon name.
+        bool                                        isNegativeConstraint(void) const;                           //!< Get negative constraint flag.
         void                                        resetTaxonBitset(const std::map<std::string, size_t> map);
         void                                        setAge(double a);                                           //!< Set the age of the clade.
         void                                        setMrca(const std::vector<Taxon>&);                         //!< Set the mrca taxon, if applicable.
         void                                        setNumberMissingTaxa(int n);                                //!< Set the number of missing taxa in this clade.
         void                                        setTaxonAge(size_t i, double age);                          //!< Set a single taxon's age.
+        void                                        setNegativeConstraint(bool);                                //!< Set clade to be a negative constraint
         size_t                                      size(void) const;                                           //!< Get the number of taxa.
         std::string                                 toString(void) const;                                       //!< Convert this value into a string.
         
@@ -77,6 +79,7 @@ namespace RevBayesCore {
         int                                         num_missing;
         std::vector<Taxon>                          mrca;
         std::vector<Taxon>                          taxa;
+        bool                                        is_negative_constraint;
         
     };
     
