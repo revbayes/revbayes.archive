@@ -206,6 +206,7 @@ void TopologyConstrainedTreeDistribution::fireTreeChangeEvent(const TopologyNode
 bool TopologyConstrainedTreeDistribution::matchesBackbone( void )
 {
 
+//    std::cout << base_distribution->getValue() << "\n";
     // ensure that each backbone constraint is found in the corresponding active_backbone_clades
     for (size_t i = 0; i < num_backbones; i++)
     {
@@ -217,6 +218,7 @@ bool TopologyConstrainedTreeDistribution::matchesBackbone( void )
             is_negative_constraint = ( backbone_topologies->getValue() )[i].isNegativeConstraint();
         }
         
+        std::vector<bool> negative_constraint_found( backbone_constraints[i].size(), false );
         for (size_t j = 0; j < backbone_constraints[i].size(); j++)
         {
             std::vector<RbBitSet>::iterator it = std::find(active_backbone_clades[i].begin(), active_backbone_clades[i].end(), backbone_constraints[i][j] );
@@ -230,8 +232,18 @@ bool TopologyConstrainedTreeDistribution::matchesBackbone( void )
             else if (it != active_backbone_clades[i].end() && is_negative_constraint )
             {
                 // match fails if negative constraint is found
-                return false;
+                negative_constraint_found[j] = true;
             }
+        }
+        
+        bool negative_constraint_failure = true;
+        for (size_t j = 0; j < negative_constraint_found.size(); j++) {
+            if (negative_constraint_found[j] == false)
+                negative_constraint_failure = false;
+        }
+        if (negative_constraint_failure)
+        {
+            return false;
         }
     }
     
