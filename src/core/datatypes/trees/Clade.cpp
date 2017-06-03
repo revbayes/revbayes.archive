@@ -18,7 +18,8 @@ Clade::Clade( void ) :
     age( 0.0 ),
     num_missing( 0 ),
     taxa(),
-    is_negative_constraint(false)
+    is_negative_constraint(false),
+    is_optional_match(false)
 {
     
 }
@@ -32,7 +33,8 @@ Clade::Clade( const Taxon &t, const RbBitSet &b ) :
     bitset( b ),
     num_missing( b.size() > 1 ? b.size() - 1 : 0 ),
     taxa(),
-    is_negative_constraint(false)
+    is_negative_constraint(false),
+    is_optional_match(false)
 {
     
     taxa.push_back( t );
@@ -50,7 +52,8 @@ Clade::Clade(const std::vector<Taxon> &n, const RbBitSet &b) :
     bitset( b ),
     num_missing( b.size() > n.size() ? b.size() - n.size() : 0 ),
     taxa( n ),
-    is_negative_constraint(false)
+    is_negative_constraint(false),
+    is_optional_match(false)
 {
     
     // for identifiability we always keep the taxon names sorted
@@ -264,6 +267,18 @@ int Clade::getNumberMissingTaxa( void ) const
     return num_missing;
 }
 
+
+/**
+ * Get the vector of optional clade constraints.
+ *
+ * \return       The optional clade constraints
+ */
+
+std::vector<Clade> Clade::getOptionalConstraints(void) const
+{
+    return optional_constraints;
+}
+
 /**
  * Get number of missing taxa.
  *
@@ -330,6 +345,17 @@ const std::string& Clade::getTaxonName(size_t i) const
 bool Clade::isNegativeConstraint(void) const
 {
     return is_negative_constraint;
+}
+
+
+/**
+ * Is this clade a negative clade constraint (used with e.g. dnConstrainedTopology).
+ *
+ * \return       The true/false value of whether the clade is a negative constraint.
+ */
+bool Clade::isOptionalMatch(void) const
+{
+    return is_optional_match;
 }
 
 
@@ -428,7 +454,7 @@ void Clade::setTaxonAge(size_t i, double age)
 }
 
 /**
- * Set flag for negative clade constraint,.
+ * Set flag for negative clade constraint.
  *
  * \param[in]    tf   Flag indicating if clade is a negative constraint.
  *
@@ -437,6 +463,31 @@ void Clade::setNegativeConstraint(bool tf)
 {
     is_negative_constraint = tf;
 }
+
+/**
+ * Set flag for negative clade constraint.
+ *
+ * \param[in]    tf   Flag indicating if clade is a negative constraint.
+ *
+ */
+void Clade::setOptionalMatch(bool tf)
+{
+    is_optional_match = tf;
+}
+
+
+
+/**
+ * Set optional clade constraints, e.g. dnConstrainedTopology must satisfy one of any clades in the set of clades
+ *
+ * \param[in]   c   Vector of optional clade constraints
+ *
+ */
+void Clade::setOptionalConstraints(std::vector<Clade> c)
+{
+    optional_constraints = c;
+}
+
 
 /**
  * Get the number of taxa contained in this clade.

@@ -68,6 +68,10 @@ void Clade::constructInternalObject( void )
         }
     }
     
+    // get clade constraint flags
+    bool match = static_cast<const RlBoolean &>( optional_match->getRevObject() ).getValue();
+    bool neg = static_cast<const RlBoolean &>( is_negative_constraint->getRevObject() ).getValue();
+    
     // now allocate a new Clade
     std::vector<RevBayesCore::Taxon> n;
     for (std::vector<RevPtr<const RevVariable> >::iterator it = names.begin(); it != names.end(); ++it) 
@@ -90,16 +94,22 @@ void Clade::constructInternalObject( void )
     }
     
     // now allocate a new Clade
+    std::vector<RevBayesCore::Clade> optional_constraints;
     for (std::vector<RevPtr<const RevVariable> >::iterator it = clades.begin(); it != clades.end(); ++it)
     {
+        
         const RevBayesCore::Clade &c = static_cast<const Clade &>( (*it)->getRevObject() ).getValue();
+        
+        if (match) {
+            optional_constraints.push_back(c);
+        }
+        
         const std::vector<RevBayesCore::Taxon> &taxa = c.getTaxa();
         for(size_t i=0; i<taxa.size(); ++i)
         {
             const RevBayesCore::Taxon &t = taxa[i];
             n.push_back( t );
         }
-        
     }
     
     
@@ -119,9 +129,19 @@ void Clade::constructInternalObject( void )
         c->setNumberMissingTaxa( n );
     }
     
+    // set optional clade constraints if provided
+    if (match && optional_constraints.size() > 0)
+    {
+        c->setOptionalConstraints( optional_constraints );
+    }
+    
+    
+    // set optional match clade constraint
+    c->setOptionalMatch( match );
+
     // set negative clade constraint
-    bool neg = static_cast<const RlBoolean &>( is_negative_constraint->getRevObject() ).getValue();
     c->setNegativeConstraint( neg );
+    
 
     dag_node = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", c);
     dag_node->incrementReferenceCount();
@@ -158,6 +178,9 @@ const MemberRules& Clade::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule("missing", Natural::getClassTypeSpec(), "Number of missing taxa in the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule("negative", RlBoolean::getClassTypeSpec(), "Is this a negative clade constraint?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        memberRules.push_back( new ArgumentRule("optional_match", RlBoolean::getClassTypeSpec(), "Clade constraint satisfied when any Clade argument matched", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+//        memberRules.push_back( new ArgumentRule("optional_constraints", ModelVector<Clade>::getClassTypeSpec(), "Optional clade constraints, i.e. this clade constraint or any optional clade constraint must be satisifed (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        
         
         rules_set = true;
     }
@@ -224,6 +247,14 @@ void Clade::setConstParameter(const std::string& name, const RevPtr<const RevVar
     {
         is_negative_constraint = var;
     }
+    else if ( name == "optional_match" )
+    {
+        optional_match = var;
+    }
+//    else if ( name == "optional_constraints" )
+//    {
+//        optional_constraints = var;
+//    }
     else
     {
         RevObject::setConstParameter(name, var);

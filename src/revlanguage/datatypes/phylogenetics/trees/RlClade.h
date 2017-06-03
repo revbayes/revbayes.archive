@@ -55,6 +55,8 @@ namespace RevLanguage {
         RevPtr<const RevVariable>               age;
         RevPtr<const RevVariable>               missing;
         RevPtr<const RevVariable>               is_negative_constraint;
+        RevPtr<const RevVariable>               optional_match;
+//        RevPtr<const RevVariable>               optional_constraints;
 
     };
     

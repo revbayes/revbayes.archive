@@ -150,18 +150,39 @@ void TopologyConstrainedTreeDistribution::initializeBitSets(void)
     // fill the monophyly constraints bitsets
     for (size_t i = 0; i < monophyly_constraints.size(); i++)
     {
-        RbBitSet b( value->getNumberOfTips() );
-        for (size_t j = 0; j < monophyly_constraints[i].size(); j++)
-        {
-            const std::map<std::string, size_t> &taxon_map = value->getTaxonBitSetMap();
-            const std::string &name = monophyly_constraints[i].getTaxonName(j);
-            std::map<std::string, size_t>::const_iterator it = taxon_map.find( name );
-            size_t k = it->second;
+        // clade constraint has only one match
+        if (monophyly_constraints[i].isOptionalMatch() == false) {
+            RbBitSet b( value->getNumberOfTips() );
+            for (size_t j = 0; j < monophyly_constraints[i].size(); j++)
+            {
+                const std::map<std::string, size_t> &taxon_map = value->getTaxonBitSetMap();
+                const std::string &name = monophyly_constraints[i].getTaxonName(j);
+                std::map<std::string, size_t>::const_iterator it = taxon_map.find( name );
+                size_t k = it->second;
 
-            b.set(k);
+                b.set(k);
+            }
+            monophyly_constraints[i].setBitRepresentation( b );
         }
-
-        monophyly_constraints[i].setBitRepresentation( b );
+        // clade constraint allows optional matches
+        else {
+            std::vector<Clade> optional_constraints = monophyly_constraints[i].getOptionalConstraints();
+            for (size_t j = 0; j < optional_constraints.size(); j++) {
+                RbBitSet b( value->getNumberOfTips() );
+                for (size_t k = 0; k < optional_constraints[j].size(); k++)
+                {
+                    const std::map<std::string, size_t> &taxon_map = value->getTaxonBitSetMap();
+                    const std::string &name = optional_constraints[j].getTaxonName(k);
+                    std::map<std::string, size_t>::const_iterator it = taxon_map.find( name );
+                    size_t s = it->second;
+                    
+                    b.set(s);
+                }
+                optional_constraints[j].setBitRepresentation( b );
+            }
+            monophyly_constraints[i].setOptionalConstraints( optional_constraints );
+        }
+        
     }
 
     // reset the backbone constraints and mask
@@ -236,6 +257,7 @@ bool TopologyConstrainedTreeDistribution::matchesBackbone( void )
             }
         }
         
+        // match fails if all negative backbone clades are found
         bool negative_constraint_failure = true;
         for (size_t j = 0; j < negative_constraint_found.size(); j++) {
             if (negative_constraint_found[j] == false)
@@ -261,22 +283,65 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
 {
     for(size_t i = 0; i < monophyly_constraints.size(); i++)
     {
-        std::vector<RbBitSet>::iterator it = std::find(active_clades.begin(), active_clades.end(), monophyly_constraints[i].getBitRepresentation() );
         
-        if (it == active_clades.end() && !monophyly_constraints[i].isNegativeConstraint() )
+        bool found_positive = false;
+        bool found_negative = false;
+        
+        std::vector<Clade> constraints;
+        if (monophyly_constraints[i].isOptionalMatch())
         {
-            // match fails if positive constraint is not found
-            return false;
+            constraints = monophyly_constraints[i].getOptionalConstraints();
         }
-        else if (it != active_clades.end() && monophyly_constraints[i].isNegativeConstraint() )
+        else
         {
-            // match fails if negative constraint is found
+            constraints.push_back(monophyly_constraints[i]);
+        }
+        
+        for (size_t j = 0; j < constraints.size(); j++) {
+            
+            std::vector<RbBitSet>::iterator it = std::find(active_clades.begin(), active_clades.end(), constraints[j].getBitRepresentation() );
+            
+            if (it != active_clades.end() && !constraints[j].isNegativeConstraint() )
+            {
+                // pass if any optional positive constraint is satisfied
+                found_positive = true;
+            }
+            else if (it != active_clades.end() && constraints[j].isNegativeConstraint() )
+            {
+                // fail if any optional negative constraint is satisfied
+                found_negative = true;
+            }
+        }
+        
+        // match fails if no optional positive or negative constraints satisfied
+        if (!found_positive || found_negative) {
             return false;
         }
     }
-
+    
     return true;
 }
+
+//    bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
+//    {
+//        for(size_t i = 0; i < monophyly_constraints.size(); i++)
+//        {
+//            std::vector<RbBitSet>::iterator it = std::find(active_clades.begin(), active_clades.end(), monophyly_constraints[i].getBitRepresentation() );
+//
+//            if (it == active_clades.end() && !monophyly_constraints[i].isNegativeConstraint() )
+//            {
+//                // match fails if positive constraint is not found
+//                return false;
+//            }
+//            else if (it != active_clades.end() && monophyly_constraints[i].isNegativeConstraint() )
+//            {
+//                // match fails if negative constraint is found
+//                return false;
+//            }
+//        }
+//
+//        return true;
+//    }
 
 
 
@@ -523,7 +588,16 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
         
         if ( monophyly_constraints[i].size() > 1 && monophyly_constraints[i].size() < num_taxa )
         {
-            sorted_clades.insert( monophyly_constraints[i] );
+            if (monophyly_constraints[i].isOptionalMatch())
+            {
+                std::vector<Clade> optional_constraints = monophyly_constraints[i].getOptionalConstraints();
+                size_t idx = (size_t)( GLOBAL_RNG->uniform01() * optional_constraints.size() );
+                sorted_clades.insert( optional_constraints[idx] );
+            }
+            else
+            {
+                sorted_clades.insert( monophyly_constraints[i] );
+            }
         }
     }
     
