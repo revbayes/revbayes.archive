@@ -517,9 +517,6 @@ void TopologyConstrainedTreeDistribution::setBackbone(const TypedDagNode<Tree> *
         }
         
     }
-
-   
-    
 }
 
 /**
@@ -586,6 +583,27 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
             }
         }
         
+        // set ages for optional constraints
+        std::vector<Clade> optional_constraints = monophyly_constraints[i].getOptionalConstraints();
+        for (size_t k = 0; k < optional_constraints.size(); k++)
+        {
+            for (size_t opt_taxon_idx = 0; opt_taxon_idx < optional_constraints[k].size(); opt_taxon_idx++)
+            {
+                for (size_t full_taxon_idx = 0; full_taxon_idx < num_taxa; full_taxon_idx++)
+                {
+                    if ( taxa[full_taxon_idx].getName() == optional_constraints[k].getTaxonName(opt_taxon_idx) )
+                    {
+                        
+                        optional_constraints[k].setTaxonAge(opt_taxon_idx, taxa[full_taxon_idx].getAge());
+                        break;
+                    }
+                }
+            }
+            
+        }
+        monophyly_constraints[i].setOptionalConstraints( optional_constraints );
+        
+        // populate sorted clades vector
         if ( monophyly_constraints[i].size() > 1 && monophyly_constraints[i].size() < num_taxa )
         {
             if (monophyly_constraints[i].isOptionalMatch())
@@ -629,16 +647,16 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
             
             j--;
             const Clade &c_nested = *jt;
-            const std::vector<Taxon> &taxa_nested = c_nested.getTaxa();
+            std::vector<Taxon> taxa_nested = c_nested.getTaxa();
             
             bool found_all = true;
             bool found_some = false;
             for (size_t k = 0; k < taxa_nested.size(); ++k)
             {
-                std::vector<Taxon>::iterator it = std::find(taxa.begin(), taxa.end(), taxa_nested[k]);
-                if ( it != taxa.end() )
+                std::vector<Taxon>::iterator kt = std::find(taxa.begin(), taxa.end(), taxa_nested[k]);
+                if ( kt != taxa.end() )
                 {
-                    taxa.erase( it );
+                    taxa.erase( kt );
                     found_some = true;
                 }
                 else
