@@ -284,9 +284,6 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
     for(size_t i = 0; i < monophyly_constraints.size(); i++)
     {
         
-        bool found_positive = false;
-        bool found_negative = false;
-        
         std::vector<Clade> constraints;
         if (monophyly_constraints[i].isOptionalMatch())
         {
@@ -297,26 +294,34 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
             constraints.push_back(monophyly_constraints[i]);
         }
         
+        std::vector<bool> constraint_satisfied( constraints.size(), false );
         for (size_t j = 0; j < constraints.size(); j++) {
             
             std::vector<RbBitSet>::iterator it = std::find(active_clades.begin(), active_clades.end(), constraints[j].getBitRepresentation() );
             
             if (it != active_clades.end() && !constraints[j].isNegativeConstraint() )
             {
-                // pass if any optional positive constraint is satisfied
-                found_positive = true;
+                constraint_satisfied[j] = true;
             }
-            else if (it != active_clades.end() && constraints[j].isNegativeConstraint() )
+            else if (it == active_clades.end() && constraints[j].isNegativeConstraint() )
             {
-                // fail if any optional negative constraint is satisfied
-                found_negative = true;
+                constraint_satisfied[j] = true;
             }
         }
         
         // match fails if no optional positive or negative constraints satisfied
-        if (!found_positive || found_negative) {
-            return false;
+        bool any_satisfied = false;
+        for (size_t j = 0; j < constraint_satisfied.size(); j++)
+        {
+            if (constraint_satisfied[j])
+            {
+                any_satisfied = true;
+                break;
+            }
         }
+        if (!any_satisfied)
+            return false;
+        
     }
     
     return true;
