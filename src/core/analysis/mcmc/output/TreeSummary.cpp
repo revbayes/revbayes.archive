@@ -3228,7 +3228,10 @@ void TreeSummary::summarizeCharacterMaps(Tree input_tree, std::vector<AncestralS
     out << "start_state" << separator;
     out << "end_state" << separator;
     out << "transition_time" << separator;
-    out << "transition_type" << std::endl; 
+    out << "transition_type" << separator; 
+    out << "parent_index" << separator; 
+    out << "child1_index" << separator; 
+    out << "child2_index" << std::endl; 
 
     // get the iteration trace
     AncestralStateTrace iteration_trace;
@@ -3254,6 +3257,7 @@ void TreeSummary::summarizeCharacterMaps(Tree input_tree, std::vector<AncestralS
         size_t sample_clade_index = i;
         trace_found = false;
         AncestralStateTrace character_map_trace;
+        std::vector<std::string> ancestralstate_vector;
         
         // loop through all the stochastic character map samples
         for (size_t j = burnin; j < num_sampled_states; ++j)
@@ -3295,18 +3299,18 @@ void TreeSummary::summarizeCharacterMaps(Tree input_tree, std::vector<AncestralS
                         if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sample_clade_index + 1))
                         {
                             character_map_trace = ancestralstate_traces[k];
+                            ancestralstate_vector = character_map_trace.getValues(); 
                             trace_found = true;
                             break;
                         }
                     }
                 }
                 
-                // get the sampled character history for this node for this iteration
-                const std::vector<std::string>& ancestralstate_vector = character_map_trace.getValues();
-                std::string character_history = ancestralstate_vector[j];
-
                 // get the iteration
                 std::string iteration = iteration_vector[j];
+                
+                // get the sampled character history for this node for this iteration
+                std::string character_history = ancestralstate_vector[j];
 
                 // parse sampled SIMMAP string
                 std::vector< std::pair<size_t, double> > this_branch_map = parseSIMMAPForNode(character_history);
@@ -3327,7 +3331,70 @@ void TreeSummary::summarizeCharacterMaps(Tree input_tree, std::vector<AncestralS
                     throw RbException("There were no sampled character histories for node " + StringUtilities::toString(sample_clade_index + 1) + " in the summary tree.");
                 }
                 
-                // write output for each transition along the branch in forward time (towards tips)
+                // write output if there was no change along the branch
+                if (this_branch_map.size() == 1)
+                {
+                    // write node index
+                    out << iteration << separator; 
+                    
+                    // write node index
+                    if (condition_on_tree && use_tree_trace)
+                    {
+                        out << summary_nodes[i]->getIndex() + 1 << separator;
+                    }
+                    else
+                    {
+                        out << sample_clade_index + 1 << separator; 
+                    }
+
+                    // write branch start/end times
+                    out << start_time << separator;
+                    out << end_time << separator;
+                    
+                    // write start state
+                    out << current_state << separator;
+                    
+                    // write end state
+                    out << end_state << separator;
+
+                    // write transition time
+                    out << "NA" << separator;
+
+                    out << "no_change" << separator; 
+
+                    // write parent/child indices
+                    std::string parent_index = "NA";
+                    std::string child1_index = "NA";
+                    std::string child2_index = "NA";
+                    if (condition_on_tree && use_tree_trace)
+                    {
+                        if (summary_nodes[i]->isRoot() == false)
+                        {
+                            parent_index = StringUtilities::toString( summary_nodes[i]->getParent().getIndex() + 1 );
+                        }
+                        if (summary_nodes[i]->isTip() == false)
+                        {
+                            child1_index = StringUtilities::toString( summary_nodes[i]->getChild( 0 ).getIndex() + 1 );
+                            child2_index = StringUtilities::toString( summary_nodes[i]->getChild( 1 ).getIndex() + 1 );
+                        }
+                    }
+                    else
+                    {
+                        if (sample_tree.getNode( sample_clade_index ).isRoot() == false)
+                        {
+                            parent_index = StringUtilities::toString( sample_tree.getNode( sample_clade_index ).getParent().getIndex() + 1 ); 
+                        }
+                        if (sample_tree.getNode( sample_clade_index ).isTip() == false)
+                        {
+                            child1_index = StringUtilities::toString( sample_tree.getNode( sample_clade_index ).getChild( 0 ).getIndex() + 1 );
+                            child2_index = StringUtilities::toString( sample_tree.getNode( sample_clade_index ).getChild( 1 ).getIndex() + 1 );
+                        }
+                    }
+                    out << parent_index << separator;
+                    out << child1_index << separator << child2_index << std::endl;
+                }   
+                
+                // write output for each anagenetic transition along the branch in forward time (towards tips)
                 for (size_t k = 1; k < this_branch_map.size(); k++)
                 {
                     if (this_branch_map[k].first != current_state)
@@ -3358,8 +3425,38 @@ void TreeSummary::summarizeCharacterMaps(Tree input_tree, std::vector<AncestralS
                         // write transition time
                         out << current_time - this_branch_map[k - 1].second << separator;
 
-                        out << "anagenetic" << std::endl; 
-                        
+                        out << "anagenetic" << separator; 
+
+                        // write parent/child indices
+                        std::string parent_index = "NA";
+                        std::string child1_index = "NA";
+                        std::string child2_index = "NA";
+                        if (condition_on_tree && use_tree_trace)
+                        {
+                            if (summary_nodes[i]->isRoot() == false)
+                            {
+                                parent_index = StringUtilities::toString( summary_nodes[i]->getParent().getIndex() + 1 );
+                            }
+                            if (summary_nodes[i]->isTip() == false)
+                            {
+                                child1_index = StringUtilities::toString( summary_nodes[i]->getChild( 0 ).getIndex() + 1 );
+                                child2_index = StringUtilities::toString( summary_nodes[i]->getChild( 1 ).getIndex() + 1 );
+                            }
+                        }
+                        else
+                        {
+                            if (sample_tree.getNode( sample_clade_index ).isRoot() == false)
+                            {
+                                parent_index = StringUtilities::toString( sample_tree.getNode( sample_clade_index ).getParent().getIndex() + 1 ); 
+                            }
+                            if (sample_tree.getNode( sample_clade_index ).isTip() == false)
+                            {
+                                child1_index = StringUtilities::toString( sample_tree.getNode( sample_clade_index ).getChild( 0 ).getIndex() + 1 );
+                                child2_index = StringUtilities::toString( sample_tree.getNode( sample_clade_index ).getChild( 1 ).getIndex() + 1 );
+                            }
+                        }
+                        out << parent_index << separator;
+                        out << child1_index << separator << child2_index << std::endl;
                     }
                     current_state = this_branch_map[k].first;
                     current_time = current_time - this_branch_map[k - 1].second;
@@ -3419,7 +3516,38 @@ void TreeSummary::summarizeCharacterMaps(Tree input_tree, std::vector<AncestralS
                         // write transition time
                         out << end_time << separator;
 
-                        out << "cladogenetic" << std::endl; 
+                        out << "cladogenetic" << separator; 
+                        
+                        // write parent/child indices
+                        std::string parent_index = "NA";
+                        std::string child1_index = "NA";
+                        std::string child2_index = "NA";
+                        if (condition_on_tree && use_tree_trace)
+                        {
+                            if (summary_nodes[i]->isRoot() == false)
+                            {
+                                parent_index = StringUtilities::toString( summary_nodes[i]->getParent().getIndex() + 1 );
+                            }
+                            if (summary_nodes[i]->isTip() == false)
+                            {
+                                child1_index = StringUtilities::toString( summary_nodes[i]->getChild( 0 ).getIndex() + 1 );
+                                child2_index = StringUtilities::toString( summary_nodes[i]->getChild( 1 ).getIndex() + 1 );
+                            }
+                        }
+                        else
+                        {
+                            if (sample_tree.getNode( sample_clade_index ).isRoot() == false)
+                            {
+                                parent_index = StringUtilities::toString( sample_tree.getNode( sample_clade_index ).getParent().getIndex() + 1 ); 
+                            }
+                            if (sample_tree.getNode( sample_clade_index ).isTip() == false)
+                            {
+                                child1_index = StringUtilities::toString( sample_tree.getNode( sample_clade_index ).getChild( 0 ).getIndex() + 1 );
+                                child2_index = StringUtilities::toString( sample_tree.getNode( sample_clade_index ).getChild( 1 ).getIndex() + 1 );
+                            }
+                        }
+                        out << parent_index << separator;
+                        out << child1_index << separator << child2_index << std::endl;
                     }
                 }
                         

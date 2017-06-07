@@ -2,6 +2,7 @@
 #include "MatrixReal.h"
 #include "RandomNumberGenerator.h"
 #include "RandomNumberFactory.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "DistributionPoisson.h"
@@ -276,8 +277,11 @@ MatrixReal AbstractRateMatrix::getRateMatrix() const
 
 MatrixReal AbstractRateMatrix::getStochasticMatrix(size_t n)
 {
-    while (stochastic_matrix.size() < (n-1)) {
-        computeStochasticMatrix(stochastic_matrix.size());
+    if (n >= stochastic_matrix.size())
+    {
+        std::stringstream ss;
+        ss << "Cannot access stochastic matrix R^" << n;
+        throw RbException(ss.str());
     }
     return stochastic_matrix[n];
 }
@@ -298,7 +302,23 @@ void AbstractRateMatrix::computeStochasticMatrix(size_t n)
     }
     else {
         // stochastic matrix, R^n = R^(n-1) * R^1
-        r = stochastic_matrix[n-1] * stochastic_matrix[1];
+        MatrixReal r_n_minus_1 = stochastic_matrix[n-1];
+        
+        // helps manage machine precision error/underflow for large R^n
+        double smallest_non_zero = RbConstants::Double::inf;
+        for (size_t i = 0; i < this->num_states; i++)
+        {
+            if (r_n_minus_1[i][i] < smallest_non_zero && r_n_minus_1[i][i] > 0.0)
+            {
+                smallest_non_zero = r_n_minus_1[i][i];
+            }
+        }
+        r_n_minus_1 *= (1.0 / smallest_non_zero);
+        
+//        r = stochastic_matrix[n-1] * stochastic_matrix[1];
+        r = r_n_minus_1 * stochastic_matrix[1];
+        r *= smallest_non_zero;
+        
     }
     stochastic_matrix.push_back(r);
 }
@@ -323,7 +343,7 @@ void AbstractRateMatrix::rescaleToAverageRate(double r)
 }
 
 
-void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times)
+bool AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times)
 {
     // start and end states
     size_t start_state = transition_states[0];
@@ -332,7 +352,8 @@ void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
     
     // transition probabilities
     TransitionProbabilityMatrix P(num_states);
-    calculateTransitionProbabilities(startAge, endAge, rate, P);
+//    calculateTransitionProbabilities(startAge, endAge, rate, P);
+    exponentiateMatrixByScalingAndSquaring(branch_length * rate, P);
     stochastic_matrix = std::vector<MatrixReal>();
     
     // dominating rate
@@ -342,8 +363,12 @@ void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
     size_t num_events = 0;
     double lambda = branch_length * rate * dominating_rate;
     double prob_transition_ctmc = P[start_state][end_state];
-    double u = GLOBAL_RNG->uniform01();
-    double g = prob_transition_ctmc * u;
+    
+//    if (prob_transition_ctmc < 1e-20) {
+//        std::cout << P << "\n";
+//    }
+    double u = GLOBAL_RNG->uniform01() * (1.0 - 1e-3);
+    double g = u * prob_transition_ctmc;
     double prob_num_events_sum = 0.0;
     double prob_total_sum = 0.0;
     while (g > 0.0) {
@@ -356,20 +381,55 @@ void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
         computeStochasticMatrix(num_events);
         
         // probability of start_state -> end_state after num_events
-        double prob_transition_dtmc = stochastic_matrix[num_events][start_state][end_state];
+        const MatrixReal& R_n = getStochasticMatrix(num_events);
+        double prob_transition_dtmc = R_n[start_state][end_state];
         
         // update sampling prob
         double prob_total = prob_num_events * prob_transition_dtmc;
         
         prob_total_sum += prob_total;
+        
+        /*
+        // Debugging statements to be removed
+        std::cout << "num_events " << num_events << "\n";
+        std::cout << start_state << " -> " << end_state << "\n";
+        std::cout << "P(n) = " << prob_num_events << "\n";
+        std::cout << "P(b|a,n) = " << prob_transition_dtmc << "\n";
+        std::cout << "P(b,n|a) = " << prob_total << "\n";
+        std::cout << "sum_n P(b|a) = " << prob_total_sum << "\n";
+        std::cout << "P(b|a) = " << prob_transition_ctmc << "\n";
+        std::cout << "brlen " << branch_length << "\n";
+        std::cout << "rate " << rate << "\n";
+        std::cout << "dom_rate " << dominating_rate << "\n";
+        std::cout << "lambda " << lambda << "\n";
+        std::cout << "u " << u << "\n";
+        std::cout << "log P(b|a) = " << log(prob_transition_ctmc) << "\n";
+        std::cout << "P\n";
+        std::cout << P << "\n";
+        
+        if (num_events > 0) {
+            std::cout << "R^1\n";
+            std::cout << getStochasticMatrix(1) << "\n";
+        }
+        std::cout << "R^" << num_events << "\n";
+        std::cout << R_n << "\n";
+        
+        std::cout << "Q\n";
+        std::cout << *the_rate_matrix << "\n";
+        std::cout << "\n";
+        */
+        
         g -= prob_total;
         if (g <= 0.0)
         {
             break;
         }
-        
-        if (num_events > 20) {
-            throw RbException("AbstractRateMatrix::simulateStochasticMapping fails to converge when sampling num_events!");
+    
+        // make sure we simulate plenty of events
+        size_t max_events = 20 + 5 * lambda;
+        if (num_events > max_events) {
+            return false;
+            // throw RbException("AbstractRateMatrix::simulateStochasticMapping fails to converge when sampling num_events!");
         }
         
         num_events += 1;
@@ -382,12 +442,15 @@ void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
     {
         size_t prev_state = transition_states[n];
         size_t num_events_left = num_events - n - 1;
+        
+        const MatrixReal& R_1 = getStochasticMatrix(1);
+        const MatrixReal& R_n = getStochasticMatrix(num_events_left);
 
         // get the normalization constant for sampling
         double p_sum = 0.0;
         for (size_t j = 0; j < num_states; j++)
         {
-            p_sum += stochastic_matrix[1][prev_state][j] * stochastic_matrix[num_events_left][j][end_state];
+            p_sum += R_1[prev_state][j] * R_n[j][end_state];
         }
         
         // sample transition to next state
@@ -395,7 +458,7 @@ void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
         double u = GLOBAL_RNG->uniform01() * p_sum;
         while (u > 0) {
             
-            double p = stochastic_matrix[1][prev_state][next_state] * stochastic_matrix[num_events_left][next_state][end_state];
+            double p = R_1[prev_state][next_state] * R_n[next_state][end_state];
             u -= p;
             if (u <= 0) {
                 break;
@@ -441,11 +504,86 @@ void AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
     transition_times[transition_times.size()-1] = branch_length - sum_transition_times;
     
     // done!
-    return;
+    return true;
 }
 
 
 
+void AbstractRateMatrix::exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const {
+    
+    // Here we use the scaling and squaring method with a 4th order Taylor approximant as described in:
+    //
+    // Moler, C., & Van Loan, C. 2003. Nineteen dubious ways to compute the exponential of a
+    // matrix, twenty-five years later. SIAM review, 45(1), 3-49.
+    //
+    // I tested this implementation against the Eigen C++ package and a scaling parameter s = 6 had similar time
+    // efficiency and returned the same results with about 10^-9 accuracy. The scaling parameter could be
+    // increased for better accuracy.
+    // -- Will Freyman 11/27/16
+    size_t s = 8;
+    
+    // first scale the matrix
+    double scale = t / pow(2, s);
+    for ( size_t i = 0; i < num_states; i++ )
+    {
+        for ( size_t j = 0; j < num_states; j++ )
+        {
+            p[i][j] = (*the_rate_matrix)[i][j] * scale;
+        }
+    }
+    
+    // compute the 4th order Taylor approximant
+    
+    // calculate the scaled matrix raised to powers 2, 3 and 4
+    TransitionProbabilityMatrix p_2(num_states);
+    multiplyMatrices(p, p, p_2);
+    
+    TransitionProbabilityMatrix p_3(num_states);
+    multiplyMatrices(p, p_2, p_3);
+    
+    TransitionProbabilityMatrix p_4(num_states);
+    multiplyMatrices(p, p_3, p_4);
+    
+    // add k=0 (the identity matrix) and k=1 terms
+    for ( size_t i = 0; i < num_states; i++ )
+    {
+        p[i][i] += 1;
+    }
+    
+    // add the k=2, k=3, k=4 terms of the Taylor series
+    for ( size_t i = 0; i < num_states; i++ )
+    {
+        for ( size_t j = 0; j < num_states; j++ )
+        {
+            p[i][j] += ( ( p_2[i][j] / 2 ) + ( p_3[i][j] / 6 ) + ( p_4[i][j] / 24 ) );
+        }
+    }
+    
+    // now perform the repeated squaring
+    TransitionProbabilityMatrix r(num_states);
+    for (size_t i = 0; i < s; i++)
+    {
+        multiplyMatrices(p, p, r);
+        p = r;
+        
+    }
+}
+
+void AbstractRateMatrix::multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const {
+    
+    // could probably use boost::ublas here, for the moment we do it ourselves.
+    for ( size_t i = 0; i < num_states; i++ )
+    {
+        for ( size_t j = 0; j < num_states; j++ )
+        {
+            r[i][j] = 0;
+            for ( size_t k = 0; k < num_states; k++ )
+            {
+                r[i][j] += p[i][k] * q[k][j];
+            }
+        }
+    }
+}
 
 
 /** Set the diagonal of the rate matrix such that each row sums to zero */
