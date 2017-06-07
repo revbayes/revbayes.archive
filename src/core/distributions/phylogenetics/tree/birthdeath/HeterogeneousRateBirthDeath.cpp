@@ -458,7 +458,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
                 CharacterEvent* event = *it;
-                double end_time = event->getTime();
+                double end_time = event->getTime() - node.getAge();
                 double time_interval = (end_time - begin_time) / branch_length;
                 
                 // we need to set the current rate caterogy
@@ -495,7 +495,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
                 CharacterEvent* event = *it;
-                double end_time = event->getTime();
+                double end_time = event->getTime() - node.getAge();
                 double time_interval = (end_time - begin_time) / branch_length;
                 
                 // we need to set the current rate caterogy
