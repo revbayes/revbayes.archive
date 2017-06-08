@@ -14,7 +14,7 @@
 
 using namespace RevBayesCore;
 
-HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<double> *a, const TypedDagNode<int> *rs, const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *e, const TypedDagNode<double > *ev, const TypedDagNode< double > *r, const std::string &cdt, const std::vector<Taxon> &n) : AbstractCharacterHistoryBirthDeathProcess(),
+HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<double> *a, const TypedDagNode<int> *rs, const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *e, const TypedDagNode<double > *ev, const TypedDagNode< double > *r, const std::string &cdt, bool allow_same, const std::vector<Taxon> &n) : AbstractCharacterHistoryBirthDeathProcess(),
     root_age( a ),
     root_state( rs ),
     speciation( s ),
@@ -30,7 +30,8 @@ HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<dou
     nodeStates( std::vector<std::vector<state_type> >(2*n.size()-1, std::vector<state_type>(2,std::vector<double>(1+speciation->getValue().size(),0))) ),
     scalingFactors( std::vector<std::vector<double> >(2*n.size()-1, std::vector<double>(2,0.0) ) ),
     totalScaling( 0.0 ),
-    NUM_TIME_SLICES( 200.0 )
+    NUM_TIME_SLICES( 200.0 ),
+    allow_same_category( allow_same )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -225,7 +226,7 @@ double HeterogeneousRateBirthDeath::computeLnProbability( void )
     // compute the probability at the root
     lnProb = computeRootLikelihood();
     
-    if ( shift_same_category == true )
+    if ( shift_same_category == true && allow_same_category == false )
     {
         return RbConstants::Double::neginf;
     }
@@ -318,7 +319,6 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
             
             updateBranchProbabilitiesNumerically(initialState, beginAge, beginAge+time_interval, s, e, r, current_state);
             
-            bool allow_same_category = false;
             double rate_cat_prob = ( allow_same_category == true ? 1.0/num_rate_categories : 1.0 / (num_rate_categories-1.0) );
             initialState[num_rate_categories] = initialState[num_rate_categories]*event_rate->getValue() * rate_cat_prob;
             
@@ -728,7 +728,7 @@ void HeterogeneousRateBirthDeath::updateBranchProbabilitiesNumerically(std::vect
     //    double dt = 0.1;
     double dt = root_age->getValue() / NUM_TIME_SLICES;
     
-    OdeHeterogeneousRateBirthDeath ode = OdeHeterogeneousRateBirthDeath(lambda,mu,delta);
+    OdeHeterogeneousRateBirthDeath ode = OdeHeterogeneousRateBirthDeath(lambda,mu,delta,allow_same_category);
     ode.setCurrentRateCategory( current_rate_category );
 
 //    typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;

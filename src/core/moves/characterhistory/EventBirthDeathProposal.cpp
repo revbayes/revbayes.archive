@@ -17,7 +17,11 @@ using namespace RevBayesCore;
  */
 EventBirthDeathProposal::EventBirthDeathProposal( StochasticNode<Tree> *n) : Proposal(),
     variable( n ),
-    stored_value()
+    stored_value(),
+    accepted_birth( 0 ),
+    trie_birth( 0 ),
+    accepted_death( 0 ),
+    trie_death( 0 )
 {
     // tell the base class to add the node
     addNode( variable );
@@ -109,15 +113,17 @@ double EventBirthDeathProposal::doProposal( void )
 
 double EventBirthDeathProposal::doBirthProposal( void )
 {
+    ++trie_birth;
+    
     // set the flag that this was a birth proposal
     was_birth_proposal = true;
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
     CharacterHistory &history = distribution->getCharacterHistory();
     
-    size_t num_events_before = history.getNumberEvents();
-    size_t num_branches = history.getNumberBranches();
-    size_t num_states   = history.getNumberStates();
+    size_t num_events_before    = history.getNumberEvents();
+    size_t num_branches         = history.getNumberBranches();
+    size_t num_states           = history.getNumberStates();
     
     // randomly pick a branch
     size_t branch_index = size_t( std::floor(num_branches * rng->uniform01()) );
@@ -150,19 +156,22 @@ double EventBirthDeathProposal::doBirthProposal( void )
     double log_death_move_prob = log(0.5);
     double p_forward  = log_birth_move_prob - log(num_branches) - log(num_states) - log(branch_length);
     double p_backward = log_death_move_prob - log(num_events_before+1);
+    
     return p_backward - p_forward;
 }
 
 double EventBirthDeathProposal::doDeathProposal( void )
 {
+    ++trie_death;
+    
     // set the flag that this was a death proposal
     was_birth_proposal = false;
     
     CharacterHistory &history = distribution->getCharacterHistory();
     
-    size_t num_events_before = history.getNumberEvents();
-    size_t num_branches = history.getNumberBranches();
-    size_t num_states   = history.getNumberStates();
+    size_t num_events_before    = history.getNumberEvents();
+    size_t num_branches         = history.getNumberBranches();
+    size_t num_states           = history.getNumberStates();
     
     size_t branch_index = 0;
     CharacterEvent *event = history.pickRandomEvent( branch_index );
@@ -210,7 +219,7 @@ void EventBirthDeathProposal::prepareProposal( void )
 void EventBirthDeathProposal::printParameterSummary(std::ostream &o) const
 {
     
-//    o << "delta = " << delta;
+    o << "delta = " << (trie_birth - accepted_birth) << "/" << trie_birth << " <|> " << (trie_death - accepted_death) << "/" << trie_death;
     
 }
 
@@ -228,12 +237,14 @@ void EventBirthDeathProposal::undoProposal( void )
     CharacterHistory &history = distribution->getCharacterHistory();
     if ( was_birth_proposal == true )
     {
+        accepted_birth++;
         history.removeEvent( stored_value, stored_branch_index );
         delete stored_value;
         stored_value = NULL;
     }
     else
     {
+        accepted_death++;
         history.addEvent( stored_value, stored_branch_index );
     }
     

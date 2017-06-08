@@ -22,6 +22,7 @@ namespace RevBayesCore {
                                     const TypedDagNode<double> *ev,
                                     const TypedDagNode<double> *r,
                                     const std::string &cdt,
+                                    bool allow_same,
                                     const std::vector<Taxon> &n);                                                                                  //!< Constructor
         
         virtual                                            ~HeterogeneousRateBirthDeath(void);                          //!< Virtual destructor
@@ -86,8 +87,9 @@ namespace RevBayesCore {
 
         const double                                        NUM_TIME_SLICES;
 
+        bool                                                allow_same_category;
         bool                                                shift_same_category;
-
+        
     };
     
 }
