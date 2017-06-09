@@ -310,7 +310,8 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
 //            double time_interval = event_time - begin_time;
             
             // we need to set the current rate category
-            size_t current_state = event->getState();
+//            size_t current_state = event->getState();
+            size_t current_state = computeStateIndex( node.getIndex(), event_time );
             
             // check that we got a distinct new state
             if ( previous_state == current_state )
@@ -318,7 +319,7 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
                 shift_same_category = true;
             }
             
-            updateBranchProbabilitiesNumerically(ext_obs_probs, begin_time, event_time, s, e, r, current_state);
+            updateBranchProbabilitiesNumerically(ext_obs_probs, begin_time, event_time, s, e, r, previous_state);
             
             double rate_cat_prob = ( allow_same_category == true ? 1.0/num_rate_categories : 1.0 / (num_rate_categories-1.0) );
             ext_obs_probs[num_rate_categories] = ext_obs_probs[num_rate_categories]*event_rate->getValue() * rate_cat_prob;
@@ -326,12 +327,6 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
             
             begin_time = event_time;
             previous_state = current_state;
-        }
-        
-        // check that we got a distinct new state
-        if ( previous_state == state_index_rootwards && bh.getNumberEvents() > 0 )
-        {
-            shift_same_category = true;
         }
         
         updateBranchProbabilitiesNumerically(ext_obs_probs, begin_time, end_time, s, e, r, state_index_rootwards);
@@ -377,6 +372,55 @@ size_t HeterogeneousRateBirthDeath::computeStartIndex(size_t i) const
         return root_state->getValue()-1;
     }
     
+}
+
+
+
+
+size_t HeterogeneousRateBirthDeath::computeStateIndex(size_t i, double time) const
+{
+    
+    size_t node_index = i;
+    size_t event_index = 0;
+    bool found = false;
+    do
+    {
+        if ( value->getNode(node_index).isRoot() == true )
+        {
+            event_index = root_state->getValue()-1;
+            found = true;
+        }
+        else if ( branch_histories[node_index].getNumberEvents() > 0 )
+        {
+            
+            const BranchHistory &bh = branch_histories[ node_index ];
+            const std::multiset<CharacterEvent*, CharacterEventCompare> &h = bh.getHistory();
+            for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=h.begin(); it!=h.end(); ++it)
+            {
+                CharacterEvent* event = *it;
+                double event_time = event->getTime();
+                if ( event_time > time )
+                {
+                    found = true;
+                    event_index = event->getState();
+                    break;
+                }
+            }
+            
+            node_index = value->getNode(node_index).getParent().getIndex();
+            
+        }
+        else
+        {
+            node_index = value->getNode(node_index).getParent().getIndex();
+
+        }
+        
+        
+    } while ( found == false );
+    
+    
+    return event_index;
 }
 
 
