@@ -88,6 +88,9 @@ double EventTimeSlideProposal::doProposal( void )
     // we let the proposal fail if there is actually no event to slide
     failed = (num_events == 0);
     
+    size_t num_events_before = num_events;
+    
+    
     double ln_proposal_ratio = 0.0;
     if ( num_events > 0 )
     {
@@ -108,37 +111,35 @@ double EventTimeSlideProposal::doProposal( void )
         stored_branch_index = branch_index;
         
         // draw a new time which we slide
-        double t = RbStatistics::Normal::rv(0, delta, *rng);
+        double proposed_displacement = RbStatistics::Normal::rv(0, delta, *rng);
         
         double remaining_branch_length = 0.0;
-        double used_time = 0.0;
-        double branch_length = tree.getNode( branch_index ).getBranchLength();
+        double parent_age   = tree.getNode( branch_index ).getParent().getAge();
+        double node_age     = tree.getNode( branch_index ).getAge();
         double current_absolute_time = event->getTime();
-        if ( t > 0 )
+        if ( proposed_displacement > 0 )
         {
-            remaining_branch_length = branch_length - current_absolute_time;
-            used_time = current_absolute_time;
+            // we are sliding up the tree towards the root
+            remaining_branch_length = parent_age - current_absolute_time;
         }
         else
         {
-            remaining_branch_length = current_absolute_time;
-            used_time = branch_length - current_absolute_time;
+            // we are sliding down the tree towards the tips
+            remaining_branch_length = current_absolute_time - node_age;
         }
         
-        while ( fabs(t) > remaining_branch_length )
+        while ( fabs(proposed_displacement) > remaining_branch_length )
         {
-            // we need to remove the event from its branch
-            used_time = 0.0;
-            
-            if ( t > 0 )
+
+            if ( proposed_displacement > 0 )
             {
-                // we are sliding up the tree
-                t -= remaining_branch_length;
+                // we are sliding up the tree towards the root
+                proposed_displacement -= remaining_branch_length;
                 if ( tree.getNode(branch_index).getParent().isRoot() == true )
                 {
                     // we need to reflect
-                    t = -t;
-                    
+                    proposed_displacement = -proposed_displacement;
+
                     // flip a coin if we go left or right
                     size_t child_index = ( rng->uniform01() < 0.5 ? 0 : 1 );
                     // add to the proposal ratio
@@ -149,6 +150,10 @@ double EventTimeSlideProposal::doProposal( void )
                 else
                 {
                     branch_index = tree.getNode(branch_index).getParent().getIndex();
+                    
+                    // the reverse proposal probability
+                    ln_proposal_ratio -= RbConstants::LN2;
+
                 }
                 
                 // the new remaining branch length
@@ -157,11 +162,12 @@ double EventTimeSlideProposal::doProposal( void )
             }
             else
             {
-                t += remaining_branch_length;
+                proposed_displacement += remaining_branch_length;
                 if ( tree.getNode(branch_index).isTip() == true )
                 {
                     // we need to reflect
-                    t = -t;
+                    proposed_displacement = -proposed_displacement;
+
                 }
                 else
                 {
@@ -179,18 +185,20 @@ double EventTimeSlideProposal::doProposal( void )
             
         }
         
-        double new_branch_length = tree.getNode( branch_index ).getBranchLength();
         double new_absolute_time = 0.0;
-        if (t > 0)
+        if (proposed_displacement > 0)
         {
-            new_absolute_time = used_time + t;
+            // this move was sliding towards the root
+            new_absolute_time = tree.getNode( branch_index ).getParent().getAge() - remaining_branch_length + proposed_displacement;
         }
         else
         {
-            new_absolute_time = new_branch_length - used_time + t;
+            // this move was sliding towards the tip
+            new_absolute_time = tree.getNode( branch_index ).getAge() + remaining_branch_length + proposed_displacement;
         }
         
-        assert( new_absolute_time >= 0 && new_absolute_time <= new_branch_length );
+        assert( new_absolute_time >= tree.getNode( branch_index ).getAge()  );
+        assert( new_absolute_time <= tree.getNode( branch_index ).getParent().getAge()  );
         
         // set the time
         event->setTime(new_absolute_time);
@@ -205,7 +213,9 @@ double EventTimeSlideProposal::doProposal( void )
         return RbConstants::Double::neginf;
     }
     
-    
+    size_t num_events_after = history.getNumberEvents();
+    assert( num_events_before == num_events_after );
+
     return ln_proposal_ratio;
 }
 
@@ -247,12 +257,17 @@ void EventTimeSlideProposal::undoProposal( void )
     
     if ( failed == false )
     {
+        
         CharacterHistory &history = distribution->getCharacterHistory();
+        size_t num_events_before = history.getNumberEvents();
         history.removeEvent( stored_value, proposed_branch_index);
         
         stored_value->setTime( stored_time );
         
         history.addEvent( stored_value, stored_branch_index );
+        
+        size_t num_events_after = history.getNumberEvents();
+        assert( num_events_before == num_events_after );
         
     }
     

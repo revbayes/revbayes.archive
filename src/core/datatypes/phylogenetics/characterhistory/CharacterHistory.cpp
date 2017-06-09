@@ -62,10 +62,19 @@ const BranchHistory& CharacterHistory::operator[](size_t i) const
 void CharacterHistory::addEvent( CharacterEvent *e, size_t branch_index)
 {
     
+    assert( branch_index < histories.size() );
+    
     BranchHistory &bh = histories[ branch_index ];
     bh.addEvent( e );
     
     ++n_events;
+    
+    size_t counted_events = 0;
+    for ( size_t i=0; i<histories.size(); ++i )
+    {
+        counted_events += histories[ i ].getNumberEvents();
+    }
+    assert( counted_events == n_events );
 }
 
 
@@ -122,6 +131,8 @@ CharacterEvent* CharacterHistory::pickRandomEvent( size_t &branch_index )
     
     // randomly pick an index for the event
     size_t event_index = size_t( std::floor(n_events * rng->uniform01()) );
+    size_t event_index_proposed = event_index;
+    size_t counted_events = 0;
     for (size_t i=0; i<n_branches; ++i)
     {
         BranchHistory& bh = histories[i];
@@ -132,6 +143,7 @@ CharacterEvent* CharacterHistory::pickRandomEvent( size_t &branch_index )
         }
         else
         {
+            counted_events += bh.getNumberEvents();
             event_index -= bh.getNumberEvents();
         }
         
@@ -147,11 +159,24 @@ CharacterEvent* CharacterHistory::pickRandomEvent( size_t &branch_index )
  */
 void CharacterHistory::removeEvent( CharacterEvent *e, size_t branch_index)
 {
+    size_t counted_events_before = 0;
+    for ( size_t i=0; i<histories.size(); ++i )
+    {
+        counted_events_before += histories[ i ].getNumberEvents();
+    }
+    assert( counted_events_before == n_events );
     
     BranchHistory &bh = histories[ branch_index ];
     bh.removeEvent( e );
     
     --n_events;
+    
+    size_t counted_events = 0;
+    for ( size_t i=0; i<histories.size(); ++i )
+    {
+        counted_events += histories[ i ].getNumberEvents();
+    }
+    assert( counted_events == n_events );
 }
 
 
