@@ -81,7 +81,6 @@
 #include "Func_exists.h"
 #include "Func_getOption.h"
 #include "Func_getwd.h"
-#include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_ls.h"
 #include "Func_modelVector.h"
