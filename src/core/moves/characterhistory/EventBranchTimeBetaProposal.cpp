@@ -125,7 +125,7 @@ double EventBranchTimeBetaProposal::doProposal( void )
             double forward = RbStatistics::Beta::lnPdf(a, b, new_time);
             double new_a = delta * new_time + offset;
             double new_b = delta * (1.0-new_time) + offset;
-            double backward = RbStatistics::Beta::lnPdf(new_a, new_b, (stored_time-my_age) / branch_length);
+            double backward = RbStatistics::Beta::lnPdf(new_a, new_b, m);
         
             // set the time
             event->setTime( new_time * branch_length + my_age );

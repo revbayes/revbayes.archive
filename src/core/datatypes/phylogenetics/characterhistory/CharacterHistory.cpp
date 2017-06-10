@@ -131,8 +131,6 @@ CharacterEvent* CharacterHistory::pickRandomEvent( size_t &branch_index )
     
     // randomly pick an index for the event
     size_t event_index = size_t( std::floor(n_events * rng->uniform01()) );
-    size_t event_index_proposed = event_index;
-    size_t counted_events = 0;
     for (size_t i=0; i<n_branches; ++i)
     {
         BranchHistory& bh = histories[i];
@@ -143,7 +141,6 @@ CharacterEvent* CharacterHistory::pickRandomEvent( size_t &branch_index )
         }
         else
         {
-            counted_events += bh.getNumberEvents();
             event_index -= bh.getNumberEvents();
         }
         

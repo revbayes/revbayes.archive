@@ -143,7 +143,7 @@ double EventTimeSlideProposal::doProposal( void )
                     // flip a coin if we go left or right
                     size_t child_index = ( rng->uniform01() < 0.5 ? 0 : 1 );
                     // add to the proposal ratio
-                    ln_proposal_ratio += RbConstants::LN2;
+//                    ln_proposal_ratio += RbConstants::LN2;
                     // the new branch index
                     branch_index = tree.getNode(branch_index).getParent().getChild(child_index).getIndex();
                 }
