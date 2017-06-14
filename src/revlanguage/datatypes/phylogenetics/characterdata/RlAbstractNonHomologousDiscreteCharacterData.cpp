@@ -13,7 +13,11 @@ using namespace RevLanguage;
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData(void) :
     NonHomologousCharacterData( ),
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     dagNode( NULL )
+=======
+    dag_node( NULL )
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
 {
     
     ArgumentRules* chartypeArgRules            = new ArgumentRules();
@@ -28,11 +32,19 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData( const RevBayesCore::AbstractNonHomologousDiscreteCharacterData &d) :
     NonHomologousCharacterData( ),
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     dagNode( new ConstantNode<valueType>("",d.clone()) )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
+=======
+    dag_node( new ConstantNode<valueType>("",d.clone()) )
+{
+    
+    // increment the reference count to the value
+    dag_node->incrementReferenceCount();
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -50,11 +62,19 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData( RevBayesCore::AbstractNonHomologousDiscreteCharacterData *d) :
     NonHomologousCharacterData( ),
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     dagNode( new ConstantNode<valueType>("",d) )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
+=======
+    dag_node( new ConstantNode<valueType>("",d) )
+{
+    
+    // increment the reference count to the value
+    dag_node->incrementReferenceCount();
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -72,11 +92,19 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractNonHomologousDiscreteCharacterData> *d) :
     NonHomologousCharacterData( ),
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     dagNode( d )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
+=======
+    dag_node( d )
+{
+    
+    // increment the reference count to the value
+    dag_node->incrementReferenceCount();
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -84,7 +112,7 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
     
     // add the DAG node member methods
     // note that this is a sage case because all DAG nodes are member objects
-    const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
+    const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dag_node )->getMethods();
     methods.insertInheritedMethods( dagMethods );
     
     ArgumentRules* chartypeArgRules            = new ArgumentRules();
@@ -99,16 +127,16 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData(const AbstractNonHomologousDiscreteCharacterData &d) :
     NonHomologousCharacterData( d ),
-    dagNode( NULL )
+    dag_node( NULL )
 {
     
-    if ( d.dagNode != NULL )
+    if ( d.dag_node != NULL )
     {
         
-        dagNode = d.dagNode->clone();
+        dag_node = d.dag_node->clone();
         
         // increment the reference count to the value
-        dagNode->incrementReferenceCount();
+        dag_node->incrementReferenceCount();
     }
     
 }
@@ -118,11 +146,11 @@ AbstractNonHomologousDiscreteCharacterData::~AbstractNonHomologousDiscreteCharac
 {
     
     // free the old value
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
     }
 }
@@ -136,23 +164,23 @@ AbstractNonHomologousDiscreteCharacterData& AbstractNonHomologousDiscreteCharact
         NonHomologousCharacterData::operator=( v );
         
         // free the old value
-        if ( dagNode != NULL )
+        if ( dag_node != NULL )
         {
-            if ( dagNode->decrementReferenceCount() == 0 )
+            if ( dag_node->decrementReferenceCount() == 0 )
             {
-                delete dagNode;
+                delete dag_node;
             }
             
-            dagNode = NULL;
+            dag_node = NULL;
         }
         
         // create own copy
-        if ( v.dagNode != NULL )
+        if ( v.dag_node != NULL )
         {
-            dagNode = v.dagNode->clone();
+            dag_node = v.dag_node->clone();
             
             // increment the reference count to the value
-            dagNode->incrementReferenceCount();
+            dag_node->incrementReferenceCount();
         }
     }
     
@@ -171,7 +199,7 @@ AbstractNonHomologousDiscreteCharacterData* AbstractNonHomologousDiscreteCharact
 RevPtr<RevVariable> AbstractNonHomologousDiscreteCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-    RevPtr<RevVariable> retVal = dynamic_cast<RevMemberObject *>( dagNode )->executeMethod(name, args, found);
+    RevPtr<RevVariable> retVal = dynamic_cast<RevMemberObject *>( dag_node )->executeMethod(name, args, found);
     
     if ( found == true )
     {
@@ -188,7 +216,7 @@ RevPtr<RevVariable> AbstractNonHomologousDiscreteCharacterData::executeMethod(st
     {
         found = true;
         
-        bool ih = this->dagNode->getValue().isHomologyEstablished();
+        bool ih = this->dag_node->getValue().isHomologyEstablished();
         
         return new RevVariable( new RlBoolean(ih) );
     }
@@ -219,7 +247,7 @@ const TypeSpec& AbstractNonHomologousDiscreteCharacterData::getClassTypeSpec(voi
 RevBayesCore::TypedDagNode<RevBayesCore::AbstractNonHomologousDiscreteCharacterData>* AbstractNonHomologousDiscreteCharacterData::getDagNode( void ) const
 {
     
-    return dagNode;
+    return dag_node;
 }
 
 
@@ -235,24 +263,24 @@ const TypeSpec& AbstractNonHomologousDiscreteCharacterData::getTypeSpec(void) co
 const RevBayesCore::AbstractNonHomologousDiscreteCharacterData& AbstractNonHomologousDiscreteCharacterData::getValue( void ) const
 {
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
     }
     
-    return dagNode->getValue();
+    return dag_node->getValue();
 }
 
 
 RevBayesCore::AbstractNonHomologousDiscreteCharacterData& AbstractNonHomologousDiscreteCharacterData::getValue( void )
 {
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
     }
     
-    return dagNode->getValue();
+    return dag_node->getValue();
 }
 
 
@@ -263,19 +291,19 @@ RevBayesCore::AbstractNonHomologousDiscreteCharacterData& AbstractNonHomologousD
  */
 bool AbstractNonHomologousDiscreteCharacterData::isAssignable( void ) const
 {
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         return false;
     }
     
-    return dagNode->isAssignable();
+    return dag_node->isAssignable();
 }
 
 
 bool AbstractNonHomologousDiscreteCharacterData::isConstant( void ) const
 {
     
-    return dagNode->isConstant();
+    return dag_node->isConstant();
 }
 
 
@@ -289,25 +317,25 @@ bool AbstractNonHomologousDiscreteCharacterData::isModelObject( void ) const
 void AbstractNonHomologousDiscreteCharacterData::makeConstantValue( void )
 {
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         throw RbException("Cannot convert a variable without value to a constant value.");
     }
-    else if ( dagNode->getDagNodeType() != RevBayesCore::DagNode::CONSTANT )
+    else if ( dag_node->getDagNodeType() != RevBayesCore::DagNode::CONSTANT )
     {
-        RevBayesCore::ConstantNode<valueType>* newNode = new ConstantNode<valueType>(dagNode->getName(), RevBayesCore::Cloner<valueType, IsDerivedFrom<valueType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
-        dagNode->replace(newNode);
+        RevBayesCore::ConstantNode<valueType>* newNode = new ConstantNode<valueType>(dag_node->getName(), RevBayesCore::Cloner<valueType, IsDerivedFrom<valueType, RevBayesCore::Cloneable>::Is >::createClone( dag_node->getValue() ) );
+        dag_node->replace(newNode);
         
         // delete the value if there are no other references to it.
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
         
-        dagNode = newNode;
+        dag_node = newNode;
         
         // increment the reference counter
-        dagNode->incrementReferenceCount();
+        dag_node->incrementReferenceCount();
     }
     
 }
@@ -343,18 +371,18 @@ void AbstractNonHomologousDiscreteCharacterData::makeUserFunctionValue( UserFunc
     UserFunctionNode< AbstractNonHomologousDiscreteCharacterData >*  detNode = new UserFunctionNode< AbstractNonHomologousDiscreteCharacterData >( "", fxn );
     
     // Signal replacement and delete the value if there are no other references to it.
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        dagNode->replace( detNode );
-        if ( dagNode->decrementReferenceCount() == 0 )
-            delete dagNode;
+        dag_node->replace( detNode );
+        if ( dag_node->decrementReferenceCount() == 0 )
+            delete dag_node;
     }
     
     // Shift the actual node
-    dagNode = detNode;
+    dag_node = detNode;
     
     // Increment the reference counter
-    dagNode->incrementReferenceCount();
+    dag_node->incrementReferenceCount();
 }
 
 
@@ -364,13 +392,17 @@ void AbstractNonHomologousDiscreteCharacterData::makeUserFunctionValue( UserFunc
  */
 void AbstractNonHomologousDiscreteCharacterData::printValue(std::ostream &o, bool user) const
 {
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         o << "NA";
     }
     else
     {
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
         dagNode->printValue( o, "" );
+=======
+        dag_node->printValue( o, "" );
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     }
     
 }
@@ -379,9 +411,9 @@ void AbstractNonHomologousDiscreteCharacterData::printValue(std::ostream &o, boo
 /** Copy name of variable onto DAG node, if it is not NULL */
 void AbstractNonHomologousDiscreteCharacterData::setName(std::string const &n)
 {
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        dagNode->setName( n );
+        dag_node->setName( n );
     }
     
 }
@@ -394,29 +426,29 @@ void AbstractNonHomologousDiscreteCharacterData::setDagNode(RevBayesCore::DagNod
 {
     
     // Take care of the old value node
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
         if ( newNode != NULL )
         {
-            newNode->setName( dagNode->getName() );
+            newNode->setName( dag_node->getName() );
         }
         
-        dagNode->replace(newNode);
+        dag_node->replace(newNode);
         
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
         
     }
     
     // Set the new value node
-    dagNode = static_cast< RevBayesCore::TypedDagNode<valueType>* >( newNode );
+    dag_node = static_cast< RevBayesCore::TypedDagNode<valueType>* >( newNode );
     
     // Increment the reference count to the new value node
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        dagNode->incrementReferenceCount();
+        dag_node->incrementReferenceCount();
     }
     
 }
@@ -427,25 +459,25 @@ void AbstractNonHomologousDiscreteCharacterData::setValue(valueType *x)
     
     RevBayesCore::ConstantNode<valueType>* newNode;
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         newNode = new ConstantNode<valueType>("",x);
     }
     else
     {
-        newNode = new ConstantNode<valueType>(dagNode->getName(),x);
-        dagNode->replace(newNode);
+        newNode = new ConstantNode<valueType>(dag_node->getName(),x);
+        dag_node->replace(newNode);
         
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
         
     }
     
-    dagNode = newNode;
+    dag_node = newNode;
     
     // increment the reference count to the value
-    dagNode->incrementReferenceCount();
+    dag_node->incrementReferenceCount();
     
 }

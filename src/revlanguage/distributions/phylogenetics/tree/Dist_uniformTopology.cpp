@@ -56,6 +56,7 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
 
     RevBayesCore::Clade og;
     if ( outgroup != NULL && outgroup->getRevObject() != RevNullObject::getInstance())
+<<<<<<< HEAD
     	og = static_cast<const Clade &>( outgroup->getRevObject() ).getValue();
 
     std::vector<RevBayesCore::Clade> c;
@@ -66,6 +67,23 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
 
 	RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution( t, og, c, r);
 		return d;
+=======
+    {
+    	og = static_cast<const Clade &>( outgroup->getRevObject() ).getValue();
+    }
+    
+    std::vector<RevBayesCore::Clade> c;
+    if ( constraints != NULL && constraints->getRevObject() != RevNullObject::getInstance())
+    {
+    	c = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
+    }
+    
+    bool r = static_cast<const RlBoolean &>( rooted->getRevObject() ).getValue();
+
+	RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution( t, og, c, r);
+    
+    return d;
+>>>>>>> development
 }
 
 

@@ -11,15 +11,16 @@ using namespace RevLanguage;
 
 
 UserInterface::UserInterface( void ) :
-    processID( 0 )
+    process_id( 0 )
 {
 #if defined (RB_MPI)
-        processID = MPI::COMM_WORLD.Get_rank();
+//    processID = MPI::COMM_WORLD.Get_rank();
+    MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
 #endif
 }
 
 UserInterface::UserInterface( const UserInterface &u ) :
-    processID( u.processID )
+    process_id( u.process_id )
 {
 }
 
@@ -67,7 +68,7 @@ bool UserInterface::ask(std::string msg)
 void UserInterface::output(std::string msg)
 {
 
-    if ( processID == 0 )
+    if ( process_id == 0 )
     {
         std::string pad = "   ";
         std::cout << StringUtilities::formatStringForScreen( msg, pad, pad, RbSettings::userSettings().getLineWidth() );
@@ -80,7 +81,7 @@ void UserInterface::output(std::string msg)
 void UserInterface::output(std::string msg, const bool hasPadding)
 {
 
-    if ( processID == 0 )
+    if ( process_id == 0 )
     {
         if (hasPadding == true)
         {

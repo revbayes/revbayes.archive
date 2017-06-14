@@ -2,7 +2,7 @@
 #define GtrRateMatrixFunction_H
 
 #include "RateMatrix_GTR.h"
-#include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class GtrRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        GtrRateMatrixFunction(const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *bf);
+        GtrRateMatrixFunction(const TypedDagNode< Simplex > *er, const TypedDagNode< Simplex > *bf);
         virtual                                            ~GtrRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -39,8 +39,13 @@ namespace RevBayesCore {
         
         // members
         
+<<<<<<< HEAD
         const TypedDagNode< RbVector<double> >*             exchangeability_rates;
         const TypedDagNode< RbVector<double> >*             base_frequencies;
+=======
+        const TypedDagNode< Simplex >*                      exchangeability_rates;
+        const TypedDagNode< Simplex >*                      base_frequencies;
+>>>>>>> development
         
     };
     

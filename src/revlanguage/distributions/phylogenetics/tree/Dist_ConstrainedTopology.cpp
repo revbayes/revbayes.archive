@@ -8,6 +8,7 @@
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlBoolean.h"
 #include "RlClade.h"
 #include "RlString.h"
 #include "RlTaxon.h"
@@ -20,8 +21,7 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Dist_ConstrainedTopology::Dist_ConstrainedTopology() : TypedDistribution<TimeTree>()
-{
+Dist_ConstrainedTopology::Dist_ConstrainedTopology() : TypedDistribution<TimeTree>() {
     
 }
 
@@ -32,8 +32,8 @@ Dist_ConstrainedTopology::Dist_ConstrainedTopology() : TypedDistribution<TimeTre
  *
  * \return A new copy of the process.
  */
-Dist_ConstrainedTopology* Dist_ConstrainedTopology::clone( void ) const
-{
+Dist_ConstrainedTopology* Dist_ConstrainedTopology::clone( void ) const {
+
     return new Dist_ConstrainedTopology(*this);
 }
 
@@ -48,10 +48,10 @@ Dist_ConstrainedTopology* Dist_ConstrainedTopology::clone( void ) const
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::TopologyConstrainedTreeDistribution* Dist_ConstrainedTopology::createDistribution( void ) const
-{
-    
+RevBayesCore::TopologyConstrainedTreeDistribution* Dist_ConstrainedTopology::createDistribution( void ) const {
+
     // get the parameters
+<<<<<<< HEAD
     const RevBayesCore::RbVector<RevBayesCore::Clade>& c = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     const Distribution&                                     rlDistribution  = static_cast<const Distribution &>( baseDistribution->getRevObject() );
     RevBayesCore::TypedDistribution<RevBayesCore::Tree>*    base            = static_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rlDistribution.createDistribution() );
@@ -64,8 +64,35 @@ RevBayesCore::TopologyConstrainedTreeDistribution* Dist_ConstrainedTopology::cre
     
     // create the internal distribution object
     RevBayesCore::TopologyConstrainedTreeDistribution* d = new RevBayesCore::TopologyConstrainedTreeDistribution(base, c, bb);
+=======
+    const RevBayesCore::RbVector<RevBayesCore::Clade>& c      = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
+    const Distribution& rlDistribution                        = static_cast<const Distribution &>( baseDistribution->getRevObject() );
+    RevBayesCore::TypedDistribution<RevBayesCore::Tree>* base = static_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rlDistribution.createDistribution() );
     
-    return d;
+    // create the internal distribution object
+    RevBayesCore::TopologyConstrainedTreeDistribution* dist = new RevBayesCore::TopologyConstrainedTreeDistribution(base, c); // , bb);
+    
+>>>>>>> development
+    
+    if (backbone == NULL && backbone->getRevObject() != RevNullObject::getInstance()) {
+        ; // do nothing
+    }
+    else if ( backbone->getRevObject().isType( ModelVector<TimeTree>::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::Tree> >* bb = NULL;
+        bb = static_cast<const ModelVector<TimeTree> &>( backbone->getRevObject() ).getDagNode();
+        
+        dist->setBackbone( NULL, bb );
+    }
+    else if ( backbone->getRevObject().isType( TimeTree::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode<RevBayesCore::Tree>* bb = NULL;
+        bb = static_cast<const TimeTree&>( backbone->getRevObject() ).getDagNode();
+
+        dist->setBackbone( bb, NULL );
+    }
+    
+    return dist;
 }
 
 
@@ -74,11 +101,13 @@ RevBayesCore::TopologyConstrainedTreeDistribution* Dist_ConstrainedTopology::cre
  *
  * \return The class' name.
  */
-const std::string& Dist_ConstrainedTopology::getClassType( void )
-{
+const std::string& Dist_ConstrainedTopology::getClassType( void ) {
     
     static std::string rev_type = "Dist_ConstrainedTopology";
+<<<<<<< HEAD
     
+=======
+>>>>>>> development
     return rev_type;
 }
 
@@ -88,11 +117,17 @@ const std::string& Dist_ConstrainedTopology::getClassType( void )
  *
  * \return TypeSpec of this class.
  */
+<<<<<<< HEAD
 const TypeSpec& Dist_ConstrainedTopology::getClassTypeSpec( void )
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
+=======
+const TypeSpec& Dist_ConstrainedTopology::getClassTypeSpec( void ) {
+    
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+>>>>>>> development
     return rev_type_spec;
 }
 
@@ -102,11 +137,10 @@ const TypeSpec& Dist_ConstrainedTopology::getClassTypeSpec( void )
  *
  * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Dist_ConstrainedTopology::getDistributionFunctionAliases( void ) const
-{
+std::vector<std::string> Dist_ConstrainedTopology::getDistributionFunctionAliases( void ) const {
+
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    
     return a_names;
 }
 
@@ -118,11 +152,10 @@ std::vector<std::string> Dist_ConstrainedTopology::getDistributionFunctionAliase
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_ConstrainedTopology::getDistributionFunctionName( void ) const
-{
+std::string Dist_ConstrainedTopology::getDistributionFunctionName( void ) const {
+
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "ConstrainedTopology";
-    
     return d_name;
 }
 
@@ -137,11 +170,11 @@ std::string Dist_ConstrainedTopology::getDistributionFunctionName( void ) const
  *
  * \return The member rules.
  */
-const MemberRules& Dist_ConstrainedTopology::getParameterRules(void) const
-{
+const MemberRules& Dist_ConstrainedTopology::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rules_set = false;
+<<<<<<< HEAD
     
     if ( !rules_set )
     {
@@ -157,6 +190,20 @@ const MemberRules& Dist_ConstrainedTopology::getParameterRules(void) const
         rules_set = true;
     }
     
+=======
+    if ( !rules_set )
+        {
+        memberRules.push_back( new ArgumentRule( "treeDistribution", TypedDistribution<TimeTree>::getClassTypeSpec(), "The base distribution for the tree.",   ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "constraints",      ModelVector<Clade>::getClassTypeSpec(),          "The topological constraints.",          ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
+            
+        std::vector<TypeSpec> backboneTypes;
+        backboneTypes.push_back( TimeTree::getClassTypeSpec() );
+        backboneTypes.push_back( ModelVector<TimeTree>::getClassTypeSpec() );
+        memberRules.push_back( new ArgumentRule( "backbone", backboneTypes, "he backbone topological constraints.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "inverse",          RlBoolean::getClassTypeSpec(),                   "Should the constraint be inverted?",    ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        rules_set = true;
+        }
+>>>>>>> development
     return memberRules;
 }
 
@@ -166,11 +213,9 @@ const MemberRules& Dist_ConstrainedTopology::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Dist_ConstrainedTopology::getTypeSpec( void ) const
-{
+const TypeSpec& Dist_ConstrainedTopology::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
-    
     return ts;
 }
 
@@ -185,8 +230,7 @@ const TypeSpec& Dist_ConstrainedTopology::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_ConstrainedTopology::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
-{
+void Dist_ConstrainedTopology::setConstParameter(const std::string& name, const RevPtr<const RevVariable>& var) {
     
     if ( name == "constraints" )
     {
@@ -200,9 +244,15 @@ void Dist_ConstrainedTopology::setConstParameter(const std::string& name, const 
     {
         backbone = var;
     }
+<<<<<<< HEAD
+=======
+    else if ( name == "inverse" )
+    {
+        invertConstraint = var;
+    }
+>>>>>>> development
     else
     {
         TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
-    
 }

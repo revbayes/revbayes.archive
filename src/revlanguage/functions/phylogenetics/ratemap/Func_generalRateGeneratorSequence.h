@@ -48,9 +48,15 @@ namespace RevLanguage {
 
     private:
         RevPtr<const RevVariable>                               q;
+<<<<<<< HEAD:src/revlanguage/functions/phylogenetics/ratemap/Func_generalRateGeneratorSequence.h
         RevPtr<const RevVariable>                               rateModifiers;
         RevPtr<const RevVariable>                               rootFrequencies;
         RevPtr<const RevVariable>                               numChars;
+=======
+        RevPtr<const RevVariable>                               rate;
+        RevPtr<const RevVariable>                               root_frequencies;
+        RevPtr<const RevVariable>                               num_chars;
+>>>>>>> development:src/revlanguage/functions/phylogenetics/ratemap/Func_generalRateMap.h
     };
     
 }

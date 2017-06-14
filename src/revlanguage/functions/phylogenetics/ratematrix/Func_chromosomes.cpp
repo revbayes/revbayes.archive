@@ -1,5 +1,6 @@
 #include "ChromosomesRateMatrixFunction.h"
 #include "Func_chromosomes.h"
+#include "Natural.h"
 #include "RateMatrix_Chromosomes.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -33,14 +34,19 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_chromosomes::cr
     
     
     RevBayesCore::TypedDagNode< int >* n           = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< double >* lambda   = static_cast<const RealPos &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< double >* gamma    = static_cast<const RealPos &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* delta    = static_cast<const RealPos &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* rho      = static_cast<const RealPos &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
+<<<<<<< HEAD
     RevBayesCore::TypedDagNode< double >* mu       = static_cast<const RealPos &>( this->args[4].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* lambda_l = static_cast<const Real &>( this->args[5].getVariable()->getRevObject() ).getDagNode();
+=======
+    RevBayesCore::TypedDagNode< double >* eta      = static_cast<const RealPos &>( this->args[4].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< double >* gamma_l  = static_cast<const Real &>( this->args[5].getVariable()->getRevObject() ).getDagNode();
+>>>>>>> development
     RevBayesCore::TypedDagNode< double >* delta_l  = static_cast<const Real &>( this->args[6].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::ChromosomesRateMatrixFunction* f = new RevBayesCore::ChromosomesRateMatrixFunction( n, lambda, delta, rho, mu, lambda_l, delta_l );
+    RevBayesCore::ChromosomesRateMatrixFunction* f = new RevBayesCore::ChromosomesRateMatrixFunction( n, gamma, delta, rho, eta, gamma_l, delta_l );
     
 	return f;
 }
@@ -56,6 +62,7 @@ const ArgumentRules& Func_chromosomes::getArgumentRules( void ) const
     if ( !rules_set )
     {
       
+<<<<<<< HEAD
         argumentRules.push_back( new ArgumentRule( "maxChromosomes", Natural::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "lambda"        , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         argumentRules.push_back( new ArgumentRule( "delta"         , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
@@ -63,6 +70,15 @@ const ArgumentRules& Func_chromosomes::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "mu"            , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         argumentRules.push_back( new ArgumentRule( "lambda_l"      , Real::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         argumentRules.push_back( new ArgumentRule( "delta_l"       , Real::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
+=======
+        argumentRules.push_back( new ArgumentRule( "maxChromosomes", Natural::getClassTypeSpec(), "Maximum number of chromosomes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "gamma"         , RealPos::getClassTypeSpec(), "Rate of gain of a single chromosome.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        argumentRules.push_back( new ArgumentRule( "delta"         , RealPos::getClassTypeSpec(), "Rate of loss of a single chromosome.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        argumentRules.push_back( new ArgumentRule( "rho"           , RealPos::getClassTypeSpec(), "Rate of polyploidization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        argumentRules.push_back( new ArgumentRule( "eta"           , RealPos::getClassTypeSpec(), "Rate of demi-polyploidization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        argumentRules.push_back( new ArgumentRule( "gamma_l"       , Real::getClassTypeSpec(), "Rate modifier for chromosome gains.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
+        argumentRules.push_back( new ArgumentRule( "delta_l"       , Real::getClassTypeSpec(), "Rate modifier for chromosome losses.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
+>>>>>>> development
         
         rules_set = true;
     }

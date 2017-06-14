@@ -1250,7 +1250,6 @@ int EigenSystem::luDecompose(MatrixReal& a, double* vv, int* indx, double* pd) {
  *
  * \brief Update eigensystem
  * \parameter m Matrix for which we should calculate eigensystem
- * \return MbError(MbError::ERROR)
  */
 void EigenSystem::update(void)
 {

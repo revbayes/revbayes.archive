@@ -16,7 +16,11 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
+<<<<<<< HEAD
 DirichletSimplexProposal::DirichletSimplexProposal( StochasticNode<RbVector<double> > *n, double a, size_t nc, double o, double k /*=0.0*/, double p) : Proposal(p),
+=======
+DirichletSimplexProposal::DirichletSimplexProposal( StochasticNode<Simplex> *n, double a, size_t nc, double o, double k /*=0.0*/, double p) : Proposal(p),
+>>>>>>> development
     variable( n ),
     storedValue( 0.0 ),
     alpha( a ),
@@ -247,7 +251,7 @@ double DirichletSimplexProposal::doProposal( void )
         }
     }
     
-    variable->setValue( new RbVector<double>(newVal), false );
+    variable->setValue( new Simplex(newVal), false );
     
     return lnProposalRatio;
 }
@@ -302,7 +306,7 @@ void DirichletSimplexProposal::undoProposal( void )
 void DirichletSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<RbVector<double> >* >(newN) ;
+    variable = static_cast<StochasticNode<Simplex>* >(newN) ;
     
 }
 

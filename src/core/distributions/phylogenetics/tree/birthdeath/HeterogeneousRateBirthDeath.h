@@ -22,6 +22,10 @@ namespace RevBayesCore {
                                     const TypedDagNode<double> *ev,
                                     const TypedDagNode<double> *r,
                                     const std::string &cdt,
+<<<<<<< HEAD
+=======
+                                    bool allow_same,
+>>>>>>> development
                                     const std::vector<Taxon> &n);                                                                                  //!< Constructor
         
         virtual                                            ~HeterogeneousRateBirthDeath(void);                          //!< Virtual destructor
@@ -54,6 +58,7 @@ namespace RevBayesCore {
         // helper functions
         void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
         void                                                buildRandomBinaryHistory(std::vector<TopologyNode *> &tips);
+        size_t                                              computeStateIndex(size_t i, double time) const;
         size_t                                              computeStartIndex(size_t i) const;
         void                                                simulateTree(void);
         void                                                runMCMC(void);
@@ -86,8 +91,14 @@ namespace RevBayesCore {
 
         const double                                        NUM_TIME_SLICES;
 
+<<<<<<< HEAD
         bool                                                shift_same_category;
 
+=======
+        bool                                                allow_same_category;
+        bool                                                shift_same_category;
+        
+>>>>>>> development
     };
     
 }

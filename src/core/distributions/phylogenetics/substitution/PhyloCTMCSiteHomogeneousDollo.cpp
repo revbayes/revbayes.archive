@@ -1214,7 +1214,12 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
         if ( process_active == false )
         {
             // send from the workers the log-likelihood to the master
+<<<<<<< HEAD
             MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+=======
+//            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+            MPI_Send(&sumPartialProbs, 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD);
+>>>>>>> development
         }
 
         // receive the likelihoods from the helpers
@@ -1223,7 +1228,14 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
                 double tmp = 0;
+<<<<<<< HEAD
                 MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
+=======
+//                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
+                MPI_Status status;
+                MPI_Recv(&tmp, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD, &status);
+                
+>>>>>>> development
                 sumPartialProbs += tmp;
             }
         }
@@ -1233,12 +1245,23 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
         {
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
+<<<<<<< HEAD
                 MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, int(i), 0);
+=======
+//                MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, int(i), 0);
+                MPI_Send(&sumPartialProbs, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD);
+>>>>>>> development
             }
         }
         else
         {
+<<<<<<< HEAD
             MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+=======
+//            MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+            MPI_Status status;
+            MPI_Recv(&sumPartialProbs, 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD, &status);
+>>>>>>> development
         }
     
     }
@@ -1304,7 +1327,11 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::getScaledNodeWeights(const T
 
     std::vector<TopologyNode*> children = node.getChildren();
 
+<<<<<<< HEAD
     TopologyNode* child;
+=======
+    TopologyNode* child = NULL;
+>>>>>>> development
     size_t num_with_descendants = 0;
 
     for(size_t i = 0; i < children.size(); i++)
@@ -1313,7 +1340,11 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::getScaledNodeWeights(const T
         const double* p_child  = partialLikelihoods + activeLikelihood[child_index]  * activeLikelihoodOffset + child_index*nodeOffset  + pattern*siteOffset;
 
         // does this child have descendants?
+<<<<<<< HEAD
         if(p_child[dim] == 0)
+=======
+        if (p_child[dim] == 0)
+>>>>>>> development
         {
             child = children[i];
             num_with_descendants++;
@@ -1321,7 +1352,11 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::getScaledNodeWeights(const T
     }
 
     //if more than one child has observed descendants, then this is the last ancestral node
+<<<<<<< HEAD
     if(num_with_descendants == 1)
+=======
+    if (num_with_descendants == 1)
+>>>>>>> development
     {
         max = std::max(max, getScaledNodeWeights(*child, pattern, weights));
     }

@@ -152,7 +152,7 @@ const typename rlType::valueType& ModelVector<rlType>::operator[]( size_t index 
 template <typename rlType>
 void ModelVector<rlType>::clear( void )
 {
-    this->dagNode->getValue().clear();
+    this->dag_node->getValue().clear();
 }
 
 
@@ -267,13 +267,52 @@ template <typename rlType>
 RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
 {
     
+<<<<<<< HEAD
     if ( name == "contains" )
+=======
+    
+    if ( name == "append" )
+    {
+        found = true;
+        
+        // Check whether the DAG node is actually a constant node
+        if ( this->dag_node->isConstant() == false )
+        {
+            throw RbException( "Only constant variables can be appended." );
+        }
+        
+        RevBayesCore::RbVector<typename rlType::valueType> &v = this->dag_node->getValue();
+        
+        if ( args[0].getVariable()->getRevObject().isType( ModelVector<rlType>::getClassTypeSpec() ) )
+        {
+            const ModelVector<rlType> &v_x = static_cast<const ModelVector<rlType>&>( args[0].getVariable()->getRevObject() );
+            const RevBayesCore::RbVector<typename rlType::valueType> &x = v_x.getValue();
+            for (size_t i = 0; i < x.size(); ++i )
+            {
+                v.push_back( x[i] );
+            }
+        }
+        else
+        {
+            const rlType &rl_x = static_cast<const rlType&>( args[0].getVariable()->getRevObject() );
+            const typename rlType::valueType &x = rl_x.getValue();
+            v.push_back( x );
+        }
+        
+        return NULL;
+    }
+    else if ( name == "contains" )
+>>>>>>> development
     {
         found = true;
         
         const rlType &rl_x = static_cast<const rlType&>( args[0].getVariable()->getRevObject() );
         const typename rlType::valueType &x = rl_x.getValue();
+<<<<<<< HEAD
         const RevBayesCore::RbVector<typename rlType::valueType> &v = this->dagNode->getValue();
+=======
+        const RevBayesCore::RbVector<typename rlType::valueType> &v = this->dag_node->getValue();
+>>>>>>> development
         for (size_t i = 0; i < v.size(); ++i )
         {
             if ( v[i] == x )
@@ -297,7 +336,11 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
         found = true;
         
         // Check whether the DAG node is actually a constant node
+<<<<<<< HEAD
         if ( this->dagNode->isConstant() == false )
+=======
+        if ( this->dag_node->isConstant() == false )
+>>>>>>> development
         {
             throw RbException( "Only constant variables can be sorted." );
         }
@@ -310,7 +353,11 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
         found = true;
         
         // Check whether the DAG node is actually a constant node
+<<<<<<< HEAD
         if ( this->dagNode->isConstant() == false )
+=======
+        if ( this->dag_node->isConstant() == false )
+>>>>>>> development
         {
             throw RbException( "Only constant variables can be made unique." );
         }
@@ -381,6 +428,17 @@ template <typename rlType>
 void ModelVector<rlType>::initMethods( void )
 {
 
+<<<<<<< HEAD
+=======
+    ArgumentRules* append_arg_rules = new ArgumentRules();
+    
+    std::vector<TypeSpec> appendValueTypes;
+    appendValueTypes.push_back( rlType::getClassTypeSpec() );
+    appendValueTypes.push_back( ModelVector<rlType>::getClassTypeSpec() );
+    append_arg_rules->push_back( new ArgumentRule( "x", appendValueTypes, "The element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "append", RlUtils::Void, append_arg_rules ) );
+
+>>>>>>> development
     ArgumentRules* contains_arg_rules = new ArgumentRules();
     contains_arg_rules->push_back( new ArgumentRule( "x", rlType::getClassTypeSpec(), "The element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "contains", RlBoolean::getClassTypeSpec(), contains_arg_rules ) );
@@ -458,7 +516,7 @@ double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) c
 template <typename rlType>
 void ModelVector<rlType>::push_back(const elementType &x)
 {
-    return this->dagNode->getValue().push_back( x );
+    return this->dag_node->getValue().push_back( x );
 }
 
 
@@ -468,7 +526,7 @@ void ModelVector<rlType>::push_back(const elementType &x)
 template <typename rlType>
 void ModelVector<rlType>::push_back(const rlType &x)
 {
-    return this->dagNode->getValue().push_back( x.getValue() );
+    return this->dag_node->getValue().push_back( x.getValue() );
 }
 
 
@@ -516,7 +574,7 @@ void ModelVector<rlType>::printValue( std::ostream& o, bool user ) const
 template <typename rlType>
 size_t ModelVector<rlType>::size( void ) const
 {
-    return this->dagNode->getValue().size();
+    return this->dag_node->getValue().size();
 }
 
 
@@ -526,7 +584,7 @@ size_t ModelVector<rlType>::size( void ) const
 template <typename rlType>
 void ModelVector<rlType>::sort( void )
 {
-    this->dagNode->getValue().sort();
+    this->dag_node->getValue().sort();
 }
 
                                        
@@ -541,18 +599,18 @@ void ModelVector<rlType>::unique(void)
     
     sort();
     valueType uniqueVector;
-    uniqueVector.push_back (this->dagNode->getValue()[0]);
+    uniqueVector.push_back (this->dag_node->getValue()[0]);
     for (size_t i = 1 ; i<this->size() ; i++)
     {
-        if ( this->dagNode->getValue()[i] != this->dagNode->getValue()[i-1] )
+        if ( this->dag_node->getValue()[i] != this->dag_node->getValue()[i-1] )
         {
-            uniqueVector.push_back(this->dagNode->getValue()[i]);
+            uniqueVector.push_back(this->dag_node->getValue()[i]);
         }
     }
     
     this->clear();
 
-    this->dagNode->getValue() = uniqueVector;
+    this->dag_node->getValue() = uniqueVector;
     
 }
 

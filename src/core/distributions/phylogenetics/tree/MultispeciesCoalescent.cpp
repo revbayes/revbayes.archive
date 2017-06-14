@@ -2,6 +2,7 @@
 #include "ConstantNode.h"
 #include "MultispeciesCoalescent.h"
 #include "DistributionExponential.h"
+#include "DistributionUniform.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -13,6 +14,7 @@
 
 using namespace RevBayesCore;
 
+<<<<<<< HEAD
 MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<Tree> *sp,
                                                const std::vector<Taxon> &t) : TypedDistribution<Tree>( NULL ),
     taxa(t),
@@ -47,6 +49,11 @@ MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<Tree> *sp,
     
     
 
+=======
+MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<Tree> *sp, const std::vector<Taxon> &t) : AbstractMultispeciesCoalescent(sp, t)
+{
+    
+>>>>>>> development
 }
 
 
@@ -57,6 +64,7 @@ MultispeciesCoalescent::~MultispeciesCoalescent()
 
 
 
+<<<<<<< HEAD
 void MultispeciesCoalescent::attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times) {
     
     if (index < num_taxa-1)
@@ -127,6 +135,8 @@ void MultispeciesCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &t
         buildRandomBinaryTree(tips);
     }
 }
+=======
+>>>>>>> development
 
 
 MultispeciesCoalescent* MultispeciesCoalescent::clone( void ) const
@@ -136,9 +146,10 @@ MultispeciesCoalescent* MultispeciesCoalescent::clone( void ) const
 }
 
 
-double MultispeciesCoalescent::computeLnProbability( void )
+double MultispeciesCoalescent::computeLnCoalescentProbability(size_t k, const std::vector<double> &times, double begin_age, double end_age, size_t index, bool add_final_interval)
 {
     
+<<<<<<< HEAD
     // variable declarations and initialization
     double lnProbCoal = 0;
     
@@ -165,22 +176,15 @@ double MultispeciesCoalescent::computeLnProbability( void )
         individualNames2geneTreeTips[ tip->getName() ] = tip;
     }
     
+=======
+    double theta = 1.0 / getNe( index );
+>>>>>>> development
     
-    std::map< const TopologyNode *, std::set< TopologyNode* > > individualsPerBranch;
-    
-    for (std::vector< Taxon >::iterator it = taxa.begin(); it != taxa.end(); ++it)
+    double ln_prob_coal = 0;
+    double current_time = begin_age;
+    for (size_t i=0; i<times.size(); ++i)
     {
-        const std::string &tipName = it->getName();
-        TopologyNode *n = individualNames2geneTreeTips[tipName];
-        const std::string &speciesName = it->getSpeciesName();
-        TopologyNode *speciesNode = speciesNames2speciesNodes[speciesName];
-        std::set< TopologyNode * > &nodesAtNode = individualsPerBranch[ speciesNode ];
-        nodesAtNode.insert( n );
-    }
-
-    /*
-    for (std::map<std::string,std::string>::iterator it = gene2species.begin(); it != gene2species.end(); ++it)
-    {
+<<<<<<< HEAD
         const std::string &tipName = it->first;
         TopologyNode *n = individualNames2geneTreeTips[tipName];
         const std::string &speciesName = it->second;
@@ -225,118 +229,62 @@ double MultispeciesCoalescent::computeLnProbability( void )
         // get all coalescent events among the individuals
         std::set<double> coalTimes;
         
+=======
+>>>>>>> development
         
-        std::map<double, TopologyNode *> coalTimes2coalNodes;
-        for ( std::set<TopologyNode*>::iterator remNode = remainingIndividuals.begin(); remNode != remainingIndividuals.end(); ++remNode)
-        {
-            TopologyNode *rn = (*remNode);
-            if ( !rn->isRoot() )
-            {
-                TopologyNode &parent = rn->getParent();
-                double parentAge = parent.getAge();
-                coalTimes2coalNodes[ parentAge ] = &parent;
-            }
-        }
+        // now we do the computation
+        //a is the time between the previous and the current coalescences
+        double a = times[i] - current_time;
         
-        double currentTime = speciesAge;
-        while ( currentTime < parentSpeciesAge && coalTimes2coalNodes.size() > 0 )
-        {
-            
-            TopologyNode *parent = coalTimes2coalNodes.begin()->second;
-            double parentAge = parent->getAge();
-			double branchNe = getNe(spNode->getIndex());
-			double theta = 1.0 / branchNe;
-            
-            if ( parentAge < parentSpeciesAge )
-            { //Coalescence in the species tree branch
-                
-                // get the left and right child of the parent
-                TopologyNode *left = &parent->getChild( 0 );
-                TopologyNode *right = &parent->getChild( 1 );
-                if ( remainingIndividuals.find( left ) == remainingIndividuals.end() || remainingIndividuals.find( right ) == remainingIndividuals.end() )
-                {
-                    // one of the children does not belong to this species tree branch
-                    return RbConstants::Double::neginf;
-                }
-                
-				//We remove the coalescent event and the coalesced lineages
-                coalTimes2coalNodes.erase( coalTimes2coalNodes.begin() );
-                remainingIndividuals.erase( remainingIndividuals.find( left ) );
-                remainingIndividuals.erase( remainingIndividuals.find( right ) );
-                
-				//We insert the parent in the vector of lineages in this branch
-                remainingIndividuals.insert( parent );
-                if ( !parent->isRoot() )
-                {
-                    TopologyNode *grandParent = &parent->getParent();
-                    coalTimes2coalNodes[ grandParent->getAge() ] = grandParent;
-                }
-                
-				//a is the time between the previous and the current coalescences
-                double a = parentAge - currentTime;
-                currentTime = parentAge;
-                
-                // now we do the computation
-                
-                // get the number j of individuals we had before the current coalescence
-                size_t j = remainingIndividuals.size() + 1;
-                // compute the number of pairs: pairs = C(j choose 2) = j * (j-1.0) / 2.0
-                double nPairs = j * (j-1.0) / 2.0;
-                double lambda = nPairs * theta;
-                
-                // add the density for this coalescent event
-                //lnProbCoal += log( lambda ) - lambda * a;
-				//Corrected version:
-                lnProbCoal += log( theta ) - lambda * a;
-				
-                
-                
-            } //End if coalescence in the species tree branch
-            else
-            { //No more coalescences in this species tree branch
-                
-                // compute the probability of no coalescent event in the final part of the branch
-                // only do this if the branch is not the root branch
-                if ( spParentNode != NULL )
-                {
-                    double finalInterval = parentSpeciesAge - currentTime;
-                    size_t k = remainingIndividuals.size();
-                    lnProbCoal -= k*(k-1.0)/2.0 * finalInterval * theta;
-                }
-                
-                // jump out of the while loop
-//                currentTime = speciesAge;
-                break;
-            }
-            
-            
-        } // end of while loop
+        current_time = times[i];
         
+        // get the number j of individuals we had before the current coalescence
+        size_t j = k - i;
         
-        // merge the two sets of individuals that go into the next species
-        if ( spParentNode != NULL )
-        {
-            std::set<TopologyNode *> &incomingLineages = individualsPerBranch[spParentNode];
-            incomingLineages.insert( remainingIndividuals.begin(), remainingIndividuals.end());
-        }
+        // compute the number of pairs: pairs = C(j choose 2) = j * (j-1.0) / 2.0
+        double n_pairs = j * (j-1.0) / 2.0;
+        double lambda = n_pairs * theta;
         
+        // add the density for this coalescent event
+        //lnProbCoal += log( lambda ) - lambda * a;
+        //Corrected version:
+        ln_prob_coal += log( theta ) - lambda * a;
         
-    } // end loop over all nodes in the species tree (in phylogenetic ordering)
+    }
     
+    // compute the probability of no coalescent event in the final part of the branch
+    // only do this if the branch is not the root branch
+    if ( add_final_interval == true )
+    {
+        double final_interval = end_age - current_time;
+        size_t j = k - times.size();
+        ln_prob_coal -= j*(j-1.0)/2.0 * final_interval * theta;
+        
+    }
     
-    return lnProbCoal; // + logTreeTopologyProb;
-    
+    return ln_prob_coal;
 }
 
 
+<<<<<<< HEAD
+=======
+double MultispeciesCoalescent::drawNe( size_t index )
+{
+    
+    return getNe( index );
+}
+
+
+
+>>>>>>> development
 double  MultispeciesCoalescent::getNe(size_t index) const
 {
     
-    if (Ne != NULL)
+    if ( Ne != NULL )
     {
         return Ne->getValue();
     }
-    else if (Nes != NULL)
+    else if ( Nes != NULL )
     {
         return Nes->getValue()[index];
     }
@@ -348,10 +296,10 @@ double  MultispeciesCoalescent::getNe(size_t index) const
 }
 
 
-
-void MultispeciesCoalescent::redrawValue( void )
+void MultispeciesCoalescent::setNes(TypedDagNode< RbVector<double> >* input_nes)
 {
     
+<<<<<<< HEAD
     simulateTree();
     
 }
@@ -359,6 +307,8 @@ void MultispeciesCoalescent::redrawValue( void )
 void MultispeciesCoalescent::setNes(TypedDagNode< RbVector<double> >* input_nes)
 {
 
+=======
+>>>>>>> development
     removeParameter( Nes );
     removeParameter( Ne );
     
@@ -366,13 +316,13 @@ void MultispeciesCoalescent::setNes(TypedDagNode< RbVector<double> >* input_nes)
     Ne  = NULL;
     
     addParameter( Nes );
-
+    
 }
 
 
 void MultispeciesCoalescent::setNe(TypedDagNode<double>* input_ne)
 {
-
+    
     removeParameter( Ne );
     removeParameter( Nes );
     
@@ -383,6 +333,7 @@ void MultispeciesCoalescent::setNe(TypedDagNode<double>* input_ne)
 }
 
 
+<<<<<<< HEAD
 
 
 void MultispeciesCoalescent::simulateTree( void )
@@ -529,11 +480,13 @@ void MultispeciesCoalescent::simulateTree( void )
 }
 
 
+=======
+>>>>>>> development
 /** Swap a parameter of the distribution */
 void MultispeciesCoalescent::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if (oldP == Nes )
+    if ( oldP == Nes )
     {
         Nes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
@@ -543,9 +496,13 @@ void MultispeciesCoalescent::swapParameterInternal(const DagNode *oldP, const Da
         Ne = static_cast<const TypedDagNode< double >* >( newP );
     }
     
+<<<<<<< HEAD
     if ( oldP == species_tree )
     {
         species_tree = static_cast<const TypedDagNode< Tree >* >( newP );
     }
+=======
+    AbstractMultispeciesCoalescent::swapParameterInternal(oldP, newP);
+>>>>>>> development
     
 }

@@ -64,7 +64,7 @@ DistributionFunctionQuantileContinuous& DistributionFunctionQuantileContinuous::
     
     if (this != &c)
     {
-        Function::operator=(c);
+        TypedFunction<Real>::operator=(c);
         
         delete templateObject;
         if ( c.templateObject != NULL )

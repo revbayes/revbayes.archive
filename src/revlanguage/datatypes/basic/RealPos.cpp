@@ -95,7 +95,7 @@ RevObject* RealPos::add( const RevObject& rhs ) const
 RealPos* RealPos::add(const RevLanguage::Natural &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() + rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -112,7 +112,7 @@ RealPos* RealPos::add(const RevLanguage::Natural &rhs) const
 RealPos* RealPos::add(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() + rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -135,11 +135,19 @@ RevObject* RealPos::convertTo( const TypeSpec& type ) const
     
     if ( type == Real::getClassTypeSpec() )
     {
+<<<<<<< HEAD
         return new Real(dagNode->getValue());
     }
     else if ( type == Probability::getClassTypeSpec() )
     {
         return new Probability(dagNode->getValue());
+=======
+        return new Real(dag_node->getValue());
+    }
+    else if ( type == Probability::getClassTypeSpec() )
+    {
+        return new Probability(dag_node->getValue());
+>>>>>>> development
     }
     
     return Real::convertTo( type );
@@ -182,7 +190,7 @@ RevObject* RealPos::divide( const RevObject& rhs ) const
 RealPos* RealPos::divide(const RevLanguage::Natural &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() / rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() / rhs.getValue() );
     
     return n;
 }
@@ -199,7 +207,7 @@ RealPos* RealPos::divide(const RevLanguage::Natural &rhs) const
 RealPos* RealPos::divide(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() / rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() / rhs.getValue() );
     
     return n;
 }
@@ -269,7 +277,7 @@ RevObject* RealPos::multiply( const RevObject& rhs ) const
 RealPos* RealPos::multiply(const RevLanguage::Natural &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() * rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() * rhs.getValue() );
     
     return n;
 }
@@ -286,7 +294,7 @@ RealPos* RealPos::multiply(const RevLanguage::Natural &rhs) const
 RealPos* RealPos::multiply(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() * rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() * rhs.getValue() );
     
     return n;
 }
@@ -299,7 +307,11 @@ double RealPos::isConvertibleTo(const TypeSpec& type, bool once) const
     {
         return 0.2;
     }
+<<<<<<< HEAD
     else if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1.0 )
+=======
+    else if ( once == true && type == Probability::getClassTypeSpec() && dag_node->getValue() <= 1.0 )
+>>>>>>> development
     {
         return 0.1;
     }

@@ -39,19 +39,14 @@ namespace RevBayesCore {
         virtual size_t                  getNumberOfStates(void) const = 0;                  //!< Get the number states for a character (return 0 in base class)
         virtual std::string             getStringValue(void) const = 0;                     //!< Get a representation of the character as string
         virtual bool                    isAmbiguous(void) const = 0;                        //!< Is the character missing or ambiguous
-        
-        // public methods
-        bool                            isGapState(void) const;                             //!< Get whether this is a gapped character state
-        bool                            isMissingState(void) const;                         //!< Get whether this is a missing character state
-        void                            setGapState(bool tf);                               //!< set whether this is a gapped character
-        void                            setMissingState(bool tf);                           //!< set whether this is a missing character
+        virtual bool                    isGapState(void) const = 0;                         //!< Get whether this is a gapped character state
+        virtual bool                    isMissingState(void) const = 0;                     //!< Get whether this is a missing character state
+        virtual void                    setGapState(bool tf) = 0;                           //!< set whether this is a gapped character
+        virtual void                    setMissingState(bool tf) = 0;                       //!< set whether this is a missing character
 
     protected:
                                         CharacterState(void);                               //!< Default constructor
-    
-        bool                            isGap;
-        bool                            isMissing;
-        
+            
     };
 
     // Global functions using the class

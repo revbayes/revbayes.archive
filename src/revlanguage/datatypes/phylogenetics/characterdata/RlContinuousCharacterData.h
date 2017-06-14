@@ -61,7 +61,15 @@ namespace RevLanguage {
         
     protected:
         
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.h
         RevBayesCore::TypedDagNode<valueType>*                  dagNode;
+=======
+        RevBayesCore::TypedDagNode<valueType>*                  dag_node;
+
+    private:
+
+        void                                                    initMethods(void);
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.h
 
     };
     

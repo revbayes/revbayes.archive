@@ -1,7 +1,12 @@
 #include "PhyloCTMCSiteHomogeneousBinary.h"
 
+<<<<<<< HEAD
 RevBayesCore::PhyloCTMCSiteHomogeneousBinary::PhyloCTMCSiteHomogeneousBinary(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding ty) :
     PhyloCTMCSiteHomogeneousConditional<BinaryState>(  t, 2, c, nSites, amb, AscertainmentBias::Coding(ty))
+=======
+RevBayesCore::PhyloCTMCSiteHomogeneousBinary::PhyloCTMCSiteHomogeneousBinary(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding ty, bool internal) :
+    PhyloCTMCSiteHomogeneousConditional<BinaryState>(  t, 2, c, nSites, amb, AscertainmentBias::Coding(ty), internal )
+>>>>>>> development
 {
 
 }
@@ -11,12 +16,59 @@ RevBayesCore::PhyloCTMCSiteHomogeneousBinary* RevBayesCore::PhyloCTMCSiteHomogen
     return new PhyloCTMCSiteHomogeneousBinary( *this );
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> development
 bool RevBayesCore::PhyloCTMCSiteHomogeneousBinary::isSitePatternCompatible( std::map<size_t, size_t> charCounts )
 {
     std::map<size_t, size_t>::iterator zero = charCounts.find(0);
     std::map<size_t, size_t>::iterator one  = charCounts.find(1);
 
     bool compatible = true;
+<<<<<<< HEAD
+=======
+
+    if( charCounts.size() == 1 )
+    {
+        if(zero != charCounts.end() && (coding & BinaryAscertainmentBias::NOABSENCESITES) )
+        {
+            compatible = false;
+        }
+        else if(one != charCounts.end()  && (coding & BinaryAscertainmentBias::NOPRESENCESITES) )
+        {
+            compatible = false;
+        }
+    }
+    else
+    {
+        if(zero != charCounts.end() && zero->second == 1 && (coding & BinaryAscertainmentBias::NOSINGLETONABSENCE) )
+        {
+            compatible = false;
+        }
+        else if(one != charCounts.end() && one->second == 1 && (coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE) )
+        {
+            compatible = false;
+        }
+    }
+
+    return compatible;
+}
+
+
+bool RevBayesCore::PhyloCTMCSiteHomogeneousBinary::isSitePatternCompatible( std::map<RbBitSet, size_t> charCounts )
+{
+    RbBitSet z(2, false);
+    RbBitSet o(2, false);
+
+    z.set(0);
+    o.set(1);
+
+    std::map<RbBitSet, size_t>::iterator zero = charCounts.find(z);
+    std::map<RbBitSet, size_t>::iterator one  = charCounts.find(o);
+
+    bool compatible = true;
+>>>>>>> development
     
     if( charCounts.size() == 1 )
     {

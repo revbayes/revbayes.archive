@@ -76,6 +76,7 @@ namespace RevBayesCore {
         double                                                      getBranchRate(size_t index) const;
 
         // parameters
+<<<<<<< HEAD
         StochasticNode<AbstractHomologousDiscreteCharacterData>*    ctmc;
         const TypedDagNode<RateGenerator>*                          q_map_site;
         const TypedDagNode<RateGeneratorSequence>*                  q_map_sequence;
@@ -98,6 +99,35 @@ namespace RevBayesCore {
 
     };
 
+=======
+        StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
+        StochasticNode<Tree>*                   tau;
+        DeterministicNode<RateMap>*             qmap;
+        
+        //BranchHistory*                          storedValue;
+        std::multiset<CharacterEvent*,CharacterEventCompare> storedHistory;
+        std::multiset<CharacterEvent*,CharacterEventCompare> proposedHistory;
+        
+        TopologyNode*                           node;
+        std::set<size_t>                        siteIndexSet;
+        
+        double                                  storedLnProb;
+        double                                  proposedLnProb;
+        
+        size_t                                  num_nodes;
+        size_t                                  numCharacters;
+        size_t                                  num_states;
+        
+        double                                  lambda;
+        bool                                    fixNodeIndex;
+        bool                                    sampleNodeIndex;
+        bool                                    sampleSiteIndexSet;
+        bool                                    useTail;
+        
+        bool                                    printDebug;
+            };
+    
+>>>>>>> development
 }
 
 
@@ -124,11 +154,21 @@ RevBayesCore::PathRejectionSampleProposal<charType>::PathRejectionSampleProposal
 
     addNode(ctmc);
     
+<<<<<<< HEAD
     for (size_t i = 0; i < numCharacters; i++)
     {
         allCharacters.insert(i);
     }
 
+=======
+    num_nodes = t->getValue().getNumberOfNodes();
+    numCharacters = n->getValue().getNumberOfCharacters();
+    num_states = q->getValue().getNumberOfStates();
+ 
+    printDebug = false;
+    
+    fixNodeIndex = (node != NULL);
+>>>>>>> development
 }
 
 template<class charType>
@@ -195,7 +235,13 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
 
+<<<<<<< HEAD
     std::vector<size_t> counts(numStates,0);
+=======
+    unsigned counts[num_states];
+    for (size_t i = 0; i < num_states; i++)
+        counts[i] = 0;
+>>>>>>> development
     fillStateCounts(currState, counts);
 
     double branch_length = nd.getBranchLength();
@@ -364,12 +410,41 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
             {
                 double r = 0.0;
                 size_t nextState = 0;
+<<<<<<< HEAD
                 std::vector<double> rates(numStates,0.0);
                 for (size_t i = 0; i < numStates; ++i)
                 {
                     if (i == currState)
                     {
                         continue;
+=======
+                if (num_states == 2)
+                {
+                    nextState = (currState == 1 ? 0 : 1);
+                    r = rm.getSiteRate(*node, currState, nextState);
+                }
+                
+                else
+                {
+                    std::vector<double> rates(num_states,0.0);
+                    for (unsigned i = 0; i < num_states; i++)
+                    {
+                        if (i == currState)
+                            continue;
+                        double v = rm.getSiteRate(*node, currState, i);
+                        rates[i] = v;
+                        r += v;
+                    }
+                    double u = GLOBAL_RNG->uniform01() * r;
+                    for (unsigned i = 0; i < num_states; i++)
+                    {
+                        u -= rates[i];
+                        if (u <= 0.0)
+                        {
+                            nextState = i;
+                            break;
+                        }
+>>>>>>> development
                     }
                     double v = rm.getRate(currState, i, age, getBranchRate(node->getIndex()));
                     rates[i] = v;
@@ -445,9 +520,21 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::prepareProposal( void 
 
     storedLnProb = 0.0;
     proposedLnProb = 0.0;
+<<<<<<< HEAD
 
     // only pick a random node if it wasn't assigned
     if ( node_assigned == false )
+=======
+    
+    if (sampleNodeIndex && !fixNodeIndex)
+    {
+        size_t node_index = GLOBAL_RNG->uniform01() * num_nodes;
+        node = &tau->getValue().getNode(node_index);
+    }
+    sampleNodeIndex = true;
+  
+    if (sampleSiteIndexSet)
+>>>>>>> development
     {
         const Tree &tau = p->getTree();
         size_t num_nodes = tau.getNumberOfNodes();

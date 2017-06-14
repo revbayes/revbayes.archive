@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //
 //  MatrixReal.cpp
 //  RevBayesCore
@@ -7,6 +8,8 @@
 //
 
 #include "CholeskyDecomposition.h"
+=======
+>>>>>>> development
 #include "EigenSystem.h"
 #include "MatrixReal.h"
 #include "RbException.h"
@@ -21,39 +24,51 @@ using namespace RevBayesCore;
 
 
 MatrixReal::MatrixReal( void ) : elements( RbVector<RbVector<double> >() ),
-    nRows( 0 ),
-    nCols( 0 ),
+    n_rows( 0 ),
+    n_cols( 0 ),
     eigensystem( NULL ),
+<<<<<<< HEAD
     eigenNeedsUpdate( true ),
     choleskyDecomp( NULL ),
     choleskyNeedsUpdate( true ),
     useCholeskyDecomp( false )
+=======
+    eigen_needs_update( true )
+>>>>>>> development
 {
 
 }
 
 
 MatrixReal::MatrixReal( size_t n ) : elements( RbVector<RbVector<double> >(n, RbVector<double>(n,0.0) ) ),
-    nRows( n ),
-    nCols( n ),
+    n_rows( n ),
+    n_cols( n ),
     eigensystem( NULL ),
+<<<<<<< HEAD
     eigenNeedsUpdate( true ),
     choleskyDecomp( NULL ),
     choleskyNeedsUpdate( true ),
     useCholeskyDecomp( false )
+=======
+    eigen_needs_update( true )
+>>>>>>> development
 {
     
 }
 
 
 MatrixReal::MatrixReal( size_t n, size_t k) : elements( RbVector<RbVector<double> >(n, RbVector<double>(k,0.0) ) ),
-    nRows( n ),
-    nCols( k ),
+    n_rows( n ),
+    n_cols( k ),
     eigensystem( NULL ),
+<<<<<<< HEAD
     eigenNeedsUpdate( true ),
     choleskyDecomp( NULL ),
     choleskyNeedsUpdate( true ),
     useCholeskyDecomp( false )
+=======
+    eigen_needs_update( true )
+>>>>>>> development
 {
     
 }
@@ -61,26 +76,34 @@ MatrixReal::MatrixReal( size_t n, size_t k) : elements( RbVector<RbVector<double
 
 MatrixReal::MatrixReal( size_t n, size_t k, double v) :
     elements( RbVector<RbVector<double> >(n, RbVector<double>(k,v) ) ),
-    nRows( n ),
-    nCols( k ),
+    n_rows( n ),
+    n_cols( k ),
     eigensystem( NULL ),
+<<<<<<< HEAD
     eigenNeedsUpdate( true ),
     choleskyDecomp( NULL ),
     choleskyNeedsUpdate( true ),
     useCholeskyDecomp( false )
+=======
+    eigen_needs_update( true )
+>>>>>>> development
 {
 
 }
 
 MatrixReal::MatrixReal( const MatrixReal &m ) :
     elements( m.elements ),
-    nRows( m.nRows ),
-    nCols( m.nCols ),
+    n_rows( m.n_rows ),
+    n_cols( m.n_cols ),
     eigensystem( NULL ),
+<<<<<<< HEAD
     eigenNeedsUpdate( true ),
     choleskyDecomp( NULL ),
     choleskyNeedsUpdate( true ),
     useCholeskyDecomp( false )
+=======
+    eigen_needs_update( true )
+>>>>>>> development
 {
     
 }
@@ -97,12 +120,16 @@ MatrixReal& MatrixReal::operator=(const MatrixReal &m)
     
     if ( this != &m )
     {
-        nCols = m.nCols;
-        nRows = m.nRows;
+        n_cols   = m.n_cols;
+        n_rows   = m.n_rows;
         elements = m.elements;
         
+<<<<<<< HEAD
         eigenNeedsUpdate = true;
         choleskyNeedsUpdate = true;
+=======
+        eigen_needs_update = true;
+>>>>>>> development
     }
     
     return *this;
@@ -112,8 +139,12 @@ MatrixReal& MatrixReal::operator=(const MatrixReal &m)
 RbVector<double>& MatrixReal::operator[]( size_t index )
 {
     // to be safe
+<<<<<<< HEAD
     eigenNeedsUpdate = true;
     choleskyNeedsUpdate = true;
+=======
+    eigen_needs_update = true;
+>>>>>>> development
     
     return elements[index];
 }
@@ -126,47 +157,15 @@ const RbVector<double>& MatrixReal::operator[]( size_t index ) const
 }
 
 
-//std::vector<std::vector<double> >::const_iterator MatrixReal::begin( void ) const
-//{
-//    // to be safe
-//    eigenNeedsUpdate = true;
-//    
-//    return elements.begin();
-//}
-//
-//
-//std::vector<std::vector<double> >::iterator MatrixReal::begin( void )
-//{
-//    // to be safe
-//    eigenNeedsUpdate = true;
-//    
-//    return elements.begin();
-//}
-//
-//
-//std::vector<std::vector<double> >::const_iterator MatrixReal::end( void ) const
-//{
-//    // to be safe
-//    eigenNeedsUpdate = true;
-//    
-//    return elements.end();
-//}
-//
-//
-//std::vector<std::vector<double> >::iterator MatrixReal::end( void )
-//{
-//    // to be safe
-//    eigenNeedsUpdate = true;
-//    
-//    return elements.end();
-//}
-
-
 void MatrixReal::clear( void )
 {
     // to be safe
+<<<<<<< HEAD
     eigenNeedsUpdate = true;
     choleskyNeedsUpdate = true;
+=======
+    eigen_needs_update = true;
+>>>>>>> development
     
     elements.clear();
 }
@@ -177,6 +176,7 @@ MatrixReal MatrixReal::computeInverse( void ) const
     // update the eigensystem/cholesky decomposition if necessary
     update();
     
+<<<<<<< HEAD
     MatrixReal inverse(nRows, nRows, 0.0);
     
     if ( useCholeskyDecomp )
@@ -184,6 +184,13 @@ MatrixReal MatrixReal::computeInverse( void ) const
         inverse = choleskyDecomp->getInverse();
     }
     else
+=======
+    
+    const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+    
+    MatrixReal tmp(n_rows, n_rows, 0);
+    for (size_t i = 0; i < n_rows; i++)
+>>>>>>> development
     {
         const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
         
@@ -228,16 +235,16 @@ void MatrixReal::executeMethod(const std::string &n, const std::vector<const Dag
 RbVector<double> MatrixReal::getColumn( size_t columnIndex ) const
 {
     
-    if ( columnIndex >= nCols )
+    if ( columnIndex >= n_cols )
     {
         std::stringstream o;
-        o << "Index out of bounds: The matrix has only " << nCols << " columns and you asked for the " << (columnIndex+1) << "-th column.";
+        o << "Index out of bounds: The matrix has only " << n_cols << " columns and you asked for the " << (columnIndex+1) << "-th column.";
         throw RbException( o.str() );
     }
     
-    RbVector<double> col = RbVector<double>( nRows, 0);
+    RbVector<double> col = RbVector<double>( n_rows, 0);
 
-    for (size_t i = 0; i < nRows; ++i)
+    for (size_t i = 0; i < n_rows; ++i)
     {
         col[i] = elements[i][columnIndex];
     }
@@ -249,7 +256,7 @@ RbVector<double> MatrixReal::getColumn( size_t columnIndex ) const
 size_t MatrixReal::getDim( void ) const
 {
     // we assume that this is a square matrix
-    return nRows;
+    return n_rows;
 }
 
 
@@ -270,30 +277,33 @@ const EigenSystem& MatrixReal::getEigenSystem( void ) const
     return *eigensystem;
 }
 
-double MatrixReal::getDet() const {
+double MatrixReal::getDet() const
+{
     
     double logDet = 0.0;
     if (isDiagonal() == true)
+    {
+        for (int i=0; i<n_rows; ++i)
         {
-        for (int i=0; i<nRows; ++i)
-            {
             logDet += log(elements[i][i]);
-            }
         }
+    }
     else
-        {
+    {
         // update the eigensystem if necessary
         update();
         const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
 
-        for (size_t i=0; i<nRows; i++)
-            {
+        for (size_t i=0; i<n_rows; i++)
+        {
             logDet += log(eigenval[i]);
-            }
         }
+    }
     
     if (logDet < -300.0)
+    {
         return 0.0;
+    }
     
     return exp(logDet);
 }
@@ -305,7 +315,7 @@ double MatrixReal::getLogDet() const
     if ( isDiagonal() == true )
     {
         double logDet = 0;
-        for (int i = 0; i < nRows; ++i)
+        for (int i = 0; i < n_rows; ++i)
         {
             logDet += log(elements[i][i]);
         }
@@ -319,7 +329,7 @@ double MatrixReal::getLogDet() const
         const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
 
         double tot = 0;
-        for (size_t i=0; i<nRows; i++)
+        for (size_t i=0; i<n_rows; i++)
         {
             tot += log(eigenval[i]);
         }
@@ -344,9 +354,9 @@ double MatrixReal::getMax( void ) const
 {
     
     double max = RbConstants::Double::neginf;
-    for (size_t i = 0; i < nRows; ++i)
+    for (size_t i = 0; i < n_rows; ++i)
     {
-        for (size_t j = 0; j < nCols; ++j)
+        for (size_t j = 0; j < n_cols; ++j)
         {
             if ( max < elements[i][j] )
             {
@@ -365,9 +375,9 @@ double MatrixReal::getMin( void ) const
 {
     
     double min = RbConstants::Double::inf;
-    for (size_t i = 0; i < nRows; ++i)
+    for (size_t i = 0; i < n_rows; ++i)
     {
-        for (size_t j = 0; j < nCols; ++j)
+        for (size_t j = 0; j < n_cols; ++j)
         {
             if ( min > elements[i][j] )
             {
@@ -383,84 +393,15 @@ double MatrixReal::getMin( void ) const
 
 size_t MatrixReal::getNumberOfColumns( void ) const
 {
-    return nCols;
+    return n_cols;
 }
 
 
 
 size_t MatrixReal::getNumberOfRows( void ) const
 {
-    return nRows;
+    return n_rows;
 }
-
-//double MatrixReal::getCovariance(size_t k, size_t l)  const
-//{
-//
-//    if (k>getDim())
-//    {
-//        throw RbException("Index out of range in symmetric real matrix.");
-//    }
-//
-//    if (l>getDim())
-//    {
-//        throw RbException("Index out of range in symmetric real matrix.");
-//    }
-//
-//    return (*this)[k][l];
-//}
-//
-//double MatrixReal::getPrecision(size_t k, size_t l)  const
-//{
-//
-//    if (k>getDim())
-//    {
-//        throw RbException("Index out of range in symmetric real matrix.");
-//    }
-//
-//    if (l>getDim())
-//    {
-//        throw RbException("Index out of range in symmetric real matrix.");
-//    }
-//
-//    update();
-//
-//    return inverse[k][l];
-//}
-//
-//double MatrixReal::getCorrel(size_t k, size_t l)  const
-//{
-//
-//    if (k>getDim())
-//    {
-//        throw RbException("Index out of range in symmetric real matrix.");
-//    }
-//
-//    if (l>getDim())
-//    {
-//        throw RbException("Index out of range in symmetric real matrix.");
-//    }
-//
-//    return (*this)[k][l] / sqrt((*this)[k][k] * (*this)[l][l]);
-//}
-//
-//double MatrixReal::getPartialCorrel(size_t k, size_t l)  const
-//{
-//
-//    if (k>getDim())
-//    {
-//        throw RbException("Index out of range in symmetric real matrix.");
-//    }
-//
-//    if (l>getDim())
-//    {
-//        throw RbException("Index out of range in symmetric real matrix.");
-//    }
-//
-//    update();
-//
-//    return - inverse[k][l] / sqrt(inverse[k][k] * inverse[l][l]);
-//}
-
 
 
 bool MatrixReal::isDiagonal(void) const
@@ -470,9 +411,9 @@ bool MatrixReal::isDiagonal(void) const
         return false;
     }
     
-    for (int i = 0; i < nRows; ++i)
+    for (int i = 0; i < n_rows; ++i)
     {
-        for (int j = i + 1; j < nCols; ++j)
+        for (int j = i + 1; j < n_cols; ++j)
         {
             if (elements[i][j] != 0.0 || elements[j][i] != 0.0)
             {
@@ -493,7 +434,7 @@ bool MatrixReal::isPositive( void )  const
     const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
 
     bool pos = true;
-    for (size_t i=0; i<nRows; i++)
+    for (size_t i=0; i<n_rows; i++)
     {
         pos &= (eigenval[i] > 0);
     }
@@ -504,7 +445,7 @@ bool MatrixReal::isPositive( void )  const
 
 bool MatrixReal::isSquareMatrix( void ) const
 {
-    return nRows == nCols;
+    return n_rows == n_cols;
 }
 
 
@@ -513,11 +454,15 @@ void MatrixReal::resize(size_t r, size_t c)
     
     elements = RbVector<RbVector<double> >(r, RbVector<double>(c,0.0) );
     
-    nRows = r;
-    nCols = c;
+    n_rows = r;
+    n_rows = c;
     
+<<<<<<< HEAD
     eigenNeedsUpdate = true;
     choleskyNeedsUpdate = true;
+=======
+    eigen_needs_update = true;
+>>>>>>> development
 }
 
 
@@ -532,14 +477,23 @@ void MatrixReal::setCholesky(bool c) const
 
 size_t MatrixReal::size( void ) const
 {
-    return nRows*nCols;
+    return n_rows*n_rows;
 }
 
 
 void MatrixReal::update( void ) const
 {
     
+<<<<<<< HEAD
     if ( useCholeskyDecomp )
+=======
+    if ( eigensystem == NULL )
+    {
+        eigensystem = new EigenSystem(this);
+    }
+
+    if ( eigen_needs_update == true )
+>>>>>>> development
     {
         
         if ( choleskyDecomp == NULL )
@@ -566,15 +520,24 @@ void MatrixReal::update( void ) const
             
         }
 
+<<<<<<< HEAD
     } else {
+=======
+            eigen_needs_update = false;
+>>>>>>> development
 
         
         if ( eigensystem == NULL )
         {
             eigensystem = new EigenSystem(this);
         }
+<<<<<<< HEAD
         
         if ( eigenNeedsUpdate == true )
+=======
+
+        catch (...)
+>>>>>>> development
         {
             
             try
@@ -920,9 +883,9 @@ MatrixReal operator/(const MatrixReal& A, const MatrixReal& B)
 MatrixReal& MatrixReal::operator+=(double b)
 {
     
-	for (size_t i=0; i<nRows; i++)
+	for (size_t i=0; i<n_rows; i++)
     {
-		for (size_t j=0; j<nCols; j++)
+		for (size_t j=0; j<n_cols; j++)
         {
 			elements[i][j] += b;
         }
@@ -944,9 +907,9 @@ MatrixReal& MatrixReal::operator+=(double b)
 MatrixReal& MatrixReal::operator-=(double b)
 {
     
-	for (size_t i=0; i<nRows; i++)
+	for (size_t i=0; i<n_rows; i++)
     {
-		for (size_t j=0; j<nCols; j++)
+		for (size_t j=0; j<n_cols; j++)
         {
 			elements[i][j] -= b;
         }
@@ -968,9 +931,9 @@ MatrixReal& MatrixReal::operator-=(double b)
 MatrixReal& MatrixReal::operator*=(double b)
 {
     
-	for (size_t i=0; i<nRows; i++)
+	for (size_t i=0; i<n_rows; i++)
     {
-		for (size_t j=0; j<nCols; j++)
+		for (size_t j=0; j<n_cols; j++)
         {
 			elements[i][j] *= b;
         }
@@ -1078,11 +1041,11 @@ MatrixReal MatrixReal::operator*(const MatrixReal& B) const
 MatrixReal&  MatrixReal::operator+=(const MatrixReal& B)
 {
     
-	if (B.getNumberOfRows() == nRows && B.getNumberOfColumns() == nCols) 
+	if (B.getNumberOfRows() == n_rows && B.getNumberOfColumns() == n_cols)
     {
-		for (size_t i=0; i<nRows; i++) 
+		for (size_t i=0; i<n_rows; i++)
         {
-			for (size_t j=0; j<nCols; j++)
+			for (size_t j=0; j<n_cols; j++)
             {
 				elements[i][j] += B[i][j];
             }
@@ -1110,11 +1073,11 @@ MatrixReal&  MatrixReal::operator+=(const MatrixReal& B)
 MatrixReal& MatrixReal::operator-=(const MatrixReal& B)
 {
     
-	if (B.getNumberOfRows() == nRows && B.getNumberOfColumns() == nCols) 
+	if (B.getNumberOfRows() == n_rows && B.getNumberOfColumns() == n_cols)
     {
-		for (size_t i=0; i<nRows; i++) 
+		for (size_t i=0; i<n_rows; i++)
         {
-			for (size_t j=0; j<nCols; j++)
+			for (size_t j=0; j<n_cols; j++)
             {
 				elements[i][j] -= B[i][j];
             }
@@ -1142,24 +1105,24 @@ MatrixReal& MatrixReal::operator-=(const MatrixReal& B)
 MatrixReal& MatrixReal::operator*=(const MatrixReal& B)
 {
     
-    size_t bRows = B.getNumberOfRows();
-    size_t bCols = B.getNumberOfColumns();
-	if ( nCols == bRows ) 
+    size_t b_rows = B.getNumberOfRows();
+    size_t b_cols = B.getNumberOfColumns();
+	if ( n_cols == b_rows )
     {
-		MatrixReal C(nRows, bCols, 0.0 );
-		for (size_t i=0; i<nRows; i++) 
+		MatrixReal C(n_rows, b_cols, 0.0 );
+		for (size_t i=0; i<n_rows; i++)
         {
-			for (size_t j=0; j<bCols; j++) 
+			for (size_t j=0; j<b_cols; j++)
             {
 				double sum = 0.0;
-				for (size_t k=0; k<nCols; k++)
+				for (size_t k=0; k<n_cols; k++)
 					sum += elements[i][k] * B[k][j];
 				C[i][j] = sum;
             }
         }
         
-        nCols = C.nCols;
-        nRows = C.nRows;
+        n_cols = C.n_cols;
+        n_rows = C.n_rows;
         elements = C.elements;
     }
     else
@@ -1173,9 +1136,9 @@ MatrixReal& MatrixReal::operator*=(const MatrixReal& B)
 
 std::vector<double> MatrixReal::operator*(const std::vector<double> &V) const
 {
-    std::vector<double> E(nCols, 0.0);
+    std::vector<double> E(n_cols, 0.0);
     
-    for (unsigned int i = 0; i < nCols; i++)
+    for (unsigned int i = 0; i < n_cols; i++)
     {
         for (unsigned int j = 0; j < V.size(); j++)
         {

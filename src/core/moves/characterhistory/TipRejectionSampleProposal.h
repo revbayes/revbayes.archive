@@ -1,6 +1,7 @@
 //#ifndef TipRejectionSampleProposal_H
 //#define TipRejectionSampleProposal_H
 //
+<<<<<<< HEAD
 //#include "BranchHistory.h"
 //#include "DeterministicNode.h"
 //#include "DiscreteCharacterData.h"
@@ -262,6 +263,231 @@
 ////        std::cout << "\n";
 //    }
 //    
+=======
+//  TipRejectionSampleProposal.h
+//  rb_mlandis
+//
+//  Created by Michael Landis on 5/7/14.
+//  Copyright (c) 2014 Michael Landis. All rights reserved.
+//
+
+#ifndef __rb_mlandis__TipRejectionSampleProposal__
+#define __rb_mlandis__TipRejectionSampleProposal__
+
+#include "BranchHistory.h"
+#include "DeterministicNode.h"
+#include "DiscreteCharacterData.h"
+#include "DistributionBinomial.h"
+#include "PathRejectionSampleProposal.h"
+#include "Proposal.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
+#include "RateMap.h"
+#include "RbException.h"
+#include "StochasticNode.h"
+//#include "TransitionProbability.h"
+#include "TypedDagNode.h"
+
+#include <cmath>
+#include <iostream>
+#include <set>
+#include <string>
+
+namespace RevBayesCore {
+    
+    /**
+     * The scaling operator.
+     *
+     * A scaling proposal draws a random uniform number u ~ unif(-0.5,0.5)
+     * and scales the current vale by a scaling factor
+     * sf = exp( lambda * u )
+     * where lambda is the tuning parameter of the Proposal to influence the size of the proposals.
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Michael Landis)
+     * @since 2009-09-08, version 1.0
+     *
+     */
+    
+    template<class charType>
+    class TipRejectionSampleProposal : public Proposal {
+        
+    public:
+        TipRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        
+        // Basic utility functions
+        void                            assignNode(TopologyNode* nd);
+        void                            assignSiteIndexSet(const std::set<size_t>& s);
+        TipRejectionSampleProposal*     clone(void) const;                                                                  //!< Clone object
+        void                            cleanProposal(void);
+        double                          computeLnProposal(const TopologyNode& nd);
+        double                          doProposal(void);                                                                   //!< Perform proposal
+        const std::set<DagNode*>&       getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on
+        const std::string&              getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
+        void                            printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
+        void                            prepareProposal(void);                                                              //!< Prepare the proposal
+        double                          sampleTipCharacters(const std::set<size_t>& indexSet);    //!< Sample the characters at the node
+        void                            swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the DAG nodes on which the Proposal is working on
+        void                            tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
+        void                            undoProposal(void);                                                                 //!< Reject the proposal
+        
+    protected:
+        
+        // parameters
+        StochasticNode<AbstractCharacterData>*  ctmc;
+        StochasticNode*               tau;
+        DeterministicNode<RateMap>*             qmap;
+        std::set<DagNode*>                      nodes;
+        
+        // dimensions
+        size_t                                  num_nodes;
+        size_t                                  numCharacters;
+        size_t                                  num_states;
+                
+        // proposal
+        std::vector<unsigned>                   storedNodeState;
+        TopologyNode*                           node;
+        std::set<size_t>                        siteIndexSet;
+        double                                  storedLnProb;
+        double                                  proposedLnProb;
+        
+        PathRejectionSampleProposal<charType,treeType>* nodeProposal;
+        TransitionProbabilityMatrix nodeTpMatrix;
+        
+        double                                  lambda;
+        int                                     monitorIndex;
+        
+        // flags
+        bool                                    fixNodeIndex;
+        bool                                    sampleNodeIndex;
+        bool                                    sampleSiteIndexSet;
+        
+    };
+    
+}
+
+
+
+/**
+ * Constructor
+ *
+ * Here we simply allocate and initialize the Proposal object.
+ */
+template<class charType>
+RevBayesCore::TipRejectionSampleProposal<charType>::TipRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+ctmc(n),
+tau(t),
+qmap(q),
+num_nodes(t->getValue().getNumberOfNodes()),
+numCharacters(n->getValue().getNumberOfCharacters()),
+num_states(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
+node(nd),
+nodeTpMatrix(num_states),
+lambda(l),
+sampleNodeIndex(true),
+sampleSiteIndexSet(true)
+
+{
+    monitorIndex = -120;
+    
+    nodes.insert(ctmc);
+    nodes.insert(tau);
+    nodes.insert(qmap);
+    
+    nodeProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
+    
+    fixNodeIndex = (node != NULL);
+}
+
+
+template<class charType>
+void RevBayesCore::TipRejectionSampleProposal<charType>::cleanProposal( void )
+{
+//    std::cout << "ACCEPT " << node->getIndex() << "\n";
+    nodeProposal->cleanProposal();
+}
+
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the proposal.
+ */
+template<class charType>
+RevBayesCore::TipRejectionSampleProposal<charType>* RevBayesCore::TipRejectionSampleProposal<charType>::clone( void ) const
+{
+    return new TipRejectionSampleProposal( *this );
+}
+
+template<class charType>
+double RevBayesCore::TipRejectionSampleProposal<charType>::computeLnProposal(const TopologyNode& nd)
+{
+    double lnP = 0.0;
+    
+    return 0.0;
+//    for (std::set<size_t>::iterator it = )
+}
+
+template<class charType>
+void RevBayesCore::TipRejectionSampleProposal<charType>::assignNode(TopologyNode* nd)
+{
+    node = nd;
+    sampleNodeIndex = false;
+}
+
+template<class charType>
+void RevBayesCore::TipRejectionSampleProposal<charType>::assignSiteIndexSet(const std::set<size_t>& s)
+{
+    siteIndexSet = s;
+    sampleSiteIndexSet = false;
+}
+
+
+/**
+ * Get Proposals' name of object
+ *
+ * \return The Proposals' name.
+ */
+template<class charType>
+const std::string& RevBayesCore::TipRejectionSampleProposal<charType>::getProposalName( void ) const
+{
+    static std::string name = "TipRejectionSampleProposal";
+    
+    return name;
+}
+
+
+/**
+ * Get the vector of nodes on which this proposal is working on.
+ *
+ * \return  Const reference to a vector of nodes pointer on which the proposal operates.
+ */
+template<class charType>
+const std::set<RevBayesCore::DagNode*>& RevBayesCore::TipRejectionSampleProposal<charType>::getNodes( void ) const
+{
+    
+    return nodes;
+}
+
+
+/**
+ * Perform the Proposal.
+ *
+ * A scaling Proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * and scales the current vale by a scaling factor
+ * sf = exp( lambda * u )
+ * where lambda is the tuning parameter of the Proposal to influence the size of the proposals.
+ *
+ * \return The hastings ratio.
+ */
+template<class charType>
+double RevBayesCore::TipRejectionSampleProposal<charType>::doProposal( void )
+{
+    proposedLnProb = 0.0;
+
+    double proposedLnProbRatio = 0.0;
+    
+>>>>>>> development
 //    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
 //    
 //    nodeProposal->assignNode(node);

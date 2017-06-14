@@ -17,8 +17,13 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
+<<<<<<< HEAD
 ElementSwapSimplexProposal::ElementSwapSimplexProposal( StochasticNode<RbVector<double> > *n ) : SimpleProposal<RbVector<double> >( n ),
 storedValue( RbVector<double>() )
+=======
+ElementSwapSimplexProposal::ElementSwapSimplexProposal( StochasticNode<Simplex> *n ) : SimpleProposal<Simplex>( n ),
+    storedValue( Simplex() )
+>>>>>>> development
 {
     
 }
@@ -68,7 +73,11 @@ const std::string& ElementSwapSimplexProposal::getProposalName( void ) const
  *
  * \return The hastings ratio.
  */
+<<<<<<< HEAD
 double ElementSwapSimplexProposal::propose( RbVector<double> &value )
+=======
+double ElementSwapSimplexProposal::propose( Simplex &value )
+>>>>>>> development
 {
     
     // Get random number generator
@@ -148,7 +157,11 @@ void ElementSwapSimplexProposal::undoProposal( void )
  */
 void ElementSwapSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
+<<<<<<< HEAD
     variable = static_cast<StochasticNode<RbVector<double> >* >(newN) ;
+=======
+    variable = static_cast<StochasticNode<Simplex >* >(newN) ;
+>>>>>>> development
 }
 
 

@@ -9,6 +9,14 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 StandardState::StandardState(size_t n) : DiscreteCharacterState( n ),
+<<<<<<< HEAD
+=======
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(n),
+>>>>>>> development
     labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" )
 {
     labels = labels.substr(0, n);
@@ -17,6 +25,14 @@ StandardState::StandardState(size_t n) : DiscreteCharacterState( n ),
 
 /** Default constructor */
 StandardState::StandardState(const std::string &s) : DiscreteCharacterState( 32 ),
+<<<<<<< HEAD
+=======
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(32),
+>>>>>>> development
     labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" )
 {
     setState(s);
@@ -24,6 +40,14 @@ StandardState::StandardState(const std::string &s) : DiscreteCharacterState( 32 
 }
 
 StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState( l.size() ),
+<<<<<<< HEAD
+=======
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(l.size()),
+>>>>>>> development
     labels( l )
 {
     setState(s);
@@ -51,3 +75,88 @@ std::string StandardState::getStateLabels( void ) const
 }
 
 
+<<<<<<< HEAD
+=======
+
+void StandardState::addState(const std::string &symbol)
+{
+    ++num_observed_states;
+    
+    std::string labels = getStateLabels();
+    size_t pos = labels.find(symbol);
+    
+    state.set( pos );
+    index_single_state = pos;
+}
+
+
+RbBitSet StandardState::getState(void) const
+{
+    return state;
+}
+
+
+bool StandardState::isGapState( void ) const
+{
+    return is_gap;
+}
+
+
+bool StandardState::isMissingState( void ) const
+{
+    return is_missing;
+}
+
+
+void StandardState::setGapState( bool tf )
+{
+    is_gap = tf;
+}
+
+
+void StandardState::setMissingState( bool tf )
+{
+    is_missing = tf;
+}
+
+
+void StandardState::setToFirstState(void)
+{
+    num_observed_states = 1;
+    index_single_state = 0;
+    state.clear();
+    state.set( 0 );
+}
+
+
+
+void StandardState::setState(const std::string &s)
+{
+    
+    std::string labels = getStateLabels();
+    
+    num_observed_states = 0;
+    state.clear();
+    
+    for (size_t i = 0; i < s.size(); i++)
+    {
+        ++num_observed_states;
+        
+        size_t pos = labels.find(s[i]);
+        state.set(pos);
+        index_single_state = pos;
+    }
+    
+}
+
+
+void StandardState::setStateByIndex(size_t index)
+{
+    
+    num_observed_states = 1;
+    index_single_state = index;
+    state.clear();
+    state.set( index );
+}
+
+>>>>>>> development

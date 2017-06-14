@@ -103,11 +103,19 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     changedAreas = m.changedAreas;
     affectingAreas = m.affectingAreas;
 //    stationaryMatrix     = m.stationaryMatrix;
+<<<<<<< HEAD
     
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 //    initializeStationaryMatrix();
     
 //    update();
+=======
+    
+    theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+//    initializeStationaryMatrix();
+    
+    update();
+>>>>>>> development
 
 }
 
@@ -163,7 +171,11 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 //        initializeStationaryMatrix();
         
+<<<<<<< HEAD
 //        update();
+=======
+        update();
+>>>>>>> development
         
     }
     
@@ -339,6 +351,7 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
     if (t != 0.0) {
         double digits = 8;
         double factor = std::pow(10.0, digits - std::ceil(std::log10(std::fabs(t))));
+<<<<<<< HEAD
         
 //        std::cout << t << " -> ";
         t = round(t * factor) / factor;
@@ -535,14 +548,139 @@ inline void RateMatrix_DECRateMatrix::multiplyMatrices(TransitionProbabilityMatr
                 r[i][j] += p[i][k] * q[k][j];
             }
         }
+=======
+        t = round(t * factor) / factor;
     }
-}
+    
+    
+    // Do we already have P(t)?
+    std::map<double, TransitionProbabilityMatrix>::const_iterator it = storedTransitionProbabilities.find(t);
+    bool found = it != storedTransitionProbabilities.end();
+    if (found) {
+        
+        // update the transition probs
+        P = it->second;
+        
+        // this time was most recently accessed
+        accessedTransitionProbabilities.remove(it->first);
+        accessedTransitionProbabilities.push_front(it->first);
+>>>>>>> development
+    }
+    else {
+        
+        if (useSquaring || true ) {
+            //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+            exponentiateMatrixByScalingAndSquaring(t, P);
+        }
+        else if ( theEigenSystem->isComplex() == false )
+        {
+            tiProbsEigens(t, P);
+        }
+        else
+        {
+            tiProbsComplexEigens(t, P);
+        }
+    
+        // condition P_ij on j!=0, P'_ij = P_ij / (1.0 - P_i0)
+        if (conditionSurvival)
+        {
+            for (size_t i = 1; i < num_states; i++) {
+                double row_sum = 0.0;
+                for (size_t j = 1; j < num_states; j++) {
+                    row_sum += P[i][j];
+                    
+                }
+                for (size_t j = 1; j < num_states; j++) {
+                    P[i][j] = P[i][j] / row_sum;
+                }
+                
+                // zeroes out the first column
+                P[i][0] = 0.0;
+                
+                // zeroes out the first row
+                P[0][i] = 0.0;
+            }
+            P[0][0] = 1.0;
+        }
 
+        if (useStoredTransitionProbabilities) {
+            storedTransitionProbabilities.insert( std::pair<double, TransitionProbabilityMatrix>(t, P) );
+            accessedTransitionProbabilities.push_front(t);
+        }
+        if (accessedTransitionProbabilities.size() > maxSizeStoredTransitionProbabilites)
+        {
+            double rem_time = accessedTransitionProbabilities.back();
+            storedTransitionProbabilities.erase(rem_time);
+            accessedTransitionProbabilities.pop_back();
+        }
+//        std::cout << storedTransitionProbabilities.size() << "\n";
+    }
+    
+    return;
+}
 
 RateMatrix_DECRateMatrix* RateMatrix_DECRateMatrix::clone( void ) const
 {
     return new RateMatrix_DECRateMatrix( *this );
 }
+
+//void RateMatrix_DECRateMatrix::computeStochasticMatrix(size_t n)
+//{
+//    AbstractRateMatrix::computeStochasticMatrix(n);
+//}
+
+void RateMatrix_DECRateMatrix::computeConditionSurvival(MatrixReal& r)
+{
+    for (size_t i = 1; i < num_states; i++)
+    {
+        double row_sum = 0.0;
+        for (size_t j = 1; j < num_states; j++)
+        {
+            row_sum += r[i][j];
+        }
+        for (size_t j = 1; j < num_states; j++)
+        {
+            r[i][j] /= row_sum;
+        }
+        r[i][0] = 0.0;
+        r[0][i] = 0.0;
+    }
+    r[0][0] = 1.0;
+}
+
+void RateMatrix_DECRateMatrix::computeConditionSurvival(TransitionProbabilityMatrix& r)
+{
+    for (size_t i = 1; i < num_states; i++)
+    {
+        double row_sum = 0.0;
+        for (size_t j = 1; j < num_states; j++)
+        {
+            row_sum += r[i][j];
+        }
+        for (size_t j = 1; j < num_states; j++)
+        {
+            r[i][j] /= row_sum;
+        }
+        r[i][0] = 0.0;
+        r[0][i] = 0.0;
+    }
+    r[0][0] = 1.0;
+}
+
+//MatrixReal RateMatrix_DECRateMatrix::getStochasticMatrix(size_t n)
+//{
+//
+//    if (conditionSurvival && false)
+//    {
+//        MatrixReal m = stochastic_matrix[n];
+//        //computeConditionSurvival(m);
+//        return m;
+//    }
+//    else
+//    {
+//        return stochastic_matrix[n];
+//    }
+//}
 
 const RbVector<RbVector<double> >& RateMatrix_DECRateMatrix::getDispersalRates(void) const
 {
@@ -576,6 +714,7 @@ std::vector<double> RateMatrix_DECRateMatrix::getStationaryFrequencies(void) con
     std::vector<double> f(num_states, 1.0/num_states);
     return(f);
 }
+<<<<<<< HEAD
 
 /*
 void RateMatrix_DECRateMatrix::initializeStationaryMatrix(void)
@@ -650,6 +789,8 @@ void RateMatrix_DECRateMatrix::initializeStationaryMatrix(void)
   
 }
 */
+=======
+>>>>>>> development
 
 void RateMatrix_DECRateMatrix::makeBits(void)
 {
@@ -741,9 +882,12 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
             lossOrGain[i].push_back(tmp[j]);
             
             std::vector<unsigned> a;
+<<<<<<< HEAD
             // store dispersal event source areas
 //            if (tmp[j]==1)
 //            {
+=======
+>>>>>>> development
             changedAreas[i].push_back((unsigned)j);
             for (size_t k = 0; k < b.size(); k++)
             {
@@ -753,6 +897,7 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
                 }
             }
             affectingAreas[i].push_back(a);
+<<<<<<< HEAD
 //            }
 //            // extinction events pushes only the lost area
 //            else
@@ -785,6 +930,11 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
 //    }
     
     
+=======
+
+        }
+    }
+>>>>>>> development
 }
 
 void RateMatrix_DECRateMatrix::setDispersalRates(const RbVector<RbVector<double> >& dr)
@@ -809,6 +959,7 @@ void RateMatrix_DECRateMatrix::setCladogeneticMatrix(const RevBayesCore::MatrixR
 {
     cladogeneticMatrix = cp;
     needs_update = true;
+<<<<<<< HEAD
 }
 
 void RateMatrix_DECRateMatrix::setBirthRate(const double &br)
@@ -817,6 +968,16 @@ void RateMatrix_DECRateMatrix::setBirthRate(const double &br)
     needs_update = true;
 }
 
+=======
+}
+
+void RateMatrix_DECRateMatrix::setBirthRate(const double &br)
+{
+    birthRate = br;
+    needs_update = true;
+}
+
+>>>>>>> development
 
 /** Calculate the transition probabilities for the real case */
 void RateMatrix_DECRateMatrix::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const

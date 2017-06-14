@@ -5,6 +5,7 @@
 #include "Probability.h"
 #include "RbException.h"
 #include "RlUtils.h"
+#include "WorkspaceVector.h"
 
 using namespace RevLanguage;
 
@@ -13,9 +14,9 @@ using namespace RevLanguage;
  * Construct an empty simplex.
  * We simply rely on the base class.
  */
-Simplex::Simplex( void ) : ModelVector<RealPos>()
+Simplex::Simplex( void ) : ModelObject<RevBayesCore::Simplex>()
 {
-    
+    initMethods();
 }
 
 
@@ -24,13 +25,14 @@ Simplex::Simplex( void ) : ModelVector<RealPos>()
  * rescale the values here and make sure they are all positive.
  * Just in case.
  */
-Simplex::Simplex( const RevBayesCore::RbVector<double>& v ) : ModelVector<RealPos>()
+Simplex::Simplex( const RevBayesCore::Simplex& v ) : ModelObject<RevBayesCore::Simplex>()
 {
-    RevBayesCore::RbVector<double>* newVal = makeNormalizedValue( v );
     
     // Now set the constant value of the simplex
-    RevBayesCore::ConstantNode< RevBayesCore::RbVector< double > >* newNode = new RevBayesCore::ConstantNode< RevBayesCore::RbVector< double > >( "", newVal );
+    RevBayesCore::ConstantNode< RevBayesCore::Simplex >* newNode = new RevBayesCore::ConstantNode< RevBayesCore::Simplex >( "", v.clone() );
     this->setDagNode( newNode );
+    
+    initMethods();
 }
 
 
@@ -41,10 +43,10 @@ Simplex::Simplex( const RevBayesCore::RbVector<double>& v ) : ModelVector<RealPo
  * @todo Make sure we actually have a simplex stored in n (or an
  *       NA value)
  */
-Simplex::Simplex( RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* n ) :
-    ModelVector<RealPos>( n )
+Simplex::Simplex( RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* n ) : ModelObject<RevBayesCore::Simplex>( n )
 {
 
+    initMethods();
 }
 
 
@@ -65,8 +67,36 @@ Simplex* Simplex::clone( void ) const
 }
 
 
+/**
+ * Map calls to member methods.
+ */
+RevPtr<RevVariable> Simplex::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
+{
+    
+    
+    if ( name == "size" )
+    {
+        found = true;
+        
+        // return a new RevVariable with the size of this container
+        return RevPtr<RevVariable>( new RevVariable( new Natural( size() ), "" ) );
+    }
+    else if ( name == "[]" )
+    {
+        found = true;
+        
+        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        return RevPtr<RevVariable>( new RevVariable( getElement( index ) ) );
+    }
+    
+    return ModelObject<RevBayesCore::Simplex>::executeMethod( name, args, found );
+}
+
+
+
 /** Get Rev type of object */
-const std::string& Simplex::getClassType(void) { 
+const std::string& Simplex::getClassType(void)
+{
     
     static std::string rev_type = "Simplex";
     
@@ -77,7 +107,11 @@ const std::string& Simplex::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Simplex::getClassTypeSpec(void) { 
     
+<<<<<<< HEAD
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), &ModelVector<RealPos>::getClassTypeSpec() );
+=======
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &ModelObject<RevBayesCore::Simplex>::getClassTypeSpec() );
+>>>>>>> development
     
 	return rev_type_spec; 
 }
@@ -90,31 +124,134 @@ const TypeSpec& Simplex::getTypeSpec(void) const
 }
 
 
-/**
- * Generate a normalized vector. This is a Simplex help functions used
- * by the constructors.
- */
-RevBayesCore::RbVector<double>* Simplex::makeNormalizedValue( const RevBayesCore::RbVector<double>& v )
+Probability* Simplex::getElement(size_t idx) const
 {
-    // Check that we have real positive values
-    for ( size_t i = 0; i < v.size(); ++i )
+    return new Probability( this->getValue()[ idx ] );
+}
+
+
+/**
+ * Initialize the methods.
+ */
+void Simplex::initMethods( void )
+{
+    
+    ArgumentRules* elementArgRules = new ArgumentRules();
+    elementArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", Probability::getClassTypeSpec(), elementArgRules ) );
+    
+}
+
+
+/**
+ * In this function we check whether this type is convertible to some other
+ * Rev object type. Here we focus entirely on supporting conversion to
+ * other generic vectors with compatible elements. This is not done automatically
+ * because of the templating: a vector of RealPos does not inherit from a vector
+ * of Real, for example.
+ */
+double Simplex::isConvertibleTo( const TypeSpec& type, bool once ) const
+{
+    
+    if ( once == true && type.getParentType() == getClassTypeSpec().getParentType() )
     {
-        if ( v[i] < 0.0 )
+        // We want to convert to another model vector
+        
+        // Simply check whether our elements can convert to the desired element type
+        RevBayesCore::RbConstIterator<double> i;
+        double penalty = 0.0;
+        for ( i = this->getValue().begin(); i != this->getValue().end(); ++i )
         {
-            throw RbException( "Attempt to set simplex element with negative number" );
+            const double& orgInternalElement = *i;
+            Probability orgElement = Probability( orgInternalElement );
+            
+            // Test whether this element is already of the desired element type or can be converted to it
+            if ( type.getElementTypeSpec() != NULL && orgElement.getTypeSpec() != *type.getElementTypeSpec() )
+            {
+                
+                double element_penalty = orgElement.isConvertibleTo( *type.getElementTypeSpec(), once );
+                if ( element_penalty == -1 )
+                {
+                    // we cannot convert this element
+                    return -1;
+                }
+                penalty += element_penalty;
+            }
+            
         }
+        
+        return penalty;
+    }
+    else if ( type == WorkspaceVector<RevObject>::getClassTypeSpec() )
+    {
+        // yes we can
+        return 0.0;
     }
     
-    // Normalize the vector to be on the safe side
-    RevBayesCore::RbVector<double>* newVal = new RevBayesCore::RbVector<double>( v );
-    double sum = 0.0;
-    for ( size_t i = 0; i < (*newVal).size(); ++i )
-        sum += (*newVal)[i];
-    for ( size_t i = 0; i < (*newVal).size(); ++i )
-        (*newVal)[i] /= sum;
+    return ModelObject<RevBayesCore::Simplex>::isConvertibleTo( type, once );
+}
+
+
+/**
+ * Add an element to the end of the vector.
+ */
+void Simplex::push_back(const double &x)
+{
+    return this->dag_node->getValue().push_back( x );
+}
+
+
+/**
+ * Add an element to the end of the vector.
+ */
+void Simplex::push_back(const Probability &x)
+{
+    return this->dag_node->getValue().push_back( x.getValue() );
+}
+
+
+/**
+ * Push a Rev object element onto the back of the vector.
+ */
+void Simplex::push_back( const RevObject &x )
+{
     
-    // Return the normalized value (the simplex)
-    return newVal;
+    // cast the object
+    const Probability *x_converted = dynamic_cast< const Probability* >( &x );
+    
+    if ( x_converted == NULL )
+    {
+        throw RbException("Could not append an element of type " + x.getType() + " to a vector of type " + this->getType() );
+    }
+    
+    // Push it onto the back of the elements vector
+    this->push_back( *x_converted );
+}
+
+
+/**
+ * Print the value of the vector, respecting the formatting of the
+ * model object elements. We do this by retrieving the elements, one
+ * by one, and printing them using their own printValue implementation.
+ * Among other things, this takes care of proper formatting.
+ *
+ * We make a perfectly safe const cast here, since we only utilize the
+ * const printValue function of the element.
+ */
+void Simplex::printValue( std::ostream& o, bool user ) const
+{
+    
+    this->getDagNode()->printValue( o, ",", -1, true, user, true );
+    
+}
+
+
+/**
+ * Size of the vector.
+ */
+size_t Simplex::size( void ) const
+{
+    return this->dag_node->getValue().size();
 }
 
 
@@ -130,3 +267,4 @@ void Simplex::unique( void )
 {
     throw RbException( "Illegal attempt to apply unique to a Simplex variable" );
 }
+

@@ -213,7 +213,9 @@ void BranchHistory::clearEvents(const std::set<size_t>& indexSet)
 
 void BranchHistory::removeEvent(CharacterEvent* evt)
 {
+
     history.erase(evt);
+
 }
 
 void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<CharacterEvent*>& parentSet, const std::set<CharacterEvent*>& childSet, const std::set<size_t>& indexSet)

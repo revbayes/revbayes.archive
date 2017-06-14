@@ -22,7 +22,11 @@ namespace RevBayesCore {
     class PhyloCTMCSiteHomogeneousBinary : public PhyloCTMCSiteHomogeneousConditional<BinaryState> {
 
         public:
+<<<<<<< HEAD:src/core/distributions/phylogenetics/substitution/PhyloCTMCSiteHomogeneousBinary.h
             PhyloCTMCSiteHomogeneousBinary(const TypedDagNode< Tree > *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding cod = BinaryAscertainmentBias::ALL);
+=======
+            PhyloCTMCSiteHomogeneousBinary(const TypedDagNode< Tree > *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding cod = BinaryAscertainmentBias::ALL, bool internal = false);
+>>>>>>> development:src/core/distributions/phylogenetics/substitution/PhyloCTMCSiteHomogeneousBinary.h
 
             // public member functions
             PhyloCTMCSiteHomogeneousBinary*                clone(void) const;
@@ -31,6 +35,10 @@ namespace RevBayesCore {
 
             double                                              sumRootLikelihood( void );
             bool                                                isSitePatternCompatible(std::map<size_t, size_t>);
+<<<<<<< HEAD:src/core/distributions/phylogenetics/substitution/PhyloCTMCSiteHomogeneousBinary.h
+=======
+            bool                                                isSitePatternCompatible(std::map<RbBitSet, size_t>);
+>>>>>>> development:src/core/distributions/phylogenetics/substitution/PhyloCTMCSiteHomogeneousBinary.h
         };
 
 }

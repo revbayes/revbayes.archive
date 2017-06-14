@@ -1,16 +1,13 @@
 #ifndef MultispeciesCoalescent_H
 #define MultispeciesCoalescent_H
 
-#include "RbVector.h"
-#include "Tree.h"
-#include "TypedDagNode.h"
-#include "TypedDistribution.h"
+#include "AbstractMultispeciesCoalescent.h"
 
 namespace RevBayesCore {
     
     class Clade;
     
-    class MultispeciesCoalescent : public TypedDistribution<Tree> {
+    class MultispeciesCoalescent : public AbstractMultispeciesCoalescent {
         
     public:
         MultispeciesCoalescent(const TypedDagNode<Tree> *st, const std::vector<Taxon> &t);
@@ -18,31 +15,32 @@ namespace RevBayesCore {
         
         // public member functions
         MultispeciesCoalescent*                             clone(void) const;                                                                                  //!< Create an independent clone
-        double                                              computeLnProbability(void);
-        void                                                redrawValue(void);
         void                                                setNes(TypedDagNode<RbVector<double> >* inputNes);
         void                                                setNe(TypedDagNode<double>* inputNe);
-
+        
+        
     protected:
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        double                                              computeLnCoalescentProbability(size_t k, const std::vector<double> &t, double a, double b, size_t index, bool f);
+        double                                              drawNe(size_t index);
+        double                                              getNe(size_t index) const;
+
         
     private:
         
-        double                                              getNe(size_t index) const;
-        
-        // helper functions
-        void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times);
-        void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
-        void                                                simulateTree(void);
-        
         // members
+<<<<<<< HEAD
         std::vector<Taxon>                                  taxa;
         const TypedDagNode<Tree>*                           species_tree;
         const TypedDagNode<RbVector<double> >*              Nes;
         const TypedDagNode<double >*                        Ne;
         size_t                                              num_taxa;
         double                                              log_tree_topology_prob;
+=======
+        const TypedDagNode<RbVector<double> >*              Nes;
+        const TypedDagNode<double >*                        Ne;
+>>>>>>> development
         
     };
     

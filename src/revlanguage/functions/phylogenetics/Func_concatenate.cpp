@@ -39,15 +39,24 @@ RevPtr<RevVariable> Func_concatenate::execute( void )
     const AbstractHomologousDiscreteCharacterData& b = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[1].getVariable()->getRevObject() );
     const std::string& type = static_cast<const RlString &>( args[2].getVariable()->getRevObject() ).getValue();
 
+<<<<<<< HEAD
     AbstractHomologousDiscreteCharacterData* d = a.concatenate( b, type );
+=======
+    AbstractHomologousDiscreteCharacterData *d = a.clone();
+    d->concatenate( b, type );
+>>>>>>> development
     for (size_t i = 3; i < args.size(); ++i)
     {
         const AbstractHomologousDiscreteCharacterData& c = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[i].getVariable()->getRevObject() );
+        d->concatenate( c, type );
         
+<<<<<<< HEAD
         AbstractHomologousDiscreteCharacterData* tmp = d->concatenate( c, type );
         delete d;
         
         d = tmp;
+=======
+>>>>>>> development
     }
     
     return new RevVariable( d );

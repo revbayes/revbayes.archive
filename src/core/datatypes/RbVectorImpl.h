@@ -73,13 +73,25 @@ namespace RevBayesCore {
         valueType&                                          operator[](size_t i)
         {
             if ( i >= std::vector<valueType>::size() )
+<<<<<<< HEAD
             throw(RbException("Vector index out of range"));
+=======
+            {
+                throw(RbException("Vector index out of range"));
+            }
+>>>>>>> development
             return std::vector<valueType>::operator [](i);
         }
         const valueType&                                    operator[](size_t i) const
         {
             if ( i >= std::vector<valueType>::size() )
+<<<<<<< HEAD
             throw(RbException("Vector index out of range"));
+=======
+            {
+                throw(RbException("Vector index out of range"));
+            }
+>>>>>>> development
             return std::vector<valueType>::operator [](i);
         }
         void                                                printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const
@@ -153,7 +165,8 @@ namespace RevBayesCore {
 
         // public (stl-like) vector functions
         RbVectorImpl<valueType, 1>&                         operator=(const RbVectorImpl<valueType, 1> &v) {
-            if ( this != &v ) {
+            if ( this != &v )
+            {
                 clear();
                 size_t n=v.size();
                 for (size_t i = 0; i < n; ++i) values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v[i] ) );
@@ -163,13 +176,25 @@ namespace RevBayesCore {
         valueType&                                          operator[](size_t i)
         {
             if ( i >= values.size() )
+<<<<<<< HEAD
             throw(RbException("Vector index out of range"));
+=======
+            {
+                throw(RbException("Vector index out of range"));
+            }
+>>>>>>> development
             return *values[i];
         }
         const valueType&                                    operator[](size_t i) const
         {
             if ( i >= values.size() )
+<<<<<<< HEAD
             throw(RbException("Vector index out of range"));
+=======
+            {
+                throw(RbException("Vector index out of range"));
+            }
+>>>>>>> development
             return *values[i];
         }
         bool                                                operator==(const RbVectorImpl<valueType,1>& x) const { return values == x.values; }                              //!< Equals operator

@@ -3,7 +3,11 @@
 
 using namespace RevBayesCore;
 
+<<<<<<< HEAD
 F81RateMatrixFunction::F81RateMatrixFunction(const TypedDagNode< RbVector<double> > *bf) : TypedFunction<RateGenerator>( new RateMatrix_F81(bf->getValue().size()) ),
+=======
+F81RateMatrixFunction::F81RateMatrixFunction(const TypedDagNode< Simplex > *bf) : TypedFunction<RateGenerator>( new RateMatrix_F81(bf->getValue().size()) ),
+>>>>>>> development
     base_frequencies( bf )
 {
     // add the lambda parameter as a parent
@@ -13,18 +17,21 @@ F81RateMatrixFunction::F81RateMatrixFunction(const TypedDagNode< RbVector<double
 }
 
 
-F81RateMatrixFunction::~F81RateMatrixFunction( void ) {
+F81RateMatrixFunction::~F81RateMatrixFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-F81RateMatrixFunction* F81RateMatrixFunction::clone( void ) const {
+F81RateMatrixFunction* F81RateMatrixFunction::clone( void ) const
+{
     return new F81RateMatrixFunction( *this );
 }
 
 
-void F81RateMatrixFunction::update( void ) {
+void F81RateMatrixFunction::update( void )
+{
     // get the information from the arguments for reading the file
     const std::vector<double>& f = base_frequencies->getValue();
     
@@ -40,7 +47,11 @@ void F81RateMatrixFunction::swapParameterInternal(const DagNode *oldP, const Dag
 {
     if (oldP == base_frequencies)
     {
+<<<<<<< HEAD
         base_frequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+=======
+        base_frequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
+>>>>>>> development
     }
 }
 

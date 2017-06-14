@@ -116,12 +116,12 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::NonHomologousDiscrete
         // get the member with give index
         const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
         
-        if (this->dagNode->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) )
+        if (this->dag_node->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) )
         {
             throw RbException("Index out of bounds in []");
         }
         
-        const RevBayesCore::DiscreteTaxonData<typename rlType::valueType>& element = static_cast< RevBayesCore::NonHomologousDiscreteCharacterData<typename rlType::valueType>& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
+        const RevBayesCore::DiscreteTaxonData<typename rlType::valueType>& element = static_cast< RevBayesCore::NonHomologousDiscreteCharacterData<typename rlType::valueType>& >( this->dag_node->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
         
         return new RevVariable( new DiscreteTaxonData<rlType>( new RevBayesCore::DiscreteTaxonData<typename rlType::valueType>( element ) ) );
     }

@@ -63,14 +63,14 @@ RevPtr<RevVariable> RateGeneratorSequence::executeMethod(std::string const &name
     {
         found = true;
         
-        int n = (int)this->dagNode->getValue().getNumberOfCharacters();
+        int n = (int)this->dag_node->getValue().getNumberOfCharacters();
         return new RevVariable( new Natural(n) );
     }
     else if (name == "nStates")
     {
         found = true;
         
-        int n = (int)this->dagNode->getValue().getNumberOfStates();
+        int n = (int)this->dag_node->getValue().getNumberOfStates();
         return new RevVariable( new Natural(n) );
     }
 
@@ -81,23 +81,27 @@ RevPtr<RevVariable> RateGeneratorSequence::executeMethod(std::string const &name
 /* Get Rev type of object */
 const std::string& RateGeneratorSequence::getClassType(void) {
     
+<<<<<<< HEAD:src/revlanguage/datatypes/math/RlRateGeneratorSequence.cpp
     static std::string revType = "RateGeneratorSequence";
+=======
+    static std::string rev_type = "RateMap";
+>>>>>>> development:src/revlanguage/datatypes/math/RlRateMap.cpp
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RateGeneratorSequence::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& RateGeneratorSequence::getTypeSpec(void) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }

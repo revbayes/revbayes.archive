@@ -17,7 +17,9 @@ using namespace RevBayesCore;
 Clade::Clade( void ) :
     age( 0.0 ),
     num_missing( 0 ),
-    taxa()
+    taxa(),
+    is_negative_constraint(false),
+    is_optional_match(false)
 {
     
 }
@@ -30,7 +32,13 @@ Clade::Clade( const Taxon &t, const RbBitSet &b ) :
     age( 0.0 ),
     bitset( b ),
     num_missing( b.size() > 1 ? b.size() - 1 : 0 ),
+<<<<<<< HEAD
     taxa()
+=======
+    taxa(),
+    is_negative_constraint(false),
+    is_optional_match(false)
+>>>>>>> development
 {
     
     taxa.push_back( t );
@@ -47,7 +55,13 @@ Clade::Clade(const std::vector<Taxon> &n, const RbBitSet &b) :
     age( 0.0 ),
     bitset( b ),
     num_missing( b.size() > n.size() ? b.size() - n.size() : 0 ),
+<<<<<<< HEAD
     taxa( n )
+=======
+    taxa( n ),
+    is_negative_constraint(false),
+    is_optional_match(false)
+>>>>>>> development
 {
     
     // for identifiability we always keep the taxon names sorted
@@ -273,6 +287,28 @@ size_t Clade::getNumberOfTaxa( void ) const
 
 
 /**
+ * Get the vector of optional clade constraints.
+ *
+ * \return       The optional clade constraints
+ */
+
+std::vector<Clade> Clade::getOptionalConstraints(void) const
+{
+    return optional_constraints;
+}
+
+/**
+ * Get number of missing taxa.
+ *
+ * \return       The number of missing taxa.
+ */
+size_t Clade::getNumberOfTaxa( void ) const
+{
+    return taxa.size();
+}
+
+
+/**
  * Get all taxon names.
  *
  * \return       The vector of taxon names.
@@ -319,11 +355,64 @@ const std::string& Clade::getTaxonName(size_t i) const
     return taxa[i].getName();
 }
 
+/**
+ * Is this clade a negative clade constraint (used with e.g. dnConstrainedTopology).
+ *
+ * \return       The true/false value of whether the clade is a negative constraint.
+ */
+bool Clade::isNegativeConstraint(void) const
+{
+    return is_negative_constraint;
+}
+
+
+/**
+ * Is this clade a negative clade constraint (used with e.g. dnConstrainedTopology).
+ *
+ * \return       The true/false value of whether the clade is a negative constraint.
+ */
+bool Clade::isOptionalMatch(void) const
+{
+    return is_optional_match;
+}
+
+
+/**
+ * Reset the bitset.
+ *
+ * \param[in]    map    The map between taxon names and index.
+ *
+ */
+void Clade::resetTaxonBitset(const std::map<std::string, size_t> map)
+{
+    
+    bitset = RbBitSet( map.size() );
+    
+    for (size_t i = 0; i < taxa.size(); ++i)
+    {
+        const std::map<std::string, size_t >::const_iterator& it = map.find( taxa[i].getName() );
+        if ( it != map.end() )
+        {
+            bitset.set( it->second );
+        }
+        else
+        {
+            for (std::map<std::string, size_t >::const_iterator it=map.begin(); it != map.end(); ++it)
+            {
+                std::cerr << it->first << " -- " << it->second << std::endl;
+            }
+            throw RbException("Missing taxon with name '" + taxa[i].getName() + "'.");
+        }
+    }
+    
+}
+
+
 
 /**
  * Set the age of the clade.
  *
- * \param[in]    age  The age of the clade.
+ * \param[in]    a  The age of the clade.
  *
  */
 void Clade::setAge(double a)
@@ -335,10 +424,17 @@ void Clade::setAge(double a)
 /**
  * Set the bitset of the clade.
  *
+<<<<<<< HEAD
  * \param[in]    bitset  The bitset representation of this clade.
  *
  */
 void Clade::setBitRepresentation( RbBitSet b )
+=======
+ * \param[in]    b  The bitset representation of this clade.
+ *
+ */
+void Clade::setBitRepresentation( const RbBitSet &b )
+>>>>>>> development
 {
     bitset = b;
 }
@@ -381,6 +477,42 @@ void Clade::setTaxonAge(size_t i, double age)
 {
     taxa[i].setAge(age);
 }
+
+/**
+ * Set flag for negative clade constraint.
+ *
+ * \param[in]    tf   Flag indicating if clade is a negative constraint.
+ *
+ */
+void Clade::setNegativeConstraint(bool tf)
+{
+    is_negative_constraint = tf;
+}
+
+/**
+ * Set flag for negative clade constraint.
+ *
+ * \param[in]    tf   Flag indicating if clade is a negative constraint.
+ *
+ */
+void Clade::setOptionalMatch(bool tf)
+{
+    is_optional_match = tf;
+}
+
+
+
+/**
+ * Set optional clade constraints, e.g. dnConstrainedTopology must satisfy one of any clades in the set of clades
+ *
+ * \param[in]   c   Vector of optional clade constraints
+ *
+ */
+void Clade::setOptionalConstraints(std::vector<Clade> c)
+{
+    optional_constraints = c;
+}
+
 
 /**
  * Get the number of taxa contained in this clade.

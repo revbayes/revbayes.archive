@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class PhyloCTMCSiteHomogeneousConditional : public PhyloCTMCSiteHomogeneous<charType> {
 
     public:
-        PhyloCTMCSiteHomogeneousConditional(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding cod = AscertainmentBias::ALL);
+        PhyloCTMCSiteHomogeneousConditional(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding cod = AscertainmentBias::ALL, bool internal = false);
         PhyloCTMCSiteHomogeneousConditional(const PhyloCTMCSiteHomogeneousConditional &n);
         virtual                                            ~PhyloCTMCSiteHomogeneousConditional(void);                                                                   //!< Virtual destructor
 
@@ -69,6 +69,10 @@ namespace RevBayesCore {
 
         virtual double                                      sumRootLikelihood( void );
         virtual bool                                        isSitePatternCompatible( std::map<size_t, size_t> );
+<<<<<<< HEAD
+=======
+        virtual bool                                        isSitePatternCompatible( std::map<RbBitSet, size_t> );
+>>>>>>> development
         std::vector<size_t>                                 getIncludedSiteIndices( void );
         void                                                updateCorrections( const TopologyNode& node, size_t nodeIndex );
 
@@ -81,8 +85,13 @@ namespace RevBayesCore {
 #include <climits>
 
 template<class charType>
+<<<<<<< HEAD
 RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomogeneousConditional(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding ty) :
     PhyloCTMCSiteHomogeneous<charType>(  t, nChars, c, nSites, amb ), warned(false), coding(ty), N(nSites), numCorrectionMasks(0)
+=======
+RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomogeneousConditional(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding ty, bool internal) :
+    PhyloCTMCSiteHomogeneous<charType>(  t, nChars, c, nSites, amb, internal ), warned(false), coding(ty), N(nSites), numCorrectionMasks(0)
+>>>>>>> development
 {
     if(coding != AscertainmentBias::ALL)
     {
@@ -195,7 +204,12 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
             }
         }
 
+<<<<<<< HEAD
         std::map<size_t, size_t> charCounts;
+=======
+        std::map<size_t,size_t> charCounts;
+        std::map<RbBitSet,size_t> bitCounts;
+>>>>>>> development
         size_t numGap = 0;
 
         std::string mask = "";
@@ -229,8 +243,13 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
                 {
                     if(coding != AscertainmentBias::ALL)
                         mask += " ";
+<<<<<<< HEAD
                     
                     charCounts[c.getStateIndex()]++;
+=======
+
+                    bitCounts[c.getState()]++;
+>>>>>>> development
                 }
 
                 if(coding != AscertainmentBias::ALL)
@@ -238,7 +257,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
             }
         }
 
-        if( !isSitePatternCompatible(charCounts) )
+        if( !isSitePatternCompatible(bitCounts) )
         {
             incompatible++;
         }
@@ -305,6 +324,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
     return siteIndices;
 }
 
+
 template<class charType>
 bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternCompatible( std::map<size_t, size_t> charCounts )
 {
@@ -324,9 +344,80 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternC
     {
         return false;
     }
-    
+
     return true;
 }
+
+
+// Thanks to MH
+template<class charType>
+bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternCompatible( std::map<RbBitSet, size_t> charCounts )
+{
+    // if the pattern is constant, then it is incompatible with the variable coding
+    if(charCounts.size() == 1) return !(coding & AscertainmentBias::VARIABLE);
+
+    // find the common_states
+    std::map<size_t,size_t> stateCounts;
+    size_t max = 0;
+
+    for(std::map<RbBitSet, size_t>::iterator it = charCounts.begin(); it != charCounts.end(); it++)
+    {
+        RbBitSet r = it->first;
+        for(size_t i = 0; i < r.size(); i++)
+        {
+            stateCounts[i] += r.isSet(i) * it->second;
+            if(stateCounts[i] > max)
+            {
+                max = stateCounts[i];
+            }
+        }
+    }
+
+    std::vector<size_t> common_states;
+    for(std::map<size_t, size_t>::iterator it = stateCounts.begin(); it != stateCounts.end(); it++)
+    {
+        if(it->second == max)
+        {
+            common_states.push_back(it->first);
+        }
+    }
+
+    // find characters not intersecting common state
+    // then get state counts
+    stateCounts.clear();
+    for(size_t i = 0; i < common_states.size(); i++)
+    {
+        for(std::map<RbBitSet, size_t>::iterator it = charCounts.begin(); it != charCounts.end(); it++)
+        {
+            RbBitSet r = it->first;
+
+            if( r.isSet(common_states[i]) ) continue;
+
+            if( it->second > 1 )
+            {
+                return true;
+            }
+
+            for(size_t i = 0; i < r.size(); i++)
+            {
+                // if a state is found more than once among characters lacking the common state
+                // then this site pattern is parsimony informative
+                if(stateCounts.find(i) != stateCounts.end() )
+                {
+                    return true;
+                }
+                else
+                {
+                    stateCounts[i] += r.isSet(i);
+                }
+            }
+        }
+    }
+
+    // if the pattern is uninformative, then it is incompatible with the informative coding
+    return (coding != AscertainmentBias::INFORMATIVE);
+}
+
 
 template<class charType>
 void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLikelihood( size_t root, size_t left, size_t right)
@@ -677,6 +768,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
     for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
         const std::vector<double> &f = ff[mixture % ff.size()];
+<<<<<<< HEAD
 
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
@@ -697,6 +789,28 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
 
                     std::fill(uc, uc + this->num_chars, 0.0);
 
+=======
+
+        // iterate over correction masks
+        for(size_t mask = 0; mask < numCorrectionMasks; mask++)
+        {
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < this->num_chars; a++)
+            {
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
+
+                std::vector<double>::iterator                 u = p_node   + offset;
+                std::vector<double>::const_iterator         u_l = p_left   + offset;
+                std::vector<double>::const_iterator         u_r = p_right  + offset;
+
+                // iterate over combinations of autapomorphic states
+                for(size_t c = 0; c < numCorrectionPatterns; c++)
+                {
+                    std::vector<double>::iterator         uc = u  + c*this->num_chars;
+
+                    std::fill(uc, uc + this->num_chars, 0.0);
+
+>>>>>>> development
                     // iterate over partitions of c
                     for(size_t p1 = 0; p1 <= c; p1++)
                     {
@@ -883,9 +997,15 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::updateCorrecti
             const TopologyNode &right = node.getChild(1);
             size_t rightIndex = right.getIndex();
             updateCorrections( right, rightIndex );
+<<<<<<< HEAD
 
 
 
+=======
+
+
+
+>>>>>>> development
             if(node.isRoot())
                 computeRootCorrection( nodeIndex, leftIndex, rightIndex );
             else

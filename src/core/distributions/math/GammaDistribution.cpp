@@ -19,17 +19,20 @@ GammaDistribution::GammaDistribution(const TypedDagNode<double> *sh, const Typed
 }
 
 
-GammaDistribution::~GammaDistribution( void ) {
+GammaDistribution::~GammaDistribution( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
-double GammaDistribution::cdf( void ) const {
+double GammaDistribution::cdf( void ) const
+{
     return RbStatistics::Gamma::cdf(shape->getValue(), rate->getValue(), *value);
 }
 
 
-GammaDistribution* GammaDistribution::clone( void ) const {
+GammaDistribution* GammaDistribution::clone( void ) const
+{
     return new GammaDistribution( *this );
 }
 

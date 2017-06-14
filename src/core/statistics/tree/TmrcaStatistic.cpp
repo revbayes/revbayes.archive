@@ -7,7 +7,11 @@ using namespace RevBayesCore;
 TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, const bool s) : TypedFunction<double>( new double(0.0) ),
     tree( t ),
     clade( c ),
+<<<<<<< HEAD
     stemAge( s ),
+=======
+    stem_age( s ),
+>>>>>>> development
     index( -RbConstants::Integer::max )
 {
 
@@ -82,6 +86,7 @@ void TmrcaStatistic::fireTreeChangeEvent(const TopologyNode &n, const unsigned& 
 
 void TmrcaStatistic::initialize( void )
 {
+<<<<<<< HEAD
     initializeBitSet();
     taxaCount = clade.size();
     index = -RbConstants::Integer::max;
@@ -112,6 +117,11 @@ void TmrcaStatistic::initializeBitSet(void) {
     {
         taxon_bitset_map[ordered_taxa[i]] = i;
     }
+=======
+    clade.resetTaxonBitset( tree->getValue().getTaxonBitSetMap() );
+    taxa_count = clade.size();
+    index = -RbConstants::Integer::max;
+>>>>>>> development
     
     for(size_t i=0; i < clade.size(); i++)
     {
@@ -128,24 +138,28 @@ void TmrcaStatistic::update( void )
 {
     
     const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
-    size_t minCladeSize = n.size() + 2;
+    size_t min_clade_size = n.size() + 2;
 
     bool found = false;
     if ( index != -RbConstants::Integer::max )
     {
         TopologyNode *node = n[index];
+<<<<<<< HEAD
         size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+=======
+        size_t clade_size = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+>>>>>>> development
         
         if ( node->containsClade( clade, false ) == true )
         {
             
-            if ( taxaCount == cladeSize )
+            if ( taxa_count == clade_size )
             {
                 found = true;
             }
             else
             {
-                minCladeSize = cladeSize;
+                min_clade_size = clade_size;
             }
             
         }
@@ -160,13 +174,13 @@ void TmrcaStatistic::update( void )
         {
             
             TopologyNode *node = n[i];
-            size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
-            if ( cladeSize < minCladeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
+            size_t clade_size = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+            if ( clade_size < min_clade_size && clade_size >= taxa_count && node->containsClade( clade, false ) )
             {
                 
-                index = node->getIndex();
-                minCladeSize = cladeSize;
-                if ( taxaCount == cladeSize )
+                index = int(node->getIndex());
+                min_clade_size = clade_size;
+                if ( taxa_count == clade_size )
                 {
                     break;
                 }
@@ -182,7 +196,7 @@ void TmrcaStatistic::update( void )
         throw RbException("TMRCA-Statistics can only be applied if clade is present.");
     }
 	
-    if ( stemAge && index != tree->getValue().getRoot().getIndex() )
+    if ( stem_age == true && index != tree->getValue().getRoot().getIndex() )
     {
         size_t parentIndex = tree->getValue().getNode(index).getParent().getIndex();
         double tmrca = tree->getValue().getNode( parentIndex ).getAge();

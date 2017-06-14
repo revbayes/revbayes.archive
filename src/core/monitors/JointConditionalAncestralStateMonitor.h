@@ -2,7 +2,10 @@
 #define JointConditionalJointConditionalAncestralStateMonitor_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
+<<<<<<< HEAD
 #include "CharacterDependentCladoBirthDeathProcess.h"
+=======
+>>>>>>> development
 #include "StateDependentSpeciationExtinctionProcess.h"
 #include "Monitor.h"
 #include "Tree.h"
@@ -79,7 +82,10 @@ namespace RevBayesCore {
 #include "StochasticNode.h"
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
+<<<<<<< HEAD
 #include "CharacterDependentCladoBirthDeathProcess.h"
+=======
+>>>>>>> development
 #include "StateDependentSpeciationExtinctionProcess.h"
 
 using namespace RevBayesCore;
@@ -120,7 +126,10 @@ JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralS
 {
     cdbdp = NULL;
     
+<<<<<<< HEAD
     // the cdbdp is both the tree and character evolution model
+=======
+>>>>>>> development
     addVariable( tree );
     addVariable( ctmc );
     
@@ -222,8 +231,11 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
         }
         else
         {
+<<<<<<< HEAD
             //dist_bd = dynamic_cast<CharacterDependentCladoBirthDeathProcess*>( &cdbdp->getDistribution() ); // this doesn't work?
             //dist_bd = dynamic_cast<CharacterDependentCladoBirthDeathProcess*>( &nodes[0]->getDistribution() ); // this does!
+=======
+>>>>>>> development
             dist_bd = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &nodes[0]->getDistribution() ); // this does!
             num_sites = 1;
             num_nodes = tree->getValue().getNumberOfNodes();

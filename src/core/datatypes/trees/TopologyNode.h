@@ -39,7 +39,10 @@
 #include "Clade.h"
 #include "RbBitSet.h"
 //#include "RevPtr.h"
+<<<<<<< HEAD
 #include "TreeChangeEventMessage.h"
+=======
+>>>>>>> development
 #include "Taxon.h"
 #include "TaxonMap.h"
 
@@ -85,9 +88,12 @@ namespace RevBayesCore {
         bool                                        containsClade(const TopologyNode* c, bool strict) const;
         bool                                        containsClade(const Clade &c, bool strict) const;
         bool                                        containsClade(const RbBitSet &c, bool strict) const;
+<<<<<<< HEAD
 //        bool                                        containsClade(const TopologyNode* c) const;
 //        bool                                        containsClade(const Clade &c) const;
         void                                        fireTreeChangeEvent(const unsigned& m = RevBayesCore::TreeChangeEventMessage::DEFAULT);
+=======
+>>>>>>> development
         double                                      getAge(void) const;                                                                 //!< Get the age (time ago from present) for this node
         const std::vector<std::string>&             getBranchParameters(void) const;                                                        //!< Get the branch length leading towards this node
         double                                      getBranchLength(void) const;                                                        //!< Get the branch length leading towards this node
@@ -100,9 +106,13 @@ namespace RevBayesCore {
         size_t                                      getIndex(void) const;                                                               //!< Get index of node
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
         const std::string&                          getName() const;                                                                    //!< Get name of node
+        TopologyNode*                               getNode(const Clade &c, bool strict);
+        TopologyNode*                               getNode(const RbBitSet &c, bool strict);
+        const TopologyNode*                         getNode(const Clade &c, bool strict) const;
+        const TopologyNode*                         getNode(const RbBitSet &c, bool strict) const;
         const std::vector<std::string>&             getNodeParameters(void) const;                                                      //!< Get the branch length leading towards this node
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
-        size_t                                      getNumberOfNodesInSubtree(bool tips) const;   
+        size_t                                      getNumberOfNodesInSubtree(bool tips) const;
         
      // std::string                                 getNodeField(std::string key) const;
      // size_t                                      getNodeFieldNumber() const;
@@ -159,7 +169,11 @@ namespace RevBayesCore {
         TopologyNode*                               parent;                                                                             //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
         Tree*                                       tree;                                                                               //!< A pointer to the tree for convinience access
         Taxon                                       taxon;                                                                              //!< Taxon of the node, i.e. identifier/taxon name, plus species it comes from
+<<<<<<< HEAD
         RbBitSet                                    taxon_index;
+=======
+        RbBitSet                                    node_bitset;
+>>>>>>> development
         size_t                                      index;                                                                              //!< Node index
         bool                                        interior_node;
         bool                                        root_node;

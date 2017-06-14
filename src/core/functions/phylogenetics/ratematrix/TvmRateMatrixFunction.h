@@ -3,6 +3,10 @@
 
 #include "RateMatrix_TVM.h"
 #include "RbVector.h"
+<<<<<<< HEAD
+=======
+#include "Simplex.h"
+>>>>>>> development
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -25,7 +29,11 @@ namespace RevBayesCore {
     class TvmRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
+<<<<<<< HEAD
         TvmRateMatrixFunction(const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *bf);
+=======
+        TvmRateMatrixFunction(const TypedDagNode< Simplex > *er, const TypedDagNode< Simplex > *bf);
+>>>>>>> development
         virtual                                            ~TvmRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -39,8 +47,13 @@ namespace RevBayesCore {
         
         // members
         
+<<<<<<< HEAD
         const TypedDagNode< RbVector<double> >*             exchangeability_rates;
         const TypedDagNode< RbVector<double> >*             base_frequencies;
+=======
+        const TypedDagNode< Simplex >*                      exchangeability_rates;
+        const TypedDagNode< Simplex >*                      base_frequencies;
+>>>>>>> development
         
     };
     

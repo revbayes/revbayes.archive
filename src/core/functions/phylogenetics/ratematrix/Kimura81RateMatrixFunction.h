@@ -3,6 +3,10 @@
 
 #include "RateMatrix_Kimura81.h"
 #include "RbVector.h"
+<<<<<<< HEAD
+=======
+#include "Simplex.h"
+>>>>>>> development
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -25,7 +29,11 @@ namespace RevBayesCore {
     class Kimura81RateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
+<<<<<<< HEAD
         Kimura81RateMatrixFunction(const TypedDagNode<double> *k1, const TypedDagNode<double> *k2, const TypedDagNode< RbVector<double> > *bf);
+=======
+        Kimura81RateMatrixFunction(const TypedDagNode<double> *k1, const TypedDagNode<double> *k2, const TypedDagNode< Simplex > *bf);
+>>>>>>> development
         virtual                                            ~Kimura81RateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -41,7 +49,11 @@ namespace RevBayesCore {
         
         const TypedDagNode<double>*                         kappa_1;
         const TypedDagNode<double>*                         kappa_2;
+<<<<<<< HEAD
         const TypedDagNode< RbVector<double> >*             base_frequencies;
+=======
+        const TypedDagNode< Simplex >*                      base_frequencies;
+>>>>>>> development
         
     };
     

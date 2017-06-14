@@ -95,17 +95,29 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
         {
             int elemtype = 0;
 
+<<<<<<< HEAD
             if( StringUtilities::isNumber(data[i][j]) )
+=======
+            if ( StringUtilities::isNumber(data[i][j]) )
+>>>>>>> development
             {
                 elemtype |= NUMERIC;
 
                 // integer
+<<<<<<< HEAD
                 if( StringUtilities::isIntegerNumber(data[i][j]) )
+=======
+                if ( StringUtilities::isIntegerNumber(data[i][j]) )
+>>>>>>> development
                 {
                     int val = atoi(data[i][j].c_str() );
 
                     // negative integer
+<<<<<<< HEAD
                     if( val < 0)
+=======
+                    if ( val < 0)
+>>>>>>> development
                     {
                         elemtype |= UNBOUNDED;
                         row.push_back( Integer( val ) );
@@ -123,7 +135,11 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
                     double val = atof(data[i][j].c_str() );
 
                     // negative real
+<<<<<<< HEAD
                     if( val < 0)
+=======
+                    if ( val < 0)
+>>>>>>> development
                     {
                         elemtype |= UNBOUNDED;
                         row.push_back( Real( val ) );
@@ -134,6 +150,7 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
                         row.push_back( RealPos( val ) );
                     }
                 }
+<<<<<<< HEAD
             }
             // string
             else
@@ -141,6 +158,15 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
                 elemtype = STRING;
                 row.push_back( RlString( data[i][j]) );
             }
+=======
+            }
+            // string
+            else
+            {
+                elemtype = STRING;
+                row.push_back( RlString( data[i][j]) );
+            }
+>>>>>>> development
 
             matrix_type = matrix_type | elemtype;
         }
@@ -148,6 +174,7 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
         matrix.push_back(row);
     }
 
+<<<<<<< HEAD
     if(matrix_type <= STRING)
     {
         if(matrix_type == REALPOS)
@@ -199,6 +226,67 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
             {
                 ModelVector<Natural> r;
                 for(size_t j = 0; j < matrix[i].size(); j++)
+=======
+    if (matrix_type <= STRING)
+    {
+        if (matrix_type == REALPOS)
+        {
+
+            RevBayesCore::MatrixReal m = RevBayesCore::MatrixReal(matrix.size(),matrix[0].size());
+            for (size_t i = 0; i<matrix.size(); i++)
+            {
+
+                for (size_t j = 0; j < matrix[i].size(); j++)
+                {
+                    if ( matrix[i][j].isType(RealPos::getClassTypeSpec()) == false )
+                    {
+                        RealPos *tmp = (RealPos*)(matrix[i][j].convertTo(RealPos::getClassTypeSpec()));
+                        m[i][j] = (tmp)->getValue();
+                        delete tmp;
+                    }
+                    else
+                    {
+                        m[i][j] = dynamic_cast<const RealPos&>(matrix[i][j]).getValue();
+                    }
+                }
+            }
+
+            return new RevVariable( new MatrixReal(m) );
+        }
+        else if (matrix_type == REAL)
+        {
+
+            RevBayesCore::MatrixReal m = RevBayesCore::MatrixReal(matrix.size(),matrix[0].size());
+            for (size_t i = 0; i<matrix.size(); i++)
+            {
+
+                for (size_t j = 0; j < matrix[i].size(); j++)
+                {
+                    if ( matrix[i][j].isType(Real::getClassTypeSpec()) == false )
+                    {
+                        
+                        RealPos *tmp = (RealPos*)(matrix[i][j].convertTo(RealPos::getClassTypeSpec()));
+                        m[i][j] = (tmp)->getValue();
+                        delete tmp;
+                    }
+                    else
+                    {
+                        m[i][j] = dynamic_cast<const Real&>(matrix[i][j]).getValue();
+                    }
+                }
+
+            }
+
+            return new RevVariable( new MatrixReal(m) );
+        }
+        else if (matrix_type == NATURAL)
+        {
+            ModelVector<ModelVector<Natural> > m;
+            for (size_t i = 0; i<matrix.size(); i++)
+            {
+                ModelVector<Natural> r;
+                for (size_t j = 0; j < matrix[i].size(); j++)
+>>>>>>> development
                 {
                     r.push_back(matrix[i][j]);
                 }
@@ -206,6 +294,7 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
             }
             return new RevVariable( new ModelVector<ModelVector<Natural> >(m) );
         }
+<<<<<<< HEAD
         else if(matrix_type == INTEGER)
         {
             ModelVector<ModelVector<Integer> > m;
@@ -213,6 +302,15 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
             {
                 ModelVector<Integer> r;
                 for(size_t j = 0; j < matrix[i].size(); j++)
+=======
+        else if (matrix_type == INTEGER)
+        {
+            ModelVector<ModelVector<Integer> > m;
+            for (size_t i = 0; i<matrix.size(); i++)
+            {
+                ModelVector<Integer> r;
+                for (size_t j = 0; j < matrix[i].size(); j++)
+>>>>>>> development
                 {
                     r.push_back(matrix[i][j]);
                 }
@@ -220,6 +318,7 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
             }
             return new RevVariable( new ModelVector<ModelVector<Integer> >(m) );
         }
+<<<<<<< HEAD
         else if(matrix_type == STRING)
         {
             ModelVector<ModelVector<RlString> > m;
@@ -227,6 +326,15 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
             {
                 ModelVector<RlString> r;
                 for(size_t j = 0; j < matrix[i].size(); j++)
+=======
+        else if (matrix_type == STRING)
+        {
+            ModelVector<ModelVector<RlString> > m;
+            for (size_t i = 0; i<matrix.size(); i++)
+            {
+                ModelVector<RlString> r;
+                for (size_t j = 0; j < matrix[i].size(); j++)
+>>>>>>> development
                 {
                     r.push_back(matrix[i][j]);
                 }
@@ -251,7 +359,11 @@ const ArgumentRules& Func_readDataDelimitedFile::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "file",      RlString::getClassTypeSpec(), "The name of the file to read in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+<<<<<<< HEAD
         argumentRules.push_back( new ArgumentRule( "header", RlBoolean::getClassTypeSpec(), "Skip first line?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
+=======
+        argumentRules.push_back( new ArgumentRule( "header",    RlBoolean::getClassTypeSpec(), "Skip first line?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
+>>>>>>> development
         argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         rules_set = true;
         

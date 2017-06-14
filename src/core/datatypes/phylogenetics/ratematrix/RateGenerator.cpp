@@ -56,6 +56,7 @@ void RateGenerator::calculateTransitionProbabilities(double t, TransitionProbabi
 size_t RateGenerator::getNumberOfStates( void ) const
 {
     return num_states;
+<<<<<<< HEAD
 }
 
 double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from, const std::vector<size_t> &counts, double age, double rate) const
@@ -134,8 +135,50 @@ void RateGenerator::executeMethod(const std::string &n, const std::vector<const 
         rv.push_back(v);
     }
 
+=======
+>>>>>>> development
 }
 
+void RateGenerator::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<RbVector<double> >& rv) const
+{
+
+    // clear old values
+    rv.clear();
+    
+    TransitionProbabilityMatrix P(num_states);
+    
+    double rate = static_cast<const TypedDagNode<double> *>( args[0] )->getValue();
+    double start_age = static_cast<const TypedDagNode<double> *>( args[1] )->getValue();
+    double end_age = static_cast<const TypedDagNode<double> *>( args[2] )->getValue();
+    
+    calculateTransitionProbabilities( start_age, end_age, rate, P);
+    
+    for (size_t i = 0; i < num_states; i++)
+    {
+        RbVector<double> v;
+        for (size_t j =0; j < num_states; j++)
+        {
+            v.push_back(P[i][j]);
+        }
+        rv.push_back(v);
+    }
+    
+}
+
+
+void RateGenerator::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const
+{
+    size_t n_states = this->getNumberOfStates();
+//    rv.resize(n_states);
+    rv.clear();
+
+    size_t from_idx = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+
+    for (size_t to_idx = 0; to_idx < n_states; to_idx++)
+    {
+        rv.push_back(this->getRate(from_idx, to_idx, 0.0, 1.0));
+    }
+}
 
 void RateGenerator::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const
 {
@@ -155,6 +198,15 @@ void RateGenerator::executeMethod(const std::string &n, const std::vector<const 
 size_t RateGenerator::size( void ) const
 {
     return num_states;
+<<<<<<< HEAD
+=======
+}
+
+bool RateGenerator::simulateStochasticMapping(double startAge, double endAge, double rate, std::vector<size_t>& transition_states, std::vector<double>& transition_times)
+{
+    throw RbException("simulateStochasticMapping not defined for abstract RateGenerator objects");
+    return false;
+>>>>>>> development
 }
 
 
@@ -198,6 +250,7 @@ void RateGenerator::printForUser(std::ostream &o, const std::string &sep, int l,
         {
             o << " ,\n";
         }
+<<<<<<< HEAD
         
     }
     
@@ -229,6 +282,39 @@ void RateGenerator::printForSimpleStoring(std::ostream &o, const std::string &se
         
     }
     
+=======
+        
+    }
+    
+    o.setf(previous_flags);
+    o.precision(previous_precision);
+    
+}
+
+
+
+void RateGenerator::printForSimpleStoring(std::ostream &o, const std::string &sep, int l, bool left) const
+{
+    
+    // print the RbMatrix with each column of equal width and each column centered on the decimal
+    for (size_t i=0; i < size(); i++)
+    {
+        if (i > 0)
+        {
+            o << sep;
+        }
+        for (size_t j = 0; j < size(); ++j)
+        {
+            if (j > 0)
+            {
+                o << sep;
+            }
+            o << getRate( i, j, 1e-6, 1.0);
+        }
+        
+    }
+    
+>>>>>>> development
 }
 
 

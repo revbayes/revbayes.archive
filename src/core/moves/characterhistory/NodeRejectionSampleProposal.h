@@ -74,6 +74,7 @@ namespace RevBayesCore {
         const TypedDagNode<RateGeneratorSequence>*                  q_map_sequence;
 
         // dimensions
+<<<<<<< HEAD
         size_t                                                      numCharacters;
         size_t                                                      numStates;
 
@@ -91,6 +92,43 @@ namespace RevBayesCore {
         TransitionProbabilityMatrix                                 nodeTpMatrix;
         TransitionProbabilityMatrix                                 leftTpMatrix;
         TransitionProbabilityMatrix                                 rightTpMatrix;
+=======
+        size_t                                  num_nodes;
+        size_t                                  numCharacters;
+        size_t                                  num_states;
+        
+        // proposal
+        std::vector<size_t>                     storedNodeState;
+        std::vector<size_t>                     storedRootState;
+//        std::vector<CharacterEvent*>            storedNodeState2;
+//        std::vector<CharacterEvent*>            storedRootState2;
+//        
+//        std::map<size_t,BranchHistory*>         storedValues;
+//        std::map<size_t,BranchHistory*>         proposedValues;
+//        BranchHistory*                          storedValue;
+        TopologyNode*                           node;
+//        int                                     node_index;
+        int                                     monitorIndex;
+        std::set<size_t>                        siteIndexSet;
+        double                                  storedLnProb;
+//        BranchHistory*                          proposedValue;
+        double                                  proposedLnProb;
+        
+        PathRejectionSampleProposal<charType>* nodeProposal;
+        PathRejectionSampleProposal<charType>* leftProposal;
+        PathRejectionSampleProposal<charType>* rightProposal;
+        
+        TransitionProbabilityMatrix nodeTpMatrix;
+        TransitionProbabilityMatrix leftTpMatrix;
+        TransitionProbabilityMatrix rightTpMatrix;
+        
+        double                                  lambda;
+        
+        // flags
+        bool                                    fixNodeIndex;
+        bool                                    sampleNodeIndex;
+        bool                                    sampleSiteIndexSet;
+>>>>>>> development
         
         double                                                      lambda;
         std::set<size_t>                                            sampledCharacters;
@@ -110,17 +148,31 @@ namespace RevBayesCore {
 template<class charType>
 RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, double l, double r ) : Proposal(r),
     ctmc(n),
+<<<<<<< HEAD
     q_map_site( NULL ),
     q_map_sequence( NULL ),
     numStates(2),
     numCharacters(n->getValue().getNumberOfCharacters()),
     node( NULL ),
+=======
+    tau(t),
+    qmap(q),
+    num_nodes(t->getValue().getNumberOfNodes()),
+    numCharacters(n->getValue().getNumberOfCharacters()),
+    num_states(q->getValue().getNumberOfStates()),
+    node(nd),
+>>>>>>> development
     nodeTpMatrix(2),
     leftTpMatrix(2),
     rightTpMatrix(2),
     lambda(l)
 {
+<<<<<<< HEAD
 
+=======
+    
+//    std::cout << num_states << "\n";
+>>>>>>> development
     addNode( ctmc );
 
     nodeProposal = new PathRejectionSampleProposal<charType>(n, l, r);
@@ -331,7 +383,16 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::prepareProposal( void 
     TreeHistoryCtmc<charType>* p = dynamic_cast< TreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
     if ( p == NULL )
     {
+<<<<<<< HEAD
         throw RbException("Failed cast.");
+=======
+        node = NULL;
+        std::vector<TopologyNode*> nds = tree.getNodes();
+        while (node == NULL || node->isTip()) {
+            size_t idx = GLOBAL_RNG->uniform01() * nds.size(); //numTips + GLOBAL_RNG->uniform01() * (num_nodes-numTips);
+            node = nds[idx];
+        };
+>>>>>>> development
     }
 
     storedLnProb = 0.0;

@@ -9,7 +9,7 @@ using namespace RevBayesCore;
 
 /* Constructor */
 ModelMonitor::ModelMonitor(unsigned long g, const std::string &fname, const std::string &del) : AbstractFileMonitor(std::vector<DagNode *>(),g,fname,del),
-    stochasticNodesOnly( false )
+    stochastic_nodes_only( false )
 {
     
 }
@@ -66,7 +66,11 @@ void ModelMonitor::resetDagNodes( void )
             // only simple numeric variable can be monitored (i.e. only integer and real numbers)
             if ( the_node->isSimpleNumeric() && !the_node->isClamped())
             {
+<<<<<<< HEAD
                 if ( (!stochasticNodesOnly && !the_node->isConstant() && the_node->getName() != "" && !the_node->isHidden() && !the_node->isElementVariable() ) || ( the_node->isStochastic() && !the_node->isClamped() && the_node->isHidden() == false  && the_node->isElementVariable() == false ) )
+=======
+                if ( (!stochastic_nodes_only && !the_node->isConstant() && the_node->getName() != "" && !the_node->isHidden() && !the_node->isElementVariable() ) || ( the_node->isStochastic() && !the_node->isClamped() && the_node->isHidden() == false  && the_node->isElementVariable() == false ) )
+>>>>>>> development
                 {
                     const std::string &name = the_node->getName();
                     if ( var_names.find( name ) == var_names.end() )
@@ -119,7 +123,7 @@ void ModelMonitor::setModel(Model *m)
 void ModelMonitor::setStochasticNodesOnly(bool tf) 
 {
     
-    stochasticNodesOnly = tf;
+    stochastic_nodes_only = tf;
     
     // reset the DAG nodes that should be monitored
     resetDagNodes();

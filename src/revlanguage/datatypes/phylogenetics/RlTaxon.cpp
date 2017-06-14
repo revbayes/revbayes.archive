@@ -76,11 +76,11 @@ Taxon* Taxon::clone(void) const
 void Taxon::constructInternalObject( void ) 
 {
     // we free the memory first
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
     }
     
@@ -89,12 +89,12 @@ void Taxon::constructInternalObject( void )
     std::string taxonSpecies = static_cast<const RlString &>( (species)->getRevObject() ).getValue() ;
     double taxonAge = static_cast<const Real &>( age->getRevObject() ).getValue();
     
-    dagNode = new RevBayesCore::ConstantNode<RevBayesCore::Taxon>("", new RevBayesCore::Taxon( taxonName ) );
+    dag_node = new RevBayesCore::ConstantNode<RevBayesCore::Taxon>("", new RevBayesCore::Taxon( taxonName ) );
     
-    dagNode->getValue().setSpeciesName( taxonSpecies );
-    dagNode->getValue().setAge( taxonAge );
+    dag_node->getValue().setSpeciesName( taxonSpecies );
+    dag_node->getValue().setAge( taxonAge );
     
-    dagNode->incrementReferenceCount();
+    dag_node->incrementReferenceCount();
     
 }
 
@@ -107,14 +107,14 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Taxon::executeMethod(std::string c
     {
         found = true;
         
-        std::string n = this->dagNode->getValue().getSpeciesName();
+        std::string n = this->dag_node->getValue().getSpeciesName();
         return RevPtr<RevVariable>( new RevVariable( new RlString( n ) ) );
     }
     if (name == "getAge")
     {
         found = true;
         
-        double a = this->dagNode->getValue().getAge();
+        double a = this->dag_node->getValue().getAge();
         return RevPtr<RevVariable>( new RevVariable( new Real( a ) ) );
     }
     
@@ -158,7 +158,8 @@ const MemberRules& Taxon::getParameterRules(void) const
 
 
 /** Get Rev type of object */
-const std::string& Taxon::getClassType(void) { 
+const std::string& Taxon::getClassType(void)
+{
     
     static std::string rev_type = "Taxon";
     
@@ -166,7 +167,8 @@ const std::string& Taxon::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Taxon::getClassTypeSpec(void) { 
+const TypeSpec& Taxon::getClassTypeSpec(void)
+{
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -175,7 +177,8 @@ const TypeSpec& Taxon::getClassTypeSpec(void) {
 
 
 /** Get type spec */
-const TypeSpec& Taxon::getTypeSpec( void ) const {
+const TypeSpec& Taxon::getTypeSpec( void ) const
+{
     
     static TypeSpec type_spec = getClassTypeSpec();
     
@@ -184,7 +187,8 @@ const TypeSpec& Taxon::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Taxon::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Taxon::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "taxonName") 
     {
@@ -201,6 +205,7 @@ void Taxon::setConstParameter(const std::string& name, const RevPtr<const RevVar
     else {
         RevObject::setConstParameter(name, var);
     }
+    
 }
 
 

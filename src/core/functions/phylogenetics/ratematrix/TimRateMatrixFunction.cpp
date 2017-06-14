@@ -3,7 +3,11 @@
 
 using namespace RevBayesCore;
 
+<<<<<<< HEAD
 TimRateMatrixFunction::TimRateMatrixFunction(const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *bf) : TypedFunction<RateGenerator>( new RateMatrix_TIM(bf->getValue().size()) ),
+=======
+TimRateMatrixFunction::TimRateMatrixFunction(const TypedDagNode< Simplex > *er, const TypedDagNode< Simplex > *bf) : TypedFunction<RateGenerator>( new RateMatrix_TIM(bf->getValue().size()) ),
+>>>>>>> development
     exchangeability_rates( er ),
     base_frequencies( bf )
 {
@@ -50,11 +54,19 @@ void TimRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const Dag
     
     if (oldP == base_frequencies)
     {
+<<<<<<< HEAD
         base_frequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == exchangeability_rates)
     {
         exchangeability_rates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+=======
+        base_frequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
+    }
+    else if (oldP == exchangeability_rates)
+    {
+        exchangeability_rates = static_cast<const TypedDagNode< Simplex >* >( newP );
+>>>>>>> development
     }
     
 }

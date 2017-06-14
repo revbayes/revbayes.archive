@@ -1,8 +1,10 @@
 #include "RlContinuousCharacterData.h"
 
 #include "ConstantNode.h"
-#include "Natural.h"
+#include "RlMemberFunction.h"
 #include "ModelVector.h"
+#include "Natural.h"
+#include "Real.h"
 #include "RlContinuousTaxonData.h"
 #include "RlString.h"
 #include "RbUtil.h"
@@ -15,27 +17,21 @@ using namespace RevLanguage;
 /** Default constructor */
 ContinuousCharacterData::ContinuousCharacterData(void) :
     HomologousCharacterData( ),
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
     dagNode( NULL )
+=======
+    dag_node( NULL )
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
 {
     
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
-    
-    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
-
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
+    initMethods();
 
 }
 
 /** Construct from core data type */
 ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d) :
     HomologousCharacterData( ),
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
     dagNode( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d.clone()) )
 {
     
@@ -46,25 +42,31 @@ ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousC
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+=======
+    dag_node( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d.clone()) )
+{
     
-    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
     
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
+    initMethods();
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
+    
+    // increment the reference count to the value
+    dag_node->incrementReferenceCount();
+    
 }
 
 /** Construct from core data type */
 ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d) :
     HomologousCharacterData( ),
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
     dagNode( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d) )
+=======
+    dag_node( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d) )
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
 {
     
-    // increment the reference count to the value
-    dagNode->incrementReferenceCount();
     
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -77,17 +79,28 @@ ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharact
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
     methods.insertInheritedMethods( charDataMethods );
+=======
+    initMethods();
+    
+    // increment the reference count to the value
+    dag_node->incrementReferenceCount();
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
 }
 
 
 ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData> *d) :
     HomologousCharacterData( ),
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
     dagNode( d )
+=======
+    dag_node( d )
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
 {
     
     // increment the reference count to the value
-    dagNode->incrementReferenceCount();
+    dag_node->incrementReferenceCount();
     
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
     // add the DAG node member methods
     // note that this is a sage case because all DAG nodes are member objects
     const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
@@ -105,22 +118,25 @@ ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<Rev
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
     methods.insertInheritedMethods( charDataMethods );
+=======
+    initMethods();
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
     
 }
 
 
 ContinuousCharacterData::ContinuousCharacterData(const ContinuousCharacterData &d) :
     HomologousCharacterData( d ),
-    dagNode( NULL )
+    dag_node( NULL )
 {
     
-    if ( d.dagNode != NULL )
+    if ( d.dag_node != NULL )
     {
         
-        dagNode = d.dagNode->clone();
+        dag_node = d.dag_node->clone();
         
         // increment the reference count to the value
-        dagNode->incrementReferenceCount();
+        dag_node->incrementReferenceCount();
     }
     
 }
@@ -132,11 +148,11 @@ ContinuousCharacterData::~ContinuousCharacterData()
 {
     
     // free the old value
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
     }
 }
@@ -150,23 +166,23 @@ ContinuousCharacterData& ContinuousCharacterData::operator=(const ContinuousChar
         HomologousCharacterData::operator=( v );
         
         // free the old value
-        if ( dagNode != NULL )
+        if ( dag_node != NULL )
         {
-            if ( dagNode->decrementReferenceCount() == 0 )
+            if ( dag_node->decrementReferenceCount() == 0 )
             {
-                delete dagNode;
+                delete dag_node;
             }
             
-            dagNode = NULL;
+            dag_node = NULL;
         }
         
         // create own copy
-        if ( v.dagNode != NULL )
+        if ( v.dag_node != NULL )
         {
-            dagNode = v.dagNode->clone();
+            dag_node = v.dag_node->clone();
             
             // increment the reference count to the value
-            dagNode->incrementReferenceCount();
+            dag_node->incrementReferenceCount();
         }
     }
     
@@ -216,7 +232,7 @@ ContinuousCharacterData* ContinuousCharacterData::clone(void) const
 RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-    RevPtr<RevVariable> retVal = dynamic_cast<RevMemberObject *>( dagNode )->executeMethod(name, args, found);
+    RevPtr<RevVariable> retVal = dynamic_cast<RevMemberObject *>( dag_node )->executeMethod(name, args, found);
     
     if ( found == true )
     {
@@ -238,12 +254,12 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
             // get the member with give index
             const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
         
-            if (this->dagNode->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) )
+            if (this->dag_node->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) )
             {
                 throw RbException("Index out of bounds in []");
             }
         
-            const RevBayesCore::ContinuousTaxonData& element = static_cast< RevBayesCore::ContinuousCharacterData& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
+            const RevBayesCore::ContinuousTaxonData& element = static_cast< RevBayesCore::ContinuousCharacterData& >( this->dag_node->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
         
             return new RevVariable( new ContinuousTaxonData( new RevBayesCore::ContinuousTaxonData( element ) ) );
         }
@@ -252,7 +268,7 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
             // get the member with give index
             const std::string &index = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
             
-            const RevBayesCore::ContinuousTaxonData& element = static_cast< RevBayesCore::ContinuousCharacterData& >( this->dagNode->getValue() ).getTaxonData(index);            
+            const RevBayesCore::ContinuousTaxonData& element = static_cast< RevBayesCore::ContinuousCharacterData& >( this->dag_node->getValue() ).getTaxonData(index);            
             return new RevVariable( new ContinuousTaxonData( new RevBayesCore::ContinuousTaxonData( element ) ) );
         }
     }
@@ -286,7 +302,7 @@ const TypeSpec& ContinuousCharacterData::getClassTypeSpec(void)
 RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData>* ContinuousCharacterData::getDagNode( void ) const
 {
     
-    return dagNode;
+    return dag_node;
 }
 
 
@@ -303,26 +319,58 @@ const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const
 const RevBayesCore::ContinuousCharacterData& ContinuousCharacterData::getValue( void ) const
 {
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
     }
     
-    return dagNode->getValue();
+    return dag_node->getValue();
 }
 
 
 RevBayesCore::ContinuousCharacterData& ContinuousCharacterData::getValue( void )
 {
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
     }
     
-    return dagNode->getValue();
+    return dag_node->getValue();
 }
 
+
+void ContinuousCharacterData::initMethods( void )
+{
+    
+    // add the DAG node member methods
+    // note that this is a sage case because all DAG nodes are member objects
+    if ( dag_node != NULL )
+    {
+        const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dag_node )->getMethods();
+        methods.insertInheritedMethods( dagMethods );
+    }
+    
+    // insert the character data specific methods
+    MethodTable charDataMethods = getCharacterDataMethods();
+    methods.insertInheritedMethods( charDataMethods );
+    
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+    
+    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
+    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
+    
+    // member functions
+    ArgumentRules* get_element_arg_rules = new ArgumentRules();
+    get_element_arg_rules->push_back( new ArgumentRule( "i", Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    get_element_arg_rules->push_back( new ArgumentRule( "j", Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<ContinuousCharacterData, Real>( "get", this, get_element_arg_rules   ) );
+
+}
 
 /**
  * Is the object or any of its upstream members or elements
@@ -331,19 +379,19 @@ RevBayesCore::ContinuousCharacterData& ContinuousCharacterData::getValue( void )
  */
 bool ContinuousCharacterData::isAssignable( void ) const
 {
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         return false;
     }
     
-    return dagNode->isAssignable();
+    return dag_node->isAssignable();
 }
 
 
 bool ContinuousCharacterData::isConstant( void ) const
 {
     
-    return dagNode->isConstant();
+    return dag_node->isConstant();
 }
 
 
@@ -357,25 +405,25 @@ bool ContinuousCharacterData::isModelObject( void ) const
 void ContinuousCharacterData::makeConstantValue( void )
 {
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         throw RbException("Cannot convert a variable without value to a constant value.");
     }
-    else if ( dagNode->getDagNodeType() != RevBayesCore::DagNode::CONSTANT )
+    else if ( dag_node->getDagNodeType() != RevBayesCore::DagNode::CONSTANT )
     {
-        RevBayesCore::ConstantNode<valueType>* newNode = new ConstantNode<valueType>(dagNode->getName(), RevBayesCore::Cloner<valueType, IsDerivedFrom<valueType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
-        dagNode->replace(newNode);
+        RevBayesCore::ConstantNode<valueType>* newNode = new ConstantNode<valueType>(dag_node->getName(), RevBayesCore::Cloner<valueType, IsDerivedFrom<valueType, RevBayesCore::Cloneable>::Is >::createClone( dag_node->getValue() ) );
+        dag_node->replace(newNode);
         
         // delete the value if there are no other references to it.
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
         
-        dagNode = newNode;
+        dag_node = newNode;
         
         // increment the reference counter
-        dagNode->incrementReferenceCount();
+        dag_node->incrementReferenceCount();
     }
     
 }
@@ -411,18 +459,18 @@ void ContinuousCharacterData::makeUserFunctionValue( UserFunction* fxn )
     UserFunctionNode< ContinuousCharacterData >*  detNode = new UserFunctionNode< ContinuousCharacterData >( "", fxn );
     
     // Signal replacement and delete the value if there are no other references to it.
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        dagNode->replace( detNode );
-        if ( dagNode->decrementReferenceCount() == 0 )
-            delete dagNode;
+        dag_node->replace( detNode );
+        if ( dag_node->decrementReferenceCount() == 0 )
+            delete dag_node;
     }
     
     // Shift the actual node
-    dagNode = detNode;
+    dag_node = detNode;
     
     // Increment the reference counter
-    dagNode->incrementReferenceCount();
+    dag_node->incrementReferenceCount();
 }
 
 
@@ -432,13 +480,17 @@ void ContinuousCharacterData::makeUserFunctionValue( UserFunction* fxn )
  */
 void ContinuousCharacterData::printValue(std::ostream &o, bool user) const
 {
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         o << "NA";
     }
     else
     {
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
         dagNode->printValue( o, "" );
+=======
+        dag_node->printValue( o, "" );
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
     }
     
 }
@@ -447,9 +499,9 @@ void ContinuousCharacterData::printValue(std::ostream &o, bool user) const
 /** Copy name of variable onto DAG node, if it is not NULL */
 void ContinuousCharacterData::setName(std::string const &n)
 {
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        dagNode->setName( n );
+        dag_node->setName( n );
     }
     
 }
@@ -462,29 +514,29 @@ void ContinuousCharacterData::setDagNode(RevBayesCore::DagNode* newNode)
 {
     
     // Take care of the old value node
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
         if ( newNode != NULL )
         {
-            newNode->setName( dagNode->getName() );
+            newNode->setName( dag_node->getName() );
         }
         
-        dagNode->replace(newNode);
+        dag_node->replace(newNode);
         
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
         
     }
     
     // Set the new value node
-    dagNode = static_cast< RevBayesCore::TypedDagNode<valueType>* >( newNode );
+    dag_node = static_cast< RevBayesCore::TypedDagNode<valueType>* >( newNode );
     
     // Increment the reference count to the new value node
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        dagNode->incrementReferenceCount();
+        dag_node->incrementReferenceCount();
     }
     
 }
@@ -495,26 +547,26 @@ void ContinuousCharacterData::setValue(valueType *x)
     
     RevBayesCore::ConstantNode<valueType>* newNode;
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         newNode = new ConstantNode<valueType>("",x);
     }
     else
     {
-        newNode = new ConstantNode<valueType>(dagNode->getName(),x);
-        dagNode->replace(newNode);
+        newNode = new ConstantNode<valueType>(dag_node->getName(),x);
+        dag_node->replace(newNode);
         
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
         
     }
     
-    dagNode = newNode;
+    dag_node = newNode;
     
     // increment the reference count to the value
-    dagNode->incrementReferenceCount();
+    dag_node->incrementReferenceCount();
     
 }
 

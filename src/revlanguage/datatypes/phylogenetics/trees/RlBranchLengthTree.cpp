@@ -80,7 +80,11 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> BranchLengthTree::executeMethod(st
         if ( st.isType( RlString::getClassTypeSpec() ) )
         {
             std::string n = std::string( static_cast<const RlString&>( st ).getValue() );
+<<<<<<< HEAD
             this->dagNode->getValue().reroot(n, true);
+=======
+            this->dag_node->getValue().reroot(n, true);
+>>>>>>> development
         }
         return NULL;
         

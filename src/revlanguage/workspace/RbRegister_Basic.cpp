@@ -114,7 +114,7 @@
 #include "Func_printSeed.h"
 #include "Func_quit.h"
 #include "Func_range.h"
-#include "Func_rep.h"
+#include "Func_replicate.h"
 #include "Func_seed.h"
 #include "Func_seq.h"
 #include "Func_setOption.h"
@@ -190,6 +190,7 @@
 #include "Func_readAncestralStateTreeTrace.h"
 #include "Func_readAncestralStateTrace.h"
 #include "Func_source.h"
+#include "Func_summarizeCharacterMaps.h"
 #include "Func_TaxonReader.h"
 #include "Func_treeTrace.h"
 #include "Func_write.h"
@@ -264,18 +265,30 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_exists()                   );
         addFunction( new Func_getwd()                    );
         addFunction( new Func_getOption()                );
+        addFunction( new Func_ifelse<Natural>()          );
+        addFunction( new Func_ifelse<Integer>()          );
         addFunction( new Func_ifelse<Real>()             );
         addFunction( new Func_ifelse<RealPos>()          );
+        addFunction( new Func_ifelse<RlString>()         );
         addFunction( new Func_license()                  );
         addFunction( new Func_ls()                       );
         addFunction( new Func_printSeed()                );
         addFunction( new Func_quit()                     );
+<<<<<<< HEAD
         addFunction( new Func_rep<Integer>()             );
         addFunction( new Func_rep<Real>()                );
         addFunction( new Func_rep<Natural>()             );
         addFunction( new Func_rep<RealPos>()             );
         addFunction( new Func_rep<RlString>()            );
         addFunction( new Func_rep<RlBoolean>()           );
+=======
+        addFunction( new Func_replicate<Integer>()       );
+        addFunction( new Func_replicate<Real>()          );
+        addFunction( new Func_replicate<Natural>()       );
+        addFunction( new Func_replicate<RealPos>()       );
+        addFunction( new Func_replicate<RlString>()      );
+        addFunction( new Func_replicate<RlBoolean>()     );
+>>>>>>> development
         addFunction( new Func_seed()                     );
         addFunction( new Func_seq<Integer>()             );
         addFunction( new Func_seq<Real>()                );
@@ -359,15 +372,11 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
 
         // division
-        addFunction( new Func__div< Natural                            , RealPos               , RealPos                   >(  )  );
         addFunction( new Func__div< RealPos                            , Natural               , RealPos                   >(  )  );
-        addFunction( new Func__div< Integer                            , Real                  , Real                      >(  )  );
         addFunction( new Func__div< Real                               , Integer               , Real                      >(  )  );
         addFunction( new Func__div< Real                               , Real                  , Real                      >(  )  );
         addFunction( new Func__div< RealPos                            , RealPos               , RealPos                   >(  )  );
-        addFunction( new Func__div< ModelVector<Natural>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
         addFunction( new Func__div< ModelVector<RealPos>               , ModelVector<Natural>  , ModelVector<RealPos>      >(  )  );
-        addFunction( new Func__div< ModelVector<Integer>               , ModelVector<Real>     , ModelVector<Real>         >(  )  );
         addFunction( new Func__div< ModelVector<Real>                  , ModelVector<Integer>  , ModelVector<Real>         >(  )  );
         addFunction( new Func__div< ModelVector<RealPos>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
         addFunction( new Func__div< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<RealPos>      >(  )  );
@@ -434,6 +443,10 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()     );
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()        );
         addFunction( new Func__conversion<Simplex, ModelVector<Real> >()                         );
+<<<<<<< HEAD
+=======
+        addFunction( new Func__conversion<Simplex, ModelVector<RealPos> >()                      );
+>>>>>>> development
         addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Integer> > >()         );
 //        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Real> > >()            );
 //        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<RealPos> > >()         );
@@ -474,6 +487,10 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
 		addFunction( new Func_readCharacterDataDelimited()              );
         addFunction( new Func_readDataDelimitedFile()                   );
         addFunction( new Func_source()                                  );
+<<<<<<< HEAD
+=======
+        addFunction( new Func_summarizeCharacterMaps()                  );
+>>>>>>> development
         addFunction( new Func_treeTrace()                               );
         addFunction( new Func_write()                                   );
         addFunction( new Func_writeCharacterDataDelimited()             );

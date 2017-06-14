@@ -32,7 +32,11 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    const TypedDagNode<RbVector<double> > *ext,
                                                                                    const TypedDagNode<RateGenerator>* q,
                                                                                    const TypedDagNode<double>* r,
+<<<<<<< HEAD
                                                                                    const TypedDagNode< RbVector< double > >* p,
+=======
+                                                                                   const TypedDagNode< Simplex >* p,
+>>>>>>> development
                                                                                    const TypedDagNode<double> *rh,
                                                                                    const std::string &cdt,
                                                                                    const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
@@ -745,7 +749,11 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
 }
 
 
+<<<<<<< HEAD
 void StateDependentSpeciationExtinctionProcess::drawJointConditionalCharacterMap(std::vector<std::string*>& character_histories)
+=======
+void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string*>& character_histories)
+>>>>>>> development
 {
     // first populate partial likelihood vectors along all the branches
     sample_character_history = true;
@@ -859,15 +867,24 @@ void StateDependentSpeciationExtinctionProcess::drawJointConditionalCharacterMap
     character_histories[node_index] = simmap_string;
     
     // recurse towards tips
+<<<<<<< HEAD
     recursivelyDrawJointConditionalCharacterMap(left, l, character_histories);
     recursivelyDrawJointConditionalCharacterMap(right, r, character_histories);
+=======
+    recursivelyDrawStochasticCharacterMap(left, l, character_histories);
+    recursivelyDrawStochasticCharacterMap(right, r, character_histories);
+>>>>>>> development
     
     // turn off sampling until we need it again
     sample_character_history = false;
 }
 
 
+<<<<<<< HEAD
 void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories)
+=======
+void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories)
+>>>>>>> development
 {
     
     size_t node_index = node.getIndex();
@@ -1175,8 +1192,13 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalC
         character_histories[node_index] = new std::string(simmap_string);
         
         // recurse towards tips
+<<<<<<< HEAD
         recursivelyDrawJointConditionalCharacterMap(left, l, character_histories);
         recursivelyDrawJointConditionalCharacterMap(right, r, character_histories);
+=======
+        recursivelyDrawStochasticCharacterMap(left, l, character_histories);
+        recursivelyDrawStochasticCharacterMap(right, r, character_histories);
+>>>>>>> development
     }
 }
 
@@ -1416,7 +1438,11 @@ void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagN
     }
     if ( oldP == pi )
     {
+<<<<<<< HEAD
         pi = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+=======
+        pi = static_cast<const TypedDagNode<Simplex>* >( newP );
+>>>>>>> development
     }
     if ( oldP == rho )
     {

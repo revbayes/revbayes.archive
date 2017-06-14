@@ -17,9 +17,10 @@
 #ifndef Func_readTreeTrace_H
 #define Func_readTreeTrace_H
 
-#include "RlBranchLengthTree.h"
+#include "Clade.h"
 #include "Procedure.h"
-#include "RbFileManager.h"
+#include "RlBranchLengthTree.h"
+#include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RlTraceTree.h"
 
@@ -47,7 +48,7 @@ namespace RevLanguage {
         
     private:
         
-        TraceTree*                          readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d);
+        TraceTree*                          readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d, const RevBayesCore::Clade &og);
         TraceTree*                          readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
     };
     

@@ -67,7 +67,11 @@ RevPtr<RevVariable> RlRelativeNodeAgeWeightedConstraints::executeMethod(std::str
     {
         found = true;
         
+<<<<<<< HEAD
         std::string name = this->dagNode->getValue().getFilename();
+=======
+        std::string name = this->dag_node->getValue().getFilename();
+>>>>>>> development
         RlString *n = new RlString(name);
         return new RevVariable( n );
     }    
@@ -81,7 +85,11 @@ RevPtr<RevVariable> RlRelativeNodeAgeWeightedConstraints::executeMethod(std::str
 /*
 const Real* RlRelativeNodeAgeWeightedConstraints::getElement(size_t idx ) const
 {
+<<<<<<< HEAD
     double element = static_cast< RevBayesCore::RelativeNodeAgeWeightedConstraints& >( this->dagNode->getValue() ).getElement(idx - 1);
+=======
+    double element = static_cast< RevBayesCore::RelativeNodeAgeWeightedConstraints& >( this->dag_node->getValue() ).getElement(idx - 1);
+>>>>>>> development
     
     return new Real( element ) ;
     
@@ -93,7 +101,11 @@ const Real* RlRelativeNodeAgeWeightedConstraints::getElement(size_t idx ) const
  */
 size_t RlRelativeNodeAgeWeightedConstraints::getNumberOfConstraints( void ) const
 {
+<<<<<<< HEAD
     return this->dagNode->getValue().getNumberOfConstraints();
+=======
+    return this->dag_node->getValue().getNumberOfConstraints();
+>>>>>>> development
 }
 
 

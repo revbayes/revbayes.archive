@@ -9,6 +9,7 @@
 #define Func_chromosomesCladoProbs_H
 
 
+#include "RlCladogeneticProbabilityMatrix.h"
 #include "RlMatrixReal.h"
 #include "RlTypedFunction.h"
 
@@ -17,21 +18,29 @@
 
 namespace RevLanguage {
     
-    class Func_chromosomesCladoProbs : public TypedFunction<MatrixReal> {
+    class Func_chromosomesCladoProbs : public TypedFunction<CladogeneticProbabilityMatrix> {
         
     public:
         Func_chromosomesCladoProbs( void );
         
         // Basic utility functions
+<<<<<<< HEAD
         Func_chromosomesCladoProbs*                                     clone(void) const;                                      //!< Clone the object
         static const std::string&                                       getClassType(void);                                     //!< Get Rev type
         static const TypeSpec&                                          getClassTypeSpec(void);                                 //!< Get class type spec
         std::string                                                     getFunctionName(void) const;                            //!< Get the primary name of the function in Rev
         const TypeSpec&                                                 getTypeSpec(void) const;                                //!< Get the type spec of the instance
+=======
+        Func_chromosomesCladoProbs*                                                     clone(void) const;                                      //!< Clone the object
+        static const std::string&                                                       getClassType(void);                                     //!< Get Rev type
+        static const TypeSpec&                                                          getClassTypeSpec(void);                                 //!< Get class type spec
+        std::string                                                                     getFunctionName(void) const;                            //!< Get the primary name of the function in Rev
+        const TypeSpec&                                                                 getTypeSpec(void) const;                                //!< Get the type spec of the instance
+>>>>>>> development
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::MatrixReal>*         createFunction(void) const;                             //!< Create internal function object
-        const ArgumentRules&                                            getArgumentRules(void) const;                           //!< Get argument rules
+        RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix>*      createFunction(void) const;                             //!< Create internal function object
+        const ArgumentRules&                                                            getArgumentRules(void) const;                           //!< Get argument rules
         
     };
     

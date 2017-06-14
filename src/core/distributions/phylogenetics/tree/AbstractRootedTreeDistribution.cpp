@@ -52,7 +52,11 @@ AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNod
     std::set<std::string> found;
     for(size_t i = 0; i < taxa.size(); i++)
     {
+<<<<<<< HEAD
         if(found.find(taxa[i].getName()) == found.end())
+=======
+        if (found.find(taxa[i].getName()) == found.end())
+>>>>>>> development
         {
             found.insert(taxa[i].getName());
         }
@@ -606,7 +610,11 @@ void AbstractRootedTreeDistribution::simulateTree( void )
     }
     if ( ra <= max_node_age )
     {
+<<<<<<< HEAD
         if(ra > 0.0)
+=======
+        if (ra > 0.0)
+>>>>>>> development
         {
             throw(RbException("Root age younger than oldest taxon age"));
         }

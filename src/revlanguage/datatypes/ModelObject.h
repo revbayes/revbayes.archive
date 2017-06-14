@@ -55,7 +55,7 @@ namespace RevLanguage {
         ModelObject(const ModelObject &v);
         
         
-        RevBayesCore::TypedDagNode<rbType>*     dagNode;
+        RevBayesCore::TypedDagNode<rbType>*     dag_node;
 
     };
     
@@ -85,7 +85,7 @@ namespace RevLanguage {
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject() :
     AbstractModelObject(),
-    dagNode( NULL )
+    dag_node( NULL )
 {
 }
 
@@ -94,10 +94,10 @@ RevLanguage::ModelObject<rbType>::ModelObject() :
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
     AbstractModelObject(),
-    dagNode( new ConstantNode<rbType>("",v) )
+    dag_node( new ConstantNode<rbType>("",v) )
 {
     // increment the reference count to the value
-    dagNode->incrementReferenceCount();
+    dag_node->incrementReferenceCount();
     
 }
 
@@ -106,14 +106,14 @@ RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) :
     AbstractModelObject(),
-    dagNode( v )
+    dag_node( v )
 {
     // increment the reference count to the value
-    dagNode->incrementReferenceCount();
+    dag_node->incrementReferenceCount();
     
     // add the DAG node member methods
     // note that this is safe case because all DAG nodes are member objects
-    const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
+    const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dag_node )->getMethods();
     methods.insertInheritedMethods( dagMethods );
 
 }
@@ -123,16 +123,16 @@ RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType>
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
     AbstractModelObject( v ),
-    dagNode( NULL )
+    dag_node( NULL )
 {
     
-    if ( v.dagNode != NULL )
+    if ( v.dag_node != NULL )
     {
         
-        dagNode = v.dagNode->clone();
+        dag_node = v.dag_node->clone();
         
         // increment the reference count to the value
-        dagNode->incrementReferenceCount();
+        dag_node->incrementReferenceCount();
     }
     
 }
@@ -143,11 +143,11 @@ RevLanguage::ModelObject<rbType>::~ModelObject()
 {
     
     // free the old value
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
     }
     
@@ -164,23 +164,23 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
         AbstractModelObject::operator=( v );
         
         // free the old value
-        if ( dagNode != NULL )
+        if ( dag_node != NULL )
         {
-            if ( dagNode->decrementReferenceCount() == 0 )
+            if ( dag_node->decrementReferenceCount() == 0 )
             {
-                delete dagNode;
+                delete dag_node;
             }
             
-            dagNode = NULL;
+            dag_node = NULL;
         }
         
         // create own copy
-        if ( v.dagNode != NULL )
+        if ( v.dag_node != NULL )
         {
-            dagNode = v.dagNode->clone();
+            dag_node = v.dag_node->clone();
             
             // increment the reference count to the value
-            dagNode->incrementReferenceCount();
+            dag_node->incrementReferenceCount();
         }
     }
     
@@ -192,7 +192,11 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
 template <typename rbType>
 RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
+<<<<<<< HEAD
     RevMemberObject * rmo = dynamic_cast<RevMemberObject *>( dagNode );
+=======
+    RevMemberObject * rmo = dynamic_cast<RevMemberObject *>( dag_node );
+>>>>>>> development
     
     if ( rmo != NULL )
     {
@@ -234,20 +238,19 @@ template <typename rbType>
 RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode( void ) const
 {
     
-    return dagNode;
+    return dag_node;
 }
-
 
 template <typename rbType>
 const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const
 {
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
     }
     
-    return dagNode->getValue();
+    return dag_node->getValue();
 }
 
 
@@ -255,10 +258,10 @@ template <typename rbType>
 rbType& RevLanguage::ModelObject<rbType>::getValue( void )
 {
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
         throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
     
-    return dagNode->getValue();
+    return dag_node->getValue();
 }
 
 
@@ -270,10 +273,10 @@ rbType& RevLanguage::ModelObject<rbType>::getValue( void )
 template <typename rbType>
 bool RevLanguage::ModelObject<rbType>::isAssignable( void ) const
 {
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
         return false;
     
-    return dagNode->isAssignable();
+    return dag_node->isAssignable();
 }
 
 
@@ -281,7 +284,7 @@ template <typename rbType>
 bool RevLanguage::ModelObject<rbType>::isConstant( void ) const
 {
     
-    return dagNode->isConstant();
+    return dag_node->isConstant();
 }
 
 
@@ -289,25 +292,25 @@ template <typename rbType>
 void RevLanguage::ModelObject<rbType>::makeConstantValue( void )
 {
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         throw RbException("Cannot convert a variable without value to a constant value.");
     }
-    else if ( dagNode->getDagNodeType() != RevBayesCore::DagNode::CONSTANT )
+    else if ( dag_node->getDagNodeType() != RevBayesCore::DagNode::CONSTANT )
     {
-        RevBayesCore::ConstantNode<rbType>* newNode = new ConstantNode<rbType>(dagNode->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
-        dagNode->replace(newNode);
+        RevBayesCore::ConstantNode<rbType>* new_node = new ConstantNode<rbType>(dag_node->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( dag_node->getValue() ) );
+        dag_node->replace(new_node);
         
         // delete the value if there are no other references to it.
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
         
-        dagNode = newNode;
+        dag_node = new_node;
         
         // increment the reference counter
-        dagNode->incrementReferenceCount();
+        dag_node->incrementReferenceCount();
     }
     
 }
@@ -346,21 +349,21 @@ void RevLanguage::ModelObject<rbType>::makeUserFunctionValue( UserFunction* fxn 
     UserFunctionNode< ModelObject<rbType> >*  detNode = new UserFunctionNode< ModelObject<rbType> >( "", fxn );
     
     // Signal replacement and delete the value if there are no other references to it.
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        dagNode->replace( detNode );
-        if ( dagNode->decrementReferenceCount() == 0 )
+        dag_node->replace( detNode );
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
         
     }
     
     // Shift the actual node
-    dagNode = detNode;
+    dag_node = detNode;
     
     // Increment the reference counter
-    dagNode->incrementReferenceCount();
+    dag_node->incrementReferenceCount();
 }
 
 
@@ -371,13 +374,17 @@ void RevLanguage::ModelObject<rbType>::makeUserFunctionValue( UserFunction* fxn 
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o, bool user) const
 {
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         o << "NA";
     }
     else
     {
+<<<<<<< HEAD
         dagNode->printValue( o, "", -1, true, user, true );
+=======
+        dag_node->printValue( o, "", -1, true, user, true );
+>>>>>>> development
     }
     
 }
@@ -387,9 +394,9 @@ void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o, bool user) co
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::setName(std::string const &n)
 {
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        dagNode->setName( n );
+        dag_node->setName( n );
     }
     
 }
@@ -403,29 +410,29 @@ void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode
 {
     
     // Take care of the old value node
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
         if ( newNode != NULL )
         {
-            newNode->setName( dagNode->getName() );
+            newNode->setName( dag_node->getName() );
         }
         
-        dagNode->replace(newNode);
+        dag_node->replace(newNode);
         
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
         
     }
     
     // Set the new value node
-    dagNode = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newNode );
+    dag_node = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newNode );
     
     // Increment the reference count to the new value node
-    if ( dagNode != NULL )
+    if ( dag_node != NULL )
     {
-        dagNode->incrementReferenceCount();
+        dag_node->incrementReferenceCount();
     }
     
 }
@@ -437,26 +444,26 @@ void RevLanguage::ModelObject<rbType>::setValue(rbType *x)
     
     RevBayesCore::ConstantNode<rbType>* newNode;
     
-    if ( dagNode == NULL )
+    if ( dag_node == NULL )
     {
         newNode = new ConstantNode<rbType>("",x);
     }
     else
     {
-        newNode = new ConstantNode<rbType>(dagNode->getName(),x);
-        dagNode->replace(newNode);
+        newNode = new ConstantNode<rbType>(dag_node->getName(),x);
+        dag_node->replace(newNode);
         
-        if ( dagNode->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-            delete dagNode;
+            delete dag_node;
         }
         
     }
     
-    dagNode = newNode;
+    dag_node = newNode;
     
     // increment the reference count to the value
-    dagNode->incrementReferenceCount();
+    dag_node->incrementReferenceCount();
     
 }
 

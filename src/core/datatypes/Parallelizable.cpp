@@ -22,8 +22,10 @@ Parallelizable::Parallelizable() :
     
     
 #ifdef RB_MPI
-    num_processes = MPI::COMM_WORLD.Get_size();
-    pid = MPI::COMM_WORLD.Get_rank();
+//    num_processes = MPI::COMM_WORLD.Get_size();
+//    pid = MPI::COMM_WORLD.Get_rank();
+    MPI_Comm_rank(MPI_COMM_WORLD, &pid);
+    MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
 #endif
     
     process_active = ( active_PID == pid );
@@ -92,6 +94,7 @@ void Parallelizable::setActivePID(size_t a, size_t n)
     
     // delegate call for derived classes
     setActivePIDSpecialized(a,n);
+<<<<<<< HEAD
 }
 
 
@@ -103,3 +106,16 @@ void Parallelizable::setActivePIDSpecialized(size_t a, size_t n )
     
     // nothing done here.
 }
+=======
+}
+
+
+/**
+ * Dummy implementation which derived classes can overwrite.
+ */
+void Parallelizable::setActivePIDSpecialized(size_t a, size_t n )
+{
+    
+    // nothing done here.
+}
+>>>>>>> development

@@ -75,11 +75,23 @@ const std::string& NearestNeighborInterchangeProposal::getProposalName( void ) c
 double NearestNeighborInterchangeProposal::doProposal( void )
 {
     
+    // reset flag
+    failed = false;
+    
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     Tree& tau = variable->getValue();
     
+<<<<<<< HEAD
+=======
+    if ( tau.getNumberOfTips() < 3)
+    {
+        failed = true;
+        return RbConstants::Double::neginf;
+    }
+    
+>>>>>>> development
     // pick a random node which is not the root nor a direct descendant of the root
     TopologyNode* node;
     do {
@@ -201,6 +213,7 @@ void NearestNeighborInterchangeProposal::printParameterSummary(std::ostream &o) 
 void NearestNeighborInterchangeProposal::undoProposal( void )
 {
     
+<<<<<<< HEAD
     // undo the proposal
     TopologyNode& parent = storedUncle->getParent();
     TopologyNode& grandparent = storedChosenNode->getParent();
@@ -216,6 +229,27 @@ void NearestNeighborInterchangeProposal::undoProposal( void )
     // rescale to old ages
     TreeUtilities::setAges(&variable->getValue(), storedChosenNode, storedAges);
     TreeUtilities::setAges(&variable->getValue(), storedUncle, storedAges);
+=======
+    // we undo the proposal only if it didn't fail
+    if ( failed == false )
+    {
+        // undo the proposal
+        TopologyNode& parent = storedUncle->getParent();
+        TopologyNode& grandparent = storedChosenNode->getParent();
+    
+        // now exchange the two nodes
+        grandparent.removeChild( storedChosenNode );
+        parent.removeChild( storedUncle );
+        grandparent.addChild( storedUncle );
+        parent.addChild( storedChosenNode );
+        storedUncle->setParent( &grandparent );
+        storedChosenNode->setParent( &parent );
+    
+        // rescale to old ages
+        TreeUtilities::setAges(&variable->getValue(), storedChosenNode, storedAges);
+        TreeUtilities::setAges(&variable->getValue(), storedUncle, storedAges);
+    }
+>>>>>>> development
     
 }
 

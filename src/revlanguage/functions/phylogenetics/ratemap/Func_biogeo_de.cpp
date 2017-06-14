@@ -41,7 +41,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGeneratorSequence >* Func_biogeo_
     
 //    RevBayesCore::TypedDagNode<std::vector<double> >* glr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     //    RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix&>( gainLossRates->getRevObject() ).getDagNode();
-    //    RevBayesCore::TypedDagNode<std::vector<double> >* rf = static_cast<const Simplex &>( rootFrequencies->getRevObject() ).getDagNode();
+    //    RevBayesCore::TypedDagNode<std::vector<double> >* rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     
     //    if ( this->args[2] != NULL && origin->getRevObject() != RevNullObject::getInstance() )
     //    RevObject* tmp = &this->args[2].getVariable()->getRevObject();
@@ -57,6 +57,10 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGeneratorSequence >* Func_biogeo_
     
     
     RevBayesCore::TypedDagNode< RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+<<<<<<< HEAD
+=======
+    RevBayesCore::TypedDagNode< RevBayesCore::Simplex >* rf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+>>>>>>> development
     
     RevBayesCore::TypedDagNode<RevBayesCore::CharacterHistoryRateModifier>* grm = NULL;
 
@@ -85,15 +89,20 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
 //        argumentRules.push_back( new ArgumentRule( "gainLossRates"   , ModelVector<RealPos>::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "gainLossRates"   , RateGenerator::getClassTypeSpec()          , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+<<<<<<< HEAD
 //        argumentRules.push_back( new ArgumentRule( "rootFrequencies" , Simplex::getClassTypeSpec()                , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( std::vector<double>(2,0.5)) ) );
         argumentRules.push_back( new ArgumentRule( "geoRateMod"      , CharacterHistoryRateModifier::getClassTypeSpec()  , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ));
+=======
+        argumentRules.push_back( new ArgumentRule( "root_frequencies" , Simplex::getClassTypeSpec()                , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( std::vector<double>(2,0.5)) ) );
+        argumentRules.push_back( new ArgumentRule( "geoRateMod"      , GeographyRateModifier::getClassTypeSpec()  , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ));
+>>>>>>> development
         argumentRules.push_back( new ArgumentRule( "numAreas"        , Natural::getClassTypeSpec()                , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "forbidExtinction", RlBoolean::getClassTypeSpec()              , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
@@ -103,7 +112,7 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const
 //        argumentRules.push_back( new ArgumentRule( "branchRates"     , branchRateTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 //        argumentRules.push_back( new ArgumentRule( "maxRangeSize"    , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0)  ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -113,18 +122,18 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const
 const std::string& Func_biogeo_de::getClassType(void)
 {
     
-    static std::string revType = "Func_biogeo_de";
+    static std::string rev_type = "Func_biogeo_de";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_biogeo_de::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -143,7 +152,7 @@ std::string Func_biogeo_de::getFunctionName( void ) const
 const TypeSpec& Func_biogeo_de::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

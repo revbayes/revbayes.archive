@@ -63,6 +63,10 @@ namespace RevBayesCore {
         void                                                clearParameters(void);                                                                              //!< Clear both the current node and branch parameters
         void                                                clearBranchParameters(void);
 		void                                                clearNodeParameters(void);
+<<<<<<< HEAD
+=======
+        void                                                collapseNegativeBranchLengths(double length);                                                                //!< Don't allow parents to be younger than their children (TimeTrees only)
+>>>>>>> development
         void                                                dropTipNodeWithName(const std::string &n);                                                          //!< Get a pointer to tip node i
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;        //!< Map the member methods to internal function calls
@@ -72,18 +76,26 @@ namespace RevBayesCore {
         TopologyNode&                                       getNode(size_t idx);                                                                                //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                                                          //!< Get the node at index
         const std::vector<TopologyNode*>&                   getNodes(void) const;                                                                               //!< Get a pointer to the nodes in the Tree
+        std::vector<RbBitSet>                               getNodesAsBitset(void) const;                                                                               //!< Get a pointer to the nodes in the Tree
         size_t                                              getNumberOfInteriorNodes(void) const;                                                               //!< Get the number of nodes in the Tree
         size_t                                              getNumberOfNodes(void) const;                                                                       //!< Get the number of nodes in the Tree
         size_t                                              getNumberOfTips(void) const;                                                                        //!< Get the number of tip nodes in the Tree
         const TopologyNode&                                 getInteriorNode(size_t indx) const;                                                                 //!< Get a pointer to interior node i
+<<<<<<< HEAD
         const std::vector<std::vector<double> >             getAdjacencyMatrix(void) const;                                                                     //!< Get a 2d-vector adjacency matrix weighted by branch lengths
+=======
+>>>>>>> development
         std::string                                         getPlainNewickRepresentation() const;                                                               //!< Get the newick representation of this Tree
         TopologyNode&                                       getRoot(void);                                                                                      //!< Get a pointer to the root node of the Tree
         const TopologyNode&                                 getRoot(void) const;                                                                                //!< Get a pointer to the root node of the Tree
         std::string                                         getSimmapNewickRepresentation() const;                                                              //!< Get the SIMMAP and phytools compatible newick representation of this Tree
         std::vector<std::string>                            getSpeciesNames() const;                                                                            //!< Get all the species represented in the tree
         std::vector<Taxon>                                  getTaxa() const;                                                                                    //!< Get all the taxa in the tree
+<<<<<<< HEAD
         std::map<std::string, size_t>                       getTaxonBitSetMap();                                                                                //!< Returns a map that holds the BitSet index for each taxon
+=======
+        const std::map<std::string, size_t>&                getTaxonBitSetMap(void) const;                                                                                //!< Returns a map that holds the BitSet index for each taxon
+>>>>>>> development
         size_t                                              getTipIndex(const std::string &name) const;
         std::vector<std::string>                            getTipNames() const;
         TopologyNode&                                       getTipNode(size_t indx);                                                                            //!< Get a pointer to tip node i
@@ -99,13 +111,22 @@ namespace RevBayesCore {
         bool                                                hasSameTopology( const Tree &t ) const;                                                             //!< Has this tree the same topology?
         bool                                                isBinary(void) const;                                                                               //!< Is the Tree rooted
         bool                                                isBroken(void) const;                                                                               //!< Is this tree ultrametric?
+        bool                                                isNegativeConstraint(void) const;                                                                   //!< Is this tree used as a negative constraint?
         bool                                                isRooted(void) const;                                                                               //!< Is the Tree rooted
         bool                                                isUltrametric(void) const;                                                                          //!< Is this tree ultrametric?
         void                                                makeInternalNodesBifurcating(bool reindex);                                                                 //!< Make all the internal nodes bifurcating.
         void                                                orderNodesByIndex();
+<<<<<<< HEAD
         void                                                reroot(const std::string &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
         void                                                reroot(TopologyNode &n, bool reindex);
         void                                                renameNodeParameter(const std::string &old_name, const std::string &new_name);
+=======
+        void                                                reroot(const Clade &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
+        void                                                reroot(const std::string &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
+        void                                                reroot(TopologyNode &n, bool reindex);
+        void                                                renameNodeParameter(const std::string &old_name, const std::string &new_name);
+        void                                                setNegativeConstraint(bool);
+>>>>>>> development
         void                                                setRoot(TopologyNode* r, bool reindex);                                                     //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
         void                                                setTaxonIndices(const TaxonMap &tm);                                                                //!< Set the indices of the taxa from the taxon map
@@ -128,9 +149,16 @@ namespace RevBayesCore {
         std::vector<TopologyNode*>                          nodes;                                                                  //!< Vector of pointers to all nodes
         bool                                                binary;                                                                 //!< Is the BranchLengthTree binary?
         bool                                                rooted;
+<<<<<<< HEAD
         size_t                                              numTips;
         size_t                                              num_nodes;
         std::map<std::string, size_t>                       taxon_bitset_map;
+=======
+        bool                                                is_negative_constraint;
+        size_t                                              num_tips;
+        size_t                                              num_nodes;
+        mutable std::map<std::string, size_t>               taxon_bitset_map;
+>>>>>>> development
 
     };
 

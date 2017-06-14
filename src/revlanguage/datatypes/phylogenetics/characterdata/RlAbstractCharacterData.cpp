@@ -36,6 +36,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* removeTaxaArgRules           = new ArgumentRules();
     ArgumentRules* removeTaxaArgRules2          = new ArgumentRules();
     ArgumentRules* setTaxonNameArgRules         = new ArgumentRules();
+    ArgumentRules* taxaArgRules                 = new ArgumentRules();
+    ArgumentRules* taxonIndexArgRules           = new ArgumentRules();
     
     std::vector<TypeSpec> taxon_types;
     taxon_types.push_back( RlString::getClassTypeSpec() );
@@ -53,8 +55,12 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     removeTaxaArgRules2->push_back(         new ArgumentRule("names" , ModelVector<RlString>::getClassTypeSpec(), "The names of the taxa.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setTaxonNameArgRules->push_back(        new ArgumentRule("current"    , RlString::getClassTypeSpec(), "The old name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setTaxonNameArgRules->push_back(        new ArgumentRule("new"        , RlString::getClassTypeSpec(), "The new name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    
+    taxonIndexArgRules->push_back(          new ArgumentRule("name"       , RlString::getClassTypeSpec(), "he name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
+<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractCharacterData.cpp
+=======
+
+>>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractCharacterData.cpp
     methods.addFunction( new MemberProcedure( "addMissingTaxa",  RlUtils::Void, addTaxonArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa",  RlUtils::Void, excludeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa", RlUtils::Void, excludeTaxaArgRules2 ) );
@@ -69,7 +75,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules2 ) );
     methods.addFunction( new MemberProcedure( "setTaxonName", RlUtils::Void, setTaxonNameArgRules ) );
-    methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), namesArgRules ) );
+    methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), taxaArgRules ) );
+    methods.addFunction( new MemberProcedure( "taxonIndex", Natural::getClassTypeSpec(), taxonIndexArgRules ) );
     
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
@@ -253,6 +260,16 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         charDataObject->show(std::cout);
         
         return NULL;
+    }
+    else if (name == "taxonIndex")
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        const std::string &n = static_cast<const RlString&>( argument ).getValue();
+        int index = (int)charDataObject->getIndexOfTaxon( n ) + 1;
+        
+        return new RevVariable( new Natural(index) );
     }
     
     

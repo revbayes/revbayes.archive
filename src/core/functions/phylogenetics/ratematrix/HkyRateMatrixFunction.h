@@ -3,6 +3,7 @@
 
 #include "RateMatrix_HKY.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -25,7 +26,7 @@ namespace RevBayesCore {
     class HkyRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        HkyRateMatrixFunction(const TypedDagNode<double> *k, const TypedDagNode< RbVector<double> > *bf);
+        HkyRateMatrixFunction(const TypedDagNode<double> *k, const TypedDagNode< Simplex > *bf);
         virtual                                            ~HkyRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -38,7 +39,11 @@ namespace RevBayesCore {
     private:
         
         // members
+<<<<<<< HEAD
         const TypedDagNode< RbVector<double> >*             base_frequencies;
+=======
+        const TypedDagNode< Simplex >*                      base_frequencies;
+>>>>>>> development
         const TypedDagNode<double>*                         kappa;
         
     };

@@ -32,8 +32,13 @@ Func_TIM* Func_TIM::clone( void ) const
 RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_TIM::createFunction( void ) const
 {
     
+<<<<<<< HEAD
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+=======
+    RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* er = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+>>>>>>> development
     
     if ( bf->getValue().size() != 4 )
     {

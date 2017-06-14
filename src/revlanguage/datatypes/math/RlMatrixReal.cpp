@@ -68,14 +68,14 @@ RevPtr<RevVariable> MatrixReal::executeMethod(std::string const &name, const std
         
         found = true;
         
-        double m = this->dagNode->getValue().getMin();
+        double m = this->dag_node->getValue().getMin();
         return new RevVariable( new Real( m ) );
     }
     else if (name == "max")
     {
         found = true;
         
-        double m = this->dagNode->getValue().getMax();
+        double m = this->dag_node->getValue().getMax();
         return new RevVariable( new Real( m ) );
     }
     else if (name == "column")
@@ -85,8 +85,29 @@ RevPtr<RevVariable> MatrixReal::executeMethod(std::string const &name, const std
         const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
         int i = index.getValue() - 1;
         
-        RevBayesCore::RbVector<double> m = this->dagNode->getValue().getColumn( i );
+        RevBayesCore::RbVector<double> m = this->dag_node->getValue().getColumn( i );
         return new RevVariable( new ModelVector<Real>( m ) );
+    }
+    else if (name == "nrows")
+    {
+        found = true;
+        
+        size_t s = this->dag_node->getValue().getNumberOfRows();
+        return new RevVariable( new Natural( s ) );
+    }
+    else if (name == "ncolumns")
+    {
+        found = true;
+        
+        size_t s = this->dag_node->getValue().getNumberOfColumns();
+        return new RevVariable( new Natural( s ) );
+    }
+    else if (name == "size")
+    {
+        found = true;
+        
+        size_t s = this->dag_node->getValue().size();
+        return new RevVariable( new Natural( s ) );
     }
     
     return ModelObject<RevBayesCore::MatrixReal>::executeMethod( name, args, found );
@@ -163,6 +184,21 @@ void MatrixReal::initializeMethods( void )
     columnArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "column", ModelVector<Real>::getClassTypeSpec(), columnArgRules ) );
     
+    // add method for call "size" as a function
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
+
+    // add method for call "size" as a function
+    ArgumentRules* nRowsArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "nrows", Natural::getClassTypeSpec(), nRowsArgRules) );
+
+<<<<<<< HEAD
+=======
+    // add method for call "size" as a function
+    ArgumentRules* nColumnsArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "ncolumns", Natural::getClassTypeSpec(), nColumnsArgRules) );
+
 }
 
 
+>>>>>>> development

@@ -21,7 +21,11 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
+<<<<<<< HEAD
         AbstractPhyloBrownianProcess(const TypedDagNode<Tree> *t, size_t nSites );
+=======
+        AbstractPhyloBrownianProcess(const TypedDagNode<Tree> *t, size_t ns );
+>>>>>>> development
         virtual                                                            ~AbstractPhyloBrownianProcess(void);                                                     //!< Virtual destructor
         
         // public member functions

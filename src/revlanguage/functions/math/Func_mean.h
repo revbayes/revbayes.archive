@@ -21,7 +21,7 @@ namespace RevLanguage {
      * @since 2014-07-27, version 1.0
      *
      */
-    class Func_mean :  public TypedFunction<Real> {
+    class Func_mean : public TypedFunction<Real> {
         
     public:
         Func_mean( void );

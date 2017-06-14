@@ -144,7 +144,7 @@ AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacter
 void AbstractCharacterData::addMissingTaxon(const std::string &n) {
     
     if ( indexOfTaxonWithName(n) == -1 )
-        {
+    {
         // add the sequence name to the list
         taxa.push_back( Taxon(n) );
     
@@ -153,7 +153,7 @@ void AbstractCharacterData::addMissingTaxon(const std::string &n) {
     
         // add the sequence also as a member so that we can access it by name
         taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( n, taxon_data ) );
-        }
+    }
 }
 
 
@@ -162,7 +162,8 @@ void AbstractCharacterData::addMissingTaxon(const std::string &n) {
  *
  * \param[in]    obsd    The TaxonData object that should be added.
  */
-void AbstractCharacterData::addTaxonData(const AbstractTaxonData &obs) {
+void AbstractCharacterData::addTaxonData(const AbstractTaxonData &obs)
+{
     
     // add the sequence name to the list
     taxa.push_back( obs.getTaxon() );
@@ -179,10 +180,10 @@ void AbstractCharacterData::addTaxonData(const AbstractTaxonData &obs) {
 void AbstractCharacterData::clear(void) {
     
     for (std::map<std::string, AbstractTaxonData*>::iterator it = taxonMap.begin(); it != taxonMap.end(); ++it)
-        {
+    {
         AbstractTaxonData* d = it->second;
         delete d;
-        }
+    }
     taxa.clear();
     taxonMap.clear();
 }
@@ -194,14 +195,15 @@ void AbstractCharacterData::clear(void) {
  *
  * \param[in]    i    The index of the taxon that will be excluded.
  */
-void AbstractCharacterData::excludeTaxon(size_t i) {
+void AbstractCharacterData::excludeTaxon(size_t i)
+{
     
     if (i >= taxonMap.size())
-        {
+    {
         std::stringstream o;
         o << "Only " << taxonMap.size() << " taxa in matrix";
         throw RbException( o.str() );
-        }
+    }
     deletedTaxa.insert( i );
 }
 
@@ -390,7 +392,8 @@ const Taxon& AbstractCharacterData::getTaxon(size_t idx) const {
  *
  * \return     A const reference to the taxon data object at position tn.
  */
-const AbstractTaxonData& AbstractCharacterData::getTaxonData(size_t tn) const {
+const AbstractTaxonData& AbstractCharacterData::getTaxonData(size_t tn) const
+{
     
     if ( tn >= getNumberOfTaxa() )
         {

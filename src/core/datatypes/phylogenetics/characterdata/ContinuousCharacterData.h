@@ -3,6 +3,7 @@
 
 #include "ContinuousTaxonData.h"
 #include "HomologousCharacterData.h"
+#include "MemberObject.h"
 
 #include <map>
 #include <set>
@@ -23,13 +24,14 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2014-02-16, version 1.0
      */
-    class ContinuousCharacterData : public HomologousCharacterData {
-        
+    class ContinuousCharacterData : public HomologousCharacterData, public MemberObject<double> {
+
     public:
                                                         ContinuousCharacterData(void);                                              //!< Default constructor
         
         // Overloaded operators
         const ContinuousTaxonData&                      operator[](size_t i) const;                                                 //!< Subscript operator (const)
+        ContinuousTaxonData&                            operator[](size_t i);                                                       //!< Subscript operator (const)
         
         // implemented methods of the Cloneable interface
         ContinuousCharacterData*                        clone(void) const;
@@ -40,11 +42,18 @@ namespace RevBayesCore {
         void                                            writeToFile(const std::string &dir, const std::string &fn) const;           //!< Write this object into a file in its default format.
 
         // CharacterData functions
+<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.h
         ContinuousCharacterData&                        concatenate(const ContinuousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
         ContinuousCharacterData&                        concatenate(const HomologousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
         ContinuousCharacterData&                        concatenate(const AbstractCharacterData &d, std::string type = "");                                //!< Concatenate data matrices
+=======
+        void                                            concatenate(const ContinuousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
+        void                                            concatenate(const HomologousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
+        void                                            concatenate(const AbstractCharacterData &d, std::string type = "");                                //!< Concatenate data matrices
+>>>>>>> development:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.h
         void                                            excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                            excludeCharacter(size_t i);                                                 //!< Exclude character
+        void                                            executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         const double&                                   getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         std::string                                     getDataType(void) const;
         size_t                                          getNumberOfCharacters(void) const;                                          //!< Number of characters

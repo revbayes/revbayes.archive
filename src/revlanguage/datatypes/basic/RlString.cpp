@@ -79,7 +79,7 @@ RevObject* RlString::add( const RevObject& rhs ) const
 RlString* RlString::add(const RevLanguage::RlString &rhs) const
 {
     
-    RlString *n = new RlString( dagNode->getValue() + rhs.getValue() );
+    RlString *n = new RlString( dag_node->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -200,7 +200,7 @@ void RlString::initMethods( void )
 void RlString::parseValue(void)
 {
     
-    const std::string &v = dagNode->getValue();
+    const std::string &v = dag_node->getValue();
     
     std::string res;
     std::string::const_iterator it = v.begin();

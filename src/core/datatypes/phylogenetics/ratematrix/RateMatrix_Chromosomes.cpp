@@ -25,11 +25,11 @@ using namespace RevBayesCore;
 RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n+1 ),
     matrixSize( n+1 )
 {
-    setLambda(1.0);
+    setGamma(1.0);
     setRho(1.0);
     setDelta(1.0);
-    setMu(1.0);
-    setLambda_l(1.0);
+    setEta(1.0);
+    setGamma_l(1.0);
     setDelta_l(1.0);
     
     update();
@@ -58,7 +58,11 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
             {
 				if (j == i+1)
                 {
+<<<<<<< HEAD
 					(*the_rate_matrix)[i][j] += lambda * exp( lambda_l * (i-1) );
+=======
+					(*the_rate_matrix)[i][j] += gamma * exp( gamma_l * (i-1) );
+>>>>>>> development
 				}
                 if (j == i-1)
                 {
@@ -70,11 +74,19 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
                 }
                 if ( (i % 2 == 0) && (j == (size_t)(1.5*i)) )
                 {
+<<<<<<< HEAD
                     (*the_rate_matrix)[i][j] += mu;
                 }
                 if ( (i % 2 != 0) && ( (j == (size_t)(1.5*i - 0.5)) || (j == (size_t)(1.5*i + 0.5) ) ) )
                 {
                     (*the_rate_matrix)[i][j] += mu;
+=======
+                    (*the_rate_matrix)[i][j] += eta;
+                }
+                if ( (i % 2 != 0) && ( (j == (size_t)(1.5*i - 0.5)) || (j == (size_t)(1.5*i + 0.5) ) ) )
+                {
+                    (*the_rate_matrix)[i][j] += eta;
+>>>>>>> development
                 }
 			}
         }
@@ -192,10 +204,10 @@ std::vector<double> RateMatrix_Chromosomes::getStationaryFrequencies( void ) con
     return stationary_freqs;
 }
 
-void RateMatrix_Chromosomes::setLambda( double l )
+void RateMatrix_Chromosomes::setGamma( double g )
 {
     
-    lambda = l;
+    gamma = g;
     
     // set flags
     needs_update = true;
@@ -221,18 +233,18 @@ void RateMatrix_Chromosomes::setDelta( double d ) {
     
 }
 
-void RateMatrix_Chromosomes::setMu( double m ) {
+void RateMatrix_Chromosomes::setEta( double e ) {
     
-    mu = m;
+    eta = e;
     
     // set flags
     needs_update = true;
     
 }
 
-void RateMatrix_Chromosomes::setLambda_l( double l ) {
+void RateMatrix_Chromosomes::setGamma_l( double l ) {
     
-    lambda_l = l;
+    gamma_l = l;
     
     // set flags
     needs_update = true;

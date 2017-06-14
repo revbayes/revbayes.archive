@@ -1,13 +1,5 @@
-//
-//  Func_DECRoot.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/3/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
-#ifndef __revbayes_proj__Func_DECRoot__
-#define __revbayes_proj__Func_DECRoot__
+#ifndef Func_DECRoot_H
+#define Func_DECRoot_H
 
 
 #include "RlTypedFunction.h"
@@ -35,11 +27,11 @@ namespace RevLanguage {
         const TypeSpec&                                                 getTypeSpec(void) const;                                    //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >*  createFunction(void) const;                                 //!< Execute function
+        RevBayesCore::TypedFunction< RevBayesCore::Simplex >*           createFunction(void) const;                                 //!< Execute function
         const ArgumentRules&                                            getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     
 }
 
-#endif /* defined(__revbayes_proj__Func_DECRoot__) */
+#endif
