@@ -807,11 +807,13 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
             }
             
         }
+    
+        // the clade is not one of my children, and we require strict identity
+        return RbConstants::Size_t::inf;
         
     }
     
-    // so the clade must be contained in my clade
-    // just return my index
+    // finally return my index
     return index;
 }
 
