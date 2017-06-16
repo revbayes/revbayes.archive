@@ -63,7 +63,7 @@ TreeSummary* TreeSummary::clone(void) const
  * Helper function for ancestralStateTree() and cladoAncestralStateTree() that collects and sorts joint ancestral state samples.
  *
  */
-void TreeSummary::collectJointAncestralStateSamples(std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, bool verbose)
+void TreeSummary::collectJointAncestralStateSamples(std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp_end, std::vector<std::vector<double> > &pp_start, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, bool verbose)
 {
     // loop through all ancestral state samples
     
@@ -82,7 +82,7 @@ void TreeSummary::collectJointAncestralStateSamples(std::vector<AncestralStateTr
  * Helper function for ancestralStateTree() and cladoAncestralStateTree() that traverses the tree from root to tips collecting ancestral state samples.
  *
  */
-void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool conditional, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, size_t &num_finished_nodes, bool verbose)
+void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool conditional, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp_end, std::vector<std::vector<double> > &pp_start, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, size_t &num_finished_nodes, bool verbose)
 {
     
     size_t parent_node_index = 0;
@@ -123,9 +123,13 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
         const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : final_summary_tree;
         const TopologyNode& sample_root = sample_tree.getRoot();
         
+        std::cout << j << "\n" << sample_tree << "\n\n";
+        
         if ( use_tree_trace == true )
         {
             // check if the clade in the summary tree is also in the sampled tree
+//            sample_clade_index = sample_root.getCladeIndex( summary_nodes[node_index] );
+//            parent_sample_clade_index = sample_root.getCladeIndex( summary_nodes[parent_node_index] );
             sample_clade_index = sample_root.getCladeIndex( summary_nodes[node_index] );
             parent_sample_clade_index = sample_root.getCladeIndex( summary_nodes[parent_node_index] );
             
@@ -205,14 +209,14 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
                     if ( clado == true && (!summary_nodes[node_index]->isTip()) )
                     {
                         
-                        if (ancestral_state_traces_lookup.find(sample_clade_index_child_1_start_str) != ancestral_state_traces_lookup.end())
+                        if (ancestral_state_traces_lookup.find(sample_clade_index_child_1_start_str) != ancestral_state_traces_lookup.end() && RbMath::isFinite( sample_clade_index_child_1 ) == true )
                         {
                             size_t idx = ancestral_state_traces_lookup[sample_clade_index_child_1_start_str];
                             ancestral_state_trace_start_1 = ancestral_state_traces[idx];
                             trace_found_start_1 = true;
                         }
                         
-                        if (ancestral_state_traces_lookup.find(sample_clade_index_child_2_start_str) != ancestral_state_traces_lookup.end())
+                        if (ancestral_state_traces_lookup.find(sample_clade_index_child_2_start_str) != ancestral_state_traces_lookup.end() && RbMath::isFinite( sample_clade_index_child_2 ) == true )
                         {
                             size_t idx = ancestral_state_traces_lookup[sample_clade_index_child_2_start_str];
                             ancestral_state_trace_start_2 = ancestral_state_traces[idx];
@@ -304,20 +308,30 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
             {
                 if ( clado == true && summary_nodes[node_index]->isTip() == false )
                 {
-                    std::vector<std::string> ancestral_state_trace_start_1_vector = ancestral_state_trace_start_1.getValues();
-                    std::string ancestral_state_start_1 = getSiteState( ancestral_state_trace_start_1_vector[j], site );
-                    
-                    std::vector<std::string> ancestral_state_trace_start_2_vector = ancestral_state_trace_start_2.getValues();
-                    std::string ancestral_state_start_2 = getSiteState( ancestral_state_trace_start_2_vector[j], site );
-                    
+                    std::string ancestral_state_start_1 = "";
+                    std::string ancestral_state_start_2 = "";
                     size_t child1 = summary_nodes[node_index]->getChild(0).getIndex();
                     size_t child2 = summary_nodes[node_index]->getChild(1).getIndex();
                     
+                    if (trace_found_start_1)
+                    {
+                        std::vector<std::string> ancestral_state_trace_start_1_vector = ancestral_state_trace_start_1.getValues();
+                        ancestral_state_start_1 = getSiteState( ancestral_state_trace_start_1_vector[j], site );
+                    }
+                    
+                    if (trace_found_start_2)
+                    {
+                        std::vector<std::string> ancestral_state_trace_start_2_vector = ancestral_state_trace_start_2.getValues();
+                        ancestral_state_start_2 = getSiteState( ancestral_state_trace_start_2_vector[j], site );
+                    }
+                    
                     bool state_found = false;
                     int k = 0;
-                    for (; k < pp[node_index].size(); k++)
+                    for (; k < pp_end[node_index].size(); k++)
                     {
-                        if (end_states[node_index][k] == ancestral_state_end && start_states[child1][k] == ancestral_state_start_1 && start_states[child2][k] == ancestral_state_start_2)
+                        if (end_states[node_index][k] == ancestral_state_end
+                                && (start_states[child1][k] == ancestral_state_start_1 || !trace_found_start_1)
+                                && (start_states[child2][k] == ancestral_state_start_2 || !trace_found_start_2))
                         {
                             state_found = true;
                             break;
@@ -326,21 +340,25 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
                     // update the pp and states vectors
                     if ( state_found == false )
                     {
-                        pp[node_index].push_back(1.0);
+                        pp_end[node_index].push_back(1.0);
                         end_states[node_index].push_back( ancestral_state_end );
-                        start_states[child1].push_back( ancestral_state_start_1 );
-                        start_states[child2].push_back( ancestral_state_start_2 );
+                        if (trace_found_start_1) {
+                            start_states[child1].push_back( ancestral_state_start_1 );
+                        }
+                        if (trace_found_start_2) {
+                            start_states[child2].push_back( ancestral_state_start_2 );
+                        }
                     }
                     else
                     {
-                        pp[node_index][k] += 1.0;
+                        pp_end[node_index][k] += 1.0;
                     }
                 }
                 else
                 {
                     bool state_found = false;
                     size_t k = 0;
-                    for (; k < pp[node_index].size(); k++)
+                    for (; k < pp_end[node_index].size(); k++)
                     {
                         if ( end_states[node_index][k] == ancestral_state_end )
                         {
@@ -351,12 +369,12 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
                     // update the pp and states vectors
                     if ( state_found == false )
                     {
-                        pp[node_index].push_back(1.0);
+                        pp_end[node_index].push_back(1.0);
                         end_states[node_index].push_back(ancestral_state_end);
                     }
                     else
                     {
-                        pp[node_index][k] += 1.0;
+                        pp_end[node_index][k] += 1.0;
                     }
                 }
                 num_samples += 1;
@@ -365,9 +383,9 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
     }
     
     // scale posteriors
-    for (size_t i = 0; i < pp[node_index].size(); i++)
+    for (size_t i = 0; i < pp_end[node_index].size(); i++)
     {
-        pp[node_index][i] /= num_samples;
+        pp_end[node_index][i] /= num_samples;
     }
     
     std::string map_state = "";
@@ -377,10 +395,10 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
         // find the MAP state
         for (size_t i = 0; i < end_states[node_index].size(); i++)
         {
-            if (pp[node_index][i] > max_pp)
+            if (pp_end[node_index][i] > max_pp)
             {
                 map_state = end_states[node_index][i];
-                max_pp = pp[node_index][i];
+                max_pp = pp_end[node_index][i];
             }
         }
     }
@@ -392,7 +410,7 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
     std::vector<int> children_indices = summary_nodes[node_index]->getChildrenIndices();
     for (size_t i = 0; i < children_indices.size(); i++)
     {
-        recursivelyCollectAncestralStateSamples(children_indices[i], map_state, false, conditional, ancestral_state_traces, b, site, num_sampled_states, num_sampled_trees, final_summary_tree, summary_nodes, pp, end_states, start_states, clado, progress, num_finished_nodes, verbose);
+        recursivelyCollectAncestralStateSamples(children_indices[i], map_state, false, conditional, ancestral_state_traces, b, site, num_sampled_states, num_sampled_trees, final_summary_tree, summary_nodes, pp_end, pp_start, end_states, start_states, clado, progress, num_finished_nodes, verbose);
     }
     
 }
@@ -455,7 +473,8 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
     
     // 2-d vectors to keep the data (posteriors and ancestral states) of the input_summary_tree nodes: [node][data]
     const std::vector<TopologyNode*> &summary_nodes = final_summary_tree->getNodes();
-    std::vector<std::vector<double> > pp( summary_nodes.size(), std::vector<double>() );
+    std::vector<std::vector<double> > pp_end( summary_nodes.size(), std::vector<double>() );
+    std::vector<std::vector<double> > pp_start( summary_nodes.size(), std::vector<double>() );
     std::vector<std::vector<std::string> > states( summary_nodes.size(), std::vector<std::string>() );
     
     size_t num_finished_nodes = 0;
@@ -468,13 +487,13 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
     if ( joint == true )
     {
         // collect and sort the joint samples
-        collectJointAncestralStateSamples(ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, states, states, false, progress, verbose);
+        collectJointAncestralStateSamples(ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp_end, pp_start, states, states, false, progress, verbose);
     }
     else
     {
         // recurse through summary tree and collect ancestral state samples
         size_t node_index = final_summary_tree->getRoot().getIndex();
-        recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, states, states, false, progress, num_finished_nodes, verbose);
+        recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp_end, pp_start, states, states, false, progress, num_finished_nodes, verbose);
     }
 
     if ( verbose == true )
@@ -526,28 +545,28 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
                 std::string state3 = "";
                 
                 // loop through all states for this node
-                for (int j = 0; j < pp[i].size(); j++)
+                for (int j = 0; j < pp_end[i].size(); j++)
                 {
-                    total_node_pp += pp[i][j];
-                    if (pp[i][j] > state1_pp)
+                    total_node_pp += pp_end[i][j];
+                    if (pp_end[i][j] > state1_pp)
                     {
                         state3_pp = state2_pp;
                         state2_pp = state1_pp;
-                        state1_pp = pp[i][j];
+                        state1_pp = pp_end[i][j];
                         state3 = state2;
                         state2 = state1;
                         state1 = states[i][j];
                     }
-                    else if (pp[i][j] > state2_pp)
+                    else if (pp_end[i][j] > state2_pp)
                     {
                         state3_pp = state2_pp;
-                        state2_pp = pp[i][j];
+                        state2_pp = pp_end[i][j];
                         state3 = state2;
                         state2 = states[i][j];
                     }
-                    else if (pp[i][j] > state3_pp)
+                    else if (pp_end[i][j] > state3_pp)
                     {
-                        state3_pp = pp[i][j];
+                        state3_pp = pp_end[i][j];
                         state3 = states[i][j];
                     }
                 }
@@ -633,9 +652,9 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
                 std::vector<double> state_samples;
                 
                 // loop through all states for this node and collect samples
-                for (int j = 0; j < pp[i].size(); j++)
+                for (int j = 0; j < pp_end[i].size(); j++)
                 {
-                    node_pp += pp[i][j];
+                    node_pp += pp_end[i][j];
                     state_samples.push_back( boost::lexical_cast<double>( states[i][j] ) );
                 }
                 posteriors[i] = node_pp;
@@ -721,7 +740,8 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
     
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
     const std::vector<TopologyNode*> &summary_nodes = final_summary_tree->getNodes();
-    std::vector<std::vector<double> > pp( summary_nodes.size(), std::vector<double>() );
+    std::vector<std::vector<double> > pp_end( summary_nodes.size(), std::vector<double>() );
+    std::vector<std::vector<double> > pp_start( summary_nodes.size(), std::vector<double>() );
     std::vector<std::vector<std::string> > end_states( summary_nodes.size(), std::vector<std::string>() );
     std::vector<std::vector<std::string> > start_states( summary_nodes.size(), std::vector<std::string>() );
     
@@ -735,13 +755,13 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
     if ( joint == true )
     {
         // collect and sort the joint samples
-        collectJointAncestralStateSamples(ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, end_states, start_states, false, progress, verbose);
+        collectJointAncestralStateSamples(ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp_end, pp_start, end_states, start_states, false, progress, verbose);
     }
     else
     {
         // recurse through summary tree and collect ancestral state samples
         size_t node_index = final_summary_tree->getRoot().getIndex();
-        recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp, end_states, start_states, true, progress, num_finished_nodes, verbose);
+        recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp_end, pp_start, end_states, start_states, true, progress, num_finished_nodes, verbose);
     }
     
     if ( verbose == true )
@@ -865,7 +885,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
                 
                 std::vector<double> best_end_pp_node;
                 std::vector<std::string> best_end_states_node;
-                computeMarginalCladogeneticStateProbs(pp[i], end_states[i], best_end_pp_node, best_end_states_node);
+                computeMarginalCladogeneticStateProbs(pp_end[i], end_states[i], best_end_pp_node, best_end_states_node);
 //                end_state1 = best_end_states_node[0];
 //                end_state2 = best_end_states_node[1];
 //                end_state3 = best_end_states_node[2];
@@ -890,7 +910,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
                 
                 std::vector<double> best_start_pp_child1;
                 std::vector<std::string> best_start_states_child1;
-                computeMarginalCladogeneticStateProbs(pp[i], start_states[child1], best_start_pp_child1, best_start_states_child1);
+                computeMarginalCladogeneticStateProbs(pp_end[i], start_states[child1], best_start_pp_child1, best_start_states_child1);
 //                start_child1_state1 = best_start_states_child1[0];
 //                start_child1_state2 = best_start_states_child1[1];
 //                start_child1_state3 = best_start_states_child1[2];
@@ -915,7 +935,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
                 
                 std::vector<double> best_start_pp_child2;
                 std::vector<std::string> best_start_states_child2;
-                computeMarginalCladogeneticStateProbs(pp[i], start_states[child2], best_start_pp_child2, best_start_states_child2);
+                computeMarginalCladogeneticStateProbs(pp_end[i], start_states[child2], best_start_pp_child2, best_start_states_child2);
 //                start_child2_state1 = best_start_states_child2[0];
 //                start_child2_state2 = best_start_states_child2[1];
 //                start_child2_state3 = best_start_states_child2[2];
@@ -1141,9 +1161,9 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
                 std::vector<double> state_samples_start;
                 
                 // loop through all states for this node and collect samples
-                for (int j = 0; j < pp[i].size(); j++)
+                for (int j = 0; j < pp_end[i].size(); j++)
                 {
-                    node_pp += pp[i][j];
+                    node_pp += pp_end[i][j];
                     state_samples_end.push_back( boost::lexical_cast<double>( end_states[i][j] ) );
                     state_samples_start.push_back( boost::lexical_cast<double>( start_states[i][j] ) );
                 }
