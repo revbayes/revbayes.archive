@@ -53,11 +53,6 @@ void RateGenerator::calculateTransitionProbabilities(double t, TransitionProbabi
     calculateTransitionProbabilities(t, 0.0, 1.0, P);
 }
 
-RbVector<double> RateGenerator::getEpochTimesWithinInterval(double start_age, double end_age) const
-{
-    return RbVector<double>(1,end_age);
-}
-
 size_t RateGenerator::getNumberOfStates( void ) const
 {
     return num_states;
@@ -108,6 +103,12 @@ void RateGenerator::executeMethod(const std::string &n, const std::vector<const 
 size_t RateGenerator::size( void ) const
 {
     return num_states;
+}
+
+bool RateGenerator::simulateStochasticMapping(double startAge, double endAge, double rate, std::vector<size_t>& transition_states, std::vector<double>& transition_times)
+{
+    throw RbException("simulateStochasticMapping not defined for abstract RateGenerator objects");
+    return false;
 }
 
 

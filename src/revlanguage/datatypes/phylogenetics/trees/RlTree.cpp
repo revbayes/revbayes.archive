@@ -133,6 +133,17 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         
         return NULL;
     }
+    else if (name == "setNegativeConstraint")
+    {
+        found = true;
+        
+        double tf = static_cast<const RlBoolean&>( args[0].getVariable()->getRevObject() ).getValue();
+        RevBayesCore::Tree &tree = dag_node->getValue();
+        tree.setNegativeConstraint(tf);
+//        RevBayesCore::TreeUtilities::rescaleTree(&tree, &tree.getRoot(), f);
+        
+        return NULL;
+    }
     
     return ModelObject<RevBayesCore::Tree>::executeMethod( name, args, found );
 }
@@ -204,6 +215,10 @@ void Tree::initMethods( void )
     ArgumentRules* rescaleArgRules = new ArgumentRules();
     rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "The scaling factor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "rescale", RlUtils::Void, rescaleArgRules ) );
+    
+    ArgumentRules* setNegativeConstraint = new ArgumentRules();
+    setNegativeConstraint->push_back( new ArgumentRule( "flag", RlBoolean::getClassTypeSpec(), "Is the tree a negative constraint?.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setNegativeConstraint", RlUtils::Void, setNegativeConstraint ) );
     
     
     // member functions

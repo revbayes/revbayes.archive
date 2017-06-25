@@ -93,10 +93,7 @@ namespace RevBayesCore {
     
     protected:
         // Utility functions
-        bool                                                isCharacterConstant(size_t idx) const;                                      //!< Is the idx-th character a constant pattern?
         bool                                                isCharacterMissingOrAmbiguous(size_t idx) const;                            //!< Does the character have missing or ambiguous data?
-        size_t                                              numConstantPatterns(void) const;                                            //!< The number of constant patterns
-        size_t                                              numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
         
         // Member variables
         std::set<size_t>                                    deletedCharacters;                                                          //!< Set of deleted characters
@@ -1268,43 +1265,6 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromString(con
 }
 
 
-
-/** 
- * Is this character pattern constant at site idx?
- * 
- * \param[in]   idx    The site at which we want to know if it is constant?
- */
-template<class charType>
-bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterConstant(size_t idx) const 
-{
-    
-    const CharacterState* f = NULL;
-    for ( size_t i=0; i<getNumberOfTaxa(); ++i )
-    {
-        if ( isTaxonExcluded(i) == false ) 
-        {
-            if ( f == NULL )
-            {
-                f = &getCharacter( i, idx );
-            }
-            else
-            {
-                const CharacterState* s = &getCharacter( i , idx );
-                if ( (*f) != (*s) )
-                {
-                    return false;
-                }
-                
-            }
-
-        }
-    
-    }
-    
-    return true;
-}
-
-
 /** 
  * Is the character excluded?
  *
@@ -1708,46 +1668,6 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numInvariableSit
     }
     
     return num_blocks;
-}
-
-
-
-/** 
- * Calculates and returns the number of constant characters.
- */
-template<class charType>
-size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numConstantPatterns( void ) const 
-{
-    
-    size_t nc = 0;
-    for (size_t i=0; i<getNumberOfCharacters(); i++)
-    {
-        if ( isCharacterExcluded(i) == false && isCharacterConstant(i) == true )
-        {
-            nc++;
-        }
-        
-    }
-    
-    return nc;
-}
-
-
-/** 
- * Returns the number of characters with missing or ambiguous data
- */
-template<class charType>
-size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numMissAmbig(void) const 
-{
-    
-    size_t nma = 0;
-    for (size_t i=0; i<getNumberOfCharacters(); i++)
-    {
-        if ( isCharacterExcluded(i) == false && isCharacterMissingOrAmbiguous(i) == true )
-            nma++;
-    }
-    
-    return nma;
 }
 
 

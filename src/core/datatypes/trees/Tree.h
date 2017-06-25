@@ -100,6 +100,7 @@ namespace RevBayesCore {
         bool                                                hasSameTopology( const Tree &t ) const;                                                             //!< Has this tree the same topology?
         bool                                                isBinary(void) const;                                                                               //!< Is the Tree rooted
         bool                                                isBroken(void) const;                                                                               //!< Is this tree ultrametric?
+        bool                                                isNegativeConstraint(void) const;                                                                   //!< Is this tree used as a negative constraint?
         bool                                                isRooted(void) const;                                                                               //!< Is the Tree rooted
         bool                                                isUltrametric(void) const;                                                                          //!< Is this tree ultrametric?
         void                                                makeInternalNodesBifurcating(bool reindex);                                                                 //!< Make all the internal nodes bifurcating.
@@ -108,6 +109,7 @@ namespace RevBayesCore {
         void                                                reroot(const std::string &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
         void                                                reroot(TopologyNode &n, bool reindex);
         void                                                renameNodeParameter(const std::string &old_name, const std::string &new_name);
+        void                                                setNegativeConstraint(bool);
         void                                                setRoot(TopologyNode* r, bool reindex);                                                     //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
         void                                                setTaxonIndices(const TaxonMap &tm);                                                                //!< Set the indices of the taxa from the taxon map
@@ -130,6 +132,7 @@ namespace RevBayesCore {
         std::vector<TopologyNode*>                          nodes;                                                                  //!< Vector of pointers to all nodes
         bool                                                binary;                                                                 //!< Is the BranchLengthTree binary?
         bool                                                rooted;
+        bool                                                is_negative_constraint;
         size_t                                              num_tips;
         size_t                                              num_nodes;
         mutable std::map<std::string, size_t>               taxon_bitset_map;
