@@ -4,6 +4,7 @@
 #include "DagNode.h"
 #include "NexusWriter.h"
 #include "RbFileManager.h"
+#include "RbSettings.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
 #include "TraceNumeric.h"
@@ -84,6 +85,7 @@ namespace RevBayesCore {
     {
         
         std::stringstream ss;
+        ss.precision(RbSettings::userSettings().getOutputPrecision());
         ss << getValue();
         std::string s = ss.str();
         if ( l > 0 )
