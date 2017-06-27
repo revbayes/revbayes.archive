@@ -66,6 +66,10 @@ std::string RbSettings::getOption(const std::string &key) const
     {
         return moduleDir;
     }
+    else if ( key == "outputPrecision" )
+    {
+        return StringUtilities::to_string(outputPrecision);
+    }
     else if ( key == "printNodeIndex" )
     {
         return printNodeIndex ? "true" : "false";
@@ -99,6 +103,13 @@ std::string RbSettings::getOption(const std::string &key) const
 }
 
 
+size_t RbSettings::getOutputPrecision( void ) const
+{
+    // return the internal value
+    return outputPrecision;
+}
+
+
 bool RbSettings::getPrintNodeIndex( void ) const
 {
     // return the internal value
@@ -129,6 +140,7 @@ void RbSettings::initializeUserSettings(void)
     scalingDensity = 4;         // the default scaling density
     lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
+    outputPrecision = 7;
     printNodeIndex = true;      // print node indices of tree nodes as comments
     collapseSampledAncestors = true;
     
@@ -260,6 +272,10 @@ void RbSettings::setOption(const std::string &key, const std::string &v, bool wr
     {
         moduleDir = value;
     }
+    else if ( key == "outputPrecision" )
+    {
+        outputPrecision = atoi(value.c_str());
+    }
     else if ( key == "printNodeIndex" )
     {
         printNodeIndex = value == "true";
@@ -302,6 +318,16 @@ void RbSettings::setOption(const std::string &key, const std::string &v, bool wr
         writeUserSettings();
     }
     
+}
+
+
+void RbSettings::setOutputPrecision(size_t p)
+{
+    // replace the internal value with this new value
+    outputPrecision = p;
+
+    // save the current settings for the future.
+    writeUserSettings();
 }
 
 
@@ -350,6 +376,7 @@ void RbSettings::writeUserSettings( void )
     std::ofstream writeStream;
     fm.openFile( writeStream );
     writeStream << "moduledir=" << moduleDir << std::endl;
+    writeStream << "outputPrecision=" << outputPrecision << std::endl;
     writeStream << "printNodeIndex=" << (printNodeIndex ? "true" : "false") << std::endl;
     writeStream << "tolerance=" << tolerance << std::endl;
     writeStream << "linewidth=" << lineWidth << std::endl;

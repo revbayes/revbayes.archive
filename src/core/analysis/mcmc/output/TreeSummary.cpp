@@ -2239,7 +2239,10 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report, bool verbos
 
         if( tmp_tree->isRooted() == false && rooted == false )
         {
-            tmp_tree->reroot( trace.objectAt(0).getTipNames()[0], true );
+            std::vector<std::string> tip_names = trace.objectAt(0).getTipNames();
+            std::sort(tip_names.begin(),tip_names.end());
+            std::string outgroup = tip_names[0];
+            tmp_tree->reroot( outgroup, true );
         }
         else if( tmp_tree->isRooted() != rooted )
         {
@@ -2705,7 +2708,9 @@ int TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbo
 {
     summarize( verbose );
     
-    std::string outgroup = trace.objectAt(0).getTipNames()[0];
+    std::vector<std::string> tip_names = trace.objectAt(0).getTipNames();
+    std::sort(tip_names.begin(),tip_names.end());
+    std::string outgroup = tip_names[0];
 
     Tree t = tree;
 
@@ -2772,8 +2777,10 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
     summarize( verbose );
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
-
-    std::string outgroup = trace.objectAt(0).getTipNames()[0];
+    
+    std::vector<std::string> tip_names = trace.objectAt(0).getTipNames();
+    std::sort(tip_names.begin(),tip_names.end());
+    std::string outgroup = tip_names[0];
 
     Tree tree = t;
 
@@ -3249,7 +3256,7 @@ int TreeSummary::size( bool post ) const
 
 void TreeSummary::summarize( bool verbose )
 {
-    if( summarized ) return;
+    if ( summarized ) return;
 
     cladeAges.clear();
     conditionalCladeAges.clear();
@@ -3266,7 +3273,9 @@ void TreeSummary::summarize( bool verbose )
         progress.start();
     }
     
-    std::string outgroup = trace.objectAt(0).getTipNames()[0];
+    std::vector<std::string> tip_names = trace.objectAt(0).getTipNames();
+    std::sort(tip_names.begin(),tip_names.end());
+    std::string outgroup = tip_names[0];
 
     for (size_t i = burnin; i < trace.size(); ++i)
     {
