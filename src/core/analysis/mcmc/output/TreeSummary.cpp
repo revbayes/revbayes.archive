@@ -82,7 +82,7 @@ void TreeSummary::collectJointAncestralStateSamples(std::vector<AncestralStateTr
  * Helper function for ancestralStateTree() and cladoAncestralStateTree() that traverses the tree from root to tips collecting ancestral state samples.
  *
  */
-void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool conditional, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp_end, std::vector<std::vector<double> > &pp_start, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, size_t &num_finished_nodes, bool verbose)
+void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool conditional, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp_end, std::vector<std::vector<double> > &pp_start, std::vector<double> &pp_clade, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, size_t &num_finished_nodes, bool verbose)
 {
     
     size_t parent_node_index = 0;
@@ -110,6 +110,7 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
     size_t num_samples_end = 0;
     size_t num_samples_start_1 = 0;
     size_t num_samples_start_2 = 0;
+    size_t num_samples_clade = 0;
     
     std::vector<TopologyNode*> sn = summary_nodes;
     
@@ -133,7 +134,7 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
         const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : final_summary_tree;
         const TopologyNode& sample_root = sample_tree.getRoot();
         
-        std::cout << "\n" << node_index << " " << j << "\n" << sample_tree << "\n\n";
+//        std::cout << "\n" << node_index << " " << j << "\n" << sample_tree << "\n\n";
         
         if ( use_tree_trace == true )
         {
@@ -158,6 +159,8 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
         // record the states if the sample tree contains the summary node's clade
         if ( RbMath::isFinite( sample_clade_index ) == true )
         {
+            num_samples_clade += 1;
+            
             size_t sample_clade_index_child_1 = 0;
             size_t sample_clade_index_child_2 = 0;
             
@@ -290,7 +293,7 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
                     }
                     
                     // find & store start_state_1
-                    if (trace_found_start_1)
+                    if (trace_found_start_1 && trace_found_start_2)
                     {
                         std::vector<std::string> ancestral_state_trace_start_1_vector = ancestral_state_trace_start_1.getValues();
                         ancestral_state_start_1 = getSiteState( ancestral_state_trace_start_1_vector[j], site );
@@ -317,11 +320,11 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
                         }
                         
                         num_samples_start_1 += 1;
-                    }
-                    
-                    // find & store start_state_1
-                    if (trace_found_start_2)
-                    {
+//                    }
+//                    
+//                    // find & store start_state_1
+//                    if (trace_found_start_2)
+//                    {
                         std::vector<std::string> ancestral_state_trace_start_2_vector = ancestral_state_trace_start_2.getValues();
                         ancestral_state_start_2 = getSiteState( ancestral_state_trace_start_2_vector[j], site );
                         
@@ -395,6 +398,7 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
         }
     }
     
+    pp_clade[node_index] = (double)num_samples_clade / (num_sampled_states - burnin);
     
     std::string map_state = "";
     double max_pp = 0.0;
@@ -418,7 +422,7 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
     std::vector<int> children_indices = summary_nodes[node_index]->getChildrenIndices();
     for (size_t i = 0; i < children_indices.size(); i++)
     {
-        recursivelyCollectAncestralStateSamples(children_indices[i], map_state, false, conditional, ancestral_state_traces, b, site, num_sampled_states, num_sampled_trees, final_summary_tree, summary_nodes, pp_end, pp_start, end_states, start_states, clado, progress, num_finished_nodes, verbose);
+        recursivelyCollectAncestralStateSamples(children_indices[i], map_state, false, conditional, ancestral_state_traces, b, site, num_sampled_states, num_sampled_trees, final_summary_tree, summary_nodes, pp_end, pp_start, pp_clade, end_states, start_states, clado, progress, num_finished_nodes, verbose);
     }
     
 }
@@ -483,6 +487,8 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
     const std::vector<TopologyNode*> &summary_nodes = final_summary_tree->getNodes();
     std::vector<std::vector<double> > pp_end( summary_nodes.size(), std::vector<double>() );
     std::vector<std::vector<double> > pp_start( summary_nodes.size(), std::vector<double>() );
+    std::vector<double> pp_clade( summary_nodes.size(), 0.0 );
+
     std::vector<std::vector<std::string> > states( summary_nodes.size(), std::vector<std::string>() );
     
     size_t num_finished_nodes = 0;
@@ -501,7 +507,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
     {
         // recurse through summary tree and collect ancestral state samples
         size_t node_index = final_summary_tree->getRoot().getIndex();
-        recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp_end, pp_start, states, states, false, progress, num_finished_nodes, verbose);
+        recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp_end, pp_start, pp_clade, states, states, false, progress, num_finished_nodes, verbose);
     }
 
     if ( verbose == true )
@@ -750,6 +756,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
     const std::vector<TopologyNode*> &summary_nodes = final_summary_tree->getNodes();
     std::vector<std::vector<double> > pp_end( summary_nodes.size(), std::vector<double>() );
     std::vector<std::vector<double> > pp_start( summary_nodes.size(), std::vector<double>() );
+    std::vector<double> pp_clade( summary_nodes.size(), 0.0 );
     std::vector<std::vector<std::string> > end_states( summary_nodes.size(), std::vector<std::string>() );
     std::vector<std::vector<std::string> > start_states( summary_nodes.size(), std::vector<std::string>() );
     
@@ -769,7 +776,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
     {
         // recurse through summary tree and collect ancestral state samples
         size_t node_index = final_summary_tree->getRoot().getIndex();
-        recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp_end, pp_start, end_states, start_states, true, progress, num_finished_nodes, verbose);
+        recursivelyCollectAncestralStateSamples(node_index, "", true, conditional, ancestralstate_traces, b, site, num_sampled_states, num_sampled_trees, *final_summary_tree, summary_nodes, pp_end, pp_start, pp_clade, end_states, start_states, true, progress, num_finished_nodes, verbose);
     }
     
     if ( verbose == true )
@@ -805,29 +812,14 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
         for (int i = 0; i < summary_nodes.size(); i++)
         {
             
-            if ( summary_nodes[i]->isTip() )
+//            if ( summary_nodes[i]->isTip() )
+//            {
+//                end_state_1[i] = new std::string(end_states[i][0]);
+//                end_state_1_pp[i] = 1.0;
+//                posteriors[i] = 1.0;
+//            }
+//            else
             {
-                end_state_1[i] = new std::string(end_states[i][0]);
-                end_state_1_pp[i] = 1.0;
-                posteriors[i] = 1.0;
-            }
-            else
-            {
-                double total_node_pp = 0.0;
-                
-//                double end_state1_pp = 0.0;
-//                double end_state2_pp = 0.0;
-//                double end_state3_pp = 0.0;
-                double end_other_pp = 0.0;
-                
-//                double start_child1_state1_pp = 0.0;
-//                double start_child1_state2_pp = 0.0;
-//                double start_child1_state3_pp = 0.0;
-//                double start_child2_state1_pp = 0.0;
-//                double start_child2_state2_pp = 0.0;
-//                double start_child2_state3_pp = 0.0;
-                double start_child1_other_pp = 0.0;
-                double start_child2_other_pp = 0.0;
                 
                 std::string end_state1 = "";
                 std::string end_state2 = "";
@@ -836,78 +828,13 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
                 std::string start_child1_state1 = "";
                 std::string start_child1_state2 = "";
                 std::string start_child1_state3 = "";
+
                 
-                std::string start_child2_state1 = "";
-                std::string start_child2_state2 = "";
-                std::string start_child2_state3 = "";
-                
-                size_t child1 = summary_nodes[i]->getChild(0).getIndex();
-                size_t child2 = summary_nodes[i]->getChild(1).getIndex();
-                
-                // loop through all sampled combinations of states for this node and find the
-                // 3 with the highest probability
-//                for (int j = 0; j < pp[i].size(); j++)
-//                {
-//                    total_node_pp += pp[i][j];
-//                    
-//                    if (pp[i][j] > end_state1_pp)
-//                    {
-//                        end_state3_pp = end_state2_pp;
-//                        end_state2_pp = end_state1_pp;
-//                        end_state1_pp = pp[i][j];
-//                        
-//                        end_state3 = end_state2;
-//                        end_state2 = end_state1;
-//                        end_state1 = end_states[i][j];
-//                        
-//                        start_child1_state3 = start_child1_state2;
-//                        start_child1_state2 = start_child1_state1;
-//                        start_child1_state1 = start_states[child1][j];
-//                        
-//                        start_child2_state3 = start_child2_state2;
-//                        start_child2_state2 = start_child2_state1;
-//                        start_child2_state1 = start_states[child2][j];
-//                    }
-//                    else if (pp[i][j] > end_state2_pp)
-//                    {
-//                        end_state3_pp = end_state2_pp;
-//                        end_state2_pp = pp[i][j];
-//                        
-//                        end_state3 = end_state2;
-//                        end_state2 = end_states[i][j];
-//                        
-//                        start_child1_state3 = start_child1_state2;
-//                        start_child1_state2 = start_states[child1][j];
-//                        
-//                        start_child2_state3 = start_child2_state2;
-//                        start_child2_state2 = start_states[child2][j];
-//                    }
-//                    else if (pp[i][j] > end_state3_pp)
-//                    {
-//                        end_state3_pp = pp[i][j];
-//                        end_state3 = end_states[i][j];
-//                        start_child1_state3 = start_states[child1][j];
-//                        start_child2_state3 = start_states[child2][j];
-//                    }
-//                }
-                
+                // end states
                 std::vector<double> best_end_pp_node;
                 std::vector<std::string> best_end_states_node;
                 computeMarginalCladogeneticStateProbs(pp_end[i], end_states[i], best_end_pp_node, best_end_states_node);
-//                end_state1 = best_end_states_node[0];
-//                end_state2 = best_end_states_node[1];
-//                end_state3 = best_end_states_node[2];
-//                end_state1_pp = best_end_pp_node[0];
-//                end_state2_pp = best_end_pp_node[1];
-//                end_state3_pp = best_end_pp_node[2];
-                
-//                end_state_1[ i ] = new std::string(end_state1);
-//                end_state_2[ i ] = new std::string(end_state2);
-//                end_state_3[ i ] = new std::string(end_state3);
-//                end_state_1_pp[ i ] = best_end_pp_node[0];
-//                end_state_2_pp[ i ] = best_end_pp_node[1];
-//                end_state_3_pp[ i ] = best_end_pp_node[2];
-                
+
                 end_state_1[ i ] = new std::string(best_end_states_node[0]);
                 end_state_2[ i ] = new std::string(best_end_states_node[1]);
                 end_state_3[ i ] = new std::string(best_end_states_node[2]);
@@ -915,197 +842,36 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
                 end_state_2_pp[ i ] = best_end_pp_node[1];
                 end_state_3_pp[ i ] = best_end_pp_node[2];
                 
-                
-                std::vector<double> best_start_pp_child1;
-                std::vector<std::string> best_start_states_child1;
-                computeMarginalCladogeneticStateProbs(pp_end[i], start_states[child1], best_start_pp_child1, best_start_states_child1);
-//                start_child1_state1 = best_start_states_child1[0];
-//                start_child1_state2 = best_start_states_child1[1];
-//                start_child1_state3 = best_start_states_child1[2];
-//                start_child1_state1_pp = best_start_pp_child1[0];
-//                start_child1_state2_pp = best_start_pp_child1[1];
-//                start_child1_state3_pp = best_start_pp_child1[2];
-//                
-//                start_state_1[ child1 ] = new std::string(start_child1_state1);
-//                start_state_2[ child1 ] = new std::string(start_child1_state2);
-//                start_state_3[ child1 ] = new std::string(start_child1_state3);
-//                start_state_1_pp[ child1 ] = best_start_pp_child1[0];
-//                start_state_2_pp[ child1 ] = best_start_pp_child1[1];
-//                start_state_3_pp[ child1 ] = best_start_pp_child1[2];
-                
-                start_state_1[ child1 ] = new std::string(best_start_states_child1[0]);
-                start_state_2[ child1 ] = new std::string(best_start_states_child1[1]);
-                start_state_3[ child1 ] = new std::string(best_start_states_child1[2]);
-                start_state_1_pp[ child1 ] = best_start_pp_child1[0];
-                start_state_2_pp[ child1 ] = best_start_pp_child1[1];
-                start_state_3_pp[ child1 ] = best_start_pp_child1[2];
-                
-                
-                std::vector<double> best_start_pp_child2;
-                std::vector<std::string> best_start_states_child2;
-                computeMarginalCladogeneticStateProbs(pp_end[i], start_states[child2], best_start_pp_child2, best_start_states_child2);
-//                start_child2_state1 = best_start_states_child2[0];
-//                start_child2_state2 = best_start_states_child2[1];
-//                start_child2_state3 = best_start_states_child2[2];
-//                start_child2_state1_pp = best_start_pp_child2[0];
-//                start_child2_state2_pp = best_start_pp_child2[1];
-//                start_child2_state3_pp = best_start_pp_child2[2];
-//                
-//                start_state_1[ child2 ] = new std::string(start_child2_state1);
-//                start_state_2[ child2 ] = new std::string(start_child2_state2);
-//                start_state_3[ child2 ] = new std::string(start_child2_state3);
-//                start_state_1_pp[ child2 ] = best_start_pp_child2[0];
-//                start_state_2_pp[ child2 ] = best_start_pp_child2[1];
-//                start_state_3_pp[ child2 ] = best_start_pp_child2[2];
-                
-                start_state_1[ child2 ] = new std::string(start_child2_state1);
-                start_state_2[ child2 ] = new std::string(start_child2_state2);
-                start_state_3[ child2 ] = new std::string(start_child2_state3);
-                start_state_1_pp[ child2 ] = best_start_pp_child2[0];
-                start_state_2_pp[ child2 ] = best_start_pp_child2[1];
-                start_state_3_pp[ child2 ] = best_start_pp_child2[2];
+            
+                // start state, child 1
+                std::vector<double> best_start_pp;
+                std::vector<std::string> best_start_states;
+                computeMarginalCladogeneticStateProbs(pp_start[i], start_states[i], best_start_pp, best_start_states);
 
+                start_state_1[ i ] = new std::string(best_start_states[0]);
+                start_state_2[ i ] = new std::string(best_start_states[1]);
+                start_state_3[ i ] = new std::string(best_start_states[2]);
+                start_state_1_pp[ i ] = best_start_pp[0];
+                start_state_2_pp[ i ] = best_start_pp[1];
+                start_state_3_pp[ i ] = best_start_pp[2];
                 
+                // sum best state probabilities
+                double total_node_pp = best_end_pp_node[0] + best_end_pp_node[1] + best_end_pp_node[2];
+                double end_other_pp = 1.0 - total_node_pp;
+                double start_child1_other_pp = 1.0 - best_start_pp[0] - best_start_pp[1] - best_start_pp[2];
+                posteriors[i] = pp_clade[i];
                 
-                total_node_pp = best_end_pp_node[0] + best_end_pp_node[1] + best_end_pp_node[2];
-                end_other_pp = 1.0 - total_node_pp;
-                start_child1_other_pp = 1.0 - best_start_pp_child1[0] - best_start_pp_child1[1] - best_start_pp_child1[2];
-                start_child2_other_pp = 1.0 - best_start_pp_child2[0] - best_start_pp_child2[1] - best_start_pp_child2[2];
-                posteriors[i] = total_node_pp;
-                
-                /*
-                for (int j = 0; j < pp[i].size(); j++)
-                {
-                    total_node_pp += pp[i][j];
-                    
-                    if (pp[i][j] > end_state1_pp)
-                    {
-                        end_state3_pp = end_state2_pp;
-                        end_state2_pp = end_state1_pp;
-                        end_state1_pp = pp[i][j];
-                        
-                        end_state3 = end_state2;
-                        end_state2 = end_state1;
-                        end_state1 = end_states[i][j];
-                        
-                        start_child1_state3 = start_child1_state2;
-                        start_child1_state2 = start_child1_state1;
-                        start_child1_state1 = start_states[child1][j];
-                        
-                        start_child2_state3 = start_child2_state2;
-                        start_child2_state2 = start_child2_state1;
-                        start_child2_state1 = start_states[child2][j];
-                    }
-                    else if (pp[i][j] > end_state2_pp)
-                    {
-                        end_state3_pp = end_state2_pp;
-                        end_state2_pp = pp[i][j];
-                        
-                        end_state3 = end_state2;
-                        end_state2 = end_states[i][j];
-                        
-                        start_child1_state3 = start_child1_state2;
-                        start_child1_state2 = start_states[child1][j];
-                        
-                        start_child2_state3 = start_child2_state2;
-                        start_child2_state2 = start_states[child2][j];
-                    }
-                    else if (pp[i][j] > end_state3_pp)
-                    {
-                        end_state3_pp = pp[i][j];
-                        end_state3 = end_states[i][j];
-                        start_child1_state3 = start_states[child1][j];
-                        start_child2_state3 = start_states[child2][j];
-                    }
-                }
-                
-                posteriors[i] = total_node_pp;
-                
-                if (end_state1_pp > 0.0001)
-                {
-                    end_state_1[i] = new std::string(end_state1);
-                    end_state_1_pp[i] = end_state1_pp;
-                    
-                    start_state_1[child1] = new std::string(start_child1_state1);
-                    start_state_1[child2] = new std::string(start_child2_state1);
-                    
-                    start_state_1_pp[child1] = end_state1_pp;
-                    start_state_1_pp[child2] = end_state1_pp;
-                    
-                } else
-                {
-                    end_state_1[i] = new std::string("NA");
-                    end_state_1_pp[i] = 0.0;
-                    
-                    start_state_1[child1] = new std::string("NA");
-                    start_state_1[child2] = new std::string("NA");
-                    
-                    start_state_1_pp[child1] = 0.0;
-                    start_state_1_pp[child2] = 0.0;
-                }
-                
-                if (end_state2_pp > 0.0001)
-                {
-                    end_state_2[i] = new std::string(end_state2);
-                    end_state_2_pp[i] = end_state2_pp;
-                    
-                    start_state_2[child1] = new std::string(start_child1_state2);
-                    start_state_2[child2] = new std::string(start_child2_state2);
-                    
-                    start_state_2_pp[child1] = end_state2_pp;
-                    start_state_2_pp[child2] = end_state2_pp;
-                    
-                } else
-                {
-                    end_state_2[i] = new std::string("NA");
-                    end_state_2_pp[i] = 0.0;
-                    
-                    start_state_2[child1] = new std::string("NA");
-                    start_state_2[child2] = new std::string("NA");
-                    
-                    start_state_2_pp[child1] = 0.0;
-                    start_state_2_pp[child2] = 0.0;
-                }
-                
-                if (end_state3_pp > 0.0001)
-                {
-                    end_state_3[i] = new std::string(end_state3);
-                    end_state_3_pp[i] = end_state3_pp;
-                    
-                    start_state_3[child1] = new std::string(start_child1_state3);
-                    start_state_3[child2] = new std::string(start_child2_state3);
-                    
-                    start_state_3_pp[child1] = end_state3_pp;
-                    start_state_3_pp[child2] = end_state3_pp;
-                    
-                } else
-                {
-                    end_state_3[i] = new std::string("NA");
-                    end_state_3_pp[i] = 0.0;
-                    
-                    start_state_3[child1] = new std::string("NA");
-                    start_state_3[child2] = new std::string("NA");
-                    
-                    start_state_3_pp[child1] = 0.0;
-                    start_state_3_pp[child2] = 0.0;
-                }
-                */
                 
                 end_state_other_pp[i] = 0.0;
-                start_state_other_pp[child1] = 0.0;
-                start_state_other_pp[child2] = 0.0;
+                start_state_other_pp[i] = 0.0;
                 if (end_other_pp > 0.0001)
                 {
                     end_state_other_pp[i] = end_other_pp;
                 }
                 if (start_child1_other_pp)
                 {
-                    start_state_other_pp[child1] = start_child1_other_pp;
+                    start_state_other_pp[i] = start_child1_other_pp;
 
-                }
-                if (start_child2_other_pp)
-                {
-                    start_state_other_pp[child2] = start_child2_other_pp;
                 }
                 
                 if (i == final_summary_tree->getRoot().getIndex())
@@ -1252,7 +1018,7 @@ void TreeSummary::computeMarginalCladogeneticStateProbs(std::vector<double> pp, 
     size_t k = 0;
     for (std::multimap<double, std::string>::reverse_iterator rit = prob_sorted_map.rbegin(); rit != prob_sorted_map.rend(); rit++)
     {
-        std::cout << rit->first << " " << rit->second << "\n";
+//        std::cout << rit->first << " " << rit->second << "\n";
         best_pp[k] = rit->first;
         best_states[k] = rit->second;
         k++;
