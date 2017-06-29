@@ -3,10 +3,10 @@
 
 #include "AbstractTreeHistoryCtmc.h"
 #include "BiogeographicCladoEvent.h"
-#include "RateMap_Biogeography.h"
+#include "RateGeneratorSequence_Biogeography.h"
 #include "ContinuousCharacterData.h"
 #include "DistributionExponential.h"
-#include "RateMap.h"
+#include "RateGeneratorSequence.h"
 #include "RbConstants.h"
 #include "RbVector.h"
 #include "Simplex.h"

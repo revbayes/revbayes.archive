@@ -133,11 +133,7 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     
     int burnin = 0;
 
-<<<<<<< HEAD
-    RevObject& b = args[3].getVariable()->getRevObject();
-=======
     RevObject& b = args[arg_index_burnin].getVariable()->getRevObject();
->>>>>>> development
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
         burnin = static_cast<const Integer &>(b).getValue();

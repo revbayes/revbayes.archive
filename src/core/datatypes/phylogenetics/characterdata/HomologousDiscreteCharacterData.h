@@ -1734,34 +1734,6 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numberTaxaMissin
 
 
 /**
- * Compute the maximum length of an invariable block.
- *
- * \return    The max block length.
- */
-template<class charType>
-size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numberTaxaMissingSequence( double x ) const
-{
-    size_t num_taxa_missing = 0;
-    size_t num_taxa_total = this->getNumberOfTaxa();
-    
-    for (size_t i=0; i<num_taxa_total; ++i)
-    {
-        const AbstractDiscreteTaxonData& taxon = this->getTaxonData(i);
-        const std::string& n = taxon.getTaxonName();
-        double p = getPercentageMissing( n );
-        
-        if ( p < x )
-        {
-            ++num_taxa_missing;
-        }
-        
-    }
-    
-    return num_taxa_missing;
-}
-
-
-/**
  * Remove all the excluded character.
  *
  */
