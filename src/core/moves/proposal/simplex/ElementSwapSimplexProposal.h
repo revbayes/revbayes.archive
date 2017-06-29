@@ -5,10 +5,7 @@
 #include <string>
 
 #include "SimpleProposal.h"
-<<<<<<< HEAD
-=======
 #include "Simplex.h"
->>>>>>> development
 #include "StochasticNode.h"
 
 namespace RevBayesCore {
@@ -24,26 +21,15 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-<<<<<<< HEAD
-    class ElementSwapSimplexProposal : public SimpleProposal<RbVector<double> > {
-        
-    public:
-        ElementSwapSimplexProposal( StochasticNode<RbVector<double> > *n );                                                //!<  constructor
-=======
     class ElementSwapSimplexProposal : public SimpleProposal<Simplex> {
         
     public:
         ElementSwapSimplexProposal( StochasticNode<Simplex> *n );                                                //!<  constructor
->>>>>>> development
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
         ElementSwapSimplexProposal*             clone(void) const;                                                                  //!< Clone object
-<<<<<<< HEAD
-        double                                  propose(RbVector<double> &v);                                                       //!< Perform proposal
-=======
         double                                  propose(Simplex &v);                                                       //!< Perform proposal
->>>>>>> development
         const std::string&                      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                                              //!< Prepare the proposal
         void                                    printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
@@ -57,19 +43,10 @@ namespace RevBayesCore {
         
     private:
         // parameters
-        
-<<<<<<< HEAD
-        RbVector<double>                        storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
-=======
         Simplex                                 storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
->>>>>>> development
         //        double                              proposedValue;                                                                      //!< The value we propose.
     };
     
 }
 
-<<<<<<< HEAD
 #endif
-=======
-#endif
->>>>>>> development

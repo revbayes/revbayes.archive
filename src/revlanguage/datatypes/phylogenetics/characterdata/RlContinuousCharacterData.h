@@ -60,16 +60,11 @@ namespace RevLanguage {
         void                                                    setValue(valueType *x);                                                                     //!< Set new constant value
         
     protected:
-        
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.h
-        RevBayesCore::TypedDagNode<valueType>*                  dagNode;
-=======
         RevBayesCore::TypedDagNode<valueType>*                  dag_node;
 
     private:
 
         void                                                    initMethods(void);
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.h
 
     };
     

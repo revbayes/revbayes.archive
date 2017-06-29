@@ -99,7 +99,7 @@
 #include "Dist_phyloCTMCDASequence.h"
 #include "Dist_phyloCTMCDASiteIID.h"
 #include "Dist_phyloCTMCClado.h"
-//#include "Dist_phyloCTMCDollo.h"
+#include "Dist_phyloCTMCDollo.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 
@@ -107,11 +107,7 @@
 #include "Dist_PhyloBrownian.h"
 #include "Dist_PhyloBrownianMVN.h"
 #include "Dist_PhyloBrownianREML.h"
-<<<<<<< HEAD
-#include "Dist_PhyloMultivariateBrownianREML.h"
-=======
 #include "Dist_PhyloBrownianMultiSampleREML.h"
->>>>>>> development
 #include "Dist_PhyloOrnsteinUhlenbeck.h"
 #include "Dist_PhyloOrnsteinUhlenbeckMVN.h"
 #include "Dist_PhyloMvtBrownian.h"
@@ -122,11 +118,7 @@
 #include "Dist_bdpTopology.h"
 #include "Dist_BirthDeathMultiRate.h"
 #include "Dist_CharacterDependentBirthDeathProcess.h"
-<<<<<<< HEAD
-#include "Dist_CharacterDependentCladoBirthDeathProcess.h"
-=======
 #include "Dist_StateDependentSpeciationExtinctionProcess.h"
->>>>>>> development
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
 #include "Dist_ConstrainedTopology.h"
@@ -139,11 +131,8 @@
 #include "Dist_empiricalTree.h"
 #include "Dist_episodicBirthDeath.h"
 #include "Dist_heterogeneousRateBirthDeath.h"
-<<<<<<< HEAD
-=======
 #include "Dist_multispeciesCoalescentInverseGammaPrior.h"
 #include "Dist_multispeciesCoalescentUniformPrior.h"
->>>>>>> development
 #include "Dist_outgroupBirthDeath.h"
 #include "Dist_phyloDistanceGamma.h"
 #include "Dist_sampledSpeciationBirthDeathProcess.h"
@@ -237,17 +226,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ModelVector<Real>          >( new Dist_PhyloBrownian()                 );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianREML()             );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMVN()              );
-<<<<<<< HEAD
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloMultivariateBrownianREML() );
-        AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()        );
-        
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()          );
-=======
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMultiSampleREML()  );
         AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()        );
-        
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()     );
->>>>>>> development
         
         // multivariate brownian motion
         AddDistribution< ModelVector< ModelVector<Real> > >( new Dist_PhyloMvtBrownian() );
@@ -262,7 +243,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( new Dist_phyloCTMCDASequence() );
         addDistribution( new Dist_phyloCTMCDASiteIID() );
         addDistribution( new Dist_phyloCTMCClado() );
-//        addDistribution( new Dist_phyloCTMCDollo() );
+        addDistribution( new Dist_phyloCTMCDollo() );
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
 
@@ -272,11 +253,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         AddDistribution< TimeTree                   >( new Dist_BirthDeathMultiRate() );
         AddDistribution< TimeTree                   >( new Dist_CharacterDependentBirthDeathProcess() );
-<<<<<<< HEAD
-        AddDistribution< TimeTree                   >( new Dist_CharacterDependentCladoBirthDeathProcess() );
-=======
         AddDistribution< TimeTree                   >( new Dist_StateDependentSpeciationExtinctionProcess() );
->>>>>>> development
         AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_outgroupBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_sampledSpeciationBirthDeathProcess() );
@@ -284,14 +261,10 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // constant rate fossil-birth-death process
         AddDistribution< TimeTree                   >( new Dist_constFBDP());
-<<<<<<< HEAD
 
-=======
-        
         // constant rate serial-sampled-birth-death process
         AddDistribution< TimeTree                   >( new Dist_constSSBDP());
         
->>>>>>> development
         // diversity-dependent pure-birth process
         AddDistribution< TimeTree                   >( new Dist_divDepYuleProcess() );
 
@@ -306,13 +279,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // multispecies coalescent (per branch constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_constPopMultispCoal() );
-<<<<<<< HEAD
-
-=======
         AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentInverseGammaPrior() );
         AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentUniformPrior() );
         
->>>>>>> development
         // constrained node order distribution
         AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeOrder() );
 
@@ -373,10 +342,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // geometric distribution
         AddDistribution< Natural                    >( new Dist_geom() );
-<<<<<<< HEAD
 
-=======
-        
         // half-Cauchy distribution
         AddContinuousDistribution< Real             >( new Dist_halfCauchy() );
         AddContinuousDistribution< RealPos          >( new Dist_halfCauchyPositive() );
@@ -388,7 +354,6 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // inverse-gamma distribution
         AddContinuousDistribution< RealPos          >( new Dist_inverseGamma() );
         
->>>>>>> development
         // poisson distribution
         AddDistribution< Natural                    >( new Dist_poisson() );
 

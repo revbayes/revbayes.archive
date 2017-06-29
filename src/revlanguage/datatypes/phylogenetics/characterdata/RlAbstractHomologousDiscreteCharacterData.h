@@ -40,14 +40,8 @@ namespace RevLanguage {
         
         // Member method functions
         virtual RevPtr<RevVariable>                             executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
-      
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractHomologousDiscreteCharacterData.h
-        AbstractHomologousDiscreteCharacterData*                concatenate(const RevObject& d, std::string type="") const;                                                  //!< Concatenate two sequences
-        AbstractHomologousDiscreteCharacterData*                concatenate(const AbstractHomologousDiscreteCharacterData& d, std::string type="") const;                    //!< Concatenate two sequences
-=======
         void                                                    concatenate(const RevObject& d, std::string type="") const;                                                  //!< Concatenate two sequences
         void                                                    concatenate(const AbstractHomologousDiscreteCharacterData& d, std::string type="") const;                    //!< Concatenate two sequences
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractHomologousDiscreteCharacterData.h
         
         
         // Basic utility functions you should not have to override
@@ -70,12 +64,7 @@ namespace RevLanguage {
         void                                                    setValue(valueType *x);                                                                 //!< Set new constant value
 
     protected:
-
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractHomologousDiscreteCharacterData.h
-        RevBayesCore::TypedDagNode<valueType>*                  dagNode;
-=======
         RevBayesCore::TypedDagNode<valueType>*                  dag_node;
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractHomologousDiscreteCharacterData.h
 
     private:
         

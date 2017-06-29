@@ -13,6 +13,7 @@
 #include "Func_characterMapTree.h"
 #include "ModelVector.h"
 #include "NexusWriter.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "RevNullObject.h"
 #include "RlBranchLengthTree.h"
@@ -82,6 +83,7 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
     // get the filename for the tree with posteriors for the MAP character history
     const std::string& map_pp_filename = static_cast<const RlString&>( args[4].getVariable()->getRevObject() ).getValue();
     
+<<<<<<< HEAD
     int burnin = static_cast<const Integer &>(args[5].getVariable()->getRevObject()).getValue();
 <<<<<<< HEAD
     
@@ -93,6 +95,19 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
     RevBayesCore::Tree* tree;
     tree = summary.characterMapTree(it->getValue(), ancestralstate_traces, burnin, num_time_slices, verbose);
 =======
+=======
+    int burnin;
+    RevObject& b = args[5].getVariable()->getRevObject();
+    if ( b.isType( Integer::getClassTypeSpec() ) )
+    {
+        burnin = static_cast<const Integer &>(b).getValue();
+    }
+    else
+    {
+        double burnin_frac = static_cast<const Probability &>(b).getValue();
+        burnin = int( floor( ancestralstate_traces[0].size() * burnin_frac ) );
+    }
+>>>>>>> dc5da38e339e81ba3e116b7fa603df3b16b875cc
 
     std::string reconstruction = static_cast<const RlString &>(args[6].getVariable()->getRevObject()).getValue();
     bool conditional = false;
@@ -158,10 +173,18 @@ const ArgumentRules& Func_characterMapTree::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "tree_trace",                   TraceTree::getClassTypeSpec(),                            "A trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "character_file",               RlString::getClassTypeSpec(),                             "The name of the file to store the tree annotated with the MAP character history.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "posterior_file",               RlString::getClassTypeSpec(),                             "The name of the file to store the tree annotated with the posterior probabilities for the MAP character history.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+<<<<<<< HEAD
         argumentRules.push_back( new ArgumentRule( "burnin",                       Integer::getClassTypeSpec(),                              "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
 <<<<<<< HEAD
 =======
        std::vector<std::string> reconstruction;
+=======
+		std::vector<TypeSpec> burnin_types;
+        burnin_types.push_back( Probability::getClassTypeSpec() );
+        burnin_types.push_back( Integer::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , burnin_types  , "The fraction/number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
+        std::vector<std::string> reconstruction;
+>>>>>>> dc5da38e339e81ba3e116b7fa603df3b16b875cc
         reconstruction.push_back( "conditional" );
         reconstruction.push_back( "joint" );
         reconstruction.push_back( "marginal" );

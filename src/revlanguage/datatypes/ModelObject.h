@@ -192,11 +192,7 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
 template <typename rbType>
 RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
-<<<<<<< HEAD
-    RevMemberObject * rmo = dynamic_cast<RevMemberObject *>( dagNode );
-=======
     RevMemberObject * rmo = dynamic_cast<RevMemberObject *>( dag_node );
->>>>>>> development
     
     if ( rmo != NULL )
     {
@@ -380,11 +376,7 @@ void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o, bool user) co
     }
     else
     {
-<<<<<<< HEAD
-        dagNode->printValue( o, "", -1, true, user, true );
-=======
         dag_node->printValue( o, "", -1, true, user, true );
->>>>>>> development
     }
     
 }

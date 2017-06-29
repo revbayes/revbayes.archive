@@ -66,14 +66,6 @@ namespace RevBayesCore {
         TreeSummary(const TraceTree &t);
         
         TreeSummary*                                                            clone(void) const;
-
-<<<<<<< HEAD
-        Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool verbose);
-        void                                                                    annotateTree(Tree &inputTree, AnnotationReport report, bool verbose );
-        Tree*                                                                   characterMapTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, int NUM_TIME_SLICES = 500, bool verbose = true);
-        double                                                                  cladeProbability(const Clade &c, bool verbose);
-        Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool verbose);
-=======
         Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool conditional, bool joint, bool verbose);
         void                                                                    annotateTree(Tree &inputTree, AnnotationReport report, bool verbose );
         Tree*                                                                   characterMapTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, int NUM_TIME_SLICES = 500, bool conditional = false, bool joint = false, bool verbose = true);
@@ -82,7 +74,6 @@ namespace RevBayesCore {
         double                                                                  computeEntropy( double credible_interval_size, bool verbose );
         std::vector<double>                                                     computePairwiseRFDistance( double credible_interval_size, bool verbose );
         std::vector<double>                                                     computeTreeLengths(void);
->>>>>>> development
         int                                                                     getBurnin(void) const;
         std::vector<Tree>                                                       getUniqueTrees(double ci=0.95, bool verbose=true);
         int                                                                     getTopologyFrequency(const Tree &t, bool verbose);
@@ -95,11 +86,7 @@ namespace RevBayesCore {
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05, bool verbose=true);
         void                                                                    setBurnin(int b);
         int                                                                     size(bool post = false) const;
-<<<<<<< HEAD
 
-    private:
-
-=======
         void                                                                    summarizeCharacterMaps(Tree inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, std::string filename, int burnin, bool verbose, std::string separator);
 
     private:
@@ -108,16 +95,13 @@ namespace RevBayesCore {
         void                                                                    recursivelyCollectAncestralStateSamples(size_t node_index, std::string map_parent_state, bool root, bool conditional, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, size_t &num_finished_nodes, bool verbose);
         void                                                                    recursivelyCollectCharacterMapSamples(size_t node_index, size_t map_parent_state, bool root, bool conditional, std::vector<AncestralStateTrace> &ancestral_state_traces, int b, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::string*> &map_character_history, std::vector<std::string*> &map_character_history_posteriors, ProgressBar &progress, size_t &num_finished_nodes, int NUM_TIME_SLICES, bool verbose);
         void                                                                    computeMarginalCladogeneticStateProbs(std::vector<double> pp, std::vector<std::string> states, std::vector<double>& best_pp, std::vector<std::string>& best_states);
->>>>>>> development
+
         void                                                                    enforceNonnegativeBranchLengths(TopologyNode& tree) const;
         Clade                                                                   fillConditionalClades(const TopologyNode &n, std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> &cc);
         const Sample<Clade>&                                                    findCladeSample(const Clade &n) const;
         TopologyNode*                                                           findParentNode(TopologyNode&, const Clade &, std::vector<TopologyNode*>&, RbBitSet& ) const;
         std::string                                                             getSiteState( const std::string &site_sample, size_t site );
-<<<<<<< HEAD
-=======
         std::vector< std::pair<size_t, double> >                                parseSIMMAPForNode(std::string character_history);
->>>>>>> development
         void                                                                    mapContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, bool np=true ) const;
         void                                                                    mapDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, bool np=true ) const;
         void                                                                    mapParameters(Tree &inputTree) const;

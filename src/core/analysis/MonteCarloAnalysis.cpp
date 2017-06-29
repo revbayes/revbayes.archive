@@ -472,9 +472,9 @@ void MonteCarloAnalysis::resetReplicates( void )
 
 
 #ifdef RB_MPI
-void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, const MPI_Comm &analysis_comm, bool verbose )
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, const MPI_Comm &analysis_comm, size_t tuning_interval, bool verbose )
 #else
-void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, bool verbose )
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, size_t tuning_interval, bool verbose )
 #endif
 {
     
@@ -586,6 +586,14 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
             
                 // Monitor
                 runs[i]->monitor(gen);
+                
+                // check for autotuning
+                if ( tuning_interval != 0 && (gen % tuning_interval) == 0 )
+                {
+                    
+                    runs[i]->tune();
+                    
+                }
             }
             
         }

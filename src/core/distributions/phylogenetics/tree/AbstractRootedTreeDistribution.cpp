@@ -541,7 +541,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
     }
     else
     {
-        throw RbException("Unexpected number of taxa in constrained tree simulation");
+        throw RbException("Unexpected number of taxa ('#taxa was " + StringUtilities::toString(n.size()) + "') in constrained tree simulation");
     }
 
 

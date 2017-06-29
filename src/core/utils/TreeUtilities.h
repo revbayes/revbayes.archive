@@ -31,10 +31,7 @@ namespace RevBayesCore {
     namespace TreeUtilities {
     
         // these function are for public use
-<<<<<<< HEAD
-=======
         double          computeRobinsonFouldDistance(const Tree &a, const Tree &b);
->>>>>>> development
         Tree*           convertTree(const Tree &t, bool resetIndex=true);
 //        AdmixtureTree*  convertToAdmixtureTree(const Tree &t, std::vector<std::string> names); // , const std::vector<std::string> names);
         DistanceMatrix* getDistanceMatrix(const Tree& tree);

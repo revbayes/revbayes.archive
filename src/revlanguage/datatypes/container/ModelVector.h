@@ -267,10 +267,6 @@ template <typename rlType>
 RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
 {
     
-<<<<<<< HEAD
-    if ( name == "contains" )
-=======
-    
     if ( name == "append" )
     {
         found = true;
@@ -302,17 +298,12 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
         return NULL;
     }
     else if ( name == "contains" )
->>>>>>> development
     {
         found = true;
         
         const rlType &rl_x = static_cast<const rlType&>( args[0].getVariable()->getRevObject() );
         const typename rlType::valueType &x = rl_x.getValue();
-<<<<<<< HEAD
-        const RevBayesCore::RbVector<typename rlType::valueType> &v = this->dagNode->getValue();
-=======
         const RevBayesCore::RbVector<typename rlType::valueType> &v = this->dag_node->getValue();
->>>>>>> development
         for (size_t i = 0; i < v.size(); ++i )
         {
             if ( v[i] == x )
@@ -336,11 +327,7 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
         found = true;
         
         // Check whether the DAG node is actually a constant node
-<<<<<<< HEAD
-        if ( this->dagNode->isConstant() == false )
-=======
         if ( this->dag_node->isConstant() == false )
->>>>>>> development
         {
             throw RbException( "Only constant variables can be sorted." );
         }
@@ -353,11 +340,7 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
         found = true;
         
         // Check whether the DAG node is actually a constant node
-<<<<<<< HEAD
-        if ( this->dagNode->isConstant() == false )
-=======
         if ( this->dag_node->isConstant() == false )
->>>>>>> development
         {
             throw RbException( "Only constant variables can be made unique." );
         }
@@ -428,8 +411,6 @@ template <typename rlType>
 void ModelVector<rlType>::initMethods( void )
 {
 
-<<<<<<< HEAD
-=======
     ArgumentRules* append_arg_rules = new ArgumentRules();
     
     std::vector<TypeSpec> appendValueTypes;
@@ -438,7 +419,6 @@ void ModelVector<rlType>::initMethods( void )
     append_arg_rules->push_back( new ArgumentRule( "x", appendValueTypes, "The element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "append", RlUtils::Void, append_arg_rules ) );
 
->>>>>>> development
     ArgumentRules* contains_arg_rules = new ArgumentRules();
     contains_arg_rules->push_back( new ArgumentRule( "x", rlType::getClassTypeSpec(), "The element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "contains", RlBoolean::getClassTypeSpec(), contains_arg_rules ) );

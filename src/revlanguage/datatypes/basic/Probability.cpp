@@ -59,11 +59,7 @@ RevObject* Probability::convertTo( const TypeSpec& type ) const
     
     if ( type == RealPos::getClassTypeSpec() )
     {
-<<<<<<< HEAD
-        return new RealPos(dagNode->getValue());
-=======
         return new RealPos(dag_node->getValue());
->>>>>>> development
     }
     
     return RealPos::convertTo( type );

@@ -90,7 +90,8 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() + currentGen;
         rules.push_back( RevBayesCore::MaxIterationStoppingRule(gen) );
         
-        bool prior = static_cast<const RlBoolean &>( args[2].getVariable()->getRevObject() ).getValue();
+        int tuning_interval = static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
+        bool prior = static_cast<const RlBoolean &>( args[3].getVariable()->getRevObject() ).getValue();
         if ( prior == true )
         {
             value->runPriorSampler( gen, rules );
@@ -98,9 +99,9 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         else
         {
 #ifdef RB_MPI
-            value->run( gen, rules, MPI_COMM_WORLD );
+            value->run( gen, rules, MPI_COMM_WORLD, tuning_interval );
 #else
-            value->run( gen, rules );
+            value->run( gen, rules, tuning_interval );
 #endif
         }
         
@@ -211,6 +212,7 @@ void MonteCarloAnalysis::initializeMethods()
     ArgumentRules* runArgRules = new ArgumentRules();
     runArgRules->push_back( new ArgumentRule( "generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     runArgRules->push_back( new ArgumentRule( "rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), "The rules when to automatically stop the run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    runArgRules->push_back( new ArgumentRule( "tuningInterval", Natural::getClassTypeSpec(), "The interval when to update the tuning parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100)  ) );
     runArgRules->push_back( new ArgumentRule( "underPrior" , RlBoolean::getClassTypeSpec(), "Should we run this analysis under the prior only?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
     methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
     

@@ -32,13 +32,6 @@ namespace RevBayesCore {
         StandardState*                  clone(void) const;                                          //!< Get a copy of this object
     
         // Discrete character observation functions
-<<<<<<< HEAD
-        std::string                     getDataType(void) const;                                    //!< Get the datatype as a common string.
-        std::string                     getStateLabels(void) const;                                 //!< Get valid state labels
-    
-    private:
-                
-=======
         void                            addState(const std::string &symbol);                //!< Add a character state to the set of character states
         RbBitSet                        getState(void) const;                               //!< Get the state (as the bitset)
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
@@ -59,7 +52,6 @@ namespace RevBayesCore {
         size_t                          index_single_state;
         size_t                          num_observed_states;
         RbBitSet                        state;
->>>>>>> development
         std::string                     labels;
         
     };

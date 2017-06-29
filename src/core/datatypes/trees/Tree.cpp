@@ -19,14 +19,9 @@ Tree::Tree(void) :
     root( NULL ),
     binary( true ),
     rooted( false ),
-<<<<<<< HEAD
-    numTips( 0 ),
-    num_nodes( 0 )
-=======
     num_tips( 0 ),
     num_nodes( 0 ),
     is_negative_constraint( false )
->>>>>>> development
 {
     
 }
@@ -38,16 +33,10 @@ Tree::Tree(const Tree& t) :
     root( NULL ),
     binary( t.binary ),
     rooted( t.rooted ),
-<<<<<<< HEAD
-    numTips( t.numTips ),
-    num_nodes( t.num_nodes ),
-    taxon_bitset_map( t.taxon_bitset_map )
-=======
     num_tips( t.num_tips ),
     num_nodes( t.num_nodes ),
     taxon_bitset_map( t.taxon_bitset_map ),
     is_negative_constraint( t.is_negative_constraint )
->>>>>>> development
 {
         
     // need to perform a deep copy of the BranchLengthTree nodes
@@ -91,19 +80,11 @@ Tree& Tree::operator=(const Tree &t)
         nodes.clear();
         delete root;
         root = NULL;
-        
-<<<<<<< HEAD
-        binary      = t.binary;
-        numTips     = t.numTips;
-        num_nodes    = t.num_nodes;
-        rooted      = t.rooted;
-=======
         binary                 = t.binary;
         num_tips               = t.num_tips;
         num_nodes              = t.num_nodes;
         rooted                 = t.rooted;
         is_negative_constraint = t.is_negative_constraint;
->>>>>>> development
         
         TopologyNode* newRoot = t.root->clone();
         
@@ -980,8 +961,9 @@ void Tree::orderNodesByIndex( void )
     std::vector<bool> used = std::vector<bool>(nodes.size(),false);
     for (int i = 0; i < nodes.size(); i++)
     {
-        if ( nodes[i]->getIndex() > nodes.size() || used[nodes[i]->getIndex()] == true )
+        if ( nodes[i]->getIndex() > nodes.size() )
         {
+<<<<<<< HEAD
             throw RbException("Problem while working with tree: Node had bad index.");
 <<<<<<< HEAD
         }
@@ -990,6 +972,13 @@ void Tree::orderNodesByIndex( void )
             used[nodes[i]->getIndex()] = true;
         }
 =======
+=======
+            throw RbException("Problem while working with tree: Node had bad index. Index was '" + StringUtilities::to_string( nodes[i]->getIndex() ) + "' while there are only '" + StringUtilities::to_string( nodes.size() ) + "' nodes in the tree.");
+        }
+        else if ( used[nodes[i]->getIndex()] == true )
+        {
+            throw RbException("Problem while working with tree: Node had bad index. Two nodes had same index of '" + StringUtilities::to_string( nodes[i]->getIndex() ) + "'.");
+>>>>>>> dc5da38e339e81ba3e116b7fa603df3b16b875cc
         }
         else
         {

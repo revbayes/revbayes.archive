@@ -53,12 +53,7 @@ RevBayesCore::HeterogeneousRateBirthDeath* Dist_heterogeneousRateBirthDeath::cre
     std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
-    
-<<<<<<< HEAD
-    RevBayesCore::HeterogeneousRateBirthDeath*   d = new RevBayesCore::HeterogeneousRateBirthDeath( ra, rs, sp, ex, er, rh, cond, t );
-=======
     RevBayesCore::HeterogeneousRateBirthDeath*   d = new RevBayesCore::HeterogeneousRateBirthDeath( ra, rs, sp, ex, er, rh, cond, allow_same, t );
->>>>>>> development
     
     return d;
 }
@@ -142,10 +137,7 @@ const MemberRules& Dist_heterogeneousRateBirthDeath::getParameterRules(void) con
         optionsCondition.push_back( "time" );
         optionsCondition.push_back( "survival" );
         memberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition, "The condition of the birth-death process." ) );
-<<<<<<< HEAD
-=======
         memberRules.push_back( new ArgumentRule( "allowSameCategory", RlBoolean::getClassTypeSpec()          , "Do we allow shifts into the same category", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
->>>>>>> development
         memberRules.push_back( new ArgumentRule( "taxa"      , ModelVector<Taxon>::getClassTypeSpec(), "The taxon names used for initialization.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rules_set = true;
