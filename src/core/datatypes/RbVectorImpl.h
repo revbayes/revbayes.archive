@@ -73,25 +73,17 @@ namespace RevBayesCore {
         valueType&                                          operator[](size_t i)
         {
             if ( i >= std::vector<valueType>::size() )
-<<<<<<< HEAD
-            throw(RbException("Vector index out of range"));
-=======
             {
                 throw(RbException("Vector index out of range"));
             }
->>>>>>> development
             return std::vector<valueType>::operator [](i);
         }
         const valueType&                                    operator[](size_t i) const
         {
             if ( i >= std::vector<valueType>::size() )
-<<<<<<< HEAD
-            throw(RbException("Vector index out of range"));
-=======
             {
                 throw(RbException("Vector index out of range"));
             }
->>>>>>> development
             return std::vector<valueType>::operator [](i);
         }
         void                                                printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const
@@ -176,25 +168,17 @@ namespace RevBayesCore {
         valueType&                                          operator[](size_t i)
         {
             if ( i >= values.size() )
-<<<<<<< HEAD
-            throw(RbException("Vector index out of range"));
-=======
             {
                 throw(RbException("Vector index out of range"));
             }
->>>>>>> development
             return *values[i];
         }
         const valueType&                                    operator[](size_t i) const
         {
             if ( i >= values.size() )
-<<<<<<< HEAD
-            throw(RbException("Vector index out of range"));
-=======
             {
                 throw(RbException("Vector index out of range"));
             }
->>>>>>> development
             return *values[i];
         }
         bool                                                operator==(const RbVectorImpl<valueType,1>& x) const { return values == x.values; }                              //!< Equals operator

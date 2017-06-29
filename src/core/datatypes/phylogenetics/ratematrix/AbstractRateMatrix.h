@@ -64,11 +64,7 @@ namespace RevBayesCore {
         AbstractRateMatrix&                 operator=(const AbstractRateMatrix& r);                                                     //!< Assignment operator
         
         // protected methods available for derived classes
-<<<<<<< HEAD
-        std::vector<double>                 calculateStationaryFrequencies(void) const;                                                  //!< Calculate the stationary frequencies for the rate matrix
-=======
         std::vector<double>                 calculateStationaryFrequencies(void) const;                                                 //!< Calculate the stationary frequencies for the rate matrix
->>>>>>> development
         bool                                checkTimeReversibity(double tolerance);
         virtual void                        computeStochasticMatrix(size_t n);
         virtual void                        computeDominatingRate(void);
@@ -76,17 +72,12 @@ namespace RevBayesCore {
         virtual void                        multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
         
         // protected members available for derived classes
-<<<<<<< HEAD
-        MatrixReal*                         the_rate_matrix;                                                                              //!< Holds the rate matrix
-        bool                                needs_update;
-=======
         MatrixReal*                         the_rate_matrix;                                                                            //!< Holds the rate matrix
         bool                                needs_update;
         
         // stochastic matrix
         double                              dominating_rate;
         std::vector<MatrixReal>             stochastic_matrix;                                                                          //!< Stochastic matrix raised to the power of n
->>>>>>> development
         
     };
     

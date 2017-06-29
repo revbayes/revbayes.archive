@@ -39,12 +39,8 @@ namespace RevBayesCore {
         void                            clear(void);
         bool                            empty(void) const;
         void                            flip(size_t i);
-<<<<<<< HEAD
-        size_t                          getNumberSetBits(void) const;                   //!< Get the number of bits set.
-=======
         size_t                          getNumberSetBits(void) const;                                           //!< Get the number of bits set.
         size_t                          getFirstSetBit(void) const;                                             //!< Get the number of bits set.
->>>>>>> development
         bool                            isSet(size_t i) const;
         void                            resize(size_t size);
         void                            set(size_t i);

@@ -38,11 +38,8 @@
 
 #include "Clade.h"
 #include "RbBitSet.h"
-//#include "RevPtr.h"
-<<<<<<< HEAD
+
 #include "TreeChangeEventMessage.h"
-=======
->>>>>>> development
 #include "Taxon.h"
 #include "TaxonMap.h"
 
@@ -88,12 +85,7 @@ namespace RevBayesCore {
         bool                                        containsClade(const TopologyNode* c, bool strict) const;
         bool                                        containsClade(const Clade &c, bool strict) const;
         bool                                        containsClade(const RbBitSet &c, bool strict) const;
-<<<<<<< HEAD
-//        bool                                        containsClade(const TopologyNode* c) const;
-//        bool                                        containsClade(const Clade &c) const;
         void                                        fireTreeChangeEvent(const unsigned& m = RevBayesCore::TreeChangeEventMessage::DEFAULT);
-=======
->>>>>>> development
         double                                      getAge(void) const;                                                                 //!< Get the age (time ago from present) for this node
         const std::vector<std::string>&             getBranchParameters(void) const;                                                        //!< Get the branch length leading towards this node
         double                                      getBranchLength(void) const;                                                        //!< Get the branch length leading towards this node
@@ -169,11 +161,7 @@ namespace RevBayesCore {
         TopologyNode*                               parent;                                                                             //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
         Tree*                                       tree;                                                                               //!< A pointer to the tree for convinience access
         Taxon                                       taxon;                                                                              //!< Taxon of the node, i.e. identifier/taxon name, plus species it comes from
-<<<<<<< HEAD
-        RbBitSet                                    taxon_index;
-=======
-        RbBitSet                                    node_bitset;
->>>>>>> development
+
         size_t                                      index;                                                                              //!< Node index
         bool                                        interior_node;
         bool                                        root_node;

@@ -51,18 +51,11 @@ namespace RevBayesCore {
         void                                        addTaxon(const Taxon &t);                                   //!< Add a taxon to our list.
         double                                      getAge(void) const;                                         //!< Get the age of this clade.
         const RbBitSet&                             getBitRepresentation(void) const;                           //!< Get the clade as a bit representation.
-<<<<<<< HEAD
-        void                                        setBitRepresentation(RbBitSet);
-        const std::vector<Taxon>&                   getMrca(void) const;                                        //!< Get the mrca taxon.
-        int                                         getNumberMissingTaxa(void) const;                           //!< Get the number of missing taxa.
-        size_t                                      getNumberOfTaxa(void) const;                                //!< Get the number of taxa.
-=======
         void                                        setBitRepresentation(const RbBitSet &b);
         const std::vector<Taxon>&                   getMrca(void) const;                                        //!< Get the mrca taxon.
         int                                         getNumberMissingTaxa(void) const;                           //!< Get the number of missing taxa.
         size_t                                      getNumberOfTaxa(void) const;                                //!< Get the number of taxa.
         std::vector<Clade>                          getOptionalConstraints(void) const;                         //!< Get optional clade constraints
->>>>>>> development
         std::vector<Taxon>&                         getTaxa(void);                                              //!< Get the taxon names.
         const std::vector<Taxon>&                   getTaxa(void) const;                                        //!< Get the taxon names.
         const Taxon&                                getTaxon(size_t i) const;                                   //!< Get a single taxon name.
@@ -71,10 +64,8 @@ namespace RevBayesCore {
         bool                                        isOptionalMatch(void) const;                           //!< Get negative constraint flag.
         void                                        resetTaxonBitset(const std::map<std::string, size_t> map);
         void                                        setAge(double a);                                           //!< Set the age of the clade.
-<<<<<<< HEAD
-=======
+
         void                                        setOptionalConstraints(std::vector<Clade> c);               //!< Set optional clade constraints.
->>>>>>> development
         void                                        setMrca(const std::vector<Taxon>&);                         //!< Set the mrca taxon, if applicable.
         void                                        setNumberMissingTaxa(int n);                                //!< Set the number of missing taxa in this clade.
         void                                        setTaxonAge(size_t i, double age);                          //!< Set a single taxon's age.
@@ -93,12 +84,9 @@ namespace RevBayesCore {
         int                                         num_missing;
         std::vector<Taxon>                          mrca;
         std::vector<Taxon>                          taxa;
-<<<<<<< HEAD
-=======
         bool                                        is_negative_constraint;
         bool                                        is_optional_match;
         std::vector<Clade>                          optional_constraints;
->>>>>>> development
         
     };
     

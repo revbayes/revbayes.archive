@@ -103,22 +103,15 @@ namespace RevBayesCore {
         
         // members
         RbVector<RbVector<double> >             elements;
-<<<<<<< HEAD
-        size_t                                  nRows;
-        size_t                                  nCols;
-        
-        mutable EigenSystem*                    eigensystem;
-        mutable bool                            eigenNeedsUpdate;
 
-        mutable bool                            useCholeskyDecomp;
-        mutable CholeskyDecomposition*          choleskyDecomp;
-        mutable bool                            choleskyNeedsUpdate;
-=======
         size_t                                  n_rows;
         size_t                                  n_cols;
         mutable EigenSystem*                    eigensystem;
         mutable bool                            eigen_needs_update;
->>>>>>> development
+        
+        mutable bool                            useCholeskyDecomp;
+        mutable CholeskyDecomposition*          choleskyDecomp;
+        mutable bool                            choleskyNeedsUpdate;
         
     };
     

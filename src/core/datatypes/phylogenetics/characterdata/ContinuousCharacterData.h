@@ -42,15 +42,9 @@ namespace RevBayesCore {
         void                                            writeToFile(const std::string &dir, const std::string &fn) const;           //!< Write this object into a file in its default format.
 
         // CharacterData functions
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.h
-        ContinuousCharacterData&                        concatenate(const ContinuousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
-        ContinuousCharacterData&                        concatenate(const HomologousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
-        ContinuousCharacterData&                        concatenate(const AbstractCharacterData &d, std::string type = "");                                //!< Concatenate data matrices
-=======
         void                                            concatenate(const ContinuousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
         void                                            concatenate(const HomologousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
         void                                            concatenate(const AbstractCharacterData &d, std::string type = "");                                //!< Concatenate data matrices
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.h
         void                                            excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                            excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                            executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls

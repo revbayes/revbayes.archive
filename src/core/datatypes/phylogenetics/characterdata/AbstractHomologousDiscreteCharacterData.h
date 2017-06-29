@@ -44,16 +44,10 @@ namespace RevBayesCore {
         virtual void                                            writeToFile(const std::string &dir, const std::string &fn) const;
         
         // CharacterData functions
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/AbstractHomologousDiscreteCharacterData.h
-        virtual AbstractHomologousDiscreteCharacterData&        concatenate(const AbstractCharacterData &d, std::string type = "") = 0;                            //!< Concatenate data matrices
-        virtual AbstractHomologousDiscreteCharacterData&        concatenate(const HomologousCharacterData &d, std::string type = "") = 0;                          //!< Concatenate two sequences
-        virtual AbstractHomologousDiscreteCharacterData&        concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type = "") = 0;          //!< Concatenate data matrices
-=======
         virtual void                                            concatenate(const AbstractCharacterData &d, std::string type = "") = 0;                             //!< Concatenate data matrices
         virtual void                                            concatenate(const HomologousCharacterData &d, std::string type = "") = 0;                           //!< Concatenate two sequences
         virtual void                                            concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type = "") = 0;           //!< Concatenate data matrices
         virtual double                                          computeMultinomialProfileLikelihood( void ) const = 0;
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/AbstractHomologousDiscreteCharacterData.h
         virtual MatrixReal                                      computeStateFrequencies(void) const = 0;                                    //!< Compute the state frequencies for this character data object
         virtual void                                            excludeCharacter(size_t i) = 0;                                             //!< Exclude character
         virtual const DiscreteCharacterState&                   getCharacter(size_t tn, size_t cn) const = 0;                               //!< Return a reference to a character element in the character matrix

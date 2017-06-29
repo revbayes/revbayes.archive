@@ -43,13 +43,8 @@ namespace RevBayesCore {
         void                                    writeToFile(const std::string &dir, const std::string &fn) const = 0;
 
         // CharacterData functions
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousCharacterData.h
-        virtual HomologousCharacterData&        concatenate(const AbstractCharacterData &d, std::string type = "") = 0;                                //!< Concatenate two sequences
-        virtual HomologousCharacterData&        concatenate(const HomologousCharacterData &d, std::string type = "") = 0;                              //!< Concatenate two sequences
-=======
         virtual void                            concatenate(const AbstractCharacterData &d, std::string type = "") = 0;                             //!< Concatenate two sequences
         virtual void                            concatenate(const HomologousCharacterData &d, std::string type = "") = 0;                           //!< Concatenate two sequences
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousCharacterData.h
         virtual void                            excludeAllCharacters(void) = 0;                                                 //!< Exclude all characters
         virtual void                            excludeCharacter(size_t i) = 0;                                                 //!< Exclude character
         virtual std::string                     getDataType(void) const = 0;                                                    //!< Return the data type of this character data matrix
