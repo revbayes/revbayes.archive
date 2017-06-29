@@ -16,21 +16,12 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 UpDownScaleProposal::UpDownScaleProposal( double l ) : Proposal(),
-<<<<<<< HEAD
-    upScalarVariables(  ),
-    upVectorVariables(  ),
-    upTreeVariables(  ),
-    downScalarVariables(  ),
-    downVectorVariables(  ),
-    downTreeVariables(  ),
-=======
     up_scalar_variables(  ),
     up_vector_variables(  ),
     up_tree_variables(  ),
     down_scalar_variables(  ),
     down_vector_variables(  ),
     down_tree_variables(  ),
->>>>>>> development
     lambda( l )
 {
     
@@ -164,57 +155,31 @@ double UpDownScaleProposal::doProposal( void )
     
     double scalingCount = 0.0;
     
-<<<<<<< HEAD
-    storedUpScalarValues = std::vector<double>(upScalarVariables.size(), 0.0);
-=======
     stored_up_scalar_values = std::vector<double>(up_scalar_variables.size(), 0.0);
->>>>>>> development
     // scale all the single variable up
     for (size_t i=0; i<up_scalar_variables.size(); ++i)
     {
-<<<<<<< HEAD
-        storedUpScalarValues[i] = upScalarVariables[i]->getValue();
-        upScalarVariables[i]->getValue() *= scaling_factor;
-        ++scalingCount;
-    }
-    
-    storedUpVectorValues = std::vector<std::vector<double> >(upVectorVariables.size(), std::vector<double>());
-=======
         stored_up_scalar_values[i] = up_scalar_variables[i]->getValue();
         up_scalar_variables[i]->getValue() *= scaling_factor;
         ++scalingCount;
     }
     
     stored_up_vector_values = std::vector<std::vector<double> >(up_vector_variables.size(), std::vector<double>());
->>>>>>> development
     // scale all the vector variables up
     for (size_t i=0; i<up_vector_variables.size(); ++i)
     {
-<<<<<<< HEAD
-        RbVector<double> &v = upVectorVariables[i]->getValue();
-
-        storedUpVectorValues[i] = std::vector<double>(v.size(), 0.0);
-        for (size_t j=0; j<v.size(); ++j)
-        {
-            storedUpVectorValues[i][j] = v[j];
-=======
         RbVector<double> &v = up_vector_variables[i]->getValue();
 
         stored_up_vector_values[i] = std::vector<double>(v.size(), 0.0);
         for (size_t j=0; j<v.size(); ++j)
         {
             stored_up_vector_values[i][j] = v[j];
->>>>>>> development
             v[j] *= scaling_factor;
         }
         scalingCount += v.size();
     }
     
-<<<<<<< HEAD
-    storedUpTreeValues = std::vector<std::vector<double> >(upTreeVariables.size(), std::vector<double>());
-=======
     stored_up_tree_values = std::vector<std::vector<double> >(up_tree_variables.size(), std::vector<double>());
->>>>>>> development
     // scale all the tree variables up
     for (size_t i=0; i<up_tree_variables.size(); ++i)
     {
@@ -223,13 +188,8 @@ double UpDownScaleProposal::doProposal( void )
         
         TopologyNode& node = tau.getRoot();
 
-<<<<<<< HEAD
-        storedUpTreeValues[i] = std::vector<double>(tau.getNumberOfNodes(), 0.0);
-        TreeUtilities::getAges(&tau, &node, storedUpTreeValues[i]);
-=======
         stored_up_tree_values[i] = std::vector<double>(tau.getNumberOfNodes(), 0.0);
         TreeUtilities::getAges(&tau, &node, stored_up_tree_values[i]);
->>>>>>> development
         
         // rescale the subtrees
         TreeUtilities::rescaleSubtree(&tau, &node, scaling_factor );
@@ -237,57 +197,31 @@ double UpDownScaleProposal::doProposal( void )
         scalingCount += tau.getNumberOfInteriorNodes();
     }
     
-<<<<<<< HEAD
-    storedDownScalarValues = std::vector<double>(downScalarVariables.size(), 0.0);
-=======
     stored_down_scalar_values = std::vector<double>(down_scalar_variables.size(), 0.0);
->>>>>>> development
     // scale all the single variable down
     for (size_t i=0; i<down_scalar_variables.size(); ++i)
     {
-<<<<<<< HEAD
-        storedDownScalarValues[i] = downScalarVariables[i]->getValue();
-        downScalarVariables[i]->getValue() /= scaling_factor;
-        --scalingCount;
-    }
-    
-    storedDownVectorValues = std::vector<std::vector<double> >(downVectorVariables.size(), std::vector<double>());
-=======
         stored_down_scalar_values[i] = down_scalar_variables[i]->getValue();
         down_scalar_variables[i]->getValue() /= scaling_factor;
         --scalingCount;
     }
     
     stored_down_vector_values = std::vector<std::vector<double> >(down_vector_variables.size(), std::vector<double>());
->>>>>>> development
     // scale all the vector variables down
     for (size_t i=0; i<down_vector_variables.size(); ++i)
     {
-<<<<<<< HEAD
-        RbVector<double> &v = downVectorVariables[i]->getValue();
-
-        storedDownVectorValues[i] = std::vector<double>(v.size(), 0.0);
-        for (size_t j=0; j<v.size(); ++j)
-        {
-            storedDownVectorValues[i][j] = v[j];
-=======
         RbVector<double> &v = down_vector_variables[i]->getValue();
 
         stored_down_vector_values[i] = std::vector<double>(v.size(), 0.0);
         for (size_t j=0; j<v.size(); ++j)
         {
             stored_down_vector_values[i][j] = v[j];
->>>>>>> development
             v[j] /= scaling_factor;
         }
         scalingCount -= v.size();
     }
     
-<<<<<<< HEAD
-    storedDownTreeValues = std::vector<std::vector<double> >(downTreeVariables.size(), std::vector<double>());
-=======
     stored_down_tree_values = std::vector<std::vector<double> >(down_tree_variables.size(), std::vector<double>());
->>>>>>> development
     // scale all the tree variables down
     for (size_t i=0; i<down_tree_variables.size(); ++i)
     {
@@ -296,13 +230,8 @@ double UpDownScaleProposal::doProposal( void )
         
         TopologyNode& node = tau.getRoot();
         
-<<<<<<< HEAD
-        storedDownTreeValues[i] = std::vector<double>(tau.getNumberOfNodes(), 0.0);
-        TreeUtilities::getAges(&tau, &node, storedDownTreeValues[i]);
-=======
         stored_down_tree_values[i] = std::vector<double>(tau.getNumberOfNodes(), 0.0);
         TreeUtilities::getAges(&tau, &node, stored_down_tree_values[i]);
->>>>>>> development
 
         // rescale the subtrees
         TreeUtilities::rescaleSubtree(&tau, &node, 1.0/scaling_factor );
@@ -425,11 +354,7 @@ void UpDownScaleProposal::undoProposal( void )
     // scale all the single variable up
     for (size_t i=0; i<up_scalar_variables.size(); ++i)
     {
-<<<<<<< HEAD
-        upScalarVariables[i]->getValue() = storedUpScalarValues[i];
-=======
         up_scalar_variables[i]->getValue() = stored_up_scalar_values[i];
->>>>>>> development
     }
     
     // scale all the vector variables up
@@ -438,11 +363,7 @@ void UpDownScaleProposal::undoProposal( void )
         RbVector<double> &v = up_vector_variables[i]->getValue();
         for (size_t j=0; j<v.size(); ++j)
         {
-<<<<<<< HEAD
-            v[j] = storedUpVectorValues[i][j];
-=======
             v[j] = stored_up_vector_values[i][j];
->>>>>>> development
         }
     }
     
@@ -455,21 +376,13 @@ void UpDownScaleProposal::undoProposal( void )
         TopologyNode& node = tau.getRoot();
         
         // rescale the subtrees
-<<<<<<< HEAD
-        TreeUtilities::setAges(&tau, &node, storedUpTreeValues[i] );
-=======
         TreeUtilities::setAges(&tau, &node, stored_up_tree_values[i] );
->>>>>>> development
     }
     
     // scale all the single variable down
     for (size_t i=0; i<down_scalar_variables.size(); ++i)
     {
-<<<<<<< HEAD
-        downScalarVariables[i]->getValue() = storedDownScalarValues[i];
-=======
         down_scalar_variables[i]->getValue() = stored_down_scalar_values[i];
->>>>>>> development
     }
     
     // scale all the vector variables down
@@ -478,11 +391,7 @@ void UpDownScaleProposal::undoProposal( void )
         RbVector<double> &v = down_vector_variables[i]->getValue();
         for (size_t j=0; j<v.size(); ++j)
         {
-<<<<<<< HEAD
-            v[j] = storedDownVectorValues[i][j];
-=======
             v[j] = stored_down_vector_values[i][j];
->>>>>>> development
         }
     }
     
@@ -495,11 +404,7 @@ void UpDownScaleProposal::undoProposal( void )
         TopologyNode& node = tau.getRoot();
         
         // rescale the subtrees
-<<<<<<< HEAD
-        TreeUtilities::setAges(&tau, &node, storedDownTreeValues[i] );
-=======
         TreeUtilities::setAges(&tau, &node, stored_down_tree_values[i] );
->>>>>>> development
     }
     
 }

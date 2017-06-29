@@ -137,11 +137,11 @@ void Func_generalRateGeneratorSequence::setConstParameter(const std::string& nam
     }
     else if ( name == "rfSite" )
     {
-        rootFrequencies = var;
+        root_frequencies = var;
     }
     else if ( name == "numChars" )
     {
-        numChars = var;
+        num_chars = var;
     }
     else
     {

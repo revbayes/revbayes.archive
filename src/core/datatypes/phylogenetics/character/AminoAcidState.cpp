@@ -6,32 +6,24 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-<<<<<<< HEAD
-AminoAcidState::AminoAcidState(size_t n) : DiscreteCharacterState( 20 )
-=======
 AminoAcidState::AminoAcidState(size_t n) : DiscreteCharacterState( 20 ),
     is_gap( false ),
     is_missing( false ),
     index_single_state( 0 ),
     num_observed_states( 0 ),
     state(20)
->>>>>>> development
 {
     
 }
 
 
 /** Constructor that sets the observation */
-<<<<<<< HEAD
-AminoAcidState::AminoAcidState(const std::string &s) : DiscreteCharacterState( 20 )
-=======
 AminoAcidState::AminoAcidState(const std::string &s) : DiscreteCharacterState( 20 ),
     is_gap( false ),
     is_missing( false ),
     index_single_state( 0 ),
     num_observed_states( 0 ),
     state(20)
->>>>>>> development
 {
     
     setState(s);
@@ -61,8 +53,6 @@ std::string AminoAcidState::getStateLabels( void ) const
 }
 
 
-<<<<<<< HEAD
-=======
 void AminoAcidState::addState(const std::string &symbol)
 {
     ++num_observed_states;
@@ -143,6 +133,3 @@ void AminoAcidState::setStateByIndex(size_t index)
     state.clear();
     state.set( index );
 }
-
-
->>>>>>> development

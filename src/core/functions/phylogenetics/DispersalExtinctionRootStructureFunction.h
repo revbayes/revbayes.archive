@@ -33,11 +33,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<RbVector<double> >*              root_frequencies;
-<<<<<<< HEAD
-        const TypedDagNode<RbVector<double> >*              rangeSize;
-=======
         const TypedDagNode<Simplex>*                        rangeSize;
->>>>>>> development
 //        const TypedDagNode<int>*                            maxRangeSize;
         
         std::vector<std::vector<unsigned> >                 bits;

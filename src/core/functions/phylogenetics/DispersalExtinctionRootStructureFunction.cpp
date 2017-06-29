@@ -7,15 +7,9 @@
 
 using namespace RevBayesCore;
 
-<<<<<<< HEAD
-DispersalExtinctionRootStructureFunction::DispersalExtinctionRootStructureFunction(TypedDagNode<RbVector<double> >* rf, TypedDagNode<RbVector<double> >* rs) : TypedFunction<RbVector<double> >( new RbVector<double>() ),
-root_frequencies( rf ),
-rangeSize(rs)
-=======
 DispersalExtinctionRootStructureFunction::DispersalExtinctionRootStructureFunction(TypedDagNode<RbVector<double> >* rf, TypedDagNode<Simplex>* rs) : TypedFunction<Simplex>( new Simplex() ),
     root_frequencies( rf ),
     rangeSize(rs)
->>>>>>> development
 {
     // add the lambda parameter as a parent
     addParameter( root_frequencies );

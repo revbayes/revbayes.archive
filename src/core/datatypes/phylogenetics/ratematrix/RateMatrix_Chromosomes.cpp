@@ -58,11 +58,7 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
             {
 				if (j == i+1)
                 {
-<<<<<<< HEAD
-					(*the_rate_matrix)[i][j] += lambda * exp( lambda_l * (i-1) );
-=======
 					(*the_rate_matrix)[i][j] += gamma * exp( gamma_l * (i-1) );
->>>>>>> development
 				}
                 if (j == i-1)
                 {
@@ -74,19 +70,11 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
                 }
                 if ( (i % 2 == 0) && (j == (size_t)(1.5*i)) )
                 {
-<<<<<<< HEAD
-                    (*the_rate_matrix)[i][j] += mu;
-                }
-                if ( (i % 2 != 0) && ( (j == (size_t)(1.5*i - 0.5)) || (j == (size_t)(1.5*i + 0.5) ) ) )
-                {
-                    (*the_rate_matrix)[i][j] += mu;
-=======
                     (*the_rate_matrix)[i][j] += eta;
                 }
                 if ( (i % 2 != 0) && ( (j == (size_t)(1.5*i - 0.5)) || (j == (size_t)(1.5*i + 0.5) ) ) )
                 {
                     (*the_rate_matrix)[i][j] += eta;
->>>>>>> development
                 }
 			}
         }

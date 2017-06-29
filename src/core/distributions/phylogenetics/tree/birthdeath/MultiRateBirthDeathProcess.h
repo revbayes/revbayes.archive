@@ -2,10 +2,6 @@
 #define MultiRateBirthDeathProcess_H
 
 #include "AbstractBirthDeathProcess.h"
-<<<<<<< HEAD
-#include "CDSE.h"
-=======
->>>>>>> development
 #include "RateMatrix.h"
 #include "Simplex.h"
 #include "SSE_ODE.h"

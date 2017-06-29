@@ -33,14 +33,6 @@ namespace RevBayesCore {
         NaturalNumbersState*            clone(void) const;                                  //!< Get a copy of this object
         
         // Discrete character observation functions
-<<<<<<< HEAD
-        void                            addState(int s);                                    //!< Add the state with the given index.
-        std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
-        std::string                     getStateLabels(void) const;                         //!< Get valid state labels
-        std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
-        void                            setState(const std::string &symbol);                //!< Compute the internal state value for this character.
-        
-=======
         void                            addState(const std::string &symbol);                //!< Add a character state to the set of character states
         RbBitSet                        getState(void) const;                               //!< Get the state (as the bitset)
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
@@ -68,7 +60,6 @@ namespace RevBayesCore {
         RbBitSet                        state;
         std::vector<std::string>        state_descriptions;
 
->>>>>>> development
     };
 //	extern size_t						g_MAX_NAT_NUM_STATES;
 }

@@ -472,10 +472,7 @@ void RevBayesCore::DiscreteTaxonData<charType>::setAllCharactersMissing( void )
         sequence[i].setMissingState( true );
     }
 
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/DiscreteTaxonData.h
 }
-=======
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/DiscreteTaxonData.h
 
 template<class charType>
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const DiscreteTaxonData<charType>& x)

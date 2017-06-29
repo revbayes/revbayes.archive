@@ -45,34 +45,16 @@ namespace RevBayesCore {
         // CharacterData functions
         double                                              computeMultinomialProfileLikelihood( void ) const;
         MatrixReal                                          computeStateFrequencies(void) const;
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-        HomologousDiscreteCharacterData&                    concatenate(const HomologousDiscreteCharacterData &d, std::string type = "");                      //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                    concatenate(const AbstractCharacterData &d, std::string type = "");                                //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                    concatenate(const HomologousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                    concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type = "");              //!< Concatenate data matrices
-=======
         void                                                concatenate(const HomologousDiscreteCharacterData &d, std::string type = "");                       //!< Concatenate data matrices
         void                                                concatenate(const AbstractCharacterData &d, std::string type = "");                                 //!< Concatenate data matrices
         void                                                concatenate(const HomologousCharacterData &d, std::string type = "");                               //!< Concatenate data matrices
         void                                                concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type = "");               //!< Concatenate data matrices
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
         void                                                excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                                excludeCharacter(size_t i);                                                 //!< Exclude character
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         std::string                                         getDataType(void) const;
         std::vector<double>                                 getEmpiricalBaseFrequencies(void) const;                                    //!< Compute the empirical base frequencies
         const std::set<size_t>&                             getExcludedCharacters(void) const;                                          //!< Returns the name of the file the data came from
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-        size_t                                              getMaxObservedStateIndex(void) const;                                              //!< Get the number of observed states for the characters in this matrix
-        size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
-        size_t                                              getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
-        size_t                                              getNumberOfInvariantSites(bool excl) const;                                      //!< Number of invariant sites
-        size_t                                              getNumberOfSegregatingSites(bool excl) const;                                    //!< Compute the number of segregating sites
-        size_t                                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
-        double                                              getAveragePaiwiseSequenceDifference(bool excl) const;                            //!< Get the average pairwise sequence distance.
-        size_t                                              getMaxPaiwiseSequenceDifference(bool excl) const;                                //!< Get the average pairwise sequence distance.
-        size_t                                              getMinPaiwiseSequenceDifference(bool excl) const;                                //!< Get the average pairwise sequence distance.
-=======
         std::vector<size_t>                                 getIncludedSiteIndices(void) const;
         size_t                                              getMaxObservedStateIndex(void) const;                                        //!< Get the number of observed states for the characters in this matrix
         size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
@@ -83,7 +65,6 @@ namespace RevBayesCore {
         double                                              getAveragePaiwiseSequenceDifference(bool excl) const;                       //!< Get the average pairwise sequence distance.
         size_t                                              getMaxPaiwiseSequenceDifference(bool excl) const;                           //!< Get the average pairwise sequence distance.
         size_t                                              getMinPaiwiseSequenceDifference(bool excl) const;                           //!< Get the average pairwise sequence distance.
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
         DiscreteTaxonData<charType>&                        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
@@ -381,11 +362,7 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractCharacterData &obsd, std::string type)
-=======
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractCharacterData &obsd, std::string type)
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
 {
     
     const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
@@ -394,12 +371,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         throw RbException("Adding wrong character data type into CharacterData!!!");
     }
     
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-    
-    return concatenate( *rhs, type );
-=======
     concatenate( *rhs, type );
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
 }
 
 
@@ -409,11 +381,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousCharacterData &obsd, std::string type)
-=======
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousCharacterData &obsd, std::string type)
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
 {
     
     const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
@@ -422,12 +390,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         throw RbException("Adding wrong character data type into CharacterData!!!");
     }
     
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-    
-    return concatenate( *rhs, type );
-=======
     concatenate( *rhs, type );
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
 }
 
 
@@ -437,11 +400,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractHomologousDiscreteCharacterData &obsd, std::string type)
-=======
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractHomologousDiscreteCharacterData &obsd, std::string type)
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
 {
     
     const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
@@ -450,12 +409,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         throw RbException("Adding wrong character data type into CharacterData!!!");
     }
     
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-    
-    return concatenate( *rhs, type );
-=======
     concatenate( *rhs, type );
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
 }
 
 
@@ -465,11 +419,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousDiscreteCharacterData<charType> &obsd, std::string type)
-=======
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousDiscreteCharacterData<charType> &obsd, std::string type)
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
 {
     
     size_t sequenceLength = getNumberOfCharacters();
@@ -479,10 +429,6 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
     {
         throw RbException("Cannot concatenate two character data objects with different number of taxa!");
     }
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-    std::vector<string> toDelete;
-    std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
-=======
     
     std::vector<string> toDelete;
     //    std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
@@ -505,7 +451,6 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         }
     }
     
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
     for (size_t i=0; i<taxa.size(); i++ )
     {
         const std::string &n = taxa[i].getName();
@@ -534,34 +479,8 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         }
     }
     for (size_t i=0; i<toDelete.size(); i++)
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
     {
         deleteTaxon(toDelete[i]);
-    }
-    
-    for (size_t i=0; i<used.size(); i++)
-    {
-        if ( used[i] == false)
-        {
-            if(type=="union")
-            {
-                std::string n = obsd.getTaxonNameWithIndex(i);
-                addMissingTaxon( n );
-                
-                AbstractTaxonData& taxon = getTaxonData( n );
-                const AbstractTaxonData& taxon_data = obsd.getTaxonData(i);
-                
-                taxon.concatenate( taxon_data );
-            }
-            else if(type != "intersection")
-            {
-                throw RbException("Cannot concatenate two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
-            }
-        }
-=======
-    {
-        deleteTaxon(toDelete[i]);
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
     }
     
     const std::set<size_t> &exclChars = obsd.getExcludedCharacters();
@@ -639,35 +558,6 @@ RevBayesCore::AbstractHomologousDiscreteCharacterData* RevBayesCore::HomologousD
             
             size_t num_states = org_char.getNumberOfStates();
             NaturalNumbersState number_state = NaturalNumbersState(0,int(num_states*n));
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-            
-            bool first = true;
-            for (size_t k=0; k < num_states; ++k)
-            {
-                
-                if ( org_char.isStateSet( k ) == true )
-                {
-                    
-                    // set the initial state
-                    if ( first == true )
-                    {
-                        first = false;
-                        number_state.setStateByIndex( k );
-                    }
-                    else
-                    {
-                        number_state.addState( int(k) );
-                    }
-                    
-                    // now we set also the expanded states
-                    for (size_t l=1; l<n; ++l)
-                    {
-                        number_state.addState( int(k)+int(num_states*l) );
-                    }
-                    
-                }
-                
-=======
            
             if ( org_char.isMissingState() == true )
             {
@@ -703,7 +593,6 @@ RevBayesCore::AbstractHomologousDiscreteCharacterData* RevBayesCore::HomologousD
                     }
                     
                 }
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
             }
             
             expanded_seq.addCharacter( number_state );
@@ -1375,47 +1264,41 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromString(con
     throw RbException("Cannot initialize a discrete character data matrix from a string.");
 }
 
+///** 
+// * Is this character pattern constant at site idx?
+// * 
+// * \param[in]   idx    The site at which we want to know if it is constant?
+// */
+//template<class charType>
+//bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterConstant(size_t idx) const 
+//{
+//    
+//    const CharacterState* f = NULL;
+//    for ( size_t i=0; i<getNumberOfTaxa(); ++i )
+//    {
+//        if ( isTaxonExcluded(i) == false ) 
+//        {
+//            if ( f == NULL )
+//            {
+//                f = &getCharacter( i, idx );
+//            }
+//            else
+//            {
+//                const CharacterState* s = &getCharacter( i , idx );
+//                if ( (*f) != (*s) )
+//                {
+//                    return false;
+//                }
+//                
+//            }
+//
+//        }
+//    
+//    }
+//    
+//    return true;
+//}
 
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-
-/** 
- * Is this character pattern constant at site idx?
- * 
- * \param[in]   idx    The site at which we want to know if it is constant?
- */
-template<class charType>
-bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterConstant(size_t idx) const 
-{
-    
-    const CharacterState* f = NULL;
-    for ( size_t i=0; i<getNumberOfTaxa(); ++i )
-    {
-        if ( isTaxonExcluded(i) == false ) 
-        {
-            if ( f == NULL )
-            {
-                f = &getCharacter( i, idx );
-            }
-            else
-            {
-                const CharacterState* s = &getCharacter( i , idx );
-                if ( (*f) != (*s) )
-                {
-                    return false;
-                }
-                
-            }
-
-        }
-    
-    }
-    
-    return true;
-}
-
-
-=======
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
 /** 
  * Is the character excluded?
  *
@@ -1822,37 +1705,10 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numInvariableSit
 }
 
 
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
-
-/** 
- * Calculates and returns the number of constant characters.
- */
-template<class charType>
-size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numConstantPatterns( void ) const 
-{
-    
-    size_t nc = 0;
-    for (size_t i=0; i<getNumberOfCharacters(); i++)
-    {
-        if ( isCharacterExcluded(i) == false && isCharacterConstant(i) == true )
-        {
-            nc++;
-        }
-        
-    }
-    
-    return nc;
-}
-
-
-/** 
- * Returns the number of characters with missing or ambiguous data
-=======
 /**
  * Compute the maximum length of an invariable block.
  *
  * \return    The max block length.
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/HomologousDiscreteCharacterData.h
  */
 template<class charType>
 size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numberTaxaMissingSequence( double x ) const

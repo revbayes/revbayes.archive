@@ -3,11 +3,8 @@
 
 using namespace RevBayesCore;
 
-<<<<<<< HEAD
-HkyRateMatrixFunction::HkyRateMatrixFunction(const TypedDagNode<double> *k, const TypedDagNode< RbVector<double> > *bf) : TypedFunction<RateGenerator>( new RateMatrix_HKY() ),
-=======
+
 HkyRateMatrixFunction::HkyRateMatrixFunction(const TypedDagNode<double> *k, const TypedDagNode< Simplex > *bf) : TypedFunction<RateGenerator>( new RateMatrix_HKY() ),
->>>>>>> development
     base_frequencies( bf ),
     kappa( k )
 {
@@ -53,11 +50,7 @@ void HkyRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const Dag
 
     if (oldP == base_frequencies)
     {
-<<<<<<< HEAD
-        base_frequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
-=======
         base_frequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
->>>>>>> development
     }
     else if (oldP == kappa)
     {
