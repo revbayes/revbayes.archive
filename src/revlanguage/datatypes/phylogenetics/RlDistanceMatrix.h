@@ -37,7 +37,7 @@ namespace RevLanguage {
             RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
 
             std::string                         getGuiName(void) { return "Distance Matrix"; }
-            std::string                         getGuiSymbol(void) { return "D"; }
+            std::string                         getGuiUnicodeSymbol(void) { return "D"; }
             std::string                         getGuiInfo(void) { return ""; }
             
         private:

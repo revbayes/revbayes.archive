@@ -39,7 +39,7 @@ namespace RevLanguage {
         virtual double                  isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
 
         std::string                     getGuiName(void) { return "Probability"; }
-        std::string                     getGuiSymbol(void) { return "P"; }
+        std::string                     getGuiUnicodeSymbol(void) { return "P"; }
         std::string                     getGuiInfo(void) { return ""; }
     };
     

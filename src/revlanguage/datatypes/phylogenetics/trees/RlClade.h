@@ -46,7 +46,7 @@ namespace RevLanguage {
             const MemberRules&                      getParameterRules(void) const;                                                      //!< Get member rules (const)
             const TypeSpec&                         getTypeSpec(void) const;                                                            //!< Get language type of the object
             std::string                             getGuiName(void) { return "Clade"; }
-            std::string                             getGuiSymbol(void) { return "\\tau(S)"; }
+            std::string                             getGuiUnicodeSymbol(void) { return "\\tau(S)"; }
             std::string                             getGuiInfo(void) { return ""; }
             
         protected:

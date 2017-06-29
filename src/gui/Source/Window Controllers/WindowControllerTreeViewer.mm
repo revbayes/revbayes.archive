@@ -179,7 +179,6 @@
 
 - (void)menuDidClose:(NSMenu*)menu {
 
-    NSLog(@"menuDidClose");
     [carousel reloadData];
 }
 

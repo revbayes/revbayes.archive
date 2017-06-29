@@ -48,7 +48,7 @@ namespace RevLanguage {
         double                      isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         
         std::string                 getGuiName(void) { return "Natural"; }
-        std::string                 getGuiSymbol(void) { return "N"; }
+        std::string                 getGuiUnicodeSymbol(void) { return "N"; }
         std::string                 getGuiInfo(void) { return ""; }
     };
     

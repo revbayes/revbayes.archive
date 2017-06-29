@@ -44,7 +44,7 @@ namespace RevLanguage {
             virtual bool                                allowsModificationToCompositeContainer(void) const { return false;}         //!< Does an object of this type allow transformation into a composite container?
 
             std::string                                 getGuiName(void) { return "Simplex"; }
-            std::string                                 getGuiSymbol(void) { return "\\delta"; }
+            std::string                                 getGuiUnicodeSymbol(void) { return "\\delta"; }
             std::string                                 getGuiInfo(void) { return ""; }
 
         private:

@@ -44,7 +44,7 @@
     std::string vType     = varPtr->getType();
     size_t n              = std::count(vType.begin(), vType.end(), '[');
     std::string guiName   = bo->getGuiName();
-    std::string guiSymbol = bo->getGuiSymbol();
+    std::string guiSymbol = bo->getGuiUnicodeSymbol();
     
     // add the variable
     Variable* newV = [[Variable alloc] initWithFrame:NSMakeRect(0.0, 0.0, 81.6, 81.6)];
@@ -340,6 +340,31 @@
 
 - (void)initializePallet {
 
+    /*
+    Bool                            B
+    BranchLengthTree               \psi
+    Clade
+    CladogeneticProbabilityMatrix   C
+    Integer                         I
+    MatrixReal
+    MatrixRealSymmetric
+    Natural                         N
+    Probability                     P
+    RateGenerator
+    RateMap
+    Real                            R
+    RealPos                         R^+
+    Simplex                        \delta
+    String                          S
+    Taxon
+    TimeTree
+    Tree                           \tau
+
+    */
+
+
+
+
     // get a pointer to the global workspace in the core and then
     // extract the list of variables and moves stored there
     RevLanguage::Workspace& myWorkspace = RevLanguage::Workspace::globalWorkspace();
@@ -369,8 +394,11 @@
             if (itf != list.end())
                 baseObj = dynamic_cast<RevLanguage::AbstractModelObject*>(itf->second);
             
-            
-            [self addVariableNamed:(it->first) withAddress:varPtr andType:baseObj];
+            std::string vType     = varPtr->getType();
+            size_t n              = std::count(vType.begin(), vType.end(), '[');
+            std::cout << vType << " (" << n << ")" << std::endl;
+
+            // TEMP: [self addVariableNamed:(it->first) withAddress:varPtr andType:baseObj];
 
 #           if 0
             // it's a variable!

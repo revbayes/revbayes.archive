@@ -57,7 +57,7 @@ namespace RevLanguage {
         void                                                    printValue(std::ostream& o, bool user) const;               //!< Print value for user
 
         std::string                                             getGuiName(void) { return "Vector"; }
-        std::string                                             getGuiSymbol(void) { return "v"; }
+        std::string                                             getGuiUnicodeSymbol(void) { return "v"; }
         std::string                                             getGuiInfo(void) { return ""; }
 
     private:

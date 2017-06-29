@@ -38,7 +38,7 @@ namespace RevLanguage {
         virtual void                            setName(const std::string &n) = 0;                                              //!< Set the name of the variable (if applicable)
         
         virtual std::string                     getGuiName(void) = 0;
-        virtual std::string                     getGuiSymbol(void) = 0;
+        virtual std::string                     getGuiUnicodeSymbol(void) = 0;
         virtual std::string                     getGuiInfo(void) = 0;
         
      private:

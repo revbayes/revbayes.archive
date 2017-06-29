@@ -894,7 +894,6 @@
 
 - (void)toolTipFire {
     
-    NSLog(@"toolTipFire %d", fireNum);
     fireNum++;
     if (fireNum == 1)
         {

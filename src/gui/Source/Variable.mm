@@ -19,53 +19,49 @@
 	[NSBezierPath fillRect:bounds];
     
     // draw the parameter
-    [[NSColor blackColor] set];
+    //[[NSColor blackColor] set];
+    //[[NSBezierPath bezierPathWithOvalInRect:bounds] fill];
+        
+#   if 1
+    
+    // allocate a shadow object
+    NSShadow* shadow = [[NSShadow alloc] init];
+    [shadow setShadowOffset:NSMakeSize(3.0, -2.0)];
+    [shadow setShadowBlurRadius:10.0];
+
+    float borderWidth = bounds.size.width * 0.01;
+    
+
+    // draw a circular parameter
+    
+    // draw the circle background
+    [NSGraphicsContext saveGraphicsState];
+    [shadow set];
+    [[NSColor lightGrayColor] set];
     [[NSBezierPath bezierPathWithOvalInRect:bounds] fill];
-    
-    return;
-    
-#   if 0
-    
-    // find the lower left corner of the parameter and transform it to the view's coordinate system
-    //[self transformToBottomLeftCoordinates:&(r.origin)];
-    
-    // draw the parameter
-        // draw the circle background
-        [NSGraphicsContext saveGraphicsState];
-        if (pPtr != nil)
-            [shadow set];
-        [[NSColor lightGrayColor] set];
-        [[NSBezierPath bezierPathWithOvalInRect:r] fill];
-        [NSGraphicsContext restoreGraphicsState];
-            
-        // draw stripes indicating that the parameter is a constant
-        BOOL drawStripes = NO;
-        if (pPtr == nil)
-            {
-            if ([self parmId] == 1)
-                drawStripes = YES;
-            }
-        else
-            {
-            if ([pPtr isConstant] == YES)
-                drawStripes = YES;
-            }
+    [NSGraphicsContext restoreGraphicsState];
         
-        // draw the black line around the circle
-        [[NSColor blackColor] set];
-        [NSBezierPath setDefaultLineWidth:borderWidth];
-        [[NSBezierPath bezierPathWithOvalInRect:r] stroke];
-        
-        // draw the separator line
-        NSPoint lp1 = NSMakePoint(r.origin.x + 0.1*r.size.width, r.origin.y + 0.33*r.size.width);
-        NSPoint lp2 = NSMakePoint(r.origin.x + 0.9*r.size.width, r.origin.y + 0.33*r.size.width);
-        NSBezierPath* separatorLine = [NSBezierPath bezierPath];
-        [separatorLine setLineCapStyle:NSRoundLineCapStyle];
-        [separatorLine moveToPoint:lp1];
-        [separatorLine lineToPoint:lp2];
-        [separatorLine setLineWidth:borderWidth];
-        [[NSColor blackColor] set];
-        [separatorLine stroke];
+    // draw stripes indicating that the parameter is a constant
+    
+    
+    // draw the black line around the circle
+    [[NSColor blackColor] set];
+    [NSBezierPath setDefaultLineWidth:borderWidth];
+    [[NSBezierPath bezierPathWithOvalInRect:bounds] stroke];
+    
+    // draw the separator line
+    NSPoint lp1 = NSMakePoint(bounds.origin.x + 0.1*bounds.size.width, bounds.origin.y + 0.33*bounds.size.width);
+    NSPoint lp2 = NSMakePoint(bounds.origin.x + 0.9*bounds.size.width, bounds.origin.y + 0.33*bounds.size.width);
+    NSBezierPath* separatorLine = [NSBezierPath bezierPath];
+    [separatorLine setLineCapStyle:NSRoundLineCapStyle];
+    [separatorLine moveToPoint:lp1];
+    [separatorLine lineToPoint:lp2];
+    [separatorLine setLineWidth:borderWidth];
+    [[NSColor blackColor] set];
+    [separatorLine stroke];
+    
+    // draw the text on the parameter
+    
 #   endif
 }
 
