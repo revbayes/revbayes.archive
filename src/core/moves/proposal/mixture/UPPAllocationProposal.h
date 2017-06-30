@@ -40,7 +40,8 @@ namespace RevBayesCore {
 
         // parameters
         StochasticNode< RbVector<mixtureType> >*  variable;                                                                           //!< The variable the Proposal is working on
-        size_t                                    oldCategory;
+        size_t                                    old_partition;
+        std::vector<int>                          old_value_assignments;
         
     };
     
@@ -66,7 +67,7 @@ namespace RevBayesCore {
 template <class mixtureType>
 RevBayesCore::UPPAllocationProposal<mixtureType>::UPPAllocationProposal( StochasticNode< RbVector<mixtureType> >* n ) : Proposal(),
     variable( n ),
-    oldCategory( 0 )
+    old_partition( 0 )
 {
     // tell the base class to add the node
     addNode( variable );
@@ -127,7 +128,10 @@ double RevBayesCore::UPPAllocationProposal<mixtureType>::doProposal( void )
     UniformPartitioningDistribution<mixtureType>& dist = static_cast<UniformPartitioningDistribution<mixtureType> &>( variable->getDistribution() );
     
     // get the current index
-    oldCategory = dist.getCurrentIndex();
+    old_partition = dist.getCurrentIndex();
+    
+    // get the value assignments
+    old_value_assignments = dist.getValueAssignments();
 
     // draw a new random partition
     dist.redrawValue();
@@ -175,8 +179,8 @@ void RevBayesCore::UPPAllocationProposal<mixtureType>::undoProposal( void )
 {
     
     UniformPartitioningDistribution<mixtureType>& dist = static_cast<UniformPartitioningDistribution<mixtureType> &>( variable->getDistribution() );
-    dist.setCurrentIndex( oldCategory );
-    // TODO reset correct value assignments for each partition
+    dist.setCurrentIndex( old_partition );
+    dist.setValueAssignments( old_value_assignments );
     
 }
 

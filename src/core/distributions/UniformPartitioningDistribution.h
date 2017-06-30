@@ -35,22 +35,18 @@ namespace RevBayesCore {
         UniformPartitioningDistribution(const UniformPartitioningDistribution &d);
 
         // public member functions
-        UniformPartitioningDistribution*                      clone(void) const;                                                                      //!< Create an independent clone
+        UniformPartitioningDistribution*                    clone(void) const;                                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;     //!< Map the member methods to internal function calls
         const std::vector<valueType>&                       getParameterValues(void) const;
-        size_t                                              getCurrentIndex(void) const;
+        int                                                 getCurrentIndex(void) const;
         RbVector<valueType>*                                getPartition(void);
+        std::vector<int>                                    getValueAssignments(void);
 
         void                                                redrawValue(void);
-        void                                                setCurrentIndex(size_t i);
+        void                                                setCurrentIndex(int i);
         void                                                setValue(valueType *v, bool f=false);
-        
-        // special handling of state changes
-        //void                                                getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                          //!< get affected nodes
-        //void                                                keepSpecialization(DagNode* affecter);
-        //void                                                restoreSpecialization(DagNode *restorer);
-        //void                                                touchSpecialization(DagNode *toucher, bool touchAll);
+        void                                                setValueAssignments(std::vector<int> v);
         
     protected:
         // Parameter management functions
@@ -60,12 +56,15 @@ namespace RevBayesCore {
     private:
         // helper methods
         RbVector<valueType>*                                simulate();
+        RbVector<valueType>*                                assignValues();
         
         // private members
         bool                                                include_zero;
-        size_t                                              index;
-        size_t                                              num_partitions;
+        int                                                 index;
+        int                                                 num_partitions;
         const TypedDagNode< RbVector<valueType> >*          parameter_values;
+        std::vector<int>                                    partition_label;
+        std::vector<int>                                    value_assignments;
     };
     
 }
@@ -92,7 +91,7 @@ RevBayesCore::UniformPartitioningDistribution<valueType>::UniformPartitioningDis
     this->addParameter( parameter_values );
     
     // calculate the number of partitions
-    size_t num_elements = parameter_values->getValue().size();
+    int num_elements = parameter_values->getValue().size();
     if ( include_zero == false )
     {
         num_partitions = RbMath::bell( num_elements ); 
@@ -101,6 +100,9 @@ RevBayesCore::UniformPartitioningDistribution<valueType>::UniformPartitioningDis
     {
         num_partitions = RbMath::bell( num_elements + 1 );
     }
+
+    value_assignments = std::vector<int>(num_elements, 0);
+    partition_label = std::vector<int>(num_elements, 0);
     
     delete this->value;
     this->value = simulate();
@@ -111,7 +113,9 @@ template <class valueType>
 RevBayesCore::UniformPartitioningDistribution<valueType>::UniformPartitioningDistribution( const UniformPartitioningDistribution &d ) : TypedDistribution< RbVector<valueType> >( d ),
     include_zero( d.include_zero ),
     index( d.index ),
-    parameter_values( d.parameter_values )
+    parameter_values( d.parameter_values ),
+    partition_label( d.partition_label ),
+    value_assignments( d.value_assignments )
 {
 
     // add the parameters to our set (in the base class)
@@ -120,7 +124,7 @@ RevBayesCore::UniformPartitioningDistribution<valueType>::UniformPartitioningDis
     this->addParameter( parameter_values );
     
     // calculate the number of partitions
-    size_t num_elements = parameter_values->getValue().size();
+    int num_elements = parameter_values->getValue().size();
     if ( include_zero == false )
     {
         num_partitions = RbMath::bell( num_elements ); 
@@ -132,6 +136,41 @@ RevBayesCore::UniformPartitioningDistribution<valueType>::UniformPartitioningDis
     
     delete this->value;
     this->value = simulate();
+
+}
+
+    
+template <class valueType>
+RevBayesCore::RbVector<valueType>* RevBayesCore::UniformPartitioningDistribution<valueType>::assignValues( void )
+{
+    
+    int num_elements = parameter_values->getValue().size();
+    RbVector<valueType>* rv = new RbVector<valueType>();
+    RbVector<valueType>& temp = *rv;
+    
+    if ( include_zero == true )
+    {
+        for (int i = 1; i < (num_elements + 1); i++)
+        {
+            if (partition_label[i] == 0)
+                temp.push_back(0.0);
+            else
+            {
+                valueType val = parameter_values->getValue()[ value_assignments[ partition_label[i] - 1 ] ];
+                temp.push_back( val );
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < num_elements; i++)
+        {
+            valueType val = parameter_values->getValue()[ value_assignments[ partition_label[i] - 1 ] ];
+            temp.push_back( val );
+        }
+    }
+
+    return rv;
 
 }
 
@@ -149,7 +188,6 @@ template <class valueType>
 double RevBayesCore::UniformPartitioningDistribution<valueType>::computeLnProbability( void )
 {
     
-    //double diff = max->getValue() - min->getValue() + 1.0;
     return -log( num_partitions );
 
 }
@@ -171,20 +209,8 @@ void RevBayesCore::UniformPartitioningDistribution<valueType>::executeMethod(con
 }
 
 
-//template <class valueType>
-//void RevBayesCore::UniformPartitioningDistribution<valueType>::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
-//{
-//    // only delegate when the toucher was our parameters
-//    if ( affecter == parameter_values && this->dag_node != NULL )
-//    {
-//        this->dag_node->getAffectedNodes( affected );
-//    }
-//    
-//}
-
-
 template <class valueType>
-size_t RevBayesCore::UniformPartitioningDistribution<valueType>::getCurrentIndex( void ) const
+int RevBayesCore::UniformPartitioningDistribution<valueType>::getCurrentIndex( void ) const
 {
 
     return index;
@@ -203,16 +229,13 @@ RevBayesCore::RbVector<valueType>* RevBayesCore::UniformPartitioningDistribution
 {
     int num_elements = parameter_values->getValue().size(); 
 
-    std::vector<int> partition_label;
     if ( include_zero == true )
     {
-        for (int i = 0; i < (num_elements + 1); i++)
-            partition_label.push_back(0);
+        partition_label = std::vector<int>(num_elements + 1, 0);
     }
     else
     {
-        for (int i = 0; i < num_elements; i++)
-            partition_label.push_back(1);
+        partition_label = std::vector<int>(num_elements, 1);
     }
 
     // iterate through an ordered list of all partitions, stopping on the current index
@@ -258,82 +281,69 @@ RevBayesCore::RbVector<valueType>* RevBayesCore::UniformPartitioningDistribution
                 break;
             }
         }
-        
-//        if ( include_zero == true )
-//        {
-//            std::cout << "include_zero = TRUE!!!!\n";
-//            for (int i = 0; i < (num_elements + 1); i++)
-//            {
-//                std::cout << partition_label[i] << "\t";
-//            }
-//            std::cout << "\n";
-//        }
-//        else
-//        {
-//            std::cout << "include_zero = false!!!!\n";
-//            for (int i = 0; i < num_elements; i++)
-//            {
-//                std::cout << partition_label[i] << "\t";
-//            }
-//            std::cout << "\n";
-//        }
 
         current_partition++;
     }
    
-    // assign values to the selected partitions non-zero subsets
-    RbVector<valueType>* rv = new RbVector<valueType>();
-    RbVector<valueType>& temp = *rv;
+    // now we must randomly assign values to the partition's non-zero subsets
     
-    if ( include_zero == true )
+    // first find the max element label
+    int max_value = 0;
+    for (int i = 0; i < partition_label.size(); i++)
     {
-        for (int i = 1; i < (num_elements + 1); i++)
-        {
-            if (partition_label[i] == 0)
-                temp.push_back(0.0);
-            else
-            {
-                // TODO value assignments should be randomized!
-                valueType val = parameter_values->getValue()[ partition_label[i] - 1 ];
-                temp.push_back( val );
-            }
-        }
+        if (partition_label[i] > max_value)
+            max_value = partition_label[i];
     }
-    else
+    
+    // for each subset label (1,2,3, etc) assign one of the non-zero elements
+    // value_assignments[ label - 1 ] = element_num
+    double weight = 1 / double(num_elements);
+    RandomNumberGenerator *rng = GLOBAL_RNG;
+    value_assignments = std::vector<int>();
+    for (int i = 0; i < max_value; i++)
     {
-        for (int i = 0; i < num_elements; i++)
+        while (true)
         {
-            if (partition_label[i] == 0)
-                temp.push_back(0.0);
-            else
+            double u = rng->uniform01();
+            int j = 0;
+            while ( u > weight )
             {
-                // TODO value assignments should be randomized!
-                valueType val = parameter_values->getValue()[ partition_label[i] - 1 ];
-                temp.push_back( val );
+                u -= weight;
+                ++j;
+            }
+            bool already_used = false;
+            for (int k = 0; k < value_assignments.size(); k++)
+            {
+                if (value_assignments[k] == j)
+                {
+                    already_used = true;
+                    break;
+                }
+            }
+            if (already_used == false)
+            {
+                value_assignments.push_back(j);
+                break;
             }
         }
     }
 
-    return rv;
+    return assignValues();
+
 }
 
 
-//template <class valueType>
-//void RevBayesCore::UniformPartitioningDistribution<valueType>::keepSpecialization( DagNode* affecter )
-//{
-//    // only do this when the toucher was our parameters
-//    if ( affecter == parameter_values && this->dag_node != NULL )
-//    {
-//        this->dag_node->keepAffected();
-//    }
-//    
-//}
+template <class valueType>
+std::vector<int> RevBayesCore::UniformPartitioningDistribution<valueType>::getValueAssignments( void )
+{
+    return value_assignments;
+}
 
 
 template <class valueType>
 RevBayesCore::RbVector<valueType>* RevBayesCore::UniformPartitioningDistribution<valueType>::simulate()
 {
-    
+    // draw a random partition index 
     double weight = 1 / double(num_partitions);
 
     RandomNumberGenerator *rng = GLOBAL_RNG;
@@ -346,17 +356,26 @@ RevBayesCore::RbVector<valueType>* RevBayesCore::UniformPartitioningDistribution
         ++index;
     }
     
-    //return parameter_values->getValue()[index];
+    // now get that partition
     return getPartition();
 }
 
 
 template <class valueType>
-void RevBayesCore::UniformPartitioningDistribution<valueType>::setCurrentIndex( size_t i )
+void RevBayesCore::UniformPartitioningDistribution<valueType>::setCurrentIndex( int i )
 {
     index = i;
     delete this->value;
     this->value = getPartition();
+}
+
+
+template <class valueType>
+void RevBayesCore::UniformPartitioningDistribution<valueType>::setValueAssignments(std::vector<int> v)
+{
+    value_assignments = v;
+    delete this->value;
+    this->value = assignValues();
 }
 
 
@@ -380,26 +399,6 @@ void RevBayesCore::UniformPartitioningDistribution<valueType>::swapParameterInte
 }
 
 
-//template <class valueType>
-//void RevBayesCore::UniformPartitioningDistribution<valueType>::restoreSpecialization( DagNode *restorer )
-//{
-//    
-//    // only do this when the toucher was our parameters
-//    if ( restorer == parameter_values )
-//    {
-//        const valueType &tmp = parameter_values->getValue()[index];
-//        Assign<valueType, IsDerivedFrom<valueType, Assignable>::Is >::doAssign( (*this->value), tmp );
-//
-//        if ( this->dag_node != NULL )
-//        {
-//            this->dag_node->restoreAffected();
-//        }
-//        
-//    }
-//    
-//}
-
-
 template <class valueType>
 void RevBayesCore::UniformPartitioningDistribution<valueType>::setValue(valueType *v, bool force)
 {
@@ -419,22 +418,5 @@ void RevBayesCore::UniformPartitioningDistribution<valueType>::setValue(valueTyp
 }
 
 
-//template <class valueType>
-//void RevBayesCore::UniformPartitioningDistribution<valueType>::touchSpecialization( DagNode *toucher, bool touchAll )
-//{
-//    // only do this when the toucher was our parameters
-//    if ( toucher == parameter_values )
-//    {
-//        const valueType &tmp = parameter_values->getValue()[index];
-//        Assign<valueType, IsDerivedFrom<valueType, Assignable>::Is >::doAssign( (*this->value), tmp );
-//        
-//        if ( this->dag_node != NULL )
-//        {
-//            this->dag_node->touchAffected();
-//        }
-//        
-//    }
-//    
-//}
 
 #endif
