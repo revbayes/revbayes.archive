@@ -9,7 +9,7 @@
 	<key>CFBundleInfo-DictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>RevBayesHelp</string>
+	<string>RevBayes Help</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersion-String</key>
@@ -22,10 +22,12 @@
 	<string>index.html</string>
 	<key>HPDBookIconPath</key>
 	<string>shrd/bookIcon.png</string>
+	<key>HPDBookIndexPath</key>
+	<string>RevBayes Help.helpindex</string>
 	<key>HPDBookKBProduct</key>
-	<string>RevBayesHelp</string>
+	<string>RevBayes Help</string>
 	<key>HPDBookTitle</key>
-	<string>RevBayesHelp</string>
+	<string>RevBayes Help</string>
 	<key>HPDBookTopic-ListCSSPath</key>
 	<string>sty/topiclist.css</string>
 	<key>HPDBookType</key>

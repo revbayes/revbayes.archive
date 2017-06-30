@@ -390,7 +390,7 @@ void HillClimber::initializeSampler( void )
         
         if ( failed == true )
         {
-            std::cout << "Drawing new initial states ... " << std::endl;
+            RBOUT( "Drawing new initial states ... " );
             for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
             {
                 

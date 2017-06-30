@@ -27,7 +27,6 @@ namespace RevLanguage {
         virtual const TypeSpec&                                 getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
         virtual RevBayesCore::AbstractCharacterData&            getValue(void) = 0;
         virtual const RevBayesCore::AbstractCharacterData&      getValue(void) const  = 0;
-        
     };
     
 }

@@ -343,7 +343,7 @@
 
         //TEMP!!!
         [self removeFilesFromTemporaryDirectory];
-        NSLog(@"paupDirectory = %@", paupDirectory);
+        //NSLog(@"paupDirectory = %@", paupDirectory);
         }
     else
         {
