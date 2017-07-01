@@ -53,11 +53,7 @@ void DelimitedDataReader::readData( size_t lines_to_skip )
         
         // skip blank lines
         std::string::iterator first_nonspace = std::find_if(read_line.begin(), read_line.end(), std::not1(std::ptr_fun<int,int>(isspace)));
-<<<<<<< HEAD
-        if(first_nonspace == read_line.end())
-=======
         if (first_nonspace == read_line.end())
->>>>>>> development
         {
             continue;
         }

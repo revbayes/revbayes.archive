@@ -54,10 +54,6 @@ AbstractRateMatrix& AbstractRateMatrix::operator=(const AbstractRateMatrix &r)
         RateMatrix::operator=( r );
         
         delete the_rate_matrix;
-<<<<<<< HEAD
-        
-=======
->>>>>>> development
         
         the_rate_matrix       = new MatrixReal( *r.the_rate_matrix );
         needs_update         = true;
@@ -234,18 +230,10 @@ bool AbstractRateMatrix::checkTimeReversibity(double tolerance)
 }
 
 
-<<<<<<< HEAD
-//size_t AbstractRateMatrix::getNumberOfStates( void ) const
-//{
-//    return num_states;
-//}
-
-=======
 double AbstractRateMatrix::getDominatingRate(void) const
 {
     return dominating_rate;
 }
->>>>>>> development
 
 void AbstractRateMatrix::computeDominatingRate(void)
 {
@@ -280,14 +268,11 @@ double AbstractRateMatrix::getRate(size_t from, size_t to, double age, double ra
     }
 
     return (*the_rate_matrix)[from][to] * rate;
-<<<<<<< HEAD
-=======
 }
 
 MatrixReal AbstractRateMatrix::getRateMatrix() const
 {
     return *the_rate_matrix;
->>>>>>> development
 }
 
 MatrixReal AbstractRateMatrix::getStochasticMatrix(size_t n)

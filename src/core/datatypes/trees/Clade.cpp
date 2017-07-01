@@ -32,13 +32,9 @@ Clade::Clade( const Taxon &t, const RbBitSet &b ) :
     age( 0.0 ),
     bitset( b ),
     num_missing( b.size() > 1 ? b.size() - 1 : 0 ),
-<<<<<<< HEAD
-    taxa()
-=======
     taxa(),
     is_negative_constraint(false),
     is_optional_match(false)
->>>>>>> development
 {
     
     taxa.push_back( t );
@@ -55,13 +51,9 @@ Clade::Clade(const std::vector<Taxon> &n, const RbBitSet &b) :
     age( 0.0 ),
     bitset( b ),
     num_missing( b.size() > n.size() ? b.size() - n.size() : 0 ),
-<<<<<<< HEAD
-    taxa( n )
-=======
     taxa( n ),
     is_negative_constraint(false),
     is_optional_match(false)
->>>>>>> development
 {
     
     // for identifiability we always keep the taxon names sorted
@@ -424,17 +416,10 @@ void Clade::setAge(double a)
 /**
  * Set the bitset of the clade.
  *
-<<<<<<< HEAD
- * \param[in]    bitset  The bitset representation of this clade.
- *
- */
-void Clade::setBitRepresentation( RbBitSet b )
-=======
  * \param[in]    b  The bitset representation of this clade.
  *
  */
 void Clade::setBitRepresentation( const RbBitSet &b )
->>>>>>> development
 {
     bitset = b;
 }

@@ -17,13 +17,8 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-<<<<<<< HEAD
-BetaSimplexProposal::BetaSimplexProposal( StochasticNode<RbVector<double> > *n, double a, double p ) : SimpleProposal<RbVector<double> >( n, p ),
-    storedValue( RbVector<double>() ),
-=======
 BetaSimplexProposal::BetaSimplexProposal( StochasticNode<Simplex> *n, double a, double p ) : SimpleProposal<Simplex>( n, p ),
     storedValue( Simplex() ),
->>>>>>> development
     alpha( a )
 {
     // tell the base class to add the node

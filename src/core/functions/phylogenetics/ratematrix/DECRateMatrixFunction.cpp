@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //
 //  DECRateMatrixFunction.cpp
 //  revbayes-proj
@@ -8,8 +7,6 @@
 //
 
 
-=======
->>>>>>> development
 #include "DECRateMatrixFunction.h"
 #include "RateMatrix_DECRateMatrix.h"
 #include "RbException.h"
@@ -20,11 +17,7 @@ using namespace RevBayesCore;
 
 DECRateMatrixFunction::DECRateMatrixFunction(   const TypedDagNode< RbVector<RbVector<double> > > *dr,
                                                 const TypedDagNode< RbVector<RbVector<double> > > *er,
-<<<<<<< HEAD
-                                                const TypedDagNode< RbVector<double> > *rs,
-=======
                                                 const TypedDagNode< Simplex > *rs,
->>>>>>> development
                                                 bool cs,
                                                 bool ex,
 //                                                bool os,

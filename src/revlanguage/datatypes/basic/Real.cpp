@@ -287,38 +287,22 @@ double Real::isConvertibleTo(const TypeSpec& type, bool once) const
         return 0.6;
     }
     
-<<<<<<< HEAD
-    if ( once && type == RealPos::getClassTypeSpec() && dagNode->getValue() > 0.0 )
-=======
     if ( once && type == RealPos::getClassTypeSpec() && dag_node->getValue() > 0.0 )
->>>>>>> development
     {
         return 0.4;
     }
     
-<<<<<<< HEAD
-    if ( once && type == Probability::getClassTypeSpec() && dagNode->getValue() >= 0.0 && dagNode->getValue() <= 1.0 )
-=======
     if ( once && type == Probability::getClassTypeSpec() && dag_node->getValue() >= 0.0 && dag_node->getValue() <= 1.0 )
->>>>>>> development
     {
         return 0.1;
     }
     
-<<<<<<< HEAD
-    if ( once && type == Integer::getClassTypeSpec() && dagNode->getValue() == int(dagNode->getValue()) )
-=======
     if ( once && type == Integer::getClassTypeSpec() && dag_node->getValue() == int(dag_node->getValue()) )
->>>>>>> development
     {
         return 0.3;
     }
     
-<<<<<<< HEAD
-    if ( once && type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0.0 && dagNode->getValue() == int(dagNode->getValue()) )
-=======
     if ( once && type == Natural::getClassTypeSpec() && dag_node->getValue() >= 0.0 && dag_node->getValue() == int(dag_node->getValue()) )
->>>>>>> development
     {
         return 0.2;
     }

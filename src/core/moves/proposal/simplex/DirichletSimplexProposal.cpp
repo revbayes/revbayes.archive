@@ -16,11 +16,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-<<<<<<< HEAD
-DirichletSimplexProposal::DirichletSimplexProposal( StochasticNode<RbVector<double> > *n, double a, size_t nc, double o, double k /*=0.0*/, double p) : Proposal(p),
-=======
 DirichletSimplexProposal::DirichletSimplexProposal( StochasticNode<Simplex> *n, double a, size_t nc, double o, double k /*=0.0*/, double p) : Proposal(p),
->>>>>>> development
     variable( n ),
     storedValue( 0.0 ),
     alpha( a ),

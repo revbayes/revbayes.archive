@@ -13,11 +13,7 @@ namespace RevBayesCore {
     class DECRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-<<<<<<< HEAD
-        DECRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > > *dr, const TypedDagNode< RbVector<RbVector<double> > > *er, const TypedDagNode< RbVector<double> > *rs, bool cs=true, bool ex=false, bool uc=false, size_t mrs=0);
-=======
         DECRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > > *dr, const TypedDagNode< RbVector<RbVector<double> > > *er, const TypedDagNode< Simplex > *rs, bool cs=true, bool ex=false, bool uc=false, size_t mrs=0);
->>>>>>> development
         virtual                                             ~DECRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -34,11 +30,7 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< RbVector<RbVector<double> > >*  dispersalRates;
         const TypedDagNode< RbVector<RbVector<double> > >*  extirpationRates;
-<<<<<<< HEAD
-        const TypedDagNode< RbVector<double> >*             rangeSize;
-=======
         const TypedDagNode< Simplex >*                      rangeSize;
->>>>>>> development
     };
     
 }

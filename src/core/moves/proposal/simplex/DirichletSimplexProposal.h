@@ -28,11 +28,7 @@ namespace RevBayesCore {
     class DirichletSimplexProposal : public Proposal {
         
     public:
-<<<<<<< HEAD
-        DirichletSimplexProposal( StochasticNode<RbVector<double> > *n, double a, size_t nc, double o, double k=0.0, double p=0.234);                                                                    //!<  constructor
-=======
         DirichletSimplexProposal( StochasticNode<Simplex> *n, double a, size_t nc, double o, double k=0.0, double p=0.234);                                                                    //!<  constructor
->>>>>>> development
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal

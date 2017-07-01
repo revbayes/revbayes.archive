@@ -57,11 +57,7 @@ const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i )
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd, std::string type)
-=======
 void ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd, std::string type)
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
 {
     std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
@@ -70,12 +66,7 @@ void ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd, std
         throw RbException("Adding wrong character data type into ContinuousCharacterData!!!");
     }
     
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
-    
-    return concatenate( *rhs, type );
-=======
     concatenate( *rhs, type );
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
 }
 
 
@@ -84,11 +75,7 @@ void ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd, std
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd, std::string type)
-=======
 void ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd, std::string type)
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
 {
     std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
@@ -97,12 +84,7 @@ void ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd, s
         throw RbException("Adding wrong character data type into ContinuousCharacterData!!!");
     }
     
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
-    
-    return concatenate( *rhs, type );
-=======
     concatenate( *rhs, type );
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
 }
 
 
@@ -111,11 +93,7 @@ void ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd, s
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, std::string type)
-=======
 void ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, std::string type)
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
 {
     
     // check if both have the same number of taxa
@@ -137,19 +115,11 @@ void ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, s
             taxon.concatenate( obsd.getTaxonData( n ) );
 
         }
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
-        else if (type == "intersection")
-        {
-            toDelete.push_back(n);
-        }
-        else if (type == "union")
-=======
         else if ( type == "intersection" )
         {
             toDelete.push_back(n);
         }
         else if ( type == "union" )
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
         {
             AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
             taxon_data->setAllCharactersMissing();
@@ -170,11 +140,7 @@ void ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, s
     {
         if ( used[i] == false )
         {
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
-            if(type=="union")
-=======
             if ( type=="union" )
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
             {
                 std::string n = obsd.getTaxonNameWithIndex(i);
                 addMissingTaxon( n );
@@ -184,11 +150,7 @@ void ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, s
 
                 taxon.concatenate( taxon_data );
             }
-<<<<<<< HEAD:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
-            else if(type != "intersection")
-=======
             else if ( type != "intersection" )
->>>>>>> development:src/core/datatypes/phylogenetics/characterdata/ContinuousCharacterData.cpp
             {
                 throw RbException("Cannot concatenate two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
             }
