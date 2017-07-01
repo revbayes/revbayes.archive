@@ -7,11 +7,7 @@ using namespace RevBayesCore;
 TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, const bool s) : TypedFunction<double>( new double(0.0) ),
     tree( t ),
     clade( c ),
-<<<<<<< HEAD
-    stemAge( s ),
-=======
     stem_age( s ),
->>>>>>> development
     index( -RbConstants::Integer::max )
 {
 
@@ -144,11 +140,7 @@ void TmrcaStatistic::update( void )
     if ( index != -RbConstants::Integer::max )
     {
         TopologyNode *node = n[index];
-<<<<<<< HEAD
-        size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
-=======
         size_t clade_size = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
->>>>>>> development
         
         if ( node->containsClade( clade, false ) == true )
         {

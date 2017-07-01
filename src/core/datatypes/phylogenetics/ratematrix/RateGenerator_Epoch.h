@@ -61,12 +61,6 @@ namespace RevBayesCore {
         // helper variables
         size_t                              numEpochs;
         bool                                needs_update;
-<<<<<<< HEAD
-
-
-=======
-        
->>>>>>> development
     };
     
     std::ostream&                       operator<<(std::ostream& o, const RateGenerator_Epoch& x);                                           //!< Overloaded output operator

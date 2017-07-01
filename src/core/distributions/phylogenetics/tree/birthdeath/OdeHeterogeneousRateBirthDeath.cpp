@@ -9,11 +9,7 @@ OdeHeterogeneousRateBirthDeath::OdeHeterogeneousRateBirthDeath( const RbVector<d
     switch_rate( r ),
     num_categories( l.size() ),
     current_rate_category( 0 ),
-<<<<<<< HEAD
-    allow_same_category( false )
-=======
     allow_same_category( a )
->>>>>>> development
 {
     
 }

@@ -158,12 +158,6 @@
 
 
 #include "Move_NarrowExchangeRateMatrix.h"
-<<<<<<< HEAD
-//#include "Move_NarrowExchangeCharacterHistory.h"
-//#include "Move_FNPRCharacterHistory.h"
-//#include "Move_NodeTimeSlideUniformCharacterHistory.h"
-=======
->>>>>>> development
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
@@ -256,10 +250,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Natural>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Integer>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Probability>( ) );
-<<<<<<< HEAD
-=======
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Simplex>( ) );
->>>>>>> development
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RateGenerator>( ) );
         addTypeWithConstructor( new Move_UPPAllocation<RealPos>() );
         
@@ -304,20 +295,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_SpeciesTreeScale()               );
         addTypeWithConstructor( new Move_TreeScale()                      );
 //        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
-//        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
-        
-<<<<<<< HEAD
-
+//        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );        
         addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()       );
-//        addTypeWithConstructor( new Move_NarrowExchangeCharacterHistory() );
-//        addTypeWithConstructor( new Move_FNPRCharacterHistory()           );
-//        addTypeWithConstructor( new Move_NodeTimeSlideUniformCharacterHistory());
 
-=======
-        addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()         );
-
-        
->>>>>>> development
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor( new Move_CharacterHistory() );
         // addTypeWithConstructor( new Move_NodeCharacterHistoryRejectionSample() );

@@ -186,10 +186,7 @@
 #include "Func_EpochCladoProbs.h"
 #include "Func_chromosomesCladoProbs.h"
 #include "Func_chromosomesCladoEventsBD.h"
-<<<<<<< HEAD
-=======
 #include "Func_chromosomesPloidyCladoEventsBD.h"
->>>>>>> development
 #include "Func_MixtureCladoProbs.h"
 #include "Func_SampledCladogenesisRootFrequencies.h"
 
@@ -345,40 +342,11 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_EpochCladoProbs() );
         addFunction( new Func_chromosomesCladoProbs() );
         addFunction( new Func_chromosomesCladoEventsBD() );
-<<<<<<< HEAD
-=======
         addFunction( new Func_chromosomesPloidyCladoEventsBD() );
->>>>>>> development
         addFunction( new Func_MixtureCladoProbs() );
         addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
-<<<<<<< HEAD
-        addFunction( new Func_branchScoreDistance()      );
-        addFunction( new Func_checkNodeOrderConstraints());
-//        addFunction( new Func_clade()                    );
-        addFunction( new Func_computeWeightedNodeOrderConstraintsScore());
-        addFunction( new Func_concatenate()              );
-        addFunction( new Func_constructRootedTripletDistribution()            );
-        addFunction( new Func_formatDiscreteCharacterData() );
-        addFunction( new Func_extantTree()                );
-        addFunction( new Func_maximumTree()              );
-        addFunction( new Func_mrcaIndex()                );
-        addFunction( new Func_nodeAgeByID()              );
-        addFunction( new Func_phyloDiversity() );
-        addFunction( new Func_pomoStateConverter()       );
-        addFunction( new Func_pomoRootFrequencies()      );
-        addFunction( new Func_pruneTree()                );
-        addFunction( new Func_readPomoCountFile()       );
-        addFunction( new Func_simTree()                  );
-        addFunction( new Func_simCompleteTree()          );
-        addFunction( new Func_stitchTree()               );
-        addFunction( new Func_symmetricDifference()      );
-        addFunction( new Func_tmrca()                    );
-        addFunction( new Func_treePairwiseDistances()    );
-        addFunction( new Func_treeAssembly()             );
-        addFunction( new Func_treeScale()                );
-=======
         addFunction( new Func_branchScoreDistance()         );
         addFunction( new Func_checkNodeOrderConstraints()   );
 //        addFunction( new Func_clade()                    );
@@ -404,7 +372,6 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_treePairwiseDistances()       );
         addFunction( new Func_treeAssembly()                );
         addFunction( new Func_treeScale()                   );
->>>>>>> development
 
         /* Population genetics functions (in folder "functions/popgen") */
         addFunction( new Func_PattersonsD()      );
@@ -498,14 +465,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // geographical distance function
         addFunction( new Func_geographicalDistance() );
-<<<<<<< HEAD
         addFunction( new Func_shortestDistance() );
         
-        
-=======
-
->>>>>>> development
-        // hyperbolic tangent function
+                // hyperbolic tangent function
         addFunction( new Func_hyperbolicTangent() );
 
         // hyperbolic sine function

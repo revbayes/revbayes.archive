@@ -21,12 +21,6 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
     
 	double branchLnFact = 0.0;
 	double nodeLnFact = 0.0;
-<<<<<<< HEAD
-	for (size_t i = 2; i < 2*num_taxa - 3 - 2*(!rooted); i++) {
-		branchLnFact += std::log(i);
-		if(i <= num_taxa - 2 - !rooted)
-			nodeLnFact += std::log(i);
-=======
 	for (size_t i = 2; i < 2*num_taxa - 3 - 2*(!rooted); i++)
     {
 		branchLnFact += std::log(i);
@@ -34,8 +28,6 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
         {
 			nodeLnFact += std::log(i);
         }
-        
->>>>>>> development
 	}
     
     logTreeTopologyProb = (num_taxa - 2 - !rooted) * RbConstants::LN2 + nodeLnFact - branchLnFact;
@@ -66,15 +58,7 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
     }
 
     RbBitSet b( num_taxa );
-<<<<<<< HEAD
-<<<<<<< HEAD
-    for(size_t j = 0; j < outgroup.size(); j++)
-=======
     for (size_t j = 0; j < outgroup.size(); j++)
->>>>>>> development
-=======
-    for (size_t j = 0; j < outgroup.size(); ++j)
->>>>>>> dc5da38e339e81ba3e116b7fa603df3b16b875cc
     {
         size_t k = taxon_bitset_map[ outgroup.getTaxonName(j) ];
 

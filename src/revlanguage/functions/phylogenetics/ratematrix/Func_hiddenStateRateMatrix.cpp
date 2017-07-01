@@ -1,9 +1,6 @@
 #include "Func_hiddenStateRateMatrix.h"
 #include "HiddenStateRateMatrixFunction.h"
-<<<<<<< HEAD
-=======
 #include "ModelVector.h"
->>>>>>> development
 #include "Natural.h"
 #include "RateMatrix_JC.h"
 #include "Real.h"

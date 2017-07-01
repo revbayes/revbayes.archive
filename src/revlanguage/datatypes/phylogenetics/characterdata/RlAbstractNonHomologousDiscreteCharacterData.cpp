@@ -13,11 +13,7 @@ using namespace RevLanguage;
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData(void) :
     NonHomologousCharacterData( ),
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
-    dagNode( NULL )
-=======
     dag_node( NULL )
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
 {
     
     ArgumentRules* chartypeArgRules            = new ArgumentRules();
@@ -32,19 +28,11 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData( const RevBayesCore::AbstractNonHomologousDiscreteCharacterData &d) :
     NonHomologousCharacterData( ),
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
-    dagNode( new ConstantNode<valueType>("",d.clone()) )
-{
-    
-    // increment the reference count to the value
-    dagNode->incrementReferenceCount();
-=======
     dag_node( new ConstantNode<valueType>("",d.clone()) )
 {
     
     // increment the reference count to the value
     dag_node->incrementReferenceCount();
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -62,19 +50,11 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData( RevBayesCore::AbstractNonHomologousDiscreteCharacterData *d) :
     NonHomologousCharacterData( ),
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
-    dagNode( new ConstantNode<valueType>("",d) )
-{
-    
-    // increment the reference count to the value
-    dagNode->incrementReferenceCount();
-=======
     dag_node( new ConstantNode<valueType>("",d) )
 {
     
     // increment the reference count to the value
     dag_node->incrementReferenceCount();
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -92,19 +72,11 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractNonHomologousDiscreteCharacterData> *d) :
     NonHomologousCharacterData( ),
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
-    dagNode( d )
-{
-    
-    // increment the reference count to the value
-    dagNode->incrementReferenceCount();
-=======
     dag_node( d )
 {
     
     // increment the reference count to the value
     dag_node->incrementReferenceCount();
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -398,11 +370,7 @@ void AbstractNonHomologousDiscreteCharacterData::printValue(std::ostream &o, boo
     }
     else
     {
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
-        dagNode->printValue( o, "" );
-=======
         dag_node->printValue( o, "" );
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractNonHomologousDiscreteCharacterData.cpp
     }
     
 }

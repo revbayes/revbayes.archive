@@ -84,11 +84,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::DiscreteTaxonData<rlT
         // get the member with give index
         const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
             
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlDiscreteTaxonData.h
-        if (this->dagNode->getValue().getNumberOfCharacters() < (size_t)(index.getValue()) )
-=======
         if (this->dag_node->getValue().getNumberOfCharacters() < (size_t)(index.getValue()) )
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlDiscreteTaxonData.h
         {
             throw RbException("Index out of bounds in []");
         }

@@ -181,8 +181,6 @@ Tree* Tree::clone(void) const
 }
 
 
-<<<<<<< HEAD
-=======
 void Tree::collapseNegativeBranchLengths(double l)
 {
     double age = 0.0;
@@ -204,7 +202,6 @@ void Tree::collapseNegativeBranchLengths(double l)
 }
 
 
->>>>>>> development
 /**
  * Drop the tip node with the given name.
  * The name should correspond to the taxon name, not the species name.
@@ -252,11 +249,7 @@ void Tree::dropTipNodeWithName( const std::string &n )
     num_nodes = nodes.size();
     
     // count the number of tips
-<<<<<<< HEAD
-    numTips = 0;
-=======
     num_tips = 0;
->>>>>>> development
     for (size_t i = 0; i < num_nodes; ++i)
     {
         if ( nodes[i] == NULL )
@@ -265,11 +258,7 @@ void Tree::dropTipNodeWithName( const std::string &n )
             std::cerr << i << " - " << nodes[i] << std::endl;
             throw RbException("Problem while reading in tree.");
         }
-<<<<<<< HEAD
-        numTips += ( nodes[i]->isTip() ? 1 : 0);
-=======
         num_tips += ( nodes[i]->isTip() ? 1 : 0);
->>>>>>> development
     }
     
 }
@@ -316,12 +305,8 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     else if ( n == "numSampledAncestors")
     {
         rv = 0;
-<<<<<<< HEAD
-        for(size_t i=0; i< numTips; i++){
-=======
         for (size_t i=0; i< num_tips; i++)
         {
->>>>>>> development
             rv += nodes[i]->isSampledAncestor();
         }
     }
@@ -627,11 +612,7 @@ std::vector<Taxon> Tree::getTaxa() const
  * The taxa are ordered alphabetically in the BitSet.
  * Eventually this should be refactored with the TaxonMap class.
  */
-<<<<<<< HEAD
-std::map<std::string, size_t> Tree::getTaxonBitSetMap()
-=======
 const std::map<std::string, size_t>& Tree::getTaxonBitSetMap( void ) const
->>>>>>> development
 {
     if (taxon_bitset_map.size() == 0)
     {
@@ -652,10 +633,6 @@ const std::map<std::string, size_t>& Tree::getTaxonBitSetMap( void ) const
             taxon_bitset_map[ordered_taxa[i]] = i;
         }
     }
-<<<<<<< HEAD
-=======
-    
->>>>>>> development
     return taxon_bitset_map;
 }
 
@@ -998,8 +975,6 @@ void Tree::renameNodeParameter(const std::string &old_name, const std::string &n
     getRoot().renameNodeParameter(old_name, new_name);
 }
 
-<<<<<<< HEAD
-=======
 void Tree::reroot(const Clade &o, bool reindex)
 {
     
@@ -1035,8 +1010,6 @@ void Tree::reroot(const Clade &o, bool reindex)
     
 }
 
->>>>>>> development
-
 void Tree::reroot(const std::string &outgroup, bool reindex)
 {
     std::vector<std::string> tip_names = getTipNames();
@@ -1061,11 +1034,7 @@ void Tree::reroot(const std::string &outgroup, bool reindex)
     outgroup_node.getParent().setParent( NULL );
 
 	// set the new root
-<<<<<<< HEAD
-	setRoot( &outgroupNode.getParent(), reindex );
-=======
 	setRoot( &outgroup_node.getParent(), reindex );
->>>>>>> development
 
 }
 
@@ -1145,11 +1114,7 @@ void Tree::setRoot( TopologyNode* r, bool reindex )
     num_nodes = nodes.size();
     
     // count the number of tips
-<<<<<<< HEAD
-    numTips = 0;
-=======
     num_tips = 0;
->>>>>>> development
     for (size_t i = 0; i < num_nodes; ++i)
     {
         if ( nodes[i] == NULL )
@@ -1162,11 +1127,7 @@ void Tree::setRoot( TopologyNode* r, bool reindex )
         {
             found = true;
         }
-<<<<<<< HEAD
-        numTips += ( nodes[i]->isTip() ? 1 : 0);
-=======
         num_tips += ( nodes[i]->isTip() ? 1 : 0);
->>>>>>> development
     }
     
     
@@ -1177,7 +1138,7 @@ void Tree::setRoot( TopologyNode* r, bool reindex )
         delete old_root;
     }
 
-<<<<<<< HEAD
+
 }
 
 
@@ -1195,27 +1156,6 @@ void Tree::setTaxonIndices(const TaxonMap &tm)
     
 }
 
-
-=======
-}
-
-
-//!< Set the indices of the taxa from the taxon map
-void Tree::setTaxonIndices(const TaxonMap &tm)
-{
-    
-    // start a recursive call at the root
-    if ( root != NULL )
-    {
-        root->setTaxonIndices(tm);
-        orderNodesByIndex();
-    }
-    
-    
-}
-
-
->>>>>>> development
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Tree& x)
 {

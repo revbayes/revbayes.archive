@@ -29,11 +29,7 @@ namespace RevBayesCore {
         virtual                                            ~EmpiricalQuantileFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
-<<<<<<< HEAD
-        EmpiricalQuantileFunction*                                       clone(void) const;                                                          //!< Create an independent clone
-=======
         EmpiricalQuantileFunction*                          clone(void) const;                                                          //!< Create an independent clone
->>>>>>> development
         void                                                update(void);
         
     protected:

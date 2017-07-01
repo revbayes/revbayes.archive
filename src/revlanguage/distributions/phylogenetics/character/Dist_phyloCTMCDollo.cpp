@@ -53,11 +53,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
 
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
-<<<<<<< HEAD
-    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
-=======
     const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *rf = NULL;
->>>>>>> development
     if ( rootFrequencies != NULL && rootFrequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( rootFrequencies->getRevObject() ).getDagNode();

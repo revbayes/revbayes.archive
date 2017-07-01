@@ -110,10 +110,6 @@ const std::string& Move_DPPTableValueUpdate<valType>::getClassType(void)
 {
     
     static std::string rev_type = "Move_DPPTableValueUpdate";
-<<<<<<< HEAD
-    
-=======
->>>>>>> development
     return rev_type;
 }
 

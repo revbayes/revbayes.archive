@@ -107,11 +107,7 @@ const std::string& Simplex::getClassType(void)
 /** Get class type spec describing type of object */
 const TypeSpec& Simplex::getClassTypeSpec(void) { 
     
-<<<<<<< HEAD
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &ModelVector<RealPos>::getClassTypeSpec() );
-=======
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), &ModelObject<RevBayesCore::Simplex>::getClassTypeSpec() );
->>>>>>> development
     
 	return rev_type_spec; 
 }

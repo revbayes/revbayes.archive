@@ -16,11 +16,7 @@
 int main(int argc, char* argv[]) {
     
 #   ifdef RB_MPI
-<<<<<<< HEAD
-    int processId = 0;
-=======
     int process_id = 0;
->>>>>>> development
     int num_processes = 0;
     try
     {
@@ -67,11 +63,8 @@ int main(int argc, char* argv[]) {
 #   ifdef RB_XCODE
 
 #   ifndef RB_MPI
-<<<<<<< HEAD
-    int processId = 0;
-=======
     int process_id = 0;
->>>>>>> development
+
 #   endif
     /* Declare things we need */
     int result = 0;

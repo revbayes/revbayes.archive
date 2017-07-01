@@ -161,9 +161,6 @@ void RbBitSet::flip(size_t i)
     num_set_bits += ( value[i] ? 1 : -1 );
 }
 
-
-<<<<<<< HEAD
-=======
 size_t RbBitSet::getFirstSetBit( void ) const
 {
     size_t index = 0;
@@ -175,8 +172,6 @@ size_t RbBitSet::getFirstSetBit( void ) const
     return index;
 }
 
-
->>>>>>> development
 size_t RbBitSet::getNumberSetBits( void ) const
 {
     // get the internal value

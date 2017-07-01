@@ -44,15 +44,8 @@ namespace RevBayesCore {
         AncestralStateMonitor*              clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-<<<<<<< HEAD
-        void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
-        void                                closeStream(void);                                                  //!< Close stream after finish writing
-        void                                openStream(bool reopen);                                            //!< Open the stream for writing
-        void                                printHeader(void);                                                  //!< Print header
-=======
         void                                monitorVariables(unsigned long gen);                                //!< Monitor at generation gen
         void                                printFileHeader(void);                                              //!< Print header
->>>>>>> development
         
         // getters and setters
 		void								swapNode(DagNode *oldN, DagNode *newN);
@@ -111,13 +104,6 @@ AncestralStateMonitor<characterType>::AncestralStateMonitor( const AncestralStat
     ctmc( m.ctmc ),
     stochastic_nodes_only( m.stochastic_nodes_only )
 {
-<<<<<<< HEAD
-    if ( m.outStream.is_open() == true )
-    {
-        openStream( true );
-    }
-=======
->>>>>>> development
     
 }
 
@@ -209,32 +195,6 @@ void AncestralStateMonitor<characterType>::monitorVariables(unsigned long gen)
 }
 
 
-<<<<<<< HEAD
-/** 
- * Open the AncestralState stream for printing.
- */
-template<class characterType>
-void AncestralStateMonitor<characterType>::openStream( bool reopen )
-{
-    
-    RbFileManager f = RbFileManager(filename);
-    f.createDirectoryForFile();
-    
-    // open the stream to the AncestralState
-    if ( append == true || reopen == true )
-    {
-        outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
-    }
-    else
-    {
-        outStream.open( filename.c_str(), std::fstream::out);    
-    }
-    
-}
-
-=======
->>>>>>> development
-
 /** 
  * Print header for monitored values 
  */
@@ -254,11 +214,8 @@ void AncestralStateMonitor<characterType>::printFileHeader()
 			out_stream << separator;
 			
 			// print the node index + 1 to be consistent with Rev language one-based indexes
-<<<<<<< HEAD
-			outStream << the_node->getIndex() + 1;
-=======
+
 			out_stream << the_node->getIndex() + 1;
->>>>>>> development
 		}
     }
     

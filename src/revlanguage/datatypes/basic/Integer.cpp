@@ -300,11 +300,7 @@ double Integer::isConvertibleTo( const TypeSpec& type, bool once ) const
         return 0.1;
     }
     
-<<<<<<< HEAD
-    if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1 && dagNode->getValue() >= 0)
-=======
     if ( once == true && type == Probability::getClassTypeSpec() && dag_node->getValue() <= 1 && dag_node->getValue() >= 0)
->>>>>>> development
     {
         return 0.2;
     }

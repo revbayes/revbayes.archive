@@ -87,20 +87,19 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         std::vector<RevBayesCore::Taxon> t = this->dag_node->getValue().getFossilTaxa();
         return new RevVariable( new ModelVector<Taxon>( t ) );
     }
-<<<<<<< HEAD
     else if (name == "numSampledAncestors")
     {
         found = true;
 
-        size_t n = this->dagNode->getValue().getNumberOfTips();
+        size_t n = this->dag_node->getValue().getNumberOfTips();
 
         size_t num = 0;
         for(size_t i=0; i<n; i++){
-            RevBayesCore::TopologyNode &node = this->dagNode->getValue().getNode(i);
+            RevBayesCore::TopologyNode &node = this->dag_node->getValue().getNode(i);
             num += node.isSampledAncestor();
         }
         return new RevVariable( new Natural( num ) );
-=======
+    }
     else if (name == "collapseNegativeBranches")
     {
         found = true;
@@ -108,7 +107,6 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         double length = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
         this->dag_node->getValue().collapseNegativeBranchLengths(length);
         return NULL;
->>>>>>> development
     }
     
     return Tree::executeMethod( name, args, found );
@@ -154,13 +152,10 @@ void TimeTree::initMethods( void )
     ArgumentRules* getFossilsArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "getFossils", ModelVector<Taxon>::getClassTypeSpec(), getFossilsArgRules ) );
 
-<<<<<<< HEAD
-=======
     ArgumentRules* collapseNegativeBranchesRules = new ArgumentRules();
     collapseNegativeBranchesRules->push_back( new ArgumentRule( "length", RealPos::getClassTypeSpec(), "The new length of all negative branches.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ));
     methods.addFunction( new MemberProcedure( "collapseNegativeBranches", RlUtils::Void, collapseNegativeBranchesRules ) );
 
->>>>>>> development
     ArgumentRules* nSampledAncestorsArgRules = new ArgumentRules();
     methods.addFunction( new MemberFunction<TimeTree, Natural>( "numSampledAncestors", this, nSampledAncestorsArgRules ) );
 

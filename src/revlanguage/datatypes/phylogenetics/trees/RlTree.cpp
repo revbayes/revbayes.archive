@@ -81,11 +81,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
             taxon_name = static_cast<const Taxon&>( taxon ).getValue().getSpeciesName();
         }
 
-<<<<<<< HEAD
-        this->dagNode->getValue().dropTipNodeWithName( taxon_name );
-=======
         this->dag_node->getValue().dropTipNodeWithName( taxon_name );
->>>>>>> development
         
         return NULL;
     }

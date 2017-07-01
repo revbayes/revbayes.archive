@@ -2,10 +2,6 @@
 #define JointConditionalJointConditionalAncestralStateMonitor_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
-<<<<<<< HEAD
-#include "CharacterDependentCladoBirthDeathProcess.h"
-=======
->>>>>>> development
 #include "StateDependentSpeciationExtinctionProcess.h"
 #include "AbstractFileMonitor.h"
 #include "Tree.h"
@@ -69,10 +65,6 @@ namespace RevBayesCore {
 #include "StochasticNode.h"
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
-<<<<<<< HEAD
-#include "CharacterDependentCladoBirthDeathProcess.h"
-=======
->>>>>>> development
 #include "StateDependentSpeciationExtinctionProcess.h"
 
 using namespace RevBayesCore;
@@ -103,10 +95,7 @@ JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralS
 {
     cdbdp = NULL;
     
-<<<<<<< HEAD
     // the cdbdp is both the tree and character evolution model
-=======
->>>>>>> development
     addVariable( tree );
     addVariable( ctmc );
     

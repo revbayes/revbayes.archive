@@ -192,13 +192,8 @@ void MatrixReal::initializeMethods( void )
     ArgumentRules* nRowsArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "nrows", Natural::getClassTypeSpec(), nRowsArgRules) );
 
-<<<<<<< HEAD
-=======
     // add method for call "size" as a function
     ArgumentRules* nColumnsArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "ncolumns", Natural::getClassTypeSpec(), nColumnsArgRules) );
 
 }
-
-
->>>>>>> development

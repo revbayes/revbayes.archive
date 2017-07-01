@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //
 //  Func_empiricalQuantile.cpp
 //  revbayes
@@ -7,8 +6,6 @@
 //  Copyright © 2016 Lyndon Coghill. All rights reserved.
 //
 
-=======
->>>>>>> development
 #include "EmpiricalQuantileFunction.h"
 #include "Func_empiricalQuantile.h"
 #include "ModelVector.h"

@@ -17,11 +17,7 @@ using namespace RevLanguage;
 /** Default constructor */
 ContinuousCharacterData::ContinuousCharacterData(void) :
     HomologousCharacterData( ),
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
-    dagNode( NULL )
-=======
     dag_node( NULL )
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
 {
     
     initMethods();
@@ -31,24 +27,11 @@ ContinuousCharacterData::ContinuousCharacterData(void) :
 /** Construct from core data type */
 ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d) :
     HomologousCharacterData( ),
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
-    dagNode( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d.clone()) )
-{
-    
-    // increment the reference count to the value
-    dagNode->incrementReferenceCount();
-    
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
-=======
     dag_node( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d.clone()) )
 {
     
     
     initMethods();
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
     
     // increment the reference count to the value
     dag_node->incrementReferenceCount();
@@ -58,70 +41,26 @@ ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousC
 /** Construct from core data type */
 ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d) :
     HomologousCharacterData( ),
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
-    dagNode( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d) )
-=======
     dag_node( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d) )
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
 {
     
-    
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
-    
-    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
-
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
-=======
     initMethods();
     
     // increment the reference count to the value
     dag_node->incrementReferenceCount();
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
 }
 
 
 ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData> *d) :
     HomologousCharacterData( ),
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
-    dagNode( d )
-=======
     dag_node( d )
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
 {
     
     // increment the reference count to the value
     dag_node->incrementReferenceCount();
     
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
-    // add the DAG node member methods
-    // note that this is a sage case because all DAG nodes are member objects
-    const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
-    methods.insertInheritedMethods( dagMethods );
-    
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
-    
-    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
-
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
-=======
     initMethods();
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
-    
+
 }
 
 

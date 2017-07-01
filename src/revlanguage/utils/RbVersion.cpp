@@ -26,11 +26,7 @@ std::string RbVersion::getGitCommit( void ) const
 
 std::string RbVersion::getVersion( void ) const
 {
-<<<<<<< HEAD
-    return "1.0.4";
-=======
     return "1.0.5";
->>>>>>> development
 }
 
 

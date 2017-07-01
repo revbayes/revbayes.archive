@@ -27,19 +27,11 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateGenerator_Epoch::RateGenerator_Epoch(size_t n, size_t ne) : RateGenerator( n ), numEpochs( ne ), needs_update(true)
 {
-<<<<<<< HEAD
-    update();
-=======
     epochTimes = RbVector<double>(1, 0.0);
     epochRates = RbVector<double>(1, 1.0);
     epochRateGenerators = RbVector<RateGenerator>(1,  RateMatrix_JC(this->num_states));
     update();
     
-//    std::vector<size_t> transition_states;
-//    std::vector<double> transition_times;
-//    simulateStochasticMapping(5.0, 1.0, 1.0, transition_states, transition_times);
-    
->>>>>>> development
 }
 
 /** Destructor */
@@ -104,53 +96,7 @@ void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, doub
             const RateGenerator& rg = epochRateGenerators[epochIdx];
             double r = epochRates[epochIdx];
             rg.calculateTransitionProbabilities( currAge, nextAge, r * rate, P );
-<<<<<<< HEAD
-            
-            double eps = 1e-4;
 
-            for (size_t i = 0; i < P.getNumberOfStates(); i++)
-            {
-                for (size_t j = 0; j < P.getNumberOfStates(); j++)
-                {
-                    if (P[i][j] > 1.0 + eps)
-                    {
-                        ;
-//                        std::cout << "error!\n";
-//                        std::cout << i << " " << j << " " << P[i][j] << "\n";
-//                        
-//                        std::cout << P << "\n";
-//                        
-//                        
-//                        // A = make_matrix_from_pointer(initialValues);
-//                        boost::numeric::ublas::matrix<double> input;
-//                        typedef boost::numeric::ublas::permutation_matrix<std::size_t> pmatrix;
-//                        boost::numeric::ublas::matrix<double> A(input);
-//                        
-//                        // create a permutation matrix for the LU-factorization
-//                        pmatrix pm(A.size1());
-//                        
-//                        // perform LU-factorization
-//                        int res = (unsigned)boost::numeric::ublas::lu_factorize(A, pm);
-//                        if (res != 0)
-//                            std::cout << "Error!\n";
-//                        
-//                        
-//                        
-//                        rg.calculateTransitionProbabilities( currAge, nextAge, r * rate, P );
-//
-//                        std::cout << "\n";
-                    }
-                }
-            }
-            
-=======
-//            for (size_t i1 = 0; i1 < rg.size(); i1++) {
-//                for (size_t i2 = 0; i2 < rg.size(); i2++) {
-//                    std::cout << rg.getRate(i1,i2,currAge,1.0) << "  ";
-//                }
-//                std::cout << "\n";
-//            }
->>>>>>> development
             // epochs construct DTMC
             tp *= P;
             
@@ -255,10 +201,7 @@ void RateGenerator_Epoch::setEpochGenerators(const RbVector<RateGenerator>& rg)
 {
     epochRateGenerators = rg;
     needs_update = true;
-<<<<<<< HEAD
-=======
     assignEpochDominatingRates();
->>>>>>> development
 }
 
 void RateGenerator_Epoch::setEpochTimes(const RbVector<double> &t)
@@ -271,8 +214,6 @@ void RateGenerator_Epoch::setEpochRates(const RbVector<double>& r)
 {
     epochRates = r;
     needs_update = true;
-<<<<<<< HEAD
-=======
     assignEpochDominatingRates();
 }
 
@@ -507,32 +448,12 @@ void RateGenerator_Epoch::sampleNumberOfTransitionsPerInterval(std::vector<size_
         }
         num_events.push_back(n);
     }
->>>>>>> development
 }
 
 void RateGenerator_Epoch::update( void ) {
     
     if ( needs_update )
     {
-<<<<<<< HEAD
-//        for (size_t i = 0; i < epochRateGenerators.size(); i++)
-//        {
-//            epochRateGenerators[i].update();
-//        }
-//        // compute the off-diagonal values
-//        computeOffDiagonal();
-//        
-//        // set the diagonal values
-//        setDiagonal();
-//        
-//        // rescale
-//        rescaleToAverageRate( 1.0 );
-//        
-//        // now update the eigensystem
-//        updateEigenSystem();
-//
-=======
->>>>>>> development
         // clean flags
         needs_update = false;
     }

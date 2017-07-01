@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //
 //  SampledCladogenesisRootFrequenciesFunction.h
 //  revbayes-proj
@@ -7,8 +6,6 @@
 //  Copyright © 2016 Michael Landis. All rights reserved.
 //
 
-=======
->>>>>>> development
 #ifndef SampledCladogenesisRootFrequenciesFunction_h
 #define SampledCladogenesisRootFrequenciesFunction_h
 
@@ -16,20 +13,14 @@
 #include "MatrixReal.h"
 #include "RateGenerator.h"
 #include "RbVector.h"
-<<<<<<< HEAD
-=======
 #include "Simplex.h"
->>>>>>> development
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
 namespace RevBayesCore {
     
-<<<<<<< HEAD
-    class SampledCladogenesisRootFrequenciesFunction : public TypedFunction< RbVector<double> > {
-=======
-    class SampledCladogenesisRootFrequenciesFunction : public TypedFunction< Simplex > {
->>>>>>> development
+class SampledCladogenesisRootFrequenciesFunction : public TypedFunction< Simplex > {
+
         
     public:
         SampledCladogenesisRootFrequenciesFunction(const TypedDagNode< RateGenerator > *rm, const TypedDagNode< MatrixReal > *cp, const TypedDagNode< Tree > *t, const TypedDagNode<double>* r);

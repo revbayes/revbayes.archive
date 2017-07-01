@@ -81,11 +81,7 @@ RevPtr<RevVariable> RateGeneratorSequence::executeMethod(std::string const &name
 /* Get Rev type of object */
 const std::string& RateGeneratorSequence::getClassType(void) {
     
-<<<<<<< HEAD:src/revlanguage/datatypes/math/RlRateGeneratorSequence.cpp
     static std::string revType = "RateGeneratorSequence";
-=======
-    static std::string rev_type = "RateMap";
->>>>>>> development:src/revlanguage/datatypes/math/RlRateMap.cpp
     
 	return rev_type;
 }

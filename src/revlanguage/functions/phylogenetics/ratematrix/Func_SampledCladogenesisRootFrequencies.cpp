@@ -46,11 +46,8 @@ Func_SampledCladogenesisRootFrequencies* Func_SampledCladogenesisRootFrequencies
 }
 
 
-<<<<<<< HEAD
-RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >* Func_SampledCladogenesisRootFrequencies::createFunction( void ) const
-=======
+
 RevBayesCore::TypedFunction< RevBayesCore::Simplex >* Func_SampledCladogenesisRootFrequencies::createFunction( void ) const
->>>>>>> development
 {
     
     // rate matrix

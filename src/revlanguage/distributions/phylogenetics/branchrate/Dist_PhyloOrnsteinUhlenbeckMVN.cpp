@@ -1,9 +1,6 @@
 #include "Dist_PhyloOrnsteinUhlenbeckMVN.h"
 #include "PhyloOrnsteinUhlenbeckProcessMVN.h"
-<<<<<<< HEAD
-=======
 #include "PhyloOrnsteinUhlenbeckProcessEVE.h"
->>>>>>> development
 #include "OptionRule.h"
 #include "RevNullObject.h"
 #include "RlBoolean.h"
@@ -41,12 +38,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     size_t n_nodes = tau->getValue().getNumberOfNodes();
     
-<<<<<<< HEAD
-    RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN *dist = new RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN(tau, n);
-=======
 //    RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN *dist = new RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN(tau, n);
     RevBayesCore::PhyloOrnsteinUhlenbeckProcessEVE *dist = new RevBayesCore::PhyloOrnsteinUhlenbeckProcessEVE(tau, n);
->>>>>>> development
     
     
     // set the clock rates
@@ -119,19 +112,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
         dist->setSigma( s );
     }
     
-<<<<<<< HEAD
-    // set the clock rates
-    if ( rootStates->getRevObject().isType( ModelVector<Real>::getClassTypeSpec() ) )
-    {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rs = static_cast<const ModelVector<Real> &>( rootStates->getRevObject() ).getDagNode();
-        dist->setRootState( rs );
-    }
-    else
-    {
-        RevBayesCore::TypedDagNode< double >* rs = static_cast<const Real &>( rootStates->getRevObject() ).getDagNode();
-        dist->setRootState( rs );
-    }
-=======
+
     // set the root states
 //    if ( rootStates->getRevObject().isType( ModelVector<Real>::getClassTypeSpec() ) )
 //    {
@@ -143,7 +124,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
         RevBayesCore::TypedDagNode< double >* rs = static_cast<const Real &>( rootStates->getRevObject() ).getDagNode();
         dist->setRootState( rs );
 //    }
->>>>>>> development
     
     return dist;
 }

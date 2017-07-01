@@ -274,21 +274,12 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_ls()                       );
         addFunction( new Func_printSeed()                );
         addFunction( new Func_quit()                     );
-<<<<<<< HEAD
-        addFunction( new Func_rep<Integer>()             );
-        addFunction( new Func_rep<Real>()                );
-        addFunction( new Func_rep<Natural>()             );
-        addFunction( new Func_rep<RealPos>()             );
-        addFunction( new Func_rep<RlString>()            );
-        addFunction( new Func_rep<RlBoolean>()           );
-=======
         addFunction( new Func_replicate<Integer>()       );
         addFunction( new Func_replicate<Real>()          );
         addFunction( new Func_replicate<Natural>()       );
         addFunction( new Func_replicate<RealPos>()       );
         addFunction( new Func_replicate<RlString>()      );
         addFunction( new Func_replicate<RlBoolean>()     );
->>>>>>> development
         addFunction( new Func_seed()                     );
         addFunction( new Func_seq<Integer>()             );
         addFunction( new Func_seq<Real>()                );
@@ -443,10 +434,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()     );
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()        );
         addFunction( new Func__conversion<Simplex, ModelVector<Real> >()                         );
-<<<<<<< HEAD
-=======
         addFunction( new Func__conversion<Simplex, ModelVector<RealPos> >()                      );
->>>>>>> development
         addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Integer> > >()         );
 //        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Real> > >()            );
 //        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<RealPos> > >()         );
@@ -487,10 +475,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
 		addFunction( new Func_readCharacterDataDelimited()              );
         addFunction( new Func_readDataDelimitedFile()                   );
         addFunction( new Func_source()                                  );
-<<<<<<< HEAD
-=======
         addFunction( new Func_summarizeCharacterMaps()                  );
->>>>>>> development
         addFunction( new Func_treeTrace()                               );
         addFunction( new Func_write()                                   );
         addFunction( new Func_writeCharacterDataDelimited()             );

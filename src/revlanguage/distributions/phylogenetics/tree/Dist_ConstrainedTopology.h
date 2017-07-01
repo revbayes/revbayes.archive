@@ -44,10 +44,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                           baseDistribution;
         RevPtr<const RevVariable>                           constraints;
         RevPtr<const RevVariable>                           backbone;
-<<<<<<< HEAD
-=======
         RevPtr<const RevVariable>                           invertConstraint;                                                                       //!< Boolean indicating whether topologies are rooted
->>>>>>> development
     };
 }
 

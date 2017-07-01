@@ -45,11 +45,7 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
 {
     
     // supplied arguments
-<<<<<<< HEAD
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ep = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-=======
     RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* ep = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
->>>>>>> development
     unsigned nc = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
     unsigned mrs = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
     if (mrs <= 1) mrs = nc;

@@ -46,13 +46,8 @@ void Move_DirichletSimplex::constructInternalObject( void )
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double o = static_cast<const RealPos &>( offset->getRevObject() ).getValue();
     double r = static_cast<const RealPos &>( tuneTarget->getRevObject() ).getValue();
-<<<<<<< HEAD
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tmp = static_cast<const Simplex &>( x->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode< RevBayesCore::RbVector<double> > *n = static_cast<RevBayesCore::StochasticNode< RevBayesCore::RbVector<double> > *>( tmp );
-=======
     RevBayesCore::TypedDagNode< RevBayesCore::Simplex >* tmp = static_cast<const Simplex &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< RevBayesCore::Simplex > *n = static_cast<RevBayesCore::StochasticNode< RevBayesCore::Simplex > *>( tmp );
->>>>>>> development
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
 
     RevBayesCore::Proposal *prop = new RevBayesCore::DirichletSimplexProposal(n,a,nc,o,0.0,r);

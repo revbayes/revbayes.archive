@@ -57,10 +57,6 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     setTaxonNameArgRules->push_back(        new ArgumentRule("new"        , RlString::getClassTypeSpec(), "The new name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     taxonIndexArgRules->push_back(          new ArgumentRule("name"       , RlString::getClassTypeSpec(), "he name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractCharacterData.cpp
-=======
-
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlAbstractCharacterData.cpp
     methods.addFunction( new MemberProcedure( "addMissingTaxa",  RlUtils::Void, addTaxonArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa",  RlUtils::Void, excludeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa", RlUtils::Void, excludeTaxaArgRules2 ) );

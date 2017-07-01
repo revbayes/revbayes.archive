@@ -64,16 +64,12 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
     const std::string&  del     = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
     bool                header  = static_cast<const RlBoolean&>( args[4].getVariable()->getRevObject() ).getValue();
     size_t lines_to_skip = ( header == true ? 1 : 0 );
-<<<<<<< HEAD
-    
-=======
    
     if (lab.compare(std::string("")) == 0)
     {
         throw RbException("You must enter a value for the state labels.");
     }
 
->>>>>>> development
     if (dt == "NaturalNumbers")
     {
         
@@ -82,11 +78,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         
         // get data from file
         RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0], lines_to_skip);
-<<<<<<< HEAD
-        
-=======
-       
->>>>>>> development
+
         int max = StringUtilities::asIntegerNumber( lab );
         
         // loop through data and get each NaturalNumbers value

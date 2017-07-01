@@ -94,11 +94,6 @@ void Clade::constructInternalObject( void )
     }
     
     // now allocate a new Clade
-<<<<<<< HEAD
-    for (std::vector<RevPtr<const RevVariable> >::iterator it = clades.begin(); it != clades.end(); ++it)
-    {
-        const RevBayesCore::Clade &c = static_cast<const Clade &>( (*it)->getRevObject() ).getValue();
-=======
     std::vector<RevBayesCore::Clade> optional_constraints;
     for (std::vector<RevPtr<const RevVariable> >::iterator it = clades.begin(); it != clades.end(); ++it)
     {
@@ -109,17 +104,12 @@ void Clade::constructInternalObject( void )
             optional_constraints.push_back(c);
         }
         
->>>>>>> development
         const std::vector<RevBayesCore::Taxon> &taxa = c.getTaxa();
         for(size_t i=0; i<taxa.size(); ++i)
         {
             const RevBayesCore::Taxon &t = taxa[i];
             n.push_back( t );
         }
-<<<<<<< HEAD
-        
-=======
->>>>>>> development
     }
     
     
@@ -191,10 +181,6 @@ const MemberRules& Clade::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("optional_match", RlBoolean::getClassTypeSpec(), "Clade constraint satisfied when any Clade argument matched", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
 //        memberRules.push_back( new ArgumentRule("optional_constraints", ModelVector<Clade>::getClassTypeSpec(), "Optional clade constraints, i.e. this clade constraint or any optional clade constraint must be satisifed (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
-<<<<<<< HEAD
-=======
-        
->>>>>>> development
         rules_set = true;
     }
     

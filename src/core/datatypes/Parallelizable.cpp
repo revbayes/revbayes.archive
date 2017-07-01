@@ -94,7 +94,6 @@ void Parallelizable::setActivePID(size_t a, size_t n)
     
     // delegate call for derived classes
     setActivePIDSpecialized(a,n);
-<<<<<<< HEAD
 }
 
 
@@ -106,16 +105,3 @@ void Parallelizable::setActivePIDSpecialized(size_t a, size_t n )
     
     // nothing done here.
 }
-=======
-}
-
-
-/**
- * Dummy implementation which derived classes can overwrite.
- */
-void Parallelizable::setActivePIDSpecialized(size_t a, size_t n )
-{
-    
-    // nothing done here.
-}
->>>>>>> development

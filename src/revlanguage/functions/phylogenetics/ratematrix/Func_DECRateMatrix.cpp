@@ -79,11 +79,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
     }
 
     // range size probabilities
-<<<<<<< HEAD
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rs = NULL;
-=======
     RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* rs = NULL;
->>>>>>> development
     if ( this->args[2].getVariable() != NULL && this->args[2].getVariable()->getRevObject() != RevNullObject::getInstance()) {
     
         rs = static_cast<const Simplex&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
@@ -93,11 +89,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
         else {
             size_t n = num_statesEr;
             double p = 1.0 / n;
-<<<<<<< HEAD
-            rs = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("", new RevBayesCore::RbVector<double>(n,p));
-=======
             rs = new RevBayesCore::ConstantNode<RevBayesCore::Simplex>("", new RevBayesCore::Simplex(n,p));
->>>>>>> development
         }
     }
     else {

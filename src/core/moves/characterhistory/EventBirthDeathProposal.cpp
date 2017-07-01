@@ -93,13 +93,10 @@ double EventBirthDeathProposal::doProposal( void )
 
     double p_birth = 1.0;
     if ( num_events > 0 )
+    {
         p_birth = 0.5;
-<<<<<<< HEAD
-
-=======
     }
-    
->>>>>>> development
+
     double proposal_prob = 0.0;
     if ( u < p_birth )
     {

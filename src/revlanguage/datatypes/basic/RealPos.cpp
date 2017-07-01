@@ -135,19 +135,11 @@ RevObject* RealPos::convertTo( const TypeSpec& type ) const
     
     if ( type == Real::getClassTypeSpec() )
     {
-<<<<<<< HEAD
-        return new Real(dagNode->getValue());
-    }
-    else if ( type == Probability::getClassTypeSpec() )
-    {
-        return new Probability(dagNode->getValue());
-=======
         return new Real(dag_node->getValue());
     }
     else if ( type == Probability::getClassTypeSpec() )
     {
         return new Probability(dag_node->getValue());
->>>>>>> development
     }
     
     return Real::convertTo( type );
@@ -307,11 +299,7 @@ double RealPos::isConvertibleTo(const TypeSpec& type, bool once) const
     {
         return 0.2;
     }
-<<<<<<< HEAD
-    else if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1.0 )
-=======
     else if ( once == true && type == Probability::getClassTypeSpec() && dag_node->getValue() <= 1.0 )
->>>>>>> development
     {
         return 0.1;
     }
