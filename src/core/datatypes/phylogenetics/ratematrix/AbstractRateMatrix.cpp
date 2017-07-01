@@ -335,7 +335,10 @@ void AbstractRateMatrix::computeStochasticMatrix(size_t n)
         r *= smallest_non_zero;
         
     }
-    stochastic_matrix.push_back(r);
+    
+    if (stochastic_matrix.size() <= n) {
+        stochastic_matrix.push_back(r);
+    }
 }
 
 /** Rescale the rates such that the average rate is r */
@@ -365,6 +368,12 @@ bool AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
     size_t end_state = transition_states[1];
     double branch_length = (startAge - endAge);
     
+    if (branch_length == 0.0) {
+        transition_states = std::vector<size_t>(1, start_state);
+        transition_times = std::vector<double>(1, 0.0);
+        return true;
+    }
+    
     // transition probabilities
     TransitionProbabilityMatrix P(num_states);
 //    calculateTransitionProbabilities(startAge, endAge, rate, P);
@@ -386,6 +395,7 @@ bool AbstractRateMatrix::simulateStochasticMapping(double startAge, double endAg
     double g = u * prob_transition_ctmc;
     double prob_num_events_sum = 0.0;
     double prob_total_sum = 0.0;
+    
     while (g > 0.0) {
         
         // probability for num_events

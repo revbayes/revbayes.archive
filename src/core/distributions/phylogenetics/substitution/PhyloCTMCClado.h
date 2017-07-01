@@ -2093,6 +2093,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
         
         // create the character
         charType c = charType( this->template_state );
+        c.setToFirstState();
 
         // draw the state
         double u = rng->uniform01();
@@ -2128,6 +2129,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
         // add the character to the sequence
         root.addCharacter( c );
     }
+
     // recursively simulate the sequences
     root.setTaxon( Taxon("Root") );
     

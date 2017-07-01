@@ -125,15 +125,9 @@ double PhyloOrnsteinUhlenbeckProcessMVN::computeLnProbability( void )
     }
     
     // sum the partials up
-<<<<<<< HEAD
-    this->lnProb = sumRootLikelihood();
-    
-    return this->lnProb;
-=======
     this->ln_prob = sumRootLikelihood();
     
     return this->ln_prob;
->>>>>>> development
 }
 
 
