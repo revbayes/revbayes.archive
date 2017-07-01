@@ -175,11 +175,7 @@ void ChromosomesCladogenicStateFunction::update( void )
 {
     // reset the transition matrix
     delete value;
-<<<<<<< HEAD:src/core/functions/phylogenetics/cladogenetic/ChromosomesCladogenicStateFunction.cpp
-    value = new MatrixReal( maxChromo + 1, (maxChromo + 1) * (maxChromo + 1), 0.0 );
-=======
     value = new CladogeneticProbabilityMatrix( maxChromo + 1 );
->>>>>>> development:src/core/functions/phylogenetics/ChromosomesCladogenicStateFunction.cpp
 
     const std::vector<double>& ep = eventProbs->getValue();
     

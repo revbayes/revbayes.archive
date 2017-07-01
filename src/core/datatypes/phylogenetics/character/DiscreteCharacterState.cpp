@@ -1,13 +1,8 @@
 #include "DiscreteCharacterState.h"
 #include "RbException.h"
-
-<<<<<<< HEAD
-=======
 #include <string>
 #include <vector>
 
-
->>>>>>> development
 using namespace RevBayesCore;
 
 
