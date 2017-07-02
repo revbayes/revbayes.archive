@@ -140,28 +140,6 @@ void JointConditionalAncestralStateMonitor<characterType>::monitorVariables(unsi
     size_t num_nodes;
         
         
-<<<<<<< HEAD
-        // get the distribution for the character
-        AbstractPhyloCTMCSiteHomogeneous<characterType> *dist_ctmc  = NULL;
-        StateDependentSpeciationExtinctionProcess       *dist_bd    = NULL;
-        if ( ctmc != NULL )
-        {
-            dist_ctmc = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType>* >( &ctmc->getDistribution() );
-            num_sites = dist_ctmc->getValue().getNumberOfCharacters();
-            num_nodes = tree->getValue().getNumberOfNodes();
-        }
-        else
-        {
-<<<<<<< HEAD
-            //dist_bd = dynamic_cast<CharacterDependentCladoBirthDeathProcess*>( &cdbdp->getDistribution() ); // this doesn't work?
-            //dist_bd = dynamic_cast<CharacterDependentCladoBirthDeathProcess*>( &nodes[0]->getDistribution() ); // this does!
-=======
->>>>>>> development
-            dist_bd = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &nodes[0]->getDistribution() ); // this does!
-            num_sites = 1;
-            num_nodes = tree->getValue().getNumberOfNodes();
-        }
-=======
     // get the distribution for the character
     AbstractPhyloCTMCSiteHomogeneous<characterType> *dist_ctmc  = NULL;
     StateDependentSpeciationExtinctionProcess       *dist_bd    = NULL;
@@ -177,7 +155,6 @@ void JointConditionalAncestralStateMonitor<characterType>::monitorVariables(unsi
         num_sites = 1;
         num_nodes = tree->getValue().getNumberOfNodes();
     }
->>>>>>> dc5da38e339e81ba3e116b7fa603df3b16b875cc
         
     std::vector<std::vector<characterType> > startStates(num_nodes,std::vector<characterType>(num_sites));
     std::vector<std::vector<characterType> > endStates(num_nodes,std::vector<characterType>(num_sites));

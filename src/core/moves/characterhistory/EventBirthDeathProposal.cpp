@@ -134,15 +134,6 @@ double EventBirthDeathProposal::doBirthProposal( void )
     // draw an event time, which is simply uniform between 0 and 1
     const TopologyNode& node = distribution->getValue().getNode(branch_index);
     double branch_length = 0.0;
-<<<<<<< HEAD
-    if (!node.isRoot()) {
-        branch_length = node.getBranchLength();
-    }
-    else {
-        branch_length = node.getAge();
-    }
-    double event_time = rng->uniform01() * branch_length;
-=======
     if ( node.isRoot() == false )
     {
         branch_length = node.getBranchLength();
@@ -153,7 +144,6 @@ double EventBirthDeathProposal::doBirthProposal( void )
     }
     double age = node.getAge();
     double event_time = rng->uniform01() * branch_length + age;
->>>>>>> development
     
     CharacterEvent *new_event = new CharacterEvent(0, new_state, event_time);
     history.addEvent( new_event, branch_index );
@@ -192,19 +182,12 @@ double EventBirthDeathProposal::doDeathProposal( void )
     stored_branch_index = branch_index;
     const TopologyNode& node = distribution->getValue().getNode(branch_index);
     double branch_length = 0.0;
-<<<<<<< HEAD
-    if (!node.isRoot()) {
-        branch_length = node.getBranchLength();
-    }
-    else {
-=======
     if ( node.isRoot() == false )
     {
         branch_length = node.getBranchLength();
     }
     else
     {
->>>>>>> development
         branch_length = node.getAge();
     }
     

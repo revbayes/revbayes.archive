@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //
 //  MatrixReal.cpp
 //  RevBayesCore
@@ -7,9 +6,7 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "CholeskyDecomposition.h"
-=======
->>>>>>> development
+#include "cholesky_decomposition.h"
 #include "EigenSystem.h"
 #include "MatrixReal.h"
 #include "RbException.h"
@@ -27,14 +24,10 @@ MatrixReal::MatrixReal( void ) : elements( RbVector<RbVector<double> >() ),
     n_rows( 0 ),
     n_cols( 0 ),
     eigensystem( NULL ),
-<<<<<<< HEAD
     eigenNeedsUpdate( true ),
-    choleskyDecomp( NULL ),
-    choleskyNeedsUpdate( true ),
-    useCholeskyDecomp( false )
-=======
-    eigen_needs_update( true )
->>>>>>> development
+    cholesky_decomp( NULL ),
+    cholesky_needs_update( true ),
+    use_cholesky_decomp( false )
 {
 
 }
@@ -44,14 +37,10 @@ MatrixReal::MatrixReal( size_t n ) : elements( RbVector<RbVector<double> >(n, Rb
     n_rows( n ),
     n_cols( n ),
     eigensystem( NULL ),
-<<<<<<< HEAD
     eigenNeedsUpdate( true ),
-    choleskyDecomp( NULL ),
-    choleskyNeedsUpdate( true ),
-    useCholeskyDecomp( false )
-=======
-    eigen_needs_update( true )
->>>>>>> development
+    cholesky_decomp( NULL ),
+    cholesky_needs_update( true ),
+    use_cholesky_decomp( false )
 {
     
 }
@@ -61,14 +50,10 @@ MatrixReal::MatrixReal( size_t n, size_t k) : elements( RbVector<RbVector<double
     n_rows( n ),
     n_cols( k ),
     eigensystem( NULL ),
-<<<<<<< HEAD
     eigenNeedsUpdate( true ),
-    choleskyDecomp( NULL ),
-    choleskyNeedsUpdate( true ),
-    useCholeskyDecomp( false )
-=======
-    eigen_needs_update( true )
->>>>>>> development
+    cholesky_decomp( NULL ),
+    cholesky_needs_update( true ),
+    use_cholesky_decomp( false )
 {
     
 }
@@ -79,14 +64,10 @@ MatrixReal::MatrixReal( size_t n, size_t k, double v) :
     n_rows( n ),
     n_cols( k ),
     eigensystem( NULL ),
-<<<<<<< HEAD
     eigenNeedsUpdate( true ),
-    choleskyDecomp( NULL ),
-    choleskyNeedsUpdate( true ),
-    useCholeskyDecomp( false )
-=======
-    eigen_needs_update( true )
->>>>>>> development
+    cholesky_decomp( NULL ),
+    cholesky_needs_update( true ),
+    use_cholesky_decomp( false )
 {
 
 }
@@ -96,14 +77,10 @@ MatrixReal::MatrixReal( const MatrixReal &m ) :
     n_rows( m.n_rows ),
     n_cols( m.n_cols ),
     eigensystem( NULL ),
-<<<<<<< HEAD
     eigenNeedsUpdate( true ),
-    choleskyDecomp( NULL ),
-    choleskyNeedsUpdate( true ),
-    useCholeskyDecomp( false )
-=======
-    eigen_needs_update( true )
->>>>>>> development
+    cholesky_decomp( NULL ),
+    cholesky_needs_update( true ),
+    use_cholesky_decomp( false )
 {
     
 }
@@ -124,12 +101,8 @@ MatrixReal& MatrixReal::operator=(const MatrixReal &m)
         n_rows   = m.n_rows;
         elements = m.elements;
         
-<<<<<<< HEAD
         eigenNeedsUpdate = true;
-        choleskyNeedsUpdate = true;
-=======
-        eigen_needs_update = true;
->>>>>>> development
+        cholesky_needs_update = true;
     }
     
     return *this;
@@ -139,12 +112,8 @@ MatrixReal& MatrixReal::operator=(const MatrixReal &m)
 RbVector<double>& MatrixReal::operator[]( size_t index )
 {
     // to be safe
-<<<<<<< HEAD
     eigenNeedsUpdate = true;
-    choleskyNeedsUpdate = true;
-=======
-    eigen_needs_update = true;
->>>>>>> development
+    cholesky_needs_update = true;
     
     return elements[index];
 }
@@ -160,12 +129,8 @@ const RbVector<double>& MatrixReal::operator[]( size_t index ) const
 void MatrixReal::clear( void )
 {
     // to be safe
-<<<<<<< HEAD
     eigenNeedsUpdate = true;
-    choleskyNeedsUpdate = true;
-=======
-    eigen_needs_update = true;
->>>>>>> development
+    cholesky_needs_update = true;
     
     elements.clear();
 }
@@ -176,26 +141,18 @@ MatrixReal MatrixReal::computeInverse( void ) const
     // update the eigensystem/cholesky decomposition if necessary
     update();
     
-<<<<<<< HEAD
-    MatrixReal inverse(nRows, nRows, 0.0);
+    MatrixReal inverse(n_rows, n_rows, 0.0);
     
-    if ( useCholeskyDecomp )
+    if ( use_cholesky_decomp )
     {
-        inverse = choleskyDecomp->getInverse();
+        inverse = cholesky_decomp->getInverse();
     }
     else
-=======
-    
-    const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
-    
-    MatrixReal tmp(n_rows, n_rows, 0);
-    for (size_t i = 0; i < n_rows; i++)
->>>>>>> development
     {
         const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
         
-        MatrixReal tmp(nRows, nRows, 0);
-        for (size_t i = 0; i < nRows; i++)
+        MatrixReal tmp(n_rows, n_rows, 0);
+        for (size_t i = 0; i < n_rows; i++)
         {
             tmp[i][i] = 1.0 / eigenval[i];
         }
@@ -457,21 +414,18 @@ void MatrixReal::resize(size_t r, size_t c)
     n_rows = r;
     n_rows = c;
     
-<<<<<<< HEAD
     eigenNeedsUpdate = true;
-    choleskyNeedsUpdate = true;
-=======
-    eigen_needs_update = true;
->>>>>>> development
+    cholesky_needs_update = true;
+    
 }
 
 
 void MatrixReal::setCholesky(bool c) const
 {
     
-    useCholeskyDecomp = c;
+    use_cholesky_decomp = c;
     eigenNeedsUpdate = true;
-    choleskyNeedsUpdate = true;
+    cholesky_needs_update = true;
     
 }
 
@@ -484,32 +438,23 @@ size_t MatrixReal::size( void ) const
 void MatrixReal::update( void ) const
 {
     
-<<<<<<< HEAD
-    if ( useCholeskyDecomp )
-=======
-    if ( eigensystem == NULL )
-    {
-        eigensystem = new EigenSystem(this);
-    }
-
-    if ( eigen_needs_update == true )
->>>>>>> development
+    if ( use_cholesky_decomp )
     {
         
-        if ( choleskyDecomp == NULL )
+        if ( cholesky_decomp == NULL )
         {
-            choleskyDecomp = new CholeskyDecomposition(this);
+            cholesky_decomp = new cholesky_decomposition(this);
         }
 
-        if ( choleskyNeedsUpdate == true )
+        if ( cholesky_needs_update == true )
         {
             
             try
             {
                 
-                choleskyDecomp->update();
+                cholesky_decomp->update();
                 
-                choleskyNeedsUpdate = false;
+                cholesky_needs_update = false;
                 
             }
             
@@ -517,27 +462,16 @@ void MatrixReal::update( void ) const
             {
                 throw RbException("MatrixReal: Cholesky decomposition update failed");
             }
-            
         }
 
-<<<<<<< HEAD
     } else {
-=======
-            eigen_needs_update = false;
->>>>>>> development
-
         
         if ( eigensystem == NULL )
         {
             eigensystem = new EigenSystem(this);
         }
-<<<<<<< HEAD
         
         if ( eigenNeedsUpdate == true )
-=======
-
-        catch (...)
->>>>>>> development
         {
             
             try

@@ -2159,12 +2159,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
 
     }
 
-<<<<<<< HEAD
-    std::vector<std::vector<double> > freqs;    getRootFrequencies(freqs);
-=======
     std::vector<std::vector<double> > freqs;
     getRootFrequencies(freqs);
->>>>>>> development
     // simulate the root sequence
     DiscreteTaxonData< charType > &root = taxa[ tau->getValue().getRoot().getIndex() ];
     for ( size_t i = 0; i < num_sites; ++i )
@@ -3126,11 +3122,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
     {
         // get the mean root frequency vector
         std::vector<double> f;
-<<<<<<< HEAD
-        if(this->branch_heterogeneous_substitution_matrices == true)
-=======
         if (this->branch_heterogeneous_substitution_matrices == true)
->>>>>>> development
         {
             f = this->getRootFrequencies(0);
         }
@@ -3141,31 +3133,19 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
 
             std::vector<double> matrix_probs(num_matrices, 1.0/num_matrices);
 
-<<<<<<< HEAD
-            if(site_matrix_probs != NULL)
-=======
             if (site_matrix_probs != NULL)
->>>>>>> development
             {
                 matrix_probs = site_matrix_probs->getValue();
             }
 
             f = std::vector<double>(ff[0].size(), 0.0);
 
-<<<<<<< HEAD
-            for(size_t matrix = 0; matrix < ff.size(); matrix++)
-=======
             for (size_t matrix = 0; matrix < ff.size(); matrix++)
->>>>>>> development
             {
                 // get the root frequencies
                 const std::vector<double> &fm = ff[matrix];
 
-<<<<<<< HEAD
-                for(size_t i = 0; i < fm.size(); i++)
-=======
                 for (size_t i = 0; i < fm.size(); i++)
->>>>>>> development
                 {
                     f[i] += fm[i] * matrix_probs[matrix];
                 }
@@ -3499,19 +3479,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
         end_age = 0.0;
     }
     double start_age = end_age + node->getBranchLength();
-<<<<<<< HEAD
 
     // first, get the rate matrix for this branch
     RateMatrix_JC jc(this->num_chars);
     const RateGenerator *rm = &jc;
 
-=======
-
-    // first, get the rate matrix for this branch
-    RateMatrix_JC jc(this->num_chars);
-    const RateGenerator *rm = &jc;
-
->>>>>>> development
     if (this->branch_heterogeneous_substitution_matrices == false )
     {
         for (size_t matrix = 0; matrix < this->num_matrices; ++matrix)

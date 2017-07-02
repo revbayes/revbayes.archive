@@ -191,10 +191,6 @@ double EventTimeSlideProposal::doProposal( void )
             
         }
         
-<<<<<<< HEAD
-        double new_branch_length = tree.getNode( branch_index ).getBranchLength();
-=======
->>>>>>> development
         double new_absolute_time = 0.0;
         if (proposed_displacement > 0)
         {

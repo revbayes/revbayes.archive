@@ -293,10 +293,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                     throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
                 }
             }
-<<<<<<< HEAD
-=======
-
->>>>>>> development
 
             dist->setRateMatrix( rm );
         }
@@ -822,19 +818,11 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         std::vector<TypeSpec> matrix_probs_types;
         matrix_probs_types.push_back(Simplex::getClassTypeSpec());
         matrix_probs_types.push_back(RlBoolean::getClassTypeSpec());
-<<<<<<< HEAD
 
         dist_member_rules.push_back( new ArgumentRule( "siteMatrices", matrix_probs_types, "Simplex of site matrix mixture probabilities. Treats Q as vector of site mixture categories instead of branch-specific matrices.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "siteRates", ModelVector<RealPos>::getClassTypeSpec(), "The rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         dist_member_rules.push_back( new ArgumentRule( "pInv", Probability::getClassTypeSpec(), "The probability of a site being invariant.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
 
-=======
-
-        dist_member_rules.push_back( new ArgumentRule( "siteMatrices", matrix_probs_types, "Simplex of site matrix mixture probabilities. Treats Q as vector of site mixture categories instead of branch-specific matrices.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        dist_member_rules.push_back( new ArgumentRule( "siteRates", ModelVector<RealPos>::getClassTypeSpec(), "The rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
-        dist_member_rules.push_back( new ArgumentRule( "pInv", Probability::getClassTypeSpec(), "The probability of a site being invariant.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
-
->>>>>>> development
         dist_member_rules.push_back( new ArgumentRule( "nSites", Natural::getClassTypeSpec(), "The number of sites, used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural() ) );
 
         std::vector<std::string> options;

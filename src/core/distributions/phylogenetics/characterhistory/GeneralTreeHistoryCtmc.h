@@ -953,11 +953,6 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
     }
     
     bh->setHistory(history);
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> development
     for (size_t i = 0; i < this->num_sites; i++)
     {
         size_t s = currState[i]->getState();

@@ -425,11 +425,7 @@ void ContinuousCharacterData::printValue(std::ostream &o, bool user) const
     }
     else
     {
-<<<<<<< HEAD:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
-        dagNode->printValue( o, "" );
-=======
         dag_node->printValue( o, "" );
->>>>>>> development:src/revlanguage/datatypes/phylogenetics/characterdata/RlContinuousCharacterData.cpp
     }
     
 }
