@@ -6,6 +6,7 @@
 #include "RbFileManager.h"
 #include "RbSettings.h"
 #include "RbUtil.h"
+#include "Simplex.h"
 #include "StringUtilities.h"
 #include "TraceNumeric.h"
 #include "TraceTree.h"
@@ -74,6 +75,9 @@ namespace RevBayesCore {
     
     template<>
     inline bool                                  TypedDagNode<RbVector<double> >::isSimpleNumeric(void) const { return true; }
+    
+    template<>
+    inline bool                                  TypedDagNode<Simplex>::isSimpleNumeric(void) const { return true; }
     
     
     
