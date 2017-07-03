@@ -278,7 +278,9 @@ const MemberRules& RevLanguage::Move_CharacterHistory::getParameterRules(void) c
     {
         
         nodeChrsmove_member_rules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The PhyloCTMC variable.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        nodeChrsmove_member_rules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec()                      , "Some rate-map.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        nodeChrsmove_member_rules.push_back( new ArgumentRule( "qmap_site", RateGenerator::getClassTypeSpec()                      , "Some rate-map.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        nodeChrsmove_member_rules.push_back( new ArgumentRule( "qmap_seq", RateGeneratorSequence::getClassTypeSpec()                      , "Some rate-map.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        
         nodeChrsmove_member_rules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec()                     , "The tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         nodeChrsmove_member_rules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , "", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
         
