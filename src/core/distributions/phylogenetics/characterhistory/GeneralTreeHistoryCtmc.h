@@ -2,17 +2,17 @@
 #define GeneralTreeHistoryCtmc_H
 
 #include "TreeHistoryCtmc.h"
+#include "ConstantNode.h"
+#include "DiscreteCharacterState.h"
+#include "HomologousDiscreteCharacterData.h"
+#include "RandomNumberFactory.h"
+#include "RateGeneratorSequence.h"
+#include "RateGeneratorSequenceUsingMatrix.h"
 #include "RbConstants.h"
 #include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "TypedDistribution.h"
-#include "ConstantNode.h"
-#include "HomologousDiscreteCharacterData.h"
-#include "DiscreteCharacterState.h"
-#include "RandomNumberFactory.h"
-#include "RateGeneratorSequence.h"
-#include "RateGeneratorSequenceUsingMatrix.h"
 
 #include <cmath>
 #include <cstring>
@@ -43,7 +43,7 @@ namespace RevBayesCore {
         
         void                                                setRateGenerator(const TypedDagNode< RateGeneratorSequence > *rm);
         void                                                setRateGenerator(const TypedDagNode< RbVector< RateGeneratorSequence > > *rm);
-        void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
+        void                                                setRootFrequencies(const TypedDagNode< Simplex > *f);
         void                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         
     protected:
@@ -64,7 +64,7 @@ namespace RevBayesCore {
 //<<<<<<< HEAD
         const TypedDagNode< RateGeneratorSequence >*                homogeneousRateGenerator;
         const TypedDagNode< RbVector< RateGeneratorSequence > >*    heterogeneousRateGenerator;
-        const TypedDagNode< RbVector< double > >*                   rootFrequencies;
+        const TypedDagNode< Simplex >*                              rootFrequencies;
         const TypedDagNode< RbVector< double > >*                   siteRates;
         
         // flags specifying which model variants we use
@@ -753,7 +753,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRateGenerator(const Type
 
 
 template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f)
+void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRootFrequencies(const TypedDagNode< Simplex > *f)
 {
     
     // remove the old parameter first
@@ -1075,7 +1075,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::swapParameterInternal( cons
     }
     else if (oldP == rootFrequencies)
     {
-        rootFrequencies = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+        rootFrequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
 //<<<<<<< HEAD
 //=======

@@ -2,6 +2,7 @@
 #include "GeneralTreeHistoryCtmcSiteIID.h"
 #include "OptionRule.h"
 #include "Probability.h"
+#include "Simplex.h"
 #include "RevNullObject.h"
 #include "RlAminoAcidState.h"
 #include "RlBoolean.h"
@@ -61,7 +62,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
 
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
-    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
+    const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *rf = NULL;
     if ( rootFrequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( rootFrequencies->getRevObject() ).getDagNode();

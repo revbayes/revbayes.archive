@@ -2,15 +2,17 @@
 #define GeneralTreeHistoryCtmcSiteIID_H
 
 #include "TreeHistoryCtmc.h"
+
+#include "ConstantNode.h"
+#include "DiscreteCharacterState.h"
+#include "HomologousDiscreteCharacterData.h"
+#include "RandomNumberFactory.h"
 #include "RbConstants.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "TypedDistribution.h"
-#include "ConstantNode.h"
-#include "HomologousDiscreteCharacterData.h"
-#include "DiscreteCharacterState.h"
-#include "RandomNumberFactory.h"
 
 #include <cmath>
 #include <cstring>
@@ -42,7 +44,7 @@ namespace RevBayesCore {
         void                                                setRateGenerator(const TypedDagNode< RateGenerator > *rm);
         void                                                setRateGenerator(const TypedDagNode< RbVector< RateGenerator > > *rm);
         void                                                setPInv(const TypedDagNode< double > *);
-        void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
+        void                                                setRootFrequencies(const TypedDagNode< Simplex > *f);
 
     protected:
 
@@ -61,7 +63,7 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< RateGenerator >*                homogeneousRateGenerator;
         const TypedDagNode< RbVector< RateGenerator > >*    heterogeneousRateGenerator;
-        const TypedDagNode< RbVector< double > >*           rootFrequencies;
+        const TypedDagNode< Simplex >*                      rootFrequencies;
         const TypedDagNode< double >*                       pInv;
         
 
@@ -612,7 +614,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::setRateGenerator(con
 
 
 template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f)
+void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::setRootFrequencies(const TypedDagNode< Simplex > *f)
 {
 
     // remove the old parameter first
@@ -832,7 +834,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::swapParameterInterna
     }
     else if (oldP == rootFrequencies)
     {
-        rootFrequencies = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+        rootFrequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     else
     {
