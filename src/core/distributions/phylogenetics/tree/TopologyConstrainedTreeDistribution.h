@@ -2,10 +2,7 @@
 #define TopologyConstrainedTreeDistribution_H
 
 #include "Clade.h"
-<<<<<<< HEAD
-=======
 #include "RbVector.h"
->>>>>>> development
 #include "Tree.h"
 #include "TreeChangeEventListener.h"
 #include "TypedDagNode.h"
@@ -58,29 +55,13 @@ namespace RevBayesCore {
         // helper functions
         bool                                                matchesBackbone(void);
         bool                                                matchesConstraints(void);
-<<<<<<< HEAD
-        RbBitSet                                            recursivelyAddBackboneConstraints(const TopologyNode& node);
-=======
         RbBitSet                                            recursivelyAddBackboneConstraints(const TopologyNode& node, size_t backbone_idx);
->>>>>>> development
         void                                                recursivelyFlagNodesDirty(const TopologyNode& n);
         RbBitSet                                            recursivelyUpdateClades(const TopologyNode& node);
         Tree*                                               simulateTree(void);
         
 
         // members
-<<<<<<< HEAD
-        std::vector<RbBitSet>                               active_backbone_clades;
-        std::vector<RbBitSet>                               active_clades;
-        std::vector<RbBitSet>                               backbone_constraints;
-        RbBitSet                                            backbone_mask;
-        const TypedDagNode<Tree>*                           backbone_topology;
-        TypedDistribution<Tree>*                            base_distribution;
-        std::vector<bool>                                   dirty_nodes;
-        std::vector<Clade>                                  monophyly_constraints;
-        std::vector<RbBitSet>                               stored_backbone_clades;
-        std::vector<RbBitSet>                               stored_clades;
-=======
         std::vector<std::vector<RbBitSet> >                 active_backbone_clades;
         std::vector<RbBitSet>                               active_clades;
         std::vector<std::vector<RbBitSet> >                 backbone_constraints;
@@ -96,7 +77,7 @@ namespace RevBayesCore {
         std::vector<RbBitSet>                               stored_clades;
         size_t                                              num_backbones;
         bool                                                use_multiple_backbones;
->>>>>>> development
+
     };
     
 }
