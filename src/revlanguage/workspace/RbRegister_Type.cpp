@@ -163,7 +163,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 
         /* Add math types (in folder "datatypes/math") */
         addTypeWithConstructor( new CorrespondenceAnalysis()                    );
-        addType( new RateMap()                                                  );
+        //addTypeWithConstructor( new RateGeneratorSequence()                     );
 //        addType( new MatrixReal()                                               );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
