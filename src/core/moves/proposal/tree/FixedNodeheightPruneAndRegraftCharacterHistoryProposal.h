@@ -3,8 +3,9 @@
 
 #include "BranchHistory.h"
 #include "HomologousDiscreteCharacterData.h"
-#include "NodeRejectionSampleProposal.h"
+#include "PathRejectionSampleProposal.h"
 #include "Proposal.h"
+#include "NodeRejectionSampleProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RateGenerator.h"
