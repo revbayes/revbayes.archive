@@ -295,6 +295,17 @@ std::vector<Clade> Clade::getOptionalConstraints(void) const
  *
  * \return       The vector of taxon names.
  */
+std::vector<Taxon>& Clade::getTaxa( void )
+{
+    return taxa;
+}
+
+
+/**
+ * Get all taxon names.
+ *
+ * \return       The vector of taxon names.
+ */
 const std::vector<Taxon>& Clade::getTaxa( void ) const
 {
     return taxa;

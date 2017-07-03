@@ -1,4 +1,5 @@
 #include "UniformTopologyDistribution.h"
+#include "Clade.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"

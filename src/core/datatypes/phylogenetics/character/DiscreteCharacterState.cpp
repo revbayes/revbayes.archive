@@ -274,6 +274,19 @@ bool DiscreteCharacterState::isAmbiguous( void ) const
     return isMissingState() || isGapState() || ( getNumberObservedStates() > 1 );
 }
 
+bool DiscreteCharacterState::isStateSet(size_t index) const
+{
+    RbBitSet bs = getState();
+    
+    return bs.isSet(index);
+}
+
+
+bool DiscreteCharacterState::isWeighted( void ) const
+{
+    // @Bastien: Dummy function
+    return false;
+}
 
 size_t DiscreteCharacterState::getStateIndex(void) const
 {
@@ -288,12 +301,6 @@ size_t DiscreteCharacterState::getStateIndex(void) const
 }
 
 
-bool DiscreteCharacterState::isStateSet(size_t index) const
-{
-    RbBitSet bs = getState();
-    
-    return bs.isSet(index);
-}
 
 
 size_t DiscreteCharacterState::getNumberObservedStates(void) const
