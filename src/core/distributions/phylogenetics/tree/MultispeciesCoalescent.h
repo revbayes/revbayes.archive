@@ -25,22 +25,13 @@ namespace RevBayesCore {
         double                                              computeLnCoalescentProbability(size_t k, const std::vector<double> &t, double a, double b, size_t index, bool f);
         double                                              drawNe(size_t index);
         double                                              getNe(size_t index) const;
-
+        
         
     private:
         
         // members
-<<<<<<< HEAD
-        std::vector<Taxon>                                  taxa;
-        const TypedDagNode<Tree>*                           species_tree;
         const TypedDagNode<RbVector<double> >*              Nes;
         const TypedDagNode<double >*                        Ne;
-        size_t                                              num_taxa;
-        double                                              log_tree_topology_prob;
-=======
-        const TypedDagNode<RbVector<double> >*              Nes;
-        const TypedDagNode<double >*                        Ne;
->>>>>>> development
         
     };
     

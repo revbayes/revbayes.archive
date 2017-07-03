@@ -69,10 +69,7 @@ namespace RevBayesCore {
 
         virtual double                                      sumRootLikelihood( void );
         virtual bool                                        isSitePatternCompatible( std::map<size_t, size_t> );
-<<<<<<< HEAD
-=======
         virtual bool                                        isSitePatternCompatible( std::map<RbBitSet, size_t> );
->>>>>>> development
         std::vector<size_t>                                 getIncludedSiteIndices( void );
         void                                                updateCorrections( const TopologyNode& node, size_t nodeIndex );
 

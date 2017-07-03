@@ -9,49 +9,37 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-<<<<<<< HEAD
-NaturalNumbersState::NaturalNumbersState(size_t n) : DiscreteCharacterState( n )
-=======
 NaturalNumbersState::NaturalNumbersState(size_t n) : DiscreteCharacterState( n ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(n)
->>>>>>> development
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(n)
 {
-
+    
 }
 
 
 
 /** Constructor that sets the observation */
-<<<<<<< HEAD
-NaturalNumbersState::NaturalNumbersState(const std::string &s, int m) : DiscreteCharacterState( m )
-=======
 NaturalNumbersState::NaturalNumbersState(const std::string &s, int m) : DiscreteCharacterState( m ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(m)
->>>>>>> development
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(m)
 {
     setState(s);
 }
 
 
 /** Constructor that sets the observation */
-<<<<<<< HEAD
-NaturalNumbersState::NaturalNumbersState(int s, int m) : DiscreteCharacterState( m )
-=======
 NaturalNumbersState::NaturalNumbersState(int s, int m) : DiscreteCharacterState( m ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(m)
->>>>>>> development
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(m)
 {
     setStateByIndex( s );
 }
@@ -71,15 +59,12 @@ void NaturalNumbersState::addState(int s)
     ++num_observed_states;
 }
 
-<<<<<<< HEAD
-=======
 void NaturalNumbersState::addStateDescriptions(const std::vector<std::string>& d)
 {
     state_descriptions = d;
 }
 
 
->>>>>>> development
 
 std::string NaturalNumbersState::getDataType( void ) const
 {
@@ -88,8 +73,6 @@ std::string NaturalNumbersState::getDataType( void ) const
 }
 
 
-<<<<<<< HEAD
-=======
 std::string NaturalNumbersState::getStateDescription( void ) const
 {
     if (state_descriptions.size() > index_single_state)
@@ -107,7 +90,6 @@ std::vector<std::string> NaturalNumbersState::getStateDescriptions( void ) const
     return state_descriptions;
 }
 
->>>>>>> development
 std::string NaturalNumbersState::getStateLabels( void ) const
 {
     std::string labels = "";
@@ -117,7 +99,7 @@ std::string NaturalNumbersState::getStateLabels( void ) const
         labels += boost::lexical_cast<std::string>(n);
     }
     return labels;
-	
+    
 }
 
 std::string NaturalNumbersState::getStringValue(void) const
@@ -133,13 +115,11 @@ std::string NaturalNumbersState::getStringValue(void) const
         return "-";
     }
     
-	return boost::lexical_cast<std::string>(index_single_state);
-	
+    return boost::lexical_cast<std::string>(index_single_state);
+    
 }
 
 
-<<<<<<< HEAD
-=======
 bool NaturalNumbersState::isGapState( void ) const
 {
     return is_gap;
@@ -164,7 +144,6 @@ void NaturalNumbersState::setMissingState( bool tf )
 }
 
 
->>>>>>> development
 void NaturalNumbersState::setState(const std::string &symbol)
 {
     
@@ -196,8 +175,6 @@ void NaturalNumbersState::setState(const std::string &symbol)
     
 }
 
-<<<<<<< HEAD
-=======
 
 void NaturalNumbersState::addState(const std::string &symbol)
 {
@@ -235,4 +212,3 @@ void NaturalNumbersState::setStateByIndex(size_t index)
     state.set( index );
 }
 
->>>>>>> development

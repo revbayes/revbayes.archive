@@ -17,8 +17,8 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 EventTimeSlideProposal::EventTimeSlideProposal( StochasticNode<Tree> *n, double d) : Proposal(),
-    variable( n ),
-    delta( d )
+variable( n ),
+delta( d )
 {
     // tell the base class to add the node
     addNode( variable );
@@ -101,11 +101,12 @@ double EventTimeSlideProposal::doProposal( void )
         
         // always remove event because we need to re-order the times
         history.removeEvent(event, branch_index);
-
+        
+        
         // store the event
         stored_value = event;
         // store the current time
-        stored_age = event->getAge();
+        stored_time = event->getTime();
         // store the current branch
         stored_branch_index = branch_index;
         
@@ -113,17 +114,10 @@ double EventTimeSlideProposal::doProposal( void )
         double proposed_displacement = RbStatistics::Normal::rv(0, delta, *rng);
         
         double remaining_branch_length = 0.0;
-<<<<<<< HEAD
-        double used_time = 0.0;
-        double branch_length = tree.getNode( branch_index ).getBranchLength();
-        double current_absolute_time = event->getAge(); // CHECK THIS AGE
-        if ( t > 0 )
-=======
         double parent_age   = tree.getNode( branch_index ).getParent().getAge();
         double node_age     = tree.getNode( branch_index ).getAge();
         double current_absolute_time = event->getTime();
         if ( proposed_displacement > 0 )
->>>>>>> development
         {
             // we are sliding up the tree towards the root
             remaining_branch_length = parent_age - current_absolute_time;
@@ -136,7 +130,7 @@ double EventTimeSlideProposal::doProposal( void )
         
         while ( fabs(proposed_displacement) > remaining_branch_length )
         {
-
+            
             if ( proposed_displacement > 0 )
             {
                 // we are sliding up the tree towards the root
@@ -145,11 +139,11 @@ double EventTimeSlideProposal::doProposal( void )
                 {
                     // we need to reflect
                     proposed_displacement = -proposed_displacement;
-
+                    
                     // flip a coin if we go left or right
                     size_t child_index = ( rng->uniform01() < 0.5 ? 0 : 1 );
                     // add to the proposal ratio
-//                    ln_proposal_ratio += RbConstants::LN2;
+                    //                    ln_proposal_ratio += RbConstants::LN2;
                     // the new branch index
                     branch_index = tree.getNode(branch_index).getParent().getChild(child_index).getIndex();
                 }
@@ -159,7 +153,7 @@ double EventTimeSlideProposal::doProposal( void )
                     
                     // the reverse proposal probability
                     ln_proposal_ratio -= RbConstants::LN2;
-
+                    
                 }
                 
                 // the new remaining branch length
@@ -173,7 +167,7 @@ double EventTimeSlideProposal::doProposal( void )
                 {
                     // we need to reflect
                     proposed_displacement = -proposed_displacement;
-
+                    
                 }
                 else
                 {
@@ -207,7 +201,7 @@ double EventTimeSlideProposal::doProposal( void )
         assert( new_absolute_time <= tree.getNode( branch_index ).getParent().getAge()  );
         
         // set the time
-        event->setAge(new_absolute_time); // CHECK THIS AGE
+        event->setTime(new_absolute_time);
         history.addEvent( event, branch_index );
         proposed_branch_index = branch_index;
         
@@ -221,7 +215,7 @@ double EventTimeSlideProposal::doProposal( void )
     
     size_t num_events_after = history.getNumberEvents();
     assert( num_events_before == num_events_after );
-
+    
     return ln_proposal_ratio;
 }
 
@@ -268,7 +262,7 @@ void EventTimeSlideProposal::undoProposal( void )
         size_t num_events_before = history.getNumberEvents();
         history.removeEvent( stored_value, proposed_branch_index);
         
-        stored_value->setAge( stored_age ); // CHECK THIS AGE
+        stored_value->setTime( stored_time );
         
         history.addEvent( stored_value, stored_branch_index );
         

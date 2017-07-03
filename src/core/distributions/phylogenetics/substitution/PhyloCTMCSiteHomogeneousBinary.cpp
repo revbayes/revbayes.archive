@@ -1,221 +1,86 @@
-#include "PhyloCTMCSiteHomogeneousBinary.h"
+#include "PhyloCTMCSiteHomogeneousDolloBinary.h"
+#include "RbMathFunctions.h"
 
-<<<<<<< HEAD
-RevBayesCore::PhyloCTMCSiteHomogeneousBinary::PhyloCTMCSiteHomogeneousBinary(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding ty) :
-    PhyloCTMCSiteHomogeneousConditional<BinaryState>(  t, 2, c, nSites, amb, AscertainmentBias::Coding(ty))
-=======
-RevBayesCore::PhyloCTMCSiteHomogeneousBinary::PhyloCTMCSiteHomogeneousBinary(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding ty, bool internal) :
-    PhyloCTMCSiteHomogeneousConditional<BinaryState>(  t, 2, c, nSites, amb, AscertainmentBias::Coding(ty), internal )
->>>>>>> development
+RevBayesCore::PhyloCTMCSiteHomogeneousDolloBinary::PhyloCTMCSiteHomogeneousDolloBinary(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, DolloAscertainmentBias::Coding ty, bool norm) :
+PhyloCTMCSiteHomogeneousDollo(  t, 1, c, nSites, amb, DolloAscertainmentBias::Coding(ty))
 {
-
-}
-
-RevBayesCore::PhyloCTMCSiteHomogeneousBinary* RevBayesCore::PhyloCTMCSiteHomogeneousBinary::clone( void ) const {
-
-    return new PhyloCTMCSiteHomogeneousBinary( *this );
-}
-
-<<<<<<< HEAD
-=======
-
->>>>>>> development
-bool RevBayesCore::PhyloCTMCSiteHomogeneousBinary::isSitePatternCompatible( std::map<size_t, size_t> charCounts )
-{
-    std::map<size_t, size_t>::iterator zero = charCounts.find(0);
-    std::map<size_t, size_t>::iterator one  = charCounts.find(1);
-
-    bool compatible = true;
-<<<<<<< HEAD
-=======
-
-    if( charCounts.size() == 1 )
-    {
-        if(zero != charCounts.end() && (coding & BinaryAscertainmentBias::NOABSENCESITES) )
-        {
-            compatible = false;
-        }
-        else if(one != charCounts.end()  && (coding & BinaryAscertainmentBias::NOPRESENCESITES) )
-        {
-            compatible = false;
-        }
-    }
-    else
-    {
-        if(zero != charCounts.end() && zero->second == 1 && (coding & BinaryAscertainmentBias::NOSINGLETONABSENCE) )
-        {
-            compatible = false;
-        }
-        else if(one != charCounts.end() && one->second == 1 && (coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE) )
-        {
-            compatible = false;
-        }
-    }
-
-    return compatible;
-}
-
-
-bool RevBayesCore::PhyloCTMCSiteHomogeneousBinary::isSitePatternCompatible( std::map<RbBitSet, size_t> charCounts )
-{
-    RbBitSet z(2, false);
-    RbBitSet o(2, false);
-
-    z.set(0);
-    o.set(1);
-
-    std::map<RbBitSet, size_t>::iterator zero = charCounts.find(z);
-    std::map<RbBitSet, size_t>::iterator one  = charCounts.find(o);
-
-    bool compatible = true;
->>>>>>> development
     
-    if( charCounts.size() == 1 )
+}
+
+bool RevBayesCore::PhyloCTMCSiteHomogeneousDolloBinary::isSitePatternCompatible( std::map<size_t, size_t> charCounts )
+{
+    size_t zero = charCounts[0];
+    size_t one  = charCounts[1];
+    
+    bool compatible = true;
+    
+    if(zero == 0 && (coding & DolloBinaryAscertainmentBias::NOPRESENCESITES) )
     {
-        if(zero != charCounts.end() && (coding & BinaryAscertainmentBias::NOABSENCESITES) )
-        {
-            compatible = false;
-        }
-        else if(one != charCounts.end()  && (coding & BinaryAscertainmentBias::NOPRESENCESITES) )
-        {
-            compatible = false;
-        }
+        compatible = false;
     }
-    else
+    else if(one == 0  && (coding & DolloBinaryAscertainmentBias::NOABSENCESITES) )
     {
-        if(zero != charCounts.end() && zero->second == 1 && (coding & BinaryAscertainmentBias::NOSINGLETONABSENCE) )
-        {
-            compatible = false;
-        }
-        else if(one != charCounts.end() && one->second == 1 && (coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE) )
-        {
-            compatible = false;
-        }
+        compatible = false;
+    }
+    else if(zero == 1 && one > 0 && (coding & DolloBinaryAscertainmentBias::NOSINGLETONABSENCE) )
+    {
+        compatible = false;
+    }
+    else if(zero > 0 && one == 1 && (coding & DolloBinaryAscertainmentBias::NOSINGLETONPRESENCE) )
+    {
+        compatible = false;
     }
     
     return compatible;
 }
 
-double RevBayesCore::PhyloCTMCSiteHomogeneousBinary::sumRootLikelihood( void )
+double RevBayesCore::PhyloCTMCSiteHomogeneousDolloBinary::computeIntegratedNodeCorrection(const std::vector<std::vector<std::vector<double> > >& partials, size_t node_index, size_t mask, size_t mixture, const std::vector<double> &f)
 {
-    double sumPartialProbs = PhyloCTMCSiteHomogeneous<BinaryState>::sumRootLikelihood();
+    /*
+     * partials[a][b][c] contains the probability of observing:
+     * autapomorphy pattern c
+     * on background state b
+     * conditioned on node state a
+     */
     
-    if(coding == BinaryAscertainmentBias::ALL)
-        return sumPartialProbs;
+    double prob = 0.0;
     
-    // get the root node
-    const TopologyNode &root = this->tau->getValue().getRoot();
-
-    // get root frequencies
-    std::vector<std::vector<double> >   ff;
-    getRootFrequencies(ff);
-
-    // get the index of the root node
-    size_t node_index = root.getIndex();
+    if(coding & DolloBinaryAscertainmentBias::NOABSENCESITES)
+        prob += partials[0][1][0];
     
-    std::vector<double>::const_iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[node_index] * activeCorrectionOffset  + node_index*correctionNodeOffset;
+    if(coding & DolloBinaryAscertainmentBias::NOSINGLETONPRESENCE)
+        prob += partials[0][1][1];
     
-    std::vector<double> perMaskCorrections = std::vector<double>(numCorrectionMasks, 0.0);
+    // if there is only one observed tip, then don't double-count singleton gains
+    if((coding & DolloBinaryAscertainmentBias::NOPRESENCESITES)
+       && maskNodeObservationCounts[mask][node_index] == maskObservationCounts[mask]
+       && (maskObservationCounts[mask] > 1 || !(coding & DolloBinaryAscertainmentBias::NOSINGLETONPRESENCE)) )
+        prob += partials[0][0][0];
     
-    // iterate over each correction mask
-    for(size_t mask = 0; mask < numCorrectionMasks; mask++)
+    // if there are only two observed tips, then don't double-count singleton gains
+    // if there is only one observed tip, then don't double-count absence sites
+    if((coding & DolloBinaryAscertainmentBias::NOSINGLETONABSENCE)
+       && (maskObservationCounts[mask] > 1 || !(coding & DolloBinaryAscertainmentBias::NOABSENCESITES))
+       && (maskObservationCounts[mask] > 2 || !(coding & DolloBinaryAscertainmentBias::NOSINGLETONPRESENCE)) )
     {
-        // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
-        {
-            const std::vector<double> &f = ff[mixture % ff.size()];
-
-            double prob = 0.0;
-            
-            // iterate over ancestral (non-autapomorphic) states
-            for(size_t a = 0; a < this->num_chars; a++)
-            {
-                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
-
-                std::vector<double>::const_iterator             u = p_node   + offset;
-
-                // iterate over combinations of autapomorphic states
-                for(size_t c = 0; c < numCorrectionPatterns; c++)
-                {
-                    // constant site pattern likelihoods
-                    std::vector<double>::const_iterator         uc = u  + c*this->num_chars;
-
-                    if( ((coding & BinaryAscertainmentBias::NOABSENCESITES)      && a == 0 && c == 0) ||
-                        ((coding & BinaryAscertainmentBias::NOPRESENCESITES)     && a == 1 && c == 0) ||
-                        ((coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE) && a == 0 && c == 1
-                                && (maskObservationCounts[mask] > 1 || !(coding & BinaryAscertainmentBias::NOPRESENCESITES)) ) ||
-                        ((coding & BinaryAscertainmentBias::NOSINGLETONABSENCE)  && a == 1 && c == 1
-                                && (maskObservationCounts[mask] > 1 || !(coding & BinaryAscertainmentBias::NOABSENCESITES))
-                                && (maskObservationCounts[mask] > 2 || !(coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE)) )
-                        )
-                    {
-                        // iterate over initial states
-                        for(size_t ci = 0; ci < this->num_chars; ci++)
-                        {
-                            prob += uc[ci];
-                        }
-                    }
-                }
-            }
-            
-            // impose a per-mixture boundary
-            if(prob <= 0.0 || prob >= 1.0)
-            {
-                prob = RbConstants::Double::nan;
-            }
-
-            perMaskCorrections[mask] += prob;
-
-            // add corrections for invariant sites
-            double prob_invariant = getPInv();
-            if(prob_invariant > 0.0)
-            {
-                prob *= (1.0 - prob_invariant);
-                
-                if(coding & BinaryAscertainmentBias::NOABSENCESITES)
-                    prob += f[0]*prob_invariant;
-                
-                if(coding & BinaryAscertainmentBias::NOPRESENCESITES)
-                    prob += f[1]*prob_invariant;
-            }
-        
-            perMaskMixtureCorrections[mask*num_site_mixtures + mixture] = 1.0 - prob;
-        }
-
-        // add corrections for invariant sites
-        double prob_invariant = getPInv();
-        if(prob_invariant > 0.0)
-        {
-            perMaskCorrections[mask] *= (1.0 - prob_invariant);
-
-            double mean = 0.0;
-            for(size_t i = 0; i < ff.size(); i++)
-            {
-                if(coding & BinaryAscertainmentBias::NOABSENCESITES)
-                    mean += ff[i][0];
-
-                if(coding & BinaryAscertainmentBias::NOPRESENCESITES)
-                    mean += ff[i][1];
-            }
-
-            mean /= ff.size();
-
-            perMaskCorrections[mask] += mean * prob_invariant * this->num_site_mixtures;
-        }
-
-        // normalize the log-probability
-        perMaskCorrections[mask] /= this->num_site_mixtures;
-
-        // impose a per-mask boundary
-        if(perMaskCorrections[mask] <= 0.0 || perMaskCorrections[mask] >= 1.0)
-            perMaskCorrections[mask] = RbConstants::Double::nan;
-
-        perMaskCorrections[mask] = log(1.0 - perMaskCorrections[mask]);
-
-        // apply the correction for this correction mask
-        sumPartialProbs -= perMaskCorrections[mask]*correctionMaskCounts[mask];
+        if(maskNodeObservationCounts[mask][node_index] == maskObservationCounts[mask])
+            prob += partials[0][0][1];
+        else if(maskNodeObservationCounts[mask][node_index] == maskObservationCounts[mask] - 1)
+            prob += partials[0][0][0];
     }
-
-    return sumPartialProbs;
+    
+    // impose a per-mixture boundary
+    if(prob < 0.0 || prob > 1.0)
+    {
+        prob = RbConstants::Double::nan;
+    }
+    
+    if(prob == 0.0 && !this->tau->getValue().getNode(node_index).isTip())
+    {
+        //prob = RbConstants::Double::nan;
+    }
+    
+    prob = integrationFactors[mixture]*(1.0 - prob);
+    
+    return prob;
 }
-

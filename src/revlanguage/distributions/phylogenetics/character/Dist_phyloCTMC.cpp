@@ -65,21 +65,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
 
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
-<<<<<<< HEAD
-    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
-=======
     const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *rf = NULL;
->>>>>>> development
     if ( root_frequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     }
 
-<<<<<<< HEAD
-    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *sp = NULL;
-=======
     const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *sp = NULL;
->>>>>>> development
 
     bool siteMatrices = false;
 
@@ -429,19 +421,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist;
         if(cd == RevBayesCore::AscertainmentBias::ALL)
         {
-<<<<<<< HEAD
-            dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig);
-        }
-        else
-        {
-            dist = new RevBayesCore::PhyloCTMCSiteHomogeneousConditional<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, RevBayesCore::AscertainmentBias::Coding(cd));
-=======
             dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, internal);
         }
         else
         {
             dist = new RevBayesCore::PhyloCTMCSiteHomogeneousConditional<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, RevBayesCore::AscertainmentBias::Coding(cd), internal);
->>>>>>> development
         }
 
         // set the root frequencies (by default these are NULL so this is OK)
@@ -521,11 +505,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             n_chars = rm->getValue().getNumberOfStates();
         }
 
-<<<<<<< HEAD
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState>(tau, n_chars, true, n, ambig);
-=======
         RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState>(tau, n_chars, true, n, ambig, internal);
->>>>>>> development
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -666,11 +646,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
         }
 
-<<<<<<< HEAD
-        RevBayesCore::PhyloCTMCSiteHomogeneousBinary *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousBinary(tau, true, n, ambig, RevBayesCore::BinaryAscertainmentBias::Coding(cd));
-=======
         RevBayesCore::PhyloCTMCSiteHomogeneousBinary *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousBinary(tau, true, n, ambig, RevBayesCore::BinaryAscertainmentBias::Coding(cd), internal);
->>>>>>> development
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -836,19 +812,12 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         options.push_back( "Binary" );
         options.push_back( "Restriction" );
         dist_member_rules.push_back( new OptionRule( "type", new RlString("DNA"), options, "The data type, used for simulation and initialization." ) );
-<<<<<<< HEAD
-
-        dist_member_rules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "Should we treat ambiguous characters as gaps/missing?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
-
-        dist_member_rules.push_back( new ArgumentRule("coding", RlString::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("all") ) );
-=======
 
         dist_member_rules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "Should we treat ambiguous characters as gaps/missing?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
 
         dist_member_rules.push_back( new ArgumentRule("coding", RlString::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("all") ) );
 
         dist_member_rules.push_back( new ArgumentRule( "storeInternalNodes", RlBoolean::getClassTypeSpec(), "Should we store internal node states in the character matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
->>>>>>> development
 
         rules_set = true;
     }

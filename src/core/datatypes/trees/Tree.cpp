@@ -933,35 +933,24 @@ void Tree::makeInternalNodesBifurcating(bool reindex)
 // used when reading in tree with existing node indexes we need to keep
 void Tree::orderNodesByIndex( void )
 {
-
+    
+    
     std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(nodes.size());
     std::vector<bool> used = std::vector<bool>(nodes.size(),false);
     for (int i = 0; i < nodes.size(); i++)
     {
         if ( nodes[i]->getIndex() > nodes.size() )
         {
-<<<<<<< HEAD
-            throw RbException("Problem while working with tree: Node had bad index.");
-<<<<<<< HEAD
-        }
-        else
-        {
-            used[nodes[i]->getIndex()] = true;
-        }
-=======
-=======
             throw RbException("Problem while working with tree: Node had bad index. Index was '" + StringUtilities::to_string( nodes[i]->getIndex() ) + "' while there are only '" + StringUtilities::to_string( nodes.size() ) + "' nodes in the tree.");
         }
         else if ( used[nodes[i]->getIndex()] == true )
         {
             throw RbException("Problem while working with tree: Node had bad index. Two nodes had same index of '" + StringUtilities::to_string( nodes[i]->getIndex() ) + "'.");
->>>>>>> dc5da38e339e81ba3e116b7fa603df3b16b875cc
         }
         else
         {
             used[nodes[i]->getIndex()] = true;
         }
->>>>>>> development
         nodes_copy[ nodes[i]->getIndex() ] = nodes[i];
     }
     

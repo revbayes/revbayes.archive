@@ -18,9 +18,9 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 EventBranchTimeBetaProposal::EventBranchTimeBetaProposal( StochasticNode<Tree> *n, double d, double o) : Proposal(),
-    variable( n ),
-    delta( d ),
-    offset( o )
+variable( n ),
+delta( d ),
+offset( o )
 {
     // tell the base class to add the node
     addNode( variable );
@@ -88,11 +88,11 @@ double EventBranchTimeBetaProposal::doProposal( void )
     
     if ( failed == false )
     {
-                
+        
         // pick a random event
         size_t branch_index = 0;
         CharacterEvent *event = history.pickRandomEvent( branch_index );
-
+        
         // we need to remove and add the event so that the events are back in time order
         history.removeEvent(event, branch_index);
         double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
@@ -101,30 +101,15 @@ double EventBranchTimeBetaProposal::doProposal( void )
         // store the event
         stored_value = event;
         // get the current index
-        stored_age = event->getAge();
+        stored_time = event->getTime();
         // store the current branch
         stored_branch_index = branch_index;
         
         // draw new ages and compute the hastings ratio at the same time
-<<<<<<< HEAD
-        double m = stored_age / branch_length;
-=======
         double m = (stored_time-my_age) / branch_length;
->>>>>>> development
         double a = delta * m + offset;
         double b = delta * (1.0-m) + offset;
         
-<<<<<<< HEAD
-        // compute the Hastings ratio
-        double forward  = RbStatistics::Beta::lnPdf(a, b, new_time);
-        double new_a    = delta * new_time + offset;
-        double new_b    = delta * (1.0-new_time) + offset;
-        double backward = RbStatistics::Beta::lnPdf(new_a, new_b, stored_age / branch_length);
-        
-        // set the time
-        // TODO: make this make sense
-        event->setAge( new_time * branch_length );
-=======
         // Sebastian: This is a fix we noticed during the Bodega 2017 workshop
         // apparently those values are not bounded
         if ( a > 0.0 && b > 0.0  )
@@ -135,20 +120,19 @@ double EventBranchTimeBetaProposal::doProposal( void )
             {
                 throw RbException("Not supposed to happen!");
             }
-        
+            
             // compute the Hastings ratio
             double forward = RbStatistics::Beta::lnPdf(a, b, new_time);
             double new_a = delta * new_time + offset;
             double new_b = delta * (1.0-new_time) + offset;
             double backward = RbStatistics::Beta::lnPdf(new_a, new_b, m);
->>>>>>> development
-        
+            
             // set the time
             event->setTime( new_time * branch_length + my_age );
-        
+            
             // we need to remove and add the event so that the events are back in time order
             history.addEvent(event, branch_index);
-        
+            
             return backward - forward;
         }
         else
@@ -214,10 +198,10 @@ void EventBranchTimeBetaProposal::undoProposal( void )
         history.removeEvent(stored_value, stored_branch_index);
         
         // reset the time
-        stored_value->setAge( stored_age );
+        stored_value->setTime( stored_time );
         
         history.addEvent(stored_value, stored_branch_index);
-
+        
     }
     
 }

@@ -42,11 +42,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getValue();
-<<<<<<< HEAD
-=======
     
     bool internal = static_cast<const RlBoolean &>( storeInternalNodes->getRevObject() ).getValue();
->>>>>>> development
     
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
@@ -62,11 +59,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
-<<<<<<< HEAD
-    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
-=======
     const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *rf = NULL;
->>>>>>> development
     if ( root_frequencies != NULL && root_frequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
@@ -114,14 +107,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
             
         }
-<<<<<<< HEAD
-        
-        if (nChars != nCharsClado) {
-            throw RbException("The cladogenetic probabilities and rate matrix do not have the same number of states.\n");
-        }
-        
-=======
->>>>>>> development
         
         if (nChars != nCharsClado) {
             throw RbException("The cladogenetic probabilities and rate matrix do not have the same number of states.\n");
@@ -291,11 +276,8 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
         
         dist_member_rules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
-<<<<<<< HEAD
-=======
         dist_member_rules.push_back( new ArgumentRule( "storeInternalNodes", RlBoolean::getClassTypeSpec(), "Should we store internal node states in the character matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
->>>>>>> development
         rules_set = true;
     }
     

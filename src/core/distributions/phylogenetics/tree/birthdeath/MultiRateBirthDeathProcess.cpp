@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-#include "CDSE.h"
-=======
 #include "SSE_ODE.h"
->>>>>>> development
 #include "Clade.h"
 #include "MultiRateBirthDeathProcess.h"
 #include "RandomNumberFactory.h"
@@ -42,20 +38,20 @@ MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double
                                                        const TypedDagNode<double> *rh,
                                                        const std::string &cdt,
                                                        const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
-    lambda( l ),
-    mu( m ),
-    pi( p ),
-    Q( q ),
-    rate( r ),
-    rho( rh ),
-    activeLikelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
-    changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
-    dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
-    nodeStates( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*lambda->getValue().size(),0))) ),
-    numRateCategories( lambda->getValue().size() ),
-    scalingFactors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
-    totalScaling( 0.0 ),
-    NUM_TIME_SLICES( 200.0 )
+lambda( l ),
+mu( m ),
+pi( p ),
+Q( q ),
+rate( r ),
+rho( rh ),
+activeLikelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
+changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
+dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
+nodeStates( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*lambda->getValue().size(),0))) ),
+numRateCategories( lambda->getValue().size() ),
+scalingFactors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
+totalScaling( 0.0 ),
+NUM_TIME_SLICES( 200.0 )
 {
     
     addParameter( lambda );
@@ -123,7 +119,7 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
                 initialState[i] = 1.0 - samplingProbability;
                 initialState[numRateCategories+i] = samplingProbability;
             }
-
+            
         }
         else
         {
@@ -144,24 +140,20 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
                 initialState[i] = leftStates[i];
                 initialState[numRateCategories+i] = leftStates[numRateCategories+i]*rightStates[numRateCategories+i]*birthRate[i];
             }
-
+            
         }
         
-<<<<<<< HEAD
-        CDSE ode = CDSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
-=======
         SSE_ODE ode = SSE_ODE(mu->getValue(), &Q->getValue(), rate->getValue(), true, false);
         ode.setSpeciationRate( lambda->getValue() );
         
->>>>>>> development
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
         double dt = root_age->getValue() / NUM_TIME_SLICES;
-//        boost::numeric::odeint::runge_kutta4< state_type > stepper;
-//        boost::numeric::odeint::integrate_const( stepper, ode , initialState , beginAge , endAge, dt );
+        //        boost::numeric::odeint::runge_kutta4< state_type > stepper;
+        //        boost::numeric::odeint::integrate_const( stepper, ode , initialState , beginAge , endAge, dt );
         typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
         boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-9 , 1E-9 , stepper_type() ) , ode , initialState , beginAge , endAge , dt );
-
+        
         
         // rescale the states
         double max = 0.0;
@@ -172,7 +164,7 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
                 max = initialState[numRateCategories+i];
             }
         }
-//        max = 1.0;
+        //        max = 1.0;
         for (size_t i=0; i<numRateCategories; ++i)
         {
             initialState[numRateCategories+i] /= max;
@@ -228,18 +220,13 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
     }
     
     double dt = root_age->getValue() / NUM_TIME_SLICES;
-<<<<<<< HEAD
-    CDSE ode = CDSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
-    boost::numeric::odeint::integrate( ode , initialState , start , end , dt );
-=======
     SSE_ODE ode = SSE_ODE(mu->getValue(), &Q->getValue(), rate->getValue(), true, false);
     ode.setSpeciationRate( lambda->getValue() );
->>>>>>> development
     
-//    boost::numeric::odeint::integrate( ode , initialState , start , end , dt );
+    //    boost::numeric::odeint::integrate( ode , initialState , start , end , dt );
     typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
     boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-9 , 1E-9 , stepper_type() ) , ode , initialState , start , end , dt );
-
+    
     
     double prob = 0.0;
     const RbVector<double> &freqs = pi->getValue();

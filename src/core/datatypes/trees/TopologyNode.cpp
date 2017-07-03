@@ -400,7 +400,6 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
         }
             
         for (size_t i = 0; i < node_comments.size(); ++i)
-<<<<<<< HEAD
         {
             if ( needsComma == true )
             {
@@ -409,28 +408,13 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
             o << node_comments[i];
             needsComma = true;
         }
-
-        for (size_t i = 0; i < fossil_comments.size(); ++i)
-=======
->>>>>>> development
-        {
-            if ( needsComma == true )
-            {
-                o << ",";
-            }
-<<<<<<< HEAD
-=======
-            o << node_comments[i];
-            needsComma = true;
-        }
-
+        
         for (size_t i = 0; i < fossil_comments.size(); ++i)
         {
             if ( needsComma == true )
             {
                 o << ",";
             }
->>>>>>> development
             o << fossil_comments[i];
             needsComma = true;
         }

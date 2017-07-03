@@ -2,16 +2,10 @@
 #define StateDependentSpeciationExtinctionProcess_H
 
 #include "TreeDiscreteCharacterData.h"
-<<<<<<< HEAD
-#include "CDCladoSE.h"
-#include "MatrixReal.h"
-#include "RateMatrix.h"
-=======
 #include "MatrixReal.h"
 #include "RateMatrix.h"
 #include "Simplex.h"
 #include "SSE_ODE.h"
->>>>>>> development
 #include "Taxon.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
@@ -38,11 +32,7 @@ namespace RevBayesCore {
                                                   const TypedDagNode<RbVector<double> >* m,
                                                   const TypedDagNode<RateGenerator>* q,
                                                   const TypedDagNode<double>* r,
-<<<<<<< HEAD
-                                                  const TypedDagNode< RbVector< double > >* p,
-=======
                                                   const TypedDagNode<Simplex>* p,
->>>>>>> development
                                                   const TypedDagNode<double> *rh,
                                                   const std::string &cdt,
                                                   const std::vector<Taxon> &tn);
@@ -61,13 +51,8 @@ namespace RevBayesCore {
         
         void                                                            drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates);
         void                                                            recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates);
-<<<<<<< HEAD
-        void                                                            drawJointConditionalCharacterMap(std::vector<std::string*>& character_histories);
-        void                                                            recursivelyDrawJointConditionalCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories);
-=======
         void                                                            drawStochasticCharacterMap(std::vector<std::string*>& character_histories);
         void                                                            recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories);
->>>>>>> development
         void                                                            numericallyIntegrateProcess(state_type &likelihoods, double begin_age, double end_age, bool use_backward, bool extinction_only) const; //!< Wrapper function for the ODE time stepper function.
         
     protected:
@@ -112,11 +97,7 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                                     root_age;                                                                                           //!< Time since the origin.
         const TypedDagNode<RbVector<double> >*                          mu;
         const TypedDagNode<RbVector<double> >*                          lambda;
-<<<<<<< HEAD
-        const TypedDagNode<RbVector< double > >*                        pi;                                                                                                 //!< The root frequencies (probabilities of the root states).
-=======
         const TypedDagNode<Simplex >*                                   pi;                                                                                                 //!< The root frequencies (probabilities of the root states).
->>>>>>> development
         const TypedDagNode<RateGenerator>*                              Q;
         const TypedDagNode<double>*                                     rate;                                                                                               //!< Sampling probability of each species.
         const TypedDagNode<double>*                                     rho;                                                                                                //!< Sampling probability of each species.
