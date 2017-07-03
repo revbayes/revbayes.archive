@@ -1,18 +1,5 @@
-<<<<<<< HEAD
-
-//  PhyloCTMCClado.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 10/30/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __revbayes_proj__PhyloCTMCClado__
-#define __revbayes_proj__PhyloCTMCClado__
-=======
 #ifndef PhyloCTMCClado_H
 #define PhyloCTMCClado_H
->>>>>>> development
 
 #include "AbstractCladogenicStateFunction.h"
 #include "CharacterHistory.h"
@@ -49,11 +36,7 @@ namespace RevBayesCore {
         virtual std::vector<charType>						drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
         virtual void                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> development
         virtual void                                        redrawValue(void);
         void                                                setCladogenesisMatrix(const TypedDagNode< CladogeneticProbabilityMatrix > *r);
         void                                                setCladogenesisMatrix(const TypedDagNode< RbVector< CladogeneticProbabilityMatrix > >* r);
@@ -103,11 +86,8 @@ namespace RevBayesCore {
         bool store_internal_nodes;
     };
 
-<<<<<<< HEAD
 }
 
-=======
->>>>>>> development
 #include "AbstractCharacterHistoryBirthDeathProcess.h"
 #include "ConstantNode.h"
 #include "StochasticNode.h"
@@ -126,11 +106,7 @@ namespace RevBayesCore {
 #include <vector>
 
 template<class charType>
-<<<<<<< HEAD
-RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb ),
-=======
 RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb ),
->>>>>>> development
 
 //    cladoPartialLikelihoods( new double[2*this->num_nodes*this->num_site_rates*this->num_sites*this->num_chars*this->num_chars] ),
 //    cladoMarginalLikelihoods( new double[this->num_nodes*this->num_site_rates*this->num_sites*this->num_chars*this->num_chars] ),
@@ -148,11 +124,7 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
     et.push_back("a");
     homogeneousCladogenesisMatrix            = new DeterministicNode<CladogeneticProbabilityMatrix>( "cladogenesisMatrix",
                                                new DECCladogeneticStateFunction(
-<<<<<<< HEAD
-                                                    new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
-=======
                                                     new ConstantNode<Simplex >( "", new Simplex(2, 0.5)),
->>>>>>> development
                                                     new ConstantNode<RbVector<RbVector<double> > >("", new RbVector<RbVector<double> >(nChars, RbVector<double>(nChars, 1))),
                                                     new ConstantNode<RbVector<RbVector<double> > >("", new RbVector<RbVector<double> >(nChars, RbVector<double>(nChars, 1))),
                                                     numReducedChar,
@@ -270,27 +242,13 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root,
 {
     
     // get the root frequencies
-<<<<<<< HEAD
-    const std::vector<double> &f                    = this->getRootFrequencies();
-//    for (size_t i = 0; i < f.size(); i++)
-//    {
-//        std::cout << f[i] << "\n";
-//    }
-//    
-=======
     const std::vector<double> &f = this->getRootFrequencies();
->>>>>>> development
     const TopologyNode& node = this->tau->getValue().getRoot();
     std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ?
                                                               heterogeneousCladogenesisMatrices->getValue()[root].getEventMap(node.getAge()) :
                                                               homogeneousCladogenesisMatrix->getValue().getEventMap(node.getAge()) );
-<<<<<<< HEAD
-=======
-    
     // bypass cladogenetic probs if it's a sampled ancestor
     bool has_sampled_ancestor_child = node.getChild(0).isSampledAncestor() || node.getChild(1).isSampledAncestor();
-
->>>>>>> development
     
     // get the pointers to the partial likelihoods of the left and right subtree
     double* p_node         = this->partialLikelihoods + this->activeLikelihood[root]  * this->activeLikelihoodOffset + root  * this->nodeOffset;
