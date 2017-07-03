@@ -42,7 +42,7 @@ Func_siteRateModifier* Func_siteRateModifier::clone( void ) const {
 RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_siteRateModifier::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* rate_multipliers  = static_cast<const ModelVector<Simplex> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* rate_multipliers  = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<int> > >* event_classes;
     event_classes = static_cast<const ModelVector<ModelVector<Natural> > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<int> >* site_classes;
@@ -63,7 +63,7 @@ const ArgumentRules& Func_siteRateModifier::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "rateMultipliers", ModelVector<Simplex>::getClassTypeSpec(), "Multiplies character i by rate-multiplier r_i.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
+        argumentRules.push_back( new ArgumentRule( "rateMultipliers", ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "Multiplies character i by rate-multiplier r_i.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
         argumentRules.push_back( new ArgumentRule( "eventClasses", ModelVector<ModelVector<Natural> >::getClassTypeSpec(), "Assigns event classes to rate matrix events.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
         argumentRules.push_back( new ArgumentRule( "siteClasses", ModelVector<Natural>::getClassTypeSpec(), "Assigns classes to the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
 

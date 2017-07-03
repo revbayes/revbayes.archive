@@ -117,7 +117,7 @@ void JointConditionalCharacterMappingMonitor::monitor(unsigned long gen)
         
         // draw character map from the joint distribution
         std::vector<std::string*> character_histories( num_nodes );
-        sse_process->drawJointConditionalCharacterMap( character_histories );
+        sse_process->drawStochasticCharacterMap( character_histories );
         
         const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
         for (int i = 0; i < nds.size(); i++)

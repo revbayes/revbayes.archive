@@ -147,7 +147,7 @@ RevPtr<RevVariable> RlDistanceMatrix::executeMethod(std::string const &name, con
     {
         found = true;
         //TODO: make sure the matrix really is symmetric
-        return new RevVariable(new MatrixRealSymmetric((RevBayesCore::MatrixReal) (this->dagNode->getValue().getMatrix() ) ) ) ;
+        return new RevVariable(new MatrixRealSymmetric((RevBayesCore::MatrixReal) (this->dag_node->getValue().getMatrix() ) ) ) ;
 
     }
     else if (name == "names")

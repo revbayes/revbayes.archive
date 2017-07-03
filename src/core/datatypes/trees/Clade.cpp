@@ -289,27 +289,6 @@ std::vector<Clade> Clade::getOptionalConstraints(void) const
     return optional_constraints;
 }
 
-/**
- * Get number of missing taxa.
- *
- * \return       The number of missing taxa.
- */
-size_t Clade::getNumberOfTaxa( void ) const
-{
-    return taxa.size();
-}
-
-
-/**
- * Get all taxon names.
- *
- * \return       The vector of taxon names.
- */
-std::vector<Taxon>& Clade::getTaxa( void )
-{
-    return taxa;
-}
-
 
 /**
  * Get all taxon names.
