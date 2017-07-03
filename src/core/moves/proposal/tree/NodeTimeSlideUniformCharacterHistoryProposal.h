@@ -12,6 +12,7 @@
 #include "RbException.h"
 #include "StochasticNode.h"
 #include "Tree.h"
+#include "TreeHistoryCtmc.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
 
