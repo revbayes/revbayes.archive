@@ -94,11 +94,11 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
         recursiveComputeLnProbability( root, rootIndex );
         
         // return the likelihood at the root
-        this->lnProb = this->partial_likelihoods[this->active_likelihood[rootIndex]][rootIndex];
+        this->ln_prob = this->partial_likelihoods[this->active_likelihood[rootIndex]][rootIndex];
         
     }
     
-    return this->lnProb;
+    return this->ln_prob;
     
 }
 

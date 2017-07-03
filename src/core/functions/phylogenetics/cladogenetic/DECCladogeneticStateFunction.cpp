@@ -19,7 +19,7 @@
 
 using namespace RevBayesCore;
 
-DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *ep,
+DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode<Simplex> *ep,
                                                            const TypedDagNode<RbVector<RbVector<double> > >* cg,
                                                            const TypedDagNode<RbVector<RbVector<double> > >* vg,
                                                            unsigned nc,
@@ -672,7 +672,7 @@ void DECCladogeneticStateFunction::swapParameterInternal(const DagNode *oldP, co
     
     if (oldP == eventProbs)
     {
-        eventProbs = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        eventProbs = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     else if (oldP == connectivityGraph)
     {

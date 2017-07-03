@@ -13,6 +13,7 @@
 #include "AbstractCladogenicStateFunction.h"
 #include "CladogeneticProbabilityMatrix.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -26,7 +27,7 @@ namespace RevBayesCore {
         
     public:
         
-        MixtureCladogeneticStateFunction( const TypedDagNode< RbVector< double > >* mw, const TypedDagNode< RbVector< CladogeneticProbabilityMatrix > >* cp, unsigned nc, unsigned ns);
+        MixtureCladogeneticStateFunction( const TypedDagNode< Simplex >* mw, const TypedDagNode< RbVector< CladogeneticProbabilityMatrix > >* cp, unsigned nc, unsigned ns);
         virtual                                                 ~MixtureCladogeneticStateFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -44,7 +45,7 @@ namespace RevBayesCore {
         void                                                    buildEventMap(void);
         
         // members
-        const TypedDagNode< RbVector<double> >*                 mixtureWeights;
+        const TypedDagNode< Simplex >*                          mixtureWeights;
         const TypedDagNode< RbVector<CladogeneticProbabilityMatrix> >*             cladoProbs;
         unsigned                                                numCharacters;
         unsigned                                                numStates;

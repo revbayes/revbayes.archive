@@ -12,6 +12,7 @@
 #include "AbstractCladogenicStateFunction.h"
 #include "CladogeneticProbabilityMatrix.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -25,7 +26,7 @@ namespace RevBayesCore {
         
     public:
         
-        DECCladogeneticStateFunction(const TypedDagNode< RbVector< double > >* ep,
+        DECCladogeneticStateFunction(const TypedDagNode<Simplex>* ep,
                                      const TypedDagNode<RbVector<RbVector<double> > >* cg,
                                      const TypedDagNode<RbVector<RbVector<double> > >* vg,
                                      unsigned nc,
@@ -63,7 +64,7 @@ namespace RevBayesCore {
         void                                                    updateProbs(void);
         
         // members
-        const TypedDagNode< RbVector<double> >*                 eventProbs;
+        const TypedDagNode< Simplex >*                 eventProbs;
         const TypedDagNode< RbVector<RbVector<double> > >*      connectivityGraph;
         const TypedDagNode< RbVector<RbVector<double> > >*      vicarianceGraph;
         unsigned                                                numCharacters;
