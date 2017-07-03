@@ -14,22 +14,18 @@
 namespace RevLanguage {
     
     
-    class AbstractHomologousDiscreteCharacterData : public HomologousCharacterData {
+    class AbstractHomologousDiscreteCharacterData : public ModelObject<RevBayesCore::AbstractHomologousDiscreteCharacterData>, public HomologousCharacterData {
         
     public:
         AbstractHomologousDiscreteCharacterData(void);                                                                                                  //!< Constructor requires character type
         AbstractHomologousDiscreteCharacterData(const RevBayesCore::AbstractHomologousDiscreteCharacterData &d);                                              //!< Constructor requires character type
         AbstractHomologousDiscreteCharacterData(RevBayesCore::AbstractHomologousDiscreteCharacterData *d);                                              //!< Constructor requires character type
         AbstractHomologousDiscreteCharacterData(RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>*d);                   //!< Constructor requires character type
-        AbstractHomologousDiscreteCharacterData(const AbstractHomologousDiscreteCharacterData &d);                                                                                                //!< Constructor requires character type
         
         virtual ~AbstractHomologousDiscreteCharacterData();
         
         
-        AbstractHomologousDiscreteCharacterData&                operator=(const AbstractHomologousDiscreteCharacterData& x);                            //!< Assignment operator
-        
-        
-        typedef RevBayesCore::AbstractHomologousDiscreteCharacterData valueType;
+//        typedef RevBayesCore::AbstractHomologousDiscreteCharacterData valueType;
         
         
         // Basic utility functions
@@ -43,6 +39,7 @@ namespace RevLanguage {
         void                                                    concatenate(const RevObject& d, std::string type="") const;                                                  //!< Concatenate two sequences
         void                                                    concatenate(const AbstractHomologousDiscreteCharacterData& d, std::string type="") const;                    //!< Concatenate two sequences
         
+<<<<<<< HEAD
         
         // Basic utility functions you should not have to override
         bool                                                    isAssignable(void) const;                                                               //!< Is object or upstream members assignable?
@@ -65,6 +62,8 @@ namespace RevLanguage {
 
     protected:
         RevBayesCore::TypedDagNode<valueType>*                  dag_node;
+=======
+>>>>>>> 4ce9ea0091b6e7f762a222f234dde76bd15d76ae
 
     private:
         

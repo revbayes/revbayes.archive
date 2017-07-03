@@ -82,10 +82,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
 }
 
 /* Map calls to member methods */
-RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found,  RevBayesCore::AbstractCharacterData *charDataObject)
 {
-    
-    RevBayesCore::AbstractCharacterData *charDataObject = &getValue();
     
     if (name == "addMissingTaxa")
     {
@@ -273,34 +271,5 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
     found = false;
     return NULL;
 }
-
-
-
-
-/* Get Rev type of object */
-const std::string& AbstractCharacterData::getClassType(void)
-{
-    
-    static std::string rev_type = "AbstractCharacterData";
-    
-    return rev_type;
-}
-
-/* Get class type spec describing type of object */
-const TypeSpec& AbstractCharacterData::getClassTypeSpec(void)
-{
-    
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
-    
-    return rev_type_spec;
-}
-
-
-
-//void AbstractCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
-//{
-//    
-//    charDataObject = o;
-//}
 
 

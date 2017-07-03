@@ -446,7 +446,7 @@ void Mcmc::initializeSampler( bool prior_only )
         
         if ( failed == true )
         {
-            std::cout << "Drawing new initial states ... " << std::endl;
+            RBOUT( "Drawing new initial states ... " );
             for (std::vector<DagNode *>::iterator i=ordered_stoch_nodes.begin(); i!=ordered_stoch_nodes.end(); ++i)
             {
                 DagNode *the_node = *i;

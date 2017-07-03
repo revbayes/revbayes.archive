@@ -52,11 +52,9 @@ MethodTable HomologousCharacterData::getCharacterDataMethods( void ) const
 }
 
 /* Map calls to member methods */
-RevPtr<RevVariable> HomologousCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> HomologousCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found, RevBayesCore::HomologousCharacterData *charDataObject)
 {
-    RevPtr<RevVariable> retVal = AbstractCharacterData::executeCharacterDataMethod(name, args, found);
-    
-    RevBayesCore::HomologousCharacterData *charDataObject = &getValue();
+    RevPtr<RevVariable> retVal = AbstractCharacterData::executeCharacterDataMethod(name, args, found, charDataObject);
     
     if (name == "excludeCharacter")
     {

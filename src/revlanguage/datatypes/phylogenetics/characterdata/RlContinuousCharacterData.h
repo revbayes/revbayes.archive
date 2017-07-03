@@ -14,21 +14,18 @@
 
 namespace RevLanguage {
     
-    class ContinuousCharacterData : public HomologousCharacterData {
+    class ContinuousCharacterData : public ModelObject<RevBayesCore::ContinuousCharacterData>, public HomologousCharacterData {
         
     public:
         ContinuousCharacterData(void);                                                                                                                      //!< Default constructor
         ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d);                                                                            //!< Constructor from new core data type pointer
         ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d);                                                                                  //!< Constructor from new core data type pointer
         ContinuousCharacterData(RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData>*d);                                                       //!< Constructor with DAG node
-        ContinuousCharacterData(const ContinuousCharacterData &d);                                                                                          //!< Default constructor
         
         virtual ~ContinuousCharacterData();
         
-        ContinuousCharacterData&                                operator=(const ContinuousCharacterData& x);                                                //!< Assignment operator
-
         
-        typedef RevBayesCore::ContinuousCharacterData valueType;
+//        typedef RevBayesCore::ContinuousCharacterData valueType;
 
         // Basic utility functions
         ContinuousCharacterData*                                clone(void) const;                                                                          //!< Clone object
@@ -39,6 +36,7 @@ namespace RevLanguage {
         const TypeSpec&                                         getTypeSpec(void) const;                                                                    //!< Get language type of the object
 
         RevPtr<RevVariable>                                     executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found);     //!< Execute member method
+<<<<<<< HEAD
 
         // Basic utility functions you should not have to override
         bool                                                    isAssignable(void) const;                                                                   //!< Is object or upstream members assignable?
@@ -61,6 +59,9 @@ namespace RevLanguage {
         
     protected:
         RevBayesCore::TypedDagNode<valueType>*                  dag_node;
+=======
+        
+>>>>>>> 4ce9ea0091b6e7f762a222f234dde76bd15d76ae
 
     private:
 

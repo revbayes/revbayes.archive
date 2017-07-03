@@ -15,9 +15,8 @@
 
 using namespace RevLanguage;
 
-AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData(void) :
-    HomologousCharacterData( ),
-    dag_node( NULL )
+AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData(void) : ModelObject<RevBayesCore::AbstractHomologousDiscreteCharacterData>(),
+    HomologousCharacterData( )
 {
     
     initMethods();
@@ -25,108 +24,44 @@ AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData
 }
 
 
-AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( const RevBayesCore::AbstractHomologousDiscreteCharacterData &d) :
-    HomologousCharacterData( ),
-    dag_node( new ConstantNode<valueType>("",d.clone()) )
+AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( const RevBayesCore::AbstractHomologousDiscreteCharacterData &d) : ModelObject<RevBayesCore::AbstractHomologousDiscreteCharacterData>( d.clone() ),
+    HomologousCharacterData( )
 {
-    
-    // increment the reference count to the value
-    dag_node->incrementReferenceCount();
     
     initMethods();
     
 }
 
 
-AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( RevBayesCore::AbstractHomologousDiscreteCharacterData *d) :
-    HomologousCharacterData( ),
-    dag_node( new ConstantNode<valueType>("",d) )
+AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( RevBayesCore::AbstractHomologousDiscreteCharacterData *d) : ModelObject<RevBayesCore::AbstractHomologousDiscreteCharacterData>( d ),
+    HomologousCharacterData( )
 {
-    
-    // increment the reference count to the value
-    dag_node->incrementReferenceCount();
     
     initMethods();
 
 }
 
 
+<<<<<<< HEAD
 AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( RevBayesCore::Typeddag_node<RevBayesCore::AbstractHomologousDiscreteCharacterData> *d) :
     HomologousCharacterData( ),
     dag_node( d )
+=======
+AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData> *d) : ModelObject<RevBayesCore::AbstractHomologousDiscreteCharacterData>( d ),
+    HomologousCharacterData( )
+>>>>>>> 4ce9ea0091b6e7f762a222f234dde76bd15d76ae
 {
-    
-    // increment the reference count to the value
-    dag_node->incrementReferenceCount();
     
     initMethods();
 
 }
 
-
-AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData(const AbstractHomologousDiscreteCharacterData &d) :
-    HomologousCharacterData( d ),
-    dag_node( NULL )
-{
-    
-    if ( d.dag_node != NULL )
-    {
-        
-        dag_node = d.dag_node->clone();
-        
-        // increment the reference count to the value
-        dag_node->incrementReferenceCount();
-    }
-    
-}
 
 
 AbstractHomologousDiscreteCharacterData::~AbstractHomologousDiscreteCharacterData()
 {
     
-    // free the old value
-    if ( dag_node != NULL )
-    {
-        if ( dag_node->decrementReferenceCount() == 0 )
-        {
-            delete dag_node;
-        }
-        
-    }
     
-}
-
-
-AbstractHomologousDiscreteCharacterData& AbstractHomologousDiscreteCharacterData::operator=(const AbstractHomologousDiscreteCharacterData &v) {
-    
-    if ( this != &v )
-    {
-        // delegate to base class
-        HomologousCharacterData::operator=( v );
-        
-        // free the old value
-        if ( dag_node != NULL )
-        {
-            if ( dag_node->decrementReferenceCount() == 0 )
-            {
-                delete dag_node;
-            }
-            
-            dag_node = NULL;
-        }
-        
-        // create own copy
-        if ( v.dag_node != NULL )
-        {
-            dag_node = v.dag_node->clone();
-            
-            // increment the reference count to the value
-            dag_node->incrementReferenceCount();
-        }
-        
-    }
-    
-    return *this;
 }
 
 
@@ -187,7 +122,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
 //        setCharacterDataObject( &this->getdag_node()->getValue() );
     }
     
-    retVal = executeCharacterDataMethod(name, args, found);
+    retVal = executeCharacterDataMethod(name, args, found, &this->getValue());
     
     if ( found == true )
     {
@@ -526,7 +461,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         return new RevVariable( new Probability(var_gc) );
     }
     
-    return HomologousCharacterData::executeMethod( name, args, found );
+    return ModelObject<RevBayesCore::AbstractHomologousDiscreteCharacterData>::executeMethod( name, args, found );
 }
 
 
@@ -543,12 +478,13 @@ const std::string& AbstractHomologousDiscreteCharacterData::getClassType(void)
 const TypeSpec& AbstractHomologousDiscreteCharacterData::getClassTypeSpec(void)
 {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( HomologousCharacterData::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::AbstractHomologousDiscreteCharacterData>::getClassTypeSpec() ) );
     
     return rev_type_spec;
 }
 
 
+<<<<<<< HEAD
 RevBayesCore::Typeddag_node<RevBayesCore::AbstractHomologousDiscreteCharacterData>* AbstractHomologousDiscreteCharacterData::getdag_node( void ) const
 {
     
@@ -558,64 +494,15 @@ RevBayesCore::Typeddag_node<RevBayesCore::AbstractHomologousDiscreteCharacterDat
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& AbstractHomologousDiscreteCharacterData::getTypeSpec(void) const
+=======
+/** Get type spec */
+const TypeSpec& AbstractHomologousDiscreteCharacterData::getTypeSpec( void ) const
+>>>>>>> 4ce9ea0091b6e7f762a222f234dde76bd15d76ae
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
+    
     return type_spec;
-}
-
-
-const RevBayesCore::AbstractHomologousDiscreteCharacterData& AbstractHomologousDiscreteCharacterData::getValue( void ) const
-{
-    
-    if ( dag_node == NULL )
-    {
-        throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
-    }
-    
-    return dag_node->getValue();
-}
-
-
-RevBayesCore::AbstractHomologousDiscreteCharacterData& AbstractHomologousDiscreteCharacterData::getValue( void )
-{
-    
-    if ( dag_node == NULL )
-    {
-        throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
-    }
-    
-    return dag_node->getValue();
-}
-
-
-/**
- * Is the object or any of its upstream members or elements
- * modifiable by the user through assignment? We simply ask
- * our DAG node.
- */
-bool AbstractHomologousDiscreteCharacterData::isAssignable( void ) const
-{
-    if ( dag_node == NULL )
-    {
-        return false;
-    }
-    
-    return dag_node->isAssignable();
-}
-
-
-bool AbstractHomologousDiscreteCharacterData::isConstant( void ) const
-{
-    
-    return dag_node->isConstant();
-}
-
-
-bool AbstractHomologousDiscreteCharacterData::isModelObject( void ) const
-{
-    
-    return true;
 }
 
 
@@ -712,6 +599,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
 }
 
 
+<<<<<<< HEAD
 void AbstractHomologousDiscreteCharacterData::makeConstantValue( void )
 {
     
@@ -875,3 +763,5 @@ void AbstractHomologousDiscreteCharacterData::setValue(valueType *x)
     dag_node->incrementReferenceCount();
     
 }
+=======
+>>>>>>> 4ce9ea0091b6e7f762a222f234dde76bd15d76ae
