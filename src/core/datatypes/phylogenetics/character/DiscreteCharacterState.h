@@ -44,22 +44,13 @@ namespace RevBayesCore {
         virtual void                            setStateByIndex(size_t index) = 0;                      //!< Set the discrete observation
         virtual void                            setState(const std::string &symbol) = 0;                //!< Set the discrete observation
 
-//        virtual unsigned long                   getState(void) const = 0;                         //!< Get the discrete observation
-
         // Discrete character observation functions
         virtual std::string                     getStateLabels(void) const = 0;                     //!< Get valid state labels
-//      virtual void                            setState(size_t pos, bool val) = 0;                 //!< Set the discrete observation
         virtual const std::vector<double>       getWeights() const ;                                //!< Get the weights of the state
-
         bool                                    isWeighted() const ;                                //!< Is the state weighted?
-        void                                    setWeighted(bool wd) ;                              //!< Set whether the state is weighted
 
     protected:
                                                 DiscreteCharacterState(size_t n);                   //!< Constructor
-        size_t                                  index_single_state;
-        size_t                                  num_observed_states;
-        RbBitSet                                state;
-        bool                                    weighted;
 
     };
 
