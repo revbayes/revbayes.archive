@@ -9,6 +9,7 @@
 #define ChromosomesCladogenicStateFunction__
 
 #include "AbstractCladogenicStateFunction.h"
+#include "CladogeneticProbabilityMatrix.h"
 #include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
@@ -19,11 +20,11 @@
 
 namespace RevBayesCore {
 
-    class ChromosomesCladogenicStateFunction : public AbstractCladogenicStateFunction, public TypedFunction<MatrixReal> {
+    class ChromosomesCladogenicStateFunction : public AbstractCladogenicStateFunction, public TypedFunction<CladogeneticProbabilityMatrix> {
         
     public:
         
-        ChromosomesCladogenicStateFunction( const TypedDagNode< RbVector< double > >* ep, unsigned mc );
+        ChromosomesCladogenicStateFunction(const TypedDagNode< Simplex > *ep, unsigned mc);
         virtual                                            ~ChromosomesCladogenicStateFunction(void);               
         
         const static unsigned NO_CHANGE                             = 0;         // N -> N
@@ -49,7 +50,7 @@ namespace RevBayesCore {
         void                                                        updateProbs(void);
         
         // members
-        const TypedDagNode< RbVector<double> >*                     eventProbs;
+        const TypedDagNode<Simplex>*                                eventProbs;
         unsigned                                                    maxChromo;
         unsigned                                                    numEventTypes;
         std::map< std::vector<unsigned>, std::vector<unsigned> >    eventMapTypes;

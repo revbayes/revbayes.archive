@@ -1,4 +1,5 @@
 #include "ChromosomesCladogenicStateFunction.h"
+#include "CladogeneticProbabilityMatrix.h"
 #include "MatrixReal.h"
 #include "RbException.h"
 
@@ -6,7 +7,7 @@
 using namespace RevBayesCore;
 
 
-ChromosomesCladogenicStateFunction::ChromosomesCladogenicStateFunction(const TypedDagNode< Simplex > *ep, unsigned mc):
+ChromosomesCladogenicStateFunction::ChromosomesCladogenicStateFunction(const TypedDagNode< Simplex > *ep, unsigned mc) :
 TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix( mc + 1 ) ),
 eventProbs( ep ),
 maxChromo(mc),
