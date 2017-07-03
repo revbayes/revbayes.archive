@@ -106,7 +106,7 @@ double EventTimeSlideProposal::doProposal( void )
         // store the event
         stored_value = event;
         // store the current time
-        stored_time = event->getTime();
+        stored_age = event->getAge();
         // store the current branch
         stored_branch_index = branch_index;
         
@@ -116,7 +116,7 @@ double EventTimeSlideProposal::doProposal( void )
         double remaining_branch_length = 0.0;
         double parent_age   = tree.getNode( branch_index ).getParent().getAge();
         double node_age     = tree.getNode( branch_index ).getAge();
-        double current_absolute_time = event->getTime();
+        double current_absolute_time = event->getAge();
         if ( proposed_displacement > 0 )
         {
             // we are sliding up the tree towards the root
@@ -201,7 +201,7 @@ double EventTimeSlideProposal::doProposal( void )
         assert( new_absolute_time <= tree.getNode( branch_index ).getParent().getAge()  );
         
         // set the time
-        event->setTime(new_absolute_time);
+        event->setAge(new_absolute_time);
         history.addEvent( event, branch_index );
         proposed_branch_index = branch_index;
         
@@ -262,7 +262,7 @@ void EventTimeSlideProposal::undoProposal( void )
         size_t num_events_before = history.getNumberEvents();
         history.removeEvent( stored_value, proposed_branch_index);
         
-        stored_value->setTime( stored_time );
+        stored_value->setAge( stored_age );
         
         history.addEvent( stored_value, stored_branch_index );
         

@@ -101,12 +101,12 @@ double EventBranchTimeBetaProposal::doProposal( void )
         // store the event
         stored_value = event;
         // get the current index
-        stored_time = event->getTime();
+        stored_age = event->getAge();
         // store the current branch
         stored_branch_index = branch_index;
         
         // draw new ages and compute the hastings ratio at the same time
-        double m = (stored_time-my_age) / branch_length;
+        double m = (stored_age-my_age) / branch_length;
         double a = delta * m + offset;
         double b = delta * (1.0-m) + offset;
         
@@ -128,7 +128,7 @@ double EventBranchTimeBetaProposal::doProposal( void )
             double backward = RbStatistics::Beta::lnPdf(new_a, new_b, m);
             
             // set the time
-            event->setTime( new_time * branch_length + my_age );
+            event->setAge( new_time * branch_length + my_age );
             
             // we need to remove and add the event so that the events are back in time order
             history.addEvent(event, branch_index);
@@ -198,7 +198,7 @@ void EventBranchTimeBetaProposal::undoProposal( void )
         history.removeEvent(stored_value, stored_branch_index);
         
         // reset the time
-        stored_value->setTime( stored_time );
+        stored_value->setAge( stored_age );
         
         history.addEvent(stored_value, stored_branch_index);
         
