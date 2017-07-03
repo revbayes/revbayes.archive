@@ -1,11 +1,3 @@
-//
-//  MixtureCladogeneticStateFunction.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 10/22/16.
-//  Copyright © 2016 Michael Landis. All rights reserved.
-//
-
 #include "MixtureCladogeneticStateFunction.h"
 #include "RbException.h"
 
@@ -87,10 +79,7 @@ void MixtureCladogeneticStateFunction::update( void )
         for (it = emp.begin(); it != emp.end(); it++)
         {
             eventMapProbsMixture[it->first] = mp[i] * it->second;
-//            std::vector<unsigned> v = it->first;
-//            std::cout << i << " : " << v[0] << "," << v[1] << "," << v[2] << " = " << it->second << "\n";
         }
-//        std::cout << "\n";
     }
     
     this->getValue().setEventMap(eventMapProbsMixture);
