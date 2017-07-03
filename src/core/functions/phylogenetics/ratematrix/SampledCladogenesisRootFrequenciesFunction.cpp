@@ -157,31 +157,18 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         
         double t = 0.0;
         double dt = 0.0;
-<<<<<<< HEAD
         double prev_age = startAge;
         double event_age = prev_age;
-=======
-        double event_age = 0.0;
->>>>>>> development
         std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
         for (it = events.begin(); it != events.end(); it++)
         {
             
-<<<<<<< HEAD
             prev_age = event_age;
             event_age = (*it)->getAge();
             
             // anagenetic changes occurring between (event_age, event_age-dt)
             
             rm.calculateTransitionProbabilities(prev_age, event_age, rate, tp_next );
-=======
-            dt = (*it)->getTime() - t;
-            event_age = startAge - t;
-            
-            // anagenetic changes occurring between (event_age, event_age-dt)
-            
-            rm.calculateTransitionProbabilities(event_age, event_age-dt, rate, tp_next );
->>>>>>> development
             tp *= tp_next;
             
             // first compute clado probs at younger end of branch
@@ -208,11 +195,7 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         // last interval
         dt = brlen - t;
         
-<<<<<<< HEAD
         rm.calculateTransitionProbabilities( event_age, endAge, rate, tp_next );
-=======
-        rm.calculateTransitionProbabilities( endAge+dt, endAge, rate, tp_next );
->>>>>>> development
         tp *= tp_next;
         
 
