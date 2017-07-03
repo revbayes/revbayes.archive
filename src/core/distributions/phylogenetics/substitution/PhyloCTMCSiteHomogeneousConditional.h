@@ -82,13 +82,8 @@ namespace RevBayesCore {
 #include <climits>
 
 template<class charType>
-<<<<<<< HEAD
-RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomogeneousConditional(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding ty) :
-    PhyloCTMCSiteHomogeneous<charType>(  t, nChars, c, nSites, amb ), warned(false), coding(ty), N(nSites), numCorrectionMasks(0)
-=======
 RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomogeneousConditional(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding ty, bool internal) :
     PhyloCTMCSiteHomogeneous<charType>(  t, nChars, c, nSites, amb, internal ), warned(false), coding(ty), N(nSites), numCorrectionMasks(0)
->>>>>>> development
 {
     if(coding != AscertainmentBias::ALL)
     {
