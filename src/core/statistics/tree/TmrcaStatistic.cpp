@@ -82,51 +82,10 @@ void TmrcaStatistic::fireTreeChangeEvent(const TopologyNode &n, const unsigned& 
 
 void TmrcaStatistic::initialize( void )
 {
-<<<<<<< HEAD
-    initializeBitSet();
-    taxaCount = clade.size();
-    index = -RbConstants::Integer::max;
     
-}
-
-
-void TmrcaStatistic::initializeBitSet(void) {
-    
-    RbBitSet bitset( tree->getValue().getNumberOfTips() );
-    
-    // initialize bitset for clade
-    std::map<std::string, size_t> taxon_bitset_map;
-    
-    // get all taxon names
-    std::vector<Taxon> unordered_taxa = tree->getValue().getTaxa();
-    std::vector<std::string> ordered_taxa;
-    for (size_t i = 0; i < unordered_taxa.size(); ++i)
-    {
-        ordered_taxa.push_back(unordered_taxa[i].getName());
-    }
-    
-    // order taxon names
-    std::sort(ordered_taxa.begin(), ordered_taxa.end());
-    
-    // add taxa to bitset map
-    for (size_t i = 0; i < ordered_taxa.size(); ++i)
-    {
-        taxon_bitset_map[ordered_taxa[i]] = i;
-    }
-=======
     clade.resetTaxonBitset( tree->getValue().getTaxonBitSetMap() );
     taxa_count = clade.size();
     index = -RbConstants::Integer::max;
->>>>>>> development
-    
-    for(size_t i=0; i < clade.size(); i++)
-    {
-        const TopologyNode& node = tree->getValue().getTipNodeWithName(clade.getTaxonName(i));
-        bitset.set(taxon_bitset_map[node.getName()]);
-        // bitset.set(node.getIndex());
-    }
-    
-    clade.setBitRepresentation(bitset);
 }
 
 

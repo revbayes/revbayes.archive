@@ -43,7 +43,6 @@ TreeSummary::TreeSummary( const TraceTree &t ) :
     setBurnin( t.getBurnin() );
 }
 
-<<<<<<< HEAD
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
@@ -58,8 +57,6 @@ TreeSummary* TreeSummary::clone(void) const
     return new TreeSummary(*this);
 }
 
-=======
->>>>>>> development
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
@@ -67,8 +64,6 @@ TreeSummary* TreeSummary::clone(void) const
  *
  * \return A new copy of the process.
  */
-<<<<<<< HEAD
-=======
 void TreeSummary::collectJointAncestralStateSamples(std::vector<AncestralStateTrace> &ancestral_state_traces, int b, int site, size_t num_sampled_states, size_t num_sampled_trees, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::vector<double> > &pp_end, std::vector<std::vector<double> > &pp_start, std::vector<std::vector<std::string> > &end_states, std::vector<std::vector<std::string> > &start_states, bool clado, ProgressBar &progress, bool verbose)
 {
     // loop through all ancestral state samples
@@ -82,7 +77,6 @@ void TreeSummary::collectJointAncestralStateSamples(std::vector<AncestralStateTr
     // save the top 3 in start/end_states and pp vectors
 }
 
->>>>>>> development
 
 <<<<<<< HEAD
 /*
@@ -6659,7 +6653,9 @@ bool CladeComparator::operator()(const Clade& a, const Clade& b) const
     // ignore mrca in unrooted comparison
     return false;
 }
-
+    
+    
+    
 /*
  * Rooted clades are equal iff their taxa and mrcas are equal
  * Unrooted splits are equal iff their taxa are equal or the intersection of their bitsets is empty
@@ -6667,56 +6663,44 @@ bool CladeComparator::operator()(const Clade& a, const Clade& b) const
 bool CladeComparator::operator()(const Sample<Clade>& s) const
 {
     const Clade& a = s.getValue();
-
+    
     const RbBitSet& ab = a.getBitRepresentation();
     const RbBitSet& bb = clade.getBitRepresentation();
-
+    
     // If clades are rooted or clades are from different sized trees,
     // do taxon-wise comparison, taking mrcas into account.
     if( rooted || ab.size() != bb.size() )
     {
         return a == clade && a.getMrca() == clade.getMrca();
     }
-
+    
     if( ab.empty() || bb.empty() )
     {
-<<<<<<< HEAD
-        throw(RbException("Cannot compare unrooted clades (splits) with empty bitsets"));
-=======
         throw RbException("Cannot compare unrooted clades (splits) with empty bitsets");
->>>>>>> development
     }
-
+    
     // do bitwise comparison
-
+    
     // if the first bit is 1, negate the bitset
     bool neg_ab = ab[0];
     bool neg_bb = bb[0];
-
-<<<<<<< HEAD
-    for(size_t i = 0; i < ab.size(); i++)
-=======
+    
     for (size_t i = 0; i < ab.size(); i++)
->>>>>>> development
     {
         bool vab = ab[i];
         bool vbb = bb[i];
-
+        
         // get bit from min bitset for each clade
         bool mab = neg_ab ? !vab : vab;
         bool mbb = neg_bb ? !vbb : vbb;
-
+        
         // return result from first mismatch
-<<<<<<< HEAD
-        if(mab != mbb)
-=======
         if (mab != mbb)
->>>>>>> development
         {
             return false;
         }
     }
-
+    
     // ignore mrca in unrooted comparison
     return true;
 }
