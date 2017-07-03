@@ -19,8 +19,8 @@ using namespace RevBayesCore;
  * \param[in]    m    The monte carlo sampler.
  */
 MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneable(), Parallelizable(),
-    replicates( r ),
-    runs(r,NULL)
+replicates( r ),
+runs(r,NULL)
 {
     
     runs[0] = m;
@@ -29,14 +29,14 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
 
 
 MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &a) : Cloneable(), Parallelizable(a),
-    replicates( a.replicates ),
-    runs(a.replicates,NULL)
+replicates( a.replicates ),
+runs(a.replicates,NULL)
 {
     
     // create replicate Monte Carlo samplers
     for (size_t i=0; i < replicates; ++i)
     {
-
+        
         if ( a.runs[i] != NULL )
         {
             runs[i] = a.runs[i]->clone();
@@ -95,7 +95,7 @@ MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &a)
             }
             
         }
-
+        
     }
     
     return *this;
@@ -135,11 +135,11 @@ void MonteCarloAnalysis::addMonitor(const Monitor &m)
 /** Run burnin and auto-tune */
 void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool underPrior, bool verbose)
 {
-        
+    
     // Initialize objects needed by chain
     for (size_t i=0; i<replicates; ++i)
     {
-     
+        
         if ( runs[i] != NULL )
         {
             runs[i]->initializeSampler(underPrior);
@@ -181,7 +181,7 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
     size_t num_stars = 0;
     for (size_t k=1; k<=generations; ++k)
     {
-                
+        
         if ( verbose == true && process_active == true)
         {
             size_t progress = 68 * (double) k / (double) generations;
@@ -193,21 +193,21 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
                     std::cout << "*";
                 }
                 std::cout.flush();
-            
+                
             }
         }
         
         for (size_t i=0; i<replicates; ++i)
         {
-
+            
             if ( runs[i] != NULL )
             {
                 runs[i]->nextCycle(false);
-        
+                
                 // check for autotuning
                 if ( k % tuningInterval == 0 && k != generations )
                 {
-            
+                    
                     runs[i]->tune();
                 }
                 
@@ -241,7 +241,7 @@ void MonteCarloAnalysis::disableScreenMonitors(bool all)
         
         if ( runs[i] != NULL )
         {
-
+            
             return runs[i]->disableScreenMonitor(all, i);
         }
         
@@ -371,13 +371,13 @@ void MonteCarloAnalysis::removeMonitors( void )
  */
 void MonteCarloAnalysis::resetReplicates( void )
 {
-
+    
     // free the runs
     MonteCarloSampler *m = NULL;
     for (size_t i = 0; i < replicates; ++i)
     {
         MonteCarloSampler *sampler = runs[i];
-
+        
         if ( m == NULL )
         {
             m = sampler;
@@ -389,7 +389,7 @@ void MonteCarloAnalysis::resetReplicates( void )
         }
         
         runs[i] = NULL;
-
+        
     }
     
     
@@ -459,7 +459,7 @@ void MonteCarloAnalysis::resetReplicates( void )
         RandomNumberGenerator *rng = GLOBAL_RNG;
         for (size_t j=0; j<10; ++j) rng->uniform01();
         
-
+        
         if ( i > 0 && runs[i] != NULL )
         {
             runs[i]->redrawStartingValues();
@@ -494,7 +494,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
     std::stringstream ss;
     if ( process_active == true && runs[0] != NULL && verbose == true )
     {
-
+        
         if ( runs[0]->getCurrentGeneration() == 0 )
         {
             ss << "\n";
@@ -508,13 +508,13 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         ss << runs[0]->getStrategyDescription();
         RBOUT( ss.str() );
     }
-
+    
     // Start monitor(s)
     for (size_t i=0; i<replicates; ++i)
     {
         
         // Sebastian (2016/04/16): We should always reset the monitors so that the ETA starts fresh
-//        if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
+        //        if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
         if ( runs[i] != NULL )
         {
             
@@ -522,13 +522,13 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
             {
                 runs[i]->disableScreenMonitor(true, i);
             }
-
+            
             runs[i]->startMonitors( kIterations, runs[i]->getCurrentGeneration() > 0 );
-        
+            
         }
         
     }
-
+    
     // Sebastian: This is very important here!
     // We need to wait first for all processes and chains to have opened the filestreams
     // before we start printing (e.g., the headers) anything.
@@ -536,7 +536,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
     // wait until all chains opened the monitor
     MPI_Barrier( analysis_comm );
 #endif
-
+    
     // Write headers and print first line
     for (size_t i=0; i<replicates; ++i)
     {
@@ -550,7 +550,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         }
         
     }
-
+    
     // reset the counters for the move schedules
     for (size_t i=0; i<replicates; ++i)
     {
@@ -561,16 +561,16 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         }
         
     }
-
+    
     // reset the stopping rules
     for (size_t i=0; i<rules.size(); ++i)
     {
-     
+        
         rules[i].setNumberOfRuns( replicates );
         rules[i].runStarted();
         
     }
-
+    
     // Run the chain
     bool finished = false;
     bool converged = false;
@@ -583,7 +583,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
             if ( runs[i] != NULL )
             {
                 runs[i]->nextCycle(true);
-            
+                
                 // Monitor
                 runs[i]->monitor(gen);
                 
@@ -705,12 +705,7 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
     // before we start printing (e.g., the headers) anything.
 #ifdef RB_MPI
     // wait until all chains opened the monitor
-<<<<<<< HEAD
-    MPI::COMM_WORLD.Barrier();
-=======
-//    MPI::COMM_WORLD.Barrier();
     MPI_Barrier(MPI_COMM_WORLD);
->>>>>>> development
 #endif
     
     // Write headers and print first line
@@ -789,7 +784,7 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
  */
 void MonteCarloAnalysis::setActivePIDSpecialized(size_t a, size_t n)
 {
-
+    
     resetReplicates();
     
 }
@@ -824,5 +819,5 @@ void MonteCarloAnalysis::setModel(Model *m)
     }
     
     resetReplicates();
-
+    
 }

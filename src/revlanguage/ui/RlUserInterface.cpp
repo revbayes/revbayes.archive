@@ -14,7 +14,6 @@ UserInterface::UserInterface( void ) :
     process_id( 0 )
 {
 #if defined (RB_MPI)
-//    processID = MPI::COMM_WORLD.Get_rank();
     MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
 #endif
 }
