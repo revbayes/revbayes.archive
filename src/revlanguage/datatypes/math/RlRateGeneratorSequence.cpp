@@ -83,7 +83,7 @@ const std::string& RateGeneratorSequence::getClassType(void) {
     
     static std::string revType = "RateGeneratorSequence";
     
-	return rev_type;
+	return revType;
 }
 
 /* Get class type spec describing type of object */

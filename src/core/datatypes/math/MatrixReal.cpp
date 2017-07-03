@@ -443,7 +443,7 @@ void MatrixReal::update( void ) const
         
         if ( cholesky_decomp == NULL )
         {
-            cholesky_decomp = new cholesky_decomposition(this);
+            cholesky_decomp = new CholeskyDecomposition(this);
         }
 
         if ( cholesky_needs_update == true )

@@ -108,7 +108,7 @@ double PhyloBrownianCharacterHistoryProcess::computeLnProbability( void )
 //        
 //    }
     
-    return this->lnProb;
+    return this->ln_prob;
     
 }
 

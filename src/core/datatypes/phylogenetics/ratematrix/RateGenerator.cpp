@@ -136,46 +136,32 @@ void RateGenerator::executeMethod(const std::string &n, const std::vector<const 
 
 }
 
-void RateGenerator::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<RbVector<double> >& rv) const
-{
+//void RateGenerator::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<RbVector<double> >& rv) const
+//{
+//
+//    // clear old values
+//    rv.clear();
+//    
+//    TransitionProbabilityMatrix P(num_states);
+//    
+//    double rate = static_cast<const TypedDagNode<double> *>( args[0] )->getValue();
+//    double start_age = static_cast<const TypedDagNode<double> *>( args[1] )->getValue();
+//    double end_age = static_cast<const TypedDagNode<double> *>( args[2] )->getValue();
+//    
+//    calculateTransitionProbabilities( start_age, end_age, rate, P);
+//    
+//    for (size_t i = 0; i < num_states; i++)
+//    {
+//        RbVector<double> v;
+//        for (size_t j =0; j < num_states; j++)
+//        {
+//            v.push_back(P[i][j]);
+//        }
+//        rv.push_back(v);
+//    }
+//    
+//}
 
-    // clear old values
-    rv.clear();
-    
-    TransitionProbabilityMatrix P(num_states);
-    
-    double rate = static_cast<const TypedDagNode<double> *>( args[0] )->getValue();
-    double start_age = static_cast<const TypedDagNode<double> *>( args[1] )->getValue();
-    double end_age = static_cast<const TypedDagNode<double> *>( args[2] )->getValue();
-    
-    calculateTransitionProbabilities( start_age, end_age, rate, P);
-    
-    for (size_t i = 0; i < num_states; i++)
-    {
-        RbVector<double> v;
-        for (size_t j =0; j < num_states; j++)
-        {
-            v.push_back(P[i][j]);
-        }
-        rv.push_back(v);
-    }
-    
-}
-
-
-void RateGenerator::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const
-{
-    size_t n_states = this->getNumberOfStates();
-//    rv.resize(n_states);
-    rv.clear();
-
-    size_t from_idx = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
-
-    for (size_t to_idx = 0; to_idx < n_states; to_idx++)
-    {
-        rv.push_back(this->getRate(from_idx, to_idx, 0.0, 1.0));
-    }
-}
 
 void RateGenerator::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const
 {
@@ -190,6 +176,20 @@ void RateGenerator::executeMethod(const std::string &n, const std::vector<const 
         rv.push_back(this->getRate(from_idx, to_idx, 0.0, 1.0));
     }
 }
+
+//void RateGenerator::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const
+//{
+//    size_t n_states = this->getNumberOfStates();
+////    rv.resize(n_states);
+//    rv.clear();
+//
+//    size_t from_idx = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+//
+//    for (size_t to_idx = 0; to_idx < n_states; to_idx++)
+//    {
+//        rv.push_back(this->getRate(from_idx, to_idx, 0.0, 1.0));
+//    }
+//}
 
 
 size_t RateGenerator::size( void ) const
