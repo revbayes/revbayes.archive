@@ -7,6 +7,7 @@
 #include "ContinuousCharacterData.h"
 #include "DistributionExponential.h"
 #include "RateGeneratorSequence.h"
+#include "RateMap.h"
 #include "RbConstants.h"
 #include "RbVector.h"
 #include "Simplex.h"

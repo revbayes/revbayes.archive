@@ -17,17 +17,10 @@ using namespace RevLanguage;
 
 
 Func_write::Func_write( void ) :
-<<<<<<< HEAD
-    processID( 0 )
-{
-#if defined (RB_MPI)
-    processID = MPI::COMM_WORLD.Get_rank();
-=======
     process_ID( 0 )
 {
 #if defined (RB_MPI)
     MPI_Comm_rank(MPI_COMM_WORLD, &process_ID);
->>>>>>> development
 #endif
 }
 

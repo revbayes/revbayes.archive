@@ -41,11 +41,7 @@ namespace RevLanguage {
         
     private:
         
-<<<<<<< HEAD
-        int                         processID;
-=======
         int                                     process_ID;
->>>>>>> development
     };
     
 }
