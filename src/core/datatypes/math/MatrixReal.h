@@ -30,7 +30,7 @@
 namespace RevBayesCore {
     
     class EigenSystem;
-    class cholesky_decomposition;
+    class CholeskyDecomposition;
     
     class MatrixReal : public Cloneable, public MemberObject<RbVector<double> > {
         
@@ -110,7 +110,7 @@ namespace RevBayesCore {
         mutable bool                            eigen_needs_update;
         
         mutable bool                            use_cholesky_decomp;
-        mutable cholesky_decomposition*         cholesky_decomp;
+        mutable CholeskyDecomposition*          cholesky_decomp;
         mutable bool                            cholesky_needs_update;
         
     };

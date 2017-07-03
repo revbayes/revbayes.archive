@@ -4,6 +4,7 @@
 #include "PhyloCTMCSiteHomogeneousDollo.h"
 #include "OptionRule.h"
 #include "Probability.h"
+#include "Simplex.h"
 #include "RevNullObject.h"
 #include "RlBoolean.h"
 #include "RlRateGenerator.h"
@@ -51,7 +52,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
 
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
-    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
+    const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *rf = NULL;
     if ( rootFrequencies != NULL && rootFrequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( rootFrequencies->getRevObject() ).getDagNode();

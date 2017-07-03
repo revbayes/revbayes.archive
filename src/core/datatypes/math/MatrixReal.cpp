@@ -6,7 +6,7 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "cholesky_decomposition.h"
+#include "CholeskyDecomposition.h"
 #include "EigenSystem.h"
 #include "MatrixReal.h"
 #include "RbException.h"
@@ -24,7 +24,7 @@ MatrixReal::MatrixReal( void ) : elements( RbVector<RbVector<double> >() ),
     n_rows( 0 ),
     n_cols( 0 ),
     eigensystem( NULL ),
-    eigenNeedsUpdate( true ),
+    eigen_needs_update( true ),
     cholesky_decomp( NULL ),
     cholesky_needs_update( true ),
     use_cholesky_decomp( false )
@@ -37,7 +37,7 @@ MatrixReal::MatrixReal( size_t n ) : elements( RbVector<RbVector<double> >(n, Rb
     n_rows( n ),
     n_cols( n ),
     eigensystem( NULL ),
-    eigenNeedsUpdate( true ),
+    eigen_needs_update( true ),
     cholesky_decomp( NULL ),
     cholesky_needs_update( true ),
     use_cholesky_decomp( false )
@@ -50,7 +50,7 @@ MatrixReal::MatrixReal( size_t n, size_t k) : elements( RbVector<RbVector<double
     n_rows( n ),
     n_cols( k ),
     eigensystem( NULL ),
-    eigenNeedsUpdate( true ),
+    eigen_needs_update( true ),
     cholesky_decomp( NULL ),
     cholesky_needs_update( true ),
     use_cholesky_decomp( false )
@@ -64,7 +64,7 @@ MatrixReal::MatrixReal( size_t n, size_t k, double v) :
     n_rows( n ),
     n_cols( k ),
     eigensystem( NULL ),
-    eigenNeedsUpdate( true ),
+    eigen_needs_update( true ),
     cholesky_decomp( NULL ),
     cholesky_needs_update( true ),
     use_cholesky_decomp( false )
@@ -77,7 +77,7 @@ MatrixReal::MatrixReal( const MatrixReal &m ) :
     n_rows( m.n_rows ),
     n_cols( m.n_cols ),
     eigensystem( NULL ),
-    eigenNeedsUpdate( true ),
+    eigen_needs_update( true ),
     cholesky_decomp( NULL ),
     cholesky_needs_update( true ),
     use_cholesky_decomp( false )
@@ -101,7 +101,7 @@ MatrixReal& MatrixReal::operator=(const MatrixReal &m)
         n_rows   = m.n_rows;
         elements = m.elements;
         
-        eigenNeedsUpdate = true;
+        eigen_needs_update = true;
         cholesky_needs_update = true;
     }
     
@@ -112,7 +112,7 @@ MatrixReal& MatrixReal::operator=(const MatrixReal &m)
 RbVector<double>& MatrixReal::operator[]( size_t index )
 {
     // to be safe
-    eigenNeedsUpdate = true;
+    eigen_needs_update = true;
     cholesky_needs_update = true;
     
     return elements[index];
@@ -129,7 +129,7 @@ const RbVector<double>& MatrixReal::operator[]( size_t index ) const
 void MatrixReal::clear( void )
 {
     // to be safe
-    eigenNeedsUpdate = true;
+    eigen_needs_update = true;
     cholesky_needs_update = true;
     
     elements.clear();
@@ -414,7 +414,7 @@ void MatrixReal::resize(size_t r, size_t c)
     n_rows = r;
     n_rows = c;
     
-    eigenNeedsUpdate = true;
+    eigen_needs_update = true;
     cholesky_needs_update = true;
     
 }
@@ -424,7 +424,7 @@ void MatrixReal::setCholesky(bool c) const
 {
     
     use_cholesky_decomp = c;
-    eigenNeedsUpdate = true;
+    eigen_needs_update = true;
     cholesky_needs_update = true;
     
 }
@@ -471,7 +471,7 @@ void MatrixReal::update( void ) const
             eigensystem = new EigenSystem(this);
         }
         
-        if ( eigenNeedsUpdate == true )
+        if ( eigen_needs_update == true )
         {
             
             try
@@ -485,7 +485,7 @@ void MatrixReal::update( void ) const
 //                eigensystem->update();
                 eigensystem->updatePositiveEigenvalues();
                 
-                eigenNeedsUpdate = false;
+                eigen_needs_update = false;
                 
             }
             

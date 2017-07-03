@@ -3,6 +3,7 @@
 
 #include "BranchHistory.h"
 #include "HomologousDiscreteCharacterData.h"
+#include "PathRejectionSampleProposal.h"
 #include "NodeRejectionSampleProposal.h"
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
