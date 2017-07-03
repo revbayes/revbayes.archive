@@ -305,7 +305,7 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
         for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
         {
             CharacterEvent* event = *it;
-            double event_time = event->getTime();
+            double event_time = event->getAge();
             //            event_time = end_time;
             //            double time_interval = event_time - begin_time;
             
@@ -398,7 +398,7 @@ size_t HeterogeneousRateBirthDeath::computeStateIndex(size_t i, double time) con
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=h.begin(); it!=h.end(); ++it)
             {
                 CharacterEvent* event = *it;
-                double event_time = event->getTime();
+                double event_time = event->getAge();
                 if ( event_time > time )
                 {
                     found = true;
@@ -501,7 +501,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
                 CharacterEvent* event = *it;
-                double end_time = event->getTime() - node.getAge();
+                double end_time = event->getAge() - node.getAge();
                 double time_interval = (end_time - begin_time) / branch_length;
                 
                 // we need to set the current rate caterogy
@@ -538,7 +538,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
                 CharacterEvent* event = *it;
-                double end_time = event->getTime() - node.getAge();
+                double end_time = event->getAge() - node.getAge();
                 double time_interval = (end_time - begin_time) / branch_length;
                 
                 // we need to set the current rate caterogy
