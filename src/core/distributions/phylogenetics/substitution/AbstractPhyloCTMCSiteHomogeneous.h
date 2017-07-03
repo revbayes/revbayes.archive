@@ -2108,7 +2108,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
 
-                double*          p_site_mixture          = p_node + offset;
+                double* p_site_mixture = p_node + offset;
 
                 for ( size_t i=0; i<this->num_chars; ++i)
                 {
@@ -2129,7 +2129,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
 
-                double*          p_site_mixture          = p_node + offset;
+                double* p_site_mixture = p_node + offset;
 
                 for ( size_t i=0; i<this->num_chars; ++i)
                 {
@@ -2142,7 +2142,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
     }
     else if ( RbSettings::userSettings().getUseScaling() == true )
     {
-        // iterate over all mixture categories
+        // iterate over all sites
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
         {
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = 0;
@@ -2951,7 +2951,6 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         if ( process_active == false )
         {
             // send from the workers the log-likelihood to the master
-//            MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
             MPI_Send(&sum_partial_probs, 1, MPI_DOUBLE, active_PID, 0, MPI_COMM_WORLD);
         }
 
@@ -2961,7 +2960,6 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
                 double tmp = 0;
-//                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
                 MPI_Status status;
                 MPI_Recv(&tmp, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD, &status);
                 sum_partial_probs += tmp;
@@ -2973,13 +2971,11 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         {
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
-//                MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, int(i), 0);
                 MPI_Send(&sum_partial_probs, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD);
             }
         }
         else
         {
-//            MPI::COMM_WORLD.Recv(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
             MPI_Status status;
             MPI_Recv(&sum_partial_probs, 1, MPI_DOUBLE, active_PID, 0, MPI_COMM_WORLD, &status);
         }
