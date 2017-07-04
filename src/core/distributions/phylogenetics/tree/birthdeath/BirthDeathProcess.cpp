@@ -268,7 +268,6 @@ double BirthDeathProcess::pSurvival(double start, double end, double r) const
 double BirthDeathProcess::pSurvival(double start, double end) const
 {
     double sampling_prob = rho->getValue();
-//    sampling_prob = 1.0;
     
     return pSurvival(start, end, sampling_prob);
 }
