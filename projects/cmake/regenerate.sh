@@ -11,10 +11,7 @@ mac="false"
 win="false"
 mpi="false"
 help="false"
-<<<<<<< HEAD
-=======
 jupyter="false"
->>>>>>> development
 
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
@@ -148,8 +145,6 @@ add_definitions(-DRB_WIN)
 fi
 
 
-<<<<<<< HEAD
-=======
 if [ "$jupyter" = "true" ]
 then
 echo "JUPYTER!"
@@ -157,7 +152,6 @@ echo '
 add_definitions(-DRB_XCODE)
 '  >> "$HERE/CMakeLists.txt"
 fi
->>>>>>> development
 
 echo '
 # Add extra CMake libraries into ./CMake
@@ -228,8 +222,6 @@ add_executable(rb ${PROJECT_SOURCE_DIR}/tool/help/HtmlHelpGenerator.cpp)
 
 target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
 set_target_properties(rb PROPERTIES PREFIX "../")
-<<<<<<< HEAD
-=======
 ' >> $HERE/CMakeLists.txt
 elif [ "$jupyter" = "true" ]
 then
@@ -239,7 +231,6 @@ add_executable(rb-jupyter ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
 target_link_libraries(rb-jupyter rb-parser rb-core libs ${Boost_LIBRARIES})
 set_target_properties(rb-jupyter PROPERTIES PREFIX "../")
->>>>>>> development
 ' >> $HERE/CMakeLists.txt
 else
 echo '
