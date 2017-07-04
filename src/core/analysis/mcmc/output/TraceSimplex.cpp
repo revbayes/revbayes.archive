@@ -91,7 +91,7 @@ bool TraceSimplex::isCoveredInInterval(const std::string &v, double i, bool verb
     //    double alpha = 1.0 - std::pow(1.0-i,double(sample.size()));
     double alpha = i;
     
-    Simplex smaller_values_count = Simplex(sample.size(), 0.0);
+    std::vector<double> smaller_values_count = std::vector<double>(sample.size(), 0.0);
     for (size_t i=0; i<values.size(); ++i)
     {
         
