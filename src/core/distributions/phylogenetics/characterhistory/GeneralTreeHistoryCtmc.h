@@ -105,7 +105,7 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Typ
 //<<<<<<< HEAD
     homogeneousRateGenerator    = new ConstantNode<RateGeneratorSequence>("rateGenerator", new RateGeneratorSequenceUsingMatrix( nChars, nSites ) );
     heterogeneousRateGenerator  = NULL;
-    rootFrequencies             = NULL;
+    rootFrequencies             = new ConstantNode<Simplex>("rootFrequencies", new Simplex(nChars, 1.0/nChars));
     siteRates                   = NULL;
     
     // flags specifying which model variants we use
@@ -756,8 +756,8 @@ template<class charType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRootFrequencies(const TypedDagNode< Simplex > *f)
 {
     
-    // remove the old parameter first
-    if ( rootFrequencies != NULL )
+    // remove the old parameter if f is a valid replacement
+    if ( rootFrequencies != NULL && f != NULL )
     {
         this->removeParameter( rootFrequencies );
         rootFrequencies = NULL;
@@ -765,28 +765,12 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRootFrequencies(const Ty
     
     if ( f != NULL )
     {
-        // set the value
-//<<<<<<< HEAD
-//        rootFrequencies = f;
-//=======
         rootFrequencies = f;
         
         // add the parameter
         this->addParameter( rootFrequencies );
-//>>>>>>> development
     }
-    else
-    {
-        branchHeterogeneousSubstitutionMatrices = false;
-    }
-    
-//<<<<<<< HEAD
-//    // add the new parameter
-//    this->addParameter( rootFrequencies );
-//    
-//    // redraw the current value
-//    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
-//=======
+
     // redraw the current value
     if ( this->dag_node != NULL && !this->dag_node->isClamped() )
     {
