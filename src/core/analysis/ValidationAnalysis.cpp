@@ -58,6 +58,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
                 if ( the_node->isStochastic() == true )
                 {
                     the_node->redraw();
+//                    std::cerr << the_node->getName() << " -- " << the_node->getValueAsString() << std::endl;
                 }
             
             }
@@ -195,17 +196,20 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
     size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
     //    size_t stone_block_size  = stone_block_end - stone_block_start;
     
+//    std::cerr << pid << ":\t From " << run_block_start << " to " << run_block_end << "." << std::endl;
+    
     // Run the chain
     size_t numStars = 0;
     for (size_t i = run_block_start; i <= run_block_end; ++i)
     {
         if ( runs[i] == NULL ) std::cerr << "Runing bad burnin (pid=" << pid <<", run="<< i << ") of runs.size()=" << runs.size() << "." << std::endl;
         // run the i-th analyses
+//        std::cerr << pid << ":\t Started burnin of run " << i << "." << std::endl;
         runs[i]->burnin(generations, tuningInterval, false, false);
         
         if ( process_active == true )
         {
-            size_t progress = 68 * (double) (i+1.0) / (double) (run_block_end - run_block_start);
+            size_t progress = 68 * (double) (i+1.0) / (double) (1 + run_block_end - run_block_start);
             if ( progress > numStars )
             {
                 for ( ;  numStars < progress; ++numStars )
@@ -215,12 +219,16 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
             
         }
         
+//        std::cerr << pid << ":\t Finished burnin of run " << i << "." << std::endl;
+
+        
     }
     
     if ( process_active == true )
     {
         std::cout << std::endl;
     }
+//    std::cerr << pid << ":\t Finished burnin." << std::endl;
     
 }
 
@@ -247,6 +255,7 @@ void ValidationAnalysis::runAll(size_t gen)
     size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
     size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
     //    size_t stone_block_size  = stone_block_end - stone_block_start;
+//    std::cerr << pid << ":\t Started actual runs." << std::endl;
     
     // Run the chain
     for (size_t i = run_block_start; i <= run_block_end; ++i)
@@ -256,6 +265,7 @@ void ValidationAnalysis::runAll(size_t gen)
         runSim(i, gen);
         
     }
+//    std::cerr << pid << ":\t Started Finished runs." << std::endl;
     
     
 }

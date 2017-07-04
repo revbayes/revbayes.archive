@@ -91,7 +91,8 @@ bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i, boo
 //    double alpha = 1.0 - std::pow(1.0-i,double(sample.size()));
     double alpha = i;
     
-    RbVector<double> smaller_values_count = RbVector<double>(sample.size(), 0.0);
+    std::vector<double> smaller_values_count = RbVector<double>(sample.size(), 0.0);
+    std::vector<double> equal_values_count   = RbVector<double>(sample.size(), 0.0);
     for (size_t i=0; i<values.size(); ++i)
     {
         
@@ -101,6 +102,10 @@ bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i, boo
             if (values[i][j] < sample[j] )
             {
                 ++smaller_values_count[j];
+            }
+            else if ( values[i][j] == sample[j] )
+            {
+                ++equal_values_count[j];
             }
             
         }
@@ -112,7 +117,7 @@ bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i, boo
     double num_covered = 0.0;
     for (size_t j=0; j<sample.size(); ++j)
     {
-        double quantile = smaller_values_count[j] / double(values.size());
+        double quantile = (smaller_values_count[j] + 0.5*equal_values_count[j]) / double(values.size());
         double lower = (1.0 - alpha) / 2.0;
         double upper = 1.0 - lower;
         if ( quantile >= lower && quantile <= upper )
