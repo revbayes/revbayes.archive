@@ -28,14 +28,18 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     StochasticVariableMonitor mntr = StochasticVariableMonitor(10, "output/posterior_samples.var", "\t");
     sampler->addMonitor( mntr );
     
+//    size_t run_pid_start = size_t(floor( (double(pid)   / num_runs ) * num_processes ) );
+//    size_t run_pid_end   = std::max( int(run_pid_start), int(floor( (double(pid+1) / num_runs ) * num_processes ) ) - 1);
+    size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
+    size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
+    int number_processes_per_run = ceil( double(num_processes) / num_runs );
+    
     runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
+    simulation_values = std::vector<Model*>(num_runs,NULL);
     for ( size_t i = 0; i < num_runs; ++i)
     {
-        size_t run_pid_start = size_t(floor( (double(i)   / num_runs ) * num_processes ) );
-        size_t run_pid_end   = std::max( int(run_pid_start), int(floor( (double(i+1) / num_runs ) * num_processes ) ) - 1);
-        int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
         
-        if ( pid >= run_pid_start && pid <= run_pid_end)
+        if ( i >= run_block_start && i <= run_block_end)
         {
 
             // create an independent copy of the analysis
@@ -59,8 +63,8 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
             }
         
             // now set the model of the current analysis
-            current_analysis->setModel( current_model );
-        
+            current_analysis->setModel( current_model, false );
+            
             std::stringstream ss;
             ss << "Validation_Sim_" << i;
         
@@ -69,9 +73,10 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
         
             // add the current analysis to our vector of analyses
             runs[i] = current_analysis;
-            simulation_values.push_back( runs[i]->getModel().clone() );
+            Model *model_clone = runs[i]->getModel().clone();
+            simulation_values[i] = model_clone;
             
-            runs[i]->setActivePID( run_pid_start, number_processes_per_run );
+            runs[i]->setActivePID( pid, number_processes_per_run );
             
         }
         
@@ -187,16 +192,16 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
     
     // compute which block of the data this process needs to compute
     size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
-    size_t run_block_end   = size_t(floor( (double(pid+1) / num_processes ) * num_runs) );
+    size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
     //    size_t stone_block_size  = stone_block_end - stone_block_start;
     
     // Run the chain
     size_t numStars = 0;
-    for (size_t i = run_block_start; i < run_block_end; ++i)
+    for (size_t i = run_block_start; i <= run_block_end; ++i)
     {
-        
+        if ( runs[i] == NULL ) std::cerr << "Runing bad burnin (pid=" << pid <<", run="<< i << ") of runs.size()=" << runs.size() << "." << std::endl;
         // run the i-th analyses
-        runs[i]->burnin(generations, tuningInterval, false);
+        runs[i]->burnin(generations, tuningInterval, false, false);
         
         if ( process_active == true )
         {
@@ -240,11 +245,11 @@ void ValidationAnalysis::runAll(size_t gen)
     
     // compute which block of the runs this process needs to compute
     size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
-    size_t run_block_end   = size_t(floor( (double(pid+1) / num_processes ) * num_runs) );
+    size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
     //    size_t stone_block_size  = stone_block_end - stone_block_start;
     
     // Run the chain
-    for (size_t i = run_block_start; i < run_block_end; ++i)
+    for (size_t i = run_block_start; i <= run_block_end; ++i)
     {
         
         // run the i-th stone
@@ -285,9 +290,9 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
     
     
 #ifdef RB_MPI
-    analysis->run(gen, rules, MPI_COMM_WORLD, false);
+    analysis->run(gen, rules, MPI_COMM_WORLD, 100, false);
 #else
-    analysis->run(gen, rules, false);
+    analysis->run(gen, rules, 100, false);
 #endif
 
 }
@@ -309,11 +314,11 @@ void ValidationAnalysis::summarizeAll( void )
     
     // compute which block of the runs this process needs to compute
     size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
-    size_t run_block_end   = size_t(floor( (double(pid+1) / num_processes ) * num_runs) );
+    size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
     //    size_t stone_block_size  = stone_block_end - stone_block_start;
     
-    // Run the chain
-    for (size_t i = run_block_start; i < run_block_end; ++i)
+    // Summarize the chain
+    for (size_t i = run_block_start; i <= run_block_end; ++i)
     {
         
         // summarize the i-th simulation
@@ -321,21 +326,51 @@ void ValidationAnalysis::summarizeAll( void )
         
     }
     
-    std::cout << std::endl;
-    std::cout << "The validation analysis ran " << num_runs << " simulations to validate the implementation." << std::endl;
-    std::cout << "This analysis used a " << credible_interval_size << " credible interval." << std::endl;
-    std::cout << "Coverage frequencies should be between " << (RbStatistics::Binomial::quantile(0.025, num_runs, credible_interval_size)/num_runs) << " and " << (RbStatistics::Binomial::quantile(0.975, num_runs, credible_interval_size)/num_runs) << " in 95% of the simulations." << std::endl;
-    std::cout << std::endl;
-    std::cout << "Coverage frequencies of parameters in validation analysis:" << std::endl;
-    std::cout << "==========================================================" << std::endl;
+#ifdef RB_MPI
+    
     for (std::map<std::string, int>::iterator it = coverage_count.begin(); it != coverage_count.end(); ++it)
     {
-        std::string n = it->first;
-        StringUtilities::formatFixedWidth(n, 20, true);
-        std::cout << n << "\t\t" << double(it->second) / num_runs << std::endl;
+        
+        if ( pid == 0 )
+        {
+            // receive
+            for (int i=1;i<num_processes;++i)
+            {
+                MPI_Status status;
+                int counts = 0;
+                MPI_Recv(&counts, 1, MPI_INT, int(i), 0, MPI_COMM_WORLD, &status);
+                it->second += counts;
+            }
+        }
+        else
+        {
+            // send
+            MPI_Send(&it->second, 1, MPI_INT, (int)active_PID, 0, MPI_COMM_WORLD);
+        }
+        
     }
-    std::cout << std::endl;
+    MPI_Barrier(MPI_COMM_WORLD);
+
+#endif
     
+    if ( process_active )
+    {
+        
+        std::cout << std::endl;
+        std::cout << "The validation analysis ran " << num_runs << " simulations to validate the implementation." << std::endl;
+        std::cout << "This analysis used a " << credible_interval_size << " credible interval." << std::endl;
+        std::cout << "Coverage frequencies should be between " << (RbStatistics::Binomial::quantile(0.025, num_runs, credible_interval_size)/num_runs) << " and " << (RbStatistics::Binomial::quantile(0.975, num_runs, credible_interval_size)/num_runs) << " in 95% of the simulations." << std::endl;
+        std::cout << std::endl;
+        std::cout << "Coverage frequencies of parameters in validation analysis:" << std::endl;
+        std::cout << "==========================================================" << std::endl;
+        for (std::map<std::string, int>::iterator it = coverage_count.begin(); it != coverage_count.end(); ++it)
+        {
+            std::string n = it->first;
+            StringUtilities::formatFixedWidth(n, 20, true);
+            std::cout << n << "\t\t" << double(it->second) / num_runs << std::endl;
+        }
+        std::cout << std::endl;
+    }
     
 }
 

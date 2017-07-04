@@ -9,6 +9,7 @@
 #include "Simplex.h"
 #include "StringUtilities.h"
 #include "TraceNumeric.h"
+#include "TraceSimplex.h"
 #include "TraceTree.h"
 #include "TraceVectorNumeric.h"
 
@@ -28,13 +29,13 @@ namespace RevBayesCore {
         virtual TypedDagNode<valueType>*                    clone(void) const = 0;
 
         // member functions
-        virtual Trace*                                      createTraceObject(void) const;                                                          //!< Create an empty trace object of the right trace type
+        virtual Trace*                                      createTraceObject(void) const;                                                                              //!< Create an empty trace object of the right trace type
         virtual size_t                                      getNumberOfElements(void) const;                                                                            //!< Get the number of elements for this value
         virtual std::string                                 getValueAsString(void) const;
         virtual bool                                        isSimpleNumeric(void) const;                                                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
         virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true, bool fv=true) const;           //!< Monitor/Print this variable
         virtual void                                        printValue(std::ostream &o, const std::string &sep, int l=-1, bool left=true, bool user=true, bool simple=true) const;  //!< Monitor/Print this variable
-        virtual void                                        writeToFile(const std::string &dir) const;                                              //!< Write the value of this node to a file within the given directory.
+        virtual void                                        writeToFile(const std::string &dir) const;                                                                  //!< Write the value of this node to a file within the given directory.
 
         // getters and setters
         virtual valueType&                                  getValue(void) = 0;
@@ -56,6 +57,9 @@ namespace RevBayesCore {
 
     template<>
     inline Trace*                                TypedDagNode< RbVector<double> >::createTraceObject(void) const { return new TraceVectorNumeric(); }
+    
+    template<>
+    inline Trace*                                TypedDagNode< Simplex >::createTraceObject(void) const { return new TraceSimplex(); }
     
     template<>
     inline Trace*                                TypedDagNode<Tree>::createTraceObject(void) const { return new TraceTree( getValue().isRooted() ); }
