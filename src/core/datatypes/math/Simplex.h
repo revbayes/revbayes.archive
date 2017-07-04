@@ -46,7 +46,7 @@ namespace RevBayesCore {
         virtual void                            initFromString( const std::string &s )
         {
             this->clear();
-            std::string sub = s.substr( 2, s.size()-4);
+            std::string sub = s.substr( 2, s.size()-3);
             std::vector<std::string> elements;
             StringUtilities::stringSplit(sub,", ", elements);
             for (size_t i=0; i<elements.size(); ++i)
