@@ -90,7 +90,8 @@ double ConstantRateBirthDeathProcess::simulateDivergenceTime(double origin, doub
     // get a random draw
     double u = rng->uniform01();
 
-    
+//    times       <- age - ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b)
+
     // compute the time for this draw
     double t = 0.0;
     if ( b > d )
@@ -104,6 +105,7 @@ double ConstantRateBirthDeathProcess::simulateDivergenceTime(double origin, doub
     
 //    return present - t;
     return origin + t;
+//    return t;
 }
 
 
