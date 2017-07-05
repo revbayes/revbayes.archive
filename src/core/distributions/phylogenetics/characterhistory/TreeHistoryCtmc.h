@@ -23,7 +23,7 @@
 namespace RevBayesCore {
 
     template<class charType>
-    class TreeHistoryCtmc : public TypedDistribution< AbstractHomologousDiscreteCharacterData >, public TreeChangeEventListener, public MemberObject< RbVector<double> >, public MemberObject< RbVector<int> > {
+    class TreeHistoryCtmc : public TypedDistribution< AbstractHomologousDiscreteCharacterData >, public TreeChangeEventListener, public MemberObject< Simplex >, public MemberObject< RbVector<int> > {
 
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
@@ -38,7 +38,7 @@ namespace RevBayesCore {
         virtual void                                                        drawInitValue(void) = 0;
         virtual void                                                        initializeTipValues(void) = 0;
         void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<int> &rv) const;     //!< Map the member methods to internal function calls
-        void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
+        void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Simplex &rv) const;     //!< Map the member methods to internal function calls
         virtual double                                                      getBranchRate(size_t idx) const;
         virtual std::vector<double>                                         getRootFrequencies(void) const = 0;
         virtual bool                                                        samplePathStart(const TopologyNode& node) = 0;
@@ -311,7 +311,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n
 
 
 template<class charType>
-void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
+void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, Simplex &rv) const
 {
 
     if ( n == "stateFrequencies" )
@@ -342,6 +342,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n
         rv.clear();
         rv.resize( num_states );
 
+        
         int node_index = static_cast<const TypedDagNode<int>* >( args[0] )->getValue() - 1;
         int site_index = static_cast<const TypedDagNode<int>* >( args[1] )->getValue() - 1;
 
