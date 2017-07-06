@@ -200,6 +200,7 @@ double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool
     
     double p = 0;
     double r = rho->getValue();
+    
     if ( n < 1 )
     {
         // we assume conditioning on survival
@@ -228,12 +229,10 @@ double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool
         if ( MRCA == false )
         {
             p = 2*log(p_s) + rate + log( 1 - e) * (n-1);
-//            p = log(p_s)   + rate + log( 1 - e) * (n-1);
         }
         else
         {
             p = log(n-1) + 4*log(p_s) + 2*rate + log( 1 - e) * (n-2);
-//            p = log(n-1) + 2*log(p_s) + 2*rate + log( 1 - e) * (n-2);
         }
     }
     
