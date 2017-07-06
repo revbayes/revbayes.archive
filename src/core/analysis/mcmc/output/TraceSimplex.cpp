@@ -3,7 +3,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "StationarityTest.h"
-#include "TraceVectorNumeric.h"
+#include "TraceSimplex.h"
 #include "TraceAnalysisContinuous.h"
 
 #include "RbUtil.h"
@@ -15,13 +15,13 @@
 
 using namespace RevBayesCore;
 
-TraceVectorNumeric::TraceVectorNumeric()
+TraceSimplex::TraceSimplex()
 {
     invalidate();
 }
 
 
-void TraceVectorNumeric::addObject(RbVector<double> d)
+void TraceSimplex::addObject(Simplex d)
 {
     values.push_back(d);
     
@@ -30,11 +30,11 @@ void TraceVectorNumeric::addObject(RbVector<double> d)
 }
 
 
-void TraceVectorNumeric::addValueFromString(const std::string &s)
+void TraceSimplex::addValueFromString(const std::string &s)
 {
     
-    RbVector<double> *d = new RbVector<double>();
-    Serializer<RbVector<double>, IsDerivedFrom<RbVector<double>, Serializable>::Is >::ressurectFromString( d, s );
+    Simplex *d = new Simplex();
+    Serializer<Simplex, IsDerivedFrom<Simplex, Serializable>::Is >::ressurectFromString( d, s );
     
     addObject( *d );
     
@@ -43,7 +43,7 @@ void TraceVectorNumeric::addValueFromString(const std::string &s)
     
 }
 
-void TraceVectorNumeric::computeStatistics( void )
+void TraceSimplex::computeStatistics( void )
 {
     
     
@@ -51,14 +51,14 @@ void TraceVectorNumeric::computeStatistics( void )
 
 
 /** Clone function */
-TraceVectorNumeric* TraceVectorNumeric::clone() const
+TraceSimplex* TraceSimplex::clone() const
 {
     
-    return new TraceVectorNumeric(*this);
+    return new TraceSimplex(*this);
 }
 
 
-void TraceVectorNumeric::invalidate()
+void TraceSimplex::invalidate()
 {
     // set values to defaults and mark for recalculation
     burnin                          = RbConstants::Size_t::nan;
@@ -82,17 +82,16 @@ void TraceVectorNumeric::invalidate()
 }
 
 
-bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i, bool verbose) const
+bool TraceSimplex::isCoveredInInterval(const std::string &v, double i, bool verbose) const
 {
     
-    RbVector<double> sample = RbVector<double>();
+    Simplex sample = Simplex();
     sample.initFromString( v );
     
-//    double alpha = 1.0 - std::pow(1.0-i,double(sample.size()));
+    //    double alpha = 1.0 - std::pow(1.0-i,double(sample.size()));
     double alpha = i;
     
-    std::vector<double> smaller_values_count = RbVector<double>(sample.size(), 0.0);
-    std::vector<double> equal_values_count   = RbVector<double>(sample.size(), 0.0);
+    std::vector<double> smaller_values_count = std::vector<double>(sample.size(), 0.0);
     for (size_t i=0; i<values.size(); ++i)
     {
         
@@ -102,10 +101,6 @@ bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i, boo
             if (values[i][j] < sample[j] )
             {
                 ++smaller_values_count[j];
-            }
-            else if ( values[i][j] == sample[j] )
-            {
-                ++equal_values_count[j];
             }
             
         }
@@ -117,7 +112,7 @@ bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i, boo
     double num_covered = 0.0;
     for (size_t j=0; j<sample.size(); ++j)
     {
-        double quantile = (smaller_values_count[j] + 0.5*equal_values_count[j]) / double(values.size());
+        double quantile = smaller_values_count[j] / double(values.size());
         double lower = (1.0 - alpha) / 2.0;
         double upper = 1.0 - lower;
         if ( quantile >= lower && quantile <= upper )
@@ -135,12 +130,12 @@ bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i, boo
 }
 
 
-void TraceVectorNumeric::removeObjectAtIndex (int index)
+void TraceSimplex::removeObjectAtIndex (int index)
 {
-
+    
 }
 
-void TraceVectorNumeric::removeLastObject() {
+void TraceSimplex::removeLastObject() {
     // remove object from list
     values.pop_back();
     
@@ -149,16 +144,16 @@ void TraceVectorNumeric::removeLastObject() {
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const TraceVectorNumeric& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const TraceSimplex& x) {
     o << x.getParameterName();
     o << " (";
-//    const std::vector<double>& values = x.getValues();
-//    for (std::vector<double>::const_iterator it = values.begin(); it != values.end(); ++it) {
-//        if ( it != values.begin() ) {
-//            o << ", ";
-//        }
-//        o << *it;
-//    }
+    //    const std::vector<double>& values = x.getValues();
+    //    for (std::vector<double>::const_iterator it = values.begin(); it != values.end(); ++it) {
+    //        if ( it != values.begin() ) {
+    //            o << ", ";
+    //        }
+    //        o << *it;
+    //    }
     o << ")";
     
     return o;

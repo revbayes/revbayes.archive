@@ -200,6 +200,7 @@ double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool
     
     double p = 0;
     double r = rho->getValue();
+    
     if ( n < 1 )
     {
         // we assume conditioning on survival
@@ -268,7 +269,6 @@ double BirthDeathProcess::pSurvival(double start, double end, double r) const
 double BirthDeathProcess::pSurvival(double start, double end) const
 {
     double sampling_prob = rho->getValue();
-//    sampling_prob = 1.0;
     
     return pSurvival(start, end, sampling_prob);
 }

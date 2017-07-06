@@ -2537,7 +2537,7 @@ std::vector<Tree> TreeSummary::getUniqueTrees( double credible_interval_size, bo
 
 
 
-bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t, double size, bool verbose)
+bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t, double ci_size, bool verbose)
 {
 
     summarize( verbose );
@@ -2562,9 +2562,9 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
     for (std::vector<Sample<std::string> >::reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
     {
         
-        double p =it->getFrequency()/(totalSamples-burnin);
-        double include_prob = (size-totalProb)/p;
-//        double include_prob = p*size;
+        double p = it->getFrequency()/(totalSamples-burnin);
+//        double include_prob = p / (1.0-totalProb) * (ci_size - totalProb) / (1.0-totalProb);
+        double include_prob = p * ci_size;
         
         if ( include_prob > rng->uniform01() )
         {
@@ -2579,7 +2579,7 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
         totalProb += p;
         
         
-        if ( totalProb >= size )
+        if ( totalProb >= ci_size )
         {
             break;
         }
