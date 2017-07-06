@@ -3,6 +3,8 @@
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "StochasticVariableMonitor.h"
@@ -36,6 +38,15 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
     size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
     int number_processes_per_run = ceil( double(num_processes) / num_runs );
+    
+    // we need to change the random number generator when using MPI so that they are not synchronized anymore
+    for ( size_t i=0; i<pid; ++i )
+    {
+        for ( size_t j=0; j<4; ++j )
+        {
+            GLOBAL_RNG->uniform01();
+        }
+    }
     
     runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
     simulation_values = std::vector<Model*>(num_runs,NULL);
