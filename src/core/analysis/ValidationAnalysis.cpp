@@ -21,6 +21,11 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     credible_interval_size( 0.9 )
 {
     
+    std::string directory = "output";
+    // some general constant variables
+    RbFileManager fm = RbFileManager( directory );
+    const std::string path_separator = fm.getPathSeparator();
+    
     // remove all monitors if there are any
     MonteCarloAnalysis *sampler = m.clone();
     sampler->removeMonitors();
@@ -28,8 +33,6 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     StochasticVariableMonitor mntr = StochasticVariableMonitor(10, "output/posterior_samples.var", "\t");
     sampler->addMonitor( mntr );
     
-//    size_t run_pid_start = size_t(floor( (double(pid)   / num_runs ) * num_processes ) );
-//    size_t run_pid_end   = std::max( int(run_pid_start), int(floor( (double(pid+1) / num_runs ) * num_processes ) ) - 1);
     size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
     size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
     int number_processes_per_run = ceil( double(num_processes) / num_runs );
@@ -41,6 +44,11 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
         
         if ( i >= run_block_start && i <= run_block_end)
         {
+            
+            // create a new directory name for this simulation
+            std::stringstream s;
+            s << directory << path_separator << "Validation_Sim_" << i;
+            std::string sim_directory_name = s.str();
 
             // create an independent copy of the analysis
             MonteCarloAnalysis *current_analysis = sampler->clone();
@@ -58,7 +66,9 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
                 if ( the_node->isStochastic() == true )
                 {
                     the_node->redraw();
-//                    std::cerr << the_node->getName() << " -- " << the_node->getValueAsString() << std::endl;
+                    
+                    // we need to store the new simulated data
+                    the_node->writeToFile(sim_directory_name);
                 }
             
             }
@@ -93,19 +103,16 @@ ValidationAnalysis::ValidationAnalysis(const ValidationAnalysis &a) : Cloneable(
     credible_interval_size( a.credible_interval_size )
 {
     
+    runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
+    simulation_values = std::vector<Model*>(num_runs,NULL);
     // create replicate Monte Carlo samplers
     for (size_t i=0; i < num_runs; ++i)
     {
         // only copy the runs which this process needs to execute
-        if ( a.runs[i] == NULL )
+        if ( a.runs[i] != NULL )
         {
-            runs.push_back( NULL );
-            simulation_values.push_back( NULL );
-        }
-        else
-        {
-            runs.push_back( a.runs[i]->clone() );
-            simulation_values.push_back( runs[i]->getModel().clone() );
+            runs[i]                 = a.runs[i]->clone();
+            simulation_values[i]    = runs[i]->getModel().clone() ;
         }
         
     }
@@ -144,24 +151,28 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
         {
             MonteCarloAnalysis *sampler = runs[i];
             delete sampler;
+            
+            Model *m = simulation_values[i];
+            delete m;
         }
         runs.clear();
+        simulation_values.clear();
         
         num_runs                    = a.num_runs;
         credible_interval_size      = a.credible_interval_size;
         
         
+        runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
+        simulation_values = std::vector<Model*>(num_runs,NULL);
+        
         // create replicate Monte Carlo samplers
         for (size_t i=0; i < num_runs; ++i)
         {
             // only copy the runs which this process needs to execute
-            if ( a.runs[i] == NULL )
+            if ( a.runs[i] != NULL )
             {
-                runs.push_back( NULL );
-            }
-            else
-            {
-                runs.push_back( a.runs[i]->clone() );
+                runs[i]                 = a.runs[i]->clone();
+                simulation_values[i]    = runs[i]->getModel().clone() ;
             }
             
         }
