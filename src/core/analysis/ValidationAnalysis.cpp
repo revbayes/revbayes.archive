@@ -1,5 +1,6 @@
 #include "DagNode.h"
 #include "DistributionBinomial.h"
+#include "DistributionUniform.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
@@ -42,10 +43,12 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     // we need to change the random number generator when using MPI so that they are not synchronized anymore
     for ( size_t i=0; i<pid; ++i )
     {
-        for ( size_t j=0; j<4; ++j )
-        {
-            GLOBAL_RNG->uniform01();
-        }
+        
+        GLOBAL_RNG->setSeed( int(floor( GLOBAL_RNG->uniform01()*1E5 )) );
+//        for ( size_t j=0; j<4; ++j )
+//        {
+//            ;
+//        }
     }
     
     runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
