@@ -550,7 +550,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 double AbstractRootedTreeDistribution::simulateNextAge(size_t n, double start, double end, double present) const
 {
 
-    std::vector<double> *times = simulateDivergenceTimes(n, start, end);
+    std::vector<double> *times = simulateDivergenceTimes(n, start, end, present);
 
     double next_time = (*times)[times->size()-1];
 //    double next_time = (*times)[0];

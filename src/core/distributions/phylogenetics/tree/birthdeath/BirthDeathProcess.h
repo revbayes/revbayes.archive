@@ -45,7 +45,7 @@ namespace RevBayesCore {
         virtual double                                      computeProbabilitySurvival(double start, double end) const = 0;                              //!< Compute the probability of survival of the process (without incomplete taxon sampling).
 
         virtual void                                        prepareRateIntegral(double end) const;                                          //!< Compute the rate integral.
-        virtual void                                        prepareSurvivalProbability(double end, double r) const;                        //!< Compute the rate integral.
+        virtual void                                        prepareSurvivalProbability(double end, double r) const;                         //!< Compute the rate integral.
         
         
         // helper functions
