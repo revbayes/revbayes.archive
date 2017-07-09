@@ -63,7 +63,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
             std::stringstream s;
             s << directory << path_separator << "Validation_Sim_" << i;
             std::string sim_directory_name = s.str();
-
+            
             // create an independent copy of the analysis
             MonteCarloAnalysis *current_analysis = sampler->clone();
         
@@ -98,7 +98,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
         
             // add the current analysis to our vector of analyses
             runs[i] = current_analysis;
-            Model *model_clone = runs[i]->getModel().clone();
+            Model *model_clone = current_model->clone();
             simulation_values[i] = model_clone;
             
             runs[i]->setActivePID( pid, number_processes_per_run );
@@ -417,7 +417,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
     std::stringstream ss;
     ss << "output/Validation_Sim_" << idx << "/" << "posterior_samples.var";
     std::string fn = ss.str();
-    
+        
     TraceReader reader;
     std::vector<ModelTrace> traces = reader.readStochasticVariableTrace( fn, "\t");
     

@@ -648,7 +648,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     {
         // we do not compress
         num_patterns = num_sites;
-        pattern_counts = std::vector<size_t>(num_sites,1);
+        pattern_counts     = std::vector<size_t>(num_sites,1);
+        indexOfSitePattern = std::vector<size_t>(num_sites,1);
         for(size_t i = 0; i < this->num_sites; i++)
 		{
 			indexOfSitePattern[i] = i;
@@ -996,7 +997,7 @@ std::vector<charType> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::
     {
 		size_t pattern = i;
 		// if the matrix is compressed use the pattern for this site
-		if (compressed)
+		if ( compressed == true )
         {
 			pattern = site_pattern[i];
 		}
@@ -1791,7 +1792,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursiveMarginal
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void )
 {
-
+    
     bool do_mask = this->dag_node != NULL && this->dag_node->isClamped();
     std::vector<std::vector<bool> > mask_gap        = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
     std::vector<std::vector<bool> > mask_missing    = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
