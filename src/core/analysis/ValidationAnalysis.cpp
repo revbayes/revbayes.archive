@@ -43,12 +43,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     // we need to change the random number generator when using MPI so that they are not synchronized anymore
     for ( size_t i=0; i<pid; ++i )
     {
-        
         GLOBAL_RNG->setSeed( int(floor( GLOBAL_RNG->uniform01()*1E5 )) );
-//        for ( size_t j=0; j<4; ++j )
-//        {
-//            ;
-//        }
     }
     
     runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
@@ -83,6 +78,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
                     
                     // we need to store the new simulated data
                     the_node->writeToFile(sim_directory_name);
+                    
                 }
             
             }
@@ -475,7 +471,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
         if ( the_node->isStochastic() == true )
         {
             const std::string &parameter_name = the_node->getName();
-            
+                        
             if ( trace_map.find( parameter_name ) != trace_map.end() )
             {
                 // create a trace

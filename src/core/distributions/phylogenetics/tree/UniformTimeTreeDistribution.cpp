@@ -257,7 +257,6 @@ void UniformTimeTreeDistribution::simulateTree( void )
     for (size_t i = 0; i < num_taxa; ++i)
     {
         TopologyNode& node = psi->getTipNodeWithName(taxa[i].getName());
-//        node.setIndex(i);
         node.setAge( 0.0 );
     }
     

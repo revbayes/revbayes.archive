@@ -198,7 +198,7 @@ std::string RevBayesCore::TypedDagNode<valueType>::getValueAsString( void ) cons
 {
     
     std::stringstream ss;
-    Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForSimpleStoring( getValue(), ss, "", -1, true );
+    Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForSimpleStoring( getValue(), ss, ",", -1, true );
 
     
     return ss.str();
