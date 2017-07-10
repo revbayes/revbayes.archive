@@ -2225,19 +2225,45 @@
                 }
 			}
         }
-        
-    // remove the connections
-    enumerator = [connectionsToRemove objectEnumerator];
-    Connection* theConnection;
-	while ( (theConnection = [enumerator nextObject]) )
+    
+    if ([connectionsToRemove count] > 0)
         {
-        Outlet* ol = [theConnection outlet];
-        [ol removeConnection:theConnection];
+        NSAlert* alert = [[NSAlert alloc] init];
+        if ([connectionsToRemove count] == 1)
+            {
+            [alert setMessageText:@"Warning: Removing a connection between tools"];
+            [alert setInformativeText:@"Removing a connection can lead to loss of information in downstream tools"];
+            }
+        else
+            {
+            [alert setMessageText:@"Warning: Removing connections between tools"];
+            [alert setInformativeText:@"Removing connections can lead to loss of information in downstream tools"];
+            }
+        [alert addButtonWithTitle:@"Continue"];
+        [alert addButtonWithTitle:@"Cancel"];
+        [alert beginSheetModalForWindow:[self window] completionHandler:^(NSModalResponse returnCode) {
+            
+            if (returnCode == NSAlertFirstButtonReturn)
+                {
+                // remove the connections
+                for (Connection* theConnection in connectionsToRemove)
+                    {
+                    Outlet* ol = [theConnection outlet];
+                    [ol removeConnection:theConnection];
+                    }
+                    
+                // reset the view and inform the document of the changes
+                [self setNeedsDisplay:YES];
+                [[[NSDocumentController sharedDocumentController] currentDocument] updateChangeCount:NSChangeDone];
+                }
+            else if (returnCode == NSAlertSecondButtonReturn)
+                {
+                return;
+                }
+            
+            }];
         }
         
-    // reset the view and inform the document of the changes
-    [self setNeedsDisplay:YES];
-    [[[NSDocumentController sharedDocumentController] currentDocument] updateChangeCount:NSChangeDone];
 }
 
 - (void)scaleFactorChanged:(NSNotification*)notification {

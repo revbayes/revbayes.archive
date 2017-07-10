@@ -15,24 +15,18 @@ using namespace RevLanguage;
 RlBoolean::RlBoolean(void) : ModelObject<RevBayesCore::Boolean>()
 {
 
-    setGuiVariableName("Boolean");
-    setGuiLatexSymbol("B");
 }
 
 /** Construct from bool */
 RlBoolean::RlBoolean(RevBayesCore::TypedDagNode<RevBayesCore::Boolean> *v) : ModelObject<RevBayesCore::Boolean>( v )
 {
     
-    setGuiVariableName("Boolean");
-    setGuiLatexSymbol("B");
 }
 
 /** Construct from bool */
 RlBoolean::RlBoolean(bool v) : ModelObject<RevBayesCore::Boolean>( new RevBayesCore::Boolean(v) )
 {
 
-    setGuiVariableName("Boolean");
-    setGuiLatexSymbol("B");
 }
 
 
@@ -55,7 +49,7 @@ RevObject* RlBoolean::convertTo(const TypeSpec& type) const
     if (type == Natural::getClassTypeSpec())
     {
         
-        if ( dagNode->getValue() == true )
+        if ( dag_node->getValue() == true )
         {
             return new Natural(1);
         }
@@ -68,7 +62,7 @@ RevObject* RlBoolean::convertTo(const TypeSpec& type) const
     else if (type == Integer::getClassTypeSpec())
     {
         
-        if ( dagNode->getValue() == true )
+        if ( dag_node->getValue() == true )
         {
             return new Integer(1);
         }
@@ -81,7 +75,7 @@ RevObject* RlBoolean::convertTo(const TypeSpec& type) const
     else if (type == Real::getClassTypeSpec())
     {
         
-        if ( dagNode->getValue() == true )
+        if ( dag_node->getValue() == true )
         {
             return new Real(1.0);
         }
@@ -94,7 +88,7 @@ RevObject* RlBoolean::convertTo(const TypeSpec& type) const
     else if (type == RealPos::getClassTypeSpec())
     {
         
-        if ( dagNode->getValue() == true )
+        if ( dag_node->getValue() == true )
         {
             return new RealPos(1.0);
         }
@@ -165,6 +159,6 @@ double RlBoolean::isConvertibleTo(const TypeSpec& type, bool once) const
 void RlBoolean::printValue(std::ostream &o) const
 {
 
-    o << (dagNode->getValue() ? "true" : "false");
+    o << (dag_node->getValue() ? "true" : "false");
 }
 

@@ -30,9 +30,9 @@ MethodTable NonHomologousCharacterData::getCharacterDataMethods( void ) const
 
 
 /* Map calls to member methods */
-RevPtr<RevVariable> NonHomologousCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> NonHomologousCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found, RevBayesCore::AbstractCharacterData *charDataObject)
 {
-    RevPtr<RevVariable> retVal = AbstractCharacterData::executeCharacterDataMethod(name, args, found);
+    RevPtr<RevVariable> retVal = AbstractCharacterData::executeCharacterDataMethod(name, args, found, charDataObject);
  
 //    RevBayesCore::NonHomologousCharacterData *charDataObject = &getValue();
 
@@ -101,16 +101,6 @@ RevPtr<RevVariable> NonHomologousCharacterData::executeCharacterDataMethod(std::
     //                includedChars->push_back( new Natural(i+1) );
     //        }
     //        return includedChars;
-    //    }
-    //    else if (name == "nconstantpatterns")
-    //    {
-    //        int n = (int)numConstantPatterns();
-    //        return RevPtr<RevObject>( new Natural(n) );
-    //    }
-    //    else if (name == "ncharswithambiguity")
-    //    {
-    //        int n = (int)numMissAmbig();
-    //        return RevPtr<RevObject>( new Natural(n) );
     //    }
     
     

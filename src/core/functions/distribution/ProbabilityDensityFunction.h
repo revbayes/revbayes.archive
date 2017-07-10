@@ -23,7 +23,11 @@ namespace RevBayesCore {
         
     public:
         ProbabilityDensityFunction(const TypedDagNode<valueType> *x, TypedDistribution<valueType> *d, bool l=true);
+        ProbabilityDensityFunction(const ProbabilityDensityFunction &d);
         virtual                            ~ProbabilityDensityFunction(void);
+        
+        ProbabilityDensityFunction&         operator=(const ProbabilityDensityFunction &d);
+
         
         ProbabilityDensityFunction*         clone(void) const;                                                  //!< Create a clon.
         void                                update(void);                                                       //!< Recompute the value
@@ -53,9 +57,40 @@ RevBayesCore::ProbabilityDensityFunction<valueType>::ProbabilityDensityFunction(
 
 
 template <class valueType>
+RevBayesCore::ProbabilityDensityFunction<valueType>::ProbabilityDensityFunction(const ProbabilityDensityFunction &d) : ContinuousFunction( d ),
+    x( d.x ),
+    dist( d.dist->clone() ),
+    useLog( d.useLog )
+{
+    
+    addParameter( x );
+    
+}
+
+template <class valueType>
 RevBayesCore::ProbabilityDensityFunction<valueType>::~ProbabilityDensityFunction(void)
 {
     delete dist;
+}
+
+
+template <class valueType>
+RevBayesCore::ProbabilityDensityFunction<valueType>& RevBayesCore::ProbabilityDensityFunction<valueType>::operator=(const ProbabilityDensityFunction &d)
+{
+    
+   // check for self-assignment
+    if ( this != d )
+    {
+        ContinuousFunction::operator=( d );
+        delete dist;
+        
+        x       = d.x;
+        dist    = d.dist->clone();
+        useLog  = d.useLog;
+
+    }
+    
+    return *this;
 }
 
 

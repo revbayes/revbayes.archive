@@ -22,7 +22,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        AbstractPhyloContinuousCharacterProcess(const TypedDagNode<Tree> *t, size_t nSites );
+        AbstractPhyloContinuousCharacterProcess(const TypedDagNode<Tree> *t, size_t ns );
         virtual                                                            ~AbstractPhyloContinuousCharacterProcess(void);                                                     //!< Virtual destructor
         
         // public member functions
@@ -36,7 +36,7 @@ namespace RevBayesCore {
         void                                                                setSiteRate(const TypedDagNode< double >* s);
         void                                                                setSiteRate(const TypedDagNode< RbVector< double > >* s);
         void                                                                setValue(ContinuousCharacterData *v, bool f=false);                                     //!< Set the current value, e.g. attach an observation (clamp)
-        void                                                                redrawValue(void);
+        virtual void                                                        redrawValue(void);
         void                                                                reInitialized(void);
         
     protected:
@@ -54,7 +54,7 @@ namespace RevBayesCore {
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter
         
         // members
-        double                                                              lnProb;
+        double                                                              ln_prob;
         size_t                                                              num_nodes;
         size_t                                                              num_sites;
         const TypedDagNode<Tree>*                                           tau;

@@ -253,7 +253,7 @@ const std::vector<double>& RevBayesCore::GeneralTreeHistoryCtmc<charType>::getRo
 template<class charType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType>::initializeTipValues( void )
 {
-    //    if (this->dagNode->isClamped())
+    //    if (this->dag_node->isClamped())
     {
         std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType>::tau->getValue().getNodes();
         for (size_t i = 0; i < nodes.size(); i++)
@@ -398,7 +398,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::redrawValue( void )
     }
     else
     {
-//        if (this->dagNode->isClamped())
+//        if (this->dag_node->isClamped())
 //            initializeTipValues();
         
         simulate();
@@ -585,7 +585,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRateMap(const TypedDagNo
     this->addParameter( heterogeneousRateMaps );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    if ( this->dagNode != NULL && !this->dag_node->isClamped() )
     {
         this->redrawValue();
     }
@@ -617,7 +617,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRootFrequencies(const Ty
     }
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    if ( this->dagNode != NULL && !this->dag_node->isClamped() )
     {
         this->redrawValue();
     }
@@ -655,7 +655,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setSiteRates(const TypedDag
     this->addParameter( site_rates );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    if ( this->dagNode != NULL && !this->dag_node->isClamped() )
     {
         this->redrawValue();
     }

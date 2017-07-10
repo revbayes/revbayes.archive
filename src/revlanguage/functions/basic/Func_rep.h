@@ -26,7 +26,7 @@ namespace RevLanguage {
      */
     
     template <typename valType>
-    class Func_rep : public Procedure {
+    class Func_rep : public TypedFunction< ModelVector< valType> > {
         
     public:
         Func_rep();
@@ -39,11 +39,8 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules&                            getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                  //!< Get type of return value
-        
-        
-        RevPtr<RevVariable>                             execute(void);                                              //!< Execute function
+        RevBayesCore::TypedFunction< RevBayesCore::RbVector<typename valType::valueType > >*            createFunction(void) const;                                 //!< Create a function object
+        const ArgumentRules&                                                                            getArgumentRules(void) const;                               //!< Get argument rules
         
     protected:
         
@@ -69,7 +66,7 @@ namespace RevLanguage {
 
 
 template <typename valType>
-RevLanguage::Func_rep<valType>::Func_rep() : Procedure()
+RevLanguage::Func_rep<valType>::Func_rep() : TypedFunction< ModelVector<valType> >()
 {
     
 }
@@ -83,21 +80,22 @@ RevLanguage::Func_rep<valType>* RevLanguage::Func_rep<valType>::clone( void ) co
 }
 
 
-/** Execute function: We rely on getValue and overloaded push_back to provide functionality */
+/** Execute function: create deterministic ModelVector<valType> object */
 template <typename valType>
-RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_rep<valType>::execute( void )
+RevBayesCore::TypedFunction< RevBayesCore::RbVector< typename valType::valueType> >* RevLanguage::Func_rep<valType>::createFunction( void ) const
 {
+    const valType &v = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() );
+    int            n = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
     
-    typename valType::valueType v   = static_cast<const valType &>( args[0].getVariable()->getRevObject() ).getValue();
-    int                         n   = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
-    
-    ModelVector<valType> *rep = new ModelVector<valType>();
-    for ( int i=0; i<n; ++i )
+    std::vector<const RevBayesCore::TypedDagNode<typename valType::valueType>* > params;
+    for ( size_t i = 0; i < n; i++ )
     {
-        rep->push_back( valType( v ) );
+        params.push_back( v.getDagNode() );
     }
     
-    return new RevVariable( rep );
+    RevBayesCore::VectorFunction<typename valType::valueType>* func = new RevBayesCore::VectorFunction<typename valType::valueType>( params );
+
+    return func;
 }
 
 
@@ -265,15 +263,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func_rep<valType>::getTypeSpec( void )
     static TypeSpec type_spec = getClassTypeSpec();
     
     return type_spec;
-}
-
-
-/** Get return type */
-template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_rep<valType>::getReturnType( void ) const
-{
-    
-    return ModelVector<valType>::getClassTypeSpec();
 }
 
 

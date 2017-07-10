@@ -1,25 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the tree assembly function. 
- * The function assembles the tree from a topology and a set of branch length.
- * This is useful so that we can separate the distribution on branch lengths from
- * the distribution on the topology.
- *
- * @brief Declaration of the tree assembly function function.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2013-03-04, version 1.0
- * @interface Function
- *
- * $Id$
- */
-
-
-
 #ifndef TreeAssemblyFunction_H
 #define TreeAssemblyFunction_H
 

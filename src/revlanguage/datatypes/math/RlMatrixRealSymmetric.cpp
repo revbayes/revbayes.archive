@@ -76,21 +76,21 @@ RevPtr<RevVariable> MatrixRealSymmetric::executeMethod(std::string const &name, 
     {
         found = true;
         
-        //int n = (int)this->dagNode->getValue().getNumberOfCharacters();
+        //int n = (int)this->dag_node->getValue().getNumberOfCharacters();
 
-        RevBayesCore::MatrixReal& m = this->dagNode->getValue();
+        RevBayesCore::MatrixReal& m = this->dag_node->getValue();
         std::cout << m[0][0] << std::endl;
 
         // get the member with give index
         /*const RevBayesCore::MatrixReal& m = static_cast<const RevBayesCore::MatrixReal&>( args[0].getVariable()->getRevObject() );
         
-        if (this->dagNode->getValue().getNumberOfStates() < (size_t)(index.getValue()) ) {
+        if (this->dag_node->getValue().getNumberOfStates() < (size_t)(index.getValue()) ) {
             throw RbException("Index out of bounds in []");
             }
         
-        const std::vector<double>& element = this->dagNode->getValue()[ size_t(index.getValue()) - 1];
+        const std::vector<double>& element = this->dag_node->getValue()[ size_t(index.getValue()) - 1];
         RevBayesCore::RbVector<double> elementVector;
-        for (size_t i=0; i < this->dagNode->getValue().size(); ++i) {
+        for (size_t i=0; i < this->dag_node->getValue().size(); ++i) {
             elementVector.push_back( element[i] );
             }
         

@@ -1,15 +1,8 @@
-//
-//  DispersalExtinctionRootStructureFunction.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/3/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
-#ifndef __revbayes_proj__DispersalExtinctionRootStructureFunction__
-#define __revbayes_proj__DispersalExtinctionRootStructureFunction__
+#ifndef DispersalExtinctionRootStructureFunction_H
+#define DispersalExtinctionRootStructureFunction_H
 
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -17,10 +10,10 @@
 
 namespace RevBayesCore {
     
-    class DispersalExtinctionRootStructureFunction : public TypedFunction<RbVector<double> > {
+    class DispersalExtinctionRootStructureFunction : public TypedFunction<Simplex> {
         
     public:
-        DispersalExtinctionRootStructureFunction(TypedDagNode<RbVector<double> >* rf, TypedDagNode<RbVector<double> >* rs);
+        DispersalExtinctionRootStructureFunction(TypedDagNode<RbVector<double> >* rf, TypedDagNode<Simplex>* rs);
         virtual                                            ~DispersalExtinctionRootStructureFunction(void);                                                         //!< Virtual destructor
         
         // public member functions
@@ -40,7 +33,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<RbVector<double> >*              root_frequencies;
-        const TypedDagNode<RbVector<double> >*              rangeSize;
+        const TypedDagNode<Simplex>*                        rangeSize;
 //        const TypedDagNode<int>*                            maxRangeSize;
         
         std::vector<std::vector<unsigned> >                 bits;

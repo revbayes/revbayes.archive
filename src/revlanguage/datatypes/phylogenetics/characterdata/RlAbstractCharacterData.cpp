@@ -36,6 +36,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* removeTaxaArgRules           = new ArgumentRules();
     ArgumentRules* removeTaxaArgRules2          = new ArgumentRules();
     ArgumentRules* setTaxonNameArgRules         = new ArgumentRules();
+    ArgumentRules* taxaArgRules                 = new ArgumentRules();
+    ArgumentRules* taxonIndexArgRules           = new ArgumentRules();
     
     std::vector<TypeSpec> taxon_types;
     taxon_types.push_back( RlString::getClassTypeSpec() );
@@ -53,7 +55,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     removeTaxaArgRules2->push_back(         new ArgumentRule("names" , ModelVector<RlString>::getClassTypeSpec(), "The names of the taxa.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setTaxonNameArgRules->push_back(        new ArgumentRule("current"    , RlString::getClassTypeSpec(), "The old name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setTaxonNameArgRules->push_back(        new ArgumentRule("new"        , RlString::getClassTypeSpec(), "The new name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    
+    taxonIndexArgRules->push_back(          new ArgumentRule("name"       , RlString::getClassTypeSpec(), "he name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+
 
     methods.addFunction( new MemberProcedure( "addMissingTaxa",  RlUtils::Void, addTaxonArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa",  RlUtils::Void, excludeTaxaArgRules ) );
@@ -69,7 +72,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules2 ) );
     methods.addFunction( new MemberProcedure( "setTaxonName", RlUtils::Void, setTaxonNameArgRules ) );
-    methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), namesArgRules ) );
+    methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), taxaArgRules ) );
+    methods.addFunction( new MemberProcedure( "taxonIndex", Natural::getClassTypeSpec(), taxonIndexArgRules ) );
     
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
@@ -79,10 +83,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
 }
 
 /* Map calls to member methods */
-RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found,  RevBayesCore::AbstractCharacterData *charDataObject)
 {
-    
-    RevBayesCore::AbstractCharacterData *charDataObject = &getValue();
     
     if (name == "addMissingTaxa")
     {
@@ -254,40 +256,21 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         
         return NULL;
     }
+    else if (name == "taxonIndex")
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        const std::string &n = static_cast<const RlString&>( argument ).getValue();
+        int index = (int)charDataObject->getIndexOfTaxon( n ) + 1;
+        
+        return new RevVariable( new Natural(index) );
+    }
     
     
     // not found a matching method
     found = false;
     return NULL;
 }
-
-
-
-
-/* Get Rev type of object */
-const std::string& AbstractCharacterData::getClassType(void)
-{
-    
-    static std::string rev_type = "AbstractCharacterData";
-    
-    return rev_type;
-}
-
-/* Get class type spec describing type of object */
-const TypeSpec& AbstractCharacterData::getClassTypeSpec(void)
-{
-    
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
-    
-    return rev_type_spec;
-}
-
-
-
-//void AbstractCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
-//{
-//    
-//    charDataObject = o;
-//}
 
 

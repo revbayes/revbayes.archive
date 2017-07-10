@@ -1,10 +1,3 @@
-//
-//  ChromosomesCladogenicStateFunction.cpp
-//
-//  Created by will freyman on 12/13/15.
-//  Copyright (c) 2015 will freyman. All rights reserved.
-//
-
 #include "ChromosomesCladogenicStateFunction.h"
 #include "MatrixReal.h"
 #include "RbException.h"
@@ -13,8 +6,8 @@
 using namespace RevBayesCore;
 
 
-ChromosomesCladogenicStateFunction::ChromosomesCladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, unsigned mc):
-    TypedFunction<MatrixReal>( new MatrixReal( mc + 1, (mc + 1) * (mc + 1), 0.0 ) ),
+ChromosomesCladogenicStateFunction::ChromosomesCladogenicStateFunction(const TypedDagNode< Simplex > *ep, unsigned mc):
+    TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix( mc + 1 ) ),
     eventProbs( ep ),
     maxChromo(mc),
     numEventTypes( (unsigned)ep->getValue().size() )
@@ -177,7 +170,7 @@ void ChromosomesCladogenicStateFunction::update( void )
 {
     // reset the transition matrix
     delete value;
-    value = new MatrixReal( maxChromo + 1, (maxChromo + 1) * (maxChromo + 1), 0.0 );
+    value = new CladogeneticProbabilityMatrix( maxChromo + 1 );
 
     const std::vector<double>& ep = eventProbs->getValue();
     
@@ -200,7 +193,7 @@ void ChromosomesCladogenicStateFunction::update( void )
                 {
                     // reset all the probs to 0.0
                     eventMapProbs[ idx ] = 0.0;
-                    (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] = 0.0;
+//                    (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] = 0.0;
                     
                     // check for NaN values
                     if (ep[ event_types[e] ] == ep[ event_types[e] ])
@@ -234,7 +227,7 @@ void ChromosomesCladogenicStateFunction::update( void )
                     double v = ( event_prob / eventMapCounts[ i ][ event_types[e] ] ) / prob_sum;
 
                     // save the probability in the transition matrix
-                    (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] += v;
+//                    (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] += v;
 
                     // save the probability in the event map
                     eventMapProbs[ idx ] += v;
@@ -242,6 +235,7 @@ void ChromosomesCladogenicStateFunction::update( void )
             } 
         }
     }
+    value->setEventMap(eventMapProbs);
 }
 
 
@@ -250,7 +244,7 @@ void ChromosomesCladogenicStateFunction::swapParameterInternal(const DagNode *ol
     
     if (oldP == eventProbs)
     {
-        eventProbs = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        eventProbs = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     
 }

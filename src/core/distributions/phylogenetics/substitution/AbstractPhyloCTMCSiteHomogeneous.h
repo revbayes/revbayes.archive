@@ -10,6 +10,7 @@
 #include "RbSettings.h"
 #include "RbVector.h"
 #include "RateGenerator.h"
+#include "Simplex.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "Tree.h"
@@ -72,7 +73,7 @@ namespace RevBayesCore {
 
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false );
+        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false, bool internal = false );
         AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n);                                                                                          //!< Copy constructor
         virtual                                                            ~AbstractPhyloCTMCSiteHomogeneous(void);                                                              //!< Virtual destructor
 
@@ -85,25 +86,28 @@ namespace RevBayesCore {
         virtual double                                                      computeLnProbability(void);
 		virtual std::vector<charType>										drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
+        virtual void                                                        drawStochasticCharacterMap(std::vector<std::string*>& character_histories, size_t site, bool use_simmap_default=true);
         void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
         void                                                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                                 //!< The tree has changed and we want to know which part.
         virtual void                                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
+        virtual bool                                                        recursivelyDrawStochasticCharacterMap(const TopologyNode &node, std::vector<std::string*>& character_histories, std::vector<std::vector<charType> >& start_states, std::vector<std::vector<charType> >& end_states, size_t site, bool use_simmap_default);
         virtual void                                                        redrawValue(void);
         void                                                                reInitialized(void);
         void                                                                setMcmcMode(bool tf);                                                                       //!< Change the likelihood computation to or from MCMC mode.
         void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);                                   //!< Set the current value, e.g. attach an observation (clamp)
         virtual void                                                        tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
         void																updateMarginalNodeLikelihoods(void);
-
+        const TypedDagNode<Tree>*                                           getTree(void);
+        
         void                                                                setClockRate(const TypedDagNode< double > *r);
         void                                                                setClockRate(const TypedDagNode< RbVector< double > > *r);
         void                                                                setPInv(const TypedDagNode< double > *);
         void                                                                setRateMatrix(const TypedDagNode< RateGenerator > *rm);
         void                                                                setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm);
-        void                                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
+        void                                                                setRootFrequencies(const TypedDagNode< Simplex > *f);
         void                                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         void                                                                setUseMarginalLikelihoods(bool tf);
-        void                                                                setUseSiteMatrices(bool sm);
+        void                                                                setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s = NULL);
 
 
     protected:
@@ -116,6 +120,7 @@ namespace RevBayesCore {
         virtual void                                                        updateTransitionProbabilities(size_t node_idx, double brlen);
         virtual std::vector<double>                                         getRootFrequencies( size_t mixture = 0 ) const;
         virtual void                                                        getRootFrequencies( std::vector<std::vector<double> >& ) const;
+        virtual std::vector<double>                                         getMixtureProbs( void ) const;
         virtual double                                                      getPInv(void) const;
 
 
@@ -203,8 +208,9 @@ namespace RevBayesCore {
         const TypedDagNode< RbVector< double > >*                           heterogeneous_clock_rates;
         const TypedDagNode< RateGenerator >*                                homogeneous_rate_matrix;
         const TypedDagNode< RbVector< RateGenerator > >*                    heterogeneous_rate_matrices;
-        const TypedDagNode< RbVector< double > >*                           root_frequencies;
+        const TypedDagNode< Simplex >*                                      root_frequencies;
         const TypedDagNode< RbVector< double > >*                           site_rates;
+        const TypedDagNode< Simplex >*                                      site_matrix_probs;
         const TypedDagNode< RbVector< double > >*                           site_rates_probs;
         const TypedDagNode< double >*                                       p_inv;
 
@@ -218,6 +224,8 @@ namespace RevBayesCore {
         size_t                                                              pattern_block_start;
         size_t                                                              pattern_block_end;
         size_t                                                              pattern_block_size;
+
+        bool                                                                store_internal_nodes;
 
         charType                                                            template_state;                                 //!< Template state used for ancestral state estimation. This makes sure that the state labels are preserved.
 
@@ -239,6 +247,7 @@ namespace RevBayesCore {
 
 
 #include "DiscreteCharacterState.h"
+#include "DistributionExponential.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -255,7 +264,7 @@ namespace RevBayesCore {
 
 
 template<class charType>
-RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb, bool wd) :
+RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb, bool internal, bool wd) :
     TypedDistribution< AbstractHomologousDiscreteCharacterData >(  NULL ),
     lnProb( 0.0 ),
     storedLnProb( 0.0 ),
@@ -294,6 +303,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     pattern_block_start( 0 ),
     pattern_block_end( num_patterns ),
     pattern_block_size( num_patterns ),
+    store_internal_nodes( internal ),
     template_state()
 {
 
@@ -304,6 +314,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     heterogeneous_rate_matrices   = NULL;
     root_frequencies              = NULL;
     site_rates                    = NULL;
+    site_matrix_probs             = NULL;
     site_rates_probs              = NULL;
     p_inv                         = NULL;
 
@@ -331,6 +342,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     this->addParameter( heterogeneous_rate_matrices );
     this->addParameter( root_frequencies );
     this->addParameter( site_rates );
+    this->addParameter( site_matrix_probs );
     this->addParameter( site_rates_probs );
     this->addParameter( p_inv );
 
@@ -380,17 +392,19 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     pattern_block_start( n.pattern_block_start ),
     pattern_block_end( n.pattern_block_end ),
     pattern_block_size( n.pattern_block_size ),
+    store_internal_nodes( n.store_internal_nodes ),
     template_state( n.template_state )
 {
 
     // initialize with default parameters
-    homogeneous_clock_rate        = n.homogeneous_clock_rate;
-    heterogeneous_clock_rates     = n.heterogeneous_clock_rates;
-    homogeneous_rate_matrix       = n.homogeneous_rate_matrix;
-    heterogeneous_rate_matrices   = n.heterogeneous_rate_matrices;
+    homogeneous_clock_rate       = n.homogeneous_clock_rate;
+    heterogeneous_clock_rates    = n.heterogeneous_clock_rates;
+    homogeneous_rate_matrix      = n.homogeneous_rate_matrix;
+    heterogeneous_rate_matrices  = n.heterogeneous_rate_matrices;
     root_frequencies             = n.root_frequencies;
     site_rates                   = n.site_rates;
-    site_rates_probs              = n.site_rates_probs;
+    site_matrix_probs            = n.site_matrix_probs;
+    site_rates_probs             = n.site_rates_probs;
     p_inv                        = n.p_inv;
 
     activeLikelihoodOffset      =  n.activeLikelihoodOffset;
@@ -497,7 +511,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
 
     // create a vector with the correct site indices
     // some of the sites may have been excluded
-    std::vector<size_t> siteIndices = getIncludedSiteIndices();
+    std::vector<size_t> site_indices = getIncludedSiteIndices();
 
     // check whether there are ambiguous characters (besides gaps)
     bool ambiguousCharacters = false;
@@ -512,7 +526,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
             if ( (*it)->isTip() )
             {
                 AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                DiscreteCharacterState &c = taxon.getCharacter(siteIndices[site]);
+                DiscreteCharacterState &c = taxon.getCharacter(site_indices[site]);
 
                 // if we treat unknown characters as gaps and this is an unknown character then we change it
                 // because we might then have a pattern more
@@ -553,9 +567,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
             if ( (*it)->isTip() )
             {
                 AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                DiscreteCharacterState &c = taxon.getCharacter(siteIndices[site]);
+                DiscreteCharacterState &c = taxon.getCharacter(site_indices[site]);
 
-                if (c.isWeighted() )
+                if ( c.isWeighted() )
                 {
                   weightedCharacters = true;
                   break;
@@ -590,7 +604,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 if ( (*it)->isTip() )
                 {
                     AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                    CharacterState &c = taxon.getCharacter(siteIndices[site]);
+                    CharacterState &c = taxon.getCharacter(site_indices[site]);
                     pattern += c.getStringValue();
                 }
             }
@@ -634,7 +648,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     {
         // we do not compress
         num_patterns = num_sites;
-        pattern_counts = std::vector<size_t>(num_sites,1);
+        pattern_counts     = std::vector<size_t>(num_sites,1);
+        indexOfSitePattern = std::vector<size_t>(num_sites,1);
         for(size_t i = 0; i < this->num_sites; i++)
 		{
 			indexOfSitePattern[i] = i;
@@ -666,7 +681,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 // set the counts for this patter
                 process_pattern_counts[patternIndex] = pattern_counts[patternIndex+pattern_block_start];
 
-                charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[indexOfSitePattern[patternIndex+pattern_block_start]]) );
+                charType &c = static_cast<charType &>( taxon.getCharacter(site_indices[indexOfSitePattern[patternIndex+pattern_block_start]]) );
                 gap_matrix[node_index][patternIndex] = c.isGapState();
 
                 if ( using_ambiguous_characters == true )
@@ -706,14 +721,21 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
         {
             const RbBitSet &val = ambiguous_char_matrix[0][i];
 
-            invariant_site_index[i] = val.size();
-
-            for (size_t j=1; j<length; ++j)
+            if ( val.getNumberSetBits() > 1 )
             {
-                if ( val != ambiguous_char_matrix[j][i] || gap_matrix[j][i] == true )
+                inv = false;
+            }
+            else
+            {
+                invariant_site_index[i] = val.getFirstSetBit();
+
+                for (size_t j=1; j<length; ++j)
                 {
-                    inv = false;
-                    break;
+                    if ( val != ambiguous_char_matrix[j][i] || gap_matrix[j][i] == true )
+                    {
+                        inv = false;
+                        break;
+                    }
                 }
             }
         }
@@ -975,7 +997,7 @@ std::vector<charType> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::
     {
 		size_t pattern = i;
 		// if the matrix is compressed use the pattern for this site
-		if (compressed)
+		if ( compressed == true )
         {
 			pattern = site_pattern[i];
 		}
@@ -1016,14 +1038,16 @@ std::vector<charType> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::
 				if ( u > 0.0 )
                 {
 
-					c++;
-					stateIndex++;
-
-					if ( stateIndex == c.getNumberOfStates() )
+                    if (c.getStateIndex() + 1 >= c.getNumberOfStates())
                     {
-						stateIndex = 0;
-						c.setToFirstState();
-					}
+                        stateIndex = 0;
+                        c.setToFirstState();
+                    }
+                    else
+                    {
+                        c++;
+                        stateIndex++;
+                    }
 
 				}
                 else
@@ -1054,11 +1078,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     // get working variables
-    std::vector<double> siteProbVector(1,1.0);
-    if ( site_rates_probs != NULL )
-    {
-        siteProbVector = site_rates_probs->getValue();
-    }
+    std::vector<double> siteProbVector = getMixtureProbs();
 
     const TopologyNode &root = tau->getValue().getRoot();
     size_t node_index = root.getIndex();
@@ -1152,7 +1172,14 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
                     stop = true;
                     break;
                 }
-                c++;
+                if (c.getStateIndex() + 1 >= c.getNumberOfStates())
+                {
+                    c.setToFirstState();
+                }
+                else
+                {
+                    c++;
+                }
             }
             if (stop) break;
         }
@@ -1179,6 +1206,179 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
 
     }
 }
+
+
+template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawStochasticCharacterMap(std::vector<std::string*>& character_histories, size_t site, bool use_simmap_default)
+{
+    
+    bool success = false;
+    size_t max_draws = 10;
+    size_t n_draws = 0;
+    
+    while (!success && n_draws != max_draws) {
+        // first draw joint ancestral states
+        std::vector<std::vector<charType> > start_states(this->num_nodes, std::vector<charType>(this->num_sites));
+        std::vector<std::vector<charType> > end_states(this->num_nodes, std::vector<charType>(this->num_sites));
+        this->drawJointConditionalAncestralStates( start_states, end_states );
+        
+        // save the character history for the root
+        const TopologyNode &root = this->tau->getValue().getRoot();
+        size_t root_index = root.getIndex();
+        std::string* simmap_string = new std::string("{" + end_states[root_index][site].getStringValue() + "," + StringUtilities::toString( root.getBranchLength() ) + "}");
+        character_histories[root_index] = simmap_string;
+        
+        // recurse towards tips
+        const TopologyNode &right = root.getChild(0);
+        const TopologyNode &left = root.getChild(1);
+        success |= recursivelyDrawStochasticCharacterMap(left, character_histories, start_states, end_states, site, use_simmap_default);
+        success |= recursivelyDrawStochasticCharacterMap(right, character_histories, start_states, end_states, site, use_simmap_default);
+        
+        if (n_draws != 0) {
+            std::cout << "Warning: numerical instability in P(t)=exp(Qt) caused stochastic mapping to fail (attempt: " << n_draws << "/" << max_draws << ")\n";
+        }
+        n_draws++;
+    }
+    
+    if (n_draws == max_draws) {
+        throw RbException("Stochastic mapping failed due to numerical instability.");
+    }
+    
+}
+
+
+template<class charType>
+bool RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, std::vector<std::string*>& character_histories, std::vector<std::vector<charType> >& start_states, std::vector<std::vector<charType> >& end_states, size_t site, bool use_simmap_default)
+{
+    
+    bool success = false;
+    
+    // get the start and end states
+    size_t node_index = node.getIndex();
+    size_t start_state = start_states[node_index][site].getStateIndex();
+    size_t end_state = start_state;
+    bool ambiguous_end_state = false;
+    
+    // check whether we should simulate the end state
+    if ( end_states[node_index][site].isAmbiguous() == true )
+    {
+        ambiguous_end_state = true;
+    }
+    else
+    {
+        end_state = end_states[node_index][site].getStateIndex();
+    }
+    
+    // set up vectors to hold the character transition events
+    std::vector<size_t> transition_states;
+    std::vector<double> transition_times;
+    transition_states.push_back(start_state);
+    
+    // get the rate matrix for this branch
+    RateMatrix_JC jc(this->num_chars);
+    const RateGenerator *rate_matrix = &jc;
+    if ( this->branch_heterogeneous_substitution_matrices == true )
+    {
+        if (this->heterogeneous_rate_matrices != NULL)
+        {
+            rate_matrix = &this->heterogeneous_rate_matrices->getValue()[node_index];
+        }
+        else if (this->homogeneous_rate_matrix != NULL)
+        {
+            rate_matrix = &this->homogeneous_rate_matrix->getValue();
+        }
+    }
+    else
+    {
+        if (this->homogeneous_rate_matrix != NULL)
+        {
+            rate_matrix = &this->homogeneous_rate_matrix->getValue();
+        }
+    }
+        
+    // get the clock rate for the branch
+    double clock_rate = 1.0;
+    if ( this->branch_heterogeneous_clock_rates == true )
+    {
+        if (this->heterogeneous_clock_rates != NULL)
+        {
+            clock_rate = this->heterogeneous_clock_rates->getValue()[node_index];
+        }
+    }
+    else
+    {
+        if (this->homogeneous_clock_rate != NULL)
+        {
+            clock_rate = this->homogeneous_clock_rate->getValue();
+        }
+    }
+    
+    
+    // now sample a character history for the branch leading to this node
+    double start_age;
+    double end_age;
+    if (RbMath::isFinite( node.getAge() ) == true)
+    {
+        start_age = node.getParent().getAge();
+        end_age = node.getAge();
+    }
+    else
+    {
+        double branch_length = node.getBranchLength();
+        if (branch_length < 0.0)
+        {
+            branch_length = 1.0;
+        }
+        start_age = branch_length;
+        end_age = 0.0;
+    }
+
+    // simulate stochastic map
+    transition_states.push_back(end_state);
+    success = const_cast<RateGenerator*>(rate_matrix)->simulateStochasticMapping(start_age, end_age, clock_rate, transition_states, transition_times);
+    
+    // make SIMMAP string
+    std::string simmap_string = "{";
+
+	if (use_simmap_default == true)
+	{
+        for (size_t i = transition_times.size(); i > 0; i--)
+        {
+            simmap_string = simmap_string + StringUtilities::toString(transition_states[i - 1]) + "," + StringUtilities::toString(transition_times[i - 1]);
+            if (i != 1)
+            {
+                simmap_string = simmap_string + ":";
+            }
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < transition_times.size(); i++)
+        {
+            if (i != 0)
+            {
+                simmap_string = simmap_string + ":";
+            }
+            simmap_string = simmap_string + StringUtilities::toString(transition_states[i]) + "," + StringUtilities::toString(transition_times[i]);
+        }
+    }
+    simmap_string = simmap_string + "}";
+    
+    // save the character history for this branch
+    character_histories[node_index] = new std::string(simmap_string);
+    
+    // recurse towards tips
+    if ( node.isTip() == false )
+    {
+        const TopologyNode &right = node.getChild(0);
+        const TopologyNode &left = node.getChild(1);
+        success |= recursivelyDrawStochasticCharacterMap(left, character_histories, start_states, end_states, site, use_simmap_default);
+        success |= recursivelyDrawStochasticCharacterMap(right, character_histories, start_states, end_states, site, use_simmap_default);
+    }
+    
+    return success;
+}
+
 
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
@@ -1283,7 +1483,14 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawJo
                 endStates[node_index][i] = c;
                 break;
             }
-            c++;
+            if (c.getStateIndex() + 1 >= c.getNumberOfStates())
+            {
+                c.setToFirstState();
+            }
+            else
+            {
+                c++;
+            }
         }
     }
 
@@ -1388,38 +1595,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fireTreeChangeEve
 
 
 template<class charType>
-std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getIncludedSiteIndices( void )
-{
-    // create a vector with the correct site indices
-    // some of the sites may have been excluded
-    std::vector<size_t> siteIndices;
-    size_t siteIndex = 0;
-    for (size_t i = 0; i < num_sites; ++i)
-    {
-        while ( this->value->isCharacterExcluded(siteIndex) )
-        {
-            siteIndex++;
-            if ( siteIndex >= this->value->getNumberOfCharacters()  )
-            {
-                throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
-            }
-        }
-
-        siteIndices.push_back(siteIndex);
-        siteIndex++;
-    }
-
-    // test if there were additional sites that we did not use
-    while ( siteIndex < this->value->getNumberOfCharacters() )
-    {
-        if ( !this->value->isCharacterExcluded(siteIndex)  )
-        {
-            throw RbException( "The character matrix cannot set to this variable because it has too many included characters." );
-        }
-        siteIndex++;
-    }
-
-    return siteIndices;
+ std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getIncludedSiteIndices( void )
+ {
+     return this->value->getIncludedSiteIndices();
 }
 
 
@@ -1482,7 +1660,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getRootFrequencie
 template<class charType>
 std::vector<double> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getRootFrequencies( size_t mixture ) const
 {
-    if(mixture > this->num_site_mixtures)
+    if (mixture > this->num_site_mixtures)
     {
         throw(RbException("Site mixture index out of bounds"));
     }
@@ -1492,6 +1670,30 @@ std::vector<double> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::ge
 
     return rf[mixture % rf.size()];
 }
+
+template<class charType>
+std::vector<double> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getMixtureProbs( void ) const
+{
+    std::vector<double> probs(num_site_mixtures, 1.0/num_site_mixtures);
+
+    if ( site_matrix_probs != NULL )
+    {
+        std::vector<double> matrix_probs = site_matrix_probs->getValue();
+
+        for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
+        {
+            // get matrix index
+            size_t matrix = mixture % num_matrices;
+
+            // multiply matrix prob and uniform site rate prob
+            // TODO: allow non-uniform site rate probs
+            probs[mixture] = matrix_probs[matrix] / num_site_rates;
+        }
+    }
+
+    return probs;
+}
+
 
 template<class charType>
 double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getPInv( void ) const
@@ -1544,7 +1746,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyFlagNo
     if ( dirty_nodes[index] == false )
     {
         // the root doesn't have an ancestor
-        if ( !n.isRoot() )
+        if ( n.isRoot() == false )
         {
             recursivelyFlagNodeDirty( n.getParent() );
         }
@@ -1590,7 +1792,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursiveMarginal
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void )
 {
-
+    
     bool do_mask = this->dag_node != NULL && this->dag_node->isClamped();
     std::vector<std::vector<bool> > mask_gap        = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
     std::vector<std::vector<bool> > mask_missing    = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
@@ -1651,9 +1853,27 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
         {
             // draw the rate for this site
             u = rng->uniform01();
-            size_t mixtureIndex = size_t(u*num_site_mixtures);
-            perSiteMixtures[i] = mixtureIndex;
+            size_t mixtureIndex = 0;
 
+            std::vector<double> mixtureProbs = getMixtureProbs();
+
+            std::vector< double >::const_iterator freq = mixtureProbs.begin();
+            while ( true )
+            {
+                u -= *freq;
+
+                if ( u > 0.0 )
+                {
+                    ++mixtureIndex;
+                    ++freq;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            perSiteMixtures[i] = mixtureIndex;
         }
         else
         {
@@ -1664,7 +1884,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
 
     }
 
-    std::vector<std::vector<double> > freqs;    getRootFrequencies(freqs);
+    std::vector<std::vector<double> > freqs;
+    getRootFrequencies(freqs);
     // simulate the root sequence
     DiscreteTaxonData< charType > &root = taxa[ tau->getValue().getRoot().getIndex() ];
     for ( size_t i = 0; i < num_sites; ++i )
@@ -1674,13 +1895,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
         // create the character
         charType c = charType( num_chars );
         c.setToFirstState();
+
         // draw the state
         double u = rng->uniform01();
         std::vector< double >::const_iterator freq = stationary_freqs.begin();
         while ( true )
         {
             u -= *freq;
-
             if ( u > 0.0 )
             {
                 ++c;
@@ -1703,10 +1924,24 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     simulate( tau->getValue().getRoot(), taxa, inv, perSiteMixtures );
 
     // add the taxon data to the character data
-//    for (size_t i = 0; i < tau->getValue().getNumberOfNodes(); ++i)
-    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+    for (size_t i = 0; i < this->tau->getValue().getNumberOfNodes(); ++i)
     {
-        this->value->addTaxonData( taxa[i] );
+        
+        const TopologyNode& node = this->tau->getValue().getNode(i);
+        size_t node_index = node.getIndex();
+
+        if (node.isTip() == true)
+        {
+            this->value->addTaxonData( taxa[node_index] );
+        }
+        else if (store_internal_nodes == true)
+        {
+            std::stringstream ss;
+            ss << "Index_" << node_index + 1;
+            taxa[node_index].setTaxon( Taxon(ss.str()) );
+            this->value->addTaxonData( taxa[node_index] );
+        }
+        
     }
 
     if ( do_mask == true )
@@ -1874,7 +2109,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
 
-                double*          p_site_mixture          = p_node + offset;
+                double* p_site_mixture = p_node + offset;
 
                 for ( size_t i=0; i<this->num_chars; ++i)
                 {
@@ -1895,7 +2130,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
 
-                double*          p_site_mixture          = p_node + offset;
+                double* p_site_mixture = p_node + offset;
 
                 for ( size_t i=0; i<this->num_chars; ++i)
                 {
@@ -1908,7 +2143,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
     }
     else if ( RbSettings::userSettings().getUseScaling() == true )
     {
-        // iterate over all mixture categories
+        // iterate over all sites
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
         {
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = 0;
@@ -2064,9 +2299,12 @@ template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setValue(AbstractHomologousDiscreteCharacterData *v, bool force)
 {
 
-    if (v->getNumberOfStates() != this->num_chars)
+    if (v->getMaxObservedStateIndex() > this->num_chars - 1)
     {
-        throw RbException("The assigned value and distribution's value must have the same number of states.");
+        // We might use different sized matrices for different partitions depending on the observed number of states.
+        std::stringstream ss;
+        ss << "The number of observed states (" << v->getMaxObservedStateIndex() + 1 << ") is greater than the dimension of the Q matrix (" << this->num_chars << ")" << std::endl;
+        throw RbException(ss.str());
     }
 
     // delegate to the parent class
@@ -2171,6 +2409,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const T
 
     }
 
+}
+
+
+template<class charType>
+const RevBayesCore::TypedDagNode<RevBayesCore::Tree>* RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getTree()
+{
+    return tau;
 }
 
 
@@ -2372,7 +2617,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(con
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRootFrequencies(const TypedDagNode< Simplex > *f)
 {
 
     // remove the old parameter first
@@ -2449,8 +2694,30 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseMarginalLik
 }
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrices(bool sm)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s)
 {
+
+    if( sm == false && s != NULL)
+    {
+        throw(RbException("Provided site matrix probs but not using site matrix mixture."));
+    }
+
+    // remove the old parameter first
+    if ( site_matrix_probs != NULL )
+    {
+        this->removeParameter( site_matrix_probs );
+        site_matrix_probs = NULL;
+    }
+
+    if ( sm )
+    {
+        // set the value
+        site_matrix_probs = s;
+    }
+
+    // add the new parameter
+    this->addParameter( site_matrix_probs );
+
     this->branch_heterogeneous_substitution_matrices = !sm;
 
     this->resizeLikelihoodVectors();
@@ -2468,6 +2735,8 @@ std::vector< std::vector<double> >* RevBayesCore::AbstractPhyloCTMCSiteHomogeneo
 {
 
     std::vector< std::vector<double> >* per_mixture_Likelihoods = new std::vector< std::vector<double> >(this->pattern_block_size, std::vector<double>(num_chars, 0.0) );
+
+    std::vector<double> mixture_probs = getMixtureProbs();
 
     // get the pointers to the partial likelihoods and the marginal likelihoods
     double*         p_node_marginal         = this->marginalLikelihoods + node_index*this->nodeOffset;
@@ -2489,7 +2758,7 @@ std::vector< std::vector<double> >* RevBayesCore::AbstractPhyloCTMCSiteHomogeneo
             for (size_t j=0; j<num_chars; ++j)
             {
                 // add the probability of being in this state
-                (*per_mixture_Likelihoods)[site][j] += *p_site_marginal_j;
+                (*per_mixture_Likelihoods)[site][j] += *p_site_marginal_j * mixture_probs[mixture];
 
                 // increment pointers
                 ++p_site_marginal_j;
@@ -2527,6 +2796,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
     // we need this vector to sum over the different mixture likelihoods
     std::vector<double> per_mixture_Likelihoods = std::vector<double>(pattern_block_size,0.0);
 
+    std::vector<double> site_mixture_probs = getMixtureProbs();
+
     // get pointer the likelihood
     double*   p_mixture     = p_node;
     // iterate over all mixture categories
@@ -2553,7 +2824,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
                 ++p_site_j;
             }
             // add the likelihood for this mixture category
-            per_mixture_Likelihoods[site] += tmp;
+            per_mixture_Likelihoods[site] += tmp * site_mixture_probs[mixture];
 
             // increment the pointers to the next site
             p_site_mixture+=this->siteOffset;
@@ -2572,7 +2843,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
     {
         // get the mean root frequency vector
         std::vector<double> f;
-        if(this->branch_heterogeneous_substitution_matrices == true)
+        if (this->branch_heterogeneous_substitution_matrices == true)
         {
             f = this->getRootFrequencies(0);
         }
@@ -2581,22 +2852,24 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
             std::vector<std::vector<double> > ff;
             getRootFrequencies(ff);
 
+            std::vector<double> matrix_probs(num_matrices, 1.0/num_matrices);
+
+            if (site_matrix_probs != NULL)
+            {
+                matrix_probs = site_matrix_probs->getValue();
+            }
+
             f = std::vector<double>(ff[0].size(), 0.0);
 
-            for(size_t matrix = 0; matrix < ff.size(); matrix++)
+            for (size_t matrix = 0; matrix < ff.size(); matrix++)
             {
                 // get the root frequencies
                 const std::vector<double> &fm = ff[matrix];
 
-                for(size_t i = 0; i < fm.size(); i++)
+                for (size_t i = 0; i < fm.size(); i++)
                 {
-                    f[i] += fm[i];
+                    f[i] += fm[i] * matrix_probs[matrix];
                 }
-            }
-
-            for(size_t i = 0; i < f.size(); i++)
-            {
-                f[i] /= this->num_matrices;
             }
         }
 
@@ -2608,11 +2881,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
 
                 if ( this->site_invariant[site] == true )
                 {
-                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] / this->num_site_mixtures ) * *patterns;
+                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                 }
                 else
                 {
-                    rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] / this->num_site_mixtures ) * *patterns;
+                    rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                 }
                 rv[site] -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
 
@@ -2622,11 +2895,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
 
                 if ( this->site_invariant[site] == true )
                 {
-                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] / this->num_site_mixtures ) * *patterns;
+                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                 }
                 else
                 {
-                    rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] / this->num_site_mixtures ) * *patterns;
+                    rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                 }
 
             }
@@ -2639,7 +2912,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
 
         for (size_t site = 0; site < pattern_block_size; ++site, ++patterns)
         {
-            rv[site] = log( per_mixture_Likelihoods[site] / this->num_site_mixtures ) * *patterns;
+            rv[site] = log( per_mixture_Likelihoods[site] ) * *patterns;
 
             if ( RbSettings::userSettings().getUseScaling() == true )
             {
@@ -2679,7 +2952,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         if ( process_active == false )
         {
             // send from the workers the log-likelihood to the master
-            MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
+            MPI_Send(&sum_partial_probs, 1, MPI_DOUBLE, active_PID, 0, MPI_COMM_WORLD);
         }
 
         // receive the likelihoods from the helpers
@@ -2688,7 +2961,8 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
                 double tmp = 0;
-                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
+                MPI_Status status;
+                MPI_Recv(&tmp, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD, &status);
                 sum_partial_probs += tmp;
             }
         }
@@ -2698,12 +2972,13 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         {
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
-                MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, int(i), 0);
+                MPI_Send(&sum_partial_probs, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD);
             }
         }
         else
         {
-            MPI::COMM_WORLD.Recv(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
+            MPI_Status status;
+            MPI_Recv(&sum_partial_probs, 1, MPI_DOUBLE, active_PID, 0, MPI_COMM_WORLD, &status);
         }
 
     }
@@ -2738,7 +3013,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::swapParameterInte
     }
     else if (oldP == root_frequencies)
     {
-        root_frequencies = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+        root_frequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     else if (oldP == site_rates)
     {
@@ -2766,7 +3041,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::swapParameterInte
 }
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::touchSpecialization( DagNode* affecter, bool touchAll )
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::touchSpecialization( DagNode* affecter, bool touch_all )
 {
 
     if ( touched == false )
@@ -2785,7 +3060,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::touchSpecializati
         if ( indices.size() == 0 )
         {
             // just flag everyting for recomputation
-            touchAll = true;
+            touch_all = true;
         }
         else
         {
@@ -2805,7 +3080,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::touchSpecializati
         if ( indices.size() == 0 )
         {
             // just flag everyting for recomputation
-            touchAll = true;
+            touch_all = true;
         }
         else
         {
@@ -2823,12 +3098,16 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::touchSpecializati
         const TopologyNode &root = this->tau->getValue().getRoot();
         this->recursivelyFlagNodeDirty( root );
     }
+    else if ( affecter == p_inv )
+    {
+        touch_all = true;
+    }
     else if ( affecter != tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     {
-        touchAll = true;
+        touch_all = true;
     }
 
-    if ( touchAll )
+    if ( touch_all == true )
     {
 
         for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
@@ -2884,6 +3163,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
     {
         rate = this->homogeneous_clock_rate->getValue();
     }
+    
+    // we rescale the rate by the inverse of the proportion of invariant sites
+    rate /= ( 1.0 - getPInv() );
 
     double end_age = node->getAge();
 

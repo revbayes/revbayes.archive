@@ -27,7 +27,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        ModelMonitor(unsigned long g, const std::string &fname, const std::string &del);                                  //!< Constructor
+        ModelMonitor(unsigned long g, const std::string &fname, const std::string &del);                        //!< Constructor
         virtual ~ModelMonitor(void);
         
         
@@ -44,7 +44,7 @@ namespace RevBayesCore {
         void                                resetDagNodes(void);                                                //!< Extract the variable to be monitored again.
         
         // members
-        bool                                stochasticNodesOnly;                                                //!< Flag if only stochastic nodes should be printed
+        bool                                stochastic_nodes_only;                                              //!< Flag if only stochastic nodes should be printed
                 
     };
     

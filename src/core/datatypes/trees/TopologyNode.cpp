@@ -334,8 +334,11 @@ void TopologyNode::addNodeParameters(std::string const &n, const std::vector<std
 }
 
 
-/* Build newick string */
-std::string TopologyNode::buildNewickString( void )
+/* 
+ * Build newick string.
+ * If simmap = true build a newick string compatible with SIMMAP and phytools.
+ */
+std::string TopologyNode::buildNewickString( bool simmap = false )
 {
     
     // create the newick string
@@ -375,7 +378,7 @@ std::string TopologyNode::buildNewickString( void )
                     o << ",";
                 }
                 j++;
-                o << children[i]->computeNewick();
+                o << children[i]->buildNewickString( simmap );
             }
         }
         
@@ -383,7 +386,7 @@ std::string TopologyNode::buildNewickString( void )
 
     }
     
-    if ( node_comments.size() + fossil_comments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true )
+    if ( ( node_comments.size() + fossil_comments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true ) && simmap == false )
     {
         o << "[&";
         
@@ -425,10 +428,33 @@ std::string TopologyNode::buildNewickString( void )
         
         o << "]";
     }
-        
-    o << ":" << getBranchLength();
     
-    if ( branch_comments.size() > 0 )
+    if ( simmap == false )
+    {
+        o << ":" << getBranchLength();
+    }
+    else
+    {
+        if ( isRoot() == false )
+        {
+            bool found = false;
+            for (size_t i = 0; i < node_comments.size(); ++i)
+            {
+                if ( node_comments[i].substr(0, 18) == "character_history=" )
+                {
+                    o << ":" << node_comments[i].substr(18, node_comments[i].length());
+                    found = true;
+                    break;
+                }
+            }
+            if ( found == false )
+            {
+                throw RbException("Error while writing SIMMAP newick string: no character history found for node.");
+            }
+        }
+    }
+    
+    if ( branch_comments.size() > 0 && simmap == false )
     {
         o << "[&";
         for (size_t i = 0; i < branch_comments.size(); ++i)
@@ -549,6 +575,12 @@ std::string TopologyNode::computePlainNewick( void ) const
         return newick;
     }
     
+}
+
+
+std::string TopologyNode::computeSimmapNewick( void )
+{
+    return buildNewickString( true );
 }
 
 
@@ -775,11 +807,13 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
             }
             
         }
+    
+        // the clade is not one of my children, and we require strict identity
+        return RbConstants::Size_t::inf;
         
     }
     
-    // so the clade must be contained in my clade
-    // just return my index
+    // finally return my index
     return index;
 }
 
@@ -914,6 +948,157 @@ const std::string& TopologyNode::getName( void ) const
 }
 
 
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+TopologyNode* TopologyNode::getNode(const Clade &c, bool strict)
+{
+    
+    return getNode( c.getBitRepresentation(), strict );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict)
+{
+    size_t n = tree->getNumberOfTips();
+    RbBitSet my_taxa   = RbBitSet( n );
+    getTaxa( my_taxa );
+    
+    if ( your_taxa.size() != my_taxa.size() )
+    {
+        throw RbException("Problem in bit representation of clades.");
+    }
+    
+    // this node needs to have at least as many taxa to contain the other clade
+    if ( your_taxa.getNumberSetBits() > my_taxa.getNumberSetBits() )
+    {
+        // quick negative abort to safe computational time
+        return NULL;
+    }
+    
+    // check that every taxon of the clade is in this subtree
+    for (size_t i=0; i<n; ++i)
+    {
+        
+        // if I don't have any of your taxa then I cannot contain you.
+        if ( your_taxa.isSet(i) == true && my_taxa.isSet(i) == false )
+        {
+            return NULL;
+        }
+        
+    }
+    
+    // now check, if required, that the contained clade is monophyletic in the containing clade.
+    if ( strict == true )
+    {
+        // we already know from our check above that all taxa from the contained clade are present in this clade.
+        // so we just need to check if there are additional taxa in this clade
+        // and if so, then we need to check that the contained clade is contained in one of my children.
+        if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
+        {
+            
+            // loop over all children
+            for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
+            {
+                // check if the clade is contained in this child
+                TopologyNode *is_contained_in_child = (*it)->getNode( your_taxa, strict );
+                if ( is_contained_in_child != NULL )
+                {
+                    // yeah, so we can abort and return true
+                    return is_contained_in_child;
+                }
+            }
+            
+            return NULL;
+        }
+        
+    }
+    
+    return this;
+}
+
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+const TopologyNode* TopologyNode::getNode(const Clade &c, bool strict) const
+{
+    
+    return getNode( c.getBitRepresentation(), strict );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+const TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict) const
+{
+    size_t n = tree->getNumberOfTips();
+    RbBitSet my_taxa   = RbBitSet( n );
+    getTaxa( my_taxa );
+    
+    if ( your_taxa.size() != my_taxa.size() )
+    {
+        throw RbException("Problem in bit representation of clades.");
+    }
+    
+    // this node needs to have at least as many taxa to contain the other clade
+    if ( your_taxa.getNumberSetBits() > my_taxa.getNumberSetBits() )
+    {
+        // quick negative abort to safe computational time
+        return NULL;
+    }
+    
+    // check that every taxon of the clade is in this subtree
+    for (size_t i=0; i<n; ++i)
+    {
+        
+        // if I don't have any of your taxa then I cannot contain you.
+        if ( your_taxa.isSet(i) == true && my_taxa.isSet(i) == false )
+        {
+            return NULL;
+        }
+        
+    }
+    
+    // now check, if required, that the contained clade is monophyletic in the containing clade.
+    if ( strict == true )
+    {
+        // we already know from our check above that all taxa from the contained clade are present in this clade.
+        // so we just need to check if there are additional taxa in this clade
+        // and if so, then we need to check that the contained clade is contained in one of my children.
+        if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
+        {
+            
+            // loop over all children
+            for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
+            {
+                // check if the clade is contained in this child
+                TopologyNode *is_contained_in_child = (*it)->getNode( your_taxa, strict );
+                if ( is_contained_in_child != NULL )
+                {
+                    // yeah, so we can abort and return true
+                    return is_contained_in_child;
+                }
+            }
+            
+            return NULL;
+        }
+        
+    }
+    
+    return this;
+}
+
+
 /*
  * Get the node parameters.
  */
@@ -922,6 +1107,7 @@ const std::vector<std::string>& TopologyNode::getNodeParameters( void ) const
     
     return node_comments;
 }
+
 
 
 size_t TopologyNode::getNumberOfChildren( void ) const
@@ -1300,35 +1486,51 @@ void TopologyNode::removeTree(Tree *t)
 }
 
 
-void TopologyNode::setAge(double a)
+void TopologyNode::renameNodeParameter(const std::string &old_name, const std::string &new_name)
 {
+    for (size_t i = 0; i < node_comments.size(); i++)
+    {
+        size_t equal_sign = node_comments[i].find("=");
+        std::string param_name = node_comments[i].substr(0, equal_sign);
+        if (param_name.compare(old_name) == 0)
+        {
+            node_comments[i] = new_name + node_comments[i].substr(equal_sign);
+            break;
+        }
+    }
     
+    for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
+    {
+        (*it)->renameNodeParameter(old_name, new_name);
+    }
+}
+
+
+void TopologyNode::setAge(double a, bool propagate)
+{
+    if( sampled_ancestor && propagate )
+    {
+        parent->setAge(a);
+        return;
+    }
+
     age = a;
     
     // we need to recompute my branch-length
     recomputeBranchLength();
-    
-//    sampled_ancestor = ( !isRoot() && a == parent->getAge() & a > 0.0 );
-//    fossil          = a > 0.0;
-    
-    //
-//    // set the fossil flags
-//    setFossil( false );
-//    setSampledAncestor( false );
-//    new_fossil->setFossil( true );
-//    new_fossil->setSampledAncestor( true );
-//    
-//    // set the age and branch-length of the fossil
-//    new_fossil->setAge( age );
-//    new_fossil->setBranchLength( 0.0 );
-    
-    
-    
+
     // we also need to recompute the branch lengths of my children
     for (std::vector<TopologyNode *>::iterator it = children.begin(); it != children.end(); ++it)
     {
         TopologyNode *child = *it;
-        child->recomputeBranchLength();
+        if( child->isSampledAncestor() )
+        {
+            child->setAge(a, false);
+        }
+        else
+        {
+            child->recomputeBranchLength();
+        }
         
         // fire tree change event
         if ( tree != NULL )
@@ -1336,8 +1538,6 @@ void TopologyNode::setAge(double a)
             tree->getTreeChangeEventHandler().fire( *child, RevBayesCore::TreeChangeEventMessage::BRANCH_LENGTH );
         }
     }
-    
-    
     
 }
 
@@ -1376,6 +1576,7 @@ void TopologyNode::setIndex( size_t idx)
     index = idx;
     
 }
+
 
 void TopologyNode::setName(std::string const &n)
 {

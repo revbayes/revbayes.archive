@@ -446,7 +446,7 @@ void Mcmc::initializeSampler( bool prior_only )
         
         if ( failed == true )
         {
-            std::cout << "Drawing new initial states ... " << std::endl;
+            RBOUT( "Drawing new initial states ... " );
             for (std::vector<DagNode *>::iterator i=ordered_stoch_nodes.begin(); i!=ordered_stoch_nodes.end(); ++i)
             {
                 DagNode *the_node = *i;
@@ -813,7 +813,7 @@ void Mcmc::setChainIndex(size_t x)
 /**
  * Set the model by delegating the model to the chains.
  */
-void Mcmc::setModel( Model *m )
+void Mcmc::setModel( Model *m, bool redraw )
 {
     // remember the old model
     Model * old_model = model;
@@ -826,8 +826,12 @@ void Mcmc::setModel( Model *m )
     replaceDag(tmp_moves, tmp_monitors);
     
     initializeMonitors();
-
-    redrawStartingValues();
+    
+    if ( redraw == true )
+    {
+        redrawStartingValues();
+    }
+    
     
     // free the old model
     delete old_model;

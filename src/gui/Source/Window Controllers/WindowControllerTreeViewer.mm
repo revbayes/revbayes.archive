@@ -43,6 +43,10 @@
 
     //configure carousel
     [self.window makeFirstResponder:self.carousel];
+    [carousel reloadData];
+
+    if ([self activeTree] != nil)
+        [carousel scrollToItemAtIndex:(NSInteger)(0) duration:0.5];
     
     [infoLabel setHidden:YES];
 }
@@ -104,9 +108,9 @@
                 }
             }
         }
-    
-    [carousel reloadData];
+
     [treePeeker updateTreePeekView];
+    [carousel reloadData];
 }
 
 - (IBAction)closeButtonAction:(id)sender {
@@ -170,6 +174,12 @@
             }
         [outgroupMenu setSubmenu:outgroupMenuMenu];
         }
+    [treeMenuMenu setDelegate:self];
+}
+
+- (void)menuDidClose:(NSMenu*)menu {
+
+    [carousel reloadData];
 }
 
 - (id)initWithTool:(ToolTreeSet*)t {

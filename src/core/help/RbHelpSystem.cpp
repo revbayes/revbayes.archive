@@ -31,6 +31,8 @@ RbHelpSystem::RbHelpSystem( const RbHelpSystem &hs) :
     helpTypeNames( hs.helpTypeNames )
 {
     
+    
+    
     for ( std::map<std::string, RbHelpType*>::const_iterator it = hs.helpForTypes.begin(); it != hs.helpForTypes.end(); ++it)
     {
         helpForTypes.insert( std::pair<std::string, RbHelpType*>( it->first, it->second->clone() ) );
@@ -45,7 +47,8 @@ RbHelpSystem::~RbHelpSystem( void )
     // free the pointers to the help types
     for ( std::map<std::string, RbHelpType*>::const_iterator it = helpForTypes.begin(); it != helpForTypes.end(); ++it)
     {
-        delete it->second;
+        RbHelpType *ht = it->second;
+        delete ht;
     }
     helpForTypes.clear();
     
@@ -96,7 +99,7 @@ void RbHelpSystem::addHelpDistribution( RbHelpDistribution *h)
 //    }
 
     
-    if ( h != NULL )
+    if ( h != NULL && helpForTypes.find( h->getName() ) == helpForTypes.end() )
     {
         helpForTypes.insert( std::pair<std::string,RbHelpType*>( h->getName() , h ) );
         helpTypeNames.insert( h->getName() );
@@ -117,10 +120,18 @@ void RbHelpSystem::addHelpDistribution( RbHelpDistribution *h)
         const std::vector<std::string>& aliases = h->getAliases();
         for (std::vector<std::string>::const_iterator alias = aliases.begin(); alias != aliases.end(); ++alias)
         {
-            helpForTypes.insert( std::pair<std::string,RbHelpType*>( *alias , h->clone() ) );
-            helpForMethods.insert( std::pair<std::string, std::map<std::string,RbHelpFunction> >(*alias,methodsHelp) );
+            if ( helpForTypes.find(*alias ) == helpForTypes.end() )
+            {
+                helpForTypes.insert( std::pair<std::string,RbHelpType*>( *alias , h->clone() ) );
+                helpForMethods.insert( std::pair<std::string, std::map<std::string,RbHelpFunction> >(*alias,methodsHelp) );
+            }
+            
         }
 
+    }
+    else if ( h != NULL )
+    {
+        delete h;
     }
 
 }
@@ -152,7 +163,7 @@ void RbHelpSystem::addHelpType( RbHelpType *h )
 {
     
     
-    if ( h != NULL )
+    if ( h != NULL && helpForTypes.find( h->getName() ) == helpForTypes.end() )
     {
         
         helpForTypes.insert( std::pair<std::string,RbHelpType*>( h->getName() , h ) );
@@ -178,6 +189,10 @@ void RbHelpSystem::addHelpType( RbHelpType *h )
             helpForMethods.insert( std::pair<std::string, std::map<std::string,RbHelpFunction> >(*alias,methodsHelp) );
         }
     
+    }
+    else if ( h != NULL )
+    {
+        delete h;
     }
     
 }

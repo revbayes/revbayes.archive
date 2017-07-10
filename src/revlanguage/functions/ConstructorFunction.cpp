@@ -28,10 +28,12 @@ ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : Proce
 }
 
 
-ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c) {
+ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c)
+{
     
-    if (this != &c) {
-        Function::operator=(c);
+    if (this != &c)
+    {
+        Procedure::operator=(c);
         
         // delete the old object
         delete templateObject;

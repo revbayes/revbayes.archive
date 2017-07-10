@@ -4,6 +4,7 @@
 #include "Func_ancestralStateTree.h"
 #include "ModelVector.h"
 #include "NexusWriter.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "RevNullObject.h"
 #include "RlBranchLengthTree.h"
@@ -73,23 +74,45 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     // get the filename
     const std::string& filename = static_cast<const RlString&>( args[4].getVariable()->getRevObject() ).getValue();
     
-    int burnin = static_cast<const Integer &>(args[5].getVariable()->getRevObject()).getValue();
-    
+    int burnin = 0;
+
+    RevObject& b = args[5].getVariable()->getRevObject();
+    if ( b.isType( Integer::getClassTypeSpec() ) )
+    {
+        burnin = static_cast<const Integer &>(b).getValue();
+    }
+    else
+    {
+        double burninFrac = static_cast<const Probability &>(b).getValue();
+        burnin = int( floor( ancestralstate_traces[0].size() * burninFrac ) );
+    }
+
     std::string summary_stat = static_cast<const RlString&>( args[6].getVariable()->getRevObject() ).getValue();
     
-    int site = static_cast<const Integer &>(args[7].getVariable()->getRevObject()).getValue() - 1;
+    std::string reconstruction = static_cast<const RlString &>(args[7].getVariable()->getRevObject()).getValue();
+    bool conditional = false;
+    if ( reconstruction == "conditional" )
+    {
+        conditional = true;
+    }
+    if ( reconstruction == "joint" )
+    {
+        throw RbException("Joint ancestral state summaries are not yet implemented. Coming soon!");
+    }
     
-    bool verbose = static_cast<const RlBoolean &>(args[8].getVariable()->getRevObject()).getValue();
+    int site = static_cast<const Integer &>(args[8].getVariable()->getRevObject()).getValue() - 1;
+    
+    bool verbose = static_cast<const RlBoolean &>(args[9].getVariable()->getRevObject()).getValue();
     
     // get the tree with ancestral states
     RevBayesCore::Tree* tree;
     if (start_states)
     {
-        tree = summary.cladoAncestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, verbose);
+        tree = summary.cladoAncestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, conditional, false, verbose);
     }
     else
     {
-        tree = summary.ancestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, verbose);
+        tree = summary.ancestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, conditional, false, verbose);
     }
     
     // return the tree
@@ -130,11 +153,19 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "tree_trace", TraceTree::getClassTypeSpec(), "A trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "include_start_states", RlBoolean::getClassTypeSpec(), "Annotate start states as well as end states for each branch. Only applicable for cladogenetic processes.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file to store the annotated tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        std::vector<TypeSpec> burninTypes;
+        burninTypes.push_back( Probability::getClassTypeSpec() );
+        burninTypes.push_back( Integer::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , burninTypes  , "The fraction/number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
         std::vector<std::string> summary_stats;
         summary_stats.push_back( "MAP" );
         summary_stats.push_back( "mean" );
         argumentRules.push_back( new OptionRule( "summary_statistic", new RlString("MAP"), summary_stats, "The statistic used to summarize ancestral states. 'MAP' displays the 3 states with highest posterior probabilities. 'mean' displays the mean value and 95% CI." ) );
+        std::vector<std::string> reconstruction;
+        reconstruction.push_back( "conditional" );
+        reconstruction.push_back( "joint" );
+        reconstruction.push_back( "marginal" );
+        argumentRules.push_back( new OptionRule( "reconstruction", new RlString("marginal"), reconstruction, "'joint' and 'conditional' should only be used to summarize ancestral states sampled from the joint distribution. 'marginal' can be used for states sampled from the joint or marginal distribution." ) );
         argumentRules.push_back( new ArgumentRule( "site"     , Integer::getClassTypeSpec()  , "The character site to be summarized.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(1) ) );
         argumentRules.push_back( new ArgumentRule( "verbose"   , RlBoolean::getClassTypeSpec()  , "Printing verbose output", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         

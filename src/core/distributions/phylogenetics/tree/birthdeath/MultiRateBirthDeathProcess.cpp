@@ -1,4 +1,4 @@
-#include "CDSE.h"
+#include "SSE_ODE.h"
 #include "Clade.h"
 #include "MultiRateBirthDeathProcess.h"
 #include "RandomNumberFactory.h"
@@ -34,7 +34,7 @@ MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double
                                                        const TypedDagNode<RbVector<double> > *m,
                                                        const TypedDagNode<RateGenerator>* q,
                                                        const TypedDagNode< double >* r,
-                                                       const TypedDagNode< RbVector< double > >* p,
+                                                       const TypedDagNode< Simplex >* p,
                                                        const TypedDagNode<double> *rh,
                                                        const std::string &cdt,
                                                        const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
@@ -143,12 +143,17 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
 
         }
         
-        CDSE ode = CDSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
+        SSE_ODE ode = SSE_ODE(mu->getValue(), &Q->getValue(), rate->getValue(), true, false);
+        ode.setSpeciationRate( lambda->getValue() );
+        
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
         double dt = root_age->getValue() / NUM_TIME_SLICES;
-        boost::numeric::odeint::runge_kutta4< state_type > stepper;
-        boost::numeric::odeint::integrate_const( stepper, ode , initialState , beginAge , endAge, dt );
+//        boost::numeric::odeint::runge_kutta4< state_type > stepper;
+//        boost::numeric::odeint::integrate_const( stepper, ode , initialState , beginAge , endAge, dt );
+        typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
+        boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-9 , 1E-9 , stepper_type() ) , ode , initialState , beginAge , endAge , dt );
+
         
         // rescale the states
         double max = 0.0;
@@ -215,9 +220,13 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
     }
     
     double dt = root_age->getValue() / NUM_TIME_SLICES;
-    CDSE ode = CDSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
-    boost::numeric::odeint::integrate( ode , initialState , start , end , dt );
+    SSE_ODE ode = SSE_ODE(mu->getValue(), &Q->getValue(), rate->getValue(), true, false);
+    ode.setSpeciationRate( lambda->getValue() );
     
+//    boost::numeric::odeint::integrate( ode , initialState , start , end , dt );
+    typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
+    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-9 , 1E-9 , stepper_type() ) , ode , initialState , start , end , dt );
+
     
     double prob = 0.0;
     const RbVector<double> &freqs = pi->getValue();
@@ -285,7 +294,7 @@ void MultiRateBirthDeathProcess::swapParameterInternal(const DagNode *oldP, cons
     }
     if ( oldP == pi )
     {
-        pi = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+        pi = static_cast<const TypedDagNode<Simplex>* >( newP );
     }
     
     if ( oldP == rho )

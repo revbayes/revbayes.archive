@@ -4,6 +4,7 @@
 #include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
+#include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlString.h"
@@ -51,8 +52,18 @@ RevBayesCore::EmpiricalTreeDistribution* Dist_empiricalTree::createDistribution(
     // tree trace
     const RevBayesCore::TraceTree &tt = static_cast<const TraceTree &>( trace->getRevObject() ).getValue().getTreeTrace();
     // burnin
-    int b = static_cast<const Natural &>( burnin->getRevObject() ).getDagNode()->getValue();
-    
+    int b = 0;
+
+    RevObject& burn = burnin->getRevObject();
+    if ( burn.isType( Integer::getClassTypeSpec() ) )
+    {
+        b = static_cast<const Integer &>(burn).getValue();
+    }
+    else
+    {
+        double burninFrac = static_cast<const Probability &>(burn).getValue();
+        b = int( floor( tt.getSamples()*burninFrac ) );
+    }
     // create the internal distribution object
     RevBayesCore::EmpiricalTreeDistribution*   d = new RevBayesCore::EmpiricalTreeDistribution( tt, b );
     
@@ -106,7 +117,10 @@ const MemberRules& Dist_empiricalTree::getParameterRules(void) const
     if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "burnin", Integer::getClassTypeSpec(), "The number of samples to discard.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        std::vector<TypeSpec> burninTypes;
+        burninTypes.push_back( Probability::getClassTypeSpec() );
+        burninTypes.push_back( Integer::getClassTypeSpec() );
+        memberRules.push_back( new ArgumentRule( "burnin", burninTypes, "The fraction/number of samples to discard.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
         
         rules_set = true;
     }

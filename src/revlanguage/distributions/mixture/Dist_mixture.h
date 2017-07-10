@@ -23,7 +23,7 @@ namespace RevLanguage {
      *
      */
     template <typename valType>
-    class Dist_mixture :  public TypedDistribution< valType >{
+    class Dist_mixture : public TypedDistribution< valType >{
         
     public:
                                                         Dist_mixture( void );
@@ -94,7 +94,7 @@ RevBayesCore::MixtureDistribution<typename valType::valueType>* RevLanguage::Dis
 	
     // get the parameters
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<typename valType::valueType> >* v   = static_cast<const ModelVector<valType> &>( values->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >*                      p   = static_cast<const Simplex &>( probabilities->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::Simplex >*                      p   = static_cast<const Simplex &>( probabilities->getRevObject() ).getDagNode();
     
     RevBayesCore::MixtureDistribution<typename valType::valueType>* d		= new RevBayesCore::MixtureDistribution<typename valType::valueType>(v,p);
     

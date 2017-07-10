@@ -49,7 +49,7 @@ namespace RevBayesCore {
         void                                    removeMonitors(void);
         void                                    reset(void);                                        //!< Reset the sampler for a new run.
         void                                    setLikelihoodHeat(double h);                        //!< Set the heat of the likelihood function.
-        void                                    setModel(Model *m);
+        void                                    setModel(Model *m, bool redraw);
         void                                    setNumberOfProcesses(size_t i);                     //!< Set the number of processes for this replication.
         void                                    startMonitors(size_t numCycles, bool reopen);       //!< Start the monitors
         void                                    tune(void);                                         //!< Tune the sampler and its moves.

@@ -1,5 +1,6 @@
 #include "Func_freeSymmetricRateMatrix.h"
 #include "FreeSymmetricRateMatrixFunction.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RateMatrix_JC.h"
 #include "Real.h"

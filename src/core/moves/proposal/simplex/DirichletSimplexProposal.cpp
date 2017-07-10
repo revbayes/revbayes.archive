@@ -16,7 +16,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-DirichletSimplexProposal::DirichletSimplexProposal( StochasticNode<RbVector<double> > *n, double a, size_t nc, double o, double k /*=0.0*/) : Proposal(),
+DirichletSimplexProposal::DirichletSimplexProposal( StochasticNode<Simplex> *n, double a, size_t nc, double o, double k /*=0.0*/, double p) : Proposal(p),
     variable( n ),
     storedValue( 0.0 ),
     alpha( a ),
@@ -247,7 +247,7 @@ double DirichletSimplexProposal::doProposal( void )
         }
     }
     
-    variable->setValue( new RbVector<double>(newVal), false );
+    variable->setValue( new Simplex(newVal), false );
     
     return lnProposalRatio;
 }
@@ -302,7 +302,7 @@ void DirichletSimplexProposal::undoProposal( void )
 void DirichletSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<RbVector<double> >* >(newN) ;
+    variable = static_cast<StochasticNode<Simplex>* >(newN) ;
     
 }
 
@@ -317,14 +317,14 @@ void DirichletSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void DirichletSimplexProposal::tune( double rate )
 {
     
-    
-    if ( rate > 0.234 )
+    double p = this->targetAcceptanceRate;
+    if ( rate > p )
     {
-        alpha /= (1.0 + ((rate-0.234)/0.766) );
+        alpha /= (1.0 + ((rate-p)/(1.0 - p)));
     }
     else
     {
-        alpha *= (2.0 - rate/0.234 );
+        alpha *= (2.0 - rate/p);
     }
     
 }

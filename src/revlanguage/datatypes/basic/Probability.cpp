@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Probability, which
- * is the primitive RevBayes type for positive real numbers between 0 and 1.
- *
- *
- * @brief Implementation of Probability
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
-
 #include "Probability.h"
 #include "RealPos.h"
 #include "RbException.h"
@@ -31,8 +14,6 @@ using namespace RevLanguage;
 Probability::Probability( void ) : RealPos( 1.0 )
 {
 
-    setGuiVariableName("Probability");
-    setGuiLatexSymbol("P");
 }
 
 
@@ -40,8 +21,6 @@ Probability::Probability( void ) : RealPos( 1.0 )
 Probability::Probability( double x ) : RealPos( x )
 {
     
-    setGuiVariableName("Probability");
-    setGuiLatexSymbol("P");
     if ( x < 0.0 || x > 1.0)
     {
         throw RbException( "Creation of " + getClassType() + " with value x=" + x + " outside standard probabilities (0,1)");
@@ -51,10 +30,9 @@ Probability::Probability( double x ) : RealPos( x )
 
 
 /** Construct from double */
-Probability::Probability( RevBayesCore::TypedDagNode<double> *x ) : RealPos( x ) {
+Probability::Probability( RevBayesCore::TypedDagNode<double> *x ) : RealPos( x )
+{
     
-    setGuiVariableName("Probability");
-    setGuiLatexSymbol("P");
 }
 
 
@@ -64,14 +42,27 @@ Probability::Probability( RevBayesCore::TypedDagNode<double> *x ) : RealPos( x )
  *
  * \return A new copy of the process.
  */
-Probability* Probability::clone( void ) const {
+Probability* Probability::clone( void ) const
+{
     
 	return new Probability( *this );
 }
 
+RevObject* Probability::convertTo( const TypeSpec& type ) const
+{
+    
+    if ( type == RealPos::getClassTypeSpec() )
+    {
+        return new RealPos(dag_node->getValue());
+    }
+    
+    return RealPos::convertTo( type );
+}
+
 
 /** Get Rev type of object */
-const std::string& Probability::getClassType(void) { 
+const std::string& Probability::getClassType(void)
+{
     
     static std::string rev_type = "Probability";
     
@@ -79,7 +70,8 @@ const std::string& Probability::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Probability::getClassTypeSpec(void) { 
+const TypeSpec& Probability::getClassTypeSpec(void)
+{
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RealPos::getClassTypeSpec() ) );
     
@@ -88,10 +80,27 @@ const TypeSpec& Probability::getClassTypeSpec(void) {
 
 
 /** Get type spec */
-const TypeSpec& Probability::getTypeSpec( void ) const {
+const TypeSpec& Probability::getTypeSpec( void ) const
+{
     
     static TypeSpec type_spec = getClassTypeSpec();
     
     return type_spec;
+}
+
+
+/** Is convertible to type? */
+double Probability::isConvertibleTo( const TypeSpec& type, bool once ) const
+{
+    
+    if ( type == RealPos::getClassTypeSpec() )
+    {
+        return 0.1;
+    }
+    else
+    {
+        double tmp = RealPos::isConvertibleTo(type, once);
+        return ( (tmp == -1.0) ? -1.0 : (tmp+0.1));
+    }
 }
 

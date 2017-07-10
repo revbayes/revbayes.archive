@@ -44,7 +44,7 @@ namespace RevBayesCore {
         
         
     protected:
-        Proposal(void);                                                                                                                                 //!< Default constructor
+        Proposal(double p=0.44);                                                                                                                                 //!< Default constructor
         Proposal(const Proposal &p);                                                                                                                    //!< Copy constructor
         Proposal&                                               operator=(const Proposal &p);                                                           //!< Assignment operator
         
@@ -60,6 +60,7 @@ namespace RevBayesCore {
         // members
         std::vector<DagNode*>                                   nodes;
         Move*                                                   move;
+        double                                                  targetAcceptanceRate;
 
         
     };

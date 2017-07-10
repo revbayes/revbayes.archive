@@ -1,11 +1,3 @@
-//
-//  DispersalExtinctionRootStructureFunction.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/3/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
 #include "DispersalExtinctionRootStructureFunction.h"
 #include "RbException.h"
 
@@ -15,9 +7,9 @@
 
 using namespace RevBayesCore;
 
-DispersalExtinctionRootStructureFunction::DispersalExtinctionRootStructureFunction(TypedDagNode<RbVector<double> >* rf, TypedDagNode<RbVector<double> >* rs) : TypedFunction<RbVector<double> >( new RbVector<double>() ),
-root_frequencies( rf ),
-rangeSize(rs)
+DispersalExtinctionRootStructureFunction::DispersalExtinctionRootStructureFunction(TypedDagNode<RbVector<double> >* rf, TypedDagNode<Simplex>* rs) : TypedFunction<Simplex>( new Simplex() ),
+    root_frequencies( rf ),
+    rangeSize(rs)
 {
     // add the lambda parameter as a parent
     addParameter( root_frequencies );
@@ -58,7 +50,7 @@ DispersalExtinctionRootStructureFunction* DispersalExtinctionRootStructureFuncti
 void DispersalExtinctionRootStructureFunction::keep(DagNode *affecter)
 {
     //delegate to base class
-    TypedFunction< RbVector<double> >::keep( affecter );
+    TypedFunction< Simplex >::keep( affecter );
     
 }
 
@@ -103,7 +95,7 @@ void DispersalExtinctionRootStructureFunction::reInitialized( void )
 void DispersalExtinctionRootStructureFunction::restore(DagNode *restorer)
 {
     //delegate to base class
-    TypedFunction< RbVector<double> >::restore( restorer );
+    TypedFunction< Simplex >::restore( restorer );
 }
 
 
@@ -111,7 +103,7 @@ void DispersalExtinctionRootStructureFunction::touch(DagNode *toucher)
 {
     
     //delegate to base class
-    TypedFunction< RbVector<double> >::touch( toucher );
+    TypedFunction< Simplex >::touch( toucher );
     
 }
 
@@ -171,6 +163,6 @@ void DispersalExtinctionRootStructureFunction::swapParameterInternal(const DagNo
     }
     else if (oldP == rangeSize)
     {
-        rangeSize = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+        rangeSize = static_cast<const TypedDagNode<Simplex>* >( newP );
     }
 }

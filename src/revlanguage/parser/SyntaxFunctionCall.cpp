@@ -134,21 +134,22 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         
         // First we see if the function name corresponds to a user-defined variable
         // We can do this first because user-defined variables are not allowed to mask function names
+        // Skip if we're not in UserWorkspace, because functions can only be user-defined in UserWorkspace
         bool found = false;
-        if ( env.existsVariable( functionName ) )
+        if ( env.existsVariable( functionName ) && &env == &Workspace::userWorkspace() )
         {
-            RevObject &theObject = env.getRevObject( functionName );
+            RevObject &the_object = env.getRevObject( functionName );
             
-            if ( theObject.isType( Function::getClassTypeSpec() ) )
+            if ( the_object.isType( Function::getClassTypeSpec() ) )
             {
-                func = static_cast<Function*>( theObject.clone() );
+                func = static_cast<Function*>( the_object.clone() );
                 found = func->checkArguments(args, NULL, !dynamic);
             }
         }
         
         // If we cannot find the function name as a variable, it must be in the function table
         // This call will throw a relevant message if the function is not found
-        if ( !found )
+        if ( found == false )
         {
             func = env.getFunction(functionName, args, !dynamic).clone();
         }
@@ -164,32 +165,32 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         // We are trying to find a member function
         
         // First we get the base variable
-        RevPtr<RevVariable> theVar = baseVariable->evaluateContent( env, dynamic );
+        RevPtr<RevVariable> the_var = baseVariable->evaluateContent( env, dynamic );
         
         // Now we get a reference to the member object inside
-        RevObject &theMemberObject = theVar->getRevObject();
+        RevObject &the_member_object = the_var->getRevObject();
         
-        const MethodTable& mt = theMemberObject.getMethods();
+        const MethodTable& mt = the_member_object.getMethods();
         
-        Function* theFunction = mt.getFunction( functionName, args, !dynamic ).clone();
-        theFunction->processArguments(args, !dynamic);
+        Function* the_function = mt.getFunction( functionName, args, !dynamic ).clone();
+        the_function->processArguments(args, !dynamic);
         
-        MemberMethod* theMemberMethod = dynamic_cast<MemberMethod*>( theFunction );
+        MemberMethod* theMemberMethod = dynamic_cast<MemberMethod*>( the_function );
         if ( theMemberMethod != NULL )
         {
-            theMemberMethod->setMemberObject( theVar );
-            func = theFunction;
+            theMemberMethod->setMemberObject( the_var );
+            func = the_function;
         }
         else
         {
-            delete theFunction;
+            delete the_function;
             throw RbException("Error while trying to access member function/procedure.");
         }
         
     }
     
     // Evaluate the function
-    RevPtr<RevVariable> funcReturnValue = func->execute();
+    RevPtr<RevVariable> func_return_value = func->execute();
     
     // free the memory of our copy
     delete func;
@@ -200,13 +201,13 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         // inside it, although many functions return constant values or NULL (void).
         // To make sure the value is a constant and not a deterministic variable in this
         // context, we convert the return value here to a constant value before returning it.
-        if ( funcReturnValue != NULL )
+        if ( func_return_value != NULL )
         {
-            funcReturnValue->getRevObject().makeConstantValue();
+            func_return_value->getRevObject().makeConstantValue();
         }
     }
     
-    return funcReturnValue;
+    return func_return_value;
 }
 
 
@@ -215,15 +216,18 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
  * Is the expression constant?
  * Only if all arguments are constant.
  */
-bool SyntaxFunctionCall::isConstExpression(void) const {
+bool SyntaxFunctionCall::isConstExpression(void) const
+{
     
     // We need to iterate over all arguments
     for ( std::list<SyntaxLabeledExpr*>::const_iterator it = arguments->begin(); it != arguments->end(); ++it )
     {
         // We return false if this argument is not constant
         SyntaxLabeledExpr* expr = *it;
-        if ( !expr->isConstExpression() )
+        if ( expr->isConstExpression() == false )
+        {
             return false;
+        }
     }
     
     // All arguments are constant

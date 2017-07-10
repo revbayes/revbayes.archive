@@ -19,7 +19,7 @@ AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std:
     likelihood( l ),
     append(ap),
     flatten( true ),
-    writeVersion( wv )
+    write_version( wv )
 {
     
 }
@@ -35,7 +35,7 @@ AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsign
     likelihood( l ),
     append(ap),
     flatten( true ),
-    writeVersion( wv )
+    write_version( wv )
 {
     
 }
@@ -53,7 +53,7 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
     likelihood          = f.likelihood;
     append              = f.append;
     flatten             = f.flatten;
-    writeVersion        = f.writeVersion;
+    write_version        = f.write_version;
     
     if ( f.out_stream.is_open() == true )
     {
@@ -139,7 +139,7 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps )
             
             std::string read_line = "";
             size_t lines_skipped = 0;
-            size_t lines_to_skip = 3;
+            size_t lines_to_skip = ( write_version == true ? 3 : 1 );
             while (std::getline(current_input_stream,read_line))
             {
                 ++lines_skipped;
@@ -197,7 +197,7 @@ bool AbstractFileMonitor::isFileMonitor( void ) const
  */
 void AbstractFileMonitor::monitorVariables(unsigned long gen)
 {
-        
+    
     for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
     {
         // add a separator before every new element
@@ -327,7 +327,8 @@ void AbstractFileMonitor::printHeader( void )
 //    out_stream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
         out_stream.seekg(0, std::ios::end);
         
-        if (writeVersion) {
+        if ( write_version == true )
+        {
             RbVersion version;
             out_stream << "#RevBayes version (" + version.getVersion() + ")\n";
             out_stream << "#Build from " + version.getGitBranch() + " (" + version.getGitCommit() + ") on " + version.getDate() + "\n";
@@ -457,6 +458,6 @@ void AbstractFileMonitor::setPrintPrior(bool tf)
 void AbstractFileMonitor::setPrintVersion(bool tf)
 {
     
-    writeVersion = tf;
+    write_version = tf;
     
 }

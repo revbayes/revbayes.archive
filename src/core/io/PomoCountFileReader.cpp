@@ -13,7 +13,7 @@ using namespace RevBayesCore;
 PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t virtualPopulationSize, char d, size_t ns) : DelimitedDataReader(fn, d, ns), virtualPopulationSize_ ( virtualPopulationSize )
 {
 	filename = fn;
-	HomologousDiscreteCharacterData<PomoState>* matrix_ = new HomologousDiscreteCharacterData<PomoState> ();
+	matrix_ = new HomologousDiscreteCharacterData<PomoState> ();
 
 	// chars is a matrix containing all the lines of the file fn.
 	// First line, with the names of the columns:
@@ -26,7 +26,6 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
 	}
 	while (chars[start][0] == "#");
 
-
 	if (chars[start][0] != "COUNTSFILE" || chars[0].size() != 5) {
 		throw RbException( "File "+fn+" is not a proper Pomo Counts file: first line is not correct, it should be similar to \nCOUNTSFILE NPOP 5 NSITES N\n.");
 	}
@@ -35,6 +34,7 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
         numberOfSites_ = StringUtilities::asIntegerNumber( chars[0][4] );
 	}
 	size_t numberOfFields = 2 + numberOfPopulations_;
+
 	// The second line should look like this:
 	//CHROM  POS  Sheep    BlackSheep  RedSheep  Wolf     RedWolf
 	if (chars[start+1][0] != "CHROM" || chars[1][1] != "POS" || chars[1].size() != numberOfFields) {
@@ -76,16 +76,21 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
 		std::string chromosome = chars[i][0];
 		size_t position = StringUtilities::asIntegerNumber( chars[i][1] );
 
-		for (size_t j = 2; j < numberOfPopulations_; ++j)
+		for (size_t j = 2; j < 2 + numberOfPopulations_; ++j)
 		{
+
 			PomoState pState (chars[i][j], chromosome, position, virtualPopulationSize_ );
-			nameToTaxonData.at(names_[j]).addCharacter( pState);
+
+			nameToTaxonData.at(names_[j-2]).addCharacter( pState);
+
 		}
 	}
+
 	// We have finished all lines, we fill up the data matrix
 	for (std::map<std::string, DiscreteTaxonData<PomoState> >::iterator tax = nameToTaxonData.begin(); tax != nameToTaxonData.end(); ++tax ) {
 	 	matrix_->addTaxonData(tax->second);
 	}
+
 	return ;
 }
 
@@ -98,7 +103,9 @@ const size_t PomoCountFileReader::getNumberOfSites( void ){
 }
 
 HomologousDiscreteCharacterData<PomoState>* PomoCountFileReader::getMatrix( void ){
+
 	return matrix_;
+
 }
 
 const size_t PomoCountFileReader::getVirtualPopulationSize( void ){

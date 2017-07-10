@@ -34,25 +34,26 @@ namespace RevLanguage {
     class MatrixReal : public ModelObject<RevBayesCore::MatrixReal>  {
         
     public:
-                           
-        MatrixReal(void);                                                                                       //!< Default constructor
-        MatrixReal(const RevBayesCore::MatrixReal& m);
-        MatrixReal(RevBayesCore::MatrixReal* m);
-        MatrixReal(RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> *mat);                                  //!< Construct from DAG node
-        
+                                            MatrixReal(void);                                                                       //!< Default constructor
+                                            MatrixReal(const RevBayesCore::MatrixReal& m);
+                                            MatrixReal(RevBayesCore::MatrixReal* m);
+                                            MatrixReal(RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> *mat);                  //!< Construct from DAG node
         
         // the value type definition
-        virtual MatrixReal*                 clone(void) const;                                                      //!< Clone object
-        static const std::string&           getClassType(void);                                                     //!< Get Rev type
-        static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
-        virtual const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
+        virtual MatrixReal*                 clone(void) const;                                                                      //!< Clone object
+        static const std::string&           getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
+        virtual const TypeSpec&             getTypeSpec(void) const;                                                                //!< Get language type of the object
 
         // Member method functions
         virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
 
+        std::string                         getGuiName(void) { return ""; }
+        std::string                         getGuiUnicodeSymbol(void) { return ""; }
+        std::string                         getGuiInfo(void) { return ""; }
+
     private:
         void                                initializeMethods(void);
-        
     };
 
 }

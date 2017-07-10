@@ -83,7 +83,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     {
         bool fe = static_cast<const RlBoolean&>(forbidExtinction->getRevObject()).getValue();
         bool uc = static_cast<const RlBoolean&>(useCladogenesis->getRevObject()).getValue();
-        const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *csf = NULL;
+        const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *csf = NULL;
         
         if ( cladoStateFreqs->getRevObject() != RevNullObject::getInstance() )
         {

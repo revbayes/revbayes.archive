@@ -21,16 +21,17 @@
 //#include "Statistic.h"
 #include "Clade.h"
 #include "Tree.h"
-#include "Tree.h"
+#include "TreeChangeEventListener.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
+
 
 #include <vector>
 #include <string>
 
 namespace RevBayesCore {
     
-    class TmrcaStatistic : public TypedFunction<double> {
+    class TmrcaStatistic : public TypedFunction<double>, TreeChangeEventListener {
         
     public:
         TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, const bool s);                                                                                   //!< Default constructor
@@ -38,6 +39,7 @@ namespace RevBayesCore {
                 
         // Basic utility functions
         TmrcaStatistic*                             clone(void) const;                                                                          //!< Clone object
+        void                                        fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                                 //!< The tree has changed and we want to know which p
         void                                        update(void);                                                                               //!< Clone the function
         
     protected:
@@ -51,9 +53,9 @@ namespace RevBayesCore {
         const TypedDagNode<Tree>*                   tree;
         Clade                                       clade;
         bool                                        initialized;
-        bool                                        stemAge;
+        bool                                        stem_age;
         int                                         index;
-        size_t                                      taxaCount;
+        size_t                                      taxa_count;
     };
     
 }

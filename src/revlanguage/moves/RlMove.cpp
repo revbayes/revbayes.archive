@@ -5,6 +5,7 @@
 #include "ModelVector.h"
 #include "Move.h"
 #include "OptionRule.h"
+#include "Probability.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
@@ -212,6 +213,8 @@ const MemberRules& Move::getParameterRules(void) const
     if ( !rules_set )
     {
         move_member_rules.push_back( new ArgumentRule( "weight", RealPos::getClassTypeSpec(), "The weight how often on average this move will be used per iteration.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 1.0 ) ) );
+        move_member_rules.push_back( new ArgumentRule( "tuneTarget", Probability::getClassTypeSpec(), "The acceptance probability targetted by auto-tuning.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability( 0.44 ) ) );
+
         
         /* Inherit variables from WorkspaceObject, put them last */
         const MemberRules& inheritedRules = WorkspaceObject::getParameterRules();
@@ -251,7 +254,11 @@ void Move::setConstParameter(const std::string& name, const RevPtr<const RevVari
     {
         weight = var;
     }
-    else 
+    else if ( name == "tuneTarget" )
+    {
+        tuneTarget = var;
+    }
+    else
     {
         RevObject::setConstParameter(name, var);
     }

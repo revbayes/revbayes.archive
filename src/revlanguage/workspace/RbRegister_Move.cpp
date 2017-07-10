@@ -94,6 +94,9 @@
 #include "Move_ConjugateInverseWishartBrownian.h"
 #include "Move_CorrelationMatrixUpdate.h"
 
+/* Moves on continuous character data (real valued matrices) */
+#include "Move_ContinuousCharacterDataSlide.h"
+
 
 ///* Moves on covariance matrices */
 #include "Move_MatrixRealSymmetricSlide.h"
@@ -106,6 +109,7 @@
 #include "Move_MixtureAllocation.h"
 #include "Move_GibbsMixtureAllocation.h"
 #include "Move_ReversibleJumpSwitchMove.h"
+#include "Move_UPPAllocation.h"
 
 // moves for the DPP table values
 #include "ScaleProposal.h"
@@ -216,6 +220,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_ConjugateInverseWishartBrownian() );
+        
+        /* Moves on continuous character data (matrices of real values) */
+        addTypeWithConstructor( new Move_ContinuousCharacterDataSlide() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor( new Move_DPPTableValueUpdate<RealPos>( new RevBayesCore::ScaleProposal( NULL, 1.0 ) ) );
@@ -235,13 +242,17 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_MixtureAllocation<Natural>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<Integer>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<Probability>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<Simplex>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<RateGenerator>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<Tree>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Real>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RealPos>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Natural>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Integer>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Probability>( ) );
+        addTypeWithConstructor( new Move_GibbsMixtureAllocation<Simplex>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RateGenerator>( ) );
+        addTypeWithConstructor( new Move_UPPAllocation<RealPos>() );
         
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Real>( )                  );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<RealPos>( )               );
@@ -256,7 +267,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BirthDeathEvent()                      );
         addTypeWithConstructor( new Move_DiscreteEventCategoryRandomWalk()      );
         addTypeWithConstructor( new Move_EventTimeBeta()                        );
-//        addTypeWithConstructor( new Move_EventTimeSlide()                       );
+        addTypeWithConstructor( new Move_EventTimeSlide()                       );
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */

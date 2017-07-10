@@ -98,7 +98,7 @@
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
 #include "Dist_phyloCTMCClado.h"
-#include "Dist_phyloDolloCTMC.h"
+#include "Dist_phyloCTMCDollo.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 
@@ -106,6 +106,7 @@
 #include "Dist_PhyloBrownian.h"
 #include "Dist_PhyloBrownianMVN.h"
 #include "Dist_PhyloBrownianREML.h"
+#include "Dist_PhyloBrownianMultiSampleREML.h"
 #include "Dist_PhyloOrnsteinUhlenbeck.h"
 #include "Dist_PhyloOrnsteinUhlenbeckMVN.h"
 #include "Dist_PhyloMvtBrownian.h"
@@ -116,7 +117,7 @@
 #include "Dist_bdpTopology.h"
 #include "Dist_BirthDeathMultiRate.h"
 #include "Dist_CharacterDependentBirthDeathProcess.h"
-#include "Dist_CharacterDependentCladoBirthDeathProcess.h"
+#include "Dist_StateDependentSpeciationExtinctionProcess.h"
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
 #include "Dist_ConstrainedTopology.h"
@@ -124,10 +125,13 @@
 #include "Dist_WeightedConstrainedNodeOrder.h"
 #include "Dist_constFBDP.h"
 #include "Dist_constPopMultispCoal.h"
+#include "Dist_constSSBDP.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
 #include "Dist_episodicBirthDeath.h"
 #include "Dist_heterogeneousRateBirthDeath.h"
+#include "Dist_multispeciesCoalescentInverseGammaPrior.h"
+#include "Dist_multispeciesCoalescentUniformPrior.h"
 #include "Dist_outgroupBirthDeath.h"
 #include "Dist_phyloDistanceGamma.h"
 #include "Dist_sampledSpeciationBirthDeathProcess.h"
@@ -143,13 +147,19 @@
 #include "Dist_categorical.h"
 #include "Dist_chisq.h"
 #include "Dist_cppNormal.h"
+#include "Dist_decomposedInverseWishart.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
 #include "Dist_exponentialOffset.h"
 #include "Dist_exponentialOffsetPositive.h"
 #include "Dist_gamma.h"
 #include "Dist_geom.h"
-#include "Dist_poisson.h"
+#include "Dist_halfCauchy.h"
+#include "Dist_halfCauchyPositive.h"
+#include "Dist_halfNormal.h"
+#include "Dist_halfNormalPositive.h"
+#include "Dist_inverseGamma.h"
+#include "Dist_inverseWishart.h"
 #include "Dist_lnorm.h"
 #include "Dist_lnormOffset.h"
 #include "Dist_lnormOffsetPositive.h"
@@ -159,6 +169,7 @@
 #include "Dist_norm.h"
 #include "Dist_normalTruncated.h"
 #include "Dist_normalTruncatedPositive.h"
+#include "Dist_poisson.h"
 #include "Dist_softBoundUniformNormal.h"
 #include "Dist_studentT.h"
 #include "Dist_unif.h"
@@ -168,14 +179,13 @@
 #include "Dist_UniformNatural.h"
 #include "Dist_varianceGamma.h"
 #include "Dist_wishart.h"
-#include "Dist_inverseWishart.h"
-#include "Dist_decomposedInverseWishart.h"
 #include "Process_OrnsteinUhlenbeck.h"
 
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
 #include "Dist_mixture.h"
 #include "Dist_reversibleJumpMixtureConstant.h"
+#include "Dist_upp.h"
 
 /// Functions ///
 
@@ -213,12 +223,13 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         /* trait evolution (in folder "distributions/evolution/branchrate") */
 
         // brownian motion
-        AddDistribution< ModelVector<Real>          >( new Dist_PhyloBrownian()             );
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianREML()         );
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMVN()          );
-        AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()    );
+        AddDistribution< ModelVector<Real>          >( new Dist_PhyloBrownian()                 );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianREML()             );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMVN()              );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMultiSampleREML()  );
+        AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()        );
         
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()          );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()     );
         
         // multivariate brownian motion
         AddDistribution< ModelVector< ModelVector<Real> > >( new Dist_PhyloMvtBrownian() );
@@ -232,7 +243,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( new Dist_phyloCTMC() );
         addDistribution( new Dist_phyloDACTMC() );
         addDistribution( new Dist_phyloCTMCClado() );
-        //addDistribution( new Dist_phyloDolloCTMC() );
+        addDistribution( new Dist_phyloCTMCDollo() );
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
@@ -242,7 +253,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		
         AddDistribution< TimeTree                   >( new Dist_BirthDeathMultiRate() );
         AddDistribution< TimeTree                   >( new Dist_CharacterDependentBirthDeathProcess() );
-        AddDistribution< TimeTree                   >( new Dist_CharacterDependentCladoBirthDeathProcess() );
+        AddDistribution< TimeTree                   >( new Dist_StateDependentSpeciationExtinctionProcess() );
         AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_outgroupBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_sampledSpeciationBirthDeathProcess() );
@@ -250,6 +261,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // constant rate fossil-birth-death process
         AddDistribution< TimeTree                   >( new Dist_constFBDP());
+        
+        // constant rate serial-sampled-birth-death process
+        AddDistribution< TimeTree                   >( new Dist_constSSBDP());
         
         // diversity-dependent pure-birth process
         AddDistribution< TimeTree                   >( new Dist_divDepYuleProcess() );
@@ -265,6 +279,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // multispecies coalescent (per branch constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_constPopMultispCoal() );
+        AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentInverseGammaPrior() );
+        AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentUniformPrior() );
         
         // constrained node order distribution
         AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeOrder() );
@@ -327,6 +343,17 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // geometric distribution
         AddDistribution< Natural                    >( new Dist_geom() );
         
+        // half-Cauchy distribution
+        AddContinuousDistribution< Real             >( new Dist_halfCauchy() );
+        AddContinuousDistribution< RealPos          >( new Dist_halfCauchyPositive() );
+        
+        // half-Normal distribution
+        AddContinuousDistribution< Real             >( new Dist_halfNormal() );
+        AddContinuousDistribution< RealPos          >( new Dist_halfNormalPositive() );
+
+        // inverse-gamma distribution
+        AddContinuousDistribution< RealPos          >( new Dist_inverseGamma() );
+        
         // poisson distribution
         AddDistribution< Natural                    >( new Dist_poisson() );
         
@@ -386,15 +413,20 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< ModelVector<Integer>       >( new Dist_dpp<Integer>()      );
 		AddDistribution< ModelVector<Probability>   >( new Dist_dpp<Probability>()  );
         AddDistribution< ModelVector<Simplex>       >( new Dist_dpp<Simplex>()      );
+		
+        // uniform partitions prior
+        AddDistribution< ModelVector<RealPos>       >( new Dist_upp<RealPos>() );
 
         // mixture distribution
         AddDistribution< Real                       >( new Dist_mixture<Real>() );
 		AddDistribution< RealPos                    >( new Dist_mixture<RealPos>() );
 		AddDistribution< Natural                    >( new Dist_mixture<Natural>() );
 		AddDistribution< Integer                    >( new Dist_mixture<Integer>() );
-		AddDistribution< Probability                >( new Dist_mixture<Probability>() );
+        AddDistribution< Probability                >( new Dist_mixture<Probability>() );
+        AddDistribution< Simplex                    >( new Dist_mixture<Simplex>() );
 //        AddDistribution< RateGenerator              >( new Dist_mixture<RateGenerator>() );
         addDistribution( new Dist_mixture<RateGenerator>() );
+        AddDistribution< TimeTree                   >( new Dist_mixture<TimeTree>() );
         
         // Ornstein-Uhlenbeck process
         AddDistribution< Real                       >( new OrnsteinUhlenbeckProcess() );

@@ -47,6 +47,7 @@ namespace RevLanguage {
 
         
         RevPtr<const RevVariable>                   weight;
+        RevPtr<const RevVariable>                   tuneTarget;
 
     };
     

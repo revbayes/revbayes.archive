@@ -49,9 +49,12 @@ RevBayesCore::HeterogeneousRateBirthDeath* Dist_heterogeneousRateBirthDeath::cre
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ex   = static_cast<const ModelVector<RealPos> &>( extinction->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* er   = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* rh   = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
+    bool allow_same   = static_cast<const RlBoolean &>( allow_same_category->getRevObject() ).getValue();
     std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
+    // condition
+    const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     
-    RevBayesCore::HeterogeneousRateBirthDeath*   d = new RevBayesCore::HeterogeneousRateBirthDeath( ra, rs, sp, ex, er, rh, t );
+    RevBayesCore::HeterogeneousRateBirthDeath*   d = new RevBayesCore::HeterogeneousRateBirthDeath( ra, rs, sp, ex, er, rh, cond, allow_same, t );
     
     return d;
 }
@@ -131,7 +134,12 @@ const MemberRules& Dist_heterogeneousRateBirthDeath::getParameterRules(void) con
         memberRules.push_back( new ArgumentRule( "mu"        , ModelVector<RealPos>::getClassTypeSpec() , "The vector of extinction rates."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "delta"     , RealPos::getClassTypeSpec()              , "The rate of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "rho"       , Probability::getClassTypeSpec()          , "The taxon sampling probability."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "taxa"      , ModelVector<Taxon>::getClassTypeSpec()   , "The taxa used for simulation."               , ArgumentRule::BY_VALUE                , ArgumentRule::ANY ) );
+        std::vector<std::string> optionsCondition;
+        optionsCondition.push_back( "time" );
+        optionsCondition.push_back( "survival" );
+        memberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition, "The condition of the birth-death process." ) );
+        memberRules.push_back( new ArgumentRule( "allowSameCategory", RlBoolean::getClassTypeSpec()          , "Do we allow shifts into the same category", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule( "taxa"      , ModelVector<Taxon>::getClassTypeSpec(), "The taxon names used for initialization.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }
@@ -177,9 +185,17 @@ void Dist_heterogeneousRateBirthDeath::setConstParameter(const std::string& name
     {
         rho = var;
     }
+    else if ( name == "condition" )
+    {
+        condition = var;
+    }
     else if ( name == "taxa" )
     {
         taxa = var;
+    }
+    else if ( name == "allowSameCategory" )
+    {
+        allow_same_category = var;
     }
     else
     {

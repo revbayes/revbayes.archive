@@ -26,7 +26,9 @@ MarginalLikelihoodEstimator::MarginalLikelihoodEstimator(const std::string &fn, 
     
         if ( !myFileManager.isFile() )
         {
-            throw RbException("We currently only support reading of single files for marginal likelihood estimation.");
+            std::stringstream ss;
+            ss << "Could not not file " << fn << std::endl;
+            throw RbException(ss.str());
         }
     
     

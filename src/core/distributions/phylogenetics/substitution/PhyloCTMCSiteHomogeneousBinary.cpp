@@ -1,7 +1,7 @@
 #include "PhyloCTMCSiteHomogeneousBinary.h"
 
-RevBayesCore::PhyloCTMCSiteHomogeneousBinary::PhyloCTMCSiteHomogeneousBinary(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding ty) :
-    PhyloCTMCSiteHomogeneousConditional<BinaryState>(  t, 2, c, nSites, amb, AscertainmentBias::Coding(ty))
+RevBayesCore::PhyloCTMCSiteHomogeneousBinary::PhyloCTMCSiteHomogeneousBinary(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding ty, bool internal) :
+    PhyloCTMCSiteHomogeneousConditional<BinaryState>(  t, 2, c, nSites, amb, AscertainmentBias::Coding(ty), internal )
 {
 
 }
@@ -11,10 +11,51 @@ RevBayesCore::PhyloCTMCSiteHomogeneousBinary* RevBayesCore::PhyloCTMCSiteHomogen
     return new PhyloCTMCSiteHomogeneousBinary( *this );
 }
 
+
 bool RevBayesCore::PhyloCTMCSiteHomogeneousBinary::isSitePatternCompatible( std::map<size_t, size_t> charCounts )
 {
     std::map<size_t, size_t>::iterator zero = charCounts.find(0);
     std::map<size_t, size_t>::iterator one  = charCounts.find(1);
+
+    bool compatible = true;
+
+    if( charCounts.size() == 1 )
+    {
+        if(zero != charCounts.end() && (coding & BinaryAscertainmentBias::NOABSENCESITES) )
+        {
+            compatible = false;
+        }
+        else if(one != charCounts.end()  && (coding & BinaryAscertainmentBias::NOPRESENCESITES) )
+        {
+            compatible = false;
+        }
+    }
+    else
+    {
+        if(zero != charCounts.end() && zero->second == 1 && (coding & BinaryAscertainmentBias::NOSINGLETONABSENCE) )
+        {
+            compatible = false;
+        }
+        else if(one != charCounts.end() && one->second == 1 && (coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE) )
+        {
+            compatible = false;
+        }
+    }
+
+    return compatible;
+}
+
+
+bool RevBayesCore::PhyloCTMCSiteHomogeneousBinary::isSitePatternCompatible( std::map<RbBitSet, size_t> charCounts )
+{
+    RbBitSet z(2, false);
+    RbBitSet o(2, false);
+
+    z.set(0);
+    o.set(1);
+
+    std::map<RbBitSet, size_t>::iterator zero = charCounts.find(z);
+    std::map<RbBitSet, size_t>::iterator one  = charCounts.find(o);
 
     bool compatible = true;
     
@@ -90,8 +131,11 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousBinary::sumRootLikelihood( void )
 
                     if( ((coding & BinaryAscertainmentBias::NOABSENCESITES)      && a == 0 && c == 0) ||
                         ((coding & BinaryAscertainmentBias::NOPRESENCESITES)     && a == 1 && c == 0) ||
-                        ((coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE) && a == 0 && c == 1 && maskObservationCounts[mask] > 1) ||
-                        ((coding & BinaryAscertainmentBias::NOSINGLETONABSENCE)  && a == 1 && c == 1 && maskObservationCounts[mask] > 2)
+                        ((coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE) && a == 0 && c == 1
+                                && (maskObservationCounts[mask] > 1 || !(coding & BinaryAscertainmentBias::NOPRESENCESITES)) ) ||
+                        ((coding & BinaryAscertainmentBias::NOSINGLETONABSENCE)  && a == 1 && c == 1
+                                && (maskObservationCounts[mask] > 1 || !(coding & BinaryAscertainmentBias::NOABSENCESITES))
+                                && (maskObservationCounts[mask] > 2 || !(coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE)) )
                         )
                     {
                         // iterate over initial states

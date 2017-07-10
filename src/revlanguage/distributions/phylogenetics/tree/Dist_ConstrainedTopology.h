@@ -23,7 +23,7 @@ namespace RevLanguage {
     class Dist_ConstrainedTopology : public TypedDistribution<TimeTree> {
         
     public:
-        Dist_ConstrainedTopology( void );
+                                                            Dist_ConstrainedTopology(void);
         
         // Basic utility functions
         Dist_ConstrainedTopology*                           clone(void) const;                                                                      //!< Clone the object
@@ -34,22 +34,18 @@ namespace RevLanguage {
         const TypeSpec&                                     getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                                  getParameterRules(void) const;                                                          //!< Get member rules (const)
         
-        
         // Distribution functions you have to override
         RevBayesCore::TopologyConstrainedTreeDistribution*  createDistribution(void) const;
         
     protected:
-        
-        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
-        
+        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable>& var);       //!< Set member variable
         
     private:
-        
         RevPtr<const RevVariable>                           baseDistribution;
         RevPtr<const RevVariable>                           constraints;
         RevPtr<const RevVariable>                           backbone;
+        RevPtr<const RevVariable>                           invertConstraint;                                                                       //!< Boolean indicating whether topologies are rooted
     };
-    
 }
 
 #endif

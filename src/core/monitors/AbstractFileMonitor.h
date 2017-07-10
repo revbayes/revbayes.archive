@@ -73,7 +73,7 @@ namespace RevBayesCore {
         bool                                likelihood;
         bool                                append;
         bool                                flatten;
-        bool                                writeVersion;
+        bool                                write_version;
         
     };
     

@@ -62,7 +62,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
         
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> file_names;
-    if ( my_file_manager.isDirectory() )
+    if ( my_file_manager.isDirectory() == true )
     {
         my_file_manager.setStringWithNamesOfFilesInDirectory(file_names);
     }
@@ -75,7 +75,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
     
     // the vector of matrices;
-    WorkspaceVector<AbstractCharacterData> *m = new WorkspaceVector<AbstractCharacterData>();
+    ModelVector<AbstractHomologousDiscreteCharacterData> *m = new ModelVector<AbstractHomologousDiscreteCharacterData>();
     
     // the return value
     RevObject* retVal = NULL;
@@ -276,7 +276,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
             // set the return value
             if ( return_as_vector == false )
             {
-                retVal = (*m)[0].clone();
+                retVal = new AbstractHomologousDiscreteCharacterData( (*m)[0] );
                 delete m;
             }
             else

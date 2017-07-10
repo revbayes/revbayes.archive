@@ -12,6 +12,8 @@
 #include "RlClade.h"
 #include "RlTaxon.h"
 
+
+
 using namespace RevLanguage;
 
 /**
@@ -48,24 +50,28 @@ Dist_uniformTopology* Dist_uniformTopology::clone( void ) const
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribution( void ) const 
-{
+RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribution( void ) const {
     
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
     std::vector<RevBayesCore::Taxon> t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
     RevBayesCore::Clade og;
     if ( outgroup != NULL && outgroup->getRevObject() != RevNullObject::getInstance())
+        {
     	og = static_cast<const Clade &>( outgroup->getRevObject() ).getValue();
-
+        }
+    
     std::vector<RevBayesCore::Clade> c;
     if ( constraints != NULL && constraints->getRevObject() != RevNullObject::getInstance())
+        {
     	c = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
-
+        }
+    
     bool r = static_cast<const RlBoolean &>( rooted->getRevObject() ).getValue();
-
-	RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution( t, og, c, r);
-		return d;
+        
+	RevBayesCore::UniformTopologyDistribution* d = new RevBayesCore::UniformTopologyDistribution( t, og, c, r);
+    
+    return d;
 }
 
 
@@ -74,12 +80,10 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
  *
  * \return The class' name.
  */
-const std::string& Dist_uniformTopology::getClassType(void) 
-{ 
+const std::string& Dist_uniformTopology::getClassType(void) {
     
     static std::string rev_type = "Dist_uniformTopology";
-    
-	return rev_type; 
+	return rev_type;
 }
 
 
@@ -88,12 +92,10 @@ const std::string& Dist_uniformTopology::getClassType(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Dist_uniformTopology::getClassTypeSpec(void) 
-{ 
+const TypeSpec& Dist_uniformTopology::getClassTypeSpec(void) {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<BranchLengthTree>::getClassTypeSpec() ) );
-    
-	return rev_type_spec; 
+	return rev_type_spec;
 }
 
 
@@ -104,11 +106,10 @@ const TypeSpec& Dist_uniformTopology::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_uniformTopology::getDistributionFunctionName( void ) const
-{
+std::string Dist_uniformTopology::getDistributionFunctionName( void ) const {
+
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "UniformTopology";
-    
     return d_name;
 }
 
@@ -122,21 +123,20 @@ std::string Dist_uniformTopology::getDistributionFunctionName( void ) const
  *
  * \return The member rules.
  */
-const MemberRules& Dist_uniformTopology::getParameterRules(void) const 
-{
+const MemberRules& Dist_uniformTopology::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rules_set = false;
     
     if ( !rules_set ) 
-    {
+        {
         memberRules.push_back( new ArgumentRule( "taxa"       , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa that will be used for the tips.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "outgroup"   , Clade::getClassTypeSpec(), "The clade (consisting of one or more taxa) used as an outgroup.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), "The topological constraints that will be enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "rooted", 		RlBoolean::getClassTypeSpec(), "Is the distribution over rooted topologies?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
 		
         rules_set = true;
-    }
+        }
     
     return memberRules;
 }
@@ -147,11 +147,9 @@ const MemberRules& Dist_uniformTopology::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Dist_uniformTopology::getTypeSpec( void ) const 
-{
+const TypeSpec& Dist_uniformTopology::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
-    
     return ts;
 }
 
@@ -167,26 +165,26 @@ const TypeSpec& Dist_uniformTopology::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_uniformTopology::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
-{
+void Dist_uniformTopology::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "taxa" )
-    {
+        {
         taxa = var;
-    }
+        }
     else if ( name == "outgroup" )
-    {
+        {
         outgroup = var;
-    }
+        }
 	else if ( name == "constraints" ) 
-    {
+        {
         constraints = var;
-    }
+        }
 	else if ( name == "rooted" )
-	{
+        {
 		rooted = var;
-	}
-    else {
+        }
+    else
+        {
         Distribution::setConstParameter(name, var);
-    }
+        }
 }

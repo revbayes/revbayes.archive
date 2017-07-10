@@ -12,6 +12,7 @@
 #include "NaturalNumbersState.h"
 
 #include <algorithm>
+#include <sstream>
 
 
 using namespace RevBayesCore;
@@ -65,7 +66,7 @@ HomologousDiscreteCharacterData<NaturalNumbersState>* BitsetCharacterDataConvert
         // get natural number value from bitset
         size_t numberState = bitsToStatesByNumOn[taxonChars];
         
-        if (numberState >= numStates)
+        if (numberState > numStates)
         {
             std::stringstream ss;
             for (size_t j = 0; j < taxon.getNumberOfCharacters(); j++)
@@ -73,7 +74,7 @@ HomologousDiscreteCharacterData<NaturalNumbersState>* BitsetCharacterDataConvert
                 ss << taxon[j].getStateIndex();
             }
             ss << "->" << numberState;
-            ss << ", max=" << numStates-1;
+            ss << ", max=" << numStates;
             throw RbException("Converted state value for " + taxon.getTaxonName() + " exceeds number of states: " + ss.str());
         }
         
@@ -87,7 +88,12 @@ HomologousDiscreteCharacterData<NaturalNumbersState>* BitsetCharacterDataConvert
         DiscreteTaxonData<NaturalNumbersState> taxonNN(taxon.getTaxonName());
         std::stringstream ss;
         ss << numberState;
-        taxonNN.addCharacter(NaturalNumbersState(ss.str(), (int)numStates));
+        NaturalNumbersState n(ss.str(), (int)numStates);
+        n.addStateDescriptions(stateDescriptionsByNumOn);
+//        taxonNN.addCharacter(NaturalNumbersState(ss.str(), (int)numStates));
+        taxonNN.addCharacter(n);
+//        std::cout << n.getStringValue() << " -> " << n.getStateDescription() << "\n";
+//        taxonNN.addStateDescriptions(state_descriptions[numberState]);
 //        std::cout << numberState << " " << ss.str() << "\n";
         
         // add converted taxon to character data
@@ -140,6 +146,12 @@ void BitsetCharacterDataConverter::initializeBits(size_t n)
 //        for (size_t j = 0; j < statesToBitsByNumOn[i].size(); j++)
 //            std::cout << statesToBitsByNumOn[i][j];
 //        std::cout << "\n";
+        std::stringstream ss;
+        for (size_t j = 0; j < statesToBitsByNumOn[i].size(); j++)
+        {
+            ss << statesToBitsByNumOn[i][j];
+        }
+        stateDescriptionsByNumOn.push_back( ss.str() );
     }
     
     return;

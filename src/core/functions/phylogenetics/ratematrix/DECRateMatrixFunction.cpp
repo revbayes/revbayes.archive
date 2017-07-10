@@ -1,12 +1,3 @@
-//
-//  DECRateMatrixFunction.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/16/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
-
 #include "DECRateMatrixFunction.h"
 #include "RateMatrix_DECRateMatrix.h"
 #include "RbException.h"
@@ -17,7 +8,7 @@ using namespace RevBayesCore;
 
 DECRateMatrixFunction::DECRateMatrixFunction(   const TypedDagNode< RbVector<RbVector<double> > > *dr,
                                                 const TypedDagNode< RbVector<RbVector<double> > > *er,
-                                                const TypedDagNode< RbVector<double> > *rs,
+                                                const TypedDagNode< Simplex > *rs,
                                                 bool cs,
                                                 bool ex,
 //                                                bool os,
@@ -86,6 +77,6 @@ void DECRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const Dag
         extirpationRates = static_cast<const TypedDagNode< RbVector<RbVector<double> > >* >( newP );
     }
     else if (oldP == rangeSize) {
-        rangeSize = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        rangeSize = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
 }

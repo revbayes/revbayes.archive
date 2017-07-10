@@ -11,9 +11,16 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include <algorithm>
+
+#	ifdef RB_WIN
+#include <windows.h>
+#   endif
 
 
-/** Default constructor: The default settings are first read, and 
+
+
+/** Default constructor: The default settings are first read, and
  * then potentially overwritten by values contained in a file.  */
 RbSettings::RbSettings(void)
 {
@@ -59,9 +66,13 @@ std::string RbSettings::getOption(const std::string &key) const
     {
         return moduleDir;
     }
+    else if ( key == "outputPrecision" )
+    {
+        return StringUtilities::to_string(outputPrecision);
+    }
     else if ( key == "printNodeIndex" )
     {
-        return printNodeIndex ? "TRUE" : "FALSE";
+        return printNodeIndex ? "true" : "false";
     }
     else if ( key == "tolerance" )
     {
@@ -77,11 +88,11 @@ std::string RbSettings::getOption(const std::string &key) const
     }
     else if ( key == "useScaling" )
     {
-        return useScaling ? "TRUE" : "FALSE";
+        return useScaling ? "true" : "false";
     }
     else if ( key == "collapseSampledAncestors" )
     {
-        return collapseSampledAncestors ? "TRUE" : "FALSE";
+        return collapseSampledAncestors ? "true" : "false";
     }
     else
     {
@@ -89,6 +100,13 @@ std::string RbSettings::getOption(const std::string &key) const
     }
     
     return "";
+}
+
+
+size_t RbSettings::getOutputPrecision( void ) const
+{
+    // return the internal value
+    return outputPrecision;
 }
 
 
@@ -118,10 +136,11 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 void RbSettings::initializeUserSettings(void)
 {
     moduleDir = "modules";      // the default module directory
-    useScaling = false;          // the default useScaling
+    useScaling = false;         // the default useScaling
     scalingDensity = 4;         // the default scaling density
     lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
+    outputPrecision = 7;
     printNodeIndex = true;      // print node indices of tree nodes as comments
     collapseSampledAncestors = true;
     
@@ -152,14 +171,19 @@ void RbSettings::initializeUserSettings(void)
     }
 
     // initialize the current directory to be the directory the binary is sitting in
+#	ifdef RB_WIN
+    
+    char buffer[MAX_DIR_PATH];
+    GetModuleFileName( NULL, buffer, MAX_DIR_PATH );
+    std::string::size_type pos = std::string( buffer ).find_last_of( "\\/" );
+    workingDirectory = std::string( buffer ).substr( 0, pos);
+
+#	else
+
     char cwd[MAX_DIR_PATH+1];
 	if ( getcwd(cwd, MAX_DIR_PATH+1) )
     {
-#	ifdef RB_WIN
-        std::string pathSeparator = "\\";
-#	else
         std::string pathSeparator = "/";
-#   endif
         
         std::string curdir = cwd;
         
@@ -174,6 +198,9 @@ void RbSettings::initializeUserSettings(void)
     {
         workingDirectory = "";
     }
+    
+#   endif
+
     
     // save the current settings for the future.
 //    writeUserSettings();
@@ -235,16 +262,23 @@ void RbSettings::setCollapseSampledAncestors(bool w)
 }
 
 
-void RbSettings::setOption(const std::string &key, const std::string &value, bool write)
+void RbSettings::setOption(const std::string &key, const std::string &v, bool write)
 {
+
+    std::string value = v;
+    std::transform(value.begin(), value.end(), value.begin(), ::tolower);
 
     if ( key == "moduledir" )
     {
         moduleDir = value;
     }
+    else if ( key == "outputPrecision" )
+    {
+        outputPrecision = atoi(value.c_str());
+    }
     else if ( key == "printNodeIndex" )
     {
-        printNodeIndex = value == "TRUE";
+        printNodeIndex = value == "true";
     }
     else if ( key == "tolerance" )
     {
@@ -260,7 +294,7 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
     }
     else if ( key == "useScaling" )
     {
-        useScaling = value == "TRUE";
+        useScaling = value == "true";
     }
     else if ( key == "scalingDensity" )
     {
@@ -272,7 +306,7 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
     }
     else if ( key == "collapseSampledAncestors" )
     {
-        collapseSampledAncestors = value == "TRUE";
+        collapseSampledAncestors = value == "true";
     }
     else
     {
@@ -284,6 +318,16 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
         writeUserSettings();
     }
     
+}
+
+
+void RbSettings::setOutputPrecision(size_t p)
+{
+    // replace the internal value with this new value
+    outputPrecision = p;
+
+    // save the current settings for the future.
+    writeUserSettings();
 }
 
 
@@ -332,12 +376,13 @@ void RbSettings::writeUserSettings( void )
     std::ofstream writeStream;
     fm.openFile( writeStream );
     writeStream << "moduledir=" << moduleDir << std::endl;
-    writeStream << "printNodeIndex=" << (printNodeIndex ? "TRUE" : "FALSE") << std::endl;
+    writeStream << "outputPrecision=" << outputPrecision << std::endl;
+    writeStream << "printNodeIndex=" << (printNodeIndex ? "true" : "false") << std::endl;
     writeStream << "tolerance=" << tolerance << std::endl;
     writeStream << "linewidth=" << lineWidth << std::endl;
-    writeStream << "useScaling=" << useScaling << std::endl;
+    writeStream << "useScaling=" << (useScaling ? "true" : "false") << std::endl;
     writeStream << "scalingDensity=" << scalingDensity << std::endl;
-    writeStream << "collapseSampledAncestors=" << (collapseSampledAncestors ? "TRUE" : "FALSE") << std::endl;
+    writeStream << "collapseSampledAncestors=" << (collapseSampledAncestors ? "true" : "false") << std::endl;
     fm.closeFile( writeStream );
 
 }

@@ -14,8 +14,7 @@ using namespace RevLanguage;
 
 
 /** Default constructor */
-Func_simplex::Func_simplex( void ) :
-    TypedFunction< Simplex >()
+Func_simplex::Func_simplex( void ) : TypedFunction< Simplex >()
 {
 }
 
@@ -32,7 +31,7 @@ Func_simplex* Func_simplex::clone( void ) const
 
 
 /** Execute function: Construct simplex from RealPos values. */
-RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_simplex::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::Simplex >* Func_simplex::createFunction( void ) const
 {
     std::vector<const RevBayesCore::TypedDagNode<double>* > params;
     for ( size_t i = 0; i < args.size(); i++ )

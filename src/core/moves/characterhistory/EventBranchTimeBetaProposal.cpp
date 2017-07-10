@@ -96,6 +96,7 @@ double EventBranchTimeBetaProposal::doProposal( void )
         // we need to remove and add the event so that the events are back in time order
         history.removeEvent(event, branch_index);
         double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
+        double my_age = distribution->getValue().getNode(branch_index).getAge();
         
         // store the event
         stored_value = event;
@@ -105,24 +106,42 @@ double EventBranchTimeBetaProposal::doProposal( void )
         stored_branch_index = branch_index;
         
         // draw new ages and compute the hastings ratio at the same time
-        double m = stored_time / branch_length;
+        double m = (stored_time-my_age) / branch_length;
         double a = delta * m + offset;
         double b = delta * (1.0-m) + offset;
-        double new_time = RbStatistics::Beta::rv(a, b, *rng);
         
-        // compute the Hastings ratio
-        double forward = RbStatistics::Beta::lnPdf(a, b, new_time);
-        double new_a = delta * new_time + offset;
-        double new_b = delta * (1.0-new_time) + offset;
-        double backward = RbStatistics::Beta::lnPdf(new_a, new_b, stored_time / branch_length);
+        // Sebastian: This is a fix we noticed during the Bodega 2017 workshop
+        // apparently those values are not bounded
+        if ( a > 0.0 && b > 0.0  )
+        {
+            double new_time = RbStatistics::Beta::rv(a, b, *rng);
+            
+            if ( new_time > 1.0 || new_time < 0.0 )
+            {
+                throw RbException("Not supposed to happen!");
+            }
         
-        // set the time
-        event->setTime( new_time * branch_length );
+            // compute the Hastings ratio
+            double forward = RbStatistics::Beta::lnPdf(a, b, new_time);
+            double new_a = delta * new_time + offset;
+            double new_b = delta * (1.0-new_time) + offset;
+            double backward = RbStatistics::Beta::lnPdf(new_a, new_b, m);
         
-        // we need to remove and add the event so that the events are back in time order
-        history.addEvent(event, branch_index);
+            // set the time
+            event->setTime( new_time * branch_length + my_age );
         
-        return backward - forward;
+            // we need to remove and add the event so that the events are back in time order
+            history.addEvent(event, branch_index);
+        
+            return backward - forward;
+        }
+        else
+        {
+            // we need to decrement the failed counter because we did not actually reject the new proposal
+            move->decrementTriedCounter();
+            return RbConstants::Double::neginf;
+            
+        }
     }
     else
     {

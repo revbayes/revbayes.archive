@@ -115,6 +115,12 @@ double GibbsPruneAndRegraftProposal::doProposal( void )
     
     Tree& tau = variable->getValue();
     
+    if ( tau.getNumberOfTips() < 3)
+    {
+        failed = true;
+        return RbConstants::Double::neginf;
+    }
+    
     // potential affected nodes for likelihood computation
     RbOrderedSet<DagNode *> affected;
     variable->getAffectedNodes( affected );

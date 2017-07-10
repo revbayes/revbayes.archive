@@ -1,11 +1,3 @@
-//
-//  BiogeographyRateMapFunction.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/3/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "BiogeographyRateMapFunction.h"
 #include "ConstantNode.h"
 #include "RateGenerator.h"
@@ -23,7 +15,7 @@ BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe, uns
     homogeneous_clock_rate                = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneous_clock_rates             = NULL;
     geographyRateModifier               = NULL;
-    root_frequencies                     = new ConstantNode< RbVector<double> >("root_frequencies", new RbVector<double>(2,0.5));
+    root_frequencies                     = new ConstantNode<Simplex>("root_frequencies", new Simplex(2,0.5));
     
     branch_heterogeneous_clock_rates       = false;
     branchHeterogeneousRateMatrices     = false;
@@ -178,7 +170,7 @@ void BiogeographyRateMapFunction::setGeographyRateModifier(const TypedDagNode<Ge
 
 }
 
-void BiogeographyRateMapFunction::setRootFrequencies(const TypedDagNode< RbVector<double> > *f)
+void BiogeographyRateMapFunction::setRootFrequencies(const TypedDagNode< Simplex > *f)
 {
     if (root_frequencies != NULL)
     {
@@ -214,6 +206,6 @@ void BiogeographyRateMapFunction::swapParameterInternal(const DagNode *oldP, con
     }
     else if (oldP == root_frequencies)
     {
-        root_frequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        root_frequencies = static_cast<const TypedDagNode<Simplex>* >( newP );
     }
 }

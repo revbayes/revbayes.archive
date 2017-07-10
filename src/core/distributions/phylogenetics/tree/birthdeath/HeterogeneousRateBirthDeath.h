@@ -15,7 +15,15 @@ namespace RevBayesCore {
     class HeterogeneousRateBirthDeath : public AbstractCharacterHistoryBirthDeathProcess, public MemberObject< RbVector<int> >, public MemberObject< RbVector<double> > {
         
     public:
-        HeterogeneousRateBirthDeath(const TypedDagNode<double> *a, const TypedDagNode<int> *rs, const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *e, const TypedDagNode<double> *ev, const TypedDagNode<double> *r, const std::vector<Taxon> &n);                                                                                  //!< Constructor
+        HeterogeneousRateBirthDeath(const TypedDagNode<double> *a,
+                                    const TypedDagNode<int> *rs,
+                                    const TypedDagNode<RbVector<double> > *s,
+                                    const TypedDagNode<RbVector<double> > *e,
+                                    const TypedDagNode<double> *ev,
+                                    const TypedDagNode<double> *r,
+                                    const std::string &cdt,
+                                    bool allow_same,
+                                    const std::vector<Taxon> &n);                                                                                  //!< Constructor
         
         virtual                                            ~HeterogeneousRateBirthDeath(void);                          //!< Virtual destructor
         
@@ -47,6 +55,7 @@ namespace RevBayesCore {
         // helper functions
         void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
         void                                                buildRandomBinaryHistory(std::vector<TopologyNode *> &tips);
+        size_t                                              computeStateIndex(size_t i, double time) const;
         size_t                                              computeStartIndex(size_t i) const;
         void                                                simulateTree(void);
         void                                                runMCMC(void);
@@ -62,6 +71,7 @@ namespace RevBayesCore {
 
         CharacterHistory                                    branch_histories;
         
+        std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
         size_t                                              num_taxa;
         size_t                                              num_rate_categories;
         std::vector<Taxon>                                  taxa;
@@ -78,8 +88,9 @@ namespace RevBayesCore {
 
         const double                                        NUM_TIME_SLICES;
 
+        bool                                                allow_same_category;
         bool                                                shift_same_category;
-
+        
     };
     
 }

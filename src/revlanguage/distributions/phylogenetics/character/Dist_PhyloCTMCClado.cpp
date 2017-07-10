@@ -43,6 +43,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getValue();
     
+    bool internal = static_cast<const RlBoolean &>( storeInternalNodes->getRevObject() ).getValue();
+    
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* site_ratesNode = NULL;
@@ -57,7 +59,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
-    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
+    const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *rf = NULL;
     if ( root_frequencies != NULL && root_frequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
@@ -111,7 +113,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
         
         
-        RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState>(tau, nChars, true, n, ambig);
+        RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState>(tau, nChars, true, n, ambig, internal);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -274,6 +276,8 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
         
         dist_member_rules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
+        dist_member_rules.push_back( new ArgumentRule( "storeInternalNodes", RlBoolean::getClassTypeSpec(), "Should we store internal node states in the character matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        
         rules_set = true;
     }
     
@@ -374,6 +378,10 @@ void Dist_phyloCTMCClado::setConstParameter(const std::string& name, const RevPt
     else if ( name == "nStates" )
     {
         nStates = var;
+    }
+    else if ( name == "storeInternalNodes" )
+    {
+        storeInternalNodes = var;
     }
     else if ( name == "type" )
     {

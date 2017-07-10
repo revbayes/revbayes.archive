@@ -10,34 +10,31 @@ using namespace RevLanguage;
 /** Constructor from empty RlString */
 RlString::RlString( void ) : ModelObject<std::string>()
 {
-
-    setGuiVariableName("String");
-    setGuiLatexSymbol("");
     
     initMethods();
 }
 
 
 /** Constructor from RlString */
-RlString::RlString(const std::string& v) : ModelObject<std::string>( new std::string(v) )
+RlString::RlString(const std::string& v, bool parse) : ModelObject<std::string>( new std::string(v) )
 {
-
-    setGuiVariableName("String");
-    setGuiLatexSymbol("");
     
-    parseValue();
+    if ( parse == true )
+    {
+        parseValue();
+    }
     initMethods();
 }
 
 
 /* Construct from DAG node */
-RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : ModelObject<std::string>( v )
+RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v, bool parse ) : ModelObject<std::string>( v )
 {
-
-    setGuiVariableName("String");
-    setGuiLatexSymbol("");
     
-    parseValue();
+    if ( parse == true )
+    {
+        parseValue();
+    }
     initMethods();
 }
 
@@ -73,7 +70,7 @@ RevObject* RlString::add( const RevObject& rhs ) const
 RlString* RlString::add(const RevLanguage::RlString &rhs) const
 {
     
-    RlString *n = new RlString( dagNode->getValue() + rhs.getValue() );
+    RlString *n = new RlString( dag_node->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -194,7 +191,7 @@ void RlString::initMethods( void )
 void RlString::parseValue(void)
 {
     
-    const std::string &v = dagNode->getValue();
+    const std::string &v = dag_node->getValue();
     
     std::string res;
     std::string::const_iterator it = v.begin();

@@ -52,25 +52,17 @@ void FixedNodeheightPruneAndRegraftProposal::findNewBrothers(std::vector<Topolog
     if (!n->isTip() && &p != n)
     {
         // check the first child
-        TopologyNode* child = &n->getChild( 0 );
-        if ( child->getAge() < p.getAge() )
+        std::vector<TopologyNode*> children = n->getChildren();
+        for(size_t i = 0; i < children.size(); i++)
         {
-            if( child->isSampledAncestor() == false ) b.push_back( child );
-        }
-        else
-        {
-            findNewBrothers(b, p, child);
-        }
-        
-        // check the second child
-        child = &n->getChild( 1 );
-        if ( child->getAge() < p.getAge() )
-        {
-            if( child->isSampledAncestor() == false ) b.push_back( child );
-        }
-        else
-        {
-            findNewBrothers(b, p, child);
+            if ( children[i]->getAge() < p.getAge() )
+            {
+                b.push_back( children[i] );
+            }
+            else
+            {
+                findNewBrothers(b, p, children[i]);
+            }
         }
     }
 }
@@ -112,13 +104,19 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
     
     Tree& tau = variable->getValue();
     
+    if ( tau.getNumberOfTips() < 3)
+    {
+        failed = true;
+        return RbConstants::Double::neginf;
+    }
+    
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
     do {
         double u = rng->uniform01();
         size_t index = size_t( std::floor(tau.getNumberOfNodes() * u) );
         node = &tau.getNode(index);
-    } while ( node->isRoot() || node->getParent().isRoot() || node->getParent().getChild(0).isSampledAncestor() || node->getParent().getChild(1).isSampledAncestor() );
+    } while ( node->isRoot() || node->getParent().isRoot() );
 
     TopologyNode* parent        = &node->getParent();
     TopologyNode* grandparent   = &parent->getParent();

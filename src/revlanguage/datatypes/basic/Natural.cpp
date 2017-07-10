@@ -22,16 +22,12 @@ using namespace RevLanguage;
 Natural::Natural( void ) : Integer( 0 )
 {
 
-    setGuiVariableName("Natural Number");
-    setGuiLatexSymbol("N");
 }
 
 
 Natural::Natural( RevBayesCore::TypedDagNode<int> *v ) : Integer( v )
 {
     
-    setGuiVariableName("Natural Number");
-    setGuiLatexSymbol("N");
 }
 
 
@@ -39,8 +35,6 @@ Natural::Natural( RevBayesCore::TypedDagNode<int> *v ) : Integer( v )
 Natural::Natural( int x ) : Integer( x )
 {
 
-    setGuiVariableName("Natural Number");
-    setGuiLatexSymbol("N");
     if ( x < 0 )
     {
         throw RbException( "Negative value for " + getClassType() );
@@ -53,8 +47,6 @@ Natural::Natural( int x ) : Integer( x )
 Natural::Natural( unsigned int x ) : Integer( x )
 {
         
-    setGuiVariableName("Natural Number");
-    setGuiLatexSymbol("N");
 }
 
 
@@ -62,8 +54,6 @@ Natural::Natural( unsigned int x ) : Integer( x )
 Natural::Natural( unsigned long x) : Integer( int(x) )
 {
 
-    setGuiVariableName("Natural Number");
-    setGuiLatexSymbol("N");
     if ( x > INT_MAX )
     {
         throw RbException( "Value out of range for " + getClassType() );
@@ -108,7 +98,7 @@ RevObject* Natural::add( const RevObject& rhs ) const
 Natural* Natural::add(const RevLanguage::Natural &rhs) const
 {
     
-    Natural *n = new Natural( dagNode->getValue() + rhs.getValue() );
+    Natural *n = new Natural( dag_node->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -125,7 +115,7 @@ Natural* Natural::add(const RevLanguage::Natural &rhs) const
 RealPos* Natural::add(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() + rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -150,22 +140,22 @@ RevObject* Natural::convertTo( const TypeSpec& type ) const
 
     if ( type == RlBoolean::getClassTypeSpec() )
     {
-        return new RlBoolean( dagNode->getValue() == 0 );
+        return new RlBoolean( dag_node->getValue() == 0 );
     }
     
     if ( type == Real::getClassTypeSpec() )
     {
-        return new Real( dagNode->getValue() );
+        return new Real( dag_node->getValue() );
     }
     
     if ( type == RealPos::getClassTypeSpec() )
     {
-        return new RealPos( dagNode->getValue() );
+        return new RealPos( dag_node->getValue() );
     }
     
     if ( type == Probability::getClassTypeSpec() )
     {
-        return new Probability( dagNode->getValue() );
+        return new Probability( dag_node->getValue() );
     }
 
     if ( type == RlString::getClassTypeSpec() )
@@ -224,7 +214,7 @@ RevObject* Natural::divide( const RevObject& rhs ) const
 RealPos* Natural::divide(const RevLanguage::Natural &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() / double( rhs.getValue() ) );
+    RealPos *n = new RealPos( dag_node->getValue() / double( rhs.getValue() ) );
     
     return n;
 }
@@ -241,7 +231,7 @@ RealPos* Natural::divide(const RevLanguage::Natural &rhs) const
 RealPos* Natural::divide(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() / rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() / rhs.getValue() );
     
     return n;
 }
@@ -295,7 +285,7 @@ double Natural::isConvertibleTo( const TypeSpec& type, bool once ) const
         return 0.2;
     }
     
-    if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1 )
+    if ( once == true && type == Probability::getClassTypeSpec() && dag_node->getValue() <= 1 )
     {
         return 0.1;
     }
@@ -346,7 +336,7 @@ RevObject* Natural::multiply( const RevObject& rhs ) const
 Natural* Natural::multiply(const RevLanguage::Natural &rhs) const
 {
     
-    Natural *n = new Natural( dagNode->getValue() * rhs.getValue() );
+    Natural *n = new Natural( dag_node->getValue() * rhs.getValue() );
     
     return n;
 }
@@ -363,7 +353,7 @@ Natural* Natural::multiply(const RevLanguage::Natural &rhs) const
 RealPos* Natural::multiply(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() * rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() * rhs.getValue() );
     
     return n;
 }

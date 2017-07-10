@@ -132,7 +132,8 @@ void FunctionTable::clear(void)
     
     for ( std::multimap<std::string, Function *>::const_iterator i = begin(); i != end(); i++ )
     {
-        delete( i->second );
+        Function *f = i->second;
+        delete( f );
     }
     
     std::multimap<std::string, Function*>::clear();
@@ -367,7 +368,8 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
             matchScore->clear();
             if ( (*it).second->checkArguments(args, matchScore, once) == true )
             {
-                if ( bestMatch == NULL ) 
+                std::sort(matchScore->begin(), matchScore->end(), std::greater<double>());
+                if ( bestMatch == NULL )
                 {
                     bestScore = *matchScore;
                     bestMatch = it->second;
@@ -376,8 +378,9 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 else 
                 {
                     size_t j;
-                    for (j=0; j<matchScore->size() && j<bestScore.size(); j++) 
+                    for (j=0; j<matchScore->size() && j<bestScore.size(); ++j)
                     {
+                        
                         if ((*matchScore)[j] < bestScore[j]) 
                         {
                             bestScore = *matchScore;
@@ -386,14 +389,20 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                             break;
                         }
                         else if ((*matchScore)[j] > bestScore[j])
+                        {
                             break;
+                        }
+                        
                     }
                     if (j==matchScore->size() || j==bestScore.size()) 
                     {
                         ambiguous = true;   // Continue checking, there might be better matches ahead
                     }
+                    
                 }
+                
             }
+            
         }
         
         // free the memory
@@ -768,6 +777,9 @@ void FunctionTable::testFunctionValidity( const std::string& name, Function* fun
             msg << name << " = ";
             fxn.printValue(msg);
             msg << " : return types differ" << std::endl;
+            
+            // free function memory
+            delete fxn;
             
             // throw the error message
             throw RbException(msg.str());

@@ -40,12 +40,14 @@ namespace RevLanguage {
         
     private:
         
+        RevPtr<const RevVariable>                       allow_same_category;
         RevPtr<const RevVariable>                       root_age;
         RevPtr<const RevVariable>                       root_state;
         RevPtr<const RevVariable>                       speciation;
         RevPtr<const RevVariable>                       extinction;
         RevPtr<const RevVariable>                       event_rate;
         RevPtr<const RevVariable>                       rho;
+        RevPtr<const RevVariable>                       condition;                                                                              //!< The condition of the process (none/survival/#Taxa)
         RevPtr<const RevVariable>                       taxa;
     
     };

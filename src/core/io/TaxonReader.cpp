@@ -3,6 +3,7 @@
 #include "StringUtilities.h"
 #include "TaxonReader.h"
 #include <sstream>
+#include <set>
 
 using namespace RevBayesCore;
 
@@ -41,7 +42,7 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         }
         else
         {
-            throw RbException("Wrong header in the taxa definition file. It can only contain 'taxon', 'species' and 'age' fields.");
+            throw RbException("Wrong header in the taxa definition file. It can only contain 'taxon', 'species' and 'age' fields but received '" + tmp + "'.");
         }
     }
     
@@ -71,7 +72,22 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         
         taxa.push_back( t );
     }
+
     
+    std::set<std::string> found;
+    for(size_t i = 0; i < taxa.size(); i++)
+    {
+        if(found.find(taxa[i].getName()) == found.end())
+        {
+            found.insert(taxa[i].getName());
+        }
+        else
+        {
+            std::stringstream ss;
+            ss << "Duplicate taxon name '" << taxa[i].getName() << "' encountered when reading taxa";
+            throw(RbException(ss.str()));
+        }
+    }
 }
 
 

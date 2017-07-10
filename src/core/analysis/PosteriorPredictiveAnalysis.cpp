@@ -189,7 +189,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
         RbFileManager tmp = RbFileManager( dir_names[i] );
         
         // now set the model of the current analysis
-        current_analysis->setModel( current_model );
+        current_analysis->setModel( current_model, false );
 
         // set the monitor index
         current_analysis->addFileMonitorExtension(tmp.getLastPathComponent(), true);
@@ -224,7 +224,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
     MPI_Comm_free(&analysis_comm);
 
     // wait until all chains complete
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier(MPI_COMM_WORLD);
 #endif
     
 }
@@ -244,9 +244,9 @@ void PosteriorPredictiveAnalysis::runSim(MonteCarloAnalysis *sampler, size_t gen
     rules.push_back( MaxIterationStoppingRule(gen + currentGen) );
     
 #ifdef RB_MPI
-    sampler->run(gen, rules, c, false);
+    sampler->run(gen, rules, c, 100, false);
 #else
-    sampler->run(gen, rules, false);
+    sampler->run(gen, rules, 100, false);
 #endif
     
 }

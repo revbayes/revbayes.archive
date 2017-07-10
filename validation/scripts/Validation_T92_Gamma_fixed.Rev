@@ -18,7 +18,7 @@
 
 ### Read in sequence data for both genes
 
-data <- readDiscreteCharacterData("data/primates_cytb.nex")
+data <- readDiscreteCharacterData("data/primates_cytb_small.nex")
 
 # set my move index
 mi = 0

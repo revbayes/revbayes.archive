@@ -46,9 +46,10 @@ namespace RevBayesCore {
         virtual void                                        initFromString( const std::string &s )
         {
             this->clear();
-            std::string sub = s.substr( 2, s.size()-4);
+            std::string sub = s.substr( 1, s.size()-2);
+//            std::string sub = s.substr( 2, s.size()-4);
             std::vector<std::string> elements;
-            StringUtilities::stringSplit(sub,", ", elements);
+            StringUtilities::stringSplit(sub,",", elements);
             for (size_t i=0; i<elements.size(); ++i)
             {
                 valueType value;
@@ -70,7 +71,22 @@ namespace RevBayesCore {
 //        void                                                insert(size_t i, const valueType &v) { values[i] = v; }
 //        void                                                push_back(const valueType &v) { values.push_back( v ); }
         virtual size_t                                      size(void) const { return this->std::vector<valueType>::size(); }
-
+        valueType&                                          operator[](size_t i)
+        {
+            if ( i >= std::vector<valueType>::size() )
+            {
+                throw(RbException("Vector index out of range"));
+            }
+            return std::vector<valueType>::operator [](i);
+        }
+        const valueType&                                    operator[](size_t i) const
+        {
+            if ( i >= std::vector<valueType>::size() )
+            {
+                throw(RbException("Vector index out of range"));
+            }
+            return std::vector<valueType>::operator [](i);
+        }
         void                                                printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
             o << "[";
@@ -80,13 +96,14 @@ namespace RevBayesCore {
                 {
                     o << ",";
                 }
-                o << " ";
+//                o << " ";
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForUser( this->operator[](i), o, sep, l, left );
             }
             o << "]";
         }
         void                                                printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
+            o << "[";
             for (size_t i=0; i<size(); ++i)
             {
                 if (i > 0)
@@ -96,6 +113,7 @@ namespace RevBayesCore {
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForSimpleStoring( this->operator[](i), o, sep, l, left );
 
             }
+            o << "]";
         }
         void                                                printForComplexStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
@@ -106,7 +124,7 @@ namespace RevBayesCore {
                 {
                     o << ",";
                 }
-                o << " ";
+//                o << " ";
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForComplexStoring( this->operator[](i), o, sep, l, left );
 
             }
@@ -142,15 +160,30 @@ namespace RevBayesCore {
 
         // public (stl-like) vector functions
         RbVectorImpl<valueType, 1>&                         operator=(const RbVectorImpl<valueType, 1> &v) {
-            if ( this != &v ) {
+            if ( this != &v )
+            {
                 clear();
                 size_t n=v.size();
                 for (size_t i = 0; i < n; ++i) values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v[i] ) );
             }
             return *this;
         }
-        valueType&                                          operator[](size_t i) { return *values[i]; }
-        const valueType&                                    operator[](size_t i) const { return *values[i]; }
+        valueType&                                          operator[](size_t i)
+        {
+            if ( i >= values.size() )
+            {
+                throw(RbException("Vector index out of range"));
+            }
+            return *values[i];
+        }
+        const valueType&                                    operator[](size_t i) const
+        {
+            if ( i >= values.size() )
+            {
+                throw(RbException("Vector index out of range"));
+            }
+            return *values[i];
+        }
         bool                                                operator==(const RbVectorImpl<valueType,1>& x) const { return values == x.values; }                              //!< Equals operator
         bool                                                operator!=(const RbVectorImpl<valueType,1>& x) const { return !operator==(x); }                              //!< Not-Equals operator
         bool                                                operator<(const RbVectorImpl<valueType,1>& x) const { return values < x.values; }

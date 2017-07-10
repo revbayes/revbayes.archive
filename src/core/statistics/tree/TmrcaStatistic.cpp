@@ -7,7 +7,7 @@ using namespace RevBayesCore;
 TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, const bool s) : TypedFunction<double>( new double(0.0) ),
     tree( t ),
     clade( c ),
-    stemAge( s ),
+    stem_age( s ),
     index( -RbConstants::Integer::max )
 {
 
@@ -66,47 +66,26 @@ TmrcaStatistic* TmrcaStatistic::clone( void ) const
 }
 
 
-void TmrcaStatistic::initialize( void )
+void TmrcaStatistic::fireTreeChangeEvent(const TopologyNode &n, const unsigned& m)
 {
-    initializeBitSet();
-    taxaCount = clade.size();
-    index = -RbConstants::Integer::max;
-    
+    if (m == TreeChangeEventMessage::DEFAULT || m == TreeChangeEventMessage::TOPOLOGY)
+    {
+        // update clade in case topology move changed MRCA node
+        ; //recursivelyFlagNodesDirty(n);
+    }
+    else
+    {
+        // otherwise, just need to read the new age
+        ;
+    }
 }
 
-
-void TmrcaStatistic::initializeBitSet(void) {
+void TmrcaStatistic::initialize( void )
+{
+    clade.resetTaxonBitset( tree->getValue().getTaxonBitSetMap() );
+    taxa_count = clade.size();
+    index = -RbConstants::Integer::max;
     
-    RbBitSet bitset( tree->getValue().getNumberOfTips() );
-    
-    // initialize bitset for clade
-    std::map<std::string, size_t> taxon_bitset_map;
-    
-    // get all taxon names
-    std::vector<Taxon> unordered_taxa = tree->getValue().getTaxa();
-    std::vector<std::string> ordered_taxa;
-    for (size_t i = 0; i < unordered_taxa.size(); ++i)
-    {
-        ordered_taxa.push_back(unordered_taxa[i].getName());
-    }
-    
-    // order taxon names
-    std::sort(ordered_taxa.begin(), ordered_taxa.end());
-    
-    // add taxa to bitset map
-    for (size_t i = 0; i < ordered_taxa.size(); ++i)
-    {
-        taxon_bitset_map[ordered_taxa[i]] = i;
-    }
-    
-    for(size_t i=0; i < clade.size(); i++)
-    {
-        const TopologyNode& node = tree->getValue().getTipNodeWithName(clade.getTaxonName(i));
-        bitset.set(taxon_bitset_map[node.getName()]);
-        // bitset.set(node.getIndex());
-    }
-    
-    clade.setBitRepresentation(bitset);
 }
 
 
@@ -114,24 +93,24 @@ void TmrcaStatistic::update( void )
 {
     
     const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
-    size_t minCladeSize = n.size() + 2;
+    size_t min_clade_size = n.size() + 2;
 
     bool found = false;
     if ( index != -RbConstants::Integer::max )
     {
         TopologyNode *node = n[index];
-        size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+        size_t clade_size = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
         
         if ( node->containsClade( clade, false ) == true )
         {
             
-            if ( taxaCount == cladeSize )
+            if ( taxa_count == clade_size )
             {
                 found = true;
             }
             else
             {
-                minCladeSize = cladeSize;
+                min_clade_size = clade_size;
             }
             
         }
@@ -146,13 +125,13 @@ void TmrcaStatistic::update( void )
         {
             
             TopologyNode *node = n[i];
-            size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
-            if ( cladeSize < minCladeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
+            size_t clade_size = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+            if ( clade_size < min_clade_size && clade_size >= taxa_count && node->containsClade( clade, false ) )
             {
                 
-                index = node->getIndex();
-                minCladeSize = cladeSize;
-                if ( taxaCount == cladeSize )
+                index = int(node->getIndex());
+                min_clade_size = clade_size;
+                if ( taxa_count == clade_size )
                 {
                     break;
                 }
@@ -168,7 +147,7 @@ void TmrcaStatistic::update( void )
         throw RbException("TMRCA-Statistics can only be applied if clade is present.");
     }
 	
-    if ( stemAge && index != tree->getValue().getRoot().getIndex() )
+    if ( stem_age == true && index != tree->getValue().getRoot().getIndex() )
     {
         size_t parentIndex = tree->getValue().getNode(index).getParent().getIndex();
         double tmrca = tree->getValue().getNode( parentIndex ).getAge();

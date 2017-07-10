@@ -1,4 +1,5 @@
 #include "Natural.h"
+#include "Probability.h"
 #include "RealPos.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -11,8 +12,6 @@ using namespace RevLanguage;
 /** Default constructor */
 RealPos::RealPos( void ) : Real( 1.0 ) {
 
-    setGuiVariableName("Positive Real Number");
-    setGuiLatexSymbol("R+");
 }
 
 
@@ -20,8 +19,6 @@ RealPos::RealPos( void ) : Real( 1.0 ) {
 RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x )
 {
     
-    setGuiVariableName("Positive Real Number");
-    setGuiLatexSymbol("R+");
     if ( x->getValue() < 0.0 )
     {
         throw RbException( "Nonpositive value for " + getClassType() );
@@ -33,8 +30,6 @@ RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x )
 RealPos::RealPos( double x ) : Real( x )
 {
 
-    setGuiVariableName("Positive Real Number");
-    setGuiLatexSymbol("R+");
     if ( x < 0.0 )
     {
         throw RbException( "Nonpositive value for " + getClassType() );
@@ -47,8 +42,6 @@ RealPos::RealPos( double x ) : Real( x )
 RealPos::RealPos( int x ) : Real( x )
 {
 
-    setGuiVariableName("Positive Real Number");
-    setGuiLatexSymbol("R+");
     if ( x < 0 )
     {
         throw RbException( "Nonpositive value for " + getClassType() );
@@ -93,7 +86,7 @@ RevObject* RealPos::add( const RevObject& rhs ) const
 RealPos* RealPos::add(const RevLanguage::Natural &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() + rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -110,7 +103,7 @@ RealPos* RealPos::add(const RevLanguage::Natural &rhs) const
 RealPos* RealPos::add(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() + rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -122,9 +115,25 @@ RealPos* RealPos::add(const RevLanguage::RealPos &rhs) const
  *
  * \return A new copy of the process.
  */
-RealPos* RealPos::clone( void ) const {
+RealPos* RealPos::clone( void ) const
+{
 
 	return new RealPos( *this );
+}
+
+RevObject* RealPos::convertTo( const TypeSpec& type ) const
+{
+    
+    if ( type == Real::getClassTypeSpec() )
+    {
+        return new Real(dag_node->getValue());
+    }
+    else if ( type == Probability::getClassTypeSpec() )
+    {
+        return new Probability(dag_node->getValue());
+    }
+    
+    return Real::convertTo( type );
 }
 
 
@@ -140,10 +149,14 @@ RevObject* RealPos::divide( const RevObject& rhs ) const
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( RealPos::getClassTypeSpec() ) )
+    {
         return divide( static_cast<const RealPos&>( rhs ) );
+    }
     
     if ( rhs.getTypeSpec().isDerivedOf( Natural::getClassTypeSpec() ) )
+    {
         return divide( static_cast<const Natural&>( rhs ) );
+    }
     
     return Real::divide( rhs );
 }
@@ -160,7 +173,7 @@ RevObject* RealPos::divide( const RevObject& rhs ) const
 RealPos* RealPos::divide(const RevLanguage::Natural &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() / rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() / rhs.getValue() );
     
     return n;
 }
@@ -177,14 +190,15 @@ RealPos* RealPos::divide(const RevLanguage::Natural &rhs) const
 RealPos* RealPos::divide(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() / rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() / rhs.getValue() );
     
     return n;
 }
 
 
 /** Get Rev type of object */
-const std::string& RealPos::getClassType(void) { 
+const std::string& RealPos::getClassType(void)
+{
     
     static std::string rev_type = "RealPos";
     
@@ -201,7 +215,8 @@ const TypeSpec& RealPos::getClassTypeSpec(void) {
 
 
 /** Get type spec */
-const TypeSpec& RealPos::getTypeSpec( void ) const {
+const TypeSpec& RealPos::getTypeSpec( void ) const
+{
     
     static TypeSpec type_spec = getClassTypeSpec();
     
@@ -221,10 +236,14 @@ RevObject* RealPos::multiply( const RevObject& rhs ) const
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( RealPos::getClassTypeSpec() ) )
+    {
         return multiply( static_cast<const RealPos&>( rhs ) );
+    }
     
     if ( rhs.getTypeSpec().isDerivedOf( Natural::getClassTypeSpec() ) )
+    {
         return multiply( static_cast<const Natural&>( rhs ) );
+    }
     
     return Real::multiply( rhs );
 }
@@ -241,7 +260,7 @@ RevObject* RealPos::multiply( const RevObject& rhs ) const
 RealPos* RealPos::multiply(const RevLanguage::Natural &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() * rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() * rhs.getValue() );
     
     return n;
 }
@@ -258,25 +277,24 @@ RealPos* RealPos::multiply(const RevLanguage::Natural &rhs) const
 RealPos* RealPos::multiply(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( dagNode->getValue() * rhs.getValue() );
+    RealPos *n = new RealPos( dag_node->getValue() * rhs.getValue() );
     
     return n;
 }
 
 /** Is convertible to type? */
-double RealPos::isConvertibleTo(const TypeSpec& type, bool once) const {
-
-    if ( type == Real::getClassTypeSpec() )
-        return 0.4;
-
-    return Real::isConvertibleTo(type, once);
-}
-
-RevObject* RealPos::convertTo( const TypeSpec& type ) const
+double RealPos::isConvertibleTo(const TypeSpec& type, bool once) const
 {
 
     if ( type == Real::getClassTypeSpec() )
-        return new Real(dagNode->getValue());
-
-    return Real::convertTo( type );
+    {
+        return 0.2;
+    }
+    else if ( once == true && type == Probability::getClassTypeSpec() && dag_node->getValue() <= 1.0 )
+    {
+        return 0.1;
+    }
+    
+    double tmp = Real::isConvertibleTo(type, once);
+    return ( (tmp == -1.0) ? -1.0 : (tmp+0.2));
 }

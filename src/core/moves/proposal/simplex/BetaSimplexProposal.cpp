@@ -17,8 +17,8 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-BetaSimplexProposal::BetaSimplexProposal( StochasticNode<RbVector<double> > *n, double a ) : SimpleProposal<RbVector<double> >( n ),
-    storedValue( RbVector<double>() ),
+BetaSimplexProposal::BetaSimplexProposal( StochasticNode<Simplex> *n, double a, double p ) : SimpleProposal<Simplex>( n, p ),
+    storedValue( Simplex() ),
     alpha( a )
 {
     // tell the base class to add the node
@@ -74,7 +74,7 @@ const std::string& BetaSimplexProposal::getProposalName( void ) const
  *
  * \return The hastings ratio.
  */
-double BetaSimplexProposal::propose( RbVector<double> &value )
+double BetaSimplexProposal::propose( Simplex &value )
 {
     
     // Get random number generator
@@ -181,7 +181,7 @@ void BetaSimplexProposal::undoProposal( void )
 void BetaSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<RbVector<double> >* >(newN) ;
+    variable = static_cast<StochasticNode<Simplex>* >(newN) ;
     
 }
 
@@ -196,13 +196,15 @@ void BetaSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void BetaSimplexProposal::tune( double rate )
 {
     
-    if ( rate > 0.234 )
+    double p = this->targetAcceptanceRate;
+    
+    if ( rate > p )
     {
-        alpha /= (1.0 + ((rate-0.234)/0.766) );
+        alpha /= (1.0 + ((rate-p)/(1.0 - p)) );
     }
     else
     {
-        alpha *= (2.0 - rate/0.234 );
+        alpha *= (2.0 - rate/p);
     }
     
 }

@@ -29,20 +29,20 @@ namespace RevLanguage {
     class WorkspaceVector : public WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<rlType> >, public Container {
         
     public:
-//        typedef typename rlType::valueType          elementType;
-//        typedef RevBayesCore::RbVector<elementType> vectorRbPtr;
+     // typedef typename rlType::valueType          elementType;
+     // typedef RevBayesCore::RbVector<elementType> vectorRbPtr;
         typedef std::vector<rlType*>                vectorRlPtr;
         
                                                     WorkspaceVector(void);                                              //!< Default constructor
                                                     WorkspaceVector(const RevBayesCore::RbVector<rlType>& v);           //!< Constructor from rb value pointers
-//                                                    WorkspaceVector(const vectorRbPtr& v);                              //!< Constructor from rb value pointers
+                                                 // WorkspaceVector(const vectorRbPtr& v);                              //!< Constructor from rb value pointers
                                                     WorkspaceVector(const vectorRlPtr& v);                              //!< Constructor from rl value pointers
         
         // STL-like vector functions provided here
         rlType&                                     operator[](size_t index);                                           //!< Subscript operator
         const rlType&                               operator[](size_t index) const;                                     //!< Subscript operator (const)
-        void                                        pop_back(void);                                                     //!< Drop element at back
-        void                                        pop_front(void);                                                    //!< Drop element from front
+        rlType&                                     pop_back(void);                                                     //!< Drop element at back
+        rlType&                                     pop_front(void);                                                    //!< Drop element from front
         void                                        push_back(const RevObject &x);                                      //!< Append element to end
         void                                        push_front(const rlType &x);                                        //!< Append element to end
         size_t                                      size(void) const;                                                   //!< The size of the vector
@@ -55,20 +55,18 @@ namespace RevLanguage {
         virtual RevPtr<RevVariable>                 executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
 
         // Container functions provided here
-        virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
+        virtual rlType*                             getElement(size_t idx) const;                                       //!< Get element variable (single index)
         
         // Type conversion functions
-//        RevObject*                                  convertTo(const TypeSpec& type) const;                      //!< Convert to requested type
-//        virtual double                              isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
+     // RevObject*                                  convertTo(const TypeSpec& type) const;                              //!< Convert to requested type
+     // virtual double                              isConvertibleTo(const TypeSpec& type, bool once) const;             //!< Is this object convertible to the requested type?
 
         // WorkspaceVector functions
-//        vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
-        
-        void                                        printValue(std::ostream& o, bool user) const;                                  //!< Print value for user
+     // vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
+        void                                        printValue(std::ostream& o, bool user) const;                       //!< Print value for user
 
         
     private:
-
         void                                        initMethods(void);
 
     };
@@ -269,7 +267,7 @@ RevPtr<RevVariable> WorkspaceVector<rlType>::executeMethod( std::string const &n
 //        found = true;
 //        
 //        // Check whether the DAG node is actually a constant node
-//        if ( !this->dagNode->isConstant() )
+//        if ( !this->dag_node->isConstant() )
 //        {
 //            throw RbException( "Only constant variables can be sorted." );
 //        }
@@ -282,7 +280,7 @@ RevPtr<RevVariable> WorkspaceVector<rlType>::executeMethod( std::string const &n
 //        found = true;
 //        
 //        // Check whether the DAG node is actually a constant node
-//        if ( !this->dagNode->isConstant() )
+//        if ( !this->dag_node->isConstant() )
 //        {
 //            throw RbException( "Only constant variables can be made unique." );
 //        }
@@ -393,9 +391,9 @@ void WorkspaceVector<rlType>::initMethods( void )
  * Drop an element from the back of the vector.
  */
 template <typename rlType>
-void WorkspaceVector<rlType>::pop_back( void )
+rlType&  WorkspaceVector<rlType>::pop_back( void )
 {
-    this->value->pop_back();
+    return this->value->pop_back();
 }
 
 
@@ -403,9 +401,9 @@ void WorkspaceVector<rlType>::pop_back( void )
  * Drop an element from the front of the vector.
  */
 template <typename rlType>
-void WorkspaceVector<rlType>::pop_front( void )
+rlType&  WorkspaceVector<rlType>::pop_front( void )
 {
-    this->value->erase( this->value->begin() );
+    return this->value->erase( this->value->begin() );
 }
 
 

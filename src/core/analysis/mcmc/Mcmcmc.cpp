@@ -446,7 +446,7 @@ void Mcmcmc::setLikelihoodHeat(double h)
 /**
   * Set the model by delegating the model to the chains.
   */
-void Mcmcmc::setModel( Model *m )
+void Mcmcmc::setModel( Model *m, bool redraw )
 {
     
     // set the models of the chains
@@ -455,7 +455,7 @@ void Mcmcmc::setModel( Model *m )
         if ( chains[i] != NULL )
         {
             Model *m_clone = m->clone();
-            chains[i]->setModel( m_clone );
+            chains[i]->setModel( m_clone, redraw );
         }
         
     }
@@ -463,7 +463,7 @@ void Mcmcmc::setModel( Model *m )
     if ( base_chain != NULL )
     {
         Model *m_clone = m->clone();
-        base_chain->setModel( m_clone );
+        base_chain->setModel( m_clone, redraw );
     }
     
     delete m;
@@ -541,12 +541,11 @@ void Mcmcmc::synchronizeValues(void)
 #ifdef RB_MPI
     if ( active_PID != pid )
     {
-//        MPI::COMM_WORLD.Send(&results, int(num_chains), MPI::DOUBLE, (int)active_PID, 0);
         for (size_t i=0; i<num_chains; ++i)
         {
             if ( pid == pid_per_chain[i] )
             {
-                MPI::COMM_WORLD.Send(&results[i], 1, MPI::DOUBLE, (int)active_PID, 0);
+                MPI_Send(&results[i], 1, MPI_DOUBLE, (int)active_PID, 0, MPI_COMM_WORLD);
             }
             
         }
@@ -564,7 +563,8 @@ void Mcmcmc::synchronizeValues(void)
             // ignore self
             if (pid != pid_per_chain[j])
             {
-                MPI::COMM_WORLD.Recv(&results[j], 1, MPI::DOUBLE, int(pid_per_chain[j]), 0);
+                MPI_Status status;
+                MPI_Recv(&results[j], 1, MPI_DOUBLE, int(pid_per_chain[j]), 0, MPI_COMM_WORLD, &status);
             }
             
         }
@@ -582,7 +582,8 @@ void Mcmcmc::synchronizeValues(void)
         {
             for (size_t j=0; j<num_chains; ++j)
             {
-                MPI::COMM_WORLD.Send(&chain_values[j], 1, MPI::DOUBLE, int(active_PID+i), 0);
+//                MPI::COMM_WORLD.Send(&chain_values[j], 1, MPI::DOUBLE, int(active_PID+i), 0);
+                MPI_Send(&chain_values[j], 1, MPI_DOUBLE, int(active_PID+i), 0, MPI_COMM_WORLD);
             }
 //            MPI::COMM_WORLD.Bcast(&chain_values[i], 1, MPI::DOUBLE, (int)active_PID);
         }
@@ -591,7 +592,9 @@ void Mcmcmc::synchronizeValues(void)
     {
         for (size_t i=0; i<num_chains; ++i)
         {
-            MPI::COMM_WORLD.Recv(&chain_values[i], 1, MPI::DOUBLE, int(active_PID), 0);
+//            MPI::COMM_WORLD.Recv(&chain_values[i], 1, MPI::DOUBLE, int(active_PID), 0);
+            MPI_Status status;
+            MPI_Recv(&chain_values[i], 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD, &status);
         }
         
     }
@@ -625,7 +628,8 @@ void Mcmcmc::synchronizeHeats(void)
         {
             if ( pid == pid_per_chain[i] )
             {
-                MPI::COMM_WORLD.Send(&heats[i], 1, MPI::DOUBLE, (int)active_PID, 0);
+//                MPI::COMM_WORLD.Send(&heats[i], 1, MPI::DOUBLE, (int)active_PID, 0);
+                MPI_Send(&heats[i], 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD);
             }
             
         }
@@ -642,7 +646,9 @@ void Mcmcmc::synchronizeHeats(void)
             // ignore self
             if (pid != pid_per_chain[j])
             {
-                MPI::COMM_WORLD.Recv(&heats[j], 1, MPI::DOUBLE, int(pid_per_chain[j]), 0);
+//                MPI::COMM_WORLD.Recv(&heats[j], 1, MPI::DOUBLE, int(pid_per_chain[j]), 0);
+                MPI_Status status;
+                MPI_Recv(&heats[j], 1, MPI_DOUBLE, int(pid_per_chain[j]), 0, MPI_COMM_WORLD, &status);
             }
             
         }
@@ -661,7 +667,8 @@ void Mcmcmc::synchronizeHeats(void)
             
             for (size_t j = 0; j < num_chains; ++j)
             {
-                MPI::COMM_WORLD.Send(&chain_heats[j], 1, MPI::DOUBLE, int(active_PID+i), 0);
+//                MPI::COMM_WORLD.Send(&chain_heats[j], 1, MPI::DOUBLE, int(active_PID+i), 0);
+                MPI_Send(&chain_heats[j], 1, MPI_DOUBLE, int(active_PID+i), 0, MPI_COMM_WORLD);
             }
         }
     }
@@ -669,7 +676,9 @@ void Mcmcmc::synchronizeHeats(void)
     {
         for (size_t i=0; i<num_chains; ++i)
         {
-            MPI::COMM_WORLD.Recv(&chain_heats[i], 1, MPI::DOUBLE, int(active_PID), 0);
+//            MPI::COMM_WORLD.Recv(&chain_heats[i], 1, MPI::DOUBLE, int(active_PID), 0);
+            MPI_Status status;
+            MPI_Recv(&chain_heats[i], 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD, &status);
         }
         
     }
@@ -753,16 +762,23 @@ void Mcmcmc::swapNeighborChains(void)
     {
         for (size_t i = 1; i < num_processes; ++i)
         {
-            MPI::COMM_WORLD.Send(&j, 1, MPI_INT, int(i+active_PID), 0);
-            MPI::COMM_WORLD.Send(&k, 1, MPI_INT, int(i+active_PID), 0);
-            MPI::COMM_WORLD.Send(&accept, 1, MPI::BOOL, int(i+active_PID), 0);
+//            MPI::COMM_WORLD.Send(&j, 1, MPI_INT, int(i+active_PID), 0);
+//            MPI::COMM_WORLD.Send(&k, 1, MPI_INT, int(i+active_PID), 0);
+//            MPI::COMM_WORLD.Send(&accept, 1, MPI::BOOL, int(i+active_PID), 0);
+            MPI_Send(&j, 1, MPI_INT, int(active_PID+i), 0, MPI_COMM_WORLD);
+            MPI_Send(&k, 1, MPI_INT, int(active_PID+i), 0, MPI_COMM_WORLD);
+            MPI_Send(&accept, 1, MPI_C_BOOL, int(active_PID+i), 0, MPI_COMM_WORLD);
         }
     }
     else
     {
-        MPI::COMM_WORLD.Recv(&j, 1, MPI_INT, int(active_PID), 0);
-        MPI::COMM_WORLD.Recv(&k, 1, MPI_INT, int(active_PID), 0);
-        MPI::COMM_WORLD.Recv(&accept, 1, MPI::BOOL, int(active_PID), 0);
+//        MPI::COMM_WORLD.Recv(&j, 1, MPI_INT, int(active_PID), 0);
+//        MPI::COMM_WORLD.Recv(&k, 1, MPI_INT, int(active_PID), 0);
+//        MPI::COMM_WORLD.Recv(&accept, 1, MPI::BOOL, int(active_PID), 0);
+        MPI_Status status;
+        MPI_Recv(&j, 1, MPI_INT, int(active_PID), 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(&k, 1, MPI_INT, int(active_PID), 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(&accept, 1, MPI_C_BOOL, int(active_PID), 0, MPI_COMM_WORLD, &status);
     }
 //    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)active_PID);
 //    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)active_PID);
@@ -899,14 +915,19 @@ void Mcmcmc::swapRandomChains(void)
     {
         for (size_t i = 1; i < num_processes; ++i)
         {
-            MPI::COMM_WORLD.Send(&j, 1, MPI_INT, int(active_PID+i), 0);
-            MPI::COMM_WORLD.Send(&k, 1, MPI_INT, int(active_PID+i), 0);
+//            MPI::COMM_WORLD.Send(&j, 1, MPI_INT, int(active_PID+i), 0);
+//            MPI::COMM_WORLD.Send(&k, 1, MPI_INT, int(active_PID+i), 0);
+            MPI_Send(&j, 1, MPI_INT, int(active_PID+i), 0, MPI_COMM_WORLD);
+            MPI_Send(&k, 1, MPI_INT, int(active_PID+i), 0, MPI_COMM_WORLD);
         }
     }
     else
     {
-        MPI::COMM_WORLD.Recv(&j, 1, MPI_INT, int(active_PID), 0);
-        MPI::COMM_WORLD.Recv(&k, 1, MPI_INT, int(active_PID), 0);
+//        MPI::COMM_WORLD.Recv(&j, 1, MPI_INT, int(active_PID), 0);
+//        MPI::COMM_WORLD.Recv(&k, 1, MPI_INT, int(active_PID), 0);
+        MPI_Status status;
+        MPI_Recv(&j, 1, MPI_INT, int(active_PID), 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(&k, 1, MPI_INT, int(active_PID), 0, MPI_COMM_WORLD, &status);
     }
 //    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)active_PID);
 //    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)active_PID);
@@ -948,12 +969,15 @@ void Mcmcmc::updateChainState(size_t j)
     {
         for (size_t i = 1; i < num_processes; ++i)
         {
-            MPI::COMM_WORLD.Send(&chain_heats[j], 1, MPI::DOUBLE, int(active_PID+i), 0);
+//            MPI::COMM_WORLD.Send(&chain_heats[j], 1, MPI::DOUBLE, int(active_PID+i), 0);
+            MPI_Send(&chain_heats[j], 1, MPI_DOUBLE, int(active_PID+i), 0, MPI_COMM_WORLD);
         }
     }
     else
     {
-        MPI::COMM_WORLD.Recv(&chain_heats[j], 1, MPI::DOUBLE, int(active_PID), 0);
+//        MPI::COMM_WORLD.Recv(&chain_heats[j], 1, MPI::DOUBLE, int(active_PID), 0);
+        MPI_Status status;
+        MPI_Recv(&chain_heats[j], 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD, &status);
     }
 //    MPI::COMM_WORLD.Bcast(&chain_heats[j], 1, MPI::DOUBLE, (int)active_PID);
 #endif

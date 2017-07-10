@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class ScaleProposal : public SimpleProposal<double> {
         
     public:
-        ScaleProposal( StochasticNode<double> *n, double l);                                                                    //!<  constructor
+        ScaleProposal( StochasticNode<double> *n, double l, double p=0.44);                                                                    //!<  constructor
         
         // Basic utility functions
         void                                cleanProposal(void);                                                                //!< Clean up proposal
@@ -33,7 +33,7 @@ namespace RevBayesCore {
         const std::string&                  getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                prepareProposal(void);                                                              //!< Prepare the proposal
         void                                printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
-        double                              propose(double &v);                                                                   //!< Perform proposal
+        double                              propose(double &v);                                                                  //!< Perform proposal
         void                                tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                undoProposal(void);                                                                 //!< Reject the proposal
         

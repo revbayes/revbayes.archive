@@ -83,27 +83,27 @@ double FossilTimeSlideUniformProposal::doProposal( void )
     
     Tree& tau = tree->getValue();
     
-    size_t numFossils = 0;
+    std::vector<size_t> fossils;
 
     for (size_t i = 0; i < tau.getNumberOfNodes(); ++i)
     {
         TopologyNode* node = &tau.getNode(i);
-        numFossils += node->isFossil();
+        if( node->isFossil() )
+        {
+            fossils.push_back(i);
+        }
 
     }
 
-    if(numFossils == 0)
+    if( fossils.empty() )
     {
         return 0;
     }
 
     // pick a random fossil node
-    TopologyNode* node;
-    do {
-        double u = rng->uniform01();
-        size_t index = size_t( std::floor(tau.getNumberOfNodes() * u) );
-        node = &tau.getNode(index);
-    } while ( !node->isFossil() );
+    double u = rng->uniform01();
+    size_t index = size_t( std::floor(fossils.size() * u) );
+    TopologyNode* node = &tau.getNode(fossils[index]);
     
     TopologyNode& parent = node->getParent();
 
@@ -146,11 +146,6 @@ double FossilTimeSlideUniformProposal::doProposal( void )
     
     // set the age
     node->setAge( my_new_age );
-    
-    if(node->isSampledAncestor())
-    {
-        parent.setAge( my_new_age );
-    }
 
     return 0.0;
     

@@ -8,9 +8,10 @@ using namespace RevBayesCore;
 
 
 
-Proposal::Proposal(void) :
+Proposal::Proposal(double p) :
     nodes(),
-    move( NULL )
+    move( NULL ),
+    targetAcceptanceRate(p)
 {
     
 }
@@ -18,7 +19,8 @@ Proposal::Proposal(void) :
 
 Proposal::Proposal(const Proposal &p)  :
     nodes( p.nodes ),
-    move( NULL )
+    move( NULL ),
+    targetAcceptanceRate( p.targetAcceptanceRate )
 {
     
     for (std::vector<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
@@ -142,17 +144,17 @@ void Proposal::removeNode( RevBayesCore::DagNode *n )
         }
     }
     
-    if ( n->decrementReferenceCount() == 0 )
-    {
-        delete n;
-    }
-    
     // delegate to the move
     if ( move != NULL )
     {
         move->removeNode( n );
     }
-    
+
+    if ( n->decrementReferenceCount() == 0 )
+    {
+        delete n;
+    }
+
 }
 
 

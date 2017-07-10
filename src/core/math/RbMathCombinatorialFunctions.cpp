@@ -277,6 +277,16 @@ int RbMath::stirlingSecond(int n, int k) {
 	return r;
 }
 
+int RbMath::bell(int n) {
+
+    int r = 0;
+    for (int k = 0; k <= n; k++)
+    {
+        r += stirlingSecond(n, k);
+    }
+    return r;
+}
+
 double RbMath::lnStirlingFirst(int n, int k) {
 	
 	double r = log(stirlingFirst(n, k));

@@ -1,15 +1,10 @@
-//
-//  ChromosomesCladogenicStateFunction.h
-//
-//  Created by will freyman on 12/13/15.
-//  Copyright (c) 2015 will freyman. All rights reserved.
-//
-
-#ifndef ChromosomesCladogenicStateFunction__
-#define ChromosomesCladogenicStateFunction__
+#ifndef ChromosomesCladogenicStateFunction_H
+#define ChromosomesCladogenicStateFunction_H
 
 #include "AbstractCladogenicStateFunction.h"
+#include "CladogeneticProbabilityMatrix.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -19,11 +14,11 @@
 
 namespace RevBayesCore {
 
-    class ChromosomesCladogenicStateFunction : public AbstractCladogenicStateFunction, public TypedFunction<MatrixReal> {
+    class ChromosomesCladogenicStateFunction : public AbstractCladogenicStateFunction, public TypedFunction<CladogeneticProbabilityMatrix> {
         
     public:
         
-        ChromosomesCladogenicStateFunction( const TypedDagNode< RbVector< double > >* ep, unsigned mc );
+        ChromosomesCladogenicStateFunction( const TypedDagNode< Simplex >* ep, unsigned mc );
         virtual                                            ~ChromosomesCladogenicStateFunction(void);               
         
         const static unsigned NO_CHANGE                             = 0;         // N -> N
@@ -49,7 +44,7 @@ namespace RevBayesCore {
         void                                                        updateProbs(void);
         
         // members
-        const TypedDagNode< RbVector<double> >*                     eventProbs;
+        const TypedDagNode< Simplex >*                              eventProbs;
         unsigned                                                    maxChromo;
         unsigned                                                    numEventTypes;
         std::map< std::vector<unsigned>, std::vector<unsigned> >    eventMapTypes;

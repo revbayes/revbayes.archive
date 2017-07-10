@@ -165,25 +165,28 @@ RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>
         DynamicNode<valueType>::operator=( n );
         
         // Remove us as the child of the distribution parameters
-        const std::set<const DagNode*>& distParents = distribution->getParameters();
-        for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+        const std::vector<const DagNode*>& dist_parents = distribution->getParameters();
+        for (std::vector<const DagNode*>::const_iterator it = dist_parents.begin(); it != dist_parents.end(); ++it)
         {
             (*it)->removeChild( this );
             
             // Decrement the reference count and check whether we need to delete the DAG node
             if ( (*it)->decrementReferenceCount() == 0)
+            {
                 delete (*it);
+            }
+            
         }
         
         // Delete the distribution
         delete distribution;
         
         // Recreate the distribution
-        distribution = n.function->clone();
+        distribution = n.distribution->clone();
         
         // Get the parameters from the new distribution and add us as child of them in the DAG
-        distParents = distribution->getParameters();
-        for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+        const std::vector<const DagNode*>& new_dist_parents = distribution->getParameters();
+        for (std::vector<const DagNode*>::const_iterator it = new_dist_parents.begin(); it != new_dist_parents.end(); ++it)
         {
             (*it)->addChild( this );
             
@@ -282,7 +285,7 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
     if ( needs_probability_recalculation )
     {
         // compute and store log-probability
-        if ( !this->prior_only || !this->clamped )
+        if ( this->prior_only == false || this->clamped == false )
         {
             lnProb = distribution->computeLnProbability();
         }

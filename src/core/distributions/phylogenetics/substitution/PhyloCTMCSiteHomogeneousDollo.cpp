@@ -2,7 +2,7 @@
 #include "RbMathFunctions.h"
 
 RevBayesCore::PhyloCTMCSiteHomogeneousDollo::PhyloCTMCSiteHomogeneousDollo(const TypedDagNode<Tree> *t, size_t nc, bool c, size_t nSites, bool amb, DolloAscertainmentBias::Coding ty, bool norm) :
-    PhyloCTMCSiteHomogeneousConditional<StandardState>(  t, nc, c, nSites, amb, AscertainmentBias::Coding(ty)), dim(nc), integrationFactors(0), normalize(norm)
+    PhyloCTMCSiteHomogeneousConditional<StandardState>(  t, nc + 1, c, nSites, amb, AscertainmentBias::Coding(ty)), dim(nc), integrationFactors(0), normalize(norm)
 {
     massNodeOffset = this->num_site_mixtures*numCorrectionMasks;
     activeMassOffset = this->num_nodes*massNodeOffset;
@@ -78,45 +78,28 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::resizeLikelihoodVectors( void 
     }
 }
 
-void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::updateTransitionProbabilities(size_t nodeIdx, double brlen)
+void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::updateTransitionProbabilities(size_t node_idx, double brlen)
 {
-    // first, get the rate matrix for this branch
-    const RateGenerator *rg = NULL;
-    if ( this->branch_heterogeneous_substitution_matrices == true )
-    {
-        rg = &this->heterogeneous_rate_matrices->getValue()[nodeIdx];
-    }
-    else if(homogeneous_rate_matrix != NULL)
-    {
-        rg = dynamic_cast<const RateMatrix *>(&this->homogeneous_rate_matrix->getValue());
-    }
-
-    const RateMatrix *rm = dynamic_cast<const RateMatrix *>(rg);
-    if ( rm == NULL && rg != NULL)
-    {
-        throw RbException("Dollo model cannot use RateGenerators that are not RateMatrices");
-    }
-
-    // second, get the clock rate for the branch
+    // first, get the clock rate for the branch
     double rate = 1.0;
     if ( this->branch_heterogeneous_clock_rates == true )
     {
-        rate = this->heterogeneous_clock_rates->getValue()[nodeIdx];
+        rate = this->heterogeneous_clock_rates->getValue()[node_idx];
     }
     else if(this->homogeneous_clock_rate != NULL)
     {
         rate = this->homogeneous_clock_rate->getValue();
     }
 
-    // third, get the death rate
+    // get the death rate
     double death = 1.0;
     if(death_rate != NULL)
     {
         death = death_rate->getValue();
     }
 
-    // and finally compute the per site rate transition probability matrix
-    const TopologyNode* node = tau->getValue().getNodes()[nodeIdx];
+    // and compute the per site rate transition probability matrix
+    const TopologyNode* node = tau->getValue().getNodes()[node_idx];
 
     double endAge = node->getAge();
 
@@ -131,20 +114,51 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::updateTransitionProbabilities(
     double mu = death * rate;
     double beta = rate;
 
-    if(rm != NULL && normalize)
-    {
-        double avg = rm->averageRate();
+    // first, get the rate matrix for this branch
+    const RateGenerator *rg = NULL;
 
-        beta *= avg / (avg + death);
-        mu /= (avg + death);
+    size_t numMatrices = node_idx+1;
+    size_t startMatrix = node_idx;
+    if (this->branch_heterogeneous_substitution_matrices == false )
+    {
+        numMatrices = this->num_matrices;
+        startMatrix = 0;
     }
 
-    if ( this->rate_variation_across_sites == true )
+    for (size_t matrix = startMatrix; matrix < numMatrices; ++matrix)
     {
-        const std::vector<double> &r = this->site_rates->getValue();
-        for (size_t i = 0; i < this->num_site_mixtures; ++i)
+        if ( this->heterogeneous_rate_matrices != NULL )
         {
-            double scaled_mu = r[i] * mu;
+            rg = &this->heterogeneous_rate_matrices->getValue()[matrix];
+        }
+        else if( this->homogeneous_rate_matrix != NULL )
+        {
+            rg = &this->homogeneous_rate_matrix->getValue();
+        }
+
+        const RateMatrix *rm = dynamic_cast<const RateMatrix *>(rg);
+        if ( rm == NULL && rg != NULL)
+        {
+            throw RbException("Dollo model cannot use RateGenerators that are not RateMatrices");
+        }
+
+        if(rm != NULL && normalize)
+        {
+            double avg = rm->averageRate();
+
+            beta *= avg / (avg + death);
+            mu /= (avg + death);
+        }
+
+        for (size_t i = 0; i < this->num_site_rates; ++i)
+        {
+            size_t matrix_index = this->branch_heterogeneous_substitution_matrices ? i : i*this->num_matrices + matrix;
+
+            double r = 1.0;
+            if ( this->rate_variation_across_sites == true )
+                r = this->site_rates->getValue()[i];
+
+            double scaled_mu = r * mu;
 
             if(node->isRoot())
             {
@@ -157,66 +171,37 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::updateTransitionProbabilities(
 
                 if(rm != NULL)
                 {
-                    rm->calculateTransitionProbabilities( startAge, endAge,  r[i] * beta, this->transition_prob_matrices[i] );
+                    rm->calculateTransitionProbabilities( startAge, endAge,  r * beta, this->transition_prob_matrices[matrix_index] );
 
                     for(size_t a = 0; a < dim; a++)
                     {
                         for(size_t b = 0; b < dim; b++)
                         {
-                            this->transition_prob_matrices[i][a][b] *= survival[i];
+                            this->transition_prob_matrices[matrix_index][a][b] *= survival[i];
                         }
 
-                        this->transition_prob_matrices[i][a][dim] = 1.0 - survival[i];
+                        this->transition_prob_matrices[matrix_index][a][dim] = 1.0 - survival[i];
+                        this->transition_prob_matrices[matrix_index][dim][a] = 0.0;
                     }
 
-                    this->transition_prob_matrices[i][dim][dim] = 1.0;
+                    this->transition_prob_matrices[matrix_index][dim][dim] = 1.0;
                 }
                 else
                 {
-                    this->transition_prob_matrices[i][0][0] = 1.0;
-                    this->transition_prob_matrices[i][0][1] = 0.0;
-                    this->transition_prob_matrices[i][1][0] = 1.0 - survival[i];
-                    this->transition_prob_matrices[i][1][1] = survival[i];
+                    this->transition_prob_matrices[matrix_index][1][1] = 1.0;
+                    this->transition_prob_matrices[matrix_index][1][0] = 0.0;
+                    this->transition_prob_matrices[matrix_index][0][1] = 1.0 - survival[i];
+                    this->transition_prob_matrices[matrix_index][0][0] = survival[i];
                 }
             }
         }
     }
-    else
-    {
-        if(node->isRoot())
-        {
-            integrationFactors[0] = 1.0/mu;
-        }
-        else
-        {
-            survival[0] = exp( - mu * (startAge - endAge) );
-            integrationFactors[0] = (1.0 - survival[0])/mu;
+    TransitionProbabilityMatrix m1 = transition_prob_matrices[0];
+    TransitionProbabilityMatrix m2 = transition_prob_matrices[1];
+    TransitionProbabilityMatrix m3 = transition_prob_matrices[2];
+    TransitionProbabilityMatrix m4 = transition_prob_matrices[3];
 
-            if(rm != NULL)
-            {
-                rm->calculateTransitionProbabilities( startAge, endAge,  beta, this->transition_prob_matrices[0] );
-
-                for(size_t a = 0; a < dim; a++)
-                {
-                    for(size_t b = 0; b < dim; b++)
-                    {
-                        this->transition_prob_matrices[0][a][b] *= survival[0];
-                    }
-
-                    this->transition_prob_matrices[0][a][dim] = 1.0 - survival[0];
-                }
-
-                this->transition_prob_matrices[0][dim][dim] = 1.0;
-            }
-            else
-            {
-                this->transition_prob_matrices[0][0][0] = 1.0;
-                this->transition_prob_matrices[0][0][1] = 0.0;
-                this->transition_prob_matrices[0][1][0] = 1.0 - survival[0];
-                this->transition_prob_matrices[0][1][1] = survival[0];
-            }
-        }
-    }
+    return;
 }
 
 void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::getStationaryFrequencies( std::vector<std::vector<double> >& rf ) const
@@ -441,7 +426,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeLikelihood(
     for (size_t mixture = 0; mixture < num_site_mixtures; ++mixture)
     {
         // get the root frequencies
-        const std::vector<double> &f = branch_heterogeneous_substitution_matrices ? ff[node_index] : ff[mixture % ff.size()];
+        const std::vector<double> &f = branch_heterogeneous_substitution_matrices ? ff[node_index % ff.size()] : ff[mixture % ff.size()];
 
         // the transition probability matrix for this mixture category
         const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
@@ -513,7 +498,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeLikelihood(
     for (size_t mixture = 0; mixture < num_site_mixtures; ++mixture)
     {
         // get the root frequencies
-        const std::vector<double> &f = branch_heterogeneous_substitution_matrices ? ff[node_index] : ff[mixture % ff.size()];
+        const std::vector<double> &f = branch_heterogeneous_substitution_matrices ? ff[node_index % ff.size()] : ff[mixture % ff.size()];
 
         // the transition probability matrix for this mixture category
         const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
@@ -590,7 +575,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeTipLikelihood(const Top
     for (size_t mixture = 0; mixture < num_site_mixtures; ++mixture)
     {
         // get the root frequencies
-        const std::vector<double> &f = branch_heterogeneous_substitution_matrices ? ff[node_index] : ff[mixture % ff.size()];
+        const std::vector<double> &f = branch_heterogeneous_substitution_matrices ? ff[node_index % ff.size()] : ff[mixture % ff.size()];
 
         // the transition probability matrix for this mixture category
         const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
@@ -760,7 +745,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeTipCorrection(const Top
                 }
             }
 
-            c_mask_mixture[mixture] = computeIntegratedNodeCorrection(partialNodeCorrections, node_index, mask, mixture, branch_heterogeneous_substitution_matrices ? ff[node_index] : ff[mixture % ff.size()]);
+            c_mask_mixture[mixture] = computeIntegratedNodeCorrection(partialNodeCorrections, node_index, mask, mixture, branch_heterogeneous_substitution_matrices ? ff[node_index % ff.size()] : ff[mixture % ff.size()]);
         }
     }
 }
@@ -848,7 +833,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeCorrection(
                 }
             }
 
-            c_mask_mixture[mixture] = computeIntegratedNodeCorrection(partialNodeCorrections, node_index, mask, mixture, branch_heterogeneous_substitution_matrices ? ff[node_index] : ff[mixture % ff.size()]);
+            c_mask_mixture[mixture] = computeIntegratedNodeCorrection(partialNodeCorrections, node_index, mask, mixture, branch_heterogeneous_substitution_matrices ? ff[node_index % ff.size()] : ff[mixture % ff.size()]);
         }
     }
 }
@@ -924,7 +909,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeCorrection(
                 }
             }
 
-            c_mask_mixture[mixture] = computeIntegratedNodeCorrection(partialNodeCorrections, node_index, mask, mixture, branch_heterogeneous_substitution_matrices ? ff[node_index] : ff[mixture % ff.size()]);
+            c_mask_mixture[mixture] = computeIntegratedNodeCorrection(partialNodeCorrections, node_index, mask, mixture, branch_heterogeneous_substitution_matrices ? ff[node_index % ff.size()] : ff[mixture % ff.size()]);
         }
     }
 }
@@ -955,7 +940,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeRootCorrection( size_t 
         // iterate over all mixture categories
         for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
         {
-            const std::vector<double> &f = branch_heterogeneous_substitution_matrices ? ff[root] : ff[mixture % ff.size()];
+            const std::vector<double> &f = branch_heterogeneous_substitution_matrices ? ff[root % ff.size()] : ff[mixture % ff.size()];
 
             // iterate over ancestral (non-autapomorphic) states
             for(size_t a = 0; a < dim + 1; a++)
@@ -1038,7 +1023,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeRootCorrection( size_t 
         // iterate over all mixture categories
         for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
         {
-            const std::vector<double> &f = branch_heterogeneous_substitution_matrices ? ff[root] : ff[mixture % ff.size()];
+            const std::vector<double> &f = branch_heterogeneous_substitution_matrices ? ff[root % ff.size()] : ff[mixture % ff.size()];
 
             // iterate over ancestral (non-autapomorphic) states
             for(size_t a = 0; a < dim + 1; a++)
@@ -1229,7 +1214,8 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
         if ( process_active == false )
         {
             // send from the workers the log-likelihood to the master
-            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+//            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+            MPI_Send(&sumPartialProbs, 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD);
         }
 
         // receive the likelihoods from the helpers
@@ -1238,7 +1224,10 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
                 double tmp = 0;
-                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
+//                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
+                MPI_Status status;
+                MPI_Recv(&tmp, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD, &status);
+                
                 sumPartialProbs += tmp;
             }
         }
@@ -1248,12 +1237,15 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
         {
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
-                MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, int(i), 0);
+//                MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, int(i), 0);
+                MPI_Send(&sumPartialProbs, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD);
             }
         }
         else
         {
-            MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+//            MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+            MPI_Status status;
+            MPI_Recv(&sumPartialProbs, 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD, &status);
         }
     
     }
@@ -1319,7 +1311,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::getScaledNodeWeights(const T
 
     std::vector<TopologyNode*> children = node.getChildren();
 
-    TopologyNode* child;
+    TopologyNode* child = NULL;
     size_t num_with_descendants = 0;
 
     for(size_t i = 0; i < children.size(); i++)
@@ -1328,7 +1320,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::getScaledNodeWeights(const T
         const double* p_child  = partialLikelihoods + activeLikelihood[child_index]  * activeLikelihoodOffset + child_index*nodeOffset  + pattern*siteOffset;
 
         // does this child have descendants?
-        if(p_child[dim] == 0)
+        if (p_child[dim] == 0)
         {
             child = children[i];
             num_with_descendants++;
@@ -1336,7 +1328,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::getScaledNodeWeights(const T
     }
 
     //if more than one child has observed descendants, then this is the last ancestral node
-    if(num_with_descendants == 1)
+    if (num_with_descendants == 1)
     {
         max = std::max(max, getScaledNodeWeights(*child, pattern, weights));
     }
@@ -1386,7 +1378,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::scale( size_t node_index)
 
                 double*          p_site_mixture          = p_node + offset;
 
-                for ( size_t i=0; i<dim + 1; ++i)
+                for ( size_t i=0; i<=dim + 1; ++i)
                 {
                     p_site_mixture[i] /= max;
                 }
@@ -1449,7 +1441,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::scale( size_t node_index, size
 
                 double*          p_site_mixture          = p_node + offset;
 
-                for ( size_t i=0; i<dim + 1; ++i)
+                for ( size_t i=0; i<=dim + 1; ++i)
                 {
                     p_site_mixture[i] /= max;
                 }
@@ -1511,7 +1503,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::scale( size_t node_index, size
 
                 double*          p_site_mixture          = p_node + offset;
 
-                for ( size_t i=0; i<dim + 1; ++i)
+                for ( size_t i=0; i<=dim + 1; ++i)
                 {
                     p_site_mixture[i] /= max;
                 }
@@ -1547,6 +1539,9 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::swapParameterInternal(const Da
 }
 
 void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::redrawValue( void ) {
+
+    if( num_sites == 0 )
+        return;
 
     // delete the old value first
     delete this->value;
@@ -1613,9 +1608,9 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::redrawValue( void ) {
         size_t rateIndex = rateIndices[i];
         size_t birthIndex = birthNodes[i];
 
-        const std::vector< double > &freqs = branch_heterogeneous_substitution_matrices ? ff[birthIndex] : ff[rateIndex % ff.size()];
+        const std::vector< double > &freqs = branch_heterogeneous_substitution_matrices ? ff[birthIndex % ff.size()] : ff[rateIndex % ff.size()];
 
-        std::vector<StandardState> siteData(num_nodes, StandardState());
+        std::vector<StandardState> siteData(num_nodes, StandardState(dim));
 
         // create the character
         StandardState &c = siteData[birthIndex];

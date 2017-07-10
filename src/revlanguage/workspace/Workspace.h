@@ -52,7 +52,7 @@ namespace RevLanguage {
 
     class Workspace : public Environment {
     public:
-        virtual ~Workspace(void);                                                                                                     //!< Destrcutor
+        virtual ~Workspace(void);                                                                                       //!< Destrcutor
         
 
         // Environment (frame) functions you have to override
@@ -70,6 +70,7 @@ namespace RevLanguage {
         const TypeTable&                    getTypeTable(void) const;                                                   //!< Get the type table
         void                                initializeGlobalWorkspace(void);                                            //!< Initialize global workspace for types
         RevObject*                          makeNewDefaultObject(const std::string& type) const;                        //!< Make a clone of the template type object
+        void                                updateVectorVariables(void);
         
         static Workspace&                   globalWorkspace(void) //!< Get global workspace
         {

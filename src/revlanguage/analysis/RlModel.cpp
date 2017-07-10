@@ -48,6 +48,9 @@ void Model::constructInternalObject( void )
     // we free the memory first
     delete value;
     
+    // update vector variables
+    Workspace::userWorkspace().updateVectorVariables();
+    
     // now allocate a model
     std::set<const RevBayesCore::DagNode*> s;
     for (std::set<RevPtr<const RevVariable> >::iterator it = sources.begin(); it != sources.end(); ++it)
