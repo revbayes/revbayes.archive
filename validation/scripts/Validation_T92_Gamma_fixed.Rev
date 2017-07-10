@@ -61,7 +61,7 @@ moves[++mi] = mvScale(alpha,weight=2)
 # Tree model #
 ##############
 
-psi <- readTrees( "data/primates.tree" )[1]
+psi <- readTrees( "data/primates_small.tre" )[1]
 
 
 
