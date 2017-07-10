@@ -25,7 +25,7 @@ data <- readDiscreteCharacterData("data/primates_cytb_small.nex")
 taxa <- data.taxa()
 
 # set my move index
-mi = 0
+mvi = 0
 
 
 
@@ -33,8 +33,22 @@ mi = 0
 # Substitution Model #
 ######################
 
-#### specify the Jukes-Cantor substitution model applied uniformly to all sites ###
-Q <- fnJC(4) 
+# specify the stationary frequency parameters
+pi_prior <- v(1,1,1,1) 
+pi ~ dnDirichlet(pi_prior)
+moves[++mvi] = mvBetaSimplex(pi, weight=2.0)
+moves[++mvi] = mvDirichletSimplex(pi, weight=1.0)
+
+
+# specify the exchangeability rate parameters
+er_prior <- v(1,1,1,1,1,1)
+er ~ dnDirichlet(er_prior)
+moves[++mvi] = mvBetaSimplex(er, weight=3.0)
+moves[++mvi] = mvDirichletSimplex(er, weight=1.5)
+
+
+# create a deterministic variable for the rate matrix, GTR
+Q := fnGTR(er,pi) 
 
 
 
@@ -59,20 +73,32 @@ sampling_fraction <- 23 / 450 # 23 out of the ~ 450 primate species
 
 # create some moves that change the stochastic variables
 # all moves are sliding proposals but you could use scaling proposals for the rates too
-moves[++mi] = mvSlide(diversification,delta=1,tune=true,weight=1)
-moves[++mi] = mvSlide(turnover,delta=1,tune=true,weight=1)
-moves[++mi] = mvSlide(root,delta=1,tune=true,weight=1)
+moves[++mvi] = mvSlide(diversification,delta=1,tune=true,weight=1)
+moves[++mvi] = mvSlide(turnover,delta=1,tune=true,weight=1)
+moves[++mvi] = mvSlide(root,delta=1,tune=true,weight=1)
 
 # construct a variable for the tree drawn from a birth death process
 psi ~ dnBDP(lambda=abs(speciation), mu=abs(extinction), rootAge=abs(root), rho=sampling_fraction, taxa=taxa, condition="nTaxa" )
 
-moves[++mi] = mvNarrow(psi, weight=5.0)
-moves[++mi] = mvNNI(psi, weight=1.0)
-moves[++mi] = mvFNPR(psi, weight=3.0)
-moves[++mi] = mvSubtreeScale(psi, weight=3.0)
-moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
+moves[++mvi] = mvNarrow(psi, weight=5.0)
+moves[++mvi] = mvNNI(psi, weight=1.0)
+moves[++mvi] = mvFNPR(psi, weight=3.0)
+moves[++mvi] = mvSubtreeScale(psi, weight=3.0)
+moves[++mvi] = mvNodeTimeSlideUniform(psi, weight=15.0)
 
 
+
+#############################
+# Among Site Rate Variation #
+#############################
+
+alpha_prior_mean <- ln(2.0)
+alpha_prior_sd <- 0.587405
+alpha ~ dnLognormal( alpha_prior_mean, alpha_prior_sd )
+gamma_rates := fnDiscretizeGamma( alpha, alpha, 4, false )
+
+# add moves for the stationary frequencies, exchangeability rates and the shape parameter
+moves[++mvi] = mvScale(alpha,weight=2)
 
 
 
@@ -85,7 +111,7 @@ moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
 clockRate <- 0.005
 
 # the sequence evolution model
-seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=clockRate, type="DNA")
+seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=clockRate, siteRates=gamma_rates, type="DNA")
 
 # attach the data
 seq.clamp(data)
