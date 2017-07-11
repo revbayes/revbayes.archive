@@ -473,7 +473,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
         {
 
             // now we simulate new ages
-            double next_sim_age = simulateNextAge(active_nodes.size()-2, present-age, present-current_age, present);
+            double next_sim_age = simulateNextAge(active_nodes.size()-1, present-age, present-current_age, present);
 
             if ( next_sim_age < next_node_age )
             {
