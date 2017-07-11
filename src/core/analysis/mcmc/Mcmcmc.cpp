@@ -444,9 +444,9 @@ void Mcmcmc::setLikelihoodHeat(double h)
 
 
 /**
- * Set the model by delegating the model to the chains.
- */
-void Mcmcmc::setModel( Model *m )
+  * Set the model by delegating the model to the chains.
+  */
+void Mcmcmc::setModel( Model *m, bool redraw )
 {
     
     // set the models of the chains
@@ -455,7 +455,7 @@ void Mcmcmc::setModel( Model *m )
         if ( chains[i] != NULL )
         {
             Model *m_clone = m->clone();
-            chains[i]->setModel( m_clone );
+            chains[i]->setModel( m_clone, redraw );
         }
         
     }
@@ -463,7 +463,7 @@ void Mcmcmc::setModel( Model *m )
     if ( base_chain != NULL )
     {
         Model *m_clone = m->clone();
-        base_chain->setModel( m_clone );
+        base_chain->setModel( m_clone, redraw );
     }
     
     delete m;

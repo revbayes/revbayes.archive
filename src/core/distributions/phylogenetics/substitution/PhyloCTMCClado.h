@@ -483,12 +483,12 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
             if (!has_sampled_ancestor_child)
 //>>>>>>> development
             {
-                // sparse elements from map
-                const std::vector<unsigned>& idx = it->first;
-                const size_t c1 = idx[0];
-                const size_t c2 = idx[1];
-                const size_t c3 = idx[2];
-//                
+//                // sparse elements from map
+//                const std::vector<unsigned>& idx = it->first;
+//                const size_t c1 = idx[0];
+//                const size_t c2 = idx[1];
+//                const size_t c3 = idx[2];
+//
 //<<<<<<< HEAD
 //                const double pl = *(p_site_mixture_left + c2);
 //                const double pr = *(p_site_mixture_right + c3);

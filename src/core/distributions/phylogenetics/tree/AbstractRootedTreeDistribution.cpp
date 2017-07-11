@@ -511,6 +511,8 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 
         }
         
+        if ( n.size() > 2 && current_age >= age  ) throw RbException("Unexpected number of taxa ('remaining #taxa was " + StringUtilities::toString(n.size()) + "' and age was " + current_age + " with maximum age of " + age + ") in constrained tree simulation");
+        
     }
 
 
@@ -551,11 +553,15 @@ double AbstractRootedTreeDistribution::simulateNextAge(size_t n, double start, d
     std::vector<double> *times = simulateDivergenceTimes(n, start, end);
 
     double next_time = (*times)[times->size()-1];
+//    double next_time = (*times)[0];
 
     delete times;
+    
+//    double next_time = simulateDivergenceTime(start, end);
 
-//    return next_age + present - end;
+//    return next_time + present - end;
     return present - next_time;
+//    return end - next_time;
 }
 
 
