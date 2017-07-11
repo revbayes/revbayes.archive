@@ -57,6 +57,11 @@ Tree::~Tree(void)
 {
     
     nodes.clear();
+    std::set<TreeChangeEventListener*> l = changeEventHandler.getListeners();
+    for ( std::set<TreeChangeEventListener*>::iterator it = l.begin(); it != l.end(); ++it )
+    {
+        changeEventHandler.removeListener( *it );
+    }
     
     delete root;
     
@@ -821,6 +826,34 @@ bool Tree::hasSameTopology(const Tree &t) const
 }
 
 
+// Serialize (resurrect) the object from a file
+void Tree::initFromFile( const std::string &dir, const std::string &fn )
+{
+    RbFileManager fm = RbFileManager(dir, fn + ".newick");
+    fm.createDirectoryForFile();
+    
+    // open the stream to the file
+    std::fstream inStream;
+    inStream.open( fm.getFullFileName().c_str(), std::fstream::in);
+    
+    
+    std::string s = "";
+    while ( inStream.good() )
+    {
+        
+        // Read a line
+        std::string line;
+        getline( inStream, line );
+        
+        // append
+        s += line;
+        
+    }
+    
+    return initFromString( s );
+}
+
+
 void Tree::initFromString(const std::string &s)
 {
     NewickConverter converter;
@@ -1142,6 +1175,26 @@ void Tree::setTaxonIndices(const TaxonMap &tm)
         orderNodesByIndex();
     }
     
+    
+}
+
+// Write this object into a file in its default format.
+void Tree::writeToFile( const std::string &dir, const std::string &fn ) const
+{
+    
+    RbFileManager fm = RbFileManager(dir, fn + ".newick");
+    fm.createDirectoryForFile();
+    
+    // open the stream to the file
+    std::fstream outStream;
+    outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
+    
+    // write the value of the node
+    outStream << getNewickRepresentation();
+    outStream << std::endl;
+    
+    // close the stream
+    outStream.close();
     
 }
 

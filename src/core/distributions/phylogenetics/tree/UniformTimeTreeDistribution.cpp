@@ -200,6 +200,8 @@ void UniformTimeTreeDistribution::redrawValue( void )
 void UniformTimeTreeDistribution::simulateTree( void )
 {
     
+    delete value;
+    
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
@@ -255,7 +257,6 @@ void UniformTimeTreeDistribution::simulateTree( void )
     for (size_t i = 0; i < num_taxa; ++i)
     {
         TopologyNode& node = psi->getTipNodeWithName(taxa[i].getName());
-        node.setIndex(i);
         node.setAge( 0.0 );
     }
     

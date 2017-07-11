@@ -1,5 +1,6 @@
 #include "DagNode.h"
 #include "DistributionBinomial.h"
+#include "DistributionUniform.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
@@ -42,10 +43,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     // we need to change the random number generator when using MPI so that they are not synchronized anymore
     for ( size_t i=0; i<pid; ++i )
     {
-        for ( size_t j=0; j<4; ++j )
-        {
-            GLOBAL_RNG->uniform01();
-        }
+        GLOBAL_RNG->setSeed( int(floor( GLOBAL_RNG->uniform01()*1E5 )) );
     }
     
     runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
@@ -60,7 +58,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
             std::stringstream s;
             s << directory << path_separator << "Validation_Sim_" << i;
             std::string sim_directory_name = s.str();
-
+            
             // create an independent copy of the analysis
             MonteCarloAnalysis *current_analysis = sampler->clone();
         
@@ -80,6 +78,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
                     
                     // we need to store the new simulated data
                     the_node->writeToFile(sim_directory_name);
+                    
                 }
             
             }
@@ -95,7 +94,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
         
             // add the current analysis to our vector of analyses
             runs[i] = current_analysis;
-            Model *model_clone = runs[i]->getModel().clone();
+            Model *model_clone = current_model->clone();
             simulation_values[i] = model_clone;
             
             runs[i]->setActivePID( pid, number_processes_per_run );
@@ -414,7 +413,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
     std::stringstream ss;
     ss << "output/Validation_Sim_" << idx << "/" << "posterior_samples.var";
     std::string fn = ss.str();
-    
+        
     TraceReader reader;
     std::vector<ModelTrace> traces = reader.readStochasticVariableTrace( fn, "\t");
     
@@ -472,7 +471,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
         if ( the_node->isStochastic() == true )
         {
             const std::string &parameter_name = the_node->getName();
-            
+                        
             if ( trace_map.find( parameter_name ) != trace_map.end() )
             {
                 // create a trace

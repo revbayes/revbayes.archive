@@ -648,7 +648,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     {
         // we do not compress
         num_patterns = num_sites;
-        pattern_counts = std::vector<size_t>(num_sites,1);
+        pattern_counts     = std::vector<size_t>(num_sites,1);
+        indexOfSitePattern = std::vector<size_t>(num_sites,1);
         for(size_t i = 0; i < this->num_sites; i++)
         {
             indexOfSitePattern[i] = i;
@@ -994,9 +995,9 @@ std::vector<charType> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::
     
     for ( size_t i = 0; i < num_sites; ++i )
     {
-        size_t pattern = i;
-        // if the matrix is compressed use the pattern for this site
-        if (compressed)
+		size_t pattern = i;
+		// if the matrix is compressed use the pattern for this site
+		if ( compressed == true )
         {
             pattern = site_pattern[i];
         }

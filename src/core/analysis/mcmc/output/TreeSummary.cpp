@@ -2564,8 +2564,8 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
         
         double p = it->getFrequency()/(totalSamples-burnin);
 //        double include_prob = p / (1.0-totalProb) * (ci_size - totalProb) / (1.0-totalProb);
-        double include_prob = p * ci_size;
-
+        double include_prob = (ci_size-totalProb)/p;
+//        double include_prob = p * ci_size;
         
         if ( include_prob > rng->uniform01() )
         {
