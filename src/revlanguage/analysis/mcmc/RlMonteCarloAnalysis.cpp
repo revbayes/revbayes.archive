@@ -9,6 +9,7 @@
 #include "Natural.h"
 #include "OptionRule.h"
 #include "RbException.h"
+#include "RealPos.h"
 #include "RlMonteCarloAnalysis.h"
 #include "RlModel.h"
 #include "RlModelTrace.h"
@@ -98,10 +99,13 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         }
         else
         {
+            
+            double power = static_cast<const RealPos &>( args[4].getVariable()->getRevObject() ).getValue();
+            
 #ifdef RB_MPI
-            value->run( gen, rules, MPI_COMM_WORLD, tuning_interval );
+            value->run( gen, rules, MPI_COMM_WORLD, tuning_interval, power );
 #else
-            value->run( gen, rules, tuning_interval );
+            value->run( gen, rules, tuning_interval, power );
 #endif
         }
         
@@ -214,6 +218,7 @@ void MonteCarloAnalysis::initializeMethods()
     runArgRules->push_back( new ArgumentRule( "rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), "The rules when to automatically stop the run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
     runArgRules->push_back( new ArgumentRule( "tuningInterval", Natural::getClassTypeSpec(), "The interval when to update the tuning parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100)  ) );
     runArgRules->push_back( new ArgumentRule( "underPrior" , RlBoolean::getClassTypeSpec(), "Should we run this analysis under the prior only?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    runArgRules->push_back( new ArgumentRule( "power" , RealPos::getClassTypeSpec(), "The power to raise the likelihood to.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
     methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
     
     ArgumentRules* burninArgRules = new ArgumentRules();

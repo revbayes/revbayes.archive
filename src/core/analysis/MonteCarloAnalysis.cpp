@@ -472,9 +472,9 @@ void MonteCarloAnalysis::resetReplicates( void )
 
 
 #ifdef RB_MPI
-void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, const MPI_Comm &analysis_comm, size_t tuning_interval, bool verbose )
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, const MPI_Comm &analysis_comm, size_t tuning_interval, double power, bool verbose )
 #else
-void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, size_t tuning_interval, bool verbose )
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, size_t tuning_interval, double power, bool verbose )
 #endif
 {
     
@@ -571,6 +571,17 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
     }
 
+    // reset the weight
+    for (size_t i=0; i<replicates; ++i)
+    {
+        
+        if ( runs[i] != NULL )
+        {
+            runs[i]->setLikelihoodHeat( power );
+        }
+        
+    }
+
     // Run the chain
     bool finished = false;
     bool converged = false;
@@ -646,6 +657,17 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
     MPI_Barrier( analysis_comm );
 #endif
     
+    // reset the weight
+    for (size_t i=0; i<replicates; ++i)
+    {
+        
+        if ( runs[i] != NULL )
+        {
+            runs[i]->setLikelihoodHeat( 1.0 );
+        }
+        
+    }
+
 }
 
 
