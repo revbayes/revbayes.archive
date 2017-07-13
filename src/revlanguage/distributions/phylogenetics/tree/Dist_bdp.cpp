@@ -65,12 +65,12 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
     // sampling probability
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     
-    // sampling mixture proportion
-    RevBayesCore::TypedDagNode<double>* mp      = static_cast<const Probability &>( samplingMixtureProportion->getRevObject() ).getDagNode();
-    
     // sampling strategy
     const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getRevObject() ).getValue();
-    
+
+    // sampling mixture proportion
+    RevBayesCore::TypedDagNode<double>* mp      = static_cast<const Probability &>( samplingMixtureProportion->getRevObject() ).getDagNode();
+
     // incompletely sampled clades
     std::vector<RevBayesCore::Clade> inc_clades;
     if ( incomplete_clades->getRevObject() != RevNullObject::getInstance() )
