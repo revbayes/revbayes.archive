@@ -103,7 +103,6 @@ namespace RevBayesCore {
         }
         void                                                printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
-            o << "[";
             for (size_t i=0; i<size(); ++i)
             {
                 if (i > 0)
@@ -113,7 +112,6 @@ namespace RevBayesCore {
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForSimpleStoring( this->operator[](i), o, sep, l, left );
 
             }
-            o << "]";
         }
         void                                                printForComplexStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
