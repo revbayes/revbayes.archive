@@ -81,7 +81,7 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
     {
         memberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()    , "The time of the process starting at the root, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "rho"    , Probability::getClassTypeSpec(), "The taxon sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
-        memberRules.push_back( new ArgumentRule( "samplingMixtureProportion"    , Probability::getClassTypeSpec(), "The proportion of the birth-death likelihood from the diversified sampling model.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "samplingMixtureProportion"    , Probability::getClassTypeSpec(), "The proportion of the birth-death likelihood from the diversified sampling model.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
         std::vector<std::string> optionsStrategy;
         optionsStrategy.push_back( "uniform" );
         optionsStrategy.push_back( "diversified" );
