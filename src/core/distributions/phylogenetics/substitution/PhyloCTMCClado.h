@@ -242,32 +242,20 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root,
 {
     
     // get the root frequencies
-    const std::vector<double> &f                    = this->getRootFrequencies();
-//    for (size_t i = 0; i < f.size(); i++)
-//    {
-//        std::cout << f[i] << "\n";
-//    }
-//    
+    const std::vector<double> &f = this->getRootFrequencies();
     const TopologyNode& node = this->tau->getValue().getRoot();
     std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ?
                                                               heterogeneousCladogenesisMatrices->getValue()[root].getEventMap(node.getAge()) :
                                                               homogeneousCladogenesisMatrix->getValue().getEventMap(node.getAge()) );
     
+    // bypass cladogenetic probs if it's a sampled ancestor
+    bool has_sampled_ancestor_child = node.getChild(0).isSampledAncestor() || node.getChild(1).isSampledAncestor();
+
+    
     // get the pointers to the partial likelihoods of the left and right subtree
     double* p_node         = this->partialLikelihoods + this->activeLikelihood[root]  * this->activeLikelihoodOffset + root  * this->nodeOffset;
     const double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]  * this->activeLikelihoodOffset + left  * this->nodeOffset;
     const double* p_right  = this->partialLikelihoods + this->activeLikelihood[right] * this->activeLikelihoodOffset + right * this->nodeOffset;
-    
-//    std::cout << "A=" << root << " -> L=" << left << " R=" << right << "\n";
-//    std::cout << " root_offset " << this->activeLikelihood[root]  * this->activeLikelihoodOffset + root  * this->nodeOffset << "\n";
-//    std::cout << " left_offset " << this->activeLikelihood[left]  * this->activeLikelihoodOffset + left  * this->nodeOffset  << "\n";;
-//    std::cout << " right_offset " << this->activeLikelihood[right] * this->activeLikelihoodOffset + right * this->nodeOffset  << "\n";;
-//    std::cout << " root_ptr " << p_node << "\n";
-//    std::cout << " left_ptr " << p_left << "\n";
-//    std::cout << " right_ptr " << p_right << "\n";
-    
-//    std::cout << root << " : " << p_node << "\t" << left << " : " << p_left << "\t" << right << " : " << p_right << "\n";
-    
     
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
@@ -288,23 +276,56 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root,
             for (size_t i = 0; i < this->num_chars; i++)
                 p_site_mixture[i] = 0.0;
             
-            for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
+//            for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
+//            {
+//                // sparse elements from map
+//                const std::vector<unsigned>& idx = it->first;
+//                const size_t c1 = idx[0];
+//                const size_t c2 = idx[1];
+//                const size_t c3 = idx[2];
+//                
+//                const double pl = *(p_site_mixture_left + c2);
+//                const double pr = *(p_site_mixture_right + c3);
+//                const double pcl = it->second;
+//                
+////                std::cout << left << " : " <<  "&p_s_m_left[ " << c2 << " ] = " << &p_site_mixture_left + c2 << "\n";
+////                std::cout << right << " : " <<  "&p_s_m_right[ " << c3 << " ] = " << &p_site_mixture_right + c3 << "\n";
+////                std::cout << root << " : " << c1 << "->" << c2 << "," << c3 << " pl=" << pl << " pr=" << pr << " pcl=" << pcl << "\n";
+//
+//                p_site_mixture[c1] += pl * pr * pcl;
+//            }
+//            
+            // cladogenetic probs for bifurcations
+            if (!has_sampled_ancestor_child)
             {
-                // sparse elements from map
-                const std::vector<unsigned>& idx = it->first;
-                const size_t c1 = idx[0];
-                const size_t c2 = idx[1];
-                const size_t c3 = idx[2];
                 
-                const double pl = *(p_site_mixture_left + c2);
-                const double pr = *(p_site_mixture_right + c3);
-                const double pcl = it->second;
+                for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
+                {
+                    // sparse elements from map
+                    const std::vector<unsigned>& idx = it->first;
+                    const size_t c1 = idx[0];
+                    const size_t c2 = idx[1];
+                    const size_t c3 = idx[2];
+                    
+                    const double pl = *(p_site_mixture_left + c2);
+                    const double pr = *(p_site_mixture_right + c3);
+                    const double pcl = it->second;
+                    
+                    p_site_mixture[c1] += pl * pr * pcl;
+                }
                 
-//                std::cout << left << " : " <<  "&p_s_m_left[ " << c2 << " ] = " << &p_site_mixture_left + c2 << "\n";
-//                std::cout << right << " : " <<  "&p_s_m_right[ " << c3 << " ] = " << &p_site_mixture_right + c3 << "\n";
-//                std::cout << root << " : " << c1 << "->" << c2 << "," << c3 << " pl=" << pl << " pr=" << pr << " pcl=" << pcl << "\n";
-
-                p_site_mixture[c1] += pl * pr * pcl;
+            }
+            
+            // no cladogenetic probs for sampled ancestors
+            else
+            {
+                
+                for (size_t c1 = 0; c1 < this->num_chars; ++c1) {
+                    const double pl = *(p_site_mixture_left + c1);
+                    const double pr = *(p_site_mixture_right + c1);
+                    
+                    p_site_mixture[c1] += pl * pr;
+                }
             }
             
             for (size_t i = 0; i < this->num_chars; i++)
@@ -391,23 +412,13 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
     std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ?
                                                               heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap(node.getAge()) :
                                                               homogeneousCladogenesisMatrix->getValue().getEventMap(node.getAge()) );
-//    if (node.getParent() == this->tree.getRoot())
-//    {
-//        
-//        std::cout << "ok\n";
-//        
-//    }
 
+    // bypass cladogenetic probs if it's a sampled ancestor
+    bool has_sampled_ancestor_child = node.getChild(0).isSampledAncestor() || node.getChild(1).isSampledAncestor();
+    
     // compute the transition probability matrix
     this->updateTransitionProbabilities( node_index, node.getBranchLength() );
-    
-    
-//    std::cout << this->transition_prob_matrices[0] << "\n";
-//    
-//
-//    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
-//    
-//    std::cout << this->transition_prob_matrices[0] << "\n";
+
     
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
@@ -415,26 +426,12 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
     double*         p_node  = this->partialLikelihoods + this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset;
     double*         p_clado_node  = this->cladoPartialLikelihoods + this->activeLikelihood[node_index]*this->cladoActiveLikelihoodOffset + node_index*this->cladoNodeOffset;
     
-//    std::cout << "node memory\n";
-//    std::cout << "N=" << node_index << "  " << p_node << "\tL=" << left << "  " << p_left << "\tR=" << right << "  " << p_right << "\n";
-//    std::cout << this->activeLikelihood[node_index}]
-    
-    
-//    std::cout << "A=" << node_index << " -> L=" << left << " R=" << right << "\n";
-//    std::cout << " node_offset " << this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset << "\n";
-//    std::cout << " left_offset " << this->activeLikelihood[left]  * this->activeLikelihoodOffset + left  * this->nodeOffset  << "\n";
-//    std::cout << " right_offset " << this->activeLikelihood[right] * this->activeLikelihoodOffset + right * this->nodeOffset  << "\n";;
-//    std::cout << " node_ptr " << p_node << "\n";
-//    std::cout << " left_ptr " << p_left << "\n";
-//    std::cout << " right_ptr " << p_right << "\n";
-    
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
         const double*    tp_begin                = this->transition_prob_matrices[mixture].theMatrix;
         
-//        std::cout << this->transition_prob_matrices[mixture] << "\n";
         // get the pointers to the likelihood for this mixture category
         size_t offset = mixture*this->mixtureOffset;
         double*          p_site_mixture          = p_node + offset;
@@ -452,24 +449,40 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
             for (size_t i = 0; i < this->num_chars; i++)
                 p_clado_site_mixture[i] = 0.0;
             
-            for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
+            
+            // cladogenetic probs for bifurcations
+            if (!has_sampled_ancestor_child)
             {
-                // sparse elements from map
-                const std::vector<unsigned>& idx = it->first;
-                const size_t c1 = idx[0];
-                const size_t c2 = idx[1];
-                const size_t c3 = idx[2];
                 
-                const double pl = *(p_site_mixture_left + c2);
-                const double pr = *(p_site_mixture_right + c3);
-                const double pcl = it->second;
-                
-//                std::cout <<  node_index << " : " << c1 << "->" << c2 << "," << c3 << "\t  pl=" << std::setw(10) <<  pl << "\t  pr=" << std::setw(10) <<  pr << "\t  pcl=" << std::setw(10) <<  pcl << "\n";
-                
-                p_clado_site_mixture[c1] += pl * pr * pcl;
+                for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
+                {
+                    // sparse elements from map
+                    const std::vector<unsigned>& idx = it->first;
+                    const size_t c1 = idx[0];
+                    const size_t c2 = idx[1];
+                    const size_t c3 = idx[2];
+                    
+                    const double pl = *(p_site_mixture_left + c2);
+                    const double pr = *(p_site_mixture_right + c3);
+                    const double pcl = it->second;
+                    
+                    p_clado_site_mixture[c1] += pl * pr * pcl;
+                }
+
             }
-
-
+            
+            // no cladogenetic probs for sampled ancestors
+            else
+            {
+                
+                for (size_t c1 = 0; c1 < this->num_chars; ++c1) {
+                    const double pl = *(p_site_mixture_left + c1);
+                    const double pr = *(p_site_mixture_right + c1);
+                    
+                    p_clado_site_mixture[c1] += pl * pr;
+                }
+            }
+            
             // get the pointers for this mixture category and this site
             const double*       tp_a    = tp_begin;
             
@@ -478,31 +491,15 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
                 double sum_ana = 0.0;
                 
                 for (size_t c1 = 0; c1 < this->num_chars; ++c1) {
-//                    std::cout << c0 << " -> " << c1 << "\t" << std::setw(10) <<  tp_a[c1] << "\t" << std::setw(10) <<  p_clado_site_mixture[c1] << "\n";
-//                    if (isnan(tp_a[c1]))
-//                    {
-//                        std::cout << this->transition_prob_matrices[mixture] << "\n";
-//                        this->updateTransitionProbabilities( node_index, node.getBranchLength() );
-//                    }
-//                    if (isnan(p_clado_site_mixture[c1]))
-//                    {
-//                        std::cout << this->transition_prob_matrices[mixture] << "\n";
-//                        this->updateTransitionProbabilities( node_index, node.getBranchLength() );
-//                    }
-                    
                     sum_ana += tp_a[c1] * p_clado_site_mixture[c1];
                 }
                 
                 // store the likelihood for this starting state
                 p_site_mixture[c0] = sum_ana;
-//                std::cout << node_index << " : " <<  "&p_site_mixture[" << c0 << "] = " << &p_site_mixture + c0 << "\t";
-//                std::cout << "sum_ana[ " << c0 << " ] = " << sum_ana << "\n";
                 
                 // increment the pointers to the next starting state
                 tp_a+=this->num_chars;
             }
-
-            
 
             // increment the pointers to the next site
             p_site_mixture_left  += this->siteOffset;

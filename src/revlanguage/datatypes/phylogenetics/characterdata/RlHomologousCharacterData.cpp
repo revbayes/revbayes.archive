@@ -217,16 +217,6 @@ RevPtr<RevVariable> HomologousCharacterData::executeCharacterDataMethod(std::str
     //        }
     //        return includedChars;
     //    }
-    //    else if (name == "nconstantpatterns")
-    //    {
-    //        int n = (int)numConstantPatterns();
-    //        return RevPtr<RevObject>( new Natural(n) );
-    //    }
-    //    else if (name == "ncharswithambiguity")
-    //    {
-    //        int n = (int)numMissAmbig();
-    //        return RevPtr<RevObject>( new Natural(n) );
-    //    }
     
     
     // not found a matching method

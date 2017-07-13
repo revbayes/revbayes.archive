@@ -267,7 +267,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BirthDeathEvent()                      );
         addTypeWithConstructor( new Move_DiscreteEventCategoryRandomWalk()      );
         addTypeWithConstructor( new Move_EventTimeBeta()                        );
-//        addTypeWithConstructor( new Move_EventTimeSlide()                       );
+        addTypeWithConstructor( new Move_EventTimeSlide()                       );
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */

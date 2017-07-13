@@ -28,10 +28,10 @@ namespace RevBayesCore {
         virtual void                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<RbVector<double> >& rv) const;      //!< Map the member methods to internal function calls
         virtual void                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;                 //!< Map the member methods to internal function calls
         virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;                                                       //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
-        virtual RbVector<double>            getEpochTimesWithinInterval(double start_age, double end_age) const;                                                       //!< Return when the epoch ends (if applicable)
         virtual void                        initFromString( const std::string &s ) { throw RbException("Sebastians (29/6/2016): Missing derived implementations!!!"); }                                                 //!< Serialize (resurrect) the object from a string value
 
         // virtual methods that may need to overwritten
+        virtual bool                        simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times);
         virtual void                        update(void) {};
         
         // public methods
