@@ -385,7 +385,7 @@ void MatrixReal::resize(size_t r, size_t c)
 
 size_t MatrixReal::size( void ) const
 {
-    return n_rows*n_rows;
+    return n_rows;
 }
 
 
