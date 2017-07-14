@@ -94,20 +94,6 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         bool tf = this->dag_node->getValue().getNode((size_t)index).isInternal();
         return new RevVariable( new RlBoolean( tf ) );
     }
-    else if (name == "nnodes")
-    {
-        found = true;
-        
-        size_t n = this->dag_node->getValue().getNumberOfNodes();
-        return new RevVariable( new Natural( n ) );
-    }
-    else if (name == "ntips")
-    {
-        found = true;
-        
-        size_t n = this->dag_node->getValue().getNumberOfTips();
-        return new RevVariable( new Natural( n ) );
-    }
     else if (name == "names" || name == "taxa")
     {
         found = true;
@@ -189,10 +175,10 @@ void Tree::initMethods( void )
     methods.addFunction( new MemberProcedure( "isInternal", RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
     
     ArgumentRules* nnodesArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "nnodes", Natural::getClassTypeSpec(), nnodesArgRules ) );
+    methods.addFunction( new MemberFunction<Tree, Natural>( "nnodes", this, nnodesArgRules ) );
     
     ArgumentRules* ntipsArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "ntips", Natural::getClassTypeSpec(), ntipsArgRules ) );
+    methods.addFunction( new MemberFunction<Tree, Natural>( "ntips", this, ntipsArgRules ) );
     
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );
