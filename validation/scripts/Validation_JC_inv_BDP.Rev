@@ -18,6 +18,7 @@
 
 ### Read in sequence data for both genes
 
+#data <- readDiscreteCharacterData("data/primates_cytb_inv.nex")
 data <- readDiscreteCharacterData("data/primates_cytb_small.nex")
 #data <- readDiscreteCharacterData("data/test_large.nex")
 
@@ -37,6 +38,15 @@ mvi = 0
 Q <- fnJC(4) 
 
 
+
+
+#############################
+# Among Site Rate Variation #
+#############################
+
+# the probability of a site being invariable, +I
+p_inv ~ dnBeta(1,1)
+moves[++mvi] = mvBetaProbability(p_inv, weight=2.0)
 
 
 
@@ -81,11 +91,11 @@ moves[++mvi] = mvNodeTimeSlideUniform(psi, weight=15.0)
 # PhyloCTMC Model #
 ###################
 
-# We use an empirical estimate of the clock rate which is 0.01 (=1%) per million years per site
+# We use an empirical estimate of the clock rate which is 0.01 (=1%) per mvillion years per site
 clockRate <- 0.005
 
 # the sequence evolution model
-seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=clockRate, type="DNA")
+seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=clockRate, pInv=p_inv, type="DNA")
 
 # attach the data
 seq.clamp(data)
