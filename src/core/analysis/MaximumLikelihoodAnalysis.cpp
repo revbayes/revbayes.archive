@@ -190,7 +190,7 @@ void MaximumLikelihoodAnalysis::run( double epsilon, bool verbose )
         if ( gen % tuning_interval == 0 )
         {
             
-            double current_ln_likelihood = estimator->getModelLnProbability();
+            double current_ln_likelihood = estimator->getModelLnProbability(false);
             converged = (current_ln_likelihood - previous_ln_likelihood) < min_improvement;
 
 //            converged &= estimator->hasConverged( min_acceptance_ratio );
