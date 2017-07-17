@@ -1,5 +1,5 @@
-#ifndef BetaSimplexProposal_H
-#define BetaSimplexProposal_H
+#ifndef BetaSimplexPairProposal_H
+#define BetaSimplexPairProposal_H
 
 #include <set>
 #include <string>
@@ -24,14 +24,14 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class BetaSimplexProposal : public SimpleProposal<Simplex> {
+    class BetaSimplexPairProposal : public SimpleProposal<Simplex> {
         
     public:
-        BetaSimplexProposal( StochasticNode<Simplex> *n, double a, double p=0.44);                                                                    //!<  constructor
+        BetaSimplexPairProposal( StochasticNode<Simplex> *n, double a, double p=0.44);                                                                    //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
-        BetaSimplexProposal*                    clone(void) const;                                                                  //!< Clone object
+        BetaSimplexPairProposal*                clone(void) const;                                                                  //!< Clone object
         double                                  propose(Simplex &v);                                                                //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                                              //!< Prepare the proposal

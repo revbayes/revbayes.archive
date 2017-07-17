@@ -2,6 +2,7 @@
 #include "Func_BDR.h"
 #include "RateMatrix_Chromosomes.h"
 #include "Real.h"
+#include "Natural.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "RlRateMatrix.h"

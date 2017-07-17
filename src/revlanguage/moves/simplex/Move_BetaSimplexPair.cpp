@@ -3,21 +3,21 @@
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
 #include "MetropolisHastingsMove.h"
-#include "Move_BetaSimplex.h"
+#include "Move_BetaSimplexPair.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlSimplex.h"
-#include "BetaSimplexProposal.h"
+#include "BetaSimplexPairProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
 
 using namespace RevLanguage;
 
-Move_BetaSimplex::Move_BetaSimplex() : Move()
+Move_BetaSimplexPair::Move_BetaSimplexPair() : Move()
 {
     
 }
@@ -29,14 +29,14 @@ Move_BetaSimplex::Move_BetaSimplex() : Move()
  *
  * \return A new copy of the process.
  */
-Move_BetaSimplex* Move_BetaSimplex::clone(void) const
+Move_BetaSimplexPair* Move_BetaSimplexPair::clone(void) const
 {
     
-	return new Move_BetaSimplex(*this);
+	return new Move_BetaSimplexPair(*this);
 }
 
 
-void Move_BetaSimplex::constructInternalObject( void )
+void Move_BetaSimplexPair::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -49,23 +49,23 @@ void Move_BetaSimplex::constructInternalObject( void )
     RevBayesCore::StochasticNode< RevBayesCore::Simplex> *n = static_cast<RevBayesCore::StochasticNode< RevBayesCore::Simplex > *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *prop = new RevBayesCore::BetaSimplexProposal(n,a,r);
+    RevBayesCore::Proposal *prop = new RevBayesCore::BetaSimplexPairProposal(n,a,r);
     value = new RevBayesCore::MetropolisHastingsMove(prop,w,t);
 
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_BetaSimplex::getClassType(void)
+const std::string& Move_BetaSimplexPair::getClassType(void)
 {
     
-    static std::string rev_type = "Move_BetaSimplex";
+    static std::string rev_type = "Move_BetaSimplexPair";
     
 	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_BetaSimplex::getClassTypeSpec(void)
+const TypeSpec& Move_BetaSimplexPair::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -79,11 +79,11 @@ const TypeSpec& Move_BetaSimplex::getClassTypeSpec(void)
  *
  * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Move_BetaSimplex::getMoveAliases( void ) const
+std::vector<std::string> Move_BetaSimplexPair::getMoveAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    a_names.push_back( "SimplexElementScale" );
+    a_names.push_back( "SimplexElementScalePair" );
     
     return a_names;
 }
@@ -94,17 +94,17 @@ std::vector<std::string> Move_BetaSimplex::getMoveAliases( void ) const
  *
  * \return Rev name of constructor function.
  */
-std::string Move_BetaSimplex::getMoveName( void ) const
+std::string Move_BetaSimplexPair::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "BetaSimplex";
+    std::string c_name = "BetaSimplexPair";
     
     return c_name;
 }
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_BetaSimplex::getParameterRules(void) const
+const MemberRules& Move_BetaSimplexPair::getParameterRules(void) const
 {
     
     static MemberRules move_member_rules;
@@ -128,7 +128,7 @@ const MemberRules& Move_BetaSimplex::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_BetaSimplex::getTypeSpec( void ) const
+const TypeSpec& Move_BetaSimplexPair::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -138,10 +138,10 @@ const TypeSpec& Move_BetaSimplex::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_BetaSimplex::printValue(std::ostream &o) const
+void Move_BetaSimplexPair::printValue(std::ostream &o) const
 {
     
-    o << "Move_BetaSimplex(";
+    o << "Move_BetaSimplexPair(";
     if (x != NULL)
     {
         o << x->getName();
@@ -155,7 +155,7 @@ void Move_BetaSimplex::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Move_BetaSimplex::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_BetaSimplexPair::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "x" )

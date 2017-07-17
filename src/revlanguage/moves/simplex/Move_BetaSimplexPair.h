@@ -1,5 +1,5 @@
-#ifndef Move_BetaSimplex_H
-#define Move_BetaSimplex_H
+#ifndef Move_BetaSimplexPair_H
+#define Move_BetaSimplexPair_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -10,7 +10,7 @@
 namespace RevLanguage {
     
     /**
-     * @brief Rev Wrapper of a beta-simplex move on a single elements of simplex.
+     * @brief Rev Wrapper of a beta-simplex move on two elements of simplex.
      *
      * This class is the RevLanguage wrapper of ElementScale.
      *
@@ -18,14 +18,14 @@ namespace RevLanguage {
      * @copyright GPL version 3
      * @since 2015-05-21, version 1.0
      */
-    class Move_BetaSimplex : public Move {
+    class Move_BetaSimplexPair : public Move {
         
     public:
         
-        Move_BetaSimplex(void);                                                                                                             //!< Default constructor
+        Move_BetaSimplexPair(void);                                                                                                             //!< Default constructor
         
         // Basic utility functions
-        virtual Move_BetaSimplex*                   clone(void) const;                                                                      //!< Clone object
+        virtual Move_BetaSimplexPair*               clone(void) const;                                                                      //!< Clone object
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec

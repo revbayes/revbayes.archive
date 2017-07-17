@@ -74,6 +74,7 @@
 /* Moves on simplices */
 #include "Move_DirichletSimplex.h"
 #include "Move_BetaSimplex.h"
+#include "Move_BetaSimplexPair.h"
 #include "Move_ElementSwapSimplex.h"
 
 /* Moves on real valued vectors */
@@ -196,6 +197,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on simplices */
         addTypeWithConstructor( new Move_DirichletSimplex() );
         addTypeWithConstructor( new Move_BetaSimplex() );
+        addTypeWithConstructor( new Move_BetaSimplexPair() );
         addTypeWithConstructor( new Move_ElementSwapSimplex() );
         
         /* Moves on vectors of real values */
