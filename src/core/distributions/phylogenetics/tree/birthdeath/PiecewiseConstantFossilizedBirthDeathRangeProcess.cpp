@@ -244,6 +244,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         double lambda = birth[bi];
         double mu = death[di];
 
+        // find the origin time
         if(b > maxb)
         {
             maxb = b;
@@ -566,6 +567,11 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::redrawValue(void)
     
     max *= 1.1;
     
+    if(max == 0.0)
+    {
+        max = 1.0;
+    }
+
     // get random uniform draws
     for(size_t i = 0; i < taxa.size(); i++)
     {
