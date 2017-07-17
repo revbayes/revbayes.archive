@@ -42,7 +42,7 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         }
         else
         {
-            throw RbException("Wrong header in the taxa definition file. It can only contain 'taxon', 'species' and 'age' fields.");
+            throw RbException("Wrong header in the taxa definition file. It can only contain 'taxon', 'species' and 'age' fields but received '" + tmp + "'.");
         }
     }
     

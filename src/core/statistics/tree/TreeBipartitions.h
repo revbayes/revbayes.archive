@@ -1,25 +1,6 @@
-/**
- * @file
- * This file contains the declaration of the TreeBipartitions statistic, which simply computes
- * all bipartitions of a tree.
- *
- * @brief Declaration of the TreeBipartitions
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-07-05 16:47:08 +0200 (Thu, 05 Jul 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2011-04-13, version 1.0
- *
- * $Id: TreeBipartitions.h 1651 2012-07-05 14:47:08Z hoehna $
- */
-
 #ifndef TreeBipartitions_H
 #define TreeBipartitions_H
 
-//#include "Statistic.h"
-#include "Tree.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"

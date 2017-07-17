@@ -18,14 +18,14 @@
 
 using namespace RevBayesCore;
 
-ChromosomesRateMatrixFunction::ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *m, const TypedDagNode<double> *l_l, const TypedDagNode<double> *d_l) : TypedFunction<RateGenerator>( new RateMatrix_Chromosomes(n->getValue()) ), lambda( l ), delta( d ), rho( r ), mu( m ), lambda_l( l_l ), delta_l( d_l ) {
+ChromosomesRateMatrixFunction::ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *g, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *e, const TypedDagNode<double> *g_l, const TypedDagNode<double> *d_l) : TypedFunction<RateGenerator>( new RateMatrix_Chromosomes(n->getValue()) ), gamma( g ), delta( d ), rho( r ), eta( e ), gamma_l( g_l ), delta_l( d_l ) {
 
-    addParameter( lambda );
+    addParameter( gamma );
     addParameter( delta );
     addParameter( rho );
-    addParameter( lambda_l );
+    addParameter( eta );
+    addParameter( gamma_l );
     addParameter( delta_l );
-    addParameter( mu );
     
     update();
 }
@@ -44,18 +44,18 @@ ChromosomesRateMatrixFunction* ChromosomesRateMatrixFunction::clone( void ) cons
 
 
 void ChromosomesRateMatrixFunction::update( void ) {
-    double la = lambda->getValue();
+    double ga = gamma->getValue();
     double de = delta->getValue();
     double rh = rho->getValue();
-    double la_l = lambda_l->getValue();
+    double ga_l = gamma_l->getValue();
     double de_l = delta_l->getValue();
-    double m = mu->getValue();
+    double e = eta->getValue();
 
-    static_cast< RateMatrix_Chromosomes* >(value)->setLambda( la );
+    static_cast< RateMatrix_Chromosomes* >(value)->setGamma( ga );
     static_cast< RateMatrix_Chromosomes* >(value)->setDelta( de );
     static_cast< RateMatrix_Chromosomes* >(value)->setRho( rh );
-    static_cast< RateMatrix_Chromosomes* >(value)->setMu( m );
-    static_cast< RateMatrix_Chromosomes* >(value)->setLambda_l( la_l );
+    static_cast< RateMatrix_Chromosomes* >(value)->setEta( e );
+    static_cast< RateMatrix_Chromosomes* >(value)->setGamma_l( ga_l );
     static_cast< RateMatrix_Chromosomes* >(value)->setDelta_l( de_l );
 
     static_cast< RateMatrix_Chromosomes* >(value)->update();
@@ -66,22 +66,22 @@ void ChromosomesRateMatrixFunction::update( void ) {
 
 void ChromosomesRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
-    if (oldP == lambda) {
-        lambda = static_cast<const TypedDagNode<double>* >( newP );
+    if (oldP == gamma) {
+        gamma = static_cast<const TypedDagNode<double>* >( newP );
     }
     else if (oldP == delta) {
         delta = static_cast<const TypedDagNode<double>* >( newP );
     }
     else if (oldP == rho) {
         rho = static_cast<const TypedDagNode<double>* >( newP );
-    } else if (oldP == mu) {
-        mu = static_cast<const TypedDagNode<double>* >( newP );
+    } else if (oldP == eta) {
+        eta = static_cast<const TypedDagNode<double>* >( newP );
     }
     else if (oldP == delta_l) {
         delta_l = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == lambda_l) {
-        lambda_l = static_cast<const TypedDagNode<double>* >( newP );
+    else if (oldP == gamma_l) {
+        gamma_l = static_cast<const TypedDagNode<double>* >( newP );
     }
     
 }

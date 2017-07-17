@@ -52,6 +52,9 @@ namespace RevLanguage {
         virtual const TypeSpec&         getTypeSpec(void) const;                    //!< Get language type of the object
         virtual double                  isConvertibleTo(const TypeSpec& type, bool once) const;
     
+        std::string                     getGuiName(void) { return "Positive Real"; }
+        std::string                     getGuiUnicodeSymbol(void) { return "+R"; }
+        std::string                     getGuiInfo(void) { return ""; }
     };
     
 }

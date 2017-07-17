@@ -32,7 +32,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    const TypedDagNode<RbVector<double> > *ext,
                                                                                    const TypedDagNode<RateGenerator>* q,
                                                                                    const TypedDagNode<double>* r,
-                                                                                   const TypedDagNode< RbVector< double > >* p,
+                                                                                   const TypedDagNode< Simplex >* p,
                                                                                    const TypedDagNode<double> *rh,
                                                                                    const std::string &cdt,
                                                                                    const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
@@ -67,7 +67,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     addParameter( root_age );
     
     // set the length of the time slices used by the ODE for numerical integration
-    dt = root_age->getValue() / NUM_TIME_SLICES;
+    dt = root_age->getValue() / NUM_TIME_SLICES * 50.0;
     
     // the combinatorial factor for the probability of a labelled history is
     // 2^{n-1} / ( n! * (n-1)! )
@@ -1416,7 +1416,7 @@ void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagN
     }
     if ( oldP == pi )
     {
-        pi = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+        pi = static_cast<const TypedDagNode<Simplex>* >( newP );
     }
     if ( oldP == rho )
     {
@@ -1494,7 +1494,7 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
     }
 
     typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
-    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-7 , 1E-7 , stepper_type() ) , ode , likelihoods , begin_age , end_age , dt );
+    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-6 , 1E-6 , stepper_type() ) , ode , likelihoods , begin_age , end_age , dt );
 
     // catch negative extinction probabilities that can result from
     // rounding errors in the ODE stepper

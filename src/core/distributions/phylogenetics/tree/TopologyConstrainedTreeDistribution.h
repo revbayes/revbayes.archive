@@ -2,6 +2,7 @@
 #define TopologyConstrainedTreeDistribution_H
 
 #include "Clade.h"
+#include "RbVector.h"
 #include "Tree.h"
 #include "TreeChangeEventListener.h"
 #include "TypedDagNode.h"
@@ -23,7 +24,7 @@ namespace RevBayesCore {
     class TopologyConstrainedTreeDistribution : public TypedDistribution<Tree>, TreeChangeEventListener {
         
     public:
-        TopologyConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const std::vector<Clade> &c, const TypedDagNode<Tree>* bb = NULL);
+        TopologyConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const std::vector<Clade> &c);
         TopologyConstrainedTreeDistribution(const TopologyConstrainedTreeDistribution &d);
         
         virtual ~TopologyConstrainedTreeDistribution(void);
@@ -35,6 +36,7 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
         void                                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                                 //!< The tree has changed and we want to know which part.
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
+        void                                                setBackbone( const TypedDagNode<Tree> *backbone_one=NULL, const TypedDagNode<RbVector<Tree> > *backbone_many=NULL);
         virtual void                                        setStochasticNode(StochasticNode<Tree> *n);                                                         //!< Set the stochastic node holding this distribution
         virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
         
@@ -53,23 +55,28 @@ namespace RevBayesCore {
         // helper functions
         bool                                                matchesBackbone(void);
         bool                                                matchesConstraints(void);
-        RbBitSet                                            recursivelyAddBackboneConstraints(const TopologyNode& node);
+        RbBitSet                                            recursivelyAddBackboneConstraints(const TopologyNode& node, size_t backbone_idx);
         void                                                recursivelyFlagNodesDirty(const TopologyNode& n);
         RbBitSet                                            recursivelyUpdateClades(const TopologyNode& node);
         Tree*                                               simulateTree(void);
         
 
         // members
-        std::vector<RbBitSet>                               active_backbone_clades;
+        std::vector<std::vector<RbBitSet> >                 active_backbone_clades;
         std::vector<RbBitSet>                               active_clades;
-        std::vector<RbBitSet>                               backbone_constraints;
-        RbBitSet                                            backbone_mask;
+        std::vector<std::vector<RbBitSet> >                 backbone_constraints;
+        std::vector<RbBitSet>                               backbone_mask;
+        
         const TypedDagNode<Tree>*                           backbone_topology;
+        const TypedDagNode<RbVector<Tree> >*                backbone_topologies;
+        
         TypedDistribution<Tree>*                            base_distribution;
         std::vector<bool>                                   dirty_nodes;
         std::vector<Clade>                                  monophyly_constraints;
-        std::vector<RbBitSet>                               stored_backbone_clades;
+        std::vector<std::vector<RbBitSet> >                 stored_backbone_clades;
         std::vector<RbBitSet>                               stored_clades;
+        size_t                                              num_backbones;
+        bool                                                use_multiple_backbones;
     };
     
 }

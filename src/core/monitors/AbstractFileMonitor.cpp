@@ -197,7 +197,7 @@ bool AbstractFileMonitor::isFileMonitor( void ) const
  */
 void AbstractFileMonitor::monitorVariables(unsigned long gen)
 {
-        
+    
     for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
     {
         // add a separator before every new element
@@ -327,7 +327,8 @@ void AbstractFileMonitor::printHeader( void )
 //    out_stream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
         out_stream.seekg(0, std::ios::end);
         
-        if (write_version) {
+        if ( write_version == true )
+        {
             RbVersion version;
             out_stream << "#RevBayes version (" + version.getVersion() + ")\n";
             out_stream << "#Build from " + version.getGitBranch() + " (" + version.getGitCommit() + ") on " + version.getDate() + "\n";

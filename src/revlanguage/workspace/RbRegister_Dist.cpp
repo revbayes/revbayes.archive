@@ -98,7 +98,7 @@
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
 #include "Dist_phyloCTMCClado.h"
-//#include "Dist_phyloCTMCDollo.h"
+#include "Dist_phyloCTMCDollo.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 
@@ -117,7 +117,7 @@
 #include "Dist_bdpTopology.h"
 #include "Dist_BirthDeathMultiRate.h"
 #include "Dist_CharacterDependentBirthDeathProcess.h"
-#include "Dist_CharacterDependentCladoBirthDeathProcess.h"
+#include "Dist_StateDependentSpeciationExtinctionProcess.h"
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
 #include "Dist_ConstrainedTopology.h"
@@ -154,6 +154,10 @@
 #include "Dist_exponentialOffsetPositive.h"
 #include "Dist_gamma.h"
 #include "Dist_geom.h"
+#include "Dist_halfCauchy.h"
+#include "Dist_halfCauchyPositive.h"
+#include "Dist_halfNormal.h"
+#include "Dist_halfNormalPositive.h"
 #include "Dist_inverseGamma.h"
 #include "Dist_inverseWishart.h"
 #include "Dist_lnorm.h"
@@ -181,6 +185,7 @@
 #include "Dist_dpp.h"
 #include "Dist_mixture.h"
 #include "Dist_reversibleJumpMixtureConstant.h"
+#include "Dist_upp.h"
 
 /// Functions ///
 
@@ -238,7 +243,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( new Dist_phyloCTMC() );
         addDistribution( new Dist_phyloDACTMC() );
         addDistribution( new Dist_phyloCTMCClado() );
-//        addDistribution( new Dist_phyloCTMCDollo() );
+        addDistribution( new Dist_phyloCTMCDollo() );
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
@@ -248,7 +253,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		
         AddDistribution< TimeTree                   >( new Dist_BirthDeathMultiRate() );
         AddDistribution< TimeTree                   >( new Dist_CharacterDependentBirthDeathProcess() );
-        AddDistribution< TimeTree                   >( new Dist_CharacterDependentCladoBirthDeathProcess() );
+        AddDistribution< TimeTree                   >( new Dist_StateDependentSpeciationExtinctionProcess() );
         AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_outgroupBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_sampledSpeciationBirthDeathProcess() );
@@ -338,6 +343,14 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // geometric distribution
         AddDistribution< Natural                    >( new Dist_geom() );
         
+        // half-Cauchy distribution
+        AddContinuousDistribution< Real             >( new Dist_halfCauchy() );
+        AddContinuousDistribution< RealPos          >( new Dist_halfCauchyPositive() );
+        
+        // half-Normal distribution
+        AddContinuousDistribution< Real             >( new Dist_halfNormal() );
+        AddContinuousDistribution< RealPos          >( new Dist_halfNormalPositive() );
+
         // inverse-gamma distribution
         AddContinuousDistribution< RealPos          >( new Dist_inverseGamma() );
         
@@ -400,6 +413,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< ModelVector<Integer>       >( new Dist_dpp<Integer>()      );
 		AddDistribution< ModelVector<Probability>   >( new Dist_dpp<Probability>()  );
         AddDistribution< ModelVector<Simplex>       >( new Dist_dpp<Simplex>()      );
+		
+        // uniform partitions prior
+        AddDistribution< ModelVector<RealPos>       >( new Dist_upp<RealPos>() );
 
         // mixture distribution
         AddDistribution< Real                       >( new Dist_mixture<Real>() );

@@ -1,9 +1,9 @@
 #include "RlContinuousStochasticNode.h"
-
-
 #include "RealPos.h"
 
-RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::string& n, RevBayesCore::ContinuousDistribution* dist, ContinuousDistribution* rlDist ) :
+using namespace RevLanguage;
+
+ContinuousStochasticNode::ContinuousStochasticNode( const std::string& n, RevBayesCore::ContinuousDistribution* dist, ContinuousDistribution* rlDist ) :
     RevBayesCore::ContinuousStochasticNode( n, dist ),
     rlDistribution( rlDist )
 {
@@ -31,7 +31,7 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::stri
 }
 
 
-RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::string& n, RevBayesCore::ContinuousDistribution* dist, PositiveContinuousDistribution* rlDist ) :
+ContinuousStochasticNode::ContinuousStochasticNode( const std::string& n, RevBayesCore::ContinuousDistribution* dist, PositiveContinuousDistribution* rlDist ) :
     RevBayesCore::ContinuousStochasticNode( n, dist ),
     rlDistribution( rlDist )
 {
@@ -59,7 +59,7 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::stri
 }
 
 
-RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::string& n, RevBayesCore::ContinuousDistribution* dist, TypedDistribution<Probability>* rlDist ) :
+ContinuousStochasticNode::ContinuousStochasticNode( const std::string& n, RevBayesCore::ContinuousDistribution* dist, TypedDistribution<Probability>* rlDist ) :
     RevBayesCore::ContinuousStochasticNode( n, dist ),
     rlDistribution( rlDist )
 {
@@ -87,7 +87,7 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::stri
 }
 
 
-RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const RevLanguage::ContinuousStochasticNode &n ) :
+ContinuousStochasticNode::ContinuousStochasticNode( const ContinuousStochasticNode &n ) :
     RevBayesCore::ContinuousStochasticNode( n ),
     rlDistribution( n.rlDistribution->clone() ),
     methods( n.methods )
@@ -96,11 +96,29 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const RevLangua
 }
 
 
-RevLanguage::ContinuousStochasticNode::~ContinuousStochasticNode( void )
+ContinuousStochasticNode::~ContinuousStochasticNode( void )
 {
     
     delete rlDistribution;
     
+}
+
+
+ContinuousStochasticNode& ContinuousStochasticNode::operator=( const ContinuousStochasticNode &n )
+{
+    
+    // check for self-assignment
+    if ( this != &n )
+    {
+        RevBayesCore::ContinuousStochasticNode::operator=(n);
+        
+        delete rlDistribution;
+        
+        rlDistribution  = n.rlDistribution->clone();
+        methods         = n.methods;
+    }
+    
+    return *this;
 }
 
 

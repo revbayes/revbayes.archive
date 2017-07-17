@@ -20,7 +20,6 @@ Func_write::Func_write( void ) :
     process_ID( 0 )
 {
 #if defined (RB_MPI)
-//    processID = MPI::COMM_WORLD.Get_rank();
     MPI_Comm_rank(MPI_COMM_WORLD, &process_ID);
 #endif
 }
@@ -51,51 +50,53 @@ RevPtr<RevVariable> Func_write::execute( void )
     
     if ( process_ID == 0 )
     {
-    if ( fn != "" ) 
-    {
-        
-        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
-        fm.createDirectoryForFile();
-        
-        std::ofstream outStream;
-        
-        if ( append == true )
+
+        if ( fn != "" )
         {
+        
+            RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
+            fm.createDirectoryForFile();
+        
+            std::ofstream out_stream;
+        
+            if ( append == true )
+            {
             
-            // open the stream to the file
-            outStream.open(fn.c_str(), std::fstream::out | std::fstream::app);
-        }
-        else 
-        {
+                // open the stream to the file
+                out_stream.open(fn.c_str(), std::fstream::out | std::fstream::app);
+            }
+            else
+            {
             
-            // open the stream to the file
-            outStream.open(fn.c_str(), std::fstream::out);
-        }
+                // open the stream to the file
+                out_stream.open(fn.c_str(), std::fstream::out);
+            }
         
-        // print the arguments
-        args[0].getVariable()->getRevObject().printValue(outStream, false);
-        for (size_t i = 4; i < args.size(); i++) 
+            // print the arguments
+            args[0].getVariable()->getRevObject().printValue(out_stream, false);
+            for (size_t i = 4; i < args.size(); i++)
+            {
+                out_stream << separator;
+                args[i].getVariable()->getRevObject().printValue( out_stream , false );
+            }
+            
+            out_stream.flush();
+            out_stream.close();
+        }
+        else
         {
-            outStream << separator;
-            args[i].getVariable()->getRevObject().printValue( outStream , false );
+        
+            std::ostream& o = std::cout;
+        
+            // print the arguments
+            args[0].getVariable()->getRevObject().printValue( o, false );
+            for (size_t i = 4; i < args.size(); i++)
+            {
+                o << separator;
+                args[i].getVariable()->getRevObject().printValue( o, false );
+            }
+            o << std::endl;
         }
-        
-        outStream.close();
-    }
-    else
-    {
-        
-        std::ostream& o = std::cout;
-        
-        // print the arguments
-        args[0].getVariable()->getRevObject().printValue( o, false );
-        for (size_t i = 4; i < args.size(); i++) 
-        {
-            o << separator;
-            args[i].getVariable()->getRevObject().printValue( o, false );
-        }
-        o << std::endl;
-    }
     }
 
     return NULL;

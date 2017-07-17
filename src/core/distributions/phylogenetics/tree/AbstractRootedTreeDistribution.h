@@ -44,7 +44,7 @@ namespace RevBayesCore {
         // pure virtual helper functions
         virtual double                                      computeLnProbabilityDivergenceTimes(void) const = 0;                                                          //!< Compute the log-transformed probability of the current value.
         virtual double                                      simulateDivergenceTime(double origin, double present) const = 0;                                                  //!< Simulate n speciation events.
-        virtual std::vector<double>*                        simulateDivergenceTimes(size_t n, double origin, double present) const = 0;                                                  //!< Simulate n speciation events.
+        virtual std::vector<double>*                        simulateDivergenceTimes(size_t n, double origin, double end, double present) const = 0;                                                  //!< Simulate n speciation events.
         
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                  //!< get affected nodes

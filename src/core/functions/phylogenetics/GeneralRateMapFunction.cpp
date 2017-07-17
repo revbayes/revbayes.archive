@@ -1,11 +1,3 @@
-//
-//  GeneralRateMapFunction.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/3/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "GeneralRateMapFunction.h"
 #include "RateMatrix_JC.h"
 #include "RateMap.h"
@@ -20,7 +12,7 @@ GeneralRateMapFunction::GeneralRateMapFunction(size_t ns, size_t nc) : TypedFunc
     heterogeneous_rate_matrices           = NULL;
     homogeneous_clock_rate                = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneous_clock_rates             = NULL;
-    root_frequencies                     = new ConstantNode<RbVector<double> >("root_frequencies", new RbVector<double>(ns,1.0/ns));
+    root_frequencies                      = new ConstantNode<Simplex>("root_frequencies", new Simplex(ns,1.0/ns));
     
     branch_heterogeneous_clock_rates       = false;
     branchHeterogeneousRateMatrices    = false;
@@ -152,7 +144,7 @@ void GeneralRateMapFunction::setClockRate(const TypedDagNode< RbVector< double >
     
 }
 
-void GeneralRateMapFunction::setRootFrequencies(const TypedDagNode<RbVector<double> > *f)
+void GeneralRateMapFunction::setRootFrequencies(const TypedDagNode< Simplex > *f)
 {
     if (root_frequencies != NULL)
     {
@@ -184,7 +176,7 @@ void GeneralRateMapFunction::swapParameterInternal(const DagNode *oldP, const Da
     }
     else if (oldP == root_frequencies)
     {
-        root_frequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        root_frequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
 }
 

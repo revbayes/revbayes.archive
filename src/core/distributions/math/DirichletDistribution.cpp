@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-DirichletDistribution::DirichletDistribution(const TypedDagNode< RbVector<double> > *a) : TypedDistribution< RbVector<double> >( new RbVector<double>() ),
+DirichletDistribution::DirichletDistribution(const TypedDagNode< RbVector<double> > *a) : TypedDistribution< Simplex >( new Simplex() ),
     alpha( a )
 {
     // add the parameters to our set (in the base class)

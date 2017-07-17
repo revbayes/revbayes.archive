@@ -17,6 +17,9 @@ namespace RevLanguage {
         ContinuousStochasticNode(const std::string& n, RevBayesCore::ContinuousDistribution* dist, TypedDistribution<Probability>* rlDist);
         ContinuousStochasticNode(const ContinuousStochasticNode &n);
         virtual                            ~ContinuousStochasticNode(void);
+
+        ContinuousStochasticNode&                   operator=(const ContinuousStochasticNode &n);
+
         
         // public methods
         ContinuousStochasticNode*                   clone(void) const;                                                                              //!< Clone the node

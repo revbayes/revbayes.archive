@@ -265,8 +265,11 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_exists()                   );
         addFunction( new Func_getwd()                    );
         addFunction( new Func_getOption()                );
+        addFunction( new Func_ifelse<Natural>()          );
+        addFunction( new Func_ifelse<Integer>()          );
         addFunction( new Func_ifelse<Real>()             );
         addFunction( new Func_ifelse<RealPos>()          );
+        addFunction( new Func_ifelse<RlString>()         );
         addFunction( new Func_license()                  );
         addFunction( new Func_ls()                       );
         addFunction( new Func_printSeed()                );
@@ -431,6 +434,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()     );
         addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()        );
         addFunction( new Func__conversion<Simplex, ModelVector<Real> >()                         );
+        addFunction( new Func__conversion<Simplex, ModelVector<RealPos> >()                      );
         addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Integer> > >()         );
 //        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<Real> > >()            );
 //        addFunction( new Func__conversion<ModelVector<ModelVector<Natural> >, ModelVector<ModelVector<RealPos> > >()         );

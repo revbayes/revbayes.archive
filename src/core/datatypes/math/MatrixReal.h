@@ -101,10 +101,10 @@ namespace RevBayesCore {
         
         // members
         RbVector<RbVector<double> >             elements;
-        size_t                                  nRows;
-        size_t                                  nCols;
+        size_t                                  n_rows;
+        size_t                                  n_cols;
         mutable EigenSystem*                    eigensystem;
-        mutable bool                            eigenNeedsUpdate;
+        mutable bool                            eigen_needs_update;
         
     };
     

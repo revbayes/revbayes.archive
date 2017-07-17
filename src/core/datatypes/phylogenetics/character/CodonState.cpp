@@ -6,7 +6,12 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-CodonState::CodonState(size_t n) : DiscreteCharacterState( 64 )
+CodonState::CodonState(size_t n) : DiscreteCharacterState( 64 ),
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(64)
 {
     
     setState("---");
@@ -14,7 +19,12 @@ CodonState::CodonState(size_t n) : DiscreteCharacterState( 64 )
 
 
 /** Constructor that sets the observation */
-CodonState::CodonState(const std::string &s) : DiscreteCharacterState( 64 )
+CodonState::CodonState(const std::string &s) : DiscreteCharacterState( 64 ),
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(64)
 {
     
     setState(s);
@@ -462,6 +472,30 @@ bool CodonState::isStopCodon( void ) const
 }
 
 
+bool CodonState::isGapState( void ) const
+{
+    return is_gap;
+}
+
+
+bool CodonState::isMissingState( void ) const
+{
+    return is_missing;
+}
+
+
+void CodonState::setGapState( bool tf )
+{
+    is_gap = tf;
+}
+
+
+void CodonState::setMissingState( bool tf )
+{
+    is_missing = tf;
+}
+
+
 void CodonState::setState(const std::string &symbol)
 {
     
@@ -539,5 +573,42 @@ void CodonState::setState(const std::string &symbol)
     num_observed_states = 1;
 }
 
+
+void CodonState::addState(const std::string &symbol)
+{
+    ++num_observed_states;
+    
+    std::string labels = getStateLabels();
+    size_t pos = labels.find(symbol);
+    
+    state.set( pos );
+    index_single_state = pos;
+}
+
+
+
+RbBitSet CodonState::getState(void) const
+{
+    return state;
+}
+
+
+void CodonState::setToFirstState(void)
+{
+    num_observed_states = 1;
+    index_single_state = 0;
+    state.clear();
+    state.set( 0 );
+}
+
+
+void CodonState::setStateByIndex(size_t index)
+{
+    
+    num_observed_states = 1;
+    index_single_state = index;
+    state.clear();
+    state.set( index );
+}
 
 

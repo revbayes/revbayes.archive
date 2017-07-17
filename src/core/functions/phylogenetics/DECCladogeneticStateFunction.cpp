@@ -1,11 +1,3 @@
-//
-//  DECCladogeneticStateFunction.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 1/19/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
 //#define DEBUG_DEC
 
 #include "DECCladogeneticStateFunction.h"
@@ -19,7 +11,7 @@
 
 using namespace RevBayesCore;
 
-DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *ep,
+DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< Simplex > *ep,
                                                            const TypedDagNode<RbVector<RbVector<double> > >* cg,
                                                            const TypedDagNode<RbVector<RbVector<double> > >* vg,
                                                            unsigned nc,
@@ -235,8 +227,10 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
                 continue;
             }
             
-            eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_NARROW;
-            eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_NARROW ] += 1;
+//            eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_NARROW;
+//            eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_NARROW ] += 1;
+            eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_SUBSET;
+            eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_SUBSET ] += 1;
             eventMapProbs[ idx ] = 0.0;
  
 #ifdef DEBUG_DEC
@@ -605,59 +599,47 @@ void DECCladogeneticStateFunction::update( void )
     {
         probs[ eventStringToStateMap[eventTypes[i]] ] = ep[i];
     }
-    
-    
-    // Compute the sum of probabilities: Z = sum_jk Prob(j,k|i)
-    // Z will then be used to normalize Prob(j,k|i)
-    
-    std::vector<double> z( eventMapTypes.size(), 0.0 );
-    
-    for (size_t i = 0; i < eventTypes.size(); i++)
+
+   
+    if (eventProbsAsWeightedAverages)
     {
-        size_t k = eventStringToStateMap[ eventTypes[i] ];
-//        for (size_t j = 0; j < numRanges; j++)
-        for (std::set<unsigned>::iterator its = beforeRanges.begin(); its != beforeRanges.end(); its++)
+        // get sum of transition weights per starting state
+        std::vector<double> z_pattern_probs( numRanges, 0.0 );
+        for (size_t i = 0; i < eventTypes.size(); i++)
         {
-            size_t j = *its;
-            z[j] += probs[k] * eventMapCounts[j][k];
+            size_t k = eventStringToStateMap[ eventTypes[i] ];
+            for (std::set<unsigned>::iterator its = beforeRanges.begin(); its != beforeRanges.end(); its++)
+            {
+                unsigned j = *its;
+                z_pattern_probs[j] += probs[k] * eventMapCounts[j][k];
+            }
         }
-    }
-    // for narrow events
-    for (size_t j = 1; j <= numCharacters; j++)
-    {
-        z[j] += 1.0;
-    }
+        for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+        {
+            const std::vector<unsigned>& idx = it->first;
+            eventMapProbs[ idx ] = probs[ it->second ] / z_pattern_probs[ idx[0] ];
+        }
 
-    for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+    }
+    else
     {
-        const std::vector<unsigned>& idx = it->first;
-        double v = 0.0;
-        
-#ifdef DEBUG_DEC
-        std::cout << idx[0] << " -> " << idx[1] << " | " << idx[2] << " = " << it->second << "\n";
-#endif
-        
-        if (it->second == BiogeographicCladoEvent::SYMPATRY_NARROW) {
-            v = 1.0;
+        // get transition probabilities per event class
+        std::vector<double> z_class_probs( numRanges, 0 );
+        for (size_t i = 0; i < eventTypes.size(); i++)
+        {
+            size_t k = eventStringToStateMap[ eventTypes[i] ];
+            for (std::set<unsigned>::iterator its = beforeRanges.begin(); its != beforeRanges.end(); its++)
+            {
+                unsigned j = *its;
+                z_class_probs[j] += (eventMapCounts[j][k] > 0 ? probs[k] : 0);
+            }
         }
-        else {
-            v = probs[ it->second ];
+       
+        for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+        {
+            const std::vector<unsigned>& idx = it->first;
+            eventMapProbs[ idx ] = probs[ it->second ] / eventMapCounts[ idx[0] ][ it->second ] / z_class_probs[ idx[0] ];
         }
-      
-        if (eventProbsAsWeightedAverages) {
-            
-            v = v / z[ idx[0] ];
-        }
-        else {
-            
-            v = v / eventMapCounts[ idx[0] ][ it->second ];
-        }
-        
-#ifdef DEBUG_DEC
-        std::cout << idx[0] << " -> " << idx[1] << " | " << idx[2] << " = " << v << "\n";
-#endif
-
-        eventMapProbs[ idx ] = v;
     }
     
     value->setEventMap(eventMapProbs);
@@ -672,7 +654,7 @@ void DECCladogeneticStateFunction::swapParameterInternal(const DagNode *oldP, co
     
     if (oldP == eventProbs)
     {
-        eventProbs = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        eventProbs = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     else if (oldP == connectivityGraph)
     {

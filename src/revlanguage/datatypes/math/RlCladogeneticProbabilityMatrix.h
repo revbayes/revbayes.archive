@@ -24,19 +24,23 @@ namespace RevLanguage {
         
     public:
         
-    CladogeneticProbabilityMatrix(void);                                                                                                           //!< Default constructor
+        CladogeneticProbabilityMatrix(void);                                                                                                           //!< Default constructor
         CladogeneticProbabilityMatrix(const RevBayesCore::CladogeneticProbabilityMatrix& m);                                                                              //!< Default constructor
         CladogeneticProbabilityMatrix(RevBayesCore::CladogeneticProbabilityMatrix *m);                                                                                    //!< Default constructor
         CladogeneticProbabilityMatrix(RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticProbabilityMatrix> *d);                                                                                                        //!< Default constructor
         
         // Basic utility functions
-        CladogeneticProbabilityMatrix*                      clone(void) const;                                                                      //!< Clone object
+        CladogeneticProbabilityMatrix*      clone(void) const;                                                                      //!< Clone object
         static const std::string&           getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         
         // Member method functions
         virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
+
+        std::string                         getGuiName(void) { return ""; }
+        std::string                         getGuiUnicodeSymbol(void) { return ""; }
+        std::string                         getGuiInfo(void) { return ""; }
         
     protected:
         void                                initMethods(void);

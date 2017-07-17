@@ -61,10 +61,12 @@ DistributionFunctionQuantilePositiveContinuous::~DistributionFunctionQuantilePos
     delete templateObjectPositive;
 }
 
-DistributionFunctionQuantilePositiveContinuous& DistributionFunctionQuantilePositiveContinuous::operator=(const DistributionFunctionQuantilePositiveContinuous &c) {
+DistributionFunctionQuantilePositiveContinuous& DistributionFunctionQuantilePositiveContinuous::operator=(const DistributionFunctionQuantilePositiveContinuous &c)
+{
     
-    if (this != &c) {
-        Function::operator=(c);
+    if (this != &c)
+    {
+        TypedFunction<RealPos>::operator=(c);
         
         delete templateObjectPositive;
         

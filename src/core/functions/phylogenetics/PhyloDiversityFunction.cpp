@@ -104,7 +104,7 @@ void PhyloDiversityFunction::update( void )
 /**
  * Function that recursively traverses the tree from the given node up to the stopIndex summing PD.
  **/
-double  PhyloDiversityFunction::sumPDforNode(size_t j, std::vector<size_t>* nodesVisited, size_t stopIndex)
+double PhyloDiversityFunction::sumPDforNode(size_t j, std::vector<size_t>* nodesVisited, size_t stopIndex)
 {
     double pd = 0.0;
     // check to see if we have visited this node
@@ -144,7 +144,7 @@ double  PhyloDiversityFunction::sumPDforNode(size_t j, std::vector<size_t>* node
 /**
  * Function that recursively traverses the tree in preorder calculating branch weights.
  **/
-double  PhyloDiversityFunction::calculateBranchWeights(size_t j)
+double PhyloDiversityFunction::calculateBranchWeights(size_t j)
 {
     double weight = 0.0;
     const TopologyNode& n = tau->getValue().getNode( j );

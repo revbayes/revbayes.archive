@@ -32,7 +32,7 @@ Dist_categorical* Dist_categorical::clone( void ) const
 RevBayesCore::CategoricalDistribution* Dist_categorical::createDistribution( void ) const
 {
     // get the parameters
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >*   q    = static_cast<const Simplex&>( p->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::Simplex >*            q    = static_cast<const Simplex&>( p->getRevObject() ).getDagNode();
     RevBayesCore::CategoricalDistribution*                          d    = new RevBayesCore::CategoricalDistribution( q );
     
     return d;

@@ -37,6 +37,12 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d);
 @synthesize showParmNames;
 @synthesize myTool;
 
+- (BOOL)acceptsFirstResponder {
+
+    // override this function from RbView
+    return NO;
+}
+
 - (void)addToSelectedLinkListParent:(Parm*)x andChild:(Parm*)y {
 
     if ([self isLinkSelectedBetweenParent:x andChild:y] == NO)

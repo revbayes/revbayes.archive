@@ -132,7 +132,8 @@ void FunctionTable::clear(void)
     
     for ( std::multimap<std::string, Function *>::const_iterator i = begin(); i != end(); i++ )
     {
-        delete( i->second );
+        Function *f = i->second;
+        delete( f );
     }
     
     std::multimap<std::string, Function*>::clear();
@@ -776,6 +777,9 @@ void FunctionTable::testFunctionValidity( const std::string& name, Function* fun
             msg << name << " = ";
             fxn.printValue(msg);
             msg << " : return types differ" << std::endl;
+            
+            // free function memory
+            delete fxn;
             
             // throw the error message
             throw RbException(msg.str());

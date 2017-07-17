@@ -1,14 +1,6 @@
-#include "Func_pomo.h"
-//
-//  Func_pomo.cpp
-//  RevBayesCore
-//
-//  Created by Bastien Boussau on 22/8/14.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "PomoRateMatrixFunction.h"
 #include "Func_pomo.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RateMatrix_Pomo.h"
 #include "Real.h"
