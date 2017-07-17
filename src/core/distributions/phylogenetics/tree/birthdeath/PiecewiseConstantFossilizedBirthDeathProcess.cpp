@@ -404,7 +404,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::p( size_t i, double t ) con
     double B = ( (1.0 - 2.0*(1.0-r)*p(i+1,ti) )*b + d + f ) / A;
     
     double e = exp(-A*dt);
-    double tmp = b + d + f - A * (e*(1.0+B)-(1.0-B))/(e*(1.0+B)+(1.0-B));
+    double tmp = b + d + f - A * ((1.0+B)-e*(1.0-B))/((1.0+B)+e*(1.0-B));
     
     return tmp / (2.0*b);
 }
@@ -466,7 +466,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::q( size_t i, double t ) con
     double B = ( (1.0 - 2.0*(1.0-r)*p(i+1,ti) )*b + d + f ) / A;
     
     double e = exp(-A*dt);
-    double tmp = ((1.0-B)+e*(1.0+B));
+    double tmp = (1.0+B) + e*(1.0-B);
     
     return 4.0*e / (tmp*tmp);    
 }
