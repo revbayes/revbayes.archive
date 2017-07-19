@@ -190,74 +190,73 @@ std::vector<double> ConstantPopulationHeterochronousCoalescent::simulateCoalesce
     }
     
     // now simulate the ages
+    // we use rejection sampling to guarantee that at least k coalescent events occur after the kth-to-last serial sample
     
     // allocate the vector for the times
     std::vector<double> coalescentTimes = std::vector<double>(n,0.0);
     
-    size_t j = numTaxaAtPresent;
-    double theta = Ne->getValue();
-    // draw a time for each speciation event condition on the time of the process
-    for (size_t i = 0; i < n; ++i)
+    // for rejection sampling
+    bool timesAreValid = false;
+    
+    do
     {
-        double prevCoalescentTime = 0.0;
-        if ( i > 0 )
+        size_t j = numTaxaAtPresent;
+        double theta = Ne->getValue();
+        // draw a time for each speciation event condition on the time of the process
+        for (size_t i = 0; i < n; ++i)
         {
-            prevCoalescentTime = coalescentTimes[i-1];
-        }
-        
-        double simAge = prevCoalescentTime;
-        bool valid = false;
-        do
-        {
-            double nPairs = j * (j-1) / 2.0;
-            double lambda = nPairs / theta;
-            double u = RbStatistics::Exponential::rv( lambda, *rng);
-            simAge += u;
-            valid = simAge < serialTimes[atSerialTime];
-            if ( !valid )
+            double prevCoalescentTime = 0.0;
+            if ( i > 0 )
             {
-                simAge = serialTimes[atSerialTime];
-                ++atSerialTime;
-                ++j;
+                prevCoalescentTime = coalescentTimes[i-1];
             }
             
-        } while ( !valid );
+            double simAge = prevCoalescentTime;
+            bool valid = false;
+            do
+            {
+                double nPairs = j * (j-1) / 2.0;
+                double lambda = nPairs / theta;
+                double u = RbStatistics::Exponential::rv( lambda, *rng);
+                simAge += u;
+                valid = simAge < serialTimes[atSerialTime];
+                if ( !valid )
+                {
+                    simAge = serialTimes[atSerialTime];
+                    ++atSerialTime;
+                    ++j;
+                }
+                
+            } while ( !valid );
+            
+            coalescentTimes[i] = simAge;
+            --j;
+        }
         
-        coalescentTimes[i] = simAge;
-        --j;
-    }
+        // Make sure we have at least k coalescent events after the kth-to-last serial sample
+        // \todo this is probably not the best way to do this
+        if ( serialTimes[0] == RbConstants::Double::inf )
+        {
+            // No serial samples, no problem
+            timesAreValid = true;
+        } else
+        {
+            size_t nInvalid = 0;
+            for (size_t i = serialTimes.size() - 1; i > -1; --i)
+            {
+                // For serial sample i out of m, simulated age n - (m - i) must be older
+                if ( coalescentTimes[n - serialTimes.size() + i] < serialTimes[i] )
+                {
+                    ++nInvalid;
+                }
+            }
+            timesAreValid = nInvalid < 1;
+        }
+        
+    } while ( !timesAreValid );
     
     return coalescentTimes;
 }
-//std::vector<double> ConstantPopulationHeterochronousCoalescent::simulateCoalescentAges( size_t n ) const
-//{
-//    // Get the rng
-//    RandomNumberGenerator* rng = GLOBAL_RNG;
-//    
-//    // now simulate the ages
-//    
-//    // allocate the vector for the times
-//    std::vector<double> coalescentTimes = std::vector<double>(n,0.0);
-//    
-//    double theta = 1.0 / (2.0*Ne->getValue());
-//    // draw a time for each speciation event condition on the time of the process
-//    for (size_t i = 0; i < n; ++i)
-//    {
-//        double prevCoalescentTime = 0.0;
-//        if ( i > 0 )
-//        {
-//            prevCoalescentTime = coalescentTimes[i-1];
-//        }
-//        
-//        size_t j = num_taxa - i;
-//        double nPairs = j * (j-1) / 2.0;
-//        double lambda = nPairs * theta / 2.0;
-//        double u = RbStatistics::Exponential::rv( lambda, *rng);
-//        coalescentTimes[i] = prevCoalescentTime + u;
-//    }
-//    
-//    return coalescentTimes;
-//}
 
 /**
  * Swap the parameters held by this distribution.
