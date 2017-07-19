@@ -132,6 +132,73 @@ void AbstractCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
     
 }
 
+/**
+ * Randomly build a tree by picking two tips and coalescing, while also attaching the times to a tree topology.
+ * This function works by randomly picking two node from the set of tips, adding their parent,
+ * setting the parent's time is set to ages[ageIndex], incrementing ageIndex and index (for node numbering),
+ * and recursively calling this function again.
+ *
+ * \param[in]     psi        The tree topology (needed to call setAge).
+ * \param[in]     ageIndex   The current age to attach
+ * \param[in]     index      The current number of the node
+ * \param[in]     active     The vector of nodes eligible to be coalesced
+ * \param[in]     ages       The ages of the coalescent events
+ */
+void AbstractCoalescent::buildHeterochronousRandomBinaryTree(Tree *psi, size_t ageIndex, size_t index, std::vector<TopologyNode*> &active, const std::vector<double> &ages)
+{
+    // Make sure there is anything to coalesce
+    if (active.size() > 1)
+    {
+        
+        // Get the rng
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        
+        // randomly draw one child (arbitrarily called left) node from the list of active nodes
+        size_t left = static_cast<size_t>( floor(rng->uniform01()*active.size()) );
+        TopologyNode* leftChild = active.at(left);
+        // remove the randomly drawn node from the list
+        active.erase(active.begin()+long(left));
+        
+        // randomly draw one child (arbitrarily called left) node from the list of active nodes
+        size_t right = static_cast<size_t>( floor(rng->uniform01()*active.size()) );
+        TopologyNode* rightChild = active.at(right);
+        
+        // remove the randomly drawn node from the list
+        active.erase(active.begin()+long(right));
+        
+        // check that we aren't trying to coalesce nodes before they exist
+        if ( (leftChild->getAge() < ages[ageIndex]) && (rightChild->getAge() < ages[ageIndex]))
+        {
+            // add the parent
+            TopologyNode* parent = new TopologyNode(index);
+            parent->addChild(leftChild);
+            parent->addChild(rightChild);
+            leftChild->setParent(parent);
+            rightChild->setParent(parent);
+//            psi->getNode( parent->getIndex() ).setAge( ages[ageIndex] );
+//            psi->getNode( parent->getIndex() ).setNodeType( false, false, true );
+            parent->setAge( ages[ageIndex] );
+            parent->setNodeType( false, false, true );
+            active.push_back(parent);
+            
+            //increment indices
+            ++index;
+            ++ageIndex;
+            
+            // recursive call to this function
+            buildHeterochronousRandomBinaryTree(psi, ageIndex, index, active, ages);
+        }
+        else
+        {
+            // abort, put nodes back where we found them
+            active.push_back(leftChild);
+            active.push_back(rightChild);
+            // recall function with current values
+            buildHeterochronousRandomBinaryTree(psi, ageIndex, index, active, ages);
+        }
+    }
+    
+}
 
 /**
  * Compute the log-transformed probability of the current value under the current parameter values.
@@ -280,6 +347,56 @@ void AbstractCoalescent::simulateTree( void )
         TopologyNode& node = psi->getTipNode(i);
         psi->getNode( node.getIndex() ).setAge( 0.0 );
     }
+    
+    // finally store the new value
+    delete value;
+    value = psi;
+    
+}
+
+/**
+ *
+ */
+void AbstractCoalescent::simulateHeterochronousTree( void )
+{
+    
+    // Get the rng
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    
+    // the time tree object (topology + times)
+    Tree *psi = new Tree();
+    
+    // internally we treat unrooted topologies the same as rooted
+    psi->setRooted( true );
+    
+    // make a vector of tip nodes
+    std::vector<TopologyNode* > nodes;
+
+    // set tip names
+    for (size_t i=0; i<num_taxa; ++i)
+    {
+        // get the node from the list
+        TopologyNode* node = new TopologyNode(i);
+        
+        // set name and age
+        const std::string& name = taxa[i].getName();
+        node->setName(name);
+        node->setSpeciesName(taxa[i].getSpeciesName());
+        node->setAge(taxa[i].getAge());
+        // add to tips
+        nodes.push_back(node);
+    }
+    
+    // get times for simulation
+    std::vector<double> ages = simulateCoalescentAges(num_taxa-1);
+
+    // recursively build the tree
+    buildHeterochronousRandomBinaryTree(psi, 0, num_taxa, nodes, ages);
+    
+    // initialize the topology by setting the root
+    // the root is the only node left in nodes 
+    TopologyNode* root = nodes[0]; // Only node left after coalescing all is the root
+    psi->setRoot(root, true);
     
     // finally store the new value
     delete value;

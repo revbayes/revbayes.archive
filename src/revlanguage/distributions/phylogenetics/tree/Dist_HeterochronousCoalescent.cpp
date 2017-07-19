@@ -9,6 +9,7 @@
 #include "RealPos.h"
 #include "RlClade.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "Taxon.h"
@@ -56,18 +57,11 @@ RevBayesCore::ConstantPopulationHeterochronousCoalescent* Dist_HeterochronousCoa
     // theta
     RevBayesCore::TypedDagNode<double>* t       = static_cast<const RealPos &>( theta->getRevObject() ).getDagNode();
     // taxon names
-    const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    const std::vector<RevBayesCore::Taxon> tn   = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getDagNode()->getValue();
     // clade constraints
     const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
-    
-    std::vector<RevBayesCore::Taxon> taxa;
-    for (size_t i = 0; i < names.size(); ++i)
-    {
-        taxa.push_back( RevBayesCore::Taxon( names[i] ) );
-    }
-    
     // create the internal distribution object
-    RevBayesCore::ConstantPopulationHeterochronousCoalescent*   d = new RevBayesCore::ConstantPopulationHeterochronousCoalescent(t, taxa, c);
+    RevBayesCore::ConstantPopulationHeterochronousCoalescent*   d = new RevBayesCore::ConstantPopulationHeterochronousCoalescent(t, tn, c);
     
     return d;
 }
@@ -137,7 +131,7 @@ const MemberRules& Dist_HeterochronousCoalescent::getParameterRules(void) const
     if ( !rules_set )
     {
         dist_member_rules.push_back( new ArgumentRule( "theta"      , RealPos::getClassTypeSpec(), "The constant population size.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The taxon names used when drawing a random tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "taxa"       , ModelVector<Taxon>::getClassTypeSpec(), "The taxon names used for initialization.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , "The topological constraints strictly enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         // add the rules from the base class
@@ -182,9 +176,9 @@ void Dist_HeterochronousCoalescent::setConstParameter(const std::string& name, c
     {
         theta = var;
     }
-    else if ( name == "names" )
+    else if ( name == "taxa" )
     {
-        taxonNames = var;
+        taxa = var;
     }
     else if ( name == "constraints" )
     {

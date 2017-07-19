@@ -21,7 +21,7 @@ ConstantPopulationHeterochronousCoalescent::ConstantPopulationHeterochronousCoal
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( Ne );
     
-    simulateTree();
+    simulateHeterochronousTree();
 }
 
 
@@ -73,8 +73,14 @@ double ConstantPopulationHeterochronousCoalescent::computeLnProbabilityTimes( vo
     size_t numTaxaAtPresent = 0;
     for (size_t i = 0; i < value->getNumberOfTips(); ++i)
     {
-        const TopologyNode& n = value->getTipNode( i );
-        double a = n.getAge();
+//        const TopologyNode& n = value->getTipNode( i );
+//        double a = n.getAge();
+//        if ( a > 0.0 ) {
+//            serialTimes.push_back(a);
+//        } else {
+//            ++numTaxaAtPresent;
+//        }
+        double a = taxa[i].getAge();
         if ( a > 0.0 ) {
             serialTimes.push_back(a);
         } else {
@@ -162,32 +168,96 @@ std::vector<double> ConstantPopulationHeterochronousCoalescent::simulateCoalesce
 {
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
-
+    
+    // retrieve the times of any serially sampled tips
+    std::vector<double> serialTimes;
+    size_t numTaxaAtPresent = 0;
+    for (size_t i = 0; i < value->getNumberOfTips(); ++i)
+    {
+        double a = taxa[i].getAge();
+        if ( a > 0.0 ) {
+            serialTimes.push_back(a);
+        } else {
+            ++numTaxaAtPresent;
+        }
+    }
+    
+    size_t atSerialTime = 0;
+    if (numTaxaAtPresent == num_taxa) {
+        serialTimes.push_back(RbConstants::Double::inf);
+    } else {
+        std::sort(serialTimes.begin(), serialTimes.end());
+    }
+    
     // now simulate the ages
     
     // allocate the vector for the times
     std::vector<double> coalescentTimes = std::vector<double>(n,0.0);
     
-    double theta = 1.0 / (2.0*Ne->getValue());
+    size_t j = numTaxaAtPresent;
+    double theta = Ne->getValue();
     // draw a time for each speciation event condition on the time of the process
-	for (size_t i = 0; i < n; ++i)
+    for (size_t i = 0; i < n; ++i)
     {
         double prevCoalescentTime = 0.0;
-        if ( i > 0 ) 
+        if ( i > 0 )
         {
             prevCoalescentTime = coalescentTimes[i-1];
         }
         
-        size_t j = num_taxa - i;
-        double nPairs = j * (j-1) / 2.0;
-        double lambda = nPairs * theta / 2.0;
-        double u = RbStatistics::Exponential::rv( lambda, *rng);
-		coalescentTimes[i] = prevCoalescentTime + u;
-	}
-
+        double simAge = prevCoalescentTime;
+        bool valid = false;
+        do
+        {
+            double nPairs = j * (j-1) / 2.0;
+            double lambda = nPairs / theta;
+            double u = RbStatistics::Exponential::rv( lambda, *rng);
+            simAge += u;
+            valid = simAge < serialTimes[atSerialTime];
+            if ( !valid )
+            {
+                simAge = serialTimes[atSerialTime];
+                ++atSerialTime;
+                ++j;
+            }
+            
+        } while ( !valid );
+        
+        coalescentTimes[i] = simAge;
+        --j;
+    }
+    
     return coalescentTimes;
 }
-
+//std::vector<double> ConstantPopulationHeterochronousCoalescent::simulateCoalescentAges( size_t n ) const
+//{
+//    // Get the rng
+//    RandomNumberGenerator* rng = GLOBAL_RNG;
+//    
+//    // now simulate the ages
+//    
+//    // allocate the vector for the times
+//    std::vector<double> coalescentTimes = std::vector<double>(n,0.0);
+//    
+//    double theta = 1.0 / (2.0*Ne->getValue());
+//    // draw a time for each speciation event condition on the time of the process
+//    for (size_t i = 0; i < n; ++i)
+//    {
+//        double prevCoalescentTime = 0.0;
+//        if ( i > 0 )
+//        {
+//            prevCoalescentTime = coalescentTimes[i-1];
+//        }
+//        
+//        size_t j = num_taxa - i;
+//        double nPairs = j * (j-1) / 2.0;
+//        double lambda = nPairs * theta / 2.0;
+//        double u = RbStatistics::Exponential::rv( lambda, *rng);
+//        coalescentTimes[i] = prevCoalescentTime + u;
+//    }
+//    
+//    return coalescentTimes;
+//}
 
 /**
  * Swap the parameters held by this distribution.

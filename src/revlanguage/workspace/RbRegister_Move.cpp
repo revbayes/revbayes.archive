@@ -54,7 +54,9 @@
 /* Moves on real values */
 #include "Move_SliceSampling.h"
 #include "Move_Scale.h"
+#include "Move_ScaleBactrian.h"
 #include "Move_Slide.h"
+#include "Move_SlideBactrian.h"
 
 /* Moves on probability values */
 #include "Move_BetaProbability.h"
@@ -172,7 +174,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         
         /* Moves on real values */
         addTypeWithConstructor( new Move_Scale() );
+        addTypeWithConstructor( new Move_ScaleBactrian() );
         addTypeWithConstructor( new Move_Slide() );
+        addTypeWithConstructor( new Move_SlideBactrian() );
         addTypeWithConstructor( new Move_SliceSampling() );
         
         /* Moves on probability */

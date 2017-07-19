@@ -45,7 +45,7 @@ namespace RevLanguage {
     private:
         
         // members
-        RevPtr<const RevVariable>                           taxonNames;                                                                             //!< The taxon names that will be applied to the initally simulated tree
+        RevPtr<const RevVariable>                           taxa;                                                                             //!< The taxon names that will be applied to the initally simulated tree
         RevPtr<const RevVariable>                           constraints;                                                                            //!< Topological constraints that will be used for calibrations
         RevPtr<const RevVariable>                           theta;
         

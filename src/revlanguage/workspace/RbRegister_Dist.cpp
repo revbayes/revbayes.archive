@@ -130,7 +130,7 @@
 #include "Dist_empiricalTree.h"
 #include "Dist_episodicBirthDeath.h"
 #include "Dist_HeterochronousCoalescent.h"
-#include "Dist_HeterochronousCoalescentSkyline.h"
+//#include "Dist_HeterochronousCoalescentSkyline.h"
 #include "Dist_heterogeneousRateBirthDeath.h"
 #include "Dist_multispeciesCoalescentInverseGammaPrior.h"
 #include "Dist_multispeciesCoalescentUniformPrior.h"
@@ -278,11 +278,11 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // coalescent (skyline population sizes)
         AddDistribution< TimeTree                   >( new Dist_CoalescentSkyline() );
         
-        // heterochronously sampled coalescent (constant population sizes)
+//        // heterochronously sampled coalescent (constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_HeterochronousCoalescent() );
-        
-        // heterochronously sampled coalescent (skyline population sizes)
-        AddDistribution< TimeTree                   >( new Dist_HeterochronousCoalescentSkyline() );
+//
+//        // heterochronously sampled coalescent (skyline population sizes)
+//        AddDistribution< TimeTree                   >( new Dist_HeterochronousCoalescentSkyline() );
         
         // multispecies coalescent (per branch constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_constPopMultispCoal() );
