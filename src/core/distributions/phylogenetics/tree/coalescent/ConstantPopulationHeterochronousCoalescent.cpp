@@ -172,7 +172,7 @@ std::vector<double> ConstantPopulationHeterochronousCoalescent::simulateCoalesce
     // retrieve the times of any serially sampled tips
     std::vector<double> serialTimes;
     size_t numTaxaAtPresent = 0;
-    for (size_t i = 0; i < value->getNumberOfTips(); ++i)
+    for (size_t i = 0; i < num_taxa; ++i)
     {
         double a = taxa[i].getAge();
         if ( a > 0.0 ) {
