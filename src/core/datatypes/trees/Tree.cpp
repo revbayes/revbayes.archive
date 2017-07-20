@@ -19,9 +19,9 @@ Tree::Tree(void) :
     root( NULL ),
     binary( true ),
     rooted( false ),
+    is_negative_constraint( false ),
     num_tips( 0 ),
-    num_nodes( 0 ),
-    is_negative_constraint( false )
+    num_nodes( 0 )
 {
     
 }
@@ -33,10 +33,10 @@ Tree::Tree(const Tree& t) :
     root( NULL ),
     binary( t.binary ),
     rooted( t.rooted ),
+    is_negative_constraint( t.is_negative_constraint ),
     num_tips( t.num_tips ),
     num_nodes( t.num_nodes ),
-    taxon_bitset_map( t.taxon_bitset_map ),
-    is_negative_constraint( t.is_negative_constraint )
+    taxon_bitset_map( t.taxon_bitset_map )
 {
         
     // need to perform a deep copy of the BranchLengthTree nodes

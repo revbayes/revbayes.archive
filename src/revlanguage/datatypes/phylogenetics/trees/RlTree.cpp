@@ -119,6 +119,16 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         
         return NULL;
     }
+    else if (name == "offset")
+    {
+        found = true;
+
+        double f = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
+        RevBayesCore::Tree &tree = dag_node->getValue();
+        RevBayesCore::TreeUtilities::offsetTree(&tree, &tree.getRoot(), f);
+
+        return NULL;
+    }
     else if (name == "setNegativeConstraint")
     {
         found = true;
@@ -202,6 +212,10 @@ void Tree::initMethods( void )
     rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "The scaling factor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "rescale", RlUtils::Void, rescaleArgRules ) );
     
+    ArgumentRules* offsetArgRules = new ArgumentRules();
+    offsetArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "The offset factor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "offset", RlUtils::Void, offsetArgRules ) );
+
     ArgumentRules* setNegativeConstraint = new ArgumentRules();
     setNegativeConstraint->push_back( new ArgumentRule( "flag", RlBoolean::getClassTypeSpec(), "Is the tree a negative constraint?.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "setNegativeConstraint", RlUtils::Void, setNegativeConstraint ) );
