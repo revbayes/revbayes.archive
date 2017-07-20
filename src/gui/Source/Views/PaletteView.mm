@@ -3,7 +3,8 @@
 #import "PaletteView.h"
 #import "ParmDraw.h"
 #import "ParmTree.h"
-
+#import "Variable.h"
+#import "WindowControllerModel.h"
 
 
 @implementation PaletteView
@@ -18,38 +19,56 @@
     
     NSRect r;
     r.size = NSMakeSize( parmSize, parmSize );
-    int nParms = [self numParms];
-    for (int i=1, k=0; i<=[self numRows]; i++)
-        {
-        for (int j=0; j<[self numColumns]; j++)
-            {
-            // find the lower left corner of the parameter and transform it to the view's coordinate system
-            r.origin = NSMakePoint( j*(parmSize+parmSpacing)+parmSpacing, i*(parmSize+parmSpacing) );
-            [self transformToBottomLeftCoordinates:&(r.origin)];
 
-            NSTrackingArea* ta = [[NSTrackingArea alloc] initWithRect:r 
-                                                              options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp)
-                                                                owner:self
-                                                             userInfo:nil];
-            [self addTrackingArea:ta];
-            [myTrackingAreas addObject:ta];
-            
-            k++;
-            if (k == nParms)
-                break;
-            }
-        if (k == nParms)
-            break;
+    NSMutableArray* parms = [myController variables];
+    for (size_t i=0; i<[parms count]; i++)
+        {
+        Variable* var = [parms objectAtIndex:i];
+        r.origin = [var frame].origin;
+        [self transformToBottomLeftCoordinates:&(r.origin)];
+
+        NSTrackingArea* ta = [[NSTrackingArea alloc] initWithRect:r
+                                                          options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp)
+                                                            owner:self
+                                                         userInfo:nil];
+        [self addTrackingArea:ta];
+        [myTrackingAreas addObject:ta];
         }
 }
 
 - (void)awakeFromNib {
     
+    // number of rows and columns
+    NSMutableArray* parms = [myController variables];
+    numVariables = (int)[parms count];
+    int nCols = 3;
+    int nRows = ((int)[parms count] / 3);
+    if (nRows % 3 != 0)
+        nRows++;
+    
+    // get the size of the variables
 	NSRect visible = [self visibleRect];
-    float x = visible.size.width;
-    x -= (numDisplayColumns+1) * parmSpacing;
-    x /= numDisplayColumns;
-    parmSize = x;
+    parmSize = (visible.size.width - (nCols+1) * parmSpacing) / nCols;
+
+    // get the size of the frame
+    float w = nCols * parmSize + (nCols+1) * parmSpacing;
+    float h = nRows * parmSize + (nRows+1) * parmSpacing;
+    [self setFrame:NSMakeRect(0.0, 0.0, w, h)];
+
+    // set the subviews
+    size_t r = 0, c = 0;
+    for (size_t i=0; i<[parms count]; i++)
+        {
+        c = i % nCols;
+        r = i / nCols;
+        NSPoint p = NSMakePoint( parmSpacing + c*(parmSpacing+parmSize), (r+1)*(parmSpacing+parmSize) );
+        [self transformToBottomLeftCoordinates:&p];
+            
+        Variable* var = [parms objectAtIndex:i];
+        [var setFrame:NSMakeRect(p.x, p.y, parmSize, parmSize)];
+        [self addSubview:var];
+        }
+    
     [self updateViewFrame];
 }
 
@@ -66,7 +85,7 @@
         parmSpacing          = 8.0;
 		toolTipTimer         = nil;
 		isToolTipTimerActive = NO;
-        toolForToolTip       = -1;
+        variableForTip       = nil;
         isOverParameterImage = NO;
         [self initializeUnicode];
         
@@ -76,7 +95,7 @@
         parmIdOffsets[3] = parmIdOffsets[2] + numPlates;
 
         // register this view as drag source for an image
-        [self registerForDraggedTypes:[NSImage imagePasteboardTypes]];
+        [self registerForDraggedTypes:[NSImage imageTypes]];
                 
 		// allocate the tool tracking rects
 		myTrackingAreas = [[NSMutableArray alloc] init];
@@ -393,10 +412,15 @@
 
 - (void)drawRect:(NSRect)dirtyRect {
     
+    
 	// set the background of the analysis window
 	NSRect bounds = [self bounds];
 	[[NSColor whiteColor] set];
 	[NSBezierPath fillRect:bounds];
+    
+    return;
+    
+#   if 0
     
     // draw the parameters
     int parmId = [self parmId];
@@ -423,7 +447,7 @@
         }
     
     // draw the tool tip
-	if (isToolTipTimerActive == YES && toolForToolTip >= 0)
+	if (isToolTipTimerActive == YES && variableForTip != nil)
 		{
         ParmDraw* pd = [drawElements objectAtIndex:(parmIdOffsets[parmId] + toolForToolTip)];
 
@@ -452,7 +476,7 @@
 		[NSBezierPath fillRect:tipRect];
 		[attrString drawAtPoint:p];
 		}
-    
+#   endif
 }
 
 - (ParmDraw*)getParmElementIndexed:(int)idx {
@@ -735,7 +759,9 @@
 
     // get the location of the mouseDown event
     NSPoint p = [self convertPoint:down fromView:nil];
-    
+
+#   if 0
+    // TEMP
     // create the image that will be dragged
     NSSize s = NSMakeSize(parmSize, parmSize);
     NSImage* anImage = [[NSImage alloc] initWithSize:s];
@@ -762,6 +788,7 @@
 		 pasteboard:pb 
 		     source:self 
 		  slideBack:NO];
+#   endif
 }
 
 - (void)mouseEntered:(NSEvent*)event {
@@ -769,12 +796,19 @@
     NSPoint p = [event locationInWindow];
     p = [self convertPoint:p fromView:nil];
     [self transformToTopLeftCoordinates:&p];
-
-    int r = p.y / (parmSize+parmSpacing);
-    int c = p.x / (parmSize+parmSpacing);
-	potentialToolForToolTip = r * numDisplayColumns + c;
-	[self startToolTipTimer];
     
+    potentialVariable = nil;
+    for (Variable* var in [myController variables])
+        {
+        NSRect r = [var frame];
+        if ( NSPointInRect( p, r ) == YES )
+            {
+            potentialVariable = var;
+            break;
+            }
+        }
+
+	[self startToolTipTimer];
     isOverParameterImage = YES;
 }
 
@@ -853,7 +887,7 @@
         [toolTipTimer invalidate];
         isToolTipTimerActive = NO;
         toolTipTimer = nil;
-        toolForToolTip = -1;
+        variableForTip = nil;
         }
 	[self setNeedsDisplay:YES];
 }
@@ -863,7 +897,9 @@
     fireNum++;
     if (fireNum == 1)
         {
-		toolForToolTip = potentialToolForToolTip;
+		variableForTip = potentialVariable;
+        if (variableForTip != nil)
+            NSLog(@"tip for tool %@", [variableForTip name]);
         [self setNeedsDisplay:YES];
         }
     else if (fireNum == 6)
@@ -899,26 +935,28 @@
 }
 
 - (void)updateViewFrame {
-    
-    int nCols = [self numColumns];
-    int nRows = [self numRows];
-    
-    float h = (nRows * parmSize) + ((nRows + 1) * parmSpacing);
-    float w = (nCols * parmSize) + ((nCols + 1) * parmSpacing);
 
+    NSMutableArray* parms = [myController variables];
+    numVariables = (int)[parms count];
+    int nCols = 3;
+    int nRows = ((int)[parms count] / 3);
+    if (nRows % 3 != 0)
+        nRows++;
+    float w = nCols * parmSize + (nCols+1) * parmSpacing;
+    float h = nRows * parmSize + (nRows+1) * parmSpacing;
 	NSRect visible = [self visibleRect];
-    
-    // update the size of the frame
-	NSRect newFrame = visible;
+    NSRect newFrame = visible;
 	if ( visible.size.width < w )
 		newFrame.size.width = w;
 	if ( visible.size.height < h )
 		newFrame.size.height = h;
 	[self setFrame:newFrame];
+
     
     // update the tracking areas
     [self removeAllTrackingAreas];
     [self addTrackingAreas];
+    [self setNeedsDisplay:YES];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item {
@@ -934,8 +972,9 @@
 
 - (NSString*)whichParmSelected {
 
-    ParmDraw* pd = [drawElements objectAtIndex:(parmIdOffsets[[self parmId]] + potentialToolForToolTip)];
-    return [pd drawingType];
+    if (variableForTip != nil)
+        return [variableForTip name];
+    return @"";
 }
 
 - (void)windowDidResize:(NSNotification*)notification {

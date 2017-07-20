@@ -110,6 +110,7 @@
 #include "Move_MixtureAllocation.h"
 #include "Move_GibbsMixtureAllocation.h"
 #include "Move_ReversibleJumpSwitchMove.h"
+#include "Move_UPPAllocation.h"
 
 // moves for the DPP table values
 #include "ScaleProposal.h"
@@ -253,6 +254,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Probability>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Simplex>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RateGenerator>( ) );
+        addTypeWithConstructor( new Move_UPPAllocation<RealPos>() );
         
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Real>( )                  );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<RealPos>( )               );

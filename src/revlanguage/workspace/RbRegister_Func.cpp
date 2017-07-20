@@ -234,6 +234,7 @@
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_logistic.h"
+#include "Func_matrix.h"
 #include "Func_max.h"
 #include "Func_mean.h"
 #include "Func_meanPositive.h"
@@ -411,6 +412,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // log function
         addFunction( new Func_log()  );
+        
+        // matrix function (converts into MatrixReal)
+        addFunction( new Func_matrix() );
 
         // min function
         addFunction( new Func_max()  );

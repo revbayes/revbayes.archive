@@ -39,7 +39,7 @@ namespace RevBayesCore {
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain
         const Model&                                        getModel(void) const;
-        double                                              getModelLnProbability(void);
+        double                                              getModelLnProbability(bool like_only);
         RbVector<Monitor>&                                  getMonitors(void);
         RbVector<Move>&                                     getMoves(void);
         MoveSchedule&                                       getSchedule(void);
@@ -59,7 +59,7 @@ namespace RevBayesCore {
         void                                                setChainPosteriorHeat(double v);                                                        //!< Set the heating temparature of the posterior of the chain
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
-        void                                                setModel(Model *m);
+        void                                                setModel(Model *m, bool redraw);
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
         void                                                startMonitors(size_t numCycles, bool reopen);                                           //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.

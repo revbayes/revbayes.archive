@@ -35,7 +35,7 @@ Func_concatenateFromVector* Func_concatenateFromVector::clone( void ) const
 /** Execute function */
 RevPtr<RevVariable> Func_concatenateFromVector::execute( void )
 {
-    const WorkspaceVector<AbstractCharacterData>& v = static_cast<const WorkspaceVector<AbstractCharacterData> &>( args[0].getVariable()->getRevObject() );
+    const WorkspaceVector<AbstractHomologousDiscreteCharacterData>& v = static_cast<const WorkspaceVector<AbstractHomologousDiscreteCharacterData> &>( args[0].getVariable()->getRevObject() );
 //    const WorkspaceVector<AbstractHomologousDiscreteCharacterData>& v = static_cast<const WorkspaceVector<AbstractHomologousDiscreteCharacterData> &>( args[0].getVariable()->getRevObject() );
     const std::string& type = static_cast<const RlString &>( args[1].getVariable()->getRevObject() ).getValue();
     
@@ -57,23 +57,23 @@ RevPtr<RevVariable> Func_concatenateFromVector::execute( void )
 const ArgumentRules& Func_concatenateFromVector::getArgumentRules( void ) const
 {
     
-    static ArgumentRules argumentRules = ArgumentRules();
+    static ArgumentRules argument_rules = ArgumentRules();
     static bool rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", WorkspaceVector<AbstractCharacterData>::getClassTypeSpec(), "First character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new ArgumentRule( "x", WorkspaceVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec(), "First character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "union" );
         optionsCondition.push_back( "intersection" );
-        argumentRules.push_back( new OptionRule( "merge", new RlString("Taxa must match"), optionsCondition, "How to merge differing taxa" ) );
+        argument_rules.push_back( new OptionRule( "merge", new RlString("Taxa must match"), optionsCondition, "How to merge differing taxa" ) );
         
         rules_set = true;
     }
     
-    return argumentRules;
+    return argument_rules;
 }
 
 

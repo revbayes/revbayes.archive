@@ -29,43 +29,43 @@ namespace RevBayesCore {
                                     const std::vector<Taxon> &tn);
         
         // pure virtual member functions
-        virtual BirthDeathProcess*                          clone(void) const = 0;                                                      //!< Create an independent clone
+        virtual BirthDeathProcess*                          clone(void) const = 0;                                                          //!< Create an independent clone
         
         
     protected:
         // Parameter management functions
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
         virtual void                                        restoreSpecialization(DagNode *restorer);
         virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
 
         // pure virtual helper functions
-        virtual double                                      lnSpeciationRate(double t) const = 0;                                       //!< Get the log-transformed speciation rate at time t.
-        virtual double                                      rateIntegral(double t_low, double t_high) const = 0;                        //!< Compute the rate integral.
-        virtual double                                      simulateDivergenceTime(double origin, double present, double rho) const = 0;//!< Simulate a speciation event.
+        virtual double                                      lnSpeciationRate(double t) const = 0;                                           //!< Get the log-transformed speciation rate at time t.
+        virtual double                                      rateIntegral(double t_low, double t_high) const = 0;                            //!< Compute the rate integral.
+        virtual double                                      simulateDivergenceTime(double origin, double present, double rho) const = 0;    //!< Simulate a speciation event.
         virtual double                                      computeProbabilitySurvival(double start, double end) const = 0;                              //!< Compute the probability of survival of the process (without incomplete taxon sampling).
 
-        virtual void                                        prepareRateIntegral(double end) const;                        //!< Compute the rate integral.
-        virtual void                                        prepareSurvivalProbability(double end, double r) const;                        //!< Compute the rate integral.
+        virtual void                                        prepareRateIntegral(double end) const;                                          //!< Compute the rate integral.
+        virtual void                                        prepareSurvivalProbability(double end, double r) const;                         //!< Compute the rate integral.
         
         
         // helper functions
-        virtual double                                      computeLnProbabilityTimes(void) const;                                      //!< Compute the log-transformed probability of the current value.
+        virtual double                                      computeLnProbabilityTimes(void) const;                                          //!< Compute the log-transformed probability of the current value.
         double                                              lnP1(double T, double r) const;
         double                                              lnP1(double t, double T, double r) const;
-        double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const;         //!< Compute the log-transformed probability of the number of taxa.
-        double                                              pSurvival(double start, double end) const;                              //!< Compute the probability of survival of the process (without incomplete taxon sampling).
-        double                                              pSurvival(double start, double end, double r) const;                        //!< Compute the probability of survival of the process including uniform taxon sampling.
-        double                                              simulateDivergenceTime(double origin, double present) const;                //!< Simulate a speciation event.
+        double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const;             //!< Compute the log-transformed probability of the number of taxa.
+        double                                              pSurvival(double start, double end) const;                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
+        double                                              pSurvival(double start, double end, double r) const;                            //!< Compute the probability of survival of the process including uniform taxon sampling.
+        double                                              simulateDivergenceTime(double origin, double present) const;                    //!< Simulate a speciation event.
         
         // members
-        const TypedDagNode<double>*                         rho;                                                                        //!< Sampling probability of each species.
-        std::string                                         sampling_strategy;                                                           //!< The incomplete taxon sampling strategy (uniform/diversified).
+        const TypedDagNode<double>*                         rho;                                                                            //!< Sampling probability of each species.
+        std::string                                         sampling_strategy;                                                              //!< The incomplete taxon sampling strategy (uniform/diversified).
         std::vector<int>                                    missing_species;
-        std::vector<Clade>                                  incomplete_clades;                                                                                        //!< Topological constrains.
-        std::vector<double>                                 incomplete_clade_ages;                                                                                        //!< Topological constrains.
+        std::vector<Clade>                                  incomplete_clades;                                                              //!< Vector of incompletely sampled clades.
+        std::vector<double>                                 incomplete_clade_ages;                                                          //!< Vector of ages for the incompletely sampled clades.
         
-        mutable std::vector<double>                         log_p_survival;                                                                                        //!< Topological constrains.
-        mutable std::vector<double>                         rate_integral;                                                                                        //!< Topological constrains.
+        mutable std::vector<double>                         log_p_survival;                                                                 //!< Precomputed vector of survival probabilities.
+        mutable std::vector<double>                         rate_integral;                                                                  //!< Precomputed vector of rate integrals.
         
         
     };

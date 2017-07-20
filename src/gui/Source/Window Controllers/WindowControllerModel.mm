@@ -190,4 +190,9 @@
     return YES;
 }
 
+- (NSMutableArray*)variables {
+
+    return [myTool variables];
+}
+
 @end

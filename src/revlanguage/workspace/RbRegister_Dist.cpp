@@ -186,6 +186,7 @@
 #include "Dist_dpp.h"
 #include "Dist_mixture.h"
 #include "Dist_reversibleJumpMixtureConstant.h"
+#include "Dist_upp.h"
 
 /// Functions ///
 
@@ -415,6 +416,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< ModelVector<Integer>       >( new Dist_dpp<Integer>()      );
 		AddDistribution< ModelVector<Probability>   >( new Dist_dpp<Probability>()  );
         AddDistribution< ModelVector<Simplex>       >( new Dist_dpp<Simplex>()      );
+		
+        // uniform partitions prior
+        AddDistribution< ModelVector<RealPos>       >( new Dist_upp<RealPos>() );
 
         // mixture distribution
         AddDistribution< Real                       >( new Dist_mixture<Real>() );

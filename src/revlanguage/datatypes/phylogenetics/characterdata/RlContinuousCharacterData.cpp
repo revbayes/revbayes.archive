@@ -15,9 +15,8 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-ContinuousCharacterData::ContinuousCharacterData(void) :
-    HomologousCharacterData( ),
-    dag_node( NULL )
+ContinuousCharacterData::ContinuousCharacterData(void) : ModelObject<RevBayesCore::ContinuousCharacterData>(),
+    HomologousCharacterData( )
 {
     
     initMethods();
@@ -25,108 +24,37 @@ ContinuousCharacterData::ContinuousCharacterData(void) :
 }
 
 /** Construct from core data type */
-ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d) :
-    HomologousCharacterData( ),
-    dag_node( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d.clone()) )
+ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d) : ModelObject<RevBayesCore::ContinuousCharacterData>( d.clone() ),
+    HomologousCharacterData( )
 {
     
     
     initMethods();
-    
-    // increment the reference count to the value
-    dag_node->incrementReferenceCount();
     
 }
 
 /** Construct from core data type */
-ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d) :
-    HomologousCharacterData( ),
-    dag_node( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d) )
+ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d) : ModelObject<RevBayesCore::ContinuousCharacterData>( d ),
+    HomologousCharacterData( )
 {
     
     
     initMethods();
-    
-    // increment the reference count to the value
-    dag_node->incrementReferenceCount();
 }
 
 
-ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData> *d) :
-    HomologousCharacterData( ),
-    dag_node( d )
+ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData> *d) : ModelObject<RevBayesCore::ContinuousCharacterData>( d ),
+    HomologousCharacterData( )
 {
-    
-    // increment the reference count to the value
-    dag_node->incrementReferenceCount();
     
     initMethods();
     
 }
-
-
-ContinuousCharacterData::ContinuousCharacterData(const ContinuousCharacterData &d) :
-    HomologousCharacterData( d ),
-    dag_node( NULL )
-{
-    
-    if ( d.dag_node != NULL )
-    {
-        
-        dag_node = d.dag_node->clone();
-        
-        // increment the reference count to the value
-        dag_node->incrementReferenceCount();
-    }
-    
-}
-
 
 
 
 ContinuousCharacterData::~ContinuousCharacterData()
 {
-    
-    // free the old value
-    if ( dag_node != NULL )
-    {
-        if ( dag_node->decrementReferenceCount() == 0 )
-        {
-            delete dag_node;
-        }
-    }
-}
-
-
-ContinuousCharacterData& ContinuousCharacterData::operator=(const ContinuousCharacterData &v) {
-    
-    if ( this != &v )
-    {
-        // delegate to base class
-        HomologousCharacterData::operator=( v );
-        
-        // free the old value
-        if ( dag_node != NULL )
-        {
-            if ( dag_node->decrementReferenceCount() == 0 )
-            {
-                delete dag_node;
-            }
-            
-            dag_node = NULL;
-        }
-        
-        // create own copy
-        if ( v.dag_node != NULL )
-        {
-            dag_node = v.dag_node->clone();
-            
-            // increment the reference count to the value
-            dag_node->incrementReferenceCount();
-        }
-    }
-    
-    return *this;
 }
 
 
@@ -179,7 +107,7 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
         return retVal;
     }
     
-    retVal = executeCharacterDataMethod(name, args, found);
+    retVal = executeCharacterDataMethod(name, args, found, &this->getValue());
     
     if ( found == true )
     {
@@ -214,7 +142,7 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
     }
     
     
-    return HomologousCharacterData::executeMethod( name, args, found );
+    return ModelObject<RevBayesCore::ContinuousCharacterData>::executeMethod( name, args, found );
     
 }
 
@@ -233,16 +161,9 @@ const std::string& ContinuousCharacterData::getClassType(void)
 const TypeSpec& ContinuousCharacterData::getClassTypeSpec(void)
 {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( HomologousCharacterData::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::ContinuousCharacterData>::getClassTypeSpec() ) );
     
 	return rev_type_spec;
-}
-
-
-RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData>* ContinuousCharacterData::getDagNode( void ) const
-{
-    
-    return dag_node;
 }
 
 
@@ -253,30 +174,6 @@ const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const
     
     static TypeSpec type_spec = getClassTypeSpec();
     return type_spec;
-}
-
-
-const RevBayesCore::ContinuousCharacterData& ContinuousCharacterData::getValue( void ) const
-{
-    
-    if ( dag_node == NULL )
-    {
-        throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
-    }
-    
-    return dag_node->getValue();
-}
-
-
-RevBayesCore::ContinuousCharacterData& ContinuousCharacterData::getValue( void )
-{
-    
-    if ( dag_node == NULL )
-    {
-        throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
-    }
-    
-    return dag_node->getValue();
 }
 
 
@@ -310,200 +207,6 @@ void ContinuousCharacterData::initMethods( void )
     get_element_arg_rules->push_back( new ArgumentRule( "j", Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<ContinuousCharacterData, Real>( "get", this, get_element_arg_rules   ) );
 
-}
-
-/**
- * Is the object or any of its upstream members or elements
- * modifiable by the user through assignment? We simply ask
- * our DAG node.
- */
-bool ContinuousCharacterData::isAssignable( void ) const
-{
-    if ( dag_node == NULL )
-    {
-        return false;
-    }
-    
-    return dag_node->isAssignable();
-}
-
-
-bool ContinuousCharacterData::isConstant( void ) const
-{
-    
-    return dag_node->isConstant();
-}
-
-
-bool ContinuousCharacterData::isModelObject( void ) const
-{
-    
-    return true;
-}
-
-
-void ContinuousCharacterData::makeConstantValue( void )
-{
-    
-    if ( dag_node == NULL )
-    {
-        throw RbException("Cannot convert a variable without value to a constant value.");
-    }
-    else if ( dag_node->getDagNodeType() != RevBayesCore::DagNode::CONSTANT )
-    {
-        RevBayesCore::ConstantNode<valueType>* newNode = new ConstantNode<valueType>(dag_node->getName(), RevBayesCore::Cloner<valueType, IsDerivedFrom<valueType, RevBayesCore::Cloneable>::Is >::createClone( dag_node->getValue() ) );
-        dag_node->replace(newNode);
-        
-        // delete the value if there are no other references to it.
-        if ( dag_node->decrementReferenceCount() == 0 )
-        {
-            delete dag_node;
-        }
-        
-        dag_node = newNode;
-        
-        // increment the reference counter
-        dag_node->incrementReferenceCount();
-    }
-    
-}
-
-
-/**
- * Make an indirect reference to the variable. This is appropriate for the contexts
- * where the object occurs on the righ-hand side of expressions like a := b
- */
-ContinuousCharacterData* ContinuousCharacterData::makeIndirectReference(void)
-{
-    
-    RevBayesCore::IndirectReferenceFunction< valueType > *func = new RevBayesCore::IndirectReferenceFunction<valueType>( this->getDagNode() );
-    RevBayesCore::DeterministicNode< valueType >* newNode = new RevBayesCore::DeterministicNode< valueType >( "", func );
-    
-    ContinuousCharacterData* newObj = this->clone();
-    
-    const std::vector<RevBayesCore::Move*>& mvs = newObj->getDagNode()->getMoves();
-    while ( mvs.empty() == false )
-    {
-        newObj->getDagNode()->removeMove( *mvs.begin() );
-    }
-    
-    newObj->setDagNode( newNode );
-    
-    return newObj;
-}
-
-
-/** Convert a model object to a deterministic object, the value of which is determined by a user-defined Rev function */
-void ContinuousCharacterData::makeUserFunctionValue( UserFunction* fxn )
-{
-    UserFunctionNode< ContinuousCharacterData >*  detNode = new UserFunctionNode< ContinuousCharacterData >( "", fxn );
-    
-    // Signal replacement and delete the value if there are no other references to it.
-    if ( dag_node != NULL )
-    {
-        dag_node->replace( detNode );
-        if ( dag_node->decrementReferenceCount() == 0 )
-            delete dag_node;
-    }
-    
-    // Shift the actual node
-    dag_node = detNode;
-    
-    // Increment the reference counter
-    dag_node->incrementReferenceCount();
-}
-
-
-/**
- * Print value for user. The DAG node pointer may be NULL, in which
- * case we print "NA".
- */
-void ContinuousCharacterData::printValue(std::ostream &o, bool user) const
-{
-    if ( dag_node == NULL )
-    {
-        o << "NA";
-    }
-    else
-    {
-        dag_node->printValue( o, "" );
-    }
-    
-}
-
-
-/** Copy name of variable onto DAG node, if it is not NULL */
-void ContinuousCharacterData::setName(std::string const &n)
-{
-    if ( dag_node != NULL )
-    {
-        dag_node->setName( n );
-    }
-    
-}
-
-
-/**
- * Set dag node. We also accommodate the possibility of setting the DAG node to null.
- */
-void ContinuousCharacterData::setDagNode(RevBayesCore::DagNode* newNode)
-{
-    
-    // Take care of the old value node
-    if ( dag_node != NULL )
-    {
-        if ( newNode != NULL )
-        {
-            newNode->setName( dag_node->getName() );
-        }
-        
-        dag_node->replace(newNode);
-        
-        if ( dag_node->decrementReferenceCount() == 0 )
-        {
-            delete dag_node;
-        }
-        
-    }
-    
-    // Set the new value node
-    dag_node = static_cast< RevBayesCore::TypedDagNode<valueType>* >( newNode );
-    
-    // Increment the reference count to the new value node
-    if ( dag_node != NULL )
-    {
-        dag_node->incrementReferenceCount();
-    }
-    
-}
-
-
-void ContinuousCharacterData::setValue(valueType *x)
-{
-    
-    RevBayesCore::ConstantNode<valueType>* newNode;
-    
-    if ( dag_node == NULL )
-    {
-        newNode = new ConstantNode<valueType>("",x);
-    }
-    else
-    {
-        newNode = new ConstantNode<valueType>(dag_node->getName(),x);
-        dag_node->replace(newNode);
-        
-        if ( dag_node->decrementReferenceCount() == 0 )
-        {
-            delete dag_node;
-        }
-        
-    }
-    
-    dag_node = newNode;
-    
-    // increment the reference count to the value
-    dag_node->incrementReferenceCount();
-    
 }
 
 

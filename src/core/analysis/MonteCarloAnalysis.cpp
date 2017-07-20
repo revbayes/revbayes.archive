@@ -794,7 +794,7 @@ void MonteCarloAnalysis::setActivePIDSpecialized(size_t a, size_t n)
 /**
  * Set the model by delegating the model to the Monte Carlo samplers (replicates).
  */
-void MonteCarloAnalysis::setModel(Model *m)
+void MonteCarloAnalysis::setModel(Model *m, bool redraw)
 {
     
     // reset the counters for the move schedules
@@ -805,14 +805,14 @@ void MonteCarloAnalysis::setModel(Model *m)
             
             if ( i == 0 )
             {
-                runs[0]->setModel( m );
+                runs[0]->setModel( m, redraw );
             }
             else
             {
                 const Model *old_model = &runs[i]->getModel();
                 delete old_model;
                 
-                runs[i]->setModel( m->clone() );
+                runs[i]->setModel( m->clone(), redraw );
             }
             
         }

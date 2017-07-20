@@ -29,13 +29,13 @@ namespace RevLanguage {
     class WorkspaceVector : public WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<rlType> >, public Container {
         
     public:
-//        typedef typename rlType::valueType          elementType;
-//        typedef RevBayesCore::RbVector<elementType> vectorRbPtr;
+     // typedef typename rlType::valueType          elementType;
+     // typedef RevBayesCore::RbVector<elementType> vectorRbPtr;
         typedef std::vector<rlType*>                vectorRlPtr;
         
                                                     WorkspaceVector(void);                                              //!< Default constructor
                                                     WorkspaceVector(const RevBayesCore::RbVector<rlType>& v);           //!< Constructor from rb value pointers
-//                                                    WorkspaceVector(const vectorRbPtr& v);                              //!< Constructor from rb value pointers
+                                                 // WorkspaceVector(const vectorRbPtr& v);                              //!< Constructor from rb value pointers
                                                     WorkspaceVector(const vectorRlPtr& v);                              //!< Constructor from rl value pointers
         
         // STL-like vector functions provided here
@@ -55,20 +55,18 @@ namespace RevLanguage {
         virtual RevPtr<RevVariable>                 executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
 
         // Container functions provided here
-        virtual rlType*                             getElement(size_t idx) const;                                        //!< Get element variable (single index)
+        virtual rlType*                             getElement(size_t idx) const;                                       //!< Get element variable (single index)
         
         // Type conversion functions
-//        RevObject*                                  convertTo(const TypeSpec& type) const;                      //!< Convert to requested type
-//        virtual double                              isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
+     // RevObject*                                  convertTo(const TypeSpec& type) const;                              //!< Convert to requested type
+     // virtual double                              isConvertibleTo(const TypeSpec& type, bool once) const;             //!< Is this object convertible to the requested type?
 
         // WorkspaceVector functions
-//        vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
-        
-        void                                        printValue(std::ostream& o, bool user) const;                                  //!< Print value for user
+     // vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
+        void                                        printValue(std::ostream& o, bool user) const;                       //!< Print value for user
 
         
     private:
-
         void                                        initMethods(void);
 
     };

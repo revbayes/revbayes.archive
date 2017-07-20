@@ -34,7 +34,7 @@ namespace RevBayesCore {
         
         static void                     ressurectFromFile( objType* obj, const std::string &dir, const std::string &fn )
         {
-            RbFileManager fm = RbFileManager(dir, fn);
+            RbFileManager fm = RbFileManager(dir, fn + ".txt");
             fm.createDirectoryForFile();
             
             // open the stream to the file
@@ -61,7 +61,7 @@ namespace RevBayesCore {
         
         static void                     writeToFile( const objType &obj, const std::string &dir, const std::string &fn )
         {
-            RbFileManager fm = RbFileManager(dir, fn);
+            RbFileManager fm = RbFileManager(dir, fn + ".txt");
             fm.createDirectoryForFile();
             
             // open the stream to the file

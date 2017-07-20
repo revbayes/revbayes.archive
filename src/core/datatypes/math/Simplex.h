@@ -43,21 +43,7 @@ namespace RevBayesCore {
         Simplex*                                clone(void) const;
         
         // utility funcions
-        virtual void                            initFromString( const std::string &s )
-        {
-            this->clear();
-            std::string sub = s.substr( 2, s.size()-4);
-            std::vector<std::string> elements;
-            StringUtilities::stringSplit(sub,", ", elements);
-            for (size_t i=0; i<elements.size(); ++i)
-            {
-                double value;
-                RevBayesCore::Serializer<double, IsDerivedFrom<double, Serializable>::Is >::ressurectFromString( &value, elements[i] );
-                this->push_back( value );
-            }
-            normalize();
-            
-        }
+        virtual void                            initFromString(const std::string &s);
         
     protected:
         

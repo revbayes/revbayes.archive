@@ -136,7 +136,7 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 void RbSettings::initializeUserSettings(void)
 {
     moduleDir = "modules";      // the default module directory
-    useScaling = false;          // the default useScaling
+    useScaling = false;         // the default useScaling
     scalingDensity = 4;         // the default scaling density
     lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
@@ -380,7 +380,7 @@ void RbSettings::writeUserSettings( void )
     writeStream << "printNodeIndex=" << (printNodeIndex ? "true" : "false") << std::endl;
     writeStream << "tolerance=" << tolerance << std::endl;
     writeStream << "linewidth=" << lineWidth << std::endl;
-    writeStream << "useScaling=" << useScaling << std::endl;
+    writeStream << "useScaling=" << (useScaling ? "true" : "false") << std::endl;
     writeStream << "scalingDensity=" << scalingDensity << std::endl;
     writeStream << "collapseSampledAncestors=" << (collapseSampledAncestors ? "true" : "false") << std::endl;
     fm.closeFile( writeStream );

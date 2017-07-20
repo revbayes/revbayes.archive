@@ -140,6 +140,8 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::StochasticNode<valueT
         found = true;
         
         // get the observation
+//        const RevObject &tmp_obj = args[0].getVariable()->getRevObject();
+//        const ModelObject<valueType> *tmp_ptr = dynamic_cast<const ModelObject<valueType> *>( &tmp_obj );
         const valueType &observation = static_cast<const ModelObject<valueType> &>( args[0].getVariable()->getRevObject() ).getValue();
         
         // clamp

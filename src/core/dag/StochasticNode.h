@@ -285,7 +285,7 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
     if ( needs_probability_recalculation )
     {
         // compute and store log-probability
-        if ( !this->prior_only || !this->clamped )
+        if ( this->prior_only == false || this->clamped == false )
         {
             lnProb = distribution->computeLnProbability();
         }

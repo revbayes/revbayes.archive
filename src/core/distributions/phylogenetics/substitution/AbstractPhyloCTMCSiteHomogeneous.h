@@ -648,7 +648,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     {
         // we do not compress
         num_patterns = num_sites;
-        pattern_counts = std::vector<size_t>(num_sites,1);
+        pattern_counts     = std::vector<size_t>(num_sites,1);
+        indexOfSitePattern = std::vector<size_t>(num_sites,1);
         for(size_t i = 0; i < this->num_sites; i++)
 		{
 			indexOfSitePattern[i] = i;
@@ -715,22 +716,35 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     for (size_t i=0; i<pattern_block_size; ++i)
     {
         bool inv = true;
+        bool allow_ambiguous_as_invariant = true;
+        size_t taxon_index = 0;
 
         if ( using_ambiguous_characters == true )
         {
-            const RbBitSet &val = ambiguous_char_matrix[0][i];
+            RbBitSet val = ambiguous_char_matrix[taxon_index][i];
 
-            if ( val.getNumberSetBits() > 1 )
+            if ( val.getNumberSetBits() > 1 && allow_ambiguous_as_invariant == false )
             {
                 inv = false;
+            }
+            else if ( val.getNumberSetBits() > 1 && allow_ambiguous_as_invariant == true )
+            {
+                
+                while ( val.getNumberSetBits() > 1 && taxon_index<length )
+                {
+                    val = ambiguous_char_matrix[taxon_index][i];
+                    ++taxon_index;
+                }
             }
             else
             {
                 invariant_site_index[i] = val.getFirstSetBit();
 
-                for (size_t j=1; j<length; ++j)
+                ++taxon_index;
+                for (; taxon_index<length; ++taxon_index)
                 {
-                    if ( val != ambiguous_char_matrix[j][i] || gap_matrix[j][i] == true )
+                    if (   ( allow_ambiguous_as_invariant == true  &&  val != ambiguous_char_matrix[taxon_index][i] && gap_matrix[taxon_index][i] == false)
+                        || ( allow_ambiguous_as_invariant == false && (val != ambiguous_char_matrix[taxon_index][i] || gap_matrix[taxon_index][i] == true ) ) )
                     {
                         inv = false;
                         break;
@@ -740,12 +754,21 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
         }
         else
         {
-            unsigned long c = char_matrix[0][i];
+            while ( gap_matrix[taxon_index][i] == true && taxon_index<length )
+            {
+                ++taxon_index;
+            }
+            
+            unsigned long c = char_matrix[taxon_index][i];
             invariant_site_index[i] = c;
 
-            for (size_t j=1; j<length; ++j)
+            for (; taxon_index<length; ++taxon_index)
             {
-                if ( invariant_site_index[i] != char_matrix[j][i] || gap_matrix[j][i] == true )
+//                if (  (invariant_site_index[i] != char_matrix[taxon_index][i] || gap_matrix[taxon_index][i] == true) )
+//                {
+                
+                if (   ( allow_ambiguous_as_invariant == true  &&  c != char_matrix[taxon_index][i] && gap_matrix[taxon_index][i] == false)
+                    || ( allow_ambiguous_as_invariant == false && (c != char_matrix[taxon_index][i] || gap_matrix[taxon_index][i] == true ) ) )
                 {
                     inv = false;
                     break;
@@ -996,7 +1019,7 @@ std::vector<charType> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::
     {
 		size_t pattern = i;
 		// if the matrix is compressed use the pattern for this site
-		if (compressed)
+		if ( compressed == true )
         {
 			pattern = site_pattern[i];
 		}
@@ -1791,7 +1814,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursiveMarginal
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void )
 {
-
+    
     bool do_mask = this->dag_node != NULL && this->dag_node->isClamped();
     std::vector<std::vector<bool> > mask_gap        = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
     std::vector<std::vector<bool> > mask_missing    = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
@@ -2108,7 +2131,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
 
-                double*          p_site_mixture          = p_node + offset;
+                double* p_site_mixture = p_node + offset;
 
                 for ( size_t i=0; i<this->num_chars; ++i)
                 {
@@ -2129,7 +2152,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
 
-                double*          p_site_mixture          = p_node + offset;
+                double* p_site_mixture = p_node + offset;
 
                 for ( size_t i=0; i<this->num_chars; ++i)
                 {
@@ -2142,7 +2165,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
     }
     else if ( RbSettings::userSettings().getUseScaling() == true )
     {
-        // iterate over all mixture categories
+        // iterate over all sites
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
         {
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = 0;
@@ -2880,14 +2903,23 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
 
                 if ( this->site_invariant[site] == true )
                 {
-                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+//                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] + oneMinusPInv * per_mixture_Likelihoods[site] / exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) ) * *patterns;
                 }
                 else
                 {
                     rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+                    rv[site] -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
                 }
-                rv[site] -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
 
+//                rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+//                rv[site] -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
+//                
+//                if ( this->site_invariant[site] == true )
+//                {
+//                    rv[site] += log( prob_invariant * f[ this->invariant_site_index[site] ] ) * *patterns;
+//                }
+                
             }
             else // no scaling
             {
@@ -2900,6 +2932,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
                 {
                     rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                 }
+                
+//                rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+//                if ( this->site_invariant[site] == true )
+//                {
+//                    rv[site] += log( prob_invariant * f[ this->invariant_site_index[site] ] ) * *patterns;
+//                }
 
             }
 
@@ -2951,7 +2989,6 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         if ( process_active == false )
         {
             // send from the workers the log-likelihood to the master
-//            MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
             MPI_Send(&sum_partial_probs, 1, MPI_DOUBLE, active_PID, 0, MPI_COMM_WORLD);
         }
 
@@ -2961,7 +2998,6 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
                 double tmp = 0;
-//                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
                 MPI_Status status;
                 MPI_Recv(&tmp, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD, &status);
                 sum_partial_probs += tmp;
@@ -2973,13 +3009,11 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         {
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
-//                MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, int(i), 0);
                 MPI_Send(&sum_partial_probs, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD);
             }
         }
         else
         {
-//            MPI::COMM_WORLD.Recv(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
             MPI_Status status;
             MPI_Recv(&sum_partial_probs, 1, MPI_DOUBLE, active_PID, 0, MPI_COMM_WORLD, &status);
         }
