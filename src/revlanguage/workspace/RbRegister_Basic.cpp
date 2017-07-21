@@ -152,6 +152,7 @@
 #include "Func__ne.h"
 #include "Func__or.h"
 #include "Func__unot.h"
+#include "Func__scalarMatrixMult.h"
 #include "Func__scalarVectorAdd.h"
 #include "Func__scalarVectorDiv.h"
 #include "Func__scalarVectorMult.h"
@@ -397,6 +398,14 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__scalarVectorMult<Integer    , ModelVector<Integer>  , ModelVector<Integer>  >(  )   );
         addFunction( new Func__scalarVectorMult<Real       , ModelVector<Real>     , ModelVector<Real>     >(  )   );
         addFunction( new Func__scalarVectorMult<RealPos    , ModelVector<RealPos>  , ModelVector<RealPos>  >(  )   );
+        addFunction( new Func__scalarMatrixMult<Natural    , MatrixReal  , MatrixReal  >(  )   );
+        addFunction( new Func__scalarMatrixMult<Integer    , MatrixReal  , MatrixReal  >(  )   );
+        addFunction( new Func__scalarMatrixMult<Real       , MatrixReal  , MatrixReal  >(  )   );
+        addFunction( new Func__scalarMatrixMult<RealPos    , MatrixReal  , MatrixReal  >(  )   );
+        addFunction( new Func__scalarMatrixMult<Natural    , MatrixRealSymmetric  , MatrixRealSymmetric  >(  )   );
+        addFunction( new Func__scalarMatrixMult<Integer    , MatrixRealSymmetric  , MatrixRealSymmetric  >(  )   );
+        addFunction( new Func__scalarMatrixMult<Real       , MatrixRealSymmetric  , MatrixRealSymmetric  >(  )   );
+        addFunction( new Func__scalarMatrixMult<RealPos    , MatrixRealSymmetric  , MatrixRealSymmetric  >(  )   );
         
         // subtraction
         addFunction( new Func__sub< Integer                            , Integer               , Integer               >(  )  );
