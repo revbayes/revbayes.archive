@@ -14,13 +14,14 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-MatrixRealSingleElementSlideProposal::MatrixRealSingleElementSlideProposal( StochasticNode<MatrixReal> *n, double l) : Proposal(),
+MatrixRealSingleElementSlideProposal::MatrixRealSingleElementSlideProposal( StochasticNode<MatrixReal> *n, double l, bool s) : Proposal(),
     array(NULL),
     matrix( n ),
     delta( l ),
     indexa(0),
     indexb(0),
-    storedValue( 0.0 )
+    storedValue( 0.0 ),
+    symmetric( s )
 {
     // tell the base class to add the node
     addNode( matrix );
@@ -33,13 +34,14 @@ MatrixRealSingleElementSlideProposal::MatrixRealSingleElementSlideProposal( Stoc
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-MatrixRealSingleElementSlideProposal::MatrixRealSingleElementSlideProposal( StochasticNode<RbVector<RbVector<double> > > *n, double l) : Proposal(),
+MatrixRealSingleElementSlideProposal::MatrixRealSingleElementSlideProposal( StochasticNode<RbVector<RbVector<double> > > *n, double l, bool s) : Proposal(),
     array( n ),
     matrix(NULL),
     delta( l ),
     indexa(0),
     indexb(0),
-    storedValue( 0.0 )
+    storedValue( 0.0 ),
+    symmetric( s )
 {
     // tell the base class to add the node
     addNode( array );
@@ -115,6 +117,11 @@ double MatrixRealSingleElementSlideProposal::doProposal( void )
 
         v[indexa][indexb] += scalingFactor;
 
+        if( symmetric == true && indexa != indexb)
+        {
+            v[indexb][indexa] += scalingFactor;
+        }
+
         array->addTouchedElementIndex(indexa*v.size() + indexb);
     }
     else
@@ -128,6 +135,11 @@ double MatrixRealSingleElementSlideProposal::doProposal( void )
         storedValue = v[indexa][indexb];
 
         v[indexa][indexb] += scalingFactor;
+
+        if( symmetric == true && indexa != indexb)
+        {
+            v[indexb][indexa] += scalingFactor;
+        }
 
         matrix->addTouchedElementIndex(indexa*v.getNumberOfRows() + indexb);
     }
@@ -175,12 +187,20 @@ void MatrixRealSingleElementSlideProposal::undoProposal( void )
     {
         RbVector<RbVector<double> >& v = array->getValue();
         v[indexa][indexb] = storedValue;
+        if( symmetric == true )
+        {
+            v[indexb][indexa] = storedValue;
+        }
         array->clearTouchedElementIndices();
     }
     else
     {
         MatrixReal& v = matrix->getValue();
         v[indexa][indexb] = storedValue;
+        if( symmetric == true )
+        {
+            v[indexb][indexa] = storedValue;
+        }
         matrix->clearTouchedElementIndices();
     }
     

@@ -28,8 +28,8 @@ namespace RevBayesCore {
     class MatrixRealSingleElementSlideProposal : public Proposal {
         
     public:
-        MatrixRealSingleElementSlideProposal( StochasticNode<MatrixReal> *n, double l);                                                                      //!<  constructor
-        MatrixRealSingleElementSlideProposal( StochasticNode<RbVector<RbVector<double> > > *n, double l);
+        MatrixRealSingleElementSlideProposal( StochasticNode<MatrixReal> *n, double l, bool s = false);                                                                      //!<  constructor
+        MatrixRealSingleElementSlideProposal( StochasticNode<RbVector<RbVector<double> > > *n, double l, bool s = false);
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
@@ -54,7 +54,8 @@ namespace RevBayesCore {
         //!< The two indices of the last modified element.
         size_t                                  indexa;
         size_t                                  indexb;
-        double                                  storedValue;                                                                          //!< The value we propose.
+        double                                  storedValue;                                                                       //!< The value we propose.
+        bool                                    symmetric;
     };
     
 }

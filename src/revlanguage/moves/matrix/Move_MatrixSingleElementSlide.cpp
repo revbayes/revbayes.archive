@@ -20,6 +20,7 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlMatrixReal.h"
+#include "RlMatrixRealSymmetric.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -60,7 +61,7 @@ void Move_MatrixSingleElementSlide::constructInternalObject( void )
     {
         RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* tmp = static_cast<const MatrixReal &>( v->getRevObject() ).getDagNode();
         RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( tmp );
-        p = new RevBayesCore::MatrixRealSingleElementSlideProposal(n,l);
+        p = new RevBayesCore::MatrixRealSingleElementSlideProposal(n,l, v->getRevObject().isType( MatrixRealSymmetric::getClassTypeSpec() ) );
     }
     else if(v->getRevObject().isType( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() ))
     {

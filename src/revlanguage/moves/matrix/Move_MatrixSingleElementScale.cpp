@@ -20,6 +20,7 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlMatrixReal.h"
+#include "RlMatrixRealSymmetric.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -60,7 +61,7 @@ void Move_MatrixSingleElementScale::constructInternalObject( void )
     {
         RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* tmp = static_cast<const MatrixReal &>( v->getRevObject() ).getDagNode();
         RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( tmp );
-        p = new RevBayesCore::MatrixRealSingleElementScaleProposal(n,l);
+        p = new RevBayesCore::MatrixRealSingleElementScaleProposal(n,l, v->getRevObject().isType( MatrixRealSymmetric::getClassTypeSpec() ) );
     }
     else if(v->getRevObject().isType( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() ))
     {
@@ -125,6 +126,7 @@ const MemberRules& Move_MatrixSingleElementScale::getParameterRules(void) const
         std::vector<TypeSpec> matTypes;
         matTypes.push_back( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() );
         matTypes.push_back( ModelVector<ModelVector<Real> >::getClassTypeSpec() );
+        matTypes.push_back( MatrixRealSymmetric::getClassTypeSpec() );
         matTypes.push_back( MatrixReal::getClassTypeSpec() );
         move_member_rules.push_back( new ArgumentRule( "x"     , matTypes, "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         move_member_rules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()   , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
