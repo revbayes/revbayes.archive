@@ -301,7 +301,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< Tree                       >( new Dist_empiricalTree() );
 		
 		// Distance Matrix Gamma distribution
-		AddDistribution< RlDistanceMatrix           >( new Dist_phyloDistanceGamma() );
+		AddDistribution< DistanceMatrix             >( new Dist_phyloDistanceGamma() );
 
 		
         /* Statistical distributions on simple variables (in folder "distributions/math") */
