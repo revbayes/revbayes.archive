@@ -340,6 +340,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
                 the_node->keep();
             }
         
+            proposal->cleanProposal();
         }
         else if (ln_acceptance_ratio < -300.0)
         {
