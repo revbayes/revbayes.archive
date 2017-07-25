@@ -1,8 +1,8 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "ConjugateInverseWishartBrownianMove.h"
+#include "ConjugateInverseWishartMove.h"
 #include "ModelVector.h"
-#include "Move_ConjugateInverseWishartBrownian.h"
+#include "Move_ConjugateInverseWishart.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
@@ -17,7 +17,7 @@
 
 using namespace RevLanguage;
 
-Move_ConjugateInverseWishartBrownian::Move_ConjugateInverseWishartBrownian() : Move()
+Move_ConjugateInverseWishart::Move_ConjugateInverseWishart() : Move()
 {
     
 }
@@ -29,41 +29,39 @@ Move_ConjugateInverseWishartBrownian::Move_ConjugateInverseWishartBrownian() : M
  *
  * \return A new copy of the process.
  */
-Move_ConjugateInverseWishartBrownian* Move_ConjugateInverseWishartBrownian::clone(void) const
+Move_ConjugateInverseWishart* Move_ConjugateInverseWishart::clone(void) const
 {
     
-    return new Move_ConjugateInverseWishartBrownian(*this);
+    return new Move_ConjugateInverseWishart(*this);
 }
 
 
-void Move_ConjugateInverseWishartBrownian::constructInternalObject( void )
+void Move_ConjugateInverseWishart::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<double>* k = static_cast<const Real&>( kappa->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<int>* d = static_cast<const Natural&>( df->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
 
     RevBayesCore::TypedDagNode< RevBayesCore::MatrixReal >* tmp = static_cast<const MatrixRealSymmetric &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< RevBayesCore::MatrixReal > *z = static_cast< RevBayesCore::StochasticNode< RevBayesCore::MatrixReal >* >( tmp );
     
-    value = new RevBayesCore::ConjugateInverseWishartBrownianMove(z, k, d, w);
+    value = new RevBayesCore::ConjugateInverseWishartMove(z, w);
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_ConjugateInverseWishartBrownian::getClassType(void)
+const std::string& Move_ConjugateInverseWishart::getClassType(void)
 {
     
-    static std::string rev_type = "Move_ConjugateInverseWishartBrownian";
+    static std::string rev_type = "Move_ConjugateInverseWishart";
     
     return rev_type;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_ConjugateInverseWishartBrownian::getClassTypeSpec(void)
+const TypeSpec& Move_ConjugateInverseWishart::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -77,10 +75,10 @@ const TypeSpec& Move_ConjugateInverseWishartBrownian::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_ConjugateInverseWishartBrownian::getMoveName( void ) const
+std::string Move_ConjugateInverseWishart::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "ConjugateInverseWishartBrownian";
+    std::string c_name = "ConjugateInverseWishart";
     
     return c_name;
 }
@@ -88,7 +86,7 @@ std::string Move_ConjugateInverseWishartBrownian::getMoveName( void ) const
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_ConjugateInverseWishartBrownian::getParameterRules(void) const
+const MemberRules& Move_ConjugateInverseWishart::getParameterRules(void) const
 {
     
     static MemberRules move_member_rules;
@@ -98,9 +96,7 @@ const MemberRules& Move_ConjugateInverseWishartBrownian::getParameterRules(void)
     {
         
         move_member_rules.push_back( new ArgumentRule( "x"     , MatrixRealSymmetric::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        move_member_rules.push_back( new ArgumentRule( "kappa" , Real::getClassTypeSpec()               , "The scaling parameter of the distribution.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        move_member_rules.push_back( new ArgumentRule( "df"    , Natural::getClassTypeSpec()            , "The degrees of freedom of the distribution.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        
+
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
         move_member_rules.insert( move_member_rules.end(), inheritedRules.begin(), inheritedRules.end() );
@@ -112,7 +108,7 @@ const MemberRules& Move_ConjugateInverseWishartBrownian::getParameterRules(void)
 }
 
 /** Get type spec */
-const TypeSpec& Move_ConjugateInverseWishartBrownian::getTypeSpec( void ) const
+const TypeSpec& Move_ConjugateInverseWishart::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -122,7 +118,7 @@ const TypeSpec& Move_ConjugateInverseWishartBrownian::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_ConjugateInverseWishartBrownian::printValue(std::ostream &o) const
+void Move_ConjugateInverseWishart::printValue(std::ostream &o) const
 {
     
     o << "ConjugateInverseWishartBrownian(";
@@ -139,19 +135,11 @@ void Move_ConjugateInverseWishartBrownian::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Move_ConjugateInverseWishartBrownian::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_ConjugateInverseWishart::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" )
     {
         x = var;
-    }
-    else if ( name == "kappa" )
-    {
-        kappa = var;
-    }
-    else if ( name == "df" )
-    {
-        df = var;
     }
     else
     {
