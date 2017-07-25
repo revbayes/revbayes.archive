@@ -1,12 +1,13 @@
-#include "AddRemoveFossilProposal.h"
+#include "AddRemoveTipProposal.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
-#include "Move_AddRemoveFossil.h"
+#include "Move_AddRemoveTip.h"
 #include "Probability.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
+#include "RlBoolean.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -14,7 +15,7 @@
 
 using namespace RevLanguage;
 
-Move_AddRemoveFossil::Move_AddRemoveFossil() : Move()
+Move_AddRemoveTip::Move_AddRemoveTip() : Move()
 {
     
 }
@@ -26,14 +27,14 @@ Move_AddRemoveFossil::Move_AddRemoveFossil() : Move()
  *
  * \return A new copy of the process.
  */
-Move_AddRemoveFossil* Move_AddRemoveFossil::clone(void) const
+Move_AddRemoveTip* Move_AddRemoveTip::clone(void) const
 {
     
-    return new Move_AddRemoveFossil(*this);
+    return new Move_AddRemoveTip(*this);
 }
 
 
-void Move_AddRemoveFossil::constructInternalObject( void )
+void Move_AddRemoveTip::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -42,34 +43,33 @@ void Move_AddRemoveFossil::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
-    RevBayesCore::StochasticNode<double> *o = NULL;
-    if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
-    {
-        RevBayesCore::TypedDagNode<double> *tmp = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
-        o = static_cast<RevBayesCore::StochasticNode<double> *>( tmp );
-    }
-    
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     
-    double pr = static_cast<const RealPos &>( probRemove->getRevObject() ).getValue();
-    double ps = static_cast<const RealPos &>( probAncestor->getRevObject() ).getValue();
+    bool exa = static_cast<const RlBoolean &>( extant->getRevObject() ).getValue();
 
-    RevBayesCore::Proposal *p = new RevBayesCore::AddRemoveFossilProposal( t, o, pr, ps );
+    bool exi = static_cast<const RlBoolean &>( extinct->getRevObject() ).getValue();
+
+    if(exa == false && exi == false)
+    {
+        throw(RbException("In mvAddRemoveTip, 'extant' and 'extinct' cannot both be false"));
+    }
+
+    RevBayesCore::Proposal *p = new RevBayesCore::AddRemoveTipProposal( t, exa, exi );
     value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_AddRemoveFossil::getClassType(void)
+const std::string& Move_AddRemoveTip::getClassType(void)
 {
     
-    static std::string rev_type = "Move_AddRemoveFossil";
+    static std::string rev_type = "Move_AddRemoveTip";
     
     return rev_type;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_AddRemoveFossil::getClassTypeSpec(void)
+const TypeSpec& Move_AddRemoveTip::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -83,17 +83,17 @@ const TypeSpec& Move_AddRemoveFossil::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_AddRemoveFossil::getMoveName( void ) const
+std::string Move_AddRemoveTip::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "AddRemoveFossil";
+    std::string c_name = "AddRemoveTip";
     
     return c_name;
 }
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_AddRemoveFossil::getParameterRules(void) const
+const MemberRules& Move_AddRemoveTip::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -103,10 +103,8 @@ const MemberRules& Move_AddRemoveFossil::getParameterRules(void) const
     {
         
         memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), "The tree on which this moves operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , "The variable for the origin of the process giving a maximum age for the new fossil attachement time.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "probRemove", Probability::getClassTypeSpec(), "The probability of proposing to remove a fossil.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability( 0.5 ) ) );
-        memberRules.push_back( new ArgumentRule( "probAncestor", Probability::getClassTypeSpec(), "The probability of proposing to add a fossil as a sampled ancestor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability( 0.5 ) ) );
-
+        memberRules.push_back( new ArgumentRule( "extant", RlBoolean::getClassTypeSpec(), "Should we add/remove extant tips?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
+        memberRules.push_back( new ArgumentRule( "extinct", RlBoolean::getClassTypeSpec(), "Should we add/remove extinct tips?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -119,7 +117,7 @@ const MemberRules& Move_AddRemoveFossil::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_AddRemoveFossil::getTypeSpec( void ) const
+const TypeSpec& Move_AddRemoveTip::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -130,10 +128,10 @@ const TypeSpec& Move_AddRemoveFossil::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_AddRemoveFossil::printValue(std::ostream &o) const
+void Move_AddRemoveTip::printValue(std::ostream &o) const
 {
     
-    o << "Move_AddRemoveFossil(";
+    o << "Move_AddRemoveTip(";
     if (tree != NULL)
     {
         o << tree->getName();
@@ -147,24 +145,20 @@ void Move_AddRemoveFossil::printValue(std::ostream &o) const
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_AddRemoveFossil::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_AddRemoveTip::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )
     {
         tree = var;
     }
-    else if ( name == "origin" )
+    else if ( name == "extant" )
     {
-        origin = var;
+        extant = var;
     }
-    else if ( name == "probRemove" )
+    else if ( name == "extinct" )
     {
-        probRemove = var;
-    }
-    else if ( name == "probAncestor" )
-    {
-        probAncestor = var;
+        extinct = var;
     }
     else
     {

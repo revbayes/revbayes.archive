@@ -1,5 +1,5 @@
 #include "DistributionUniform.h"
-#include "FossilTimeSlideUniformProposal.h"
+#include "TipTimeSlideUniformProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -16,7 +16,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-FossilTimeSlideUniformProposal::FossilTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o ) : Proposal(),
+TipTimeSlideUniformProposal::TipTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o ) : Proposal(),
     tree( n ),
     origin( o )
 {
@@ -32,7 +32,7 @@ FossilTimeSlideUniformProposal::FossilTimeSlideUniformProposal( StochasticNode<T
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void FossilTimeSlideUniformProposal::cleanProposal( void )
+void TipTimeSlideUniformProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -43,10 +43,10 @@ void FossilTimeSlideUniformProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-FossilTimeSlideUniformProposal* FossilTimeSlideUniformProposal::clone( void ) const
+TipTimeSlideUniformProposal* TipTimeSlideUniformProposal::clone( void ) const
 {
     
-    return new FossilTimeSlideUniformProposal( *this );
+    return new TipTimeSlideUniformProposal( *this );
 }
 
 
@@ -55,9 +55,9 @@ FossilTimeSlideUniformProposal* FossilTimeSlideUniformProposal::clone( void ) co
  *
  * \return The Proposals' name.
  */
-const std::string& FossilTimeSlideUniformProposal::getProposalName( void ) const
+const std::string& TipTimeSlideUniformProposal::getProposalName( void ) const
 {
-    static std::string name = "FossilTimeSlideUniform";
+    static std::string name = "TipTimeSlideUniform";
     
     return name;
 }
@@ -75,7 +75,7 @@ const std::string& FossilTimeSlideUniformProposal::getProposalName( void ) const
  *
  * \return The hastings ratio.
  */
-double FossilTimeSlideUniformProposal::doProposal( void )
+double TipTimeSlideUniformProposal::doProposal( void )
 {
     
     // Get random number generator
@@ -83,27 +83,27 @@ double FossilTimeSlideUniformProposal::doProposal( void )
     
     Tree& tau = tree->getValue();
     
-    std::vector<size_t> fossils;
+    std::vector<size_t> tips;
 
-    for (size_t i = 0; i < tau.getNumberOfNodes(); ++i)
+    for (size_t i = 0; i < tau.getNumberOfTips(); ++i)
     {
         TopologyNode* node = &tau.getNode(i);
-        if( node->isFossil() )
+        if( node->getAge() > 0.0 )
         {
-            fossils.push_back(i);
+            tips.push_back(i);
         }
 
     }
 
-    if( fossils.empty() )
+    if( tips.empty() )
     {
         return 0;
     }
 
     // pick a random fossil node
     double u = rng->uniform01();
-    size_t index = size_t( std::floor(fossils.size() * u) );
-    TopologyNode* node = &tau.getNode(fossils[index]);
+    size_t index = size_t( std::floor(tips.size() * u) );
+    TopologyNode* node = &tau.getNode(tips[index]);
     
     TopologyNode& parent = node->getParent();
 
@@ -155,7 +155,7 @@ double FossilTimeSlideUniformProposal::doProposal( void )
 /**
  *
  */
-void FossilTimeSlideUniformProposal::prepareProposal( void )
+void TipTimeSlideUniformProposal::prepareProposal( void )
 {
     
 }
@@ -169,7 +169,7 @@ void FossilTimeSlideUniformProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void FossilTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
+void TipTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
 {
     
 }
@@ -182,17 +182,11 @@ void FossilTimeSlideUniformProposal::printParameterSummary(std::ostream &o) cons
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void FossilTimeSlideUniformProposal::undoProposal( void )
+void TipTimeSlideUniformProposal::undoProposal( void )
 {
     
     // undo the proposal
     storedNode->setAge( storedAge );
-    
-    if(storedNode->isSampledAncestor())
-    {
-        storedNode->getParent().setAge( storedAge );
-    }
-
 }
 
 
@@ -202,7 +196,7 @@ void FossilTimeSlideUniformProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void FossilTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void TipTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     if(oldN == tree)
@@ -224,7 +218,7 @@ void FossilTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *ne
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void FossilTimeSlideUniformProposal::tune( double rate )
+void TipTimeSlideUniformProposal::tune( double rate )
 {
     
 }

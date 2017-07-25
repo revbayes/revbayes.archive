@@ -1,5 +1,5 @@
-#ifndef AddRemoveFossilProposal_H
-#define AddRemoveFossilProposal_H
+#ifndef AddRemoveTipProposal_H
+#define AddRemoveTipProposal_H
 
 #include <string>
 
@@ -22,14 +22,14 @@ namespace RevBayesCore {
      * @since 2012-07-12, version 1.0
      *
      */
-    class AddRemoveFossilProposal : public Proposal {
+    class AddRemoveTipProposal : public Proposal {
         
     public:
-        AddRemoveFossilProposal( StochasticNode<Tree> *n, TypedDagNode<double>* o, double pr, double ps);               //!<  constructor
+        AddRemoveTipProposal( StochasticNode<Tree> *n, bool exa, bool exi);               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
-        AddRemoveFossilProposal*                clone(void) const;                                          //!< Clone object
+        AddRemoveTipProposal*                   clone(void) const;                                          //!< Clone object
         double                                  doProposal(void);                                           //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                      //!< Prepare the proposal
@@ -41,23 +41,21 @@ namespace RevBayesCore {
         
         void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);             //!< Swap the DAG nodes on which the Proposal is working on
         
-        double                                  addFossil(TopologyNode *n);
-        double                                  removeFossil(TopologyNode *n);
+        double                                  addTip(TopologyNode *n);
+        double                                  removeTip(TopologyNode *n);
         
     private:
         
         // parameters
         StochasticNode<Tree>*                   tau;                                                        //!< The variable the Proposal is working on
-        TypedDagNode<double>*                   origin;                                                     //!< The variable the Proposal is working on
         
         // stored objects to undo proposal
-        TopologyNode*                           storedFossil;
         TopologyNode*                           storedSibling;
-        double                                  storedAge;
+        TopologyNode*                           storedTip;
 
         bool                                    removed;
-        double                                  probRemove;
-        double                                  probAncestor;
+        bool                                    extant;
+        bool                                    extinct;
     
     };
     

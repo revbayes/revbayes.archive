@@ -1,5 +1,5 @@
-#ifndef FossilTimeSlideUniformProposal_H
-#define FossilTimeSlideUniformProposal_H
+#ifndef TipTimeSlideUniformProposal_H
+#define TipTimeSlideUniformProposal_H
 
 #include <string>
 
@@ -22,14 +22,14 @@ namespace RevBayesCore {
      * @since 2012-07-12, version 1.0
      *
      */
-    class FossilTimeSlideUniformProposal : public Proposal {
+    class TipTimeSlideUniformProposal : public Proposal {
         
     public:
-        FossilTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double>* o);                                               //!<  constructor
+        TipTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double>* o);                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
-        FossilTimeSlideUniformProposal*           clone(void) const;                                          //!< Clone object
+        TipTimeSlideUniformProposal*            clone(void) const;                                          //!< Clone object
         double                                  doProposal(void);                                           //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                      //!< Prepare the proposal

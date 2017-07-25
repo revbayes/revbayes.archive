@@ -1,5 +1,5 @@
-#ifndef Move_FossilTimeSlideUniform_H
-#define Move_FossilTimeSlideUniform_H
+#ifndef Move_AddRemoveTip_H
+#define Move_AddRemoveTip_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -11,23 +11,23 @@ namespace RevLanguage {
     
     
     /**
-     * @brief Rev wrapper class for the NodeTimeSlideUniform move.
+     * @brief Rev wrapper class for the CollapseExpandFossilBranch move.
      *
-     * This class is the Rev wrapper class for the FossilTimeSlideUniform move,
+     * This class is the Rev wrapper class for the CollapseExpandFossilBranch move,
      * a move that proposes a node age.
      *
      *
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @copyright GPL version 3
      */
-    class Move_FossilTimeSlideUniform : public Move {
+    class Move_AddRemoveTip : public Move {
         
     public:
         
-        Move_FossilTimeSlideUniform(void);                                                                                                    //!< Default constructor
+        Move_AddRemoveTip(void);                                                                                              //!< Default constructor
         
         // Basic utility functions
-        virtual Move_FossilTimeSlideUniform*          clone(void) const;                                                                      //!< Clone object
+        virtual Move_AddRemoveTip*                  clone(void) const;                                                                      //!< Clone object
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
@@ -41,7 +41,9 @@ namespace RevLanguage {
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         RevPtr<const RevVariable>                   tree;
-        RevPtr<const RevVariable>                   origin;
+        RevPtr<const RevVariable>                   extant;
+        RevPtr<const RevVariable>                   extinct;
+        
     };
     
 }

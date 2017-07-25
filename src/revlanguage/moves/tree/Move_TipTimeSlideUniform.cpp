@@ -1,8 +1,8 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
-#include "Move_FossilTimeSlideUniform.h"
-#include "FossilTimeSlideUniformProposal.h"
+#include "Move_TipTimeSlideUniform.h"
+#include "TipTimeSlideUniformProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -13,7 +13,7 @@
 
 using namespace RevLanguage;
 
-Move_FossilTimeSlideUniform::Move_FossilTimeSlideUniform() : Move()
+Move_TipTimeSlideUniform::Move_TipTimeSlideUniform() : Move()
 {
     
 }
@@ -25,14 +25,14 @@ Move_FossilTimeSlideUniform::Move_FossilTimeSlideUniform() : Move()
  *
  * \return A new copy of the process.
  */
-Move_FossilTimeSlideUniform* Move_FossilTimeSlideUniform::clone(void) const
+Move_TipTimeSlideUniform* Move_TipTimeSlideUniform::clone(void) const
 {
     
-	return new Move_FossilTimeSlideUniform(*this);
+	return new Move_TipTimeSlideUniform(*this);
 }
 
 
-void Move_FossilTimeSlideUniform::constructInternalObject( void )
+void Move_TipTimeSlideUniform::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -49,22 +49,22 @@ void Move_FossilTimeSlideUniform::constructInternalObject( void )
         d = static_cast<RevBayesCore::StochasticNode<double> *>( tmp );
     }
 
-    RevBayesCore::Proposal *p = new RevBayesCore::FossilTimeSlideUniformProposal( t, d );
+    RevBayesCore::Proposal *p = new RevBayesCore::TipTimeSlideUniformProposal( t, d );
     value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_FossilTimeSlideUniform::getClassType(void)
+const std::string& Move_TipTimeSlideUniform::getClassType(void)
 {
     
-    static std::string rev_type = "Move_FossilTimeSlideUniform";
+    static std::string rev_type = "Move_TipTimeSlideUniform";
     
 	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_FossilTimeSlideUniform::getClassTypeSpec(void)
+const TypeSpec& Move_TipTimeSlideUniform::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -78,17 +78,17 @@ const TypeSpec& Move_FossilTimeSlideUniform::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_FossilTimeSlideUniform::getMoveName( void ) const
+std::string Move_TipTimeSlideUniform::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "FossilTimeSlideUniform";
+    std::string c_name = "TipTimeSlideUniform";
     
     return c_name;
 }
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_FossilTimeSlideUniform::getParameterRules(void) const
+const MemberRules& Move_TipTimeSlideUniform::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -111,7 +111,7 @@ const MemberRules& Move_FossilTimeSlideUniform::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_FossilTimeSlideUniform::getTypeSpec( void ) const
+const TypeSpec& Move_TipTimeSlideUniform::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -122,10 +122,10 @@ const TypeSpec& Move_FossilTimeSlideUniform::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_FossilTimeSlideUniform::printValue(std::ostream &o) const
+void Move_TipTimeSlideUniform::printValue(std::ostream &o) const
 {
     
-    o << "Move_FossilTimeSlideUniform(";
+    o << "Move_TipTimeSlideUniform(";
     if (tree != NULL)
     {
         o << tree->getName();
@@ -139,7 +139,7 @@ void Move_FossilTimeSlideUniform::printValue(std::ostream &o) const
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_FossilTimeSlideUniform::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_TipTimeSlideUniform::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )
