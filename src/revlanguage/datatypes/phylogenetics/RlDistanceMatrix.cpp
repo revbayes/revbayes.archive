@@ -18,7 +18,7 @@
 
 using namespace RevLanguage;
 
-RlDistanceMatrix::RlDistanceMatrix(void) : ModelObject<RevBayesCore::DistanceMatrix>( )
+DistanceMatrix::DistanceMatrix(void) : ModelObject<RevBayesCore::DistanceMatrix>( )
 {
 
     ArgumentRules* namesArgRules               = new ArgumentRules();
@@ -46,7 +46,7 @@ RlDistanceMatrix::RlDistanceMatrix(void) : ModelObject<RevBayesCore::DistanceMat
 }
 
 
-RlDistanceMatrix::RlDistanceMatrix( RevBayesCore::DistanceMatrix *v) : ModelObject<RevBayesCore::DistanceMatrix>( v )
+DistanceMatrix::DistanceMatrix( RevBayesCore::DistanceMatrix *v) : ModelObject<RevBayesCore::DistanceMatrix>( v )
 {
 
     ArgumentRules* namesArgRules               = new ArgumentRules();
@@ -74,7 +74,7 @@ RlDistanceMatrix::RlDistanceMatrix( RevBayesCore::DistanceMatrix *v) : ModelObje
 }
 
 
-RlDistanceMatrix::RlDistanceMatrix( const RevBayesCore::DistanceMatrix &v) : ModelObject<RevBayesCore::DistanceMatrix>( v.clone() )
+DistanceMatrix::DistanceMatrix( const RevBayesCore::DistanceMatrix &v) : ModelObject<RevBayesCore::DistanceMatrix>( v.clone() )
 {
     
     ArgumentRules* namesArgRules               = new ArgumentRules();
@@ -101,7 +101,7 @@ RlDistanceMatrix::RlDistanceMatrix( const RevBayesCore::DistanceMatrix &v) : Mod
 }
 
 
-RlDistanceMatrix::RlDistanceMatrix( RevBayesCore::TypedDagNode<RevBayesCore::DistanceMatrix> *m) : ModelObject<RevBayesCore::DistanceMatrix>( m )
+DistanceMatrix::DistanceMatrix( RevBayesCore::TypedDagNode<RevBayesCore::DistanceMatrix> *m) : ModelObject<RevBayesCore::DistanceMatrix>( m )
 {
 
 	ArgumentRules* namesArgRules               = new ArgumentRules();
@@ -128,13 +128,14 @@ RlDistanceMatrix::RlDistanceMatrix( RevBayesCore::TypedDagNode<RevBayesCore::Dis
 }
 
 
-RlDistanceMatrix* RlDistanceMatrix::clone() const {
-    return new RlDistanceMatrix( *this );
+DistanceMatrix* DistanceMatrix::clone() const
+{
+    return new DistanceMatrix( *this );
 }
 
 
 /* Map calls to member methods */
-RevPtr<RevVariable> RlDistanceMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> DistanceMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "matrix")
@@ -154,11 +155,11 @@ RevPtr<RevVariable> RlDistanceMatrix::executeMethod(std::string const &name, con
     {
         found = true;
 		
-		std::vector<std::string> names = this->dag_node->getValue().getNames();
+        std::vector<RevBayesCore::Taxon> names = this->dag_node->getValue().getTaxa();
         ModelVector<RlString> *n = new ModelVector<RlString>();
         for (size_t i = 0; i < names.size(); ++i)
         {
-            n->push_back( names[i] );
+            n->push_back( names[i].getName() );
         }
         return new RevVariable( n );
     }
@@ -230,7 +231,7 @@ RevPtr<RevVariable> RlDistanceMatrix::executeMethod(std::string const &name, con
 
 
 
-const Real* RlDistanceMatrix::getElement(size_t idx, size_t idy) const
+const Real* DistanceMatrix::getElement(size_t idx, size_t idy) const
 {
 	double element = static_cast< RevBayesCore::DistanceMatrix& >( this->dag_node->getValue() ).getElement(idx - 1, idy - 1);
 	
@@ -239,7 +240,7 @@ const Real* RlDistanceMatrix::getElement(size_t idx, size_t idy) const
 }
 
 
-void RlDistanceMatrix::setElement(size_t idx, size_t idy, double& value) {
+void DistanceMatrix::setElement(size_t idx, size_t idy, double& value) {
 
 	static_cast< RevBayesCore::DistanceMatrix& >( this->dag_node->getValue() ).getElement(idx - 1, idy - 1) = value;
 	
@@ -274,7 +275,7 @@ rlType* ModelVector<rlType>::getElement(size_t idx) const
 /**
  * Size of the matrix.
  */
-size_t RlDistanceMatrix::size( void ) const
+size_t DistanceMatrix::size( void ) const
 {
 	return this->dag_node->getValue().size();
 }
@@ -283,15 +284,17 @@ size_t RlDistanceMatrix::size( void ) const
 
 
 /* Get Rev type of object */
-const std::string& RlDistanceMatrix::getClassType(void) {
+const std::string& DistanceMatrix::getClassType(void)
+{
     
-    static std::string rev_type = "RlDistanceMatrix";
+    static std::string rev_type = "DistanceMatrix";
     
 	return rev_type;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& RlDistanceMatrix::getClassTypeSpec(void) {
+const TypeSpec& DistanceMatrix::getClassTypeSpec(void)
+{
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -300,7 +303,8 @@ const TypeSpec& RlDistanceMatrix::getClassTypeSpec(void) {
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
-const TypeSpec& RlDistanceMatrix::getTypeSpec(void) const {
+const TypeSpec& DistanceMatrix::getTypeSpec(void) const
+{
     
     static TypeSpec type_spec = getClassTypeSpec();
     return type_spec;

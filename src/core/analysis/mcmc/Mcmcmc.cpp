@@ -178,19 +178,31 @@ const Model& Mcmcmc::getModel( void ) const
 }
 
 
-double Mcmcmc::getModelLnProbability( void )
+double Mcmcmc::getModelLnProbability( bool likelihood_only )
 {
-    synchronizeValues();
+    // we need to make sure that the vector chain_values is propagated properly
+    // usualy we store the posteriors in there
+    // now we might want to get the likelihoods only
+    synchronizeValues(likelihood_only);
+    
+    // create the return value
+    double rv = RbConstants::Double::neginf;
     
     for (size_t i=0; i<num_chains; ++i)
     {
         if ( chain_heats[i] == 1.0 )
         {
-            return chain_values[i];
+            rv = chain_values[i];
+            break;
         }
     }
     
-    return RbConstants::Double::neginf;
+    // we need to make sure that the vector chain_values is propagated properly
+    // usualy we store the posteriors in there
+    // now we might want to get the likelihoods only
+    synchronizeValues(false);
+    
+    return rv;
 }
 
 
@@ -519,7 +531,7 @@ void Mcmcmc::startMonitors(size_t num_cycles, bool reopen)
 }
 
 
-void Mcmcmc::synchronizeValues(void)
+void Mcmcmc::synchronizeValues( bool likelihood_only )
 {
     
     // synchronize chain values
@@ -533,7 +545,7 @@ void Mcmcmc::synchronizeValues(void)
         
         if ( chains[j] != NULL )
         {
-            results[j] = chains[j]->getModelLnProbability();
+            results[j] = chains[j]->getModelLnProbability(likelihood_only);
         }
         
     }
@@ -690,7 +702,7 @@ void Mcmcmc::swapChains(void)
     }
     
     // send all chain values to pid 0
-    synchronizeValues();
+    synchronizeValues( false );
     
     // send all chain heats to pid 0
     synchronizeHeats();

@@ -222,13 +222,18 @@ const Model& HillClimber::getModel( void ) const
  * Get the joint posterior probability of the current state for this model.
  * Note that the joint posterior is the true, unscaled and unheated value.
  */
-double HillClimber::getModelLnProbability(void)
+double HillClimber::getModelLnProbability(bool likelihood_only)
 {
     const std::vector<DagNode*> &n = model->getDagNodes();
     double pp = 0.0;
     for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
     {
-        pp += (*it)->getLnProbability();
+        DagNode *the_node = *it;
+        if ( likelihood_only == true && the_node->isClamped() == true )
+        {
+            pp += the_node->getLnProbability();
+        }
+        
     }
     return pp;
 }

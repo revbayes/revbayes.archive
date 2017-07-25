@@ -65,6 +65,7 @@ namespace RevBayesCore {
         double                                              getAveragePaiwiseSequenceDifference(bool excl) const;                       //!< Get the average pairwise sequence distance.
         size_t                                              getMaxPaiwiseSequenceDifference(bool excl) const;                           //!< Get the average pairwise sequence distance.
         size_t                                              getMinPaiwiseSequenceDifference(bool excl) const;                           //!< Get the average pairwise sequence distance.
+        DistanceMatrix                                      getPaiwiseSequenceDifference(bool excl) const;                              //!< Get the average pairwise sequence distance.
         DiscreteTaxonData<charType>&                        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
@@ -1069,6 +1070,58 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMinPaiwiseSeq
     
     
     return min_pd;
+}
+
+
+/**
+ * Get the minimum pairwise distance between the sequences.
+ *
+ * \return    The min pairwise distance.
+ */
+template<class charType>
+RevBayesCore::DistanceMatrix RevBayesCore::HomologousDiscreteCharacterData<charType>::getPaiwiseSequenceDifference( bool include_missing ) const
+{
+    size_t nt = this->getNumberOfIncludedTaxa();
+    MatrixReal distances = MatrixReal(nt);
+    
+    
+    for (size_t i=0; i<(nt-1); i++)
+    {
+        
+        const AbstractDiscreteTaxonData& firstTaxonData = this->getTaxonData(i);
+        size_t nc = firstTaxonData.getNumberOfCharacters();
+        
+        for (size_t j=i+1; j<nt; j++)
+        {
+            
+            const AbstractDiscreteTaxonData& secondTaxonData = this->getTaxonData(j);
+            size_t pd = 0.0;
+            
+            for (size_t k=0; k<nc; k++)
+            {
+                const DiscreteCharacterState& a = firstTaxonData[k];
+                const DiscreteCharacterState& b = secondTaxonData[k];
+                if ( include_missing == true || ( a.isAmbiguous() == false && b.isAmbiguous() == false) )
+                {
+                    if (a != b)
+                    {
+                        ++pd;
+                    }
+                }
+                
+            }
+            
+            distances[i][j] = pd;
+            distances[j][i] = pd;
+            
+        } // end loop over all second taxa
+        
+        distances[i][i] = 0;
+        
+    } // end loop over all first taxa
+    
+    
+    return DistanceMatrix(distances,getTaxa());
 }
 
 

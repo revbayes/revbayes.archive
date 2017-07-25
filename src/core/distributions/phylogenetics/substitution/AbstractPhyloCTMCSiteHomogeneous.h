@@ -716,22 +716,35 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     for (size_t i=0; i<pattern_block_size; ++i)
     {
         bool inv = true;
-        
+        bool allow_ambiguous_as_invariant = true;
+        size_t taxon_index = 0;
+
         if ( using_ambiguous_characters == true )
         {
-            const RbBitSet &val = ambiguous_char_matrix[0][i];
-            
-            if ( val.getNumberSetBits() > 1 )
+            RbBitSet val = ambiguous_char_matrix[taxon_index][i];
+
+            if ( val.getNumberSetBits() > 1 && allow_ambiguous_as_invariant == false )
             {
                 inv = false;
+            }
+            else if ( val.getNumberSetBits() > 1 && allow_ambiguous_as_invariant == true )
+            {
+                
+                while ( val.getNumberSetBits() > 1 && taxon_index<length )
+                {
+                    val = ambiguous_char_matrix[taxon_index][i];
+                    ++taxon_index;
+                }
             }
             else
             {
                 invariant_site_index[i] = val.getFirstSetBit();
-                
-                for (size_t j=1; j<length; ++j)
+
+                ++taxon_index;
+                for (; taxon_index<length; ++taxon_index)
                 {
-                    if ( val != ambiguous_char_matrix[j][i] || gap_matrix[j][i] == true )
+                    if (   ( allow_ambiguous_as_invariant == true  &&  val != ambiguous_char_matrix[taxon_index][i] && gap_matrix[taxon_index][i] == false)
+                        || ( allow_ambiguous_as_invariant == false && (val != ambiguous_char_matrix[taxon_index][i] || gap_matrix[taxon_index][i] == true ) ) )
                     {
                         inv = false;
                         break;
@@ -741,12 +754,21 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
         }
         else
         {
-            unsigned long c = char_matrix[0][i];
-            invariant_site_index[i] = c;
-            
-            for (size_t j=1; j<length; ++j)
+            while ( gap_matrix[taxon_index][i] == true && taxon_index<length )
             {
-                if ( invariant_site_index[i] != char_matrix[j][i] || gap_matrix[j][i] == true )
+                ++taxon_index;
+            }
+            
+            unsigned long c = char_matrix[taxon_index][i];
+            invariant_site_index[i] = c;
+
+            for (; taxon_index<length; ++taxon_index)
+            {
+//                if (  (invariant_site_index[i] != char_matrix[taxon_index][i] || gap_matrix[taxon_index][i] == true) )
+//                {
+                
+                if (   ( allow_ambiguous_as_invariant == true  &&  c != char_matrix[taxon_index][i] && gap_matrix[taxon_index][i] == false)
+                    || ( allow_ambiguous_as_invariant == false && (c != char_matrix[taxon_index][i] || gap_matrix[taxon_index][i] == true ) ) )
                 {
                     inv = false;
                     break;
@@ -2881,13 +2903,22 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
                 
                 if ( this->site_invariant[site] == true )
                 {
-                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+//                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] + oneMinusPInv * per_mixture_Likelihoods[site] / exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) ) * *patterns;
                 }
                 else
                 {
                     rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+                    rv[site] -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
                 }
-                rv[site] -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
+
+//                rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+//                rv[site] -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
+//                
+//                if ( this->site_invariant[site] == true )
+//                {
+//                    rv[site] += log( prob_invariant * f[ this->invariant_site_index[site] ] ) * *patterns;
+//                }
                 
             }
             else // no scaling
@@ -2902,6 +2933,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
                     rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                 }
                 
+//                rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+//                if ( this->site_invariant[site] == true )
+//                {
+//                    rv[site] += log( prob_invariant * f[ this->invariant_site_index[site] ] ) * *patterns;
+//                }
+
             }
             
         }

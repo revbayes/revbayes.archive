@@ -1,5 +1,6 @@
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlAbstractDiscreteTaxonData.h"
+#include "RlDistanceMatrix.h"
 #include "ArgumentRule.h"
 #include "RlMatrixReal.h"
 #include "MemberProcedure.h"
@@ -287,6 +288,17 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         
         return new RevVariable( new Natural(min_pd) );
     }
+    else if ( name == "getPairwiseDifference" )
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        bool excl = static_cast<const RlBoolean&>( argument ).getValue();
+        
+        RevBayesCore::DistanceMatrix pd = this->dag_node->getValue().getPaiwiseSequenceDifference( excl );
+        
+        return new RevVariable( new DistanceMatrix(pd) );
+    }
     else if ( name == "numInvariableBlocks" )
     {
         found = true;
@@ -532,6 +544,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     ArgumentRules* minGcContentArgRules                 = new ArgumentRules();
     ArgumentRules* maxPairwiseDifferenceArgRules        = new ArgumentRules();
     ArgumentRules* minPairwiseDifferenceArgRules        = new ArgumentRules();
+    ArgumentRules* getPairwiseDifferenceArgRules        = new ArgumentRules();
     ArgumentRules* meanGcContentArgRules                = new ArgumentRules();
     ArgumentRules* meanGcContentByCodonPositionArgRules = new ArgumentRules();
     ArgumentRules* numInvariableBlocksArgRules          = new ArgumentRules();
@@ -557,6 +570,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     minGcContentArgRules->push_back(                    new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
     maxPairwiseDifferenceArgRules->push_back(           new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
     minPairwiseDifferenceArgRules->push_back(           new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    getPairwiseDifferenceArgRules->push_back(           new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
     meanGcContentArgRules->push_back(                   new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
     meanGcContentByCodonPositionArgRules->push_back(    new ArgumentRule( "index" , Natural::getClassTypeSpec()          , "The index of the codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
     meanGcContentByCodonPositionArgRules->push_back(    new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
@@ -584,6 +598,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     methods.addFunction( new MemberProcedure( "minGcContent",                           Probability::getClassTypeSpec(),    minGcContentArgRules                ) );
     methods.addFunction( new MemberProcedure( "maxPairwiseDifference",                  Natural::getClassTypeSpec(),        maxPairwiseDifferenceArgRules       ) );
     methods.addFunction( new MemberProcedure( "minPairwiseDifference",                  Natural::getClassTypeSpec(),        minPairwiseDifferenceArgRules       ) );
+    methods.addFunction( new MemberProcedure( "getPairwiseDifference",                  DistanceMatrix::getClassTypeSpec(), getPairwiseDifferenceArgRules       ) );
     methods.addFunction( new MemberProcedure( "meanGcContent",                          Probability::getClassTypeSpec(),    meanGcContentArgRules                ) );
     methods.addFunction( new MemberProcedure( "meanGcContentByCodonPosition",           Probability::getClassTypeSpec(),    meanGcContentByCodonPositionArgRules                ) );
     methods.addFunction( new MemberProcedure( "numInvariableBlocks",                    Natural::getClassTypeSpec(),        numInvariableBlocksArgRules         ) );
