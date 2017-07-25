@@ -90,9 +90,8 @@
 #include "Move_VectorSlide.h"
 
 /* Moves on real valued matrices */
-#include "Move_MatrixSingleElementScale.h"
 #include "Move_MatrixSingleElementSlide.h"
-#include "Move_ConjugateInverseWishartBrownian.h"
+#include "Move_ConjugateInverseWishart.h"
 #include "Move_CorrelationMatrixUpdate.h"
 
 /* Moves on continuous character data (real valued matrices) */
@@ -213,7 +212,6 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_SynchronizedVectorFixedSingleElementSlide() );
         
         /* Moves on matrices of real values */
-        addTypeWithConstructor( new Move_MatrixSingleElementScale() );
         addTypeWithConstructor( new Move_MatrixSingleElementSlide() );
         addTypeWithConstructor( new Move_CorrelationMatrixUpdate() );
 
@@ -221,7 +219,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_MatrixRealSymmetricSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor( new Move_ConjugateInverseWishartBrownian() );
+        addTypeWithConstructor( new Move_ConjugateInverseWishart() );
         
         /* Moves on continuous character data (matrices of real values) */
         addTypeWithConstructor( new Move_ContinuousCharacterDataSlide() );
