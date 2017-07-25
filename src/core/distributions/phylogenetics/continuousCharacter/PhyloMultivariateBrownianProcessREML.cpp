@@ -354,7 +354,10 @@ void PhyloMultivariateBrownianProcessREML::simulateRecursively( const TopologyNo
         const TopologyNode &child = *(*it);
         
         // get the branch length for this child
-        double branch_length = child.getBranchLength();
+        size_t child_index   = child.getIndex();
+        double branch_length = this->computeBranchTime(child_index, child.getBranchLength());
+        
+//        this->computeBranchTime(child_index, child.getBranchLength());
         
         ContinuousTaxonData &taxon = taxa[ child.getIndex() ];
         std::vector<double> c = RbStatistics::MultivariateNormal::rvPrecision(parent_state, precision_matrix, *rng, branch_length);
