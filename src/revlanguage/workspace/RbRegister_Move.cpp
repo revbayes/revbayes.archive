@@ -273,7 +273,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-        //addTypeWithConstructor( new Move_AddRemoveTip()     );
+        addTypeWithConstructor( new Move_AddRemoveTip()     );
         addTypeWithConstructor( new Move_CollapseExpandFossilBranch()     );
 		addTypeWithConstructor( new Move_EmpiricalTree()                  );
         addTypeWithConstructor( new Move_FNPR()                           );
@@ -296,8 +296,6 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_TreeNodeAgeUpdate()              );
         addTypeWithConstructor( new Move_SpeciesTreeScale()               );
         addTypeWithConstructor( new Move_TreeScale()                      );
-//        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
-//        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
         
         addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()         );
 
