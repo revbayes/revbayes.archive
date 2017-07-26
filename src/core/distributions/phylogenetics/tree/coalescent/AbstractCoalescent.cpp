@@ -139,65 +139,127 @@ void AbstractCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
  * and recursively calling this function again.
  *
  * \param[in]     psi        The tree topology (needed to call setAge).
- * \param[in]     ageIndex   The current age to attach
- * \param[in]     index      The current number of the node
  * \param[in]     active     The vector of nodes eligible to be coalesced
  * \param[in]     ages       The ages of the coalescent events
  */
-void AbstractCoalescent::buildHeterochronousRandomBinaryTree(Tree *psi, size_t ageIndex, size_t index, std::vector<TopologyNode*> &active, const std::vector<double> &ages)
+void AbstractCoalescent::buildHeterochronousRandomBinaryTree(Tree *psi, std::vector<TopologyNode*> &active, const std::vector<double> &ages)
 {
-    // Make sure there is anything to coalesce
-    if (active.size() > 1)
+//    // check that ages are indeed sorted as they should be
+//    size_t anyOutOfOrder = 0;
+//    for (size_t i = 1; i < (num_taxa - 1); ++i) {
+//        if (ages[i-1] > ages[i]) {
+//            ++anyOutOfOrder;
+//        }
+//    }
+//    
+//    if (anyOutOfOrder > 0) {
+//        throw RbException("Nodes are out of order");
+//    }
+//    
+    for (size_t i = 0; i < (num_taxa - 1); ++i)
     {
-        
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
         
-        // randomly draw one child (arbitrarily called left) node from the list of active nodes
-        size_t left = static_cast<size_t>( floor(rng->uniform01()*active.size()) );
-        TopologyNode* leftChild = active.at(left);
-        // remove the randomly drawn node from the list
-        active.erase(active.begin()+long(left));
-        
-        // randomly draw one child (arbitrarily called left) node from the list of active nodes
-        size_t right = static_cast<size_t>( floor(rng->uniform01()*active.size()) );
-        TopologyNode* rightChild = active.at(right);
-        
-        // remove the randomly drawn node from the list
-        active.erase(active.begin()+long(right));
-        
-        // check that we aren't trying to coalesce nodes before they exist
-        if ( (leftChild->getAge() < ages[ageIndex]) && (rightChild->getAge() < ages[ageIndex]))
+        bool valid = false;
+        size_t redraw_attempts = 0;
+        std::vector<TopologyNode* > unusableNodes;
+        do
         {
-            // add the parent
-            TopologyNode* parent = new TopologyNode(index);
-            parent->addChild(leftChild);
-            parent->addChild(rightChild);
-            leftChild->setParent(parent);
-            rightChild->setParent(parent);
-//            psi->getNode( parent->getIndex() ).setAge( ages[ageIndex] );
-//            psi->getNode( parent->getIndex() ).setNodeType( false, false, true );
-            parent->setAge( ages[ageIndex] );
-            parent->setNodeType( false, false, true );
-            active.push_back(parent);
+//            if (redraw_attempts > 20)
+//            {
+//                if ((active.size() + i) < num_taxa) {
+//                    throw RbException("We're bleeding nodes somewhere");
+//                }
+//                if ((active.size() + i) > num_taxa) {
+//                    throw RbException("We're adding nodes somewhere");
+//                }
+//                double youngest = 10000000;
+//                for (size_t j = 0; j < active.size(); ++j) {
+//                    TopologyNode* thisNode = active.at(j);
+//                    if (thisNode->getAge() < youngest) {
+//                        youngest = thisNode->getAge();
+//                    }
+//                }
+//                if (youngest > ages[i]) {
+//                    throw RbException("Well something's fucked");
+//                }
+//                throw RbException("20 tries to coalesce nodes");
+//            }
             
-            //increment indices
-            ++index;
-            ++ageIndex;
+            // randomly draw one child (arbitrarily called left) node from the list of active nodes
+            size_t left = static_cast<size_t>( floor(rng->uniform01()*active.size()) );
+            TopologyNode* leftChild = active.at(left);
             
-            // recursive call to this function
-            buildHeterochronousRandomBinaryTree(psi, ageIndex, index, active, ages);
-        }
-        else
+            // remove the randomly drawn node from the list
+            active.erase(active.begin()+long(left));
+            
+            // randomly draw one child (arbitrarily called left) node from the list of active nodes
+            size_t right = static_cast<size_t>( floor(rng->uniform01()*active.size()) );
+            TopologyNode* rightChild = active.at(right);
+            
+            // remove the randomly drawn node from the list
+            active.erase(active.begin()+long(right));
+            
+            // check that we aren't trying to coalesce nodes before they exist
+            if ( (leftChild->getAge() < ages[i]) && (rightChild->getAge() < ages[i]))
+            {
+                // add the parent
+                TopologyNode* parent = new TopologyNode(i + num_taxa);
+                parent->addChild(leftChild);
+                parent->addChild(rightChild);
+                leftChild->setParent(parent);
+                rightChild->setParent(parent);
+                parent->setAge( ages[i] );
+                parent->setNodeType( false, false, true );
+                active.push_back(parent);
+                
+                // we coalesced, we can move on now
+                valid = true;
+            }
+            else
+            {
+                ++redraw_attempts;
+                // abort
+                // if the node is coalesceable for this age, we put it back in active
+                // otherwise, we collect it in unusableNodes so we can't try to re-draw it
+                
+                // handle left child
+                if (leftChild->getAge() < ages[i])
+                {
+                    // this is node is currently coalesceable
+                    active.push_back(leftChild);
+                }
+                else
+                {
+                    // this node cannot be coalesced right now
+                    unusableNodes.push_back(leftChild);
+                }
+                // handle left child
+                if (rightChild->getAge() < ages[i])
+                {
+                    // this is node is currently coalesceable
+                    active.push_back(rightChild);
+                }
+                else
+                {
+                    // this node cannot be coalesced right now
+                    unusableNodes.push_back(rightChild);
+                }
+            }
+        } while ( !valid );
+        
+        // If we had to temporarily discard nodes, now we put them back
+        if (redraw_attempts > 0)
         {
-            // abort, put nodes back where we found them
-            active.push_back(leftChild);
-            active.push_back(rightChild);
-            // recall function with current values
-            buildHeterochronousRandomBinaryTree(psi, ageIndex, index, active, ages);
+            for (size_t index = 0; index < unusableNodes.size(); ++index)
+            {
+                TopologyNode* thisNode = unusableNodes.at(index);
+                active.push_back(thisNode);
+            }
         }
     }
-    
+
 }
 
 /**
@@ -383,15 +445,17 @@ void AbstractCoalescent::simulateHeterochronousTree( void )
         node->setName(name);
         node->setSpeciesName(taxa[i].getSpeciesName());
         node->setAge(taxa[i].getAge());
+        node->setNodeType( true, false, false );
         // add to tips
         nodes.push_back(node);
     }
     
     // get times for simulation
     std::vector<double> ages = simulateCoalescentAges(num_taxa-1);
-
+    std::sort(ages.begin(), ages.end());
+    
     // recursively build the tree
-    buildHeterochronousRandomBinaryTree(psi, 0, num_taxa, nodes, ages);
+    buildHeterochronousRandomBinaryTree(psi, nodes, ages);
     
     // initialize the topology by setting the root
     // the root is the only node left in nodes 

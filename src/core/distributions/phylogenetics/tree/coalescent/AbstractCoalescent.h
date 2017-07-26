@@ -46,7 +46,7 @@ namespace RevBayesCore {
         void                                                attachAges(Tree *psi, std::vector<TopologyNode *> &tips, size_t index,
                                                                         const std::vector<double> &a);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
-        void                                                buildHeterochronousRandomBinaryTree(Tree *psi, size_t ageIndex, size_t index, std::vector<TopologyNode*> &active, const std::vector<double> &ages);
+        void                                                buildHeterochronousRandomBinaryTree(Tree *psi, std::vector<TopologyNode*> &active, const std::vector<double> &ages);
         bool                                                matchesConstraints(void);
         void                                                simulateTree(void);
         void                                                simulateHeterochronousTree(void);
