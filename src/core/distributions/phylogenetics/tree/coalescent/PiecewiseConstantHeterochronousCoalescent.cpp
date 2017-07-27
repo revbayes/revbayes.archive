@@ -231,6 +231,12 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
         }
     }
     
+    for (size_t i = 1; i < n; ++i) {
+        if (intervals[i-1] > intervals[i]) {
+            throw RbException("Intervals are out of order");
+        }
+    }
+
     // Put sampling times and pop-size changes into a single vector of event times
     std::vector<double> combinedEventTimes;
     std::vector<double> combinedEventTypes;
@@ -238,7 +244,6 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
         
         // sort the vector of serial sampling times in ascending order
         std::sort(serialTimes.begin(), serialTimes.end());
-        
         size_t atSerialTime = 0;
         size_t atIntervalStart = 0;
         double nextSerialTime = serialTimes[atSerialTime];
@@ -272,12 +277,15 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
                 }
             }
         }
-        
     } else {
         combinedEventTimes = intervals;
-        combinedEventTypes = std::vector<double>(n,0.0);
+        combinedEventTypes = std::vector<double>(intervals.size(),0.0);
     }
-    
+ 
+    // cap vector with an event at t=infinity
+    combinedEventTimes.push_back(RbConstants::Double::inf);
+    combinedEventTypes.push_back(RbConstants::Double::inf);
+
     // allocate the vector for the times
     std::vector<double> coalescentTimes = std::vector<double>(n,0.0);
     
@@ -291,78 +299,100 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
     // now simulate the ages
     for (size_t i = 0; i < n; ++i)
     {
-        // if j is 1 and we haven;t exited the loop, we have >= 1 serial sample left to coalesce
-        // there are no samples to coalesce now, but we cannot exit
-        // thus, we advance to the next event
-        if (j == 1)
-        {
-            simAge = combinedEventTimes[currentInterval];
-            if (combinedEventTypes[currentInterval] == 0.0) {
-                // theta change
-                ++thetaInterval;
-            } else {
-                // serial sample
-                ++j;
-            }
-            ++currentInterval;
-            ++j;
-        }
-        else
+        
+        bool valid = false;
+        do
         {
             double nPairs = j * (j-1) / 2.0;
-            
-            bool valid = false;
-            do
-            {
-                double theta = popSizes[thetaInterval];
-                double lambda = nPairs / theta;
-                double u = RbStatistics::Exponential::rv( lambda, *rng);
-                simAge += u;
-                valid = simAge < combinedEventTimes[currentInterval] || currentInterval > combinedEventTimes.size();
-                if ( !valid )
-                {
+            double theta = popSizes[thetaInterval];
+            double lambda = nPairs / theta;
+            double u = RbStatistics::Exponential::rv( lambda, *rng);
+            simAge += u;
+            valid = simAge < combinedEventTimes[currentInterval] && j > 1;
+            if ( !valid ) {
+                if (j == 1) {
+                    // if j is 1 and we are still simulating coalescent events, we have >= 1 serial sample left to coalesce
+                    // there are no samples to coalesce now, but we cannot exit
+                    // thus, we advance to the next event (serial sample or pop size change)
                     simAge = combinedEventTimes[currentInterval];
                     if (combinedEventTypes[currentInterval] == 0.0) {
                         // theta change
                         ++thetaInterval;
-                    } else {
+                    } else if (combinedEventTypes[currentInterval] == 1.0) {
                         // serial sample
                         ++j;
+                    } else {
+                        throw RbException("Tried to incorporate event that is neither sampling nor pop size change");
+                    }
+                    ++currentInterval;
+                    if (i > 0) {
+                        if (simAge < coalescentTimes[i-1]) {
+                            throw RbException("Fucked up in handling single-lineage intervals");
+                        }
+                    }
+                } else {
+                    // when we cross a serial sampling time, the number of active lineages changes
+                    // when we pass a pop size interval, the population size changes
+                    // it is necessary to discard any "excess" time, which is drawn from an incorrect distribution
+                    // then we can draw a new time according to the correct number of active lineages and population size
+                    simAge = combinedEventTimes[currentInterval];
+                    if (combinedEventTypes[currentInterval] == 0.0) {
+                        // theta change
+                        ++thetaInterval;
+                    } else if (combinedEventTypes[currentInterval] == 1.0) {
+                        // serial sample
+                        ++j;
+                    } else {
+                        throw RbException("Tried to incorporate event that is neither sampling nor pop size change");
                     }
                     ++currentInterval;
                 }
-                
-            } while ( !valid );
-            
-            coalescentTimes[i] = simAge;
-            --j;
+            }
+        } while ( !valid );
+
+        coalescentTimes[i] = simAge;
+        --j;
+        
+        if (i > 0) {
+            if (coalescentTimes[i] < coalescentTimes[i - 1]) {
+                throw RbException("Fucked up simulating intervals");
+            }
         }
     }
     
-    //    size_t anyOutOfOrder = 0;
-    //    for (size_t i = 1; i < n; ++i) {
-    //        if (coalescentTimes[i-1] > coalescentTimes[i]) {
-    //            ++anyOutOfOrder;
-    //        }
-    //    }
-    //
-    //    if (anyOutOfOrder > 0) {
-    //        throw RbException("Nodes are out of order");
-    //    }
+    for (size_t i = 0; i < n; ++i) {
+        if (coalescentTimes[i] == 0.0) {
+            throw RbException("Node age of 0");
+        }
+    }
     
-    
-    //    if ( serialTimes[0] != RbConstants::Double::inf) {
-    //        size_t uncoalescable_serial_samples = 0;
-    //        for (size_t i = (serialTimes.size() - 1); i > -1 ; --i)
-    //        {
-    //            if (serialTimes[i] > coalescentTimes[ (coalescentTimes.size() - serialTimes.size()) + i ]) {
-    //                ++uncoalescable_serial_samples;
-    //            }
-    //        }
-    //        if (uncoalescable_serial_samples > 0) {
-    //            throw RbException("There are serial samples without coalescent events older than them");
-    //        }
-    //    }
+//    if (coalescentTimes[1] < coalescentTimes[0]) {
+//        throw RbException("coalescentTimes[1] < coalescentTimes[0]");
+//    }
+//    if (coalescentTimes[2] < coalescentTimes[1]) {
+//        throw RbException("coalescentTimes[2] < coalescentTimes[1]");
+//    }
+//    
+//    
+    for (size_t i = 1; i < n; ++i) {
+        if (coalescentTimes[i-1] > coalescentTimes[i]) {
+            throw RbException("Nodes are out of order");
+        }
+    }
+
+
+    if ( serialTimes[0] != RbConstants::Double::inf) {
+        size_t uncoalescable_serial_samples = 0;
+        for (size_t i = (serialTimes.size() - 1); i > -1 ; --i)
+        {
+            if (serialTimes[i] > coalescentTimes[ (coalescentTimes.size() - serialTimes.size()) + i ]) {
+                ++uncoalescable_serial_samples;
+            }
+        }
+        if (uncoalescable_serial_samples > 0) {
+            throw RbException("There are serial samples without coalescent events older than them");
+        }
+    }
     
     return coalescentTimes;
 }

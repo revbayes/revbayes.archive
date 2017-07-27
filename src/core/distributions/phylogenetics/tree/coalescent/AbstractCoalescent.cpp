@@ -452,7 +452,8 @@ void AbstractCoalescent::simulateHeterochronousTree( void )
     
     // get times for simulation
     std::vector<double> ages = simulateCoalescentAges(num_taxa-1);
-    std::sort(ages.begin(), ages.end());
+    
+//    throw RbException("Simulated coalescent times");
     
     // recursively build the tree
     buildHeterochronousRandomBinaryTree(psi, nodes, ages);

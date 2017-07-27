@@ -205,39 +205,35 @@ std::vector<double> ConstantPopulationHeterochronousCoalescent::simulateCoalesce
     // draw a time for each speciation event condition on the time of the process
     for (size_t i = 0; i < n; ++i)
     {
-        
-        // if j is 1 and we haven;t exited the loop, we have >= 1 serial sample left to coalesce
-        // there are no samples to coalesce now, but we cannot exit
-        // thus, we advance to the next serial sample and draw a waiting time for those lineages
-        if (j == 1)
+        bool valid = false;
+        do
         {
-            simAge = serialTimes[atSerialTime];
-            ++atSerialTime;
-            ++j;
-        } else {
-            bool valid = false;
-            do
-            {
-                double nPairs = j * (j-1) / 2.0;
-                double lambda = nPairs / theta;
-                double u = RbStatistics::Exponential::rv( lambda, *rng);
-                simAge += u;
-                valid = simAge < serialTimes[atSerialTime];
-                if ( !valid )
-                {
+            double nPairs = j * (j-1) / 2.0;
+            double lambda = nPairs / theta;
+            double u = RbStatistics::Exponential::rv( lambda, *rng);
+            simAge += u;
+            valid = simAge < serialTimes[atSerialTime] && j > 1;
+            if ( !valid ) {
+                if (j == 1) {
+                    // if j is 1 and we are still simulating coalescent events, we have >= 1 serial sample left to coalesce
+                    // there are no samples to coalesce now, but we cannot exit
+                    // thus, we advance to the next serial sample
+                    simAge = serialTimes[atSerialTime];
+                    ++atSerialTime;
+                    ++j;
+                } else {
                     // when we cross a serial sampling time, the number of active lineages changes
-                    // it is necessary to discard any "excess" time drawn that carries us past the sample
+                    // it is necessary to discard any "excess" time, which is drawn from an incorrect distribution
                     // then we can draw a new time according to the correct number of active lineages
                     simAge = serialTimes[atSerialTime];
                     ++atSerialTime;
                     ++j;
                 }
-                
-            } while ( !valid );
-            
-            coalescentTimes[i] = simAge;
-            --j;
-        }
+            }
+        } while ( !valid );
+    
+        coalescentTimes[i] = simAge;
+        --j;
         
     }
     
