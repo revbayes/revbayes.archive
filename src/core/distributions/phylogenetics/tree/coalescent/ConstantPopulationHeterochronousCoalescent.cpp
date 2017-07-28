@@ -73,13 +73,6 @@ double ConstantPopulationHeterochronousCoalescent::computeLnProbabilityTimes( vo
     size_t numTaxaAtPresent = 0;
     for (size_t i = 0; i < value->getNumberOfTips(); ++i)
     {
-//        const TopologyNode& n = value->getTipNode( i );
-//        double a = n.getAge();
-//        if ( a > 0.0 ) {
-//            serialTimes.push_back(a);
-//        } else {
-//            ++numTaxaAtPresent;
-//        }
         double a = taxa[i].getAge();
         if ( a > 0.0 ) {
             serialTimes.push_back(a);
@@ -214,21 +207,15 @@ std::vector<double> ConstantPopulationHeterochronousCoalescent::simulateCoalesce
             simAge += u;
             valid = simAge < serialTimes[atSerialTime] && j > 1;
             if ( !valid ) {
-                if (j == 1) {
-                    // if j is 1 and we are still simulating coalescent events, we have >= 1 serial sample left to coalesce
-                    // there are no samples to coalesce now, but we cannot exit
-                    // thus, we advance to the next serial sample
-                    simAge = serialTimes[atSerialTime];
-                    ++atSerialTime;
-                    ++j;
-                } else {
-                    // when we cross a serial sampling time, the number of active lineages changes
-                    // it is necessary to discard any "excess" time, which is drawn from an incorrect distribution
-                    // then we can draw a new time according to the correct number of active lineages
-                    simAge = serialTimes[atSerialTime];
-                    ++atSerialTime;
-                    ++j;
-                }
+                // If j is 1 and we are still simulating coalescent events, we have >= 1 serial sample left to coalesce.
+                // There are no samples to coalesce now, but we cannot exit, thus, we advance to the next serial sample
+                // Alternately, when we cross a serial sampling time, the number of active lineages changes
+                // it is necessary to discard any "excess" time, which is drawn from an incorrect distribution
+                // then we can draw a new time according to the correct number of active lineages.
+                // Either we advance or go back, but in both situations we set the time to the current serial sample.
+                simAge = serialTimes[atSerialTime];
+                ++atSerialTime;
+                ++j;
             }
         } while ( !valid );
     
@@ -236,32 +223,7 @@ std::vector<double> ConstantPopulationHeterochronousCoalescent::simulateCoalesce
         --j;
         
     }
-    
-//    size_t anyOutOfOrder = 0;
-//    for (size_t i = 1; i < n; ++i) {
-//        if (coalescentTimes[i-1] > coalescentTimes[i]) {
-//            ++anyOutOfOrder;
-//        }
-//    }
-//    
-//    if (anyOutOfOrder > 0) {
-//        throw RbException("Nodes are out of order");
-//    }
-
-    
-//    if ( serialTimes[0] != RbConstants::Double::inf) {
-//        size_t uncoalescable_serial_samples = 0;
-//        for (size_t i = (serialTimes.size() - 1); i > -1 ; --i)
-//        {
-//            if (serialTimes[i] > coalescentTimes[ (coalescentTimes.size() - serialTimes.size()) + i ]) {
-//                ++uncoalescable_serial_samples;
-//            }
-//        }
-//        if (uncoalescable_serial_samples > 0) {
-//            throw RbException("There are serial samples without coalescent events older than them");
-//        }
-//    }
-    
+        
     return coalescentTimes;
 }
 

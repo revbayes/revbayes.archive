@@ -78,12 +78,6 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
     for (size_t i = 0; i < value->getNumberOfTips(); ++i)
     {
         const TopologyNode& n = value->getTipNode( i );
-//        double a = n.getAge();
-//        if ( a > 0.0 ) {
-//            serialTimes.push_back(a);
-//        } else {
-//            ++numTaxaAtPresent;
-//        }
         double a = taxa[i].getAge();
         if ( a > 0.0 ) {
             serialTimes.push_back(a);
@@ -231,12 +225,6 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
         }
     }
     
-    for (size_t i = 1; i < n; ++i) {
-        if (intervals[i-1] > intervals[i]) {
-            throw RbException("Intervals are out of order");
-        }
-    }
-
     // Put sampling times and pop-size changes into a single vector of event times
     std::vector<double> combinedEventTimes;
     std::vector<double> combinedEventTypes;
@@ -310,210 +298,31 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
             simAge += u;
             valid = simAge < combinedEventTimes[currentInterval] && j > 1;
             if ( !valid ) {
-                if (j == 1) {
-                    // if j is 1 and we are still simulating coalescent events, we have >= 1 serial sample left to coalesce
-                    // there are no samples to coalesce now, but we cannot exit
-                    // thus, we advance to the next event (serial sample or pop size change)
-                    simAge = combinedEventTimes[currentInterval];
-                    if (combinedEventTypes[currentInterval] == 0.0) {
-                        // theta change
-                        ++thetaInterval;
-                    } else if (combinedEventTypes[currentInterval] == 1.0) {
-                        // serial sample
-                        ++j;
-                    } else {
-                        throw RbException("Tried to incorporate event that is neither sampling nor pop size change");
-                    }
-                    ++currentInterval;
-                    if (i > 0) {
-                        if (simAge < coalescentTimes[i-1]) {
-                            throw RbException("Fucked up in handling single-lineage intervals");
-                        }
-                    }
+                // If j is 1 and we are still simulating coalescent events, we have >= 1 serial sample left to coalesce.
+                // There are no samples to coalesce now, but we cannot exit, thus, we advance to the next serial sample
+                // Alternately, when we cross a serial sampling time or theta window, the number of active lineages changes
+                // or the pop size changes, and it is necessary to discard any "excess" time,
+                // which is drawn from an incorrect distribution,then we can draw a new time according to
+                // the correct number of active lineages.
+                // Either we advance or go back, but in both situations we set the time to the current event in combinedEvents.
+                simAge = combinedEventTimes[currentInterval];
+                if (combinedEventTypes[currentInterval] == 0.0) {
+                    // theta change
+                    ++thetaInterval;
                 } else {
-                    // when we cross a serial sampling time, the number of active lineages changes
-                    // when we pass a pop size interval, the population size changes
-                    // it is necessary to discard any "excess" time, which is drawn from an incorrect distribution
-                    // then we can draw a new time according to the correct number of active lineages and population size
-                    simAge = combinedEventTimes[currentInterval];
-                    if (combinedEventTypes[currentInterval] == 0.0) {
-                        // theta change
-                        ++thetaInterval;
-                    } else if (combinedEventTypes[currentInterval] == 1.0) {
-                        // serial sample
-                        ++j;
-                    } else {
-                        throw RbException("Tried to incorporate event that is neither sampling nor pop size change");
-                    }
-                    ++currentInterval;
+                    // serial sample
+                    ++j;
                 }
+                ++currentInterval;
             }
         } while ( !valid );
 
         coalescentTimes[i] = simAge;
         --j;
-        
-        if (i > 0) {
-            if (coalescentTimes[i] < coalescentTimes[i - 1]) {
-                throw RbException("Fucked up simulating intervals");
-            }
-        }
-    }
-    
-    for (size_t i = 0; i < n; ++i) {
-        if (coalescentTimes[i] == 0.0) {
-            throw RbException("Node age of 0");
-        }
-    }
-    
-//    if (coalescentTimes[1] < coalescentTimes[0]) {
-//        throw RbException("coalescentTimes[1] < coalescentTimes[0]");
-//    }
-//    if (coalescentTimes[2] < coalescentTimes[1]) {
-//        throw RbException("coalescentTimes[2] < coalescentTimes[1]");
-//    }
-//    
-//    
-    for (size_t i = 1; i < n; ++i) {
-        if (coalescentTimes[i-1] > coalescentTimes[i]) {
-            throw RbException("Nodes are out of order");
-        }
-    }
-
-
-    if ( serialTimes[0] != RbConstants::Double::inf) {
-        size_t uncoalescable_serial_samples = 0;
-        for (size_t i = (serialTimes.size() - 1); i > -1 ; --i)
-        {
-            if (serialTimes[i] > coalescentTimes[ (coalescentTimes.size() - serialTimes.size()) + i ]) {
-                ++uncoalescable_serial_samples;
-            }
-        }
-        if (uncoalescable_serial_samples > 0) {
-            throw RbException("There are serial samples without coalescent events older than them");
-        }
     }
     
     return coalescentTimes;
 }
-//{
-//    // Retreive skyline parameters
-//    const RbVector<double> &popSizes  = Nes->getValue();
-//    const RbVector<double> &intervals = intervalStarts->getValue();
-//
-//    // Get the rng
-//    RandomNumberGenerator* rng = GLOBAL_RNG;
-//    
-//    // retrieve the times of any serially sampled tips
-//    std::vector<double> serialTimes;
-//    size_t numTaxaAtPresent = 0;
-//    for (size_t i = 0; i < value->getNumberOfTips(); ++i)
-//    {
-//        const TopologyNode& n = value->getTipNode( i );
-//        double a = n.getAge();
-//        if ( a > 0.0 ) {
-//            serialTimes.push_back(a);
-//        } else {
-//            ++numTaxaAtPresent;
-//        }
-//    }
-//    
-//    std::vector<double> combinedEventTimes;
-//    std::vector<double> combinedEventTypes;
-//    if (numTaxaAtPresent < num_taxa) {
-//        
-//        // sort the vector of serial sampling times in ascending order
-//        std::sort(serialTimes.begin(), serialTimes.end());
-//        
-//        size_t atSerialTime = 0;
-//        size_t atIntervalStart = 0;
-//        double nextSerialTime = serialTimes[atSerialTime];
-//        double nextIntervalStart = intervals[atIntervalStart];
-//        
-//        // create master list of event times and types
-//        // pre-defined events are either a sample (lineage size up) or theta changepoint (lineage size constant)
-//        size_t nEvents = 0;
-//        size_t nTotalEvents = intervals.size() + serialTimes.size();
-//        for (size_t nEvents = 0; nEvents < nTotalEvents; ++nEvents)
-//        {
-//            if (nextIntervalStart <= nextSerialTime) {
-//                // theta change
-//                combinedEventTimes.push_back(nextIntervalStart);
-//                combinedEventTypes.push_back(0.0);
-//                ++atIntervalStart;
-//                if (atIntervalStart < intervals.size()) {
-//                    nextIntervalStart = intervals[atIntervalStart];
-//                } else {
-//                    nextIntervalStart = RbConstants::Double::inf;
-//                }
-//            } else {
-//                // serial sample
-//                combinedEventTimes.push_back(nextSerialTime);
-//                combinedEventTypes.push_back(1.0);
-//                ++atSerialTime;
-//                if (atSerialTime < serialTimes.size()) {
-//                    nextSerialTime = serialTimes[atSerialTime];
-//                } else {
-//                    nextSerialTime = RbConstants::Double::inf;
-//                }
-//            }
-//        }
-//        
-//    } else {
-//        combinedEventTimes = intervals;
-//        combinedEventTypes = std::vector<double>(n,0.0);
-//    }
-//    
-//    // now simulate the ages
-//    
-//    // allocate the vector for the times
-//    std::vector<double> coalescentTimes = std::vector<double>(n,0.0);
-//    
-//    size_t currentInterval = 0;
-//    size_t thetaInterval = 0;
-//    size_t j = numTaxaAtPresent;
-//    
-//    // draw a time for each speciation event condition on the time of the process
-//    for (size_t i = 0; i < n; ++i)
-//    {
-//        double prevCoalescentTime = 0.0;
-//        if ( i > 0 )
-//        {
-//            prevCoalescentTime = coalescentTimes[i-1];
-//        }
-//        
-//        double nPairs = j * (j-1) / 2.0;
-//        
-//        double simAge = prevCoalescentTime;
-//        bool valid = false;
-//        do
-//        {
-//            double theta = popSizes[thetaInterval];
-//            double lambda = nPairs / theta;
-//            double u = RbStatistics::Exponential::rv( lambda, *rng);
-//            simAge += u;
-//            valid = simAge < combinedEventTimes[currentInterval] || currentInterval > combinedEventTimes.size();
-//            if ( !valid )
-//            {
-//                simAge = combinedEventTimes[currentInterval];
-//                if (combinedEventTypes[currentInterval] == 0.0) {
-//                    // theta change
-//                    ++thetaInterval;
-//                } else {
-//                    // serial sample
-//                    ++j;
-//                }
-//                ++currentInterval;
-//            }
-//            
-//        } while ( !valid );
-//        
-//        coalescentTimes[i] = simAge;
-//        --j;
-//    }
-//    
-//    return coalescentTimes;
-//}
 
 
 /**

@@ -144,18 +144,6 @@ void AbstractCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
  */
 void AbstractCoalescent::buildHeterochronousRandomBinaryTree(Tree *psi, std::vector<TopologyNode*> &active, const std::vector<double> &ages)
 {
-//    // check that ages are indeed sorted as they should be
-//    size_t anyOutOfOrder = 0;
-//    for (size_t i = 1; i < (num_taxa - 1); ++i) {
-//        if (ages[i-1] > ages[i]) {
-//            ++anyOutOfOrder;
-//        }
-//    }
-//    
-//    if (anyOutOfOrder > 0) {
-//        throw RbException("Nodes are out of order");
-//    }
-//    
     for (size_t i = 0; i < (num_taxa - 1); ++i)
     {
         // Get the rng
@@ -166,26 +154,6 @@ void AbstractCoalescent::buildHeterochronousRandomBinaryTree(Tree *psi, std::vec
         std::vector<TopologyNode* > unusableNodes;
         do
         {
-//            if (redraw_attempts > 20)
-//            {
-//                if ((active.size() + i) < num_taxa) {
-//                    throw RbException("We're bleeding nodes somewhere");
-//                }
-//                if ((active.size() + i) > num_taxa) {
-//                    throw RbException("We're adding nodes somewhere");
-//                }
-//                double youngest = 10000000;
-//                for (size_t j = 0; j < active.size(); ++j) {
-//                    TopologyNode* thisNode = active.at(j);
-//                    if (thisNode->getAge() < youngest) {
-//                        youngest = thisNode->getAge();
-//                    }
-//                }
-//                if (youngest > ages[i]) {
-//                    throw RbException("Well something's fucked");
-//                }
-//                throw RbException("20 tries to coalesce nodes");
-//            }
             
             // randomly draw one child (arbitrarily called left) node from the list of active nodes
             size_t left = static_cast<size_t>( floor(rng->uniform01()*active.size()) );
@@ -453,16 +421,14 @@ void AbstractCoalescent::simulateHeterochronousTree( void )
     // get times for simulation
     std::vector<double> ages = simulateCoalescentAges(num_taxa-1);
     
-//    throw RbException("Simulated coalescent times");
-    
     // recursively build the tree
     buildHeterochronousRandomBinaryTree(psi, nodes, ages);
-    
+
     // initialize the topology by setting the root
     // the root is the only node left in nodes 
     TopologyNode* root = nodes[0]; // Only node left after coalescing all is the root
     psi->setRoot(root, true);
-    
+
     // finally store the new value
     delete value;
     value = psi;
