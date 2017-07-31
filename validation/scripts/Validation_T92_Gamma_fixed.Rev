@@ -18,7 +18,7 @@
 
 ### Read in sequence data for both genes
 
-data <- readDiscreteCharacterData("data/primates_cytb.nex")
+data <- readDiscreteCharacterData("data/primates_cytb_small.nex")
 
 # set my move index
 mi = 0
@@ -61,7 +61,7 @@ moves[++mi] = mvScale(alpha,weight=2)
 # Tree model #
 ##############
 
-psi <- readTrees( "data/primates.tree" )[1]
+psi <- readTrees( "data/primates_small.tre" )[1]
 
 
 

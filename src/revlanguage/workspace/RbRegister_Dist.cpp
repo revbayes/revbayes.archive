@@ -98,7 +98,7 @@
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
 #include "Dist_phyloCTMCClado.h"
-//#include "Dist_phyloCTMCDollo.h"
+#include "Dist_phyloCTMCDollo.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 
@@ -187,6 +187,7 @@
 #include "Dist_dpp.h"
 #include "Dist_mixture.h"
 #include "Dist_reversibleJumpMixtureConstant.h"
+#include "Dist_upp.h"
 
 /// Functions ///
 
@@ -244,7 +245,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( new Dist_phyloCTMC() );
         addDistribution( new Dist_phyloDACTMC() );
         addDistribution( new Dist_phyloCTMCClado() );
-//        addDistribution( new Dist_phyloCTMCDollo() );
+        addDistribution( new Dist_phyloCTMCDollo() );
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
@@ -308,7 +309,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< Tree                       >( new Dist_empiricalTree() );
 		
 		// Distance Matrix Gamma distribution
-		AddDistribution< RlDistanceMatrix           >( new Dist_phyloDistanceGamma() );
+		AddDistribution< DistanceMatrix             >( new Dist_phyloDistanceGamma() );
 
 		
         /* Statistical distributions on simple variables (in folder "distributions/math") */
@@ -420,6 +421,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< ModelVector<Integer>       >( new Dist_dpp<Integer>()      );
 		AddDistribution< ModelVector<Probability>   >( new Dist_dpp<Probability>()  );
         AddDistribution< ModelVector<Simplex>       >( new Dist_dpp<Simplex>()      );
+		
+        // uniform partitions prior
+        AddDistribution< ModelVector<RealPos>       >( new Dist_upp<RealPos>() );
 
         // mixture distribution
         AddDistribution< Real                       >( new Dist_mixture<Real>() );

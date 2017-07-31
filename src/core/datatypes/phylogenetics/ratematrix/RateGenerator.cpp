@@ -105,6 +105,12 @@ size_t RateGenerator::size( void ) const
     return num_states;
 }
 
+bool RateGenerator::simulateStochasticMapping(double startAge, double endAge, double rate, std::vector<size_t>& transition_states, std::vector<double>& transition_times)
+{
+    throw RbException("simulateStochasticMapping not defined for abstract RateGenerator objects");
+    return false;
+}
+
 
 
 void RateGenerator::printForUser(std::ostream &o, const std::string &sep, int l, bool left) const

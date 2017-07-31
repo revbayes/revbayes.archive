@@ -54,7 +54,9 @@ namespace RevBayesCore {
         
         // virtual basic utility functions
         virtual Tree*                                       clone(void) const;                                                                                  //!< Clone object
-        virtual void                                        initFromString(const std::string &s);                                                               //!< Serialize the object from a string
+        void                                                initFromFile( const std::string &dir, const std::string &fn );          //!< Read and resurrect this object from a file in its default format.
+        void                                                initFromString(const std::string &s);                                                               //!< Serialize the object from a string
+        void                                                writeToFile( const std::string &dir, const std::string &fn ) const;                                 //!< Write this object into a file in its default format.
 
         // public Tree methods
         void                                                addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
@@ -100,6 +102,7 @@ namespace RevBayesCore {
         bool                                                hasSameTopology( const Tree &t ) const;                                                             //!< Has this tree the same topology?
         bool                                                isBinary(void) const;                                                                               //!< Is the Tree rooted
         bool                                                isBroken(void) const;                                                                               //!< Is this tree ultrametric?
+        bool                                                isNegativeConstraint(void) const;                                                                   //!< Is this tree used as a negative constraint?
         bool                                                isRooted(void) const;                                                                               //!< Is the Tree rooted
         bool                                                isUltrametric(void) const;                                                                          //!< Is this tree ultrametric?
         void                                                makeInternalNodesBifurcating(bool reindex);                                                                 //!< Make all the internal nodes bifurcating.
@@ -108,7 +111,8 @@ namespace RevBayesCore {
         void                                                reroot(const std::string &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
         void                                                reroot(TopologyNode &n, bool reindex);
         void                                                renameNodeParameter(const std::string &old_name, const std::string &new_name);
-        void                                                setRoot(TopologyNode* r, bool reindex);                                                     //!< Set the root and bootstrap the Tree from it
+        void                                                setNegativeConstraint(bool);
+        void                                                setRoot(TopologyNode* r, bool reindex);                                                             //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
         void                                                setTaxonIndices(const TaxonMap &tm);                                                                //!< Set the indices of the taxa from the taxon map
         TopologyNode&                                       reverseParentChild(TopologyNode &n);                                                                //!< Reverse the parent child relationship.
@@ -130,6 +134,7 @@ namespace RevBayesCore {
         std::vector<TopologyNode*>                          nodes;                                                                  //!< Vector of pointers to all nodes
         bool                                                binary;                                                                 //!< Is the BranchLengthTree binary?
         bool                                                rooted;
+        bool                                                is_negative_constraint;
         size_t                                              num_tips;
         size_t                                              num_nodes;
         mutable std::map<std::string, size_t>               taxon_bitset_map;

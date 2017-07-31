@@ -590,7 +590,7 @@ bool RbFileManager::makeDirectory(const std::string &dn)
     
 #   else
     
-    std::string cmd = "mkdir " + dn;
+    std::string cmd = "mkdir -p " + dn;
     
     return ( system( cmd.c_str() ) == 0 );
     

@@ -65,6 +65,7 @@ namespace RevBayesCore {
         double                                              getAveragePaiwiseSequenceDifference(bool excl) const;                       //!< Get the average pairwise sequence distance.
         size_t                                              getMaxPaiwiseSequenceDifference(bool excl) const;                           //!< Get the average pairwise sequence distance.
         size_t                                              getMinPaiwiseSequenceDifference(bool excl) const;                           //!< Get the average pairwise sequence distance.
+        DistanceMatrix                                      getPaiwiseSequenceDifference(bool excl) const;                              //!< Get the average pairwise sequence distance.
         DiscreteTaxonData<charType>&                        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
@@ -93,10 +94,7 @@ namespace RevBayesCore {
     
     protected:
         // Utility functions
-        bool                                                isCharacterConstant(size_t idx) const;                                      //!< Is the idx-th character a constant pattern?
         bool                                                isCharacterMissingOrAmbiguous(size_t idx) const;                            //!< Does the character have missing or ambiguous data?
-        size_t                                              numConstantPatterns(void) const;                                            //!< The number of constant patterns
-        size_t                                              numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
         
         // Member variables
         std::set<size_t>                                    deletedCharacters;                                                          //!< Set of deleted characters
@@ -1075,6 +1073,58 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMinPaiwiseSeq
 }
 
 
+/**
+ * Get the minimum pairwise distance between the sequences.
+ *
+ * \return    The min pairwise distance.
+ */
+template<class charType>
+RevBayesCore::DistanceMatrix RevBayesCore::HomologousDiscreteCharacterData<charType>::getPaiwiseSequenceDifference( bool include_missing ) const
+{
+    size_t nt = this->getNumberOfIncludedTaxa();
+    MatrixReal distances = MatrixReal(nt);
+    
+    
+    for (size_t i=0; i<(nt-1); i++)
+    {
+        
+        const AbstractDiscreteTaxonData& firstTaxonData = this->getTaxonData(i);
+        size_t nc = firstTaxonData.getNumberOfCharacters();
+        
+        for (size_t j=i+1; j<nt; j++)
+        {
+            
+            const AbstractDiscreteTaxonData& secondTaxonData = this->getTaxonData(j);
+            size_t pd = 0.0;
+            
+            for (size_t k=0; k<nc; k++)
+            {
+                const DiscreteCharacterState& a = firstTaxonData[k];
+                const DiscreteCharacterState& b = secondTaxonData[k];
+                if ( include_missing == true || ( a.isAmbiguous() == false && b.isAmbiguous() == false) )
+                {
+                    if (a != b)
+                    {
+                        ++pd;
+                    }
+                }
+                
+            }
+            
+            distances[i][j] = pd;
+            distances[j][i] = pd;
+            
+        } // end loop over all second taxa
+        
+        distances[i][i] = 0;
+        
+    } // end loop over all first taxa
+    
+    
+    return DistanceMatrix(distances,getTaxa());
+}
+
+
 /** 
  * Get the taxon data object with index tn.
  *
@@ -1265,43 +1315,6 @@ template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromString(const std::string &s)
 {
     throw RbException("Cannot initialize a discrete character data matrix from a string.");
-}
-
-
-
-/** 
- * Is this character pattern constant at site idx?
- * 
- * \param[in]   idx    The site at which we want to know if it is constant?
- */
-template<class charType>
-bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterConstant(size_t idx) const 
-{
-    
-    const CharacterState* f = NULL;
-    for ( size_t i=0; i<getNumberOfTaxa(); ++i )
-    {
-        if ( isTaxonExcluded(i) == false ) 
-        {
-            if ( f == NULL )
-            {
-                f = &getCharacter( i, idx );
-            }
-            else
-            {
-                const CharacterState* s = &getCharacter( i , idx );
-                if ( (*f) != (*s) )
-                {
-                    return false;
-                }
-                
-            }
-
-        }
-    
-    }
-    
-    return true;
 }
 
 
@@ -1708,46 +1721,6 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numInvariableSit
     }
     
     return num_blocks;
-}
-
-
-
-/** 
- * Calculates and returns the number of constant characters.
- */
-template<class charType>
-size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numConstantPatterns( void ) const 
-{
-    
-    size_t nc = 0;
-    for (size_t i=0; i<getNumberOfCharacters(); i++)
-    {
-        if ( isCharacterExcluded(i) == false && isCharacterConstant(i) == true )
-        {
-            nc++;
-        }
-        
-    }
-    
-    return nc;
-}
-
-
-/** 
- * Returns the number of characters with missing or ambiguous data
- */
-template<class charType>
-size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numMissAmbig(void) const 
-{
-    
-    size_t nma = 0;
-    for (size_t i=0; i<getNumberOfCharacters(); i++)
-    {
-        if ( isCharacterExcluded(i) == false && isCharacterMissingOrAmbiguous(i) == true )
-            nma++;
-    }
-    
-    return nma;
 }
 
 

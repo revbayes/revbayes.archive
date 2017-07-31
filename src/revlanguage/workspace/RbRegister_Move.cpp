@@ -93,7 +93,7 @@
 
 /* Moves on real valued matrices */
 #include "Move_MatrixSingleElementSlide.h"
-#include "Move_ConjugateInverseWishartBrownian.h"
+#include "Move_ConjugateInverseWishart.h"
 #include "Move_CorrelationMatrixUpdate.h"
 
 /* Moves on continuous character data (real valued matrices) */
@@ -111,6 +111,7 @@
 #include "Move_MixtureAllocation.h"
 #include "Move_GibbsMixtureAllocation.h"
 #include "Move_ReversibleJumpSwitchMove.h"
+#include "Move_UPPAllocation.h"
 
 // moves for the DPP table values
 #include "ScaleProposal.h"
@@ -223,7 +224,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_MatrixRealSymmetricSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor( new Move_ConjugateInverseWishartBrownian() );
+        addTypeWithConstructor( new Move_ConjugateInverseWishart() );
         
         /* Moves on continuous character data (matrices of real values) */
         addTypeWithConstructor( new Move_ContinuousCharacterDataSlide() );
@@ -256,6 +257,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Probability>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Simplex>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RateGenerator>( ) );
+        addTypeWithConstructor( new Move_UPPAllocation<RealPos>() );
         
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Real>( )                  );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<RealPos>( )               );
@@ -270,7 +272,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BirthDeathEvent()                      );
         addTypeWithConstructor( new Move_DiscreteEventCategoryRandomWalk()      );
         addTypeWithConstructor( new Move_EventTimeBeta()                        );
-//        addTypeWithConstructor( new Move_EventTimeSlide()                       );
+        addTypeWithConstructor( new Move_EventTimeSlide()                       );
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */

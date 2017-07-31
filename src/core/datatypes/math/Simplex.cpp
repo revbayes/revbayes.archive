@@ -44,6 +44,21 @@ Simplex* Simplex::clone( void ) const
     return new Simplex(*this);
 }
 
+void Simplex::initFromString( const std::string &s )
+{
+    this->clear();
+    std::string sub = s.substr( 1, s.size()-2);
+    std::vector<std::string> elements;
+    StringUtilities::stringSplit(sub,",", elements);
+    for (size_t i=0; i<elements.size(); ++i)
+    {
+        double value;
+        RevBayesCore::Serializer<double, IsDerivedFrom<double, Serializable>::Is >::ressurectFromString( &value, elements[i] );
+        this->push_back( value );
+    }
+    normalize();
+    
+}
 
 
 void Simplex::normalize( void )

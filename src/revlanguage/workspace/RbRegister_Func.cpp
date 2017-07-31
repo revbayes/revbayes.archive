@@ -81,7 +81,6 @@
 #include "Func_exists.h"
 #include "Func_getOption.h"
 #include "Func_getwd.h"
-#include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_ls.h"
 #include "Func_modelVector.h"
@@ -129,6 +128,7 @@
 /* Rate matrix functions (in folder "functions/phylogenetics/ratematrix") */
 #include "Func_blosum62.h"
 #include "Func_chromosomes.h"
+#include "Func_chromosomesPloidy.h"
 #include "Func_covarionRateMatrix.h"
 #include "Func_covarion.h"
 #include "Func_cpRev.h"
@@ -181,6 +181,7 @@
 #include "Func_EpochCladoProbs.h"
 #include "Func_chromosomesCladoProbs.h"
 #include "Func_chromosomesCladoEventsBD.h"
+#include "Func_chromosomesPloidyCladoEventsBD.h"
 #include "Func_MixtureCladoProbs.h"
 #include "Func_SampledCladogenesisRootFrequencies.h"
 
@@ -232,6 +233,7 @@
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_logistic.h"
+#include "Func_matrix.h"
 #include "Func_max.h"
 #include "Func_mean.h"
 #include "Func_meanPositive.h"
@@ -286,6 +288,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( new Func_blosum62()                 );
         addFunction( new Func_chromosomes()              );
+        addFunction( new Func_chromosomesPloidy()        );
         addFunction( new Func_covarionRateMatrix()       );
         addFunction( new Func_covarion()                 );
         addFunction( new Func_cpRev()                    );
@@ -329,6 +332,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_EpochCladoProbs() );
         addFunction( new Func_chromosomesCladoProbs() );
         addFunction( new Func_chromosomesCladoEventsBD() );
+        addFunction( new Func_chromosomesPloidyCladoEventsBD() );
         addFunction( new Func_MixtureCladoProbs() );
         addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
@@ -407,6 +411,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // log function
         addFunction( new Func_log()  );
+        
+        // matrix function (converts into MatrixReal)
+        addFunction( new Func_matrix() );
 
         // min function
         addFunction( new Func_max()  );

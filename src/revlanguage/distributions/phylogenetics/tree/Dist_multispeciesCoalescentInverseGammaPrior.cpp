@@ -24,7 +24,7 @@ using namespace RevLanguage;
  */
 Dist_multispeciesCoalescentInverseGammaPrior::Dist_multispeciesCoalescentInverseGammaPrior() : TypedDistribution<TimeTree>()
 {
-    
+
 }
 
 /**
@@ -35,9 +35,9 @@ Dist_multispeciesCoalescentInverseGammaPrior::Dist_multispeciesCoalescentInverse
 
 Dist_multispeciesCoalescentInverseGammaPrior* Dist_multispeciesCoalescentInverseGammaPrior::clone(void) const
 {
-    
+
     return new Dist_multispeciesCoalescentInverseGammaPrior(*this);
-    
+
 }
 
 
@@ -55,21 +55,21 @@ Dist_multispeciesCoalescentInverseGammaPrior* Dist_multispeciesCoalescentInverse
  */
 RevBayesCore::MultispeciesCoalescentInverseGammaPrior* Dist_multispeciesCoalescentInverseGammaPrior::createDistribution( void ) const
 {
-    
+
     // Get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* st = static_cast<const TimeTree &>( species_tree->getRevObject() ).getDagNode();
     const std::vector<RevBayesCore::Taxon>      &t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
-    
+
     RevBayesCore::MultispeciesCoalescentInverseGammaPrior*   d = new RevBayesCore::MultispeciesCoalescentInverseGammaPrior( st, t );
-    
+
     RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( shape->getRevObject() ).getDagNode();
     d->setShape( s );
     RevBayesCore::TypedDagNode<double>* r = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
     d->setRate( r );
-    
-    
+
+
     d->redrawValue();
-    
+
     return d;
 }
 
@@ -82,9 +82,9 @@ RevBayesCore::MultispeciesCoalescentInverseGammaPrior* Dist_multispeciesCoalesce
  */
 const std::string& Dist_multispeciesCoalescentInverseGammaPrior::getClassType(void)
 {
-    
+
     static std::string rev_type = "Dist_multispeciesCoalescentInverseGammaPrior";
-    
+
     return rev_type;
 }
 
@@ -96,9 +96,9 @@ const std::string& Dist_multispeciesCoalescentInverseGammaPrior::getClassType(vo
  */
 const TypeSpec& Dist_multispeciesCoalescentInverseGammaPrior::getClassTypeSpec(void)
 {
-    
+
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
-    
+
     return rev_type_spec;
 }
 
@@ -114,7 +114,7 @@ std::string Dist_multispeciesCoalescentInverseGammaPrior::getDistributionFunctio
 {
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "MultiSpeciesCoalescentInverseGamma";
-    
+
     return d_name;
 }
 
@@ -131,20 +131,20 @@ std::string Dist_multispeciesCoalescentInverseGammaPrior::getDistributionFunctio
  */
 const MemberRules& Dist_multispeciesCoalescentInverseGammaPrior::getParameterRules(void) const
 {
-    
+
     static MemberRules memberRules;
     static bool rules_set = false;
-    
+
     if ( !rules_set )
     {
-        memberRules.push_back( new ArgumentRule( "speciesTree"  , TimeTree::getClassTypeSpec(), "The species in which the gene trees evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "shape"        , RealPos::getClassTypeSpec(), "The shape of the inverse gamma prior distribution on the population size.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "rate"         , RealPos::getClassTypeSpec(), "The rate of the inverse gamma prior distribution on the population size.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree"  , TimeTree::getClassTypeSpec(), "The species tree in which the gene trees evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "shape"        , RealPos::getClassTypeSpec(), "The shape of the inverse gamma prior distribution on the effective population sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "rate"         , RealPos::getClassTypeSpec(), "The rate of the inverse gamma prior distribution on the effective population sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "taxa"         , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        
+
         rules_set = true;
     }
-    
+
     return memberRules;
 }
 
@@ -161,7 +161,7 @@ const MemberRules& Dist_multispeciesCoalescentInverseGammaPrior::getParameterRul
  */
 void Dist_multispeciesCoalescentInverseGammaPrior::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
-    
+
     if ( name == "speciesTree" )
     {
         species_tree = var;
@@ -182,18 +182,15 @@ void Dist_multispeciesCoalescentInverseGammaPrior::setConstParameter(const std::
     {
         TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
-    
+
 }
 
 
 /** Get type spec */
 const TypeSpec& Dist_multispeciesCoalescentInverseGammaPrior::getTypeSpec( void ) const
 {
-    
+
     static TypeSpec type_spec = getClassTypeSpec();
-    
+
     return type_spec;
 }
-
-
-

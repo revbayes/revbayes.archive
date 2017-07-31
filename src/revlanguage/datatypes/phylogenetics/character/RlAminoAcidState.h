@@ -31,8 +31,8 @@ namespace RevLanguage {
     class AminoAcidState : public ModelObject<RevBayesCore::AminoAcidState> {
         
     public:
-        AminoAcidState(void);                                                                                   //!< Default constructor
-        AminoAcidState(const RevBayesCore::AminoAcidState &d);                                                  //!< Construct from AminoAcid
+                                        AminoAcidState(void);                                                   //!< Default constructor
+                                        AminoAcidState(const RevBayesCore::AminoAcidState &d);                  //!< Construct from AminoAcid
         
         // Operators
         
@@ -42,7 +42,9 @@ namespace RevLanguage {
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         
-        
+        std::string                     getGuiName(void) { return "Amino Acid State"; }
+        std::string                     getGuiUnicodeSymbol(void) { return "S(AA)"; }
+        std::string                     getGuiInfo(void) { return ""; }
     };
     
 }

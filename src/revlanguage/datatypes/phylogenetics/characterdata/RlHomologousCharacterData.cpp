@@ -28,7 +28,8 @@ MethodTable HomologousCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* includecharArgRules          = new ArgumentRules();
     ArgumentRules* includecharArgRules2         = new ArgumentRules();
     ArgumentRules* isResolvedArgRules           = new ArgumentRules();
-    
+    ArgumentRules* getIncludedCharacterIndicesArgRules = new ArgumentRules();
+
     
     excludecharArgRules->push_back(         new ArgumentRule("pos"        , Natural::getClassTypeSpec()              , "The position of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     excludecharArgRules2->push_back(        new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , "A vector of character positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -42,6 +43,7 @@ MethodTable HomologousCharacterData::getCharacterDataMethods( void ) const
     methods.addFunction( new MemberProcedure( "excludeCharacter", RlUtils::Void,            excludecharArgRules  ) );
     methods.addFunction( new MemberProcedure( "excludeCharacter", RlUtils::Void,            excludecharArgRules2 ) );
     methods.addFunction( new MemberProcedure( "excludeAll", RlUtils::Void,                  excludeallArgRules   ) );
+    methods.addFunction( new MemberProcedure( "getIncludedCharacterIndices", ModelVector<Natural>::getClassTypeSpec(), getIncludedCharacterIndicesArgRules   ) );
     methods.addFunction( new MemberProcedure( "includeCharacter", RlUtils::Void,            includecharArgRules  ) );
     methods.addFunction( new MemberProcedure( "includeCharacter", RlUtils::Void,            includecharArgRules2 ) );
     methods.addFunction( new MemberProcedure( "includeAll", RlUtils::Void,                  includeallArgRules   ) );
@@ -52,11 +54,9 @@ MethodTable HomologousCharacterData::getCharacterDataMethods( void ) const
 }
 
 /* Map calls to member methods */
-RevPtr<RevVariable> HomologousCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> HomologousCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found, RevBayesCore::HomologousCharacterData *charDataObject)
 {
-    RevPtr<RevVariable> retVal = AbstractCharacterData::executeCharacterDataMethod(name, args, found);
-    
-    RevBayesCore::HomologousCharacterData *charDataObject = &getValue();
+    RevPtr<RevVariable> retVal = AbstractCharacterData::executeCharacterDataMethod(name, args, found, charDataObject);
     
     if (name == "excludeCharacter")
     {
@@ -96,6 +96,26 @@ RevPtr<RevVariable> HomologousCharacterData::executeCharacterDataMethod(std::str
         }
         
         return NULL;
+    }
+    else if (name == "getIncludedCharacterIndices")
+    {
+        found = true;
+        
+        RevBayesCore::HomologousCharacterData &v = *charDataObject;
+        size_t nChars = v.getNumberOfCharacters();
+        
+        RevBayesCore::RbVector<int> indices;
+        for (size_t i = 0; i < nChars; i++)
+        {
+            bool excluded = v.isCharacterExcluded(i);
+            if ( excluded == false )
+            {
+                indices.push_back( int(i) );
+            }
+        }
+        
+        return new RevVariable( new ModelVector<Natural>( indices ) );
+        
     }
     else if (name == "includeCharacter")
     {
@@ -216,16 +236,6 @@ RevPtr<RevVariable> HomologousCharacterData::executeCharacterDataMethod(std::str
     //                includedChars->push_back( new Natural(i+1) );
     //        }
     //        return includedChars;
-    //    }
-    //    else if (name == "nconstantpatterns")
-    //    {
-    //        int n = (int)numConstantPatterns();
-    //        return RevPtr<RevObject>( new Natural(n) );
-    //    }
-    //    else if (name == "ncharswithambiguity")
-    //    {
-    //        int n = (int)numMissAmbig();
-    //        return RevPtr<RevObject>( new Natural(n) );
     //    }
     
     

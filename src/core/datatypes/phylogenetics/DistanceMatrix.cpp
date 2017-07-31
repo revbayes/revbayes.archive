@@ -1,10 +1,3 @@
-//
-//  DistanceMatrix.cpp
-//
-//  Created by Bastien Boussau on 4/8/15.
-//  Copyright (c) 2015 Bastien Boussau. All rights reserved.
-//
-
 #include "DistanceMatrix.h"
 #include "DistanceMatrixReader.h"
 #include <sstream>
@@ -14,16 +7,16 @@ using namespace RevBayesCore;
 
 DistanceMatrix::DistanceMatrix( void ) :
     matrix( 2 ),
-    names(),
-    numTips( 2 )
+    taxa( std::vector<Taxon>(2,Taxon()) ),
+    num_tips( 2 )
 {
     
 }
 
 DistanceMatrix::DistanceMatrix( size_t n ) :
     matrix( n ),
-    names(),
-    numTips( n )
+    taxa( std::vector<Taxon>(n,Taxon("")) ),
+    num_tips( n )
 {
     
 }
@@ -31,9 +24,9 @@ DistanceMatrix::DistanceMatrix( size_t n ) :
 
 DistanceMatrix::DistanceMatrix(DistanceMatrixReader* tadr) : filename(tadr->getFilename())
 {
-    names = tadr->getNames();
+    taxa = tadr->getTaxa();
 	matrix = tadr->getMatrix();
-	numTips = names.size();
+	num_tips = taxa.size();
 }
 
 DistanceMatrix::DistanceMatrix(const DistanceMatrix& a)
@@ -41,11 +34,11 @@ DistanceMatrix::DistanceMatrix(const DistanceMatrix& a)
     *this = a;
 }
 
-DistanceMatrix::DistanceMatrix(const MatrixReal& a, std::vector<std::string>& nam)
+DistanceMatrix::DistanceMatrix(const MatrixReal& a, const std::vector<Taxon>& t)
 {
-	names = nam;
+	taxa = t;
 	matrix = a;
-	numTips = names.size();
+	num_tips = taxa.size();
 
 }
 
@@ -54,10 +47,10 @@ DistanceMatrix& DistanceMatrix::operator=(const DistanceMatrix& a)
 {
     if (this != &a)
     {
-        names = a.names;
+        taxa = a.taxa;
 		matrix = a.matrix;
 		filename = a.filename;
-		numTips = a.numTips;
+		num_tips = a.num_tips;
     }
     
     return *this;
@@ -68,9 +61,9 @@ DistanceMatrix* DistanceMatrix::clone(void) const
     return new DistanceMatrix(*this);
 }
 
-const std::vector<std::string>& DistanceMatrix::getNames(void) const
+const std::vector<Taxon>& DistanceMatrix::getTaxa(void) const
 {
-    return names;
+    return taxa;
 }
 
 const MatrixReal& DistanceMatrix::getMatrix(void) const
@@ -80,7 +73,7 @@ const MatrixReal& DistanceMatrix::getMatrix(void) const
 
 size_t DistanceMatrix::getSize(void) const
 {
-	return numTips;
+	return num_tips;
 }
 
 
@@ -126,10 +119,10 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const DistanceMatrix& x)
     s << "DistanceMatrix with " << x.getSize() << " tips. " << std::endl;
 
     o << s.str();
-	std::vector<std::string> names = x.getNames();
+	std::vector<Taxon> taxa = x.getTaxa();
 
 	for ( size_t i = 0; i < x.getSize(); ++i ) {
-		o << names[i] ;
+		o << taxa[i] ;
 		for ( size_t j = 0; j < x.getSize(); ++j ) {
         	o << "\t" << x.getMatrix()[i][j] ;
 		}

@@ -20,7 +20,7 @@ DistanceMatrixReader::DistanceMatrixReader(const std::string &fn, char d, size_t
 	{
 		std::string name = chars[i][0];
 		
-		names.push_back( name );
+		taxa.push_back( Taxon(name) );
 		for (size_t j = 1; j < chars[i].size(); ++j)
 		{
 			matrix[i-1][j-1] = atof( chars[i][j].c_str() );
@@ -30,9 +30,9 @@ DistanceMatrixReader::DistanceMatrixReader(const std::string &fn, char d, size_t
 }
 
 
-const std::vector<std::string>& DistanceMatrixReader::getNames(void)
+const std::vector<Taxon>& DistanceMatrixReader::getTaxa(void)
 {
-	return names;
+	return taxa;
 }
 
 

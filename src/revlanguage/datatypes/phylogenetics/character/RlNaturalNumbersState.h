@@ -28,20 +28,22 @@ namespace RevLanguage {
     class NaturalNumbersState : public ModelObject<RevBayesCore::NaturalNumbersState> {
         
     public:
-        NaturalNumbersState(void);                                                                                 //!< Default constructor
-        NaturalNumbersState(RevBayesCore::TypedDagNode<RevBayesCore::NaturalNumbersState> *v);                                                            //!< Constructor from DAG node
-        NaturalNumbersState(const RevBayesCore::NaturalNumbersState &d);                                              //!< Construct from NaturalNumbersState
+                                        NaturalNumbersState(void);                                                              //!< Default constructor
+                                        NaturalNumbersState(RevBayesCore::TypedDagNode<RevBayesCore::NaturalNumbersState> *v);  //!< Constructor from DAG node
+                                        NaturalNumbersState(const RevBayesCore::NaturalNumbersState &d);                        //!< Construct from NaturalNumbersState
         
         // Operators
         
         // Basic utility functions
-        NaturalNumbersState*            clone(void) const;                                                      //!< Clone object
-        static const std::string&       getClassType(void);                                                     //!< Get Rev type
-        static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
-        const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
+        NaturalNumbersState*            clone(void) const;                                                                      //!< Clone object
+        static const std::string&       getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&          getClassTypeSpec(void);                                                                 //!< Get class type spec
+        const TypeSpec&                 getTypeSpec(void) const;                                                                //!< Get language type of the object
        
+        std::string                     getGuiName(void) { return ""; }
+        std::string                     getGuiUnicodeSymbol(void) { return ""; }
+        std::string                     getGuiInfo(void) { return ""; }
     };
-    
 }
 
 #endif
