@@ -265,7 +265,6 @@ std::string Dist_multispeciesCoalescentUniformPrior::getHelpExample(void) const
     example += "# let's pick a constant effective population size of 50:\n";
     example += "popSize <- 50\n";
     example += "# let's simulate gene trees now:\n";
-    example += "# we simulate an ultrametric species tree:\n";
     example += "# taxa names:\n";
     example += "for (g in 1:n_genes) {\n";
     example += "  for (i in 1:n_species) {\n";
