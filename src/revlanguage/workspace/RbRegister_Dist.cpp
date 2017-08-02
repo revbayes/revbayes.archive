@@ -172,6 +172,7 @@
 #include "Dist_normalTruncated.h"
 #include "Dist_normalTruncatedPositive.h"
 #include "Dist_poisson.h"
+#include "Dist_scaledDirichlet.h"
 #include "Dist_softBoundUniformNormal.h"
 #include "Dist_studentT.h"
 #include "Dist_unif.h"
@@ -344,7 +345,10 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // dirichlet distribution
         AddDistribution< Simplex                    >( new Dist_dirichlet() );
-		
+
+        // scaled Dirichlet distribution
+        AddDistribution< Simplex                    >( new Dist_scaledDirichlet() );
+
         // gamma distribution
         AddContinuousDistribution< RealPos          >( new Dist_gamma() );
         
