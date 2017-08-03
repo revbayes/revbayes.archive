@@ -182,6 +182,7 @@
 #include "Func_chromosomesCladoProbs.h"
 #include "Func_chromosomesCladoEventsBD.h"
 #include "Func_chromosomesPloidyCladoEventsBD.h"
+#include "Func_cladogeneticSpeciationRateMatrix.h"
 #include "Func_MixtureCladoProbs.h"
 #include "Func_SampledCladogenesisRootFrequencies.h"
 
@@ -333,6 +334,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_chromosomesCladoProbs() );
         addFunction( new Func_chromosomesCladoEventsBD() );
         addFunction( new Func_chromosomesPloidyCladoEventsBD() );
+        addFunction( new Func_cladogeneticSpeciationRateMatrix() );
         addFunction( new Func_MixtureCladoProbs() );
         addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
