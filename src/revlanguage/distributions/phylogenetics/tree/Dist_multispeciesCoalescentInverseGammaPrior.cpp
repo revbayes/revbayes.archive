@@ -336,6 +336,7 @@ std::vector<std::string> Dist_multispeciesCoalescentInverseGammaPrior::getHelpSe
     // create an entry for each suggested function
     std::vector<std::string> see_also;
     see_also.push_back( "dnMultiSpeciesCoalescent" );
+    see_also.push_back( "dnMultiSpeciesCoalescentUniformPrior" );
 
 
     return see_also;
