@@ -754,12 +754,14 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
         }
         else
         {
-            while ( gap_matrix[taxon_index][i] == true && taxon_index<length )
+            while ( taxon_index<length && gap_matrix[taxon_index][i] == true  )
             {
                 ++taxon_index;
             }
             
             unsigned long c = char_matrix[taxon_index][i];
+            if ( c > 3 )
+                std::cerr << "Oh no!" << std::endl;
             invariant_site_index[i] = c;
 
             for (; taxon_index<length; ++taxon_index)
