@@ -760,8 +760,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
             }
             
             unsigned long c = char_matrix[taxon_index][i];
-            if ( c > 3 )
-                std::cerr << "Oh no!" << std::endl;
             invariant_site_index[i] = c;
 
             for (; taxon_index<length; ++taxon_index)
@@ -2903,12 +2901,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
             if ( RbSettings::userSettings().getUseScaling() == true )
             {
 
-                if ( this->site_invariant[site] == true )
+                if ( this->site_invariant[site] == true && this->gap_matrix[site][0] == false )
                 {
 //                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                     rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] + oneMinusPInv * per_mixture_Likelihoods[site] / exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) ) * *patterns;
                 }
-                else
+                else if ( this->site_invariant[site] == false )
                 {
                     rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                     rv[site] -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
@@ -2926,11 +2924,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
             else // no scaling
             {
 
-                if ( this->site_invariant[site] == true )
+                if ( this->site_invariant[site] == true && this->gap_matrix[site][0] == false )
                 {
                     rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                 }
-                else
+                else if ( this->site_invariant[site] == false )
                 {
                     rv[site] = log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                 }
