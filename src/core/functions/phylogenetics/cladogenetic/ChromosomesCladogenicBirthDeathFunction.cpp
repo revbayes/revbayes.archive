@@ -6,7 +6,6 @@
 
 
 #include "ChromosomesCladogenicBirthDeathFunction.h"
-#include "CladogeneticSpeciationRateMatrix.h"
 #include "MatrixReal.h"
 #include "RbException.h"
 
@@ -14,9 +13,8 @@
 using namespace RevBayesCore;
 
 
-//TypedFunction<MatrixReal>( new MatrixReal( mc + 1, (mc + 1) * (mc + 1), 0.0 ) ),
 ChromosomesCladogenicBirthDeathFunction::ChromosomesCladogenicBirthDeathFunction(const TypedDagNode< RbVector<double> > *sr, unsigned mc):
-TypedFunction<CladogeneticSpeciationRateMatrix>( new CladogeneticSpeciationRateMatrix( mc + 1 ) ),
+TypedFunction<MatrixReal>( new MatrixReal( mc + 1, (mc + 1) * (mc + 1), 0.0 ) ),
 speciationRates( sr ),
 maxChromo(mc),
 numEventTypes( (unsigned)sr->getValue().size() )
@@ -180,8 +178,7 @@ void ChromosomesCladogenicBirthDeathFunction::update( void )
 {
     // reset the transition matrix
     delete value;
-//    value = new MatrixReal( maxChromo + 1, (maxChromo + 1) * (maxChromo + 1), 0.0 );
-    value = new CladogeneticSpeciationRateMatrix( maxChromo + 1 );
+    value = new MatrixReal( maxChromo + 1, (maxChromo + 1) * (maxChromo + 1), 0.0 );
     
     const std::vector<double>& sr = speciationRates->getValue();
     
@@ -196,7 +193,7 @@ void ChromosomesCladogenicBirthDeathFunction::update( void )
             {
                 // reset all rates to 0.0
                 eventMap[ idx ] = 0.0;
-//                (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] = 0.0;
+                (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] = 0.0;
             }
         }
 
@@ -220,7 +217,7 @@ void ChromosomesCladogenicBirthDeathFunction::update( void )
                     double v = ( speciation_rate / eventMapCounts[ i ][ event_types[e] ] );
                     
                     // save the rate in the rate matrix
-//                    (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] += v;
+                    (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] += v;
                     
                     // save the rate in the event map
                     eventMap[ idx ] += v;
@@ -228,7 +225,6 @@ void ChromosomesCladogenicBirthDeathFunction::update( void )
             }
         }
     }
-    value->setEventMap(eventMap);
 }
 
 

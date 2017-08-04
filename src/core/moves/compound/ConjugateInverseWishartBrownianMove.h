@@ -1,5 +1,5 @@
-#ifndef ConjugateInverseWishartMove_H
-#define ConjugateInverseWishartMove_H
+#ifndef ConjugateInverseWishartBrownianMove_H
+#define ConjugateInverseWishartBrownianMove_H
 
 #include <map>
 #include <ostream>
@@ -13,14 +13,14 @@
 
 namespace RevBayesCore {
     
-    class ConjugateInverseWishartMove : public AbstractGibbsMove {
+    class ConjugateInverseWishartBrownianMove : public AbstractGibbsMove {
         
     public:
-        ConjugateInverseWishartMove(StochasticNode<MatrixReal>* s, double w);                                                         //!<  constructor
-        virtual                                ~ConjugateInverseWishartMove(void);                                                             //!< Destructor
+        ConjugateInverseWishartBrownianMove(StochasticNode<MatrixReal>* s, TypedDagNode<double>* k, TypedDagNode<int>* d, double w);                                                         //!<  constructor
+        virtual                                ~ConjugateInverseWishartBrownianMove(void);                                                             //!< Destructor
         
         // Basic utility functions
-        ConjugateInverseWishartMove*            clone(void) const;                                                                  //!< Clone object
+        ConjugateInverseWishartBrownianMove*    clone(void) const;                                                                  //!< Clone object
         const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         
     protected:
@@ -31,6 +31,8 @@ namespace RevBayesCore {
         
         // member variables
         StochasticNode<MatrixReal>*             sigma;
+        TypedDagNode<double>*                   kappa;
+        TypedDagNode<int>*                      df;
         
     };
     

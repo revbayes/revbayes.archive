@@ -33,13 +33,6 @@ const std::vector<std::string>& RbHelpEntry::getDetails( void ) const
 }
 
 
-const std::string& RbHelpEntry::getExample( void ) const
-{
-    // return a const reference to the internal value
-    return example;
-}
-
-
 const std::string& RbHelpEntry::getName( void ) const
 {
     // return a const reference to the internal value
@@ -93,13 +86,6 @@ void RbHelpEntry::setDetails(const std::vector<std::string> &d)
 {
     // overwrite the internal value with the new value
     details = d;
-}
-
-
-void RbHelpEntry::setExample(const std::string &e)
-{
-    // overwrite the internal value with the new value
-    example = e;
 }
 
 

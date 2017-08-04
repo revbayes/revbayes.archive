@@ -431,7 +431,7 @@ void MatrixReal::setCholesky(bool c) const
 
 size_t MatrixReal::size( void ) const
 {
-    return n_rows*n_cols;
+    return n_rows*n_rows;
 }
 
 

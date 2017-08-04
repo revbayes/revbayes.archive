@@ -357,12 +357,6 @@ RevBayesCore::RbHelpEntry* RevObject::getHelpEntry( void ) const
     // description
     helpEntry.setDescription( getHelpDescription() );
     
-    // details
-    helpEntry.setDetails( getHelpDetails() );
-    
-    // example
-    helpEntry.setExample( getHelpExample() );
-    
     helpEntry.setReferences( getHelpReferences() );
     
     // author

@@ -2,9 +2,9 @@
     <head>
         <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
         <script src="../jquery.js"></script>
-
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
@@ -15,10 +15,10 @@
             var methodEntries;
             var showMore;
             $(document).ready(function() {
-
+                
 
                 methodEntries = $("#methodEntries");
-
+                
                 // hide per default
                 methodEntries.find("[id$=less-label]").each(function() {
                     $(this).hide();
@@ -27,7 +27,7 @@
                     $(this).hide();
                 });
 
-
+                
             });
 
             function showMore(entry) {
@@ -59,7 +59,7 @@
 <h2>Name</h2>
 <p class="indent">dnMultiSpeciesCoalescent</p>
 <h2>Description</h2>
-<p class="indent">Multispecies coalescent distribution describing how gene trees can be generated from within a species tree given effective population sizes. Requires an ultrametric species tree, effective population size(s) (a single real positive or a vector of real positives), and taxa with species and individual names.</p>
+<p class="indent"></p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
@@ -71,7 +71,7 @@
 <div class="indent">
 <b >speciesTree</b>
 <div class="indent">
-The species tree in which the gene trees evolve.<br />
+The species in which the gene trees evolve.<br />
 <br />
 <span class="argument">Argument type: </span>
 pass by const reference<br />
@@ -81,12 +81,12 @@ TimeTree<br />
 <br />
 <b >Ne</b>
 <div class="indent">
-The effective population size(s).<br />
+The population sizes.<br />
 <br />
 <span class="argument">Argument type: </span>
 pass by const reference<br />
 <span class="argument">Value type: </span>
-RealPos|RealPos[]<br />
+RealPos<br />
 </div>
 <br />
 <b >taxa</b>

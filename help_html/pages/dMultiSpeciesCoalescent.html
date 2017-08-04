@@ -2,9 +2,9 @@
     <head>
         <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
         <script src="../jquery.js"></script>
-
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
@@ -15,10 +15,10 @@
             var methodEntries;
             var showMore;
             $(document).ready(function() {
-
+                
 
                 methodEntries = $("#methodEntries");
-
+                
                 // hide per default
                 methodEntries.find("[id$=less-label]").each(function() {
                     $(this).hide();
@@ -27,7 +27,7 @@
                     $(this).hide();
                 });
 
-
+                
             });
 
             function showMore(entry) {
@@ -44,7 +44,7 @@
             }
 
         </script>
-
+        
     </head>
     <body>
 
@@ -59,16 +59,13 @@
         <br />
 <h2>Name</h2>
 <p class="indent">dMultiSpeciesCoalescent</p>
-<h2>Description</h2>
-<p class="indent">Function to compute the probability of a gene tree x under the multispecies coalescent model, given an ultrametric species tree, effective population size(s) (a single real positive or a vector of real positives), and taxa with species and individual names. The function can return the probability or its logarithm.</p>
-<br />
 <h2>Usage</h2>
 <p class="indent">dMultiSpeciesCoalescent(TimeTree<any> x, TimeTree<any> speciesTree, RealPos|RealPos[]<any> Ne, Taxon[]<any> taxa, Bool<any> log)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >x</b>
 <div class="indent">
-The observed value whose probability we want to compute.<br />
+The observed value.<br />
 <br />
 <span class="argument">Argument type: </span>
 pass by const reference<br />
@@ -78,7 +75,7 @@ TimeTree<br />
 <br />
 <b >speciesTree</b>
 <div class="indent">
-The species tree in which the gene tree has evolved.<br />
+The species in which the gene trees evolve.<br />
 <br />
 <span class="argument">Argument type: </span>
 pass by const reference<br />
@@ -88,12 +85,12 @@ TimeTree<br />
 <br />
 <b >Ne</b>
 <div class="indent">
-The effective population sizes.<br />
+The population sizes.<br />
 <br />
 <span class="argument">Argument type: </span>
 pass by const reference<br />
 <span class="argument">Value type: </span>
-RealPos|RealPos[]<br />
+RealPos<br />
 </div>
 <br />
 <b >taxa</b>

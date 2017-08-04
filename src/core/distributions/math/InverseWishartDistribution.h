@@ -41,10 +41,6 @@ namespace RevBayesCore {
         
         int                                                 getDF() const {return df->getValue();}
         
-        const TypedDagNode<MatrixReal>*                     getSigma0() const {return sigma0;}
-        const TypedDagNode<RbVector<double> >*              getKappaVector() const {return kappaVector;}
-        const TypedDagNode<double>*                         getKappa() const {return kappa;}
-
         
     protected:
         // Parameter management functions
