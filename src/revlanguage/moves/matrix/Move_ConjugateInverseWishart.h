@@ -1,5 +1,5 @@
-#ifndef Move_ConjugateInverseWishartBrownian_H
-#define Move_ConjugateInverseWishartBrownian_H
+#ifndef Move_ConjugateInverseWishart_H
+#define Move_ConjugateInverseWishart_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -18,14 +18,14 @@ namespace RevLanguage {
      * @copyright GPL version 3
      * @since 2013-11-17, version 1.0
      */
-    class Move_ConjugateInverseWishartBrownian : public Move {
+    class Move_ConjugateInverseWishart : public Move {
         
     public:
         
-        Move_ConjugateInverseWishartBrownian(void);                                                                                                         //!< Default constructor
+        Move_ConjugateInverseWishart(void);                                                                                                         //!< Default constructor
         
         // Basic utility functions
-        virtual Move_ConjugateInverseWishartBrownian*       clone(void) const;                                                                              //!< Clone the object
+        virtual Move_ConjugateInverseWishart*               clone(void) const;                                                                              //!< Clone the object
         void                                                constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                           getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                              getClassTypeSpec(void);                                                                         //!< Get class type spec
@@ -39,9 +39,6 @@ namespace RevLanguage {
         void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
         RevPtr<const RevVariable>                           x;
-        RevPtr<const RevVariable>                           kappa;
-        RevPtr<const RevVariable>                           df;                                                                                             //!< The variable telling if to tune or not.
-        
     };
     
 }

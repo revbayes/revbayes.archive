@@ -54,7 +54,9 @@
 /* Moves on real values */
 #include "Move_SliceSampling.h"
 #include "Move_Scale.h"
+#include "Move_ScaleBactrian.h"
 #include "Move_Slide.h"
+#include "Move_SlideBactrian.h"
 
 /* Moves on probability values */
 #include "Move_BetaProbability.h"
@@ -91,7 +93,7 @@
 
 /* Moves on real valued matrices */
 #include "Move_MatrixSingleElementSlide.h"
-#include "Move_ConjugateInverseWishartBrownian.h"
+#include "Move_ConjugateInverseWishart.h"
 #include "Move_CorrelationMatrixUpdate.h"
 
 /* Moves on continuous character data (real valued matrices) */
@@ -144,6 +146,7 @@
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideBeta.h"
 #include "Move_RateAgeBetaShift.h"
+#include "Move_RootTimeScaleBactrian.h"
 #include "Move_RootTimeSlideUniform.h"
 #include "Move_SpeciesNarrowExchange.h"
 #include "Move_SpeciesNodeTimeSlideUniform.h"
@@ -173,7 +176,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 
         /* Moves on real values */
         addTypeWithConstructor( new Move_Scale() );
+        addTypeWithConstructor( new Move_ScaleBactrian() );
         addTypeWithConstructor( new Move_Slide() );
+        addTypeWithConstructor( new Move_SlideBactrian() );
         addTypeWithConstructor( new Move_SliceSampling() );
         
         /* Moves on probability */
@@ -219,7 +224,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_MatrixRealSymmetricSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor( new Move_ConjugateInverseWishartBrownian() );
+        addTypeWithConstructor( new Move_ConjugateInverseWishart() );
         
         /* Moves on continuous character data (matrices of real values) */
         addTypeWithConstructor( new Move_ContinuousCharacterDataSlide() );
@@ -284,6 +289,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_NodeTimeSlideUniform()           );
         addTypeWithConstructor( new Move_NodeTimeSlideBeta()              );
         addTypeWithConstructor( new Move_RateAgeBetaShift()               );
+        addTypeWithConstructor( new Move_RootTimeScaleBactrian()           );
         addTypeWithConstructor( new Move_RootTimeSlideUniform()           );
         addTypeWithConstructor( new Move_SubtreeScale()                   );
         addTypeWithConstructor( new Move_SPRNonclock()                    );
