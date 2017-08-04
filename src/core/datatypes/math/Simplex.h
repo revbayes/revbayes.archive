@@ -40,6 +40,12 @@ namespace RevBayesCore {
         Simplex(const Simplex& m);
         virtual                                ~Simplex(void);
         
+        // global operators
+        RbVector<double>                        operator+(double b) const;                                          //!< operator + for matrix + scalar
+        RbVector<double>                        operator-(double b) const;                                          //!< operator - for scalar
+        RbVector<double>                        operator*(double b) const;                                          //!< operator * for scalar
+//        std::vector<double>                     operator*(const std::vector<double> &b) const;
+        
         Simplex*                                clone(void) const;
         
         // utility funcions
@@ -55,6 +61,8 @@ namespace RevBayesCore {
     // Global functions using the class
     std::ostream&                       operator<<(std::ostream& o, const Simplex& x);                                           //!< Overloaded output operator
     
+    RbVector<double>                        operator*(const double &a, const Simplex& B);                            //!< operator * for scalar * simplex
+
     
 }
 

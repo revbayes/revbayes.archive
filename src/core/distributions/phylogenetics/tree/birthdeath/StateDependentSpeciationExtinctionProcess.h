@@ -2,7 +2,7 @@
 #define StateDependentSpeciationExtinctionProcess_H
 
 #include "TreeDiscreteCharacterData.h"
-#include "MatrixReal.h"
+#include "CladogeneticSpeciationRateMatrix.h"
 #include "RateMatrix.h"
 #include "Simplex.h"
 #include "SSE_ODE.h"
@@ -38,12 +38,12 @@ namespace RevBayesCore {
                                                   const std::vector<Taxon> &tn);
         
         // pure virtual member functions
-        virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;                                                                                  //!< Create an independent clone
+        virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
         
-        double                                                          computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
+        double                                                          computeLnProbability(void);
         const AbstractHomologousDiscreteCharacterData&                  getCharacterData() const;
-        virtual void                                                    redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
-        void                                                            setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
+        virtual void                                                    redrawValue(void);
+        void                                                            setCladogenesisMatrix(const TypedDagNode< CladogeneticSpeciationRateMatrix > *r);
         void                                                            setSampleCharacterHistory(bool sample_history);                                                     //!< Set whether or not we are sampling the character history along branches.
         void                                                            setSpeciationRates(const TypedDagNode< RbVector<double> > *r);
         void                                                            setNumberOfTimeSlices(double n);                                                                    //!< Set the number of time slices for the numerical ODE.
@@ -93,7 +93,7 @@ namespace RevBayesCore {
         bool                                                            sample_character_history;                                                                           //!< are we sampling the character history along branches?
         
         // parameters
-        const TypedDagNode< MatrixReal >*                               cladogenesis_matrix;
+        const TypedDagNode< CladogeneticSpeciationRateMatrix >*                               cladogenesis_matrix;
         const TypedDagNode<double>*                                     root_age;                                                                                           //!< Time since the origin.
         const TypedDagNode<RbVector<double> >*                          mu;
         const TypedDagNode<RbVector<double> >*                          lambda;
