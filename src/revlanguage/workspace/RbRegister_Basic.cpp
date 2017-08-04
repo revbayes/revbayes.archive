@@ -389,6 +389,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__mult< Integer               , Integer               , Integer               >(  )  );
         addFunction( new Func__mult< Real                  , Real                  , Real                  >(  )  );
         addFunction( new Func__mult< RealPos               , RealPos               , RealPos               >(  )  );
+        addFunction( new Func__mult< Simplex               , RealPos                , ModelVector<RealPos>  >(  )  );
+        addFunction( new Func__mult< Simplex               , Real                   , ModelVector<Real>     >(  )  );
         addFunction( new Func__mult< ModelVector<Natural>  , ModelVector<Natural>  , ModelVector<Natural>  >(  )  );
         addFunction( new Func__mult< ModelVector<Integer>  , ModelVector<Integer>  , ModelVector<Integer>  >(  )  );
         addFunction( new Func__mult< ModelVector<RealPos>  , ModelVector<RealPos>  , ModelVector<RealPos>  >(  )  );
