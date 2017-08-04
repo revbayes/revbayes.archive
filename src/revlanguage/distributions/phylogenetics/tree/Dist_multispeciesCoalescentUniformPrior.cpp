@@ -250,7 +250,7 @@ const TypeSpec& Dist_multispeciesCoalescentUniformPrior::getTypeSpec( void ) con
       // create an example as a single string variable.
       std::string example = "";
       example += "# We are going to save the trees we simulate in the folder simulatedTrees:\n";
-      example += "dataFolder = \"simulatedTrees\" \n";
+      example += "dataFolder = \"simulatedTrees/\" \n";
       example += "# Let’s simulate a species tree with 10 taxa, 2 gene trees, 3 alleles per species:\n";
       example += "n_species <- 10\n";
       example += "n_genes <- 2\n";
