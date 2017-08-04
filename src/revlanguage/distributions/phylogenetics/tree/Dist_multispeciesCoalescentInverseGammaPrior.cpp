@@ -298,7 +298,7 @@ std::string Dist_multispeciesCoalescentInverseGammaPrior::getHelpExample(void) c
     example += "  print(geneTrees[g])\n";
     example += "}\n";
     example += "# We can save the species tree and the gene trees: \n";
-    example += "write(speciesTree, filename=dataFolder+\"speciesTree\")\n";
+    example += "write(spTree, filename=dataFolder+\"speciesTree\")\n";
     example += "# Saving the gene trees\n";
     example += "for (i in 1:(n_genes)) {\n";
     example += "  write(geneTrees[i], filename=dataFolder+\"geneTree_\"+i+\".tree\")\n";
