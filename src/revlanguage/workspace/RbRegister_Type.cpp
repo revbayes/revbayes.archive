@@ -48,6 +48,7 @@
 /* Container types (in folder "datatypes/container") */
 #include "RlCorrespondenceAnalysis.h"
 #include "RlMatrixReal.h"
+#include "RlMatrixRealPos.h"
 #include "RlMatrixRealSymmetric.h"
 #include "RlRateMap.h"
 #include "RlRateMatrix.h"
@@ -126,6 +127,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<CladogeneticProbabilityMatrix,3>::addTypeToWorkspace( *this, new CladogeneticProbabilityMatrix() );
         AddWorkspaceVectorType<CladogeneticSpeciationRateMatrix,3>::addTypeToWorkspace( *this, new CladogeneticSpeciationRateMatrix() );
         AddWorkspaceVectorType<MatrixReal,3>::addTypeToWorkspace( *this, new MatrixReal() );
+        AddWorkspaceVectorType<MatrixRealPos,3>::addTypeToWorkspace( *this, new MatrixRealPos() );
         AddWorkspaceVectorType<MatrixRealSymmetric,3>::addTypeToWorkspace( *this, new MatrixRealSymmetric() );
         AddWorkspaceVectorType<AbstractHomologousDiscreteCharacterData,3>::addTypeToWorkspace( *this, new AbstractHomologousDiscreteCharacterData() );
         

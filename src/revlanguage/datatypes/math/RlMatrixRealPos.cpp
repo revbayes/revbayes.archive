@@ -86,6 +86,7 @@ RevPtr<RevVariable> MatrixRealPos::executeMethod(std::string const &name, const 
         int i = index.getValue() - 1;
         
         RevBayesCore::RbVector<double> m = this->dag_node->getValue().getColumn( i );
+
         return new RevVariable( new ModelVector<RealPos>( m ) );
     }
     
@@ -154,7 +155,7 @@ void MatrixRealPos::initializeMethods( void )
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberFunction<MatrixRealPos,ModelVector<Real> >("[]", this, squareBracketArgRules ) );
+    methods.addFunction( new MemberFunction<MatrixRealPos,ModelVector<RealPos> >("[]", this, squareBracketArgRules ) );
     
     // add method for call "min" as a function
     ArgumentRules* minArgRules = new ArgumentRules();

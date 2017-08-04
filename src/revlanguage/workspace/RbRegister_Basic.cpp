@@ -158,7 +158,6 @@
 #include "Func__scalarVectorSub.h"
 #include "Func__sub.h"
 #include "Func__uminus.h"
-#include "Func__vectorIndexOperator.h"
 #include "Func__vectorScalarDiv.h"
 #include "Func__vectorScalarSub.h"
 
