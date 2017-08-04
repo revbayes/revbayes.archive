@@ -754,7 +754,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
         }
         else
         {
-            while ( taxon_index<length && gap_matrix[taxon_index][i] == true  )
+            while ( taxon_index<(length-1) && gap_matrix[taxon_index][i] == true  )
             {
                 ++taxon_index;
             }
