@@ -2901,7 +2901,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
             if ( RbSettings::userSettings().getUseScaling() == true )
             {
 
-                if ( this->site_invariant[site] == true && this->gap_matrix[site][0] == false )
+                if ( this->site_invariant[site] == true  && this->invariant_site_index[site] < this->num_chars )
                 {
 //                    rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                     rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ] + oneMinusPInv * per_mixture_Likelihoods[site] / exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) ) * *patterns;
@@ -2924,7 +2924,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
             else // no scaling
             {
 
-                if ( this->site_invariant[site] == true && this->gap_matrix[site][0] == false )
+                if ( this->site_invariant[site] == true && this->invariant_site_index[site] < this->num_chars )
                 {
                     rv[site] = log( prob_invariant * f[ this->invariant_site_index[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
                 }
