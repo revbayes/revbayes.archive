@@ -7,7 +7,7 @@
 //
 
 #include <cmath>
-#include "DistributionMultivariateNormal.h"
+#include "DistributionBeta.h"
 #include "DistributionLKJ.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -94,13 +94,53 @@ MatrixReal RbStatistics::LKJ::rv(double eta, size_t dim, RandomNumberGenerator& 
 
     // TODO: let's make this actually stochastic
     
-    MatrixReal z(dim);
-    for (size_t i = 0; i < dim; ++i) {
-        z[i][i] = 1.0;
+    MatrixReal P(dim); // this matrix holds the partial correlations
+    MatrixReal S(dim); // this matrix holds the product-moment correlation matrix
+    
+    // S must start as an identity matrix
+    for(size_t i = 0; i < dim; ++i)
+    {
+        S[i][i] = 1.0;
     }
-
-    return z;
+    
+    // this algorithm is only safe for eta > 1.
+    // if eta < 1, we'll just return the identity matrix.
+    // during MCMC, this only means that the initial value will not be from the prior
+    if (eta < 1)
+    {
+        return S;
+    }
+    
+    // initialize beta
+    double beta = eta + (dim - 1) / 2;
+    
+    for(int k = 0; k < dim - 1; ++k)
+    {
+        
+        // decrement beta
+        beta -= 0.5;
+        
+        for(int i = k + 1; i < dim; ++i)
+        {
+            
+            P[k][i] = RbStatistics::Beta::rv(beta, beta, rng) * 2.0 - 1.0; // sample the partial correlation
+            
+            double p = P[k][i]; // initial value for the product-moment correlation
+//            if(k > 0) // recursively compute the product-moment correlation
+//            {
+                for(int l = k - 1; l >= 0; --l)
+                {
+                    p = p * pow( ( 1.0 - pow(P[l][i], 2) ) * ( 1.0 - pow(P[l][k], 2) ), 0.5) + P[l][i] * P[l][k];
+                }
+//            }
+            
+            S[i][k] = p;
+            S[k][i] = p;
+            
+        }
+        
+    }
+    
+    return S;
+    
 }
-
-
-
