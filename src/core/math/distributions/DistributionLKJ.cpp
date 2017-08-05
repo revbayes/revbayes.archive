@@ -73,7 +73,7 @@ double RbStatistics::LKJ::lnPdf(double eta, const MatrixReal &z)
 //    }
     
     z.setCholesky(true);
-    
+        
     return (eta - 1) * z.getLogDet();
 
 }

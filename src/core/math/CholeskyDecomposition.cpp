@@ -1,5 +1,6 @@
 #include "CholeskyDecomposition.h"
 #include "MatrixReal.h"
+#include "RbConstants.h"
 
 #include <assert.h>
 #include <vector>
@@ -57,13 +58,20 @@ void CholeskyDecomposition::computeInverse( void )
 double CholeskyDecomposition::computeLogDet(void)
 {
     
-    double logDet = 0.0;
+    double logdet = 0.0;
     
     for(int r = 0; r < n; ++r) {
-        logDet += L[r][r];
+        logdet += std::log(L[r][r]);
     }
     
-    return logDet;
+    logdet *= 2.0;
+    
+//    if (det < 0.0)
+//    {
+//        return RbConstants::Double::neginf;
+//    }
+    
+    return logdet;
     
 }
 
