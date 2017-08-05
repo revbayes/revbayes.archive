@@ -19,8 +19,8 @@ using namespace RevLanguage;
 MatrixRealSymmetric::MatrixRealSymmetric(void) : MatrixReal()
 {
     
-    ArgumentRules* precisionArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "precision", Natural::getClassTypeSpec(), precisionArgRules) );
+    // initialize the member methods
+    initializeMethods();
 }
 
 
@@ -28,8 +28,8 @@ MatrixRealSymmetric::MatrixRealSymmetric(void) : MatrixReal()
 MatrixRealSymmetric::MatrixRealSymmetric( const RevBayesCore::MatrixReal &mat ) : MatrixReal( mat.clone() )
 {
     
-    ArgumentRules* precisionArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "precision", Natural::getClassTypeSpec(), precisionArgRules) );
+    // initialize the member methods
+    initializeMethods();
 }
 
 
@@ -37,8 +37,8 @@ MatrixRealSymmetric::MatrixRealSymmetric( const RevBayesCore::MatrixReal &mat ) 
 MatrixRealSymmetric::MatrixRealSymmetric( RevBayesCore::MatrixReal *mat ) : MatrixReal( mat )
 {
     
-    ArgumentRules* precisionArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "precision", Natural::getClassTypeSpec(), precisionArgRules) );
+    // initialize the member methods
+    initializeMethods();
 }
 
 
@@ -46,8 +46,8 @@ MatrixRealSymmetric::MatrixRealSymmetric( RevBayesCore::MatrixReal *mat ) : Matr
 MatrixRealSymmetric::MatrixRealSymmetric( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : MatrixReal( mat )
 {
     
-    ArgumentRules* precisionArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "precision", Natural::getClassTypeSpec(), precisionArgRules) );
+    // initialize the member methods
+    initializeMethods();
 }
 
 
@@ -100,15 +100,8 @@ RevPtr<RevVariable> MatrixRealSymmetric::executeMethod(std::string const &name, 
     if (name == "upperTriangle")
     {
         found = true;
-     
-        
-        
-        
-    }
-    if (name == "lowerTriangle")
-    {
-        found = true;
-        
+        RevBayesCore::RbVector<double> u = this->dag_node->getValue().getUpperTriangle();
+        return new RevVariable( new ModelVector<Real>( u ) );
     }
     if (name == "diagonal")
     {
@@ -146,6 +139,20 @@ const TypeSpec& MatrixRealSymmetric::getTypeSpec( void ) const
     static TypeSpec type_spec = getClassTypeSpec();
     
     return type_spec;
+}
+
+void MatrixRealSymmetric::initializeMethods( void )
+{
+
+    ArgumentRules* precisionArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "precision", Natural::getClassTypeSpec(), precisionArgRules) );
+    
+    ArgumentRules* diagonalArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "diagonal", Natural::getClassTypeSpec(), diagonalArgRules) );
+    
+    ArgumentRules* upperTriangleArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "upperTriangle", Natural::getClassTypeSpec(), upperTriangleArgRules) );
+
 }
 
 

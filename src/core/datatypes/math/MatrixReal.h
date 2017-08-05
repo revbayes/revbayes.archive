@@ -89,6 +89,7 @@ namespace RevBayesCore {
         double                                  getMax(void) const;
         double                                  getMin(void) const;
         size_t                                  getNumberOfRows(void) const;
+        RbVector<double>                        getUpperTriangle(void) const;
         bool                                    isDiagonal(void) const;
         bool                                    isPositive() const;
         bool                                    isSquareMatrix(void) const;

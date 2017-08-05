@@ -394,6 +394,29 @@ size_t MatrixReal::getNumberOfRows( void ) const
     return n_rows;
 }
 
+RbVector<double> MatrixReal::getUpperTriangle( void ) const
+{
+    
+    if( isDiagonal() == false ) {
+        throw RbException("MatrixReal: Can only get the diagonal elements of a diagonal matrix.");
+    }
+    
+    RbVector<double> upper_triangle_elements(n_rows * (n_rows - 1) / 2, 0.0);
+    
+    size_t k = 0;
+    for(size_t i = 0; i < n_rows; ++i)
+    {
+        for(size_t j = i + 1; j < n_cols; ++j)
+        {
+            upper_triangle_elements[k++] = elements[i][j];
+        }
+    }
+    
+    return upper_triangle_elements;
+    
+}
+
+
 
 bool MatrixReal::isDiagonal(void) const
 {

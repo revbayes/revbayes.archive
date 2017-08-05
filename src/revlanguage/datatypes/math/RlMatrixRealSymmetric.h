@@ -52,6 +52,9 @@ namespace RevLanguage {
 
     protected:
 
+    private:
+        void                            initializeMethods(void);
+
     };
 
 }
