@@ -260,6 +260,7 @@
 #include "Func_standardDeviation.h"
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
+#include "Func_upperTriangle.h"
 #include "Func_variance.h"
 #include "Func_vectorFlatten.h"
 
@@ -481,6 +482,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_trunc<Real,Integer>()  );
         addFunction( new Func_trunc<RealPos,Natural>()  );
 
+        // upper triangle of a matrix function
+        addFunction( new Func_upperTriangle()  );
+        
         // variance function
         addFunction( new Func_variance()  );
 
