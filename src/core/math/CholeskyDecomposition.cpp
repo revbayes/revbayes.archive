@@ -54,6 +54,19 @@ void CholeskyDecomposition::computeInverse( void )
     
 }
 
+double CholeskyDecomposition::computeLogDet(void)
+{
+    
+    double logDet = 0.0;
+    
+    for(int r = 0; r < n; ++r) {
+        logDet += L[r][r];
+    }
+    
+    return logDet;
+    
+}
+
 void CholeskyDecomposition::decomposeMatrix( void )
 {
     

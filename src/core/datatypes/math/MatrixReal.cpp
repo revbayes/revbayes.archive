@@ -209,6 +209,23 @@ RbVector<double> MatrixReal::getColumn( size_t columnIndex ) const
     return col;
 }
 
+RbVector<double> MatrixReal::getDiagonal( void ) const
+{
+    
+    if( isDiagonal() == false ) {
+        throw RbException("MatrixReal: Can only get the diagonal elements of a diagonal matrix.");
+    }
+    
+    RbVector<double> diagonal_elements(n_rows, 0.0);
+    
+    for(size_t i = 0; i < n_rows; ++i)
+    {
+        diagonal_elements[i] = elements[i][i];
+    }
+    
+    return diagonal_elements;
+    
+}
 
 size_t MatrixReal::getDim( void ) const
 {
@@ -247,13 +264,21 @@ double MatrixReal::getDet() const
     }
     else
     {
-        // update the eigensystem if necessary
+        // update the decomposition if necessary
         update();
-        const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
-
-        for (size_t i=0; i<n_rows; i++)
+        
+        if( use_cholesky_decomp == true)
         {
-            logDet += log(eigenval[i]);
+            logDet = cholesky_decomp->computeLogDet();
+        }
+        else
+        {
+            const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+            
+            for (size_t i=0; i<n_rows; i++)
+            {
+                logDet += log(eigenval[i]);
+            }
         }
     }
     
@@ -280,16 +305,25 @@ double MatrixReal::getLogDet() const
     }
     else
     {
-        // update the eigensystem if necessary
+
+        // update the decomposition if necessary
         update();
-
-        const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
-
-        double tot = 0;
-        for (size_t i=0; i<n_rows; i++)
+        
+        double tot = 0.0;
+        if( use_cholesky_decomp == true)
         {
-            tot += log(eigenval[i]);
+            tot = cholesky_decomp->computeLogDet();
         }
+        else
+        {
+            const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+            
+            for (size_t i=0; i<n_rows; i++)
+            {
+                tot += log(eigenval[i]);
+            }
+        }
+        
 //        if (std::isnan(tot))
 //        {
 //            std::cerr << "in MatrixReal::getLogDet(): nan\n";
@@ -451,11 +485,8 @@ void MatrixReal::update( void ) const
             
             try
             {
-                
                 cholesky_decomp->update();
-                
                 cholesky_needs_update = false;
-                
             }
             
             catch(...)

@@ -1,6 +1,7 @@
 #include "ConstantNode.h"
 #include "Integer.h"
 #include "Natural.h"
+#include "ModelVector.h"
 #include "RlBoolean.h"
 #include "Probability.h"
 #include "RlMatrixRealSymmetric.h"
@@ -96,8 +97,28 @@ RevPtr<RevVariable> MatrixRealSymmetric::executeMethod(std::string const &name, 
         
         return new RevVariable( new ModelVector<Real>( elementVector ) );*/
     }
+    if (name == "upperTriangle")
+    {
+        found = true;
+     
+        
+        
+        
+    }
+    if (name == "lowerTriangle")
+    {
+        found = true;
+        
+    }
+    if (name == "diagonal")
+    {
+        found = true;
+        RevBayesCore::RbVector<double> d = this->dag_node->getValue().getDiagonal();
+        return new RevVariable( new ModelVector<Real>( d ) );
+    }
     
     return ModelObject<RevBayesCore::MatrixReal>::executeMethod( name, args, found );
+    
 }
 
 /** Get Rev type of object */

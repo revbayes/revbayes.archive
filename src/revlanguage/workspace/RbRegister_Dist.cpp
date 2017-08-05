@@ -162,6 +162,7 @@
 #include "Dist_halfNormalPositive.h"
 #include "Dist_inverseGamma.h"
 #include "Dist_inverseWishart.h"
+#include "Dist_LKJ.h"
 #include "Dist_lnorm.h"
 #include "Dist_lnormOffset.h"
 #include "Dist_lnormOffsetPositive.h"
@@ -396,6 +397,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< Natural                    >( new Dist_UniformNatural() );
         AddContinuousDistribution< Real             >( new Dist_varianceGamma() );
 
+        // LKJ distribution
+        AddDistribution< MatrixRealSymmetric        >( new Dist_LKJ() );
+        
         // Wishart distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_wishart() );
 
