@@ -1,4 +1,5 @@
-#include "MatrixRealSingleElementSlidingProposal.h"
+#include "CorrelationMatrixElementBetaProposal.h"
+#include "DistributionBeta.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -14,9 +15,9 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-MatrixRealSingleElementSlidingProposal::MatrixRealSingleElementSlidingProposal( StochasticNode<MatrixReal> *n, double l) : Proposal(),
+CorrelationMatrixElementBetaProposal::CorrelationMatrixElementBetaProposal( StochasticNode<MatrixReal> *n, double a) : Proposal(),
     variable( n ),
-    lambda( l ),
+    alpha( a ),
     storedValue( 0.0 )
 {
     // tell the base class to add the node
@@ -30,7 +31,7 @@ MatrixRealSingleElementSlidingProposal::MatrixRealSingleElementSlidingProposal( 
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void MatrixRealSingleElementSlidingProposal::cleanProposal( void )
+void CorrelationMatrixElementBetaProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -41,10 +42,10 @@ void MatrixRealSingleElementSlidingProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-MatrixRealSingleElementSlidingProposal* MatrixRealSingleElementSlidingProposal::clone( void ) const
+CorrelationMatrixElementBetaProposal* CorrelationMatrixElementBetaProposal::clone( void ) const
 {
     
-    return new MatrixRealSingleElementSlidingProposal( *this );
+    return new CorrelationMatrixElementBetaProposal( *this );
 }
 
 
@@ -53,9 +54,9 @@ MatrixRealSingleElementSlidingProposal* MatrixRealSingleElementSlidingProposal::
  *
  * \return The Proposals' name.
  */
-const std::string& MatrixRealSingleElementSlidingProposal::getProposalName( void ) const
+const std::string& CorrelationMatrixElementBetaProposal::getProposalName( void ) const
 {
-    static std::string name = "MatrixRealSingleElementSlidingMove";
+    static std::string name = "MatrixRealSingleElementBetaMove";
     
     return name;
 }
@@ -64,14 +65,14 @@ const std::string& MatrixRealSingleElementSlidingProposal::getProposalName( void
 /**
  * Perform the proposal.
  *
- * A sliding proposal draws a random uniform number u ~ unif(-0.5,0.5)
- * and MatrixRealSingleElementSlidings the current vale by
+ * A Beta proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * and MatrixRealSingleElementBetas the current vale by
  * delta = lambda * u
  * where lambda is the tuning parameter of the proposal to influence the size of the proposals.
  *
  * \return The hastings ratio.
  */
-double MatrixRealSingleElementSlidingProposal::doProposal( void )
+double CorrelationMatrixElementBetaProposal::doProposal( void )
 {
     
     // Get random number generator
@@ -82,31 +83,57 @@ double MatrixRealSingleElementSlidingProposal::doProposal( void )
     indexa = size_t( rng->uniform01() * v.getNumberOfRows() );
     indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
     
-    // copy value
-    storedValue = v[indexa][indexb];
-    
-    // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
-    double u = rng->uniform01();
-    double slidingFactor = lambda * ( u - 0.5 );
-    v[indexa][indexb] += slidingFactor;
-    
-    if ( indexa != indexb )
+    // make sure we don't get a diagonal
+    while (indexb == indexa)
     {
-        v[indexb][indexa] = v[indexa][indexb];
+        indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
     }
+    
+    // copy the current value
+    storedValue = v[indexa][indexb];
+    double current_value = storedValue;
+    
+    // transform the current value from [-1, 1] to [0, 1]
+    current_value = (current_value + 1.0) / 2.0;
+    
+    // draw new rates and compute the hastings ratio at the same time
+    double a = alpha + 1.0;
+    double b = (a - 1.0) / current_value - a + 2.0;
+    double new_value = RbStatistics::Beta::rv(a, b, *rng);
+
+    // set the value (for both sides of the matrix!)
+    double new_value_transformed = new_value * 2.0 - 1.0;
+    v[indexa][indexb] = new_value_transformed;
+    v[indexb][indexa] = new_value_transformed;
     
     variable->addTouchedElementIndex(indexa);
     variable->addTouchedElementIndex(indexb);
     
-    // this is a symmetric proposal so the hasting ratio is 0.0
-    return 0.0;
+    double ln_Hastings_ratio = 0.0;
+    try
+    {
+        // compute the Hastings ratio
+        double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
+        double new_a = alpha + 1.0;
+        double new_b = (a - 1.0) / new_value - a + 2.0;
+        double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
+        ln_Hastings_ratio = backward - forward;
+    }
+    catch (RbException e)
+    {
+        ln_Hastings_ratio = RbConstants::Double::neginf;
+    }
+
+    
+    return ln_Hastings_ratio;
+    
 }
 
 
 /**
  *
  */
-void MatrixRealSingleElementSlidingProposal::prepareProposal( void )
+void CorrelationMatrixElementBetaProposal::prepareProposal( void )
 {
     
 }
@@ -120,10 +147,10 @@ void MatrixRealSingleElementSlidingProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void MatrixRealSingleElementSlidingProposal::printParameterSummary(std::ostream &o) const
+void CorrelationMatrixElementBetaProposal::printParameterSummary(std::ostream &o) const
 {
     
-    o << "delta = " << lambda;
+    o << "alpha = " << alpha;
     
 }
 
@@ -135,7 +162,7 @@ void MatrixRealSingleElementSlidingProposal::printParameterSummary(std::ostream 
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void MatrixRealSingleElementSlidingProposal::undoProposal( void )
+void CorrelationMatrixElementBetaProposal::undoProposal( void )
 {
     
     MatrixReal& v = variable->getValue();
@@ -152,7 +179,7 @@ void MatrixRealSingleElementSlidingProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void MatrixRealSingleElementSlidingProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void CorrelationMatrixElementBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
@@ -167,19 +194,19 @@ void MatrixRealSingleElementSlidingProposal::swapNodeInternal(DagNode *oldN, Dag
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void MatrixRealSingleElementSlidingProposal::tune( double rate )
+void CorrelationMatrixElementBetaProposal::tune( double rate )
 {
     
-    if ( rate > 0.44 )
+    double p = this->targetAcceptanceRate;
+    
+    if ( rate > p )
     {
-        lambda *= (1.0 + ((rate-0.44)/0.56) );
+        alpha /= (1.0 + ((rate-p)/(1.0 - p)) );
     }
     else
     {
-        lambda /= (2.0 - rate/0.44 );
+        alpha *= (2.0 - rate/p);
     }
-    
-    lambda = fmin(10000, lambda);
     
 }
 
