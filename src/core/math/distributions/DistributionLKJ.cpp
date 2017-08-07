@@ -126,13 +126,10 @@ MatrixReal RbStatistics::LKJ::rv(double eta, size_t dim, RandomNumberGenerator& 
             P[k][i] = RbStatistics::Beta::rv(beta, beta, rng) * 2.0 - 1.0; // sample the partial correlation
             
             double p = P[k][i]; // initial value for the product-moment correlation
-//            if(k > 0) // recursively compute the product-moment correlation
-//            {
-                for(int l = k - 1; l >= 0; --l)
-                {
-                    p = p * pow( ( 1.0 - pow(P[l][i], 2) ) * ( 1.0 - pow(P[l][k], 2) ), 0.5) + P[l][i] * P[l][k];
-                }
-//            }
+            for(int l = k - 1; l >= 0; --l)
+            {
+                p = p * pow( ( 1.0 - pow(P[l][i], 2) ) * ( 1.0 - pow(P[l][k], 2) ), 0.5) + P[l][i] * P[l][k];
+            }
             
             S[i][k] = p;
             S[k][i] = p;

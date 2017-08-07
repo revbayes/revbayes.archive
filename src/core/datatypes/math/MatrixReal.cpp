@@ -480,9 +480,12 @@ void MatrixReal::resize(size_t r, size_t c)
 void MatrixReal::setCholesky(bool c) const
 {
     
-    use_cholesky_decomp = c;
-    eigen_needs_update = true;
-    cholesky_needs_update = true;
+    if (use_cholesky_decomp != c)
+    {
+        use_cholesky_decomp = c;
+        eigen_needs_update = true;
+        cholesky_needs_update = true;
+    }
     
 }
 

@@ -123,7 +123,6 @@ double CorrelationMatrixElementBetaProposal::doProposal( void )
     {
         ln_Hastings_ratio = RbConstants::Double::neginf;
     }
-
     
     return ln_Hastings_ratio;
     
