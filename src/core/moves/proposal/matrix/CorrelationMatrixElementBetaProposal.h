@@ -28,7 +28,7 @@ namespace RevBayesCore {
     class CorrelationMatrixElementBetaProposal : public Proposal {
         
     public:
-        CorrelationMatrixElementBetaProposal( StochasticNode<MatrixReal> *n, double a);                                                                      //!<  constructor
+        CorrelationMatrixElementBetaProposal( StochasticNode<MatrixReal> *n, double a, double p=0.234);                                                                      //!<  constructor
         
         // Basic utility functions
         void                                     cleanProposal(void);                                                                //!< Clean up proposal

@@ -103,6 +103,18 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
         }
     }
 
+    // compute the Jacobian of the transformation from a correlation matrix
+    // to a partial correlation matrix
+    double ln_jacobian = 0.0;
+    for(size_t k = 0; k < dim - 1; ++k)
+    {
+        for(size_t i = k + 1; i < dim; ++i)
+        {
+            ln_jacobian += (dim - k - 1) * std::log(1 - partial_correlations[k][i]);
+        }
+    }
+    ln_jacobian *= -1/2;
+    
     // choose an index
     size_t indexa = size_t( rng->uniform01() * dim );
     size_t indexb = size_t( rng->uniform01() * dim );
@@ -116,27 +128,24 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
     // get the chosen partial correlation
     double current_value = partial_correlations[indexa][indexb];
 
-//    std::cout << current_value;
     // transform the current value from [-1, 1] to [0, 1]
     current_value = (current_value + 1.0) / 2.0;
 
     // draw new rates and compute the hastings ratio at the same time
 //    double a = alpha * current_value + 1.0;
 //    double b = alpha * (1.0 - current_value) + 1.0;
-    double a = alpha + 10.0;
-    double b = (a - 10.0) / current_value - a + 20.0;
+    double a = alpha + 1.0;
+    double b = (a - 1.0) / current_value - a + 2.0;
     double new_value = RbStatistics::Beta::rv(a, b, *rng);
+    
 
     // set the value (for both sides of the matrix!)
     double new_value_transformed = new_value * 2.0 - 1.0;
     partial_correlations[indexa][indexb] = new_value_transformed;
     partial_correlations[indexb][indexa] = new_value_transformed;
     
-//    std::cout << " -- " << new_value_transformed;
-    
     // now transform the partial correlations back into a correlation matrix
     MatrixReal P(dim, dim, 1.0);
-    
     for(int k = 0; k < dim - 1; ++k)
     {
         for(int i = k + 1; i < dim; ++i)
@@ -159,8 +168,8 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
     {
         // compute the Hastings ratio
         double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
-        double new_a = alpha + 10.0;
-        double new_b = (a - 10.0) / new_value - a + 20.0;
+        double new_a = alpha + 1.0;
+        double new_b = (a - 1.0) / new_value - a + 2.0;
 //        double new_a = alpha * new_value + 1.0;
 //        double new_b = alpha * (1.0 - new_value) + 1.0;
         double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
@@ -171,10 +180,7 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
         ln_Hastings_ratio = RbConstants::Double::neginf;
     }
     
-//    std::cout << " -- " << ln_Hastings_ratio << std::endl;
-    
-    
-    return ln_Hastings_ratio;
+    return ln_jacobian + ln_Hastings_ratio;
     
 }
 
