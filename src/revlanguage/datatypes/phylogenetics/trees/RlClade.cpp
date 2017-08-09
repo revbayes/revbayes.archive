@@ -173,6 +173,7 @@ const MemberRules& Clade::getParameterRules(void) const
 
   if ( !rules_set )
     {
+
       memberRules.push_back( new Ellipsis( "Taxon names as string values.", RlString::getClassTypeSpec() ) );
       memberRules.push_back( new Ellipsis("Taxon names as a vector of string values.", ModelVector<RlString>::getClassTypeSpec() ) );
       memberRules.push_back( new Ellipsis( "Taxa as clade objects.", Clade::getClassTypeSpec() ) );
@@ -182,8 +183,6 @@ const MemberRules& Clade::getParameterRules(void) const
       memberRules.push_back( new ArgumentRule("missing", Natural::getClassTypeSpec(), "Number of missing taxa in the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
       memberRules.push_back( new ArgumentRule("negative", RlBoolean::getClassTypeSpec(), "Is this a negative clade constraint?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
       memberRules.push_back( new ArgumentRule("optional_match", RlBoolean::getClassTypeSpec(), "Clade constraint satisfied when any Clade argument matched", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-      //        memberRules.push_back( new ArgumentRule("optional_constraints", ModelVector<Clade>::getClassTypeSpec(), "Optional clade constraints, i.e. this clade constraint or any optional clade constraint must be satisifed (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-
 
       rules_set = true;
     }

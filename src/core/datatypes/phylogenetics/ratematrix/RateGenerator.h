@@ -2,20 +2,21 @@
 #define RateGenerator_H
 
 #include "Assignable.h"
+#include "CharacterEvent.h"
 #include "Cloneable.h"
 #include "MatrixReal.h"
 #include "Printable.h"
 #include <vector>
 
 namespace RevBayesCore {
-    
+
     class TransitionProbabilityMatrix;
     
     class RateGenerator : public Cloneable, public Assignable, public Printable, public Serializable, public MemberObject<RbVector<RbVector<double> > >, public MemberObject<RbVector<double> > {
         
     public:
         virtual                             ~RateGenerator(void);
-        
+
         virtual bool                        operator==(const RateGenerator &rm) const { return this == &rm; }
         virtual bool                        operator!=(const RateGenerator &rm) const { return !operator==(rm); }
         virtual bool                        operator<(const RateGenerator &rm) const { return this < &rm; }
@@ -29,11 +30,14 @@ namespace RevBayesCore {
         virtual void                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;                 //!< Map the member methods to internal function calls
         virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;                                                       //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
         virtual void                        initFromString( const std::string &s ) { throw RbException("Sebastians (29/6/2016): Missing derived implementations!!!"); }                                                 //!< Serialize (resurrect) the object from a string value
+        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, double age=0.0, double rate=1.0) const;
+        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, const std::vector<size_t> &counts, double age=0.0, double rate=1.0) const;
+        virtual double                      getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0, double rate=1.0) const;
 
         // virtual methods that may need to overwritten
         virtual bool                        simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times);
         virtual void                        update(void) {};
-        
+
         // public methods
         void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;           //!< Calculate the transition probabilities for the rate matrix
         size_t                              getNumberOfStates(void) const;                                                              //!< Return the number of states
@@ -46,11 +50,10 @@ namespace RevBayesCore {
     protected:
         // prevent instantiation
         RateGenerator(size_t n);                                                                                                        //!< Construct rate matrix with n states
-        
+
         // protected members available for derived classes
         size_t                              num_states;                                                                                  //!< The number of character states
 
-        
     };
     
 };

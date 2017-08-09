@@ -32,10 +32,6 @@ RateGenerator_Epoch::RateGenerator_Epoch(size_t n, size_t ne) : RateGenerator( n
     epochRateGenerators = RbVector<RateGenerator>(1,  RateMatrix_JC(this->num_states));
     update();
     
-//    std::vector<size_t> transition_states;
-//    std::vector<double> transition_times;
-//    simulateStochasticMapping(5.0, 1.0, 1.0, transition_states, transition_times);
-    
 }
 
 /** Destructor */
@@ -100,14 +96,13 @@ void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, doub
             const RateGenerator& rg = epochRateGenerators[epochIdx];
             double r = epochRates[epochIdx];
             rg.calculateTransitionProbabilities( currAge, nextAge, r * rate, P );
-//            for (size_t i1 = 0; i1 < rg.size(); i1++) {
-//                for (size_t i2 = 0; i2 < rg.size(); i2++) {
-//                    std::cout << rg.getRate(i1,i2,currAge,1.0) << "  ";
-//                }
-//                std::cout << "\n";
-//            }
+
             // epochs construct DTMC
             tp *= P;
+            
+//            std::cout << P << "\n\n";
+//            std::cout << tp << "\n";
+//            std::cout << "-------\n";
             
             // advance increment
             currAge = nextAge;

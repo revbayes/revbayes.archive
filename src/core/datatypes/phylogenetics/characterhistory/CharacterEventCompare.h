@@ -3,12 +3,12 @@
 
 
 namespace RevBayesCore {
-    
+
     class CharacterEvent;
     class CharacterEventCompare
     {
     public:
-        bool operator()(CharacterEvent* lhs, CharacterEvent* rhs) const { return (*lhs < *rhs); }
+        bool operator()(CharacterEvent* lhs, CharacterEvent* rhs) const { return (*lhs > *rhs); }
     protected:
         // ...
     private:

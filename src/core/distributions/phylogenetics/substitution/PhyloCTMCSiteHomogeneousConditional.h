@@ -196,6 +196,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
             }
         }
 
+
         std::map<size_t,size_t> charCounts;
         std::map<RbBitSet,size_t> bitCounts;
         size_t numGap = 0;
@@ -770,7 +771,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
                     std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
                     std::fill(uc, uc + this->num_chars, 0.0);
-
+                    
                     // iterate over partitions of c
                     for(size_t p1 = 0; p1 <= c; p1++)
                     {
@@ -957,8 +958,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::updateCorrecti
             const TopologyNode &right = node.getChild(1);
             size_t rightIndex = right.getIndex();
             updateCorrections( right, rightIndex );
-
-
 
             if(node.isRoot())
                 computeRootCorrection( nodeIndex, leftIndex, rightIndex );

@@ -1,9 +1,7 @@
 #include "DiscreteCharacterState.h"
 #include "RbException.h"
-
 #include <string>
 #include <vector>
-
 
 using namespace RevBayesCore;
 
@@ -47,6 +45,7 @@ bool DiscreteCharacterState::operator<(const CharacterState &x) const
     {
         const RbBitSet& myState = getState();
         const RbBitSet& yourState = derivedX->getState();
+
         return ( myState < yourState );
     }
 
@@ -205,7 +204,6 @@ void DiscreteCharacterState::operator-=( int i )
 }
 
 
-
 std::string DiscreteCharacterState::getStateDescription(void) const
 {
     return getStringValue();
@@ -276,6 +274,19 @@ bool DiscreteCharacterState::isAmbiguous( void ) const
     return isMissingState() || isGapState() || ( getNumberObservedStates() > 1 );
 }
 
+bool DiscreteCharacterState::isStateSet(size_t index) const
+{
+    RbBitSet bs = getState();
+    
+    return bs.isSet(index);
+}
+
+
+bool DiscreteCharacterState::isWeighted( void ) const
+{
+    // @Bastien: Dummy function
+    return false;
+}
 
 size_t DiscreteCharacterState::getStateIndex(void) const
 {
@@ -290,12 +301,6 @@ size_t DiscreteCharacterState::getStateIndex(void) const
 }
 
 
-bool DiscreteCharacterState::isStateSet(size_t index) const
-{
-    RbBitSet bs = getState();
-    
-    return bs.isSet(index);
-}
 
 
 size_t DiscreteCharacterState::getNumberObservedStates(void) const
@@ -313,24 +318,9 @@ size_t DiscreteCharacterState::getNumberOfStates(void) const
 
 
 
-const std::vector<double> DiscreteCharacterState::getWeights() const {
+const std::vector<double> DiscreteCharacterState::getWeights() const
+{
     
     // @Bastien: Change this function as needed!beta
     return std::vector<double>(getNumberObservedStates(), 1.0);
 }
-//
-//
-//
-//bool DiscreteCharacterState::isWeighted() const {
-//
-//  return weighted;
-//
-//}
-//
-//
-//void DiscreteCharacterState::setWeighted(bool wd) {
-//
-//  weighted = wd;
-//  return ;
-//
-//}

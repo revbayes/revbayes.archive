@@ -1,7 +1,10 @@
+#include "RateGenerator.h"
 #include "TamuraNeiRateMatrixFunction.h"
+#include "TypedFunction.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
+
 
 TamuraNeiRateMatrixFunction::TamuraNeiRateMatrixFunction(const TypedDagNode<double> *k1, const TypedDagNode<double> *k2, const TypedDagNode< Simplex > *bf) : TypedFunction<RateGenerator>( new RateMatrix_TamuraNei(bf->getValue().size()) ),
     kappa_1( k1 ),

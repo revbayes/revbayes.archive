@@ -87,6 +87,19 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         std::vector<RevBayesCore::Taxon> t = this->dag_node->getValue().getFossilTaxa();
         return new RevVariable( new ModelVector<Taxon>( t ) );
     }
+    else if (name == "numSampledAncestors")
+    {
+        found = true;
+
+        size_t n = this->dag_node->getValue().getNumberOfTips();
+
+        size_t num = 0;
+        for(size_t i=0; i<n; i++){
+            RevBayesCore::TopologyNode &node = this->dag_node->getValue().getNode(i);
+            num += node.isSampledAncestor();
+        }
+        return new RevVariable( new Natural( num ) );
+    }
     else if (name == "collapseNegativeBranches")
     {
         found = true;

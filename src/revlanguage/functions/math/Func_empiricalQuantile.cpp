@@ -1,3 +1,11 @@
+//
+//  Func_empiricalQuantile.cpp
+//  revbayes
+//
+//  Created by Lyndon Coghill on 9/22/16.
+//  Copyright © 2016 Lyndon Coghill. All rights reserved.
+//
+
 #include "EmpiricalQuantileFunction.h"
 #include "Func_empiricalQuantile.h"
 #include "ModelVector.h"

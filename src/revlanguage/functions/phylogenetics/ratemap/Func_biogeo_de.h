@@ -19,7 +19,7 @@
 #ifndef Func_biogeo_de_H
 #define Func_biogeo_de_H
 
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlTypedFunction.h"
 
 #include <map>
@@ -27,7 +27,7 @@
 
 namespace RevLanguage {
     
-    class Func_biogeo_de : public TypedFunction<RateMap> {
+    class Func_biogeo_de : public TypedFunction<RateGeneratorSequence> {
         
     public:
         Func_biogeo_de( void );
@@ -40,7 +40,7 @@ namespace RevLanguage {
         const TypeSpec&                                                 getTypeSpec(void) const;                                    //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::RateMap >*           createFunction(void) const;                                 //!< Create internal function object
+        RevBayesCore::TypedFunction< RevBayesCore::RateGeneratorSequence >*           createFunction(void) const;                                 //!< Create internal function object
         const ArgumentRules&                                            getArgumentRules(void) const;                               //!< Get argument rules
 
     };
