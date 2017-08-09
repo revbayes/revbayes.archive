@@ -126,7 +126,7 @@ const MemberRules& Move_SpeciesNodeTimeSlideUniform::getParameterRules(void) con
 
     if ( !rules_set )
     {
-        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec() , "The ultrametric species tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec() , "The species tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

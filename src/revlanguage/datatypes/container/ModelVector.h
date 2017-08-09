@@ -266,7 +266,6 @@ template <typename rlType>
 RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
 {
     
-    
     if ( name == "append" )
     {
         found = true;

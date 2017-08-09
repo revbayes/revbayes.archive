@@ -18,9 +18,9 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 EventBranchTimeBetaProposal::EventBranchTimeBetaProposal( StochasticNode<Tree> *n, double d, double o) : Proposal(),
-    variable( n ),
-    delta( d ),
-    offset( o )
+variable( n ),
+delta( d ),
+offset( o )
 {
     // tell the base class to add the node
     addNode( variable );
@@ -88,11 +88,11 @@ double EventBranchTimeBetaProposal::doProposal( void )
     
     if ( failed == false )
     {
-                
+        
         // pick a random event
         size_t branch_index = 0;
         CharacterEvent *event = history.pickRandomEvent( branch_index );
-
+        
         // we need to remove and add the event so that the events are back in time order
         history.removeEvent(event, branch_index);
         double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
@@ -101,12 +101,12 @@ double EventBranchTimeBetaProposal::doProposal( void )
         // store the event
         stored_value = event;
         // get the current index
-        stored_time = event->getTime();
+        stored_age = event->getAge();
         // store the current branch
         stored_branch_index = branch_index;
         
         // draw new ages and compute the hastings ratio at the same time
-        double m = (stored_time-my_age) / branch_length;
+        double m = (stored_age-my_age) / branch_length;
         double a = delta * m + offset;
         double b = delta * (1.0-m) + offset;
         
@@ -120,19 +120,19 @@ double EventBranchTimeBetaProposal::doProposal( void )
             {
                 throw RbException("Not supposed to happen!");
             }
-        
+            
             // compute the Hastings ratio
             double forward = RbStatistics::Beta::lnPdf(a, b, new_time);
             double new_a = delta * new_time + offset;
             double new_b = delta * (1.0-new_time) + offset;
             double backward = RbStatistics::Beta::lnPdf(new_a, new_b, m);
-        
+            
             // set the time
-            event->setTime( new_time * branch_length + my_age );
-        
+            event->setAge( new_time * branch_length + my_age );
+            
             // we need to remove and add the event so that the events are back in time order
             history.addEvent(event, branch_index);
-        
+            
             return backward - forward;
         }
         else
@@ -198,10 +198,10 @@ void EventBranchTimeBetaProposal::undoProposal( void )
         history.removeEvent(stored_value, stored_branch_index);
         
         // reset the time
-        stored_value->setTime( stored_time );
+        stored_value->setAge( stored_age );
         
         history.addEvent(stored_value, stored_branch_index);
-
+        
     }
     
 }

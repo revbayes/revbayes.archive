@@ -64,6 +64,7 @@ namespace RevBayesCore {
         bool                                        isOptionalMatch(void) const;                           //!< Get negative constraint flag.
         void                                        resetTaxonBitset(const std::map<std::string, size_t> map);
         void                                        setAge(double a);                                           //!< Set the age of the clade.
+
         void                                        setOptionalConstraints(std::vector<Clade> c);               //!< Set optional clade constraints.
         void                                        setMrca(const std::vector<Taxon>&);                         //!< Set the mrca taxon, if applicable.
         void                                        setNumberMissingTaxa(int n);                                //!< Set the number of missing taxa in this clade.

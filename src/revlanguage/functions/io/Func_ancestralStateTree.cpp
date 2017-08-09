@@ -89,6 +89,7 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
 
     std::string summary_stat = static_cast<const RlString&>( args[6].getVariable()->getRevObject() ).getValue();
     
+
     std::string reconstruction = static_cast<const RlString &>(args[7].getVariable()->getRevObject()).getValue();
     bool conditional = false;
     if ( reconstruction == "conditional" )
@@ -161,6 +162,7 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
         summary_stats.push_back( "MAP" );
         summary_stats.push_back( "mean" );
         argumentRules.push_back( new OptionRule( "summary_statistic", new RlString("MAP"), summary_stats, "The statistic used to summarize ancestral states. 'MAP' displays the 3 states with highest posterior probabilities. 'mean' displays the mean value and 95% CI." ) );
+
         std::vector<std::string> reconstruction;
         reconstruction.push_back( "conditional" );
         reconstruction.push_back( "joint" );

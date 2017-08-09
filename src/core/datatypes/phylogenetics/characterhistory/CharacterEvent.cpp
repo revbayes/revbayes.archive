@@ -1,4 +1,5 @@
 #include "CharacterEvent.h"
+#include "CharacterEventType.h"
 #include <iostream>
 #include <sstream>
 
@@ -7,23 +8,25 @@ using namespace RevBayesCore;
 
 CharacterEvent::CharacterEvent(void)
 {
-    
+
 }
 
-CharacterEvent::CharacterEvent(size_t i, size_t s, double t) :
-    character_index(i),
+CharacterEvent::CharacterEvent(size_t i, size_t s, double a, size_t t) :
+    site_index(i),
     state(s),
-    time(t)
+    age(a),
+    event_type(t)
 {
-    
+
 }
 
 CharacterEvent::CharacterEvent(const CharacterEvent& c) :
-    character_index(c.character_index),
+    site_index(c.site_index),
     state(c.state),
-    time(c.time)
+    age(c.age),
+    event_type(c.event_type)
 {
-    
+
 }
 
 CharacterEvent::~CharacterEvent(void)
@@ -38,17 +41,27 @@ CharacterEvent* CharacterEvent::clone( void ) const
 
 bool CharacterEvent::operator<(const CharacterEvent& rhs) const
 {
-    return time < rhs.time;
+    return age < rhs.age;
 }
 
-double CharacterEvent::getTime(void) const
+bool CharacterEvent::operator>(const CharacterEvent& rhs) const
 {
-    return time;
+    return age > rhs.age;
 }
 
-size_t CharacterEvent::getCharacterIndex(void) const
+double CharacterEvent::getAge(void) const
 {
-    return character_index;
+    return age;
+}
+
+size_t CharacterEvent::getEventType(void) const
+{
+    return event_type;
+}
+
+size_t CharacterEvent::getSiteIndex(void) const
+{
+    return site_index;
 }
 
 size_t CharacterEvent::getState(void) const
@@ -65,9 +78,19 @@ std::string CharacterEvent::getStateStr(void) const
     return ss.str();
 }
 
-void CharacterEvent::setCharacterIndex(size_t i)
+void CharacterEvent::setAge(double a)
 {
-    character_index = i;
+    age = a;
+}
+
+void CharacterEvent::setEventType(size_t t)
+{
+    event_type = t;
+}
+
+void CharacterEvent::setSiteIndex(size_t i)
+{
+    site_index = i;
 }
 
 void CharacterEvent::setState(size_t s)
@@ -75,12 +98,9 @@ void CharacterEvent::setState(size_t s)
     state = s;
 }
 
-void CharacterEvent::setTime(double t)
-{
-    time = t;
-}
+
 
 void CharacterEvent::print(void) const
 {
-    std::cout << character_index << " " << state << " " << time << "\n";
+    std::cout << site_index << " " << state << " " << age << "\n";
 }

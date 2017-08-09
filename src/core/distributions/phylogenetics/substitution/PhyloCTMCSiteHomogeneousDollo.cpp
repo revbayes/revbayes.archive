@@ -1214,7 +1214,6 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
         if ( process_active == false )
         {
             // send from the workers the log-likelihood to the master
-//            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
             MPI_Send(&sumPartialProbs, 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD);
         }
 
@@ -1224,7 +1223,6 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
                 double tmp = 0;
-//                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
                 MPI_Status status;
                 MPI_Recv(&tmp, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD, &status);
                 
@@ -1237,13 +1235,11 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
         {
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
-//                MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, int(i), 0);
                 MPI_Send(&sumPartialProbs, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD);
             }
         }
         else
         {
-//            MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
             MPI_Status status;
             MPI_Recv(&sumPartialProbs, 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD, &status);
         }

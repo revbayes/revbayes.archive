@@ -1317,6 +1317,40 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromString(con
     throw RbException("Cannot initialize a discrete character data matrix from a string.");
 }
 
+///** 
+// * Is this character pattern constant at site idx?
+// * 
+// * \param[in]   idx    The site at which we want to know if it is constant?
+// */
+//template<class charType>
+//bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterConstant(size_t idx) const 
+//{
+//    
+//    const CharacterState* f = NULL;
+//    for ( size_t i=0; i<getNumberOfTaxa(); ++i )
+//    {
+//        if ( isTaxonExcluded(i) == false ) 
+//        {
+//            if ( f == NULL )
+//            {
+//                f = &getCharacter( i, idx );
+//            }
+//            else
+//            {
+//                const CharacterState* s = &getCharacter( i , idx );
+//                if ( (*f) != (*s) )
+//                {
+//                    return false;
+//                }
+//                
+//            }
+//
+//        }
+//    
+//    }
+//    
+//    return true;
+//}
 
 /** 
  * Is the character excluded?

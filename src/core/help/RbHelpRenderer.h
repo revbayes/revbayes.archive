@@ -40,8 +40,8 @@ namespace RevBayesCore {
         std::string                 renderSeeAlso(const std::vector<std::string> &s, size_t w) const;
         std::string                 renderUsage(const std::string &u, size_t w) const;
         
-        std::string                 section_break;
-        std::string                 line_break;
+        std::string           sectionBreak;
+        std::string           lineBreak;
         
     };
     

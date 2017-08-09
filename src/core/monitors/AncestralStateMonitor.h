@@ -195,7 +195,6 @@ void AncestralStateMonitor<characterType>::monitorVariables(unsigned long gen)
 }
 
 
-
 /** 
  * Print header for monitored values 
  */
@@ -215,6 +214,7 @@ void AncestralStateMonitor<characterType>::printFileHeader()
 			out_stream << separator;
 			
 			// print the node index + 1 to be consistent with Rev language one-based indexes
+
 			out_stream << the_node->getIndex() + 1;
 		}
     }

@@ -26,7 +26,6 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     
     int pid = 0;
 #ifdef RB_MPI
-//    pid = MPI::COMM_WORLD.Get_rank();
     MPI_Comm_rank(MPI_COMM_WORLD, &pid);
 #endif
     
