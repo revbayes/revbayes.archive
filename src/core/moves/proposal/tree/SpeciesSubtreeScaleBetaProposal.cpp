@@ -183,7 +183,7 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
     // compute the Hastings ratio
     double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
     double new_a = alpha + 1.0;
-    double new_b = (a-1.0) / new_value - a + 2.0;
+    double new_b = (new_a-1.0) / new_value - new_a + 2.0;
     double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
     double lnHastingsratio = (backward - forward) * (num_nodes-1);
 
