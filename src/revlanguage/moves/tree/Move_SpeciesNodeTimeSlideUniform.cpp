@@ -281,7 +281,7 @@ void Move_SpeciesNodeTimeSlideUniform::setConstParameter(const std::string& name
       details.push_back( details_2 );
 
       std::string details_3 = "";
-      details_3 += "This move jointly performs node time slides (branch length alterations, keeping the topologies fixed) on the species tree and on gene trees, all of which must be ultrametric. ";
+      details_3 += "This move jointly performs node time slides (branch length alterations, keeping the topologies fixed) on the species tree and on gene trees, all of which must be ultrametric. This is the rubber-band move of B. Rannala and Z. Yang, 2003.";
 
       details.push_back( details_3 );
 
@@ -358,21 +358,16 @@ void Move_SpeciesNodeTimeSlideUniform::setConstParameter(const std::string& name
    */
   std::vector<RevBayesCore::RbHelpReference> Move_SpeciesNodeTimeSlideUniform::getHelpReferences(void) const
   {
-      // create an entry for each reference
-      std::vector<RevBayesCore::RbHelpReference> references;
-      RevBayesCore::RbHelpReference ref = RevBayesCore::RbHelpReference();
-      ref.setCitation("Guided Tree Topology Proposals for Bayesian Phylogenetic Inference. Sebastian Höhna, Alexei J. Drummond. Syst Biol (2012) 61 (1): 1-11.");
-      ref.setDoi("https://doi.org/10.1093/sysbio/syr074");
-      ref.setUrl("https://academic.oup.com/sysbio/article-lookup/doi/10.1093/sysbio/syr074");
+    // create an entry for each reference
+    std::vector<RevBayesCore::RbHelpReference> references;
 
-      references.push_back(ref);
+    RevBayesCore::RbHelpReference ref = RevBayesCore::RbHelpReference();
+    ref.setCitation("Bayes Estimation of Species Divergence Times and Ancestral Population Sizes Using DNA Sequences From Multiple Loci. Bruce Rannala and Ziheng Yang. GENETICS August 1, 2003 vol. 164 no. 4 1645-1656.");
+    ref.setDoi("");
+    ref.setUrl("http://www.genetics.org/content/164/4/1645.short");
 
-      RevBayesCore::RbHelpReference ref2 = RevBayesCore::RbHelpReference();
-      ref2.setCitation("Algorithmic improvements to species delimitation and phylogeny estimation under the multispecies coalescent. Graham Jones.  Journal of Mathematical Biology, 2016.");
-      ref2.setDoi("https://doi.org/10.1007/s00285-016-1034-0");
-      ref2.setUrl("http://link.springer.com/article/10.1007/s00285-016-1034-0");
+    references.push_back(ref);
 
-      references.push_back(ref2);
 
       return references;
   }
@@ -400,7 +395,7 @@ void Move_SpeciesNodeTimeSlideUniform::setConstParameter(const std::string& name
   std::string Move_SpeciesNodeTimeSlideUniform::getHelpTitle(void) const
   {
       // create a title variable
-      std::string title = "Node time slide joint move on species tree and gene trees for multispecies coalescent models. ";
+      std::string title = "Node time slide joint move on species tree and gene trees for multispecies coalescent models (aka rubber-band move). ";
 
       return title;
   }
