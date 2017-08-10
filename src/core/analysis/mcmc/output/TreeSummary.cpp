@@ -2763,7 +2763,6 @@ Tree* TreeSummary::mrTree(AnnotationReport report, double cutoff, bool verbose)
                 {
                     for (size_t i = 0; i < mrca.size(); i++)
                     {
-                        mrca[i]->setFossil(true);
                         mrca[i]->setSampledAncestor(true);
                     }
                 }

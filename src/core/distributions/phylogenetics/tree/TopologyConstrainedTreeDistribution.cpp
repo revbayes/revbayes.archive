@@ -551,11 +551,6 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
         // set the age of this tip node
         node->setAge( taxa[i].getAge() );
         
-        if (node->getAge() > 0)
-        {
-            node->setFossil(true);
-        }
-        
         // add the new node to the list
         nodes.push_back( node );
         

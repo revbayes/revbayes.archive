@@ -94,7 +94,6 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
     }
     
     // set the node flags
-    tn->setFossil( n.isFossil() );
     tn->setSampledAncestor( n.isSampledAncestor() );
     
     // remember the node
@@ -124,7 +123,6 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
     
     if ( tn->getNumberOfChildren() == 1 )
     {
-        tn->setFossil( true );
         tn->setSampledAncestor( true );
     }
     
@@ -162,12 +160,6 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t, bool
     for (size_t i = 0; i < nodes.size(); ++i) 
     {
         nodes[i]->setAge( ages[i] );
-
-        if ( nodes[i]->isTip() && ages[i] > 0.0)
-        {
-            nodes[i]->setFossil( true );
-        }
-        
     }
     
     return tt;
@@ -274,7 +266,6 @@ void RevBayesCore::TreeUtilities::offsetTree(Tree *t, TopologyNode *n, double fa
     // rescale the time of the node
     double newAge = n->getAge() + factor;
     t->getNode(n->getIndex()).setAge( newAge);
-    t->getNode(n->getIndex()).setFossil( factor > 0.0 );
 
     // offset all children
     std::vector<TopologyNode*> children = n->getChildren();

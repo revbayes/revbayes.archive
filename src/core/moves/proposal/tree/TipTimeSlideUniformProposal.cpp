@@ -88,7 +88,7 @@ double TipTimeSlideUniformProposal::doProposal( void )
     for (size_t i = 0; i < tau.getNumberOfTips(); ++i)
     {
         TopologyNode* node = &tau.getNode(i);
-        if( node->getAge() > 0.0 )
+        if( node->isFossil() )
         {
             tips.push_back(i);
         }
