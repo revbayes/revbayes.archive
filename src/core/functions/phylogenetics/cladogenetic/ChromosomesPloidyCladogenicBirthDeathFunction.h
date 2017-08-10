@@ -8,6 +8,7 @@
 #define ChromosomesPloidyCladogenicBirthDeathFunction__
 
 #include "AbstractCladogenicStateFunction.h"
+#include "CladogeneticSpeciationRateMatrix.h"
 #include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
@@ -18,7 +19,7 @@
 
 namespace RevBayesCore {
     
-    class ChromosomesPloidyCladogenicBirthDeathFunction : public AbstractCladogenicStateFunction, public TypedFunction<MatrixReal> {
+    class ChromosomesPloidyCladogenicBirthDeathFunction : public AbstractCladogenicStateFunction, public TypedFunction<CladogeneticSpeciationRateMatrix> {
         
     public:
         

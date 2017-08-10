@@ -2,7 +2,7 @@
 #define StateDependentSpeciationExtinctionProcess_H
 
 #include "TreeDiscreteCharacterData.h"
-#include "MatrixReal.h"
+#include "CladogeneticSpeciationRateMatrix.h"
 #include "RateMatrix.h"
 #include "Simplex.h"
 #include "SSE_ODE.h"
@@ -38,11 +38,11 @@ namespace RevBayesCore {
                                                   const std::vector<Taxon> &tn);
         
         // pure virtual member functions
-        virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;                                                                                  //!< Create an independent clone
+        virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
         
-        double                                                          computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
+        double                                                          computeLnProbability(void);
         const AbstractHomologousDiscreteCharacterData&                  getCharacterData() const;
-        virtual void                                                    redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
+        virtual void                                                    redrawValue(void);
         void                                                            setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
         void                                                            setSampleCharacterHistory(bool sample_history);                                                     //!< Set whether or not we are sampling the character history along branches.
         void                                                            setSpeciationRates(const TypedDagNode< RbVector<double> > *r);
