@@ -135,7 +135,7 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
     // Sebastian: This is for debugging to test if the proposal's acceptance rate is 1.0 as it should be!
 //    new_value = current_value;
 
-    double my_new_age = new_value * (parent_age - min_age);
+    double my_new_age = new_value * (parent_age - min_age) + min_age;
 
     double scaling_factor = my_new_age / my_age;
 
@@ -185,10 +185,8 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
     double new_a = alpha + 1.0;
     double new_b = (new_a-1.0) / new_value - new_a + 2.0;
     double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
-    double lnHastingsratio = (backward - forward) * (num_nodes-1);
 
-    //std::cout << "parent_age: " << parent_age << " my_age: " << my_age << " current_value: " << current_value << " new_value: " << new_value << " my_new_age: " << my_new_age << " node.age: " << node->getAge() << " lnHastingsratio: " << lnHastingsratio << std::endl;
-
+    double lnHastingsratio = (num_nodes > 1 ? ( log(scaling_factor) + backward - forward ) * (num_nodes-1) : 0.0 );
 
     return lnHastingsratio;
 }

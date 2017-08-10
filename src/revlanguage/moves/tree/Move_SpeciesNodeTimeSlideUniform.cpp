@@ -233,9 +233,6 @@ void Move_SpeciesNodeTimeSlideUniform::setConstParameter(const std::string& name
 }
 
 
-
-
-
   /**
    * Get the author(s) of this function so they can receive credit (and blame) for it.
    */
