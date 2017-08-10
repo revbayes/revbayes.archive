@@ -389,7 +389,7 @@ void PhyloBrownianCharacterHistoryProcess::simulateRecursively( const TopologyNo
         // name the taxon if it isn't already
         if ( child.getTaxon().getName() == "" )
         {
-            child.setName("node " + std::to_string( child.getIndex() ) );
+            child.setName("node " + StringUtilities::to_string( child.getIndex() ) );
         }
         
         // get the branch length for this child
