@@ -12,7 +12,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_chromosomesPloidyCladoEventsBD::Func_chromosomesPloidyCladoEventsBD( void ) : TypedFunction<MatrixReal>( ) {
+Func_chromosomesPloidyCladoEventsBD::Func_chromosomesPloidyCladoEventsBD( void ) : TypedFunction<CladogeneticSpeciationRateMatrix>( ) {
     
 }
 
@@ -29,7 +29,7 @@ Func_chromosomesPloidyCladoEventsBD* Func_chromosomesPloidyCladoEventsBD::clone(
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_chromosomesPloidyCladoEventsBD::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::CladogeneticSpeciationRateMatrix >* Func_chromosomesPloidyCladoEventsBD::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();

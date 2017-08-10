@@ -131,6 +131,8 @@
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
 #include "Dist_episodicBirthDeath.h"
+#include "Dist_HeterochronousCoalescent.h"
+#include "Dist_HeterochronousCoalescentSkyline.h"
 #include "Dist_heterogeneousRateBirthDeath.h"
 #include "Dist_multispeciesCoalescentInverseGammaPrior.h"
 #include "Dist_multispeciesCoalescentUniformPrior.h"
@@ -173,6 +175,7 @@
 #include "Dist_normalTruncated.h"
 #include "Dist_normalTruncatedPositive.h"
 #include "Dist_poisson.h"
+#include "Dist_scaledDirichlet.h"
 #include "Dist_softBoundUniformNormal.h"
 #include "Dist_studentT.h"
 #include "Dist_unif.h"
@@ -280,7 +283,13 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // coalescent (skyline population sizes)
         AddDistribution< TimeTree                   >( new Dist_CoalescentSkyline() );
-
+        
+//        // heterochronously sampled coalescent (constant population sizes)
+        AddDistribution< TimeTree                   >( new Dist_HeterochronousCoalescent() );
+//
+//        // heterochronously sampled coalescent (skyline population sizes)
+        AddDistribution< TimeTree                   >( new Dist_HeterochronousCoalescentSkyline() );
+        
         // multispecies coalescent (per branch constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_constPopMultispCoal() );
         AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentInverseGammaPrior() );
@@ -340,6 +349,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // dirichlet distribution
         AddDistribution< Simplex                    >( new Dist_dirichlet() );
+
+        // scaled Dirichlet distribution
+        AddDistribution< Simplex                    >( new Dist_scaledDirichlet() );
 
         // gamma distribution
         AddContinuousDistribution< RealPos          >( new Dist_gamma() );

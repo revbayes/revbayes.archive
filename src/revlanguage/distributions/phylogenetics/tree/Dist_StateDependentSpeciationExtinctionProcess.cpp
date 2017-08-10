@@ -11,7 +11,7 @@
 #include "RealPos.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlDistributionMemberFunction.h"
-#include "RlMatrixReal.h"
+#include "RlCladogeneticSpeciationRateMatrix.h"
 #include "RlRateGenerator.h"
 #include "RlSimplex.h"
 #include "RlString.h"
@@ -59,7 +59,7 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_StateDependentSpeciati
     RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, rf, rh, cond, t );
     
     // set the cladogenetic speciation rate event map
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const MatrixReal &>( cladoEvents->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticSpeciationRateMatrix>* cp = static_cast<const CladogeneticSpeciationRateMatrix &>( cladoEvents->getRevObject() ).getDagNode();
     d->setCladogenesisMatrix( cp );
     
     // set the number of time slices for the numeric ODE
@@ -132,7 +132,7 @@ const MemberRules& Dist_StateDependentSpeciationExtinctionProcess::getParameterR
     {
         
         memberRules.push_back( new ArgumentRule( "rootAge",           RealPos::getClassTypeSpec(),              "The age of the root.",                                     ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "cladoEventMap",     MatrixReal::getClassTypeSpec(),           "The map of speciation rates to cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "cladoEventMap",     CladogeneticSpeciationRateMatrix::getClassTypeSpec(), "The map of speciation rates to cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "extinctionRates",   ModelVector<Real>::getClassTypeSpec(),    "The vector of extinction rates for the observed states.",  ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "Q",                 RateGenerator::getClassTypeSpec(),        "The rate matrix of jumping between rate categories.",      ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "delta",             RealPos::getClassTypeSpec(),              "The rate-factor of jumping between rate categories.",      ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
