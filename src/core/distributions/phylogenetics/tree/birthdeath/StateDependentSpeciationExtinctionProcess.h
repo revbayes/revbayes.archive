@@ -43,7 +43,7 @@ namespace RevBayesCore {
         double                                                          computeLnProbability(void);
         const AbstractHomologousDiscreteCharacterData&                  getCharacterData() const;
         virtual void                                                    redrawValue(void);
-        void                                                            setCladogenesisMatrix(const TypedDagNode< CladogeneticSpeciationRateMatrix > *r);
+        void                                                            setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
         void                                                            setSampleCharacterHistory(bool sample_history);                                                     //!< Set whether or not we are sampling the character history along branches.
         void                                                            setSpeciationRates(const TypedDagNode< RbVector<double> > *r);
         void                                                            setNumberOfTimeSlices(double n);                                                                    //!< Set the number of time slices for the numerical ODE.
@@ -93,7 +93,7 @@ namespace RevBayesCore {
         bool                                                            sample_character_history;                                                                           //!< are we sampling the character history along branches?
         
         // parameters
-        const TypedDagNode< CladogeneticSpeciationRateMatrix >*                               cladogenesis_matrix;
+        const TypedDagNode< MatrixReal >*                               cladogenesis_matrix;
         const TypedDagNode<double>*                                     root_age;                                                                                           //!< Time since the origin.
         const TypedDagNode<RbVector<double> >*                          mu;
         const TypedDagNode<RbVector<double> >*                          lambda;
