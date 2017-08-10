@@ -281,7 +281,7 @@ void Move_SpeciesNodeTimeSlideUniform::setConstParameter(const std::string& name
       details.push_back( details_2 );
 
       std::string details_3 = "";
-      details_3 += "This move jointly performs node time slides (branch length alterations, keeping the topologies fixed) on the species tree and on gene trees, all of which must be ultrametric. This has been called the rubber-band algorithm by Z. Yang and B. Rannala, 2003.";
+      details_3 += "This move jointly performs node time slides (branch length alterations, keeping the topologies fixed) on the species tree and on gene trees, all of which must be ultrametric. This is the rubber-band move of B. Rannala and Z. Yang, 2003.";
 
       details.push_back( details_3 );
 
@@ -394,7 +394,7 @@ void Move_SpeciesNodeTimeSlideUniform::setConstParameter(const std::string& name
   std::string Move_SpeciesNodeTimeSlideUniform::getHelpTitle(void) const
   {
       // create a title variable
-      std::string title = "Node time slide joint move on species tree and gene trees for multispecies coalescent models (Rubber-band proposal). ";
+      std::string title = "Node time slide joint move on species tree and gene trees for multispecies coalescent models (aka rubber-band move). ";
 
       return title;
   }
