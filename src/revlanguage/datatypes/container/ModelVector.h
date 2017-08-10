@@ -192,7 +192,7 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
         Container *theConvertedContainer = dynamic_cast<Container*>( emptyContainer );
         
         // test if the cast succeeded
-        if (theConvertedContainer == NULL)
+        if ( theConvertedContainer == NULL )
         {
             throw RbException("Could not convert a container of type " + this->getClassType() + " to a container of type " + type.getType() );
         }
@@ -201,7 +201,7 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
         {
             
             rlType orgElement = rlType( *i );
-            if ( orgElement.isType( *type.getElementTypeSpec() ) )
+            if ( type.getElementTypeSpec() != NULL  && orgElement.isType( *type.getElementTypeSpec() ) == true )
             {
                 theConvertedContainer->push_back( orgElement );
             }
