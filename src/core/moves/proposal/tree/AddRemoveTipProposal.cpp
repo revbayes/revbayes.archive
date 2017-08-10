@@ -119,15 +119,12 @@ double AddRemoveTipProposal::doProposal( void )
     {
         if(tips.empty())
         {
-            //removed = false;
             return 0.0;
         }
 
         u = rng->uniform01();
         node = tips[ size_t(u*tips.size()) ];
 
-        //double p_radd = ( tips.size() == 1 ) ? 1.0 : 0.5;
-        //hr += log( ( p_radd / (siblings.size()-2) ) / ( 0.5 / tips.size() ) );
         hr = log( tips.size() / double(siblings.size()-2) ) - both*RbConstants::LN2;
         jacobian = removeTip( node );
     }
@@ -137,8 +134,6 @@ double AddRemoveTipProposal::doProposal( void )
         u = rng->uniform01();
         node = siblings[ size_t(u*siblings.size()) ];
 
-        //double p_add = ( tips.empty() == true ) ? 1.0 : 0.5;
-        //hr += log( ( 0.5 / (tips.size()+1) ) / ( p_add / siblings.size() ) );
         hr = log( siblings.size() / double(tips.size()+1) ) + both*RbConstants::LN2;
         jacobian = addTip( node );
     }
