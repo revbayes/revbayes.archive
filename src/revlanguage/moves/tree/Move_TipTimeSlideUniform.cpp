@@ -86,6 +86,15 @@ std::string Move_TipTimeSlideUniform::getMoveName( void ) const
     return c_name;
 }
 
+std::vector<std::string> Move_TipTimeSlideUniform::getMoveAliases(void) const
+{
+    std::vector<std::string> aliases;
+
+    aliases.push_back("FossilTimeSlideUniform");
+
+    return aliases;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Move_TipTimeSlideUniform::getParameterRules(void) const
