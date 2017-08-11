@@ -1525,6 +1525,7 @@ void TopologyNode::setAge(double a, bool propagate)
     }
 
     age = a;
+    taxon.setAge(a);
     
     // we need to recompute my branch-length
     recomputeBranchLength();
