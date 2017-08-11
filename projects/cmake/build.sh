@@ -19,5 +19,5 @@ fi
 	cd ..
 	
     cp GitVersion_backup.cpp ../../src/revlanguage/utils/GitVersion.cpp
-    rm cp GitVersion_backup.cpp
+    rm GitVersion_backup.cpp
 fi
