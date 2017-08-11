@@ -339,6 +339,7 @@ void AbstractCoalescent::simulateTree( void )
         const std::string& name = taxa[i].getName();
         node->setName(name);
         node->setSpeciesName(taxa[i].getSpeciesName());
+        node->setAge(taxa[i].getAge());
     }
     
     // initialize the topology by setting the root
