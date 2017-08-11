@@ -1292,7 +1292,7 @@ double TopologyNode::getTmrca(const std::vector<Taxon> &yourTaxa) const
 bool TopologyNode::isFossil( void ) const
 {
     
-    return age > 0.0;
+    return age > 0.0 && tip_node;
 }
 
 
