@@ -339,6 +339,10 @@ void AbstractCoalescent::simulateTree( void )
         const std::string& name = taxa[i].getName();
         node->setName(name);
         node->setSpeciesName(taxa[i].getSpeciesName());
+        if( taxa[i].getAge() > 0.0 )
+        {
+            throw(RbException("Can't use non-heterochronous coalescent with heterochronous taxa"));
+        }
     }
     
     // initialize the topology by setting the root
@@ -389,9 +393,6 @@ void AbstractCoalescent::simulateTree( void )
  */
 void AbstractCoalescent::simulateHeterochronousTree( void )
 {
-    
-    // Get the rng
-    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // the time tree object (topology + times)
     Tree *psi = new Tree();

@@ -78,7 +78,7 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
     for (size_t i = 0; i < value->getNumberOfTips(); ++i)
     {
         const TopologyNode& n = value->getTipNode( i );
-        double a = taxa[i].getAge();
+        double a = n.getAge();
         if ( a > 0.0 ) {
             serialTimes.push_back(a);
         } else {
