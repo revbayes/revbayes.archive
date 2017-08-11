@@ -65,7 +65,6 @@ Tree* Tree::clone(void) const
 /* Map calls to member methods */
 RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
-    
     if (name == "dropTip")
     {
         found = true;
@@ -204,12 +203,19 @@ void Tree::initMethods( void )
     ArgumentRules* rescaleArgRules = new ArgumentRules();
     rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "The scaling factor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "rescale", RlUtils::Void, rescaleArgRules ) );
-    
-    
+
     // member functions
     ArgumentRules* parentArgRules = new ArgumentRules();
     parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<Tree, Natural>( "parent", this, parentArgRules   ) );
+    
+    ArgumentRules* leftChildArgRules = new ArgumentRules();
+    leftChildArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<Tree, Natural>( "leftChild", this, leftChildArgRules   ) );
+    
+    ArgumentRules* rightChildArgRules = new ArgumentRules();
+    rightChildArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<Tree, Natural>( "rightChild", this, rightChildArgRules   ) );
     
     ArgumentRules* branchLengthArgRules = new ArgumentRules();
     branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );

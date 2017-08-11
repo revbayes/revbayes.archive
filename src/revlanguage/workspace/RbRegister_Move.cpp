@@ -63,6 +63,7 @@
 
 /* Compound Moves on Real Values */
 #include "Move_UpDownSlide.h"
+#include "Move_UpDownSlideBactrian.h"
 #include "Move_UpDownTreeScale.h"
 #include "Move_LevyJumpSum.h"
 #include "Move_LevyJump.h"
@@ -187,6 +188,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 //        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
         addTypeWithConstructor( new Move_UpDownTreeScale() );
         addTypeWithConstructor( new Move_UpDownSlide() );
+        addTypeWithConstructor( new Move_UpDownSlideBactrian() );
         
 		// compound moves on real values
         addTypeWithConstructor( new Move_LevyJumpSum() );
