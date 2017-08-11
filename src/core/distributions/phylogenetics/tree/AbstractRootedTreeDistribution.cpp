@@ -29,25 +29,12 @@ using namespace RevBayesCore;
  */
 AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNode<double> *ra, const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new Tree() ),
     root_age( ra ),
-    num_taxa( tn.size() ),
     taxa( tn )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( root_age );
-    
-    // the combinatorial factor for the probability of a labelled history is
-    // 2^{n-1} / ( n! * (n-1)! )
-    // but since the probability of the divergence times contains the factor (n-1)! we simply store
-    // 2^{n-1} / n!
-    double lnFact = 0.0;
-    for (size_t i = 2; i <= num_taxa; i++)
-    {
-        lnFact += std::log(i);
-    }
-    
-    log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
 
     std::set<std::string> found;
     for(size_t i = 0; i < taxa.size(); i++)
@@ -75,7 +62,7 @@ AbstractRootedTreeDistribution::~AbstractRootedTreeDistribution(void)
 void AbstractRootedTreeDistribution::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
 {
     
-    if (tips.size() < num_taxa)
+    if (tips.size() < taxa.size() )
     {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -189,8 +176,8 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
 
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeLnProbabilityDivergenceTimes();
-    
-    return lnProbTimes + log_tree_topology_prob;
+
+    return lnProbTimes + lnProbTreeShape();
 }
 
 
@@ -360,8 +347,8 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
 
 size_t AbstractRootedTreeDistribution::getNumberOfTaxa( void ) const
 {
-    
-    return num_taxa;
+
+    return taxa.size();
 }
 
 /**
@@ -400,6 +387,17 @@ void AbstractRootedTreeDistribution::keepSpecialization(DagNode *affecter)
         dag_node->keepAffected();
     }
     
+}
+
+
+double AbstractRootedTreeDistribution::lnProbTreeShape(void) const
+{
+    // the number of ranked non-oriented labeled trees is
+    // n! (n-1)! / 2^(n-1)
+
+    size_t num_taxa = value->getNumberOfTips();
+
+    return (num_taxa - 1) * RbConstants::LN2 - 2.0 * RbMath::lnFactorial(num_taxa) + log(num_taxa);
 }
 
 
@@ -579,7 +577,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 
     // create the tip nodes
     std::vector<TopologyNode*> nodes;
-    for (size_t i=0; i<num_taxa; ++i)
+    for (size_t i=0; i<taxa.size(); ++i)
     {
 
         // create the i-th taxon
@@ -632,7 +630,6 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 }
 
 
-
 /**
  * Restore the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
@@ -662,8 +659,7 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
     
     // delegate to super class
     TypedDistribution<Tree>::setValue(v, f);
-    
-    
+
     if ( root_age != NULL )
     {
         const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);

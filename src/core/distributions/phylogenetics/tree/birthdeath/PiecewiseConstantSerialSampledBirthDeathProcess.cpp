@@ -92,6 +92,8 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     std::vector<double>* agesInternalNodes  = getAgesOfInternalNodesFromMostRecentSample();
     std::vector<double>* agesTips           = getAgesOfTipsFromMostRecentSample();
     
+    size_t num_taxa = value->getNumberOfTips();
+
     // multiply the probabilities for the tip ages
     for (size_t i = 0; i < num_taxa; ++i)
     {

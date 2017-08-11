@@ -44,7 +44,6 @@ namespace RevLanguage {
     private:
 
         std::string                                             startCondition;                                                                         //!< The process start condition
-        RevPtr<const RevVariable>                               startAge;                                                                               //!< The process start age
         RevPtr<const RevVariable>                               lambda;                                                                                 //!< The speciation rate(s)
         RevPtr<const RevVariable>                               mu;                                                                                     //!< The extinction rate(s)
         RevPtr<const RevVariable>                               psi;                                                                                    //!< The fossilization rate(s)

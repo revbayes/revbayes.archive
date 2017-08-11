@@ -105,7 +105,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         
     }
     
-    for (size_t i = 0; i < num_taxa-num_initial_lineages; ++i)
+    for (size_t i = 0; i < value->getNumberOfTips()-num_initial_lineages; ++i)
     {
         if ( RbMath::isFinite(lnProbTimes) == false )
         {

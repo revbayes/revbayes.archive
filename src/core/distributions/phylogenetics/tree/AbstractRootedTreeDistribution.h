@@ -58,6 +58,7 @@ namespace RevBayesCore {
         
         // helper functions
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
+        virtual double                                      lnProbTreeShape(void) const;
         void                                                recomputeDivergenceTimesSinceOrigin(void) const;                                                             //!< Extract the divergence times from the tree.
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.
         std::vector<double>*                                getAgesOfInternalNodesFromMostRecentSample(void) const;                                             //!< Get the ages of all internal nodes since the time of the most recent tip age.
@@ -67,10 +68,9 @@ namespace RevBayesCore {
         
         // members                                                                                           //!< Time since the origin.
         const TypedDagNode<double>*                         root_age;                                                                                            //!< Time since the origin.
-        size_t                                              num_taxa;                                                                                            //!< Number of taxa (needed for correct initialization).
         std::vector<Taxon>                                  taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
         mutable std::vector<double>                         divergence_times;                                                                                               //!< Taxon names that will be attached to new simulated trees.
-        double                                              log_tree_topology_prob;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
+        //double                                              log_tree_topology_prob;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
         
     };
     

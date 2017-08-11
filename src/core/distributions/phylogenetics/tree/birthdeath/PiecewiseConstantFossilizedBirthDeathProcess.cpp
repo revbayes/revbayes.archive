@@ -4,6 +4,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbMathLogic.h"
+#include "RbMathCombinatorialFunctions.h"
 #include "StochasticNode.h"
 
 #include <algorithm>
@@ -178,7 +179,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityDiverge
     // did we condition on survival?
     if ( condition == "nTaxa" )
     {
-        lnProbTimes = -lnProbNumTaxa( num_taxa, 0, present_time, true );
+        lnProbTimes = -lnProbNumTaxa( value->getNumberOfTips(), 0, present_time, true );
     }
 
     // multiply the probability of a descendant of the initial species
@@ -329,17 +330,6 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         return RbConstants::Double::nan;
     }
 
-    // subtract the normalizing constant for the number of labeled trees
-    for(size_t i = 2; i <= num_fossil_taxa + num_sampled_ancestors; i++)
-    {
-        lnProbTimes -= log(i);
-    }
-
-    for(size_t i = 2; i <= num_extant_taxa; i++)
-    {
-        lnProbTimes -= log(i);
-    }
-
 
     return lnProbTimes;
 }
@@ -354,6 +344,27 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 size_t PiecewiseConstantFossilizedBirthDeathProcess::l(double t) const
 {
     return times.rend() - std::upper_bound( times.rbegin(), times.rend(), t) + 1;
+}
+
+
+double PiecewiseConstantFossilizedBirthDeathProcess::lnProbTreeShape(void) const
+{
+    // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
+    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n-1} / ((n-m)! m!)
+    // where m is the number of extinct tips
+
+    size_t num_taxa = value->getNumberOfTips();
+
+    size_t num_extinct = 0;
+    for( size_t i = 0; i < num_taxa; i++)
+    {
+        if( value->getNode(i).getAge() > 0 )
+        {
+            num_extinct++;
+        }
+    }
+
+    return (num_taxa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct) - RbMath::lnFactorial(num_extinct);
 }
 
 

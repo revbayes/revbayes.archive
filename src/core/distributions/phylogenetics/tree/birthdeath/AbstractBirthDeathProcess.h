@@ -32,7 +32,7 @@ namespace RevBayesCore {
         // pure virtual helper functions
         virtual double                                      computeLnProbabilityTimes(void) const = 0;                                                          //!< Compute the log-transformed probability of the current value.
         virtual double                                      lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const = 0;                             //!< Compute the log-transformed probability of the number of taxa.
-        virtual double                                      simulateDivergenceTime(double origin, double present) const = 0;                                    //!< Simulate n speciation events.
+        virtual double                                      lnProbTreeShape(void) const;
         virtual double                                      pSurvival(double start, double end) const = 0;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         virtual void                                        prepareProbComputation(void) const;
 
@@ -43,7 +43,6 @@ namespace RevBayesCore {
         
         // members
         std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
-        
     };
     
 }

@@ -31,12 +31,11 @@ namespace RevBayesCore {
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                        restoreSpecialization(DagNode *restorer);
         virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
-
-    private:
         
         // helper functions
         double                                              computeLnProbabilityTimes(void) const;                                          //!< Compute the log-transformed probability of the current value.
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
+        double                                              lnProbTreeShape(void) const;
         double                                              simulateDivergenceTime(double origin, double present) const;                    //!< Simulate a speciation event.
         double                                              pSurvival(double start, double end) const;                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
 		double												pZero(double t, double c1, double c2) const;

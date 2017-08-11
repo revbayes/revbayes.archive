@@ -69,13 +69,23 @@ double AbstractBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) co
     }
     else if ( condition == "nTaxa" )
     {
-        lnProbTimes = -lnProbNumTaxa( num_taxa, 0, present_time, true );
+        lnProbTimes = -lnProbNumTaxa( value->getNumberOfTips(), 0, present_time, true );
     }
     
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeLnProbabilityTimes();
     
     return lnProbTimes;
+}
+
+
+double AbstractBirthDeathProcess::lnProbTreeShape(void) const
+{
+    // the birth death density is derived for a (ranked) unlabeled oriented tree
+    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n-1} / n!
+    // see Gernhard 2008
+
+    return (value->getNumberOfTips() - 1) * RbConstants::LN2 - RbMath::lnFactorial(value->getNumberOfTips());
 }
 
 

@@ -59,12 +59,11 @@ namespace RevBayesCore {
         virtual void                                    restoreSpecialization(DagNode *restorer);
         virtual void                                    touchSpecialization(DagNode *toucher, bool touchAll);
         
-    private:
-        
         // helper functions
         double                                          computeLnProbabilityTimes(void) const;                     //!< Compute the log-transformed probability of the current value.
         size_t                                          l(double t) const;                                         //!< Find the index so that times[index-1] < t < times[index]
         double                                          lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
+        double                                          lnProbTreeShape(void) const;
         double                                          pSurvival(double start, double end) const;                 //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                          p(size_t i, double t) const;
         void                                            prepareProbComputation(void) const;
