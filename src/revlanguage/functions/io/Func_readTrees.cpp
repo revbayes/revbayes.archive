@@ -144,3 +144,104 @@ const TypeSpec& Func_readTrees::getReturnType( void ) const
     static TypeSpec returnTypeSpec = ModelVector<TimeTree>::getClassTypeSpec();
     return returnTypeSpec;
 }
+
+
+
+/**
+ * Get the author(s) of this function so they can receive credit (and blame) for it.
+ */
+std::vector<std::string> Func_readTrees::getHelpAuthor(void) const
+{
+    // create a vector of authors for this function
+    std::vector<std::string> authors;
+    authors.push_back( "Bastien Boussau" );
+
+    return authors;
+}
+
+
+/**
+ * Get the (brief) description for this function
+ */
+std::vector<std::string> Func_readTrees::getHelpDescription(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> descriptions;
+    descriptions.push_back( "Reads trees from a file containing trees (Nexus, Phylip or Newick accepted), or from a string containing Newick representations of trees." );
+
+    return descriptions;
+}
+
+
+/**
+ * Get the more detailed description of the function
+ */
+std::vector<std::string> Func_readTrees::getHelpDetails(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> details;
+    details.push_back( "Either a file name (with the file argument) or a string (with the text argument) must be provided as argument. If both are provided, trees will be read from both sources." );
+
+    return details;
+}
+
+
+/**
+ * Get an executable and instructive example.
+ * These example should help the users to show how this function works but
+ * are also used to test if this function still works.
+ */
+std::string Func_readTrees::getHelpExample(void) const
+{
+    // create an example as a single string variable.
+    std::string example = "";
+    example += "trees=readTrees(text=\"(a,(b,c));\\n(d:0.1,(e:0.1,f:0.1):0.1);\")\n";
+    example += "print(trees)\n";
+    return example;
+}
+
+
+/**
+ * Get some references/citations for this function
+ *
+ */
+std::vector<RevBayesCore::RbHelpReference> Func_readTrees::getHelpReferences(void) const
+{
+    // create an entry for each reference
+    std::vector<RevBayesCore::RbHelpReference> references;
+
+    return references;
+}
+
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> Func_readTrees::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+
+    see_also.push_back("write");
+    see_also.push_back("readBranchLengthTrees");
+    see_also.push_back("readCharacterData");
+    see_also.push_back("readCharacterDataDelimited");
+    see_also.push_back("readContinuousCharacterData");
+    see_also.push_back("readDiscreteCharacterData");
+    see_also.push_back("readDataDelimitedFile");
+    see_also.push_back("readCharacterData");
+
+    return see_also;
+}
+
+
+/**
+ * Get the title of this help entry
+ */
+std::string Func_readTrees::getHelpTitle(void) const
+{
+    // create a title variable
+    std::string title = "Function to read in trees.";
+
+    return title;
+}
