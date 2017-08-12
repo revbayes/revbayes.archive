@@ -103,6 +103,7 @@ std::vector<std::string> Func_coala::getHelpAuthor(void) const
 {
     // create a vector of authors for this function
     std::vector<std::string> authors;
+    authors.push_back( "Bastien Boussau" );
 
     return authors;
 }
