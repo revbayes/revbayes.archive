@@ -354,15 +354,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::lnProbTreeShape(void) const
     // where m is the number of extinct tips
 
     size_t num_taxa = value->getNumberOfTips();
-
-    size_t num_extinct = 0;
-    for( size_t i = 0; i < num_taxa; i++)
-    {
-        if( value->getNode(i).getAge() > 0 )
-        {
-            num_extinct++;
-        }
-    }
+    size_t num_extinct = value->getNumberOfExtinctTips();
 
     return (num_taxa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct) - RbMath::lnFactorial(num_extinct);
 }

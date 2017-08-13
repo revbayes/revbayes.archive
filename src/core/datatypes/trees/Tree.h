@@ -78,6 +78,8 @@ namespace RevBayesCore {
         std::vector<RbBitSet>                               getNodesAsBitset(void) const;                                                                               //!< Get a pointer to the nodes in the Tree
         size_t                                              getNumberOfInteriorNodes(void) const;                                                               //!< Get the number of nodes in the Tree
         size_t                                              getNumberOfNodes(void) const;                                                                       //!< Get the number of nodes in the Tree
+        size_t                                              getNumberOfExtantTips(void) const;                                                                  //!< Get the number of extant tip nodes in the Tree
+        size_t                                              getNumberOfExtinctTips(void) const;                                                                 //!< Get the number of extinct tip nodes in the Tree
         size_t                                              getNumberOfTips(void) const;                                                                        //!< Get the number of tip nodes in the Tree
         const TopologyNode&                                 getInteriorNode(size_t indx) const;                                                                 //!< Get a pointer to interior node i
         std::string                                         getPlainNewickRepresentation() const;                                                               //!< Get the newick representation of this Tree

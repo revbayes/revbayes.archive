@@ -541,6 +541,30 @@ size_t Tree::getNumberOfTips( void ) const
 }
 
 
+/**
+ * return the number of tips.
+ */
+size_t Tree::getNumberOfExtinctTips( void ) const
+{
+    size_t num_extant = 0;
+    for(size_t i = 0; i < num_tips; i++)
+    {
+        num_extant += nodes[i]->isFossil();
+    }
+
+    return num_extant;
+}
+
+
+/**
+ * return the number of tips.
+ */
+size_t Tree::getNumberOfExtantTips( void ) const
+{
+    return num_tips - getNumberOfExtinctTips();
+}
+
+
 std::string Tree::getPlainNewickRepresentation() const
 {
     

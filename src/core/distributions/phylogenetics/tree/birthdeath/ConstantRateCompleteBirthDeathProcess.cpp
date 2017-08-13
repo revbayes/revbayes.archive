@@ -162,15 +162,7 @@ double ConstantRateCompleteBirthDeathProcess::lnProbTreeShape(void) const
     // where n is the number of tips and m is the number of extinct tips
 
     size_t n = value->getNumberOfTips();
-    size_t m = 0;
-
-    for( size_t i = 0; i < n; i++)
-    {
-        if( value->getNode(i).getAge() > 0 )
-        {
-            m++;
-        }
-    }
+    size_t m = value->getNumberOfExtinctTips();
 
     // condition on survival
     if(n == m)
@@ -178,7 +170,7 @@ double ConstantRateCompleteBirthDeathProcess::lnProbTreeShape(void) const
         return RbConstants::Double::neginf;
     }
 
-    return (n - 1) * RbConstants::LN2;// - RbMath::lnFactorial(m) - RbMath::lnFactorial(n - m);
+    return (n - 1) * RbConstants::LN2 - RbMath::lnFactorial(n - m) - RbMath::lnFactorial(m);
 }
 
 

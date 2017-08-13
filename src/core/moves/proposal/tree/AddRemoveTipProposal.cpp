@@ -184,6 +184,10 @@ double AddRemoveTipProposal::addTip(TopologyNode *n)
     
     double lnJacobian = log(max_age - min_age);
 
+    // not yet sure why this is needed, but it is
+    // unless lnProbTreeShape is incorrect for all birth death processes
+    double hr = 0;
+
     if( extinct == extant == true )
     {
         u = rng->uniform01();
@@ -203,9 +207,15 @@ double AddRemoveTipProposal::addTip(TopologyNode *n)
         double new_tip_age = new_parent_node->getAge() * v;
 
         storedTip->setAge(new_tip_age);
+
+        hr = log( t.getNumberOfExtinctTips() );
+    }
+    else
+    {
+        hr = log( t.getNumberOfExtantTips() );
     }
 
-    return lnJacobian;
+    return lnJacobian + hr;
 }
 
 
@@ -245,12 +255,21 @@ double AddRemoveTipProposal::removeTip(TopologyNode *n)
 
     double lnJacobian = - log(max_age - min_age);
 
+    // not yet sure why this is needed, but it is
+    // unless lnProbTreeShape is incorrect for all birth death processes
+    double hr = 0;
+
     if( storedTip->getAge() > 0.0 )
     {
         lnJacobian -= log(parent->getAge());
+        hr = - log( t.getNumberOfExtinctTips() + 1 );
+    }
+    else
+    {
+        hr = - log( t.getNumberOfExtantTips() + 1 );
     }
 
-    return lnJacobian;
+    return lnJacobian + hr;
 }
 
 
