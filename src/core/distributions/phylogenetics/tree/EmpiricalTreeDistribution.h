@@ -35,8 +35,10 @@ namespace RevBayesCore {
 
 		EmpiricalTreeDistribution*                          clone(void) const;                                          //!< Create an independent clone
 		double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
-		void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
-		size_t                                              getCurrentTreeIndex(void);
+        size_t                                              getBurnin(void) const;
+        size_t                                              getCurrentTreeIndex(void) const;
+        size_t                                              getNumberOfTrees(void) const;
+        void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
 		void                                                setCurrentTree(size_t index);
 		
 	protected:

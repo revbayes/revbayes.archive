@@ -45,7 +45,7 @@ namespace RevBayesCore {
     private:
         
         StochasticNode<Tree>*                   variable;
-        size_t                                  oldTreeIndex;
+        size_t                                  old_tree_index;
         
     };
     
