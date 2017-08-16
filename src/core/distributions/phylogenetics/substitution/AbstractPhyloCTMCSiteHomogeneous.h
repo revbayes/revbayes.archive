@@ -179,6 +179,7 @@ namespace RevBayesCore {
         size_t                                                              num_patterns;
         bool                                                                compressed;
         std::vector<size_t>                                                 site_pattern;    // an array that keeps track of which pattern is used for each site
+        std::map<std::string,size_t>                                        taxon_name_2_tip_index_map;
         
         // flags for likelihood recomputation
         bool                                                                touched;
@@ -664,13 +665,16 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     
     
     std::vector<size_t> process_pattern_counts = std::vector<size_t>(pattern_block_size,0);
+    taxon_name_2_tip_index_map.clear();
     // allocate and fill the cells of the matrices
     for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        if ( (*it)->isTip() )
+        TopologyNode *the_node = *it;
+        if ( the_node->isTip() )
         {
-            size_t node_index = (*it)->getIndex();
-            AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
+            size_t node_index = the_node->getIndex();
+            taxon_name_2_tip_index_map.insert( std::pair<std::string,size_t>(the_node->getName(), node_index) );
+            AbstractDiscreteTaxonData& taxon = value->getTaxonData( the_node->getName() );
             
             // resize the column
             ambiguous_char_matrix[node_index].resize(pattern_block_size);

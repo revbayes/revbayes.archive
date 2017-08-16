@@ -50,26 +50,43 @@ EmpiricalTreeDistribution* EmpiricalTreeDistribution::clone( void ) const
 }
 
 
+size_t EmpiricalTreeDistribution::getBurnin( void ) const
+{
+    
+    return burnin;
+    
+}
+
+
+size_t EmpiricalTreeDistribution::getCurrentTreeIndex( void ) const
+{
+    
+    return current_tree_index;
+    
+}
+
+
+size_t EmpiricalTreeDistribution::getNumberOfTrees( void ) const
+{
+    
+    return trace.size();
+    
+}
+
+
 void EmpiricalTreeDistribution::redrawValue( void )
 {
     
     // draw a random tree
     RandomNumberGenerator* rng = GLOBAL_RNG;
     size_t total_tree_samples = trace.size();
-    current_tree_index = (size_t)( rng->uniform01() * (total_tree_samples - burnin) + burnin - 1 );
+    double u = rng->uniform01();
+    current_tree_index = (size_t)( u * (total_tree_samples - burnin) + burnin );
     
     Tree *psi = new Tree( trace.objectAt(current_tree_index) );
     
     delete this->value;
     this->value = psi;
-    
-}
-
-
-size_t EmpiricalTreeDistribution::getCurrentTreeIndex( void )
-{
-    
-    return current_tree_index;
     
 }
 
