@@ -10,6 +10,8 @@
 #
 ################################################################################
 
+seed(12345)
+
 #######################
 # Reading in the Data #
 #######################
@@ -106,7 +108,7 @@ monitors[1] = mnStochasticVariable(filename="output/mcmc_JC_BDP.out",printgen=1,
 mymcmc = mcmc(mymodel, monitors, moves, moveschedule="single")
 
 
-mymcmc.run(generations=100)
+mymcmc.run(generations=1000)
 
 
 # you may want to quit RevBayes now
