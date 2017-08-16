@@ -1,5 +1,8 @@
 #include "EmpiricalTreeProposal.h"
 #include "EmpiricalTreeDistribution.h"
+#include "RandomNumberGenerator.h"
+#include "RandomNumberFactory.h"
+#include "Move.h"
 
 using namespace RevBayesCore;
 
@@ -48,10 +51,24 @@ double EmpiricalTreeProposal::doProposal( void )
     EmpiricalTreeDistribution& dist = static_cast<EmpiricalTreeDistribution &>( variable->getDistribution() );
     
     // get the current tree index
-    oldTreeIndex = dist.getCurrentTreeIndex();
+    old_tree_index = dist.getCurrentTreeIndex();
     
     // draw a new tree
-    dist.redrawValue();
+    // in the old way we simply proposed any tree, even the current tree
+    // dist.redrawValue();
+    // we try to be more efficient by not proposing the same tree again
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    size_t total_tree_samples = dist.getNumberOfTrees() - 1;
+    size_t burnin = dist.getBurnin();
+    double u = rng->uniform01();
+    size_t new_tree_index = (size_t)( u * (total_tree_samples - burnin) + burnin );
+    
+    if ( new_tree_index >= old_tree_index )
+    {
+        ++new_tree_index;
+    }
+    
+    dist.setCurrentTree( new_tree_index );
     
     variable->touch( true );
     
@@ -81,7 +98,7 @@ void EmpiricalTreeProposal::undoProposal( void )
     
     // reset to the old tree
     EmpiricalTreeDistribution& dist = static_cast<EmpiricalTreeDistribution &>( variable->getDistribution() );
-    dist.setCurrentTree( oldTreeIndex );
+    dist.setCurrentTree( old_tree_index );
     
 }
 
