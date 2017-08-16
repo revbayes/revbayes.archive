@@ -225,7 +225,7 @@ double MultispeciesCoalescentMigration::computeLnProbability( void )
             next_coalescent_age = RbConstants::Double::inf;
         }
         
-        MultispeciesCoalescentMigrationODE ode = MultispeciesCoalescentMigrationODE(<#const std::vector<double> &t#>, <#const RevBayesCore::RateGenerator *q#>, <#double r#>, <#size_t n_ind#>, <#size_t n_pop#>)
+//        MultispeciesCoalescentMigrationODE ode = MultispeciesCoalescentMigrationODE(<#const std::vector<double> &t#>, <#const RevBayesCore::RateGenerator *q#>, <#double r#>, <#size_t n_ind#>, <#size_t n_pop#>)
     }
     
     // create a map for the individuals to branches
@@ -278,115 +278,115 @@ double MultispeciesCoalescentMigration::getMigrationRate(size_t from, size_t to)
 }
 
 
-double MultispeciesCoalescentMigration::recursivelyComputeLnProbability( const RevBayesCore::TopologyNode &species_node )
-{
-    
-    double ln_prob_coal = 0;
-    
-    if ( species_node.isTip() == false )
-    {
-        individuals_per_branch[ species_node.getIndex() ].clear();
-        
-        for (size_t i=0; i<species_node.getNumberOfChildren(); ++i)
-        {
-            ln_prob_coal += recursivelyComputeLnProbability( species_node.getChild(i) );
-        }
-    }
-    
-    //    const TopologyNode *species_parent_node = NULL;
-    double species_age = species_node.getAge();
-    double parent_species_age = RbConstants::Double::inf;
-    
-    //        double branchLength = RbConstants::Double::inf;
-    if ( species_node.isRoot() == false )
-    {
-        const TopologyNode &species_parent_node = species_node.getParent();
-        parent_species_age = species_parent_node.getAge();
-    }
-    
-    // create a local copy of the individuals per branch
-    const std::set<const TopologyNode*> &initial_individuals = individuals_per_branch[species_node.getIndex()];
-    std::set<const TopologyNode*> remaining_individuals = initial_individuals;
-    
-    // get all coalescent events among the individuals
-    std::vector<double> coal_times;
-    
-    
-    std::map<double, const TopologyNode *> coal_times_2_nodes;
-    for ( std::set<const TopologyNode*>::iterator it = remaining_individuals.begin(); it != remaining_individuals.end(); ++it)
-    {
-        const TopologyNode *ind = (*it);
-        if ( ind->isRoot() == false )
-        {
-            const TopologyNode &parent = ind->getParent();
-            double parent_age = parent.getAge();
-            coal_times_2_nodes[ parent_age ] = &parent;
-        }
-    }
-    
-    double current_time = species_age;
-    while ( current_time < parent_species_age && coal_times_2_nodes.size() > 0 )
-    {
-        
-        const TopologyNode *parent = coal_times_2_nodes.begin()->second;
-        double parent_age = parent->getAge();
-        current_time = parent_age;
-        
-        if ( parent_age < parent_species_age )
-        { //Coalescence in the species tree branch
-            
-            // get the left and right child of the parent
-            const TopologyNode *left = &parent->getChild( 0 );
-            const TopologyNode *right = &parent->getChild( 1 );
-            if ( remaining_individuals.find( left ) == remaining_individuals.end() || remaining_individuals.find( right ) == remaining_individuals.end() )
-            {
-                // one of the children does not belong to this species tree branch
-                return RbConstants::Double::neginf;
-            }
-            
-            //We remove the coalescent event and the coalesced lineages
-            coal_times_2_nodes.erase( coal_times_2_nodes.begin() );
-            remaining_individuals.erase( remaining_individuals.find( left ) );
-            remaining_individuals.erase( remaining_individuals.find( right ) );
-            
-            //We insert the parent in the vector of lineages in this branch
-            remaining_individuals.insert( parent );
-            if ( parent->isRoot() == false )
-            {
-                const TopologyNode *grand_parent = &parent->getParent();
-                coal_times_2_nodes[ grand_parent->getAge() ] = grand_parent;
-            }
-            
-            coal_times.push_back( parent_age );
-            
-            
-        } //End if coalescence in the species tree branch
-        else
-        { //No more coalescences in this species tree branch
-            
-            // jump out of the while loop
-            //                currentTime = speciesAge;
-            break;
-        }
-        
-        
-    } // end of while loop
-    
-    if ( initial_individuals.size() > 1 )
-    {
-//        ln_prob_coal += computeLnCoalescentProbability(initial_individuals.size(), coal_times, species_age, parent_species_age, species_node.getIndex(), species_node.isRoot() == false);
-    }
-    
-    
-    // merge the two sets of individuals that go into the next species
-    if ( species_node.isRoot() == false )
-    {
-        std::set<const TopologyNode *> &incoming_lineages = individuals_per_branch[ species_node.getParent().getIndex() ];
-        incoming_lineages.insert( remaining_individuals.begin(), remaining_individuals.end());
-    }
-    
-    return ln_prob_coal;
-}
+//double MultispeciesCoalescentMigration::recursivelyComputeLnProbability( const RevBayesCore::TopologyNode &species_node )
+//{
+//    
+//    double ln_prob_coal = 0;
+//    
+//    if ( species_node.isTip() == false )
+//    {
+//        individuals_per_branch[ species_node.getIndex() ].clear();
+//        
+//        for (size_t i=0; i<species_node.getNumberOfChildren(); ++i)
+//        {
+//            ln_prob_coal += recursivelyComputeLnProbability( species_node.getChild(i) );
+//        }
+//    }
+//    
+//    //    const TopologyNode *species_parent_node = NULL;
+//    double species_age = species_node.getAge();
+//    double parent_species_age = RbConstants::Double::inf;
+//    
+//    //        double branchLength = RbConstants::Double::inf;
+//    if ( species_node.isRoot() == false )
+//    {
+//        const TopologyNode &species_parent_node = species_node.getParent();
+//        parent_species_age = species_parent_node.getAge();
+//    }
+//    
+//    // create a local copy of the individuals per branch
+//    const std::set<const TopologyNode*> &initial_individuals = individuals_per_branch[species_node.getIndex()];
+//    std::set<const TopologyNode*> remaining_individuals = initial_individuals;
+//    
+//    // get all coalescent events among the individuals
+//    std::vector<double> coal_times;
+//    
+//    
+//    std::map<double, const TopologyNode *> coal_times_2_nodes;
+//    for ( std::set<const TopologyNode*>::iterator it = remaining_individuals.begin(); it != remaining_individuals.end(); ++it)
+//    {
+//        const TopologyNode *ind = (*it);
+//        if ( ind->isRoot() == false )
+//        {
+//            const TopologyNode &parent = ind->getParent();
+//            double parent_age = parent.getAge();
+//            coal_times_2_nodes[ parent_age ] = &parent;
+//        }
+//    }
+//    
+//    double current_time = species_age;
+//    while ( current_time < parent_species_age && coal_times_2_nodes.size() > 0 )
+//    {
+//        
+//        const TopologyNode *parent = coal_times_2_nodes.begin()->second;
+//        double parent_age = parent->getAge();
+//        current_time = parent_age;
+//        
+//        if ( parent_age < parent_species_age )
+//        { //Coalescence in the species tree branch
+//            
+//            // get the left and right child of the parent
+//            const TopologyNode *left = &parent->getChild( 0 );
+//            const TopologyNode *right = &parent->getChild( 1 );
+//            if ( remaining_individuals.find( left ) == remaining_individuals.end() || remaining_individuals.find( right ) == remaining_individuals.end() )
+//            {
+//                // one of the children does not belong to this species tree branch
+//                return RbConstants::Double::neginf;
+//            }
+//            
+//            //We remove the coalescent event and the coalesced lineages
+//            coal_times_2_nodes.erase( coal_times_2_nodes.begin() );
+//            remaining_individuals.erase( remaining_individuals.find( left ) );
+//            remaining_individuals.erase( remaining_individuals.find( right ) );
+//            
+//            //We insert the parent in the vector of lineages in this branch
+//            remaining_individuals.insert( parent );
+//            if ( parent->isRoot() == false )
+//            {
+//                const TopologyNode *grand_parent = &parent->getParent();
+//                coal_times_2_nodes[ grand_parent->getAge() ] = grand_parent;
+//            }
+//            
+//            coal_times.push_back( parent_age );
+//            
+//            
+//        } //End if coalescence in the species tree branch
+//        else
+//        { //No more coalescences in this species tree branch
+//            
+//            // jump out of the while loop
+//            //                currentTime = speciesAge;
+//            break;
+//        }
+//        
+//        
+//    } // end of while loop
+//    
+//    if ( initial_individuals.size() > 1 )
+//    {
+////        ln_prob_coal += computeLnCoalescentProbability(initial_individuals.size(), coal_times, species_age, parent_species_age, species_node.getIndex(), species_node.isRoot() == false);
+//    }
+//    
+//    
+//    // merge the two sets of individuals that go into the next species
+//    if ( species_node.isRoot() == false )
+//    {
+//        std::set<const TopologyNode *> &incoming_lineages = individuals_per_branch[ species_node.getParent().getIndex() ];
+//        incoming_lineages.insert( remaining_individuals.begin(), remaining_individuals.end());
+//    }
+//    
+//    return ln_prob_coal;
+//}
 
 
 void MultispeciesCoalescentMigration::redrawValue( void )
