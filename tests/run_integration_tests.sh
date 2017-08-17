@@ -1,7 +1,7 @@
 #!/bin/bash
 
 for f in scripts/*; do
-    projects/cmake/rb $f > output_tmp.txt
+    ../projects/cmake/rb $f > output_tmp.txt
 done
 
 rm output_tmp.txt
