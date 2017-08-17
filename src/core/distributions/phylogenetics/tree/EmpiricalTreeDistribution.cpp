@@ -104,6 +104,30 @@ void EmpiricalTreeDistribution::setCurrentTree( size_t index )
 }
 
 
+void EmpiricalTreeDistribution::setValue(Tree *v, bool f)
+{
+    
+    bool found = false;
+    for(size_t i = burnin; i < trace.size(); ++i)
+    {
+        if(trace.objectAt(i) == *v)
+        {
+            found = true;
+            current_tree_index = i;
+            break;
+        }
+    }
+    
+    if(found == false)
+    {
+        RbException("The starting tree is not in the empirical tree sample.");
+    }
+    
+    TypedDistribution<Tree>::setValue(v, f);
+    
+}
+
+
 double EmpiricalTreeDistribution::computeLnProbability( void )
 {
     

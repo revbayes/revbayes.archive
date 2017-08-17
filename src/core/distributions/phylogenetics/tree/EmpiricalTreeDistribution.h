@@ -40,6 +40,7 @@ namespace RevBayesCore {
         size_t                                              getNumberOfTrees(void) const;
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
 		void                                                setCurrentTree(size_t index);
+        void                                                setValue(Tree *v, bool f=false);
 		
 	protected:
 
