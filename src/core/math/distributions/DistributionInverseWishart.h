@@ -28,6 +28,7 @@ namespace RevBayesCore {
             double                      pdf(const MatrixReal& sigma0, size_t df, const MatrixReal& z);                  /*!< Dirichlet(a[]) probability density */
             double                      lnPdf(const MatrixReal& sigma0, size_t df, const MatrixReal& z);                /*!< Dirichlet(a[]) log_e probability density */
             MatrixReal                  rv(const MatrixReal& sigma0, size_t df, RandomNumberGenerator& rng);            /*!< Dirichlet(a[]) random variable */
+            MatrixReal                  rvCovariance(const MatrixReal& sigma0, size_t df, RandomNumberGenerator& rng);            /*!< Dirichlet(a[]) random variable */
 
             // InverseWishart of parameters sigma0 = Diagonal(kappa) and df degrees of freedom
             double                      pdf(const std::vector<double>& kappa, size_t df, const MatrixReal& z);          /*!< Dirichlet(a[]) probability density */

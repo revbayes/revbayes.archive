@@ -83,12 +83,15 @@ namespace RevBayesCore {
         size_t                                  getDim() const;
         EigenSystem&                            getEigenSystem(void);
         const EigenSystem&                      getEigenSystem(void) const ;
+        CholeskyDecomposition&                  getCholeskyDecomposition(void);
+        const CholeskyDecomposition&            getCholeskyDecomposition(void) const ;
         double                                  getDet() const;
         double                                  getLogDet() const;
         size_t                                  getNumberOfColumns(void) const;
         double                                  getMax(void) const;
         double                                  getMin(void) const;
         size_t                                  getNumberOfRows(void) const;
+        MatrixReal                              getTranspose(void);
         RbVector<double>                        getUpperTriangle(void) const;
         bool                                    isDiagonal(void) const;
         bool                                    isPositive() const;
