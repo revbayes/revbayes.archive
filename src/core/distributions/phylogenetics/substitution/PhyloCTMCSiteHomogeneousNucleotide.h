@@ -557,9 +557,11 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
     
     double* p_node = this->partialLikelihoods + this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset;
     
-    const std::vector<bool> &gap_node = this->gap_matrix[node_index];
-    const std::vector<unsigned long> &char_node = this->char_matrix[node_index];
-    const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[node_index];
+    // get the current correct tip index in case the whole tree change (after performing an empiricalTree Proposal)
+    size_t data_tip_index = this->taxon_name_2_tip_index_map[ node.getName() ];
+    const std::vector<bool> &gap_node = this->gap_matrix[data_tip_index];
+    const std::vector<unsigned long> &char_node = this->char_matrix[data_tip_index];
+    const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[data_tip_index];
     
     // compute the transition probabilities
     this->updateTransitionProbabilities( node_index, node.getBranchLength() );
