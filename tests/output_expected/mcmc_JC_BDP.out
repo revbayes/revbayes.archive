@@ -1,7 +1,7 @@
 #RevBayes version (1.0.5)
 #Build from master (c55ced) on Wed Aug 17 14:55:20 CEST 2017
 Iteration	diversification	psi	root	turnover
-0	1.216033	((Galagos_senegalensis[&index=5]:1.658633,Lemur_catta[&index=4]:1.658633)[&index=6]:75.187436,((Tarsius_syrichta[&index=3]:1.037774,Alouatta_palliata[&index=2]:1.037774)[&index=7]:1.075741,Pan_paniscus[&index=1]:2.113515)[&index=8]:74.732555)[&index=9]:0.000000;	76.84607	1.047759
+0	1.216033	((Galago_senegalensis[&index=5]:1.658633,Lemur_catta[&index=4]:1.658633)[&index=6]:75.187436,((Tarsius_syrichta[&index=3]:1.037774,Alouatta_palliata[&index=2]:1.037774)[&index=7]:1.075741,Pan_paniscus[&index=1]:2.113515)[&index=8]:74.732555)[&index=9]:0.000000;	76.84607	1.047759
 1	1.216033	((Galago_senegalensis[&index=5]:1.658633,Lemur_catta[&index=4]:1.658633)[&index=6]:75.187436,((Tarsius_syrichta[&index=3]:24.699252,Alouatta_palliata[&index=2]:24.699252)[&index=7]:25.602878,Pan_paniscus[&index=1]:50.302130)[&index=8]:26.543940)[&index=9]:0.000000;	76.84607	1.047759
 2	1.216033	((Galago_senegalensis[&index=5]:33.516232,Lemur_catta[&index=4]:33.516232)[&index=6]:43.329838,((Tarsius_syrichta[&index=3]:24.699252,Alouatta_palliata[&index=2]:24.699252)[&index=7]:25.602878,Pan_paniscus[&index=1]:50.302130)[&index=8]:26.543940)[&index=9]:0.000000;	76.84607	1.047759
 3	1.216033	((Pan_paniscus[&index=1]:50.302130,(Tarsius_syrichta[&index=3]:24.699252,Alouatta_palliata[&index=2]:24.699252)[&index=7]:25.602878)[&index=8]:26.543940,(Galago_senegalensis[&index=5]:33.516232,Lemur_catta[&index=4]:33.516232)[&index=6]:43.329838)[&index=9]:0.000000;	76.84607	1.047759
