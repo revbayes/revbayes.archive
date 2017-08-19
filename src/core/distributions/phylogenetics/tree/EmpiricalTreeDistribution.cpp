@@ -49,6 +49,19 @@ EmpiricalTreeDistribution* EmpiricalTreeDistribution::clone( void ) const
     return new EmpiricalTreeDistribution( *this );
 }
 
+void EmpiricalTreeDistribution::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+{
+    
+    if ( n == "getTreeIndex" )
+    {
+        rv = int(current_tree_index) + 1;
+    }
+    else
+    {
+        throw RbException("A empirical-tree distribution does not have a member method called '" + n + "'.");
+    }
+    
+}
 
 size_t EmpiricalTreeDistribution::getBurnin( void ) const
 {
@@ -100,6 +113,30 @@ void EmpiricalTreeDistribution::setCurrentTree( size_t index )
     
     delete this->value;
     this->value = psi;
+    
+}
+
+
+void EmpiricalTreeDistribution::setValue(Tree *v, bool f)
+{
+    
+    bool found = false;
+    for(size_t i = burnin; i < trace.size(); ++i)
+    {
+        if(trace.objectAt(i) == *v)
+        {
+            found = true;
+            current_tree_index = i;
+            break;
+        }
+    }
+    
+    if(found == false)
+    {
+        RbException("The starting tree is not in the empirical tree sample.");
+    }
+    
+    TypedDistribution<Tree>::setValue(v, f);
     
 }
 
