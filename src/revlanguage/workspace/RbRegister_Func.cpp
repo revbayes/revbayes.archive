@@ -92,6 +92,7 @@
 #include "Func_seq.h"
 #include "Func_setOption.h"
 #include "Func_setwd.h"
+#include "Func_sort.h"
 #include "Func_structure.h"
 #include "Func_system.h"
 #include "Func_type.h"
@@ -457,6 +458,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // simplex constructor function (from vector of RealPos values)
         addFunction( new Func_simplexFromVector()        );
+
+        // sort vector function
+        addFunction( new Func_sort() );
 
 		// square root function
         addFunction( new Func_sqrt()  );

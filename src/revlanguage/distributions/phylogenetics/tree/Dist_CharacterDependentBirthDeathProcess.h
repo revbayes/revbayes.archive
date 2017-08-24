@@ -23,6 +23,7 @@ namespace RevLanguage {
         Dist_CharacterDependentBirthDeathProcess*                   clone(void) const;                                                                      //!< Clone the object
         static const std::string&                                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::vector<std::string>                                    getDistributionFunctionAliases(void) const;
         std::string                                                 getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
         virtual MethodTable                                         getDistributionMethods( void ) const;                                                                       //!< Get the member methods
         const TypeSpec&                                             getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
@@ -43,6 +44,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                                   root_frequencies;
         RevPtr<const RevVariable>                                   speciation_rates;
         RevPtr<const RevVariable>                                   extinction_rates;
+        RevPtr<const RevVariable>                                   psi;
         RevPtr<const RevVariable>                                   event_rate_matrix;
         RevPtr<const RevVariable>                                   event_rate;
         RevPtr<const RevVariable>                                   rho;
