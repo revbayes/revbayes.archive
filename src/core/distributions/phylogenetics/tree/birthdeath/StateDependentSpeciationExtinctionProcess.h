@@ -45,7 +45,7 @@ namespace RevBayesCore {
         const AbstractHomologousDiscreteCharacterData&                  getCharacterData() const;
         virtual void                                                    redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
         void                                                            setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
-        void                                                            setFossilizationRates(const TypedDagNode< RbVector<double> > *r);
+        void                                                            setSerialSamplingRates(const TypedDagNode< RbVector<double> > *r);
         void                                                            setSampleCharacterHistory(bool sample_history);                                                     //!< Set whether or not we are sampling the character history along branches.
         void                                                            setSpeciationRates(const TypedDagNode< RbVector<double> > *r);
         void                                                            setNumberOfTimeSlices(double n);                                                                    //!< Set the number of time slices for the numerical ODE.

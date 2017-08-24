@@ -1404,7 +1404,7 @@ void StateDependentSpeciationExtinctionProcess::setCladogenesisMatrix(const Type
 }
 
 
-void StateDependentSpeciationExtinctionProcess::setFossilizationRates(const TypedDagNode< RbVector<double> >* r)
+void StateDependentSpeciationExtinctionProcess::setSerialSamplingRates(const TypedDagNode< RbVector<double> >* r)
 {
 
     // remove the old parameter first
@@ -1616,8 +1616,8 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
 
     if( psi != NULL )
     {
-        const std::vector<double> &fossilization_rates = psi->getValue();
-        ode.setFossilizationRate( fossilization_rates );
+        const std::vector<double> &serial_sampling_rates = psi->getValue();
+        ode.setSerialSamplingRate( serial_sampling_rates );
     }
 
     typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;

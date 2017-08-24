@@ -30,7 +30,7 @@ namespace RevBayesCore {
         
         void            setEventMap( const std::map<std::vector<unsigned>, double> &e );
         void            setSpeciationRate( const std::vector<double> &s );
-        void            setFossilizationRate( const std::vector<double> &s );
+        void            setSerialSamplingRate( const std::vector<double> &s );
         
     private:
         

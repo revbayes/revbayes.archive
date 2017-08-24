@@ -115,9 +115,7 @@
 /* Tree priors (in folder "distributions/phylogenetics/tree") */
 #include "Dist_bdp.h"
 #include "Dist_bdp_complete.h"
-#include "Dist_BirthDeathMultiRate.h"
 #include "Dist_CharacterDependentBirthDeathProcess.h"
-#include "Dist_CharacterDependentFossilizedBirthDeathProcess.h"
 #include "Dist_StateDependentSpeciationExtinctionProcess.h"
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
@@ -252,9 +250,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_bdp());
         AddDistribution< TimeTree                   >( new Dist_bdp_complete());
 
-        AddDistribution< TimeTree                   >( new Dist_BirthDeathMultiRate() );
         AddDistribution< TimeTree                   >( new Dist_CharacterDependentBirthDeathProcess() );
-        AddDistribution< TimeTree                   >( new Dist_CharacterDependentFossilizedBirthDeathProcess() );
         AddDistribution< TimeTree                   >( new Dist_StateDependentSpeciationExtinctionProcess() );
         AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_outgroupBirthDeath() );

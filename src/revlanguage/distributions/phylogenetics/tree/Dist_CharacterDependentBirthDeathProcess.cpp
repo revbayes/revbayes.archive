@@ -83,6 +83,14 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     double n = static_cast<const RealPos &>( num_time_slices->getRevObject() ).getValue();
     d->setNumberOfTimeSlices( n );
     
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ps = NULL;
+    if( psi->getRevObject() != RevNullObject::getInstance() )
+    {
+        ps  = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
+
+        d->setSerialSamplingRates( ps );
+    }
+
     return d;
 }
 
@@ -124,6 +132,23 @@ std::string Dist_CharacterDependentBirthDeathProcess::getDistributionFunctionNam
 }
 
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_CharacterDependentBirthDeathProcess::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "CDSSBDP" );
+    a_names.push_back( "CDFBDP" );
+    a_names.push_back( "BirthDeathMultiRate" );
+
+    return a_names;
+}
+
+
 MethodTable Dist_CharacterDependentBirthDeathProcess::getDistributionMethods( void ) const
 {
     
@@ -160,6 +185,7 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
         elabels.push_back("extinctionRates");
         elabels.push_back("mu");
         memberRules.push_back( new ArgumentRule( elabels     , ModelVector<RealPos>::getClassTypeSpec() , "The vector of extinction rates."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "psi"       , ModelVector<RealPos>::getClassTypeSpec() , "The vector of serial sampling rates."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "Q"         , RateGenerator::getClassTypeSpec()        , "The rate matrix of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "delta"     , RealPos::getClassTypeSpec()              , "The rate-factor of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, new RealPos(1.0) ) );
         memberRules.push_back( new ArgumentRule( "pi"        , Simplex::getClassTypeSpec()              , "State frequencies at the root."              , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
@@ -208,6 +234,10 @@ void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::stri
     else if ( name == "extinctionRates" || name == "mu" )
     {
         extinction_rates = var;
+    }
+    else if ( name == "psi" )
+    {
+        psi = var;
     }
     else if ( name == "Q" )
     {

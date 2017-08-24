@@ -196,7 +196,7 @@ void SSE_ODE::setSpeciationRate( const std::vector<double> &s )
     
 }
 
-void SSE_ODE::setFossilizationRate( const std::vector<double> &s )
+void SSE_ODE::setSerialSamplingRate( const std::vector<double> &s )
 {
 
     psi = s;
