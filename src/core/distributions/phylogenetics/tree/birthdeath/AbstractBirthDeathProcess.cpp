@@ -99,10 +99,10 @@ void AbstractBirthDeathProcess::prepareProbComputation( void ) const
 }
 
 
-std::vector<double>* AbstractBirthDeathProcess::simulateDivergenceTimes(size_t n, double origin, double end, double present) const
+std::vector<double> AbstractBirthDeathProcess::simulateDivergenceTimes(size_t n, double origin, double end, double present) const
 {
 
-    std::vector<double>* times = new std::vector<double>(n, 0.0);
+    std::vector<double> times(n, 0.0);
     
     for (size_t i = 0; i < n; ++i)
     {
@@ -112,11 +112,11 @@ std::vector<double>* AbstractBirthDeathProcess::simulateDivergenceTimes(size_t n
             t = simulateDivergenceTime(origin, present);
         } while ( t > end );
         
-        (*times)[i] = t;
+        times[i] = t;
     }
     
     // finally sort the times
-    std::sort(times->begin(), times->end());
+    std::sort(times.begin(), times.end());
     
     return times;
 }

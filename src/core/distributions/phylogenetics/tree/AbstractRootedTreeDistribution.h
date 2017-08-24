@@ -44,7 +44,7 @@ namespace RevBayesCore {
         // pure virtual helper functions
         virtual double                                      computeLnProbabilityDivergenceTimes(void) const = 0;                                                          //!< Compute the log-transformed probability of the current value.
         virtual double                                      simulateDivergenceTime(double origin, double present) const = 0;                                                  //!< Simulate n speciation events.
-        virtual std::vector<double>*                        simulateDivergenceTimes(size_t n, double origin, double end, double present) const = 0;                                                  //!< Simulate n speciation events.
+        virtual std::vector<double>                         simulateDivergenceTimes(size_t n, double origin, double end, double present) const = 0;                                                  //!< Simulate n speciation events.
         
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                  //!< get affected nodes
@@ -61,8 +61,8 @@ namespace RevBayesCore {
         virtual double                                      lnProbTreeShape(void) const;
         void                                                recomputeDivergenceTimesSinceOrigin(void) const;                                                             //!< Extract the divergence times from the tree.
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.
-        std::vector<double>*                                getAgesOfInternalNodesFromMostRecentSample(void) const;                                             //!< Get the ages of all internal nodes since the time of the most recent tip age.
-        std::vector<double>*                                getAgesOfTipsFromMostRecentSample(void) const;                                                      //!< Get the ages of all tip nodes since the time of the most recent tip age.
+        std::vector<double>                                 getAgesOfInternalNodesFromMostRecentSample(void) const;                                             //!< Get the ages of all internal nodes since the time of the most recent tip age.
+        std::vector<double>                                 getAgesOfTipsFromMostRecentSample(void) const;                                                      //!< Get the ages of all tip nodes since the time of the most recent tip age.
         double                                              simulateNextAge(size_t n, double start, double end, double present) const;
         void                                                simulateTree(void);
         

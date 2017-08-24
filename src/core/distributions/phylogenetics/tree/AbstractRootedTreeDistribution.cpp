@@ -253,7 +253,7 @@ void AbstractRootedTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affect
  *
  * \return     A vector of ages. The caller needs to deallocate this vector.
  */
-std::vector<double>* AbstractRootedTreeDistribution::getAgesOfInternalNodesFromMostRecentSample( void ) const
+std::vector<double> AbstractRootedTreeDistribution::getAgesOfInternalNodesFromMostRecentSample( void ) const
 {
     
     double minTipAge = 0.0;
@@ -276,7 +276,7 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfInternalNodesFromM
     }
     
     // retrieved the speciation times
-    std::vector<double> *ages = new std::vector<double>();
+    std::vector<double> ages;
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         
@@ -284,12 +284,12 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfInternalNodesFromM
         if ( n.isInternal() == true )
         {
             double t = n.getAge() - minTipAge;
-            ages->push_back(t);
+            ages.push_back(t);
         }
         
     }
     // sort the vector of times in ascending order
-    std::sort(ages->begin(), ages->end());
+    std::sort(ages.begin(), ages.end());
     
     return ages;
 }
@@ -301,7 +301,7 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfInternalNodesFromM
  *
  * \return     A vector of ages. The caller needs to deallocate this vector.
  */
-std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecentSample( void ) const
+std::vector<double> AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecentSample( void ) const
 {
     
     double minTipAge = 0.0;
@@ -324,7 +324,7 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
     }
     
     // retrieved the speciation times
-    std::vector<double> *ages = new std::vector<double>();
+    std::vector<double> ages;
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         
@@ -332,14 +332,14 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
         if ( n.isTip() == true && n.isSampledAncestor() == false )
         {
             double t = n.getAge() - minTipAge;
-            ages->push_back(t);
+            ages.push_back(t);
             
         }
         
     }
     
     // sort the vector of times in ascending order
-    std::sort(ages->begin(), ages->end());
+    std::sort(ages.begin(), ages.end());
     
     return ages;
 }
@@ -509,7 +509,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 
         }
         
-        if ( n.size() > 2 && current_age >= age  ) throw RbException("Unexpected number of taxa ('remaining #taxa was " + StringUtilities::toString(n.size()) + "' and age was " + current_age + " with maximum age of " + age + ") in constrained tree simulation");
+        if ( n.size() > 2 && current_age >= age  ) throw RbException("Unexpected number of taxa (remaining #taxa was " + StringUtilities::toString(n.size()) + " and age was " + current_age + " with maximum age of " + age + ") in tree simulation");
         
     }
 
@@ -537,7 +537,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
     }
     else
     {
-        throw RbException("Unexpected number of taxa ('#taxa was " + StringUtilities::toString(n.size()) + "') in constrained tree simulation");
+        throw RbException("Unexpected number of taxa (" + StringUtilities::toString(n.size()) + ") in tree simulation");
     }
 
 
@@ -548,12 +548,10 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 double AbstractRootedTreeDistribution::simulateNextAge(size_t n, double start, double end, double present) const
 {
 
-    std::vector<double> *times = simulateDivergenceTimes(n, start, end, present);
+    std::vector<double> times = simulateDivergenceTimes(n, start, end, present);
 
-    double next_time = (*times)[times->size()-1];
+    double next_time = times.back();
 //    double next_time = (*times)[0];
-
-    delete times;
     
 //    double next_time = simulateDivergenceTime(start, end);
 
