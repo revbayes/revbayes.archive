@@ -93,20 +93,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityDivergenc
     prepareProbComputation();
 
     // variable declarations and initialization
-    double lnProbTimes = 0;
-
-    // present time
-    double present_time = value->getRoot().getAge();
-
-    // what do we condition on?
-    // did we condition on survival?
-    if ( condition == "nTaxa" )
-    {
-        lnProbTimes = -lnProbNumTaxa( value->getNumberOfTips(), 0, present_time, true );
-    }
-
-    // multiply the probability of a descendant of the initial species
-    lnProbTimes += computeLnProbabilityTimes();
+    double lnProbTimes = computeLnProbabilityTimes();
 
     return lnProbTimes;
 }
@@ -143,12 +130,12 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     // variable declarations and initialization
     double birth_rate = lambda->getValue();
     double death_rate = mu->getValue();
-    double fossil_rate = psi->getValue();
+    double serial_rate = psi->getValue();
     double sampling_prob = rho->getValue();
     
     // get helper variables
-    double a = birth_rate - death_rate - fossil_rate;
-    double c1 = std::fabs(sqrt(a * a + 4 * birth_rate * fossil_rate));
+    double a = birth_rate - death_rate - serial_rate;
+    double c1 = std::fabs(sqrt(a * a + 4 * birth_rate * serial_rate));
     double c2 = -(a - 2 * birth_rate * sampling_prob) / c1;
 
     // get node/time variables
@@ -166,12 +153,12 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     {
         const TopologyNode& n = value->getNode( i );
 
-        if ( n.isTip() && n.isFossil() && n.isSampledAncestor() )
+        if ( n.isFossil() && n.isSampledAncestor() )
         {
             // node is sampled ancestor
             num_sampled_ancestors++;
         }
-        else if ( n.isTip() && n.isFossil() && !n.isSampledAncestor() )
+        else if ( n.isFossil() && !n.isSampledAncestor() )
         {
             // node is fossil leaf
             num_fossil_taxa++;
@@ -191,13 +178,13 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     }
     
     // add the log probability for the fossilization events
-    if (fossil_rate == 0.0 && num_fossil_taxa + num_sampled_ancestors > 0)
+    if (serial_rate == 0.0 && num_fossil_taxa + num_sampled_ancestors > 0)
     {
-        throw RbException("The sampling rate is zero, but the tree has sampled fossils.");
+        throw RbException("The serial sampling rate is zero, but the tree has serial sampled tips.");
     }
-    else if (fossil_rate > 0.0)
+    else
     {
-        lnProbTimes += (num_fossil_taxa + num_sampled_ancestors) * log( fossil_rate );
+        lnProbTimes += (num_fossil_taxa + num_sampled_ancestors) * log( serial_rate );
     }
     
     // add the log probability for sampling the extant taxa
@@ -225,6 +212,11 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     if( condition == "survival")
     {
         lnProbTimes -= num_initial_lineages * log(1.0 - pHatZero(process_time));
+    }
+    // condition on nTaxa
+    else if ( condition == "nTaxa" )
+    {
+        lnProbTimes -= lnProbNumTaxa( value->getNumberOfTips(), 0, process_time, true );
     }
 
     return lnProbTimes;
