@@ -155,7 +155,7 @@ const MemberRules& Dist_ConstrainedTopology::getParameterRules(void) const {
         std::vector<TypeSpec> backboneTypes;
         backboneTypes.push_back( TimeTree::getClassTypeSpec() );
         backboneTypes.push_back( ModelVector<TimeTree>::getClassTypeSpec() );
-        memberRules.push_back( new ArgumentRule( "backbone", backboneTypes, "he backbone topological constraints.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "backbone", backboneTypes, "The backbone topological constraints.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "inverse",          RlBoolean::getClassTypeSpec(),                   "Should the constraint be inverted?",    ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         rules_set = true;
         }
