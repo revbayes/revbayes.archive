@@ -45,7 +45,6 @@ RevPtr<RevVariable> Func_concatenate::execute( void )
     {
         const AbstractHomologousDiscreteCharacterData& c = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[i].getVariable()->getRevObject() );
         d->concatenate( c, type );
-        
     }
     
     return new RevVariable( d );

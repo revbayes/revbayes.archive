@@ -288,7 +288,8 @@ size_t ContinuousCharacterData::getNumberOfCharacters(void) const
  *
  * \return    The total number of characters
  */
-size_t ContinuousCharacterData::getNumberOfIncludedCharacters(void) const {
+size_t ContinuousCharacterData::getNumberOfIncludedCharacters(void) const
+{
     
     if (getNumberOfTaxa() > 0) 
     {

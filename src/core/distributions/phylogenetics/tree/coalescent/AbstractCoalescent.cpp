@@ -132,6 +132,103 @@ void AbstractCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
     
 }
 
+/**
+ * Randomly build a tree by picking two tips and coalescing, while also attaching the times to a tree topology.
+ * This function works by randomly picking two node from the set of tips, adding their parent,
+ * setting the parent's time is set to ages[ageIndex], incrementing ageIndex and index (for node numbering),
+ * and recursively calling this function again.
+ *
+ * \param[in]     psi        The tree topology (needed to call setAge).
+ * \param[in]     active     The vector of nodes eligible to be coalesced
+ * \param[in]     ages       The ages of the coalescent events
+ */
+void AbstractCoalescent::buildHeterochronousRandomBinaryTree(Tree *psi, std::vector<TopologyNode*> &active, const std::vector<double> &ages)
+{
+    for (size_t i = 0; i < (num_taxa - 1); ++i)
+    {
+        // Get the rng
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        
+        bool valid = false;
+        size_t redraw_attempts = 0;
+        std::vector<TopologyNode* > unusableNodes;
+        do
+        {
+            
+            // randomly draw one child (arbitrarily called left) node from the list of active nodes
+            size_t left = static_cast<size_t>( floor(rng->uniform01()*active.size()) );
+            TopologyNode* leftChild = active.at(left);
+            
+            // remove the randomly drawn node from the list
+            active.erase(active.begin()+long(left));
+            
+            // randomly draw one child (arbitrarily called left) node from the list of active nodes
+            size_t right = static_cast<size_t>( floor(rng->uniform01()*active.size()) );
+            TopologyNode* rightChild = active.at(right);
+            
+            // remove the randomly drawn node from the list
+            active.erase(active.begin()+long(right));
+            
+            // check that we aren't trying to coalesce nodes before they exist
+            if ( (leftChild->getAge() < ages[i]) && (rightChild->getAge() < ages[i]))
+            {
+                // add the parent
+                TopologyNode* parent = new TopologyNode(i + num_taxa);
+                parent->addChild(leftChild);
+                parent->addChild(rightChild);
+                leftChild->setParent(parent);
+                rightChild->setParent(parent);
+                parent->setAge( ages[i] );
+                parent->setNodeType( false, false, true );
+                active.push_back(parent);
+                
+                // we coalesced, we can move on now
+                valid = true;
+            }
+            else
+            {
+                ++redraw_attempts;
+                // abort
+                // if the node is coalesceable for this age, we put it back in active
+                // otherwise, we collect it in unusableNodes so we can't try to re-draw it
+                
+                // handle left child
+                if (leftChild->getAge() < ages[i])
+                {
+                    // this is node is currently coalesceable
+                    active.push_back(leftChild);
+                }
+                else
+                {
+                    // this node cannot be coalesced right now
+                    unusableNodes.push_back(leftChild);
+                }
+                // handle left child
+                if (rightChild->getAge() < ages[i])
+                {
+                    // this is node is currently coalesceable
+                    active.push_back(rightChild);
+                }
+                else
+                {
+                    // this node cannot be coalesced right now
+                    unusableNodes.push_back(rightChild);
+                }
+            }
+        } while ( !valid );
+        
+        // If we had to temporarily discard nodes, now we put them back
+        if (redraw_attempts > 0)
+        {
+            for (size_t index = 0; index < unusableNodes.size(); ++index)
+            {
+                TopologyNode* thisNode = unusableNodes.at(index);
+                active.push_back(thisNode);
+            }
+        }
+    }
+
+}
 
 /**
  * Compute the log-transformed probability of the current value under the current parameter values.
@@ -242,6 +339,10 @@ void AbstractCoalescent::simulateTree( void )
         const std::string& name = taxa[i].getName();
         node->setName(name);
         node->setSpeciesName(taxa[i].getSpeciesName());
+        if( taxa[i].getAge() > 0.0 )
+        {
+            throw(RbException("Can't use non-heterochronous coalescent with heterochronous taxa"));
+        }
     }
     
     // initialize the topology by setting the root
@@ -281,6 +382,54 @@ void AbstractCoalescent::simulateTree( void )
         psi->getNode( node.getIndex() ).setAge( 0.0 );
     }
     
+    // finally store the new value
+    delete value;
+    value = psi;
+    
+}
+
+/**
+ *
+ */
+void AbstractCoalescent::simulateHeterochronousTree( void )
+{
+    
+    // the time tree object (topology + times)
+    Tree *psi = new Tree();
+    
+    // internally we treat unrooted topologies the same as rooted
+    psi->setRooted( true );
+    
+    // make a vector of tip nodes
+    std::vector<TopologyNode* > nodes;
+
+    // set tip names
+    for (size_t i=0; i<num_taxa; ++i)
+    {
+        // get the node from the list
+        TopologyNode* node = new TopologyNode(i);
+        
+        // set name and age
+        const std::string& name = taxa[i].getName();
+        node->setName(name);
+        node->setSpeciesName(taxa[i].getSpeciesName());
+        node->setAge(taxa[i].getAge());
+        node->setNodeType( true, false, false );
+        // add to tips
+        nodes.push_back(node);
+    }
+    
+    // get times for simulation
+    std::vector<double> ages = simulateCoalescentAges(num_taxa-1);
+    
+    // recursively build the tree
+    buildHeterochronousRandomBinaryTree(psi, nodes, ages);
+
+    // initialize the topology by setting the root
+    // the root is the only node left in nodes 
+    TopologyNode* root = nodes[0]; // Only node left after coalescing all is the root
+    psi->setRoot(root, true);
+
     // finally store the new value
     delete value;
     value = psi;

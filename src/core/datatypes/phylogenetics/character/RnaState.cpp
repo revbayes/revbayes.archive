@@ -28,6 +28,7 @@ RnaState* RnaState::clone( void ) const
 }
 
 
+
 void RnaState::setState(const std::string &symbol)
 {
     
@@ -224,6 +225,5 @@ void RnaState::setStateByIndex(size_t index)
             state = '?';
             break;
     }
-    
 }
 

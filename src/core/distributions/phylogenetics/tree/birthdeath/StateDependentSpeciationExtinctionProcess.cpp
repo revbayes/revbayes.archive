@@ -2,6 +2,7 @@
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "SSE_ODE.h"
 #include "Clade.h"
+#include "CladogeneticSpeciationRateMatrix.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
 #include "DeterministicNode.h"
 #include "MatrixReal.h"
@@ -266,11 +267,11 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             if ( use_cladogenetic_events == true )
             {
                 // get cladogenesis event map (sparse speciation rate matrix)
-                const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-                const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-                const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-                
-                eventMap = csf->getEventMap();
+                //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
+                //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+                //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+                //eventMap = csf->getEventMap();
+                eventMap = cladogenesis_matrix->getValue().getEventMap();
             }
             else
             {
@@ -393,11 +394,11 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     if ( use_cladogenetic_events == true )
     {
         // get cladogenesis event map (sparse speciation rate matrix)
-        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        
-        eventMap = csf->getEventMap();
+        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
+        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+        //eventMap = csf->getEventMap();
+        eventMap = cladogenesis_matrix->getValue().getEventMap();
     }
     else
     {
@@ -478,11 +479,11 @@ void StateDependentSpeciationExtinctionProcess::drawJointConditionalAncestralSta
     if ( use_cladogenetic_events == true )
     {
         // get cladogenesis event map (sparse speciation rate matrix)
-        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        
-        eventMap = csf->getEventMap();
+        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
+        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+        //eventMap = csf->getEventMap();
+        eventMap = cladogenesis_matrix->getValue().getEventMap();
     }
     else
     {
@@ -673,11 +674,11 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         if ( use_cladogenetic_events == true )
         {
             // get cladogenesis event map (sparse speciation rate matrix)
-            const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-            const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-            const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-            
-            event_map = csf->getEventMap();
+            //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
+            //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+            //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+            //event_map = csf->getEventMap();
+            event_map = cladogenesis_matrix->getValue().getEventMap();
         }
         else
         {
@@ -792,11 +793,11 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
     if ( use_cladogenetic_events == true )
     {
         // get cladogenesis event map (sparse speciation rate matrix)
-        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        
-        eventMap = csf->getEventMap();
+        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
+        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+        //eventMap = csf->getEventMap();
+        eventMap = cladogenesis_matrix->getValue().getEventMap();
     }
     else
     {
@@ -1073,11 +1074,11 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         if ( use_cladogenetic_events == true )
         {
             // get cladogenesis event map (sparse speciation rate matrix)
-            const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-            const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-            const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-            
-            event_map = csf->getEventMap();
+            //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
+            //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+            //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+            //event_map = csf->getEventMap();
+            event_map = cladogenesis_matrix->getValue().getEventMap();
         }
         else
         {
@@ -1381,7 +1382,7 @@ void StateDependentSpeciationExtinctionProcess::restoreSpecialization(DagNode *a
 
 
 
-void StateDependentSpeciationExtinctionProcess::setCladogenesisMatrix(const TypedDagNode< MatrixReal >* cm)
+void StateDependentSpeciationExtinctionProcess::setCladogenesisMatrix(const TypedDagNode< CladogeneticSpeciationRateMatrix >* cm)
 {
     
     // remove the old parameter first
@@ -1545,7 +1546,7 @@ void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagN
     }
     if ( oldP == cladogenesis_matrix )
     {
-        cladogenesis_matrix = static_cast<const TypedDagNode<MatrixReal>* >( newP );
+        cladogenesis_matrix = static_cast<const TypedDagNode<CladogeneticSpeciationRateMatrix>* >( newP );
     }
     
 }
@@ -1601,10 +1602,11 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
         cladogenesis_matrix->getValue(); // we must call getValue() to update the speciation and extinction rates in the event map
         
         // get cladogenesis event map (sparse speciation rate matrix)
-        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        std::map<std::vector<unsigned>, double> event_map = csf->getEventMap();
+        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
+        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+        //std::map<std::vector<unsigned>, double> event_map = csf->getEventMap();
+        std::map<std::vector<unsigned>, double> event_map = cladogenesis_matrix->getValue().getEventMap();
         
         ode.setEventMap( event_map );
     }

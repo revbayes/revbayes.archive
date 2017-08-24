@@ -25,22 +25,19 @@ namespace RevLanguage {
         virtual ~AbstractHomologousDiscreteCharacterData();
         
         
-//        typedef RevBayesCore::AbstractHomologousDiscreteCharacterData valueType;
-        
-        
-        // Basic utility functions
+            // Basic utility functions
         virtual AbstractHomologousDiscreteCharacterData*        clone(void) const;                                                                      //!< Clone object
         static const std::string&                               getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                  getClassTypeSpec(void);                                                                 //!< Get class type spec
         virtual const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get language type of the object
         
-        // Member method functions
+            // Member method functions
         virtual RevPtr<RevVariable>                             executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
-      
+        
         void                                                    concatenate(const RevObject& d, std::string type="") const;                                                  //!< Concatenate two sequences
         void                                                    concatenate(const AbstractHomologousDiscreteCharacterData& d, std::string type="") const;                    //!< Concatenate two sequences
         
-
+        
     private:
         
         void                                                    initMethods(void);

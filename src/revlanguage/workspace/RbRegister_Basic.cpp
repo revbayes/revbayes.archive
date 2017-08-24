@@ -11,7 +11,7 @@
  * This is the central registry of Rev objects. It is a large file and needs
  * to be properly organized to facilitate maintenance. Follow these simple
  * guidelines to ensure that your additions follow the existing structure.
- * 
+ *
  * 1. All headers are added in groups corresponding to directories in the
  *    revlanguage code base.
  * 2. All objects (types, distributions, and functions) are registered in
@@ -79,7 +79,7 @@
 /* Math types (in folder "datatypes/math") */
 #include "RlMatrixReal.h"
 #include "RlMatrixRealSymmetric.h"
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 
@@ -89,9 +89,9 @@
 
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
-#include "Dist_phyloDACTMC.h"
+#include "Dist_phyloCTMCDASequence.h"
+#include "Dist_phyloCTMCDASiteIID.h"
 #include "Dist_phyloCTMCClado.h"
-
 
 /* Argument rules (in folder "functions/argumentrules") */
 #include "ArgumentRule.h"
@@ -130,11 +130,11 @@
 /* These are functions that are typically not called explicitly but implicitly
    through parsing of a Rev statement. Examples include a statement like '1 + 2',
    which results in the builtin '_add' function being called.
- 
+
    Exceptions include Func_range and Func_vector, which are both used for implicit
    and explicit calls. They are therefore considered basic functions instead of
    internal functions.
- 
+
    All internal functions have function calls that start with an underscore character,
    and therefore their class names have two underscore characters. They are typically
    templated. */
@@ -159,7 +159,6 @@
 #include "Func__scalarVectorSub.h"
 #include "Func__sub.h"
 #include "Func__uminus.h"
-#include "Func__vectorIndexOperator.h"
 #include "Func__vectorScalarDiv.h"
 #include "Func__vectorScalarSub.h"
 
@@ -246,15 +245,15 @@
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
 {
-    
+
     try
     {
         ///////////////////////////////////////////
         /* Add functions (in "functions" folder) */
         ///////////////////////////////////////////
-        
+
         /* Basic functions (in folder "functions/basic") */
-        
+
         // regular functions
         addFunction( new Func_append<Integer>()          );
         addFunction( new Func_append<Real>()             );
@@ -293,15 +292,15 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         /* Internal functions (in folder "functions/internal") */
         /* Note: These are functions that are called implicitly, and the name of which, if
          called explicitly, starts with an underscore character. */
-        
+
         // not templated logical functions
         addFunction( new Func__and()   );
         addFunction( new Func__or()    );
         addFunction( new Func__unot()  );
-        
+
         // range function (x:y)
         addFunction( new Func_range()  );
-        
+
         // logical templated functions
         addFunction( new Func__eq<             Integer,          Integer >()             );
         addFunction( new Func__eq<                Real,             Real >()             );
@@ -339,13 +338,13 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__ne<             Simplex,          Simplex >()             );
         addFunction( new Func__ne<            TimeTree,         TimeTree >()             );
         addFunction( new Func__ne<    BranchLengthTree, BranchLengthTree >()             );
-        
+
         // unary minus (e.g. -a)
         addFunction( new Func__uminus<Integer, Integer>()  );
         addFunction( new Func__uminus<Natural, Integer>()  );
         addFunction( new Func__uminus<Real, Real>()        );
         addFunction( new Func__uminus<RealPos, Real>()     );
-        
+
         // addition (e.g. a+b )
         addFunction( new Func__add< Natural                , Natural               , Natural               >(  )   );
         addFunction( new Func__add< Integer                , Integer               , Integer               >(  )   );
@@ -362,7 +361,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__scalarVectorAdd<Integer     , ModelVector<Integer>  , ModelVector<Integer>       >(  )   );
         addFunction( new Func__scalarVectorAdd<Real        , ModelVector<Real>     , ModelVector<Real>          >(  )   );
         addFunction( new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
-        
+
         // division
         addFunction( new Func__div< RealPos                            , Natural               , RealPos                   >(  )  );
         addFunction( new Func__div< Real                               , Integer               , Real                      >(  )  );
@@ -384,12 +383,14 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__scalarVectorDiv<Integer                 , Real                  , Real                      >(  )   );
         addFunction( new Func__scalarVectorDiv<Real                    , Real                  , Real                      >(  )   );
         addFunction( new Func__scalarVectorDiv<RealPos                 , RealPos               , RealPos                   >(  )   );
-        
+
         // multiplication
         addFunction( new Func__mult< Natural               , Natural               , Natural               >(  )  );
         addFunction( new Func__mult< Integer               , Integer               , Integer               >(  )  );
         addFunction( new Func__mult< Real                  , Real                  , Real                  >(  )  );
         addFunction( new Func__mult< RealPos               , RealPos               , RealPos               >(  )  );
+        addFunction( new Func__mult< Simplex               , RealPos               , ModelVector<RealPos>  >(  )  );
+        addFunction( new Func__mult< Simplex               , Real                  , ModelVector<Real>     >(  )  );
         addFunction( new Func__mult< ModelVector<Natural>  , ModelVector<Natural>  , ModelVector<Natural>  >(  )  );
         addFunction( new Func__mult< ModelVector<Integer>  , ModelVector<Integer>  , ModelVector<Integer>  >(  )  );
         addFunction( new Func__mult< ModelVector<RealPos>  , ModelVector<RealPos>  , ModelVector<RealPos>  >(  )  );
@@ -416,10 +417,10 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__vectorScalarSub<Real                    , Real                  , Real                      >(  )   );
         addFunction( new Func__scalarVectorSub<Integer                 , Integer               , Integer                   >(  )   );
         addFunction( new Func__scalarVectorSub<Real                    , Real                  , Real                      >(  )   );
-        
+
         // modulo
         addFunction( new Func__mod() );
-        
+
         // exponentiation
         addFunction( new Func_power() );
         addFunction( new Func_powerVector() );
@@ -433,8 +434,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
 //        addFunction( "_Probability2RealPos",        new Func__conversion<Probability, RealPos>()    );
 //        addFunction( "_Probability2Real",           new Func__conversion<Probability, Real>()       );
 //        addFunction( "_RealPos2Real",               new Func__conversion<RealPos, Real>()           );
-        
-        
+
+
         addFunction( new Func__conversion<ModelVector<Natural>, ModelVector<Integer> >()         );
         addFunction( new Func__conversion<ModelVector<Natural>, ModelVector<Real> >()            );
         addFunction( new Func__conversion<ModelVector<Natural>, ModelVector<RealPos> >()         );
@@ -453,6 +454,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__conversion<ModelVector<ModelVector<Probability> >, ModelVector<ModelVector<Real> > >()        );
         
         
+
+
 
         /* Input/output functions (in folder "functions/io") */
         addFunction( new Func_ancestralStateTree()                      );
@@ -492,20 +495,18 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
     }
     catch(RbException& rbException)
     {
-        
+
         RBOUT("Caught an exception while initializing the workspace\n");
         std::ostringstream msg;
         rbException.print(msg);
         msg << std::endl;
         RBOUT(msg.str());
-        
+
         RBOUT("Please report this bug to the RevBayes Development Core Team");
-        
+
         RBOUT("Press any character to exit the program.");
         getchar();
         exit(1);
     }
-    
+
 }
-
-

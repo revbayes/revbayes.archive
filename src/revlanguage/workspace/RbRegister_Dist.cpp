@@ -11,7 +11,7 @@
  * This is the central registry of Rev objects. It is a large file and needs
  * to be properly organized to facilitate maintenance. Follow these simple
  * guidelines to ensure that your additions follow the existing structure.
- * 
+ *
  * 1. All headers are added in groups corresponding to directories in the
  *    revlanguage code base.
  * 2. All objects (types, distributions, and functions) are registered in
@@ -84,7 +84,7 @@
 /* Math types (in folder "datatypes/math") */
 #include "RlMatrixReal.h"
 #include "RlMatrixRealSymmetric.h"
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 
@@ -96,7 +96,8 @@
 
 /* Character evolution models (in folder "distributions/phylogenetics/character") */
 #include "Dist_phyloCTMC.h"
-#include "Dist_phyloDACTMC.h"
+#include "Dist_phyloCTMCDASequence.h"
+#include "Dist_phyloCTMCDASiteIID.h"
 #include "Dist_phyloCTMCClado.h"
 #include "Dist_phyloCTMCDollo.h"
 
@@ -107,9 +108,10 @@
 #include "Dist_PhyloBrownianMVN.h"
 #include "Dist_PhyloBrownianREML.h"
 #include "Dist_PhyloBrownianMultiSampleREML.h"
+#include "Dist_PhyloMvtBrownian.h"
+#include "Dist_PhyloMultivariateBrownianREML.h"
 #include "Dist_PhyloOrnsteinUhlenbeck.h"
 #include "Dist_PhyloOrnsteinUhlenbeckMVN.h"
-#include "Dist_PhyloMvtBrownian.h"
 #include "Dist_PhyloWhiteNoise.h"
 
 /* Tree priors (in folder "distributions/phylogenetics/tree") */
@@ -127,6 +129,8 @@
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
 #include "Dist_episodicBirthDeath.h"
+#include "Dist_HeterochronousCoalescent.h"
+#include "Dist_HeterochronousCoalescentSkyline.h"
 #include "Dist_heterogeneousRateBirthDeath.h"
 #include "Dist_multispeciesCoalescentInverseGammaPrior.h"
 #include "Dist_multispeciesCoalescentUniformPrior.h"
@@ -159,6 +163,7 @@
 #include "Dist_halfNormalPositive.h"
 #include "Dist_inverseGamma.h"
 #include "Dist_inverseWishart.h"
+#include "Dist_LKJ.h"
 #include "Dist_lnorm.h"
 #include "Dist_lnormOffset.h"
 #include "Dist_lnormOffsetPositive.h"
@@ -169,6 +174,7 @@
 #include "Dist_normalTruncated.h"
 #include "Dist_normalTruncatedPositive.h"
 #include "Dist_poisson.h"
+#include "Dist_scaledDirichlet.h"
 #include "Dist_softBoundUniformNormal.h"
 #include "Dist_studentT.h"
 #include "Dist_unif.h"
@@ -204,7 +210,7 @@
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 {
-    
+
     try
     {
         ///////////////////////////////////////////////////
@@ -226,8 +232,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianREML()             );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMVN()              );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMultiSampleREML()  );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloMultivariateBrownianREML() );
         AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()        );
-        
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()     );
         
         // multivariate brownian motion
@@ -240,7 +246,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 //        AddDistribution< AbstractHomologousDiscreteCharacterData >( new Dist_phyloDACTMC() );
 //        AddDistribution< AbstractHomologousDiscreteCharacterData >( new Dist_phyloCTMCClado() );
         addDistribution( new Dist_phyloCTMC() );
-        addDistribution( new Dist_phyloDACTMC() );
+        addDistribution( new Dist_phyloCTMCDASequence() );
+        addDistribution( new Dist_phyloCTMCDASiteIID() );
         addDistribution( new Dist_phyloCTMCClado() );
         addDistribution( new Dist_phyloCTMCDollo() );
         
@@ -265,16 +272,22 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // diversity-dependent pure-birth process
         AddDistribution< TimeTree                   >( new Dist_divDepYuleProcess() );
-        
+
         // episodic birth-death process
         AddDistribution< TimeTree                   >( new Dist_episodicBirthDeath() );
-        
+
         // coalescent (constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_Coalescent() );
-        
+
         // coalescent (skyline population sizes)
         AddDistribution< TimeTree                   >( new Dist_CoalescentSkyline() );
-
+        
+//        // heterochronously sampled coalescent (constant population sizes)
+        AddDistribution< TimeTree                   >( new Dist_HeterochronousCoalescent() );
+//
+//        // heterochronously sampled coalescent (skyline population sizes)
+        AddDistribution< TimeTree                   >( new Dist_HeterochronousCoalescentSkyline() );
+        
         // multispecies coalescent (per branch constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_constPopMultispCoal() );
         AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentInverseGammaPrior() );
@@ -291,38 +304,38 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // uniform time tree distribution
         AddDistribution< TimeTree                   >( new Dist_uniformTimeTree() );
-        
+
         // uniform topology distribution
         AddDistribution< BranchLengthTree           >( new Dist_uniformTopology() );
-        
+
 		// empirical tree distributions
 		AddDistribution< Tree                       >( new Dist_empiricalTree() );
-		
-		// Distance Matrix Gamma distribution
-		AddDistribution< RlDistanceMatrix           >( new Dist_phyloDistanceGamma() );
 
-		
+		// Distance Matrix Gamma distribution
+		AddDistribution< DistanceMatrix             >( new Dist_phyloDistanceGamma() );
+
+
         /* Statistical distributions on simple variables (in folder "distributions/math") */
-        
+
         // bernoulli distribution
         AddDistribution< Natural                    >( new Dist_bernoulli() );
 
         // binomial distribution
         AddDistribution< Natural                    >( new Dist_binomial() );
-        
+
         // beta distribution
 //        AddContinuousDistribution< Probability >( new Dist_beta() );
         AddDistribution< Probability                >( new Dist_beta() );
-        
+
         // bimodal normal distribution
         AddContinuousDistribution< Real             >( new Dist_bimodalNorm() );
-        
+
         // bimodal lognormal distribution
         AddContinuousDistribution< RealPos          >( new Dist_bimodalLnorm() );
-        
+
         // categorical distribution
         AddDistribution< Natural                    >( new Dist_categorical() );
-        
+
         // chi-square distribution
         AddContinuousDistribution< RealPos          >( new Dist_chisq() );
         
@@ -331,16 +344,19 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // compound Poisson w/ normal kernel
         AddDistribution< Real                       >( new Dist_cppNormal() );
-        
+
         // dirichlet distribution
         AddDistribution< Simplex                    >( new Dist_dirichlet() );
-		
+
+        // scaled Dirichlet distribution
+        AddDistribution< Simplex                    >( new Dist_scaledDirichlet() );
+
         // gamma distribution
         AddContinuousDistribution< RealPos          >( new Dist_gamma() );
-        
+
         // geometric distribution
         AddDistribution< Natural                    >( new Dist_geom() );
-        
+
         // half-Cauchy distribution
         AddContinuousDistribution< Real             >( new Dist_halfCauchy() );
         AddContinuousDistribution< RealPos          >( new Dist_halfCauchyPositive() );
@@ -354,34 +370,34 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // poisson distribution
         AddDistribution< Natural                    >( new Dist_poisson() );
-        
+
         // exponential distribution
         AddContinuousDistribution< RealPos          >( new Dist_exponential() );
         AddContinuousDistribution< Real             >( new Dist_exponentialOffset() );
         AddContinuousDistribution< RealPos          >( new Dist_exponentialOffsetPositive() );
-        
+
         // lognormal distribution
         AddContinuousDistribution< RealPos          >( new Dist_lnorm() );
         AddContinuousDistribution< Real             >( new Dist_lnormOffset() );
         AddContinuousDistribution< RealPos          >( new Dist_lnormOffsetPositive() );
-        
+
         // multinomial distribution
         AddDistribution< ModelVector<Natural>       >( new Dist_multinomial() );
-        
+
         // multivariate normal distribution
         AddDistribution< ModelVector<Real>          >( new Dist_multivariateNorm());
-        
+
         // normal distribution
         AddContinuousDistribution< Real             >( new Dist_norm() );
         AddContinuousDistribution< Real             >( new Dist_normalTruncated() );
         AddContinuousDistribution< RealPos          >( new Dist_normalTruncatedPositive() );
-        
-        // LogUniform distribution   
+
+        // LogUniform distribution
         AddContinuousDistribution< RealPos          >( new Dist_logUniform() );
-        
+
         // Uniform distribution with normal distributed bounds
         AddContinuousDistribution< Real             >( new Dist_SoftBoundUniformNormal() );
-        
+
         // uniform distribution
         AddContinuousDistribution< Real             >( new Dist_unif() );
         AddContinuousDistribution< RealPos          >( new Dist_unifPositive() );
@@ -390,16 +406,19 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< Integer                    >( new Dist_UniformInteger() );
         AddDistribution< Natural                    >( new Dist_UniformNatural() );
         AddContinuousDistribution< Real             >( new Dist_varianceGamma() );
+
+        // LKJ distribution
+        AddDistribution< MatrixRealSymmetric        >( new Dist_LKJ() );
         
         // Wishart distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_wishart() );
-        
+
         // inverse Wishart distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_inverseWishart() );
 
         // and the so-called "decomposed" Inverse Wishart
         AddDistribution< MatrixReal                 >( new Dist_decomposedInverseWishart() );
-        
+
         /* Mixture distributions (in folder "distributions/mixture") */
         AddDistribution< ModelVector<TimeTree>      >( new Dist_EmpiricalSample<TimeTree>());
 
@@ -428,7 +447,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // Ornstein-Uhlenbeck process
         AddDistribution< Real                       >( new OrnsteinUhlenbeckProcess() );
-        
+
         // mixture distribution
         AddDistribution< Real                       >( new Dist_reversibleJumpMixtureConstant<Real>() );
         AddDistribution< RealPos                    >( new Dist_reversibleJumpMixtureConstant<RealPos>() );
@@ -439,7 +458,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ModelVector<Natural>       >( new Dist_reversibleJumpMixtureConstant<ModelVector<Natural> >() );
         AddDistribution< TimeTree                   >( new Dist_reversibleJumpMixtureConstant<TimeTree>() );
         AddDistribution< BranchLengthTree           >( new Dist_reversibleJumpMixtureConstant<BranchLengthTree>() );
-        
+
 
         /* Now we have added all primitive and complex data types and can start type checking */
         Workspace::globalWorkspace().typesInitialized = true;
@@ -448,20 +467,18 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
     }
     catch(RbException& rbException)
     {
-        
+
         RBOUT("Caught an exception while initializing distributions in the workspace\n");
         std::ostringstream msg;
         rbException.print(msg);
         msg << std::endl;
         RBOUT(msg.str());
-        
+
         RBOUT("Please report this bug to the RevBayes Development Core Team");
-        
+
         RBOUT("Press any character to exit the program.");
         getchar();
         exit(1);
     }
-    
+
 }
-
-

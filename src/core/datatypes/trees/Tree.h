@@ -65,6 +65,7 @@ namespace RevBayesCore {
         void                                                clearParameters(void);                                                                              //!< Clear both the current node and branch parameters
         void                                                clearBranchParameters(void);
 		void                                                clearNodeParameters(void);
+
         void                                                collapseNegativeBranchLengths(double length);                                                                //!< Don't allow parents to be younger than their children (TimeTrees only)
         void                                                dropTipNodeWithName(const std::string &n);                                                          //!< Get a pointer to tip node i
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
@@ -82,12 +83,15 @@ namespace RevBayesCore {
         size_t                                              getNumberOfExtinctTips(void) const;                                                                 //!< Get the number of extinct tip nodes in the Tree
         size_t                                              getNumberOfTips(void) const;                                                                        //!< Get the number of tip nodes in the Tree
         const TopologyNode&                                 getInteriorNode(size_t indx) const;                                                                 //!< Get a pointer to interior node i
+        const std::vector<std::vector<double> >             getAdjacencyMatrix(void) const;                                                                     //!< Get a 2d-vector adjacency matrix weighted by branch lengths
+
         std::string                                         getPlainNewickRepresentation() const;                                                               //!< Get the newick representation of this Tree
         TopologyNode&                                       getRoot(void);                                                                                      //!< Get a pointer to the root node of the Tree
         const TopologyNode&                                 getRoot(void) const;                                                                                //!< Get a pointer to the root node of the Tree
         std::string                                         getSimmapNewickRepresentation() const;                                                              //!< Get the SIMMAP and phytools compatible newick representation of this Tree
         std::vector<std::string>                            getSpeciesNames() const;                                                                            //!< Get all the species represented in the tree
         std::vector<Taxon>                                  getTaxa() const;                                                                                    //!< Get all the taxa in the tree
+
         const std::map<std::string, size_t>&                getTaxonBitSetMap(void) const;                                                                                //!< Returns a map that holds the BitSet index for each taxon
         size_t                                              getTipIndex(const std::string &name) const;
         std::vector<std::string>                            getTipNames() const;

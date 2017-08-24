@@ -17,7 +17,7 @@ BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx) :
 {
     parentCharacters.resize(n_characters);
     childCharacters.resize(n_characters);
-    
+
     for (size_t i = 0; i < n_characters; i++)
     {
         parentCharacters[i] = new CharacterEvent(i,0,0.0);
@@ -32,23 +32,23 @@ BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx, std::set<int> sc)
 {
     parentCharacters.resize(n_characters);
     childCharacters.resize(n_characters);
-    
+
     for (size_t i = 0; i < n_characters; i++)
     {
         parentCharacters[i] = new CharacterEvent(i,0,0.0);
         childCharacters[i] = new CharacterEvent(i,0,1.0);
     }
-    
+
 }
 
 
 
 BranchHistory::BranchHistory(const BranchHistory& m)
 {
-    
+
     if (this != &m)
     {
-        
+
         n_states                = m.n_states;
         n_characters            = m.n_characters;
         parentCharacters        = m.parentCharacters;
@@ -56,7 +56,7 @@ BranchHistory::BranchHistory(const BranchHistory& m)
         history                 = m.history;
         branch_index            = m.branch_index;
     }
-    
+
 }
 
 BranchHistory::~BranchHistory(void)
@@ -71,10 +71,10 @@ BranchHistory::~BranchHistory(void)
 
 BranchHistory& BranchHistory::operator=(const BranchHistory &bh)
 {
-    
+
     if (this != &bh)
     {
-        
+
         n_states                = bh.n_states;
         n_characters            = bh.n_characters;
         parentCharacters        = bh.parentCharacters;
@@ -82,7 +82,7 @@ BranchHistory& BranchHistory::operator=(const BranchHistory &bh)
         history                 = bh.history;
         branch_index            = bh.branch_index;
     }
-    
+
     return *this;
 }
 
@@ -99,6 +99,24 @@ void BranchHistory::addEvent(CharacterEvent* evt)
     history.insert(evt);
 }
 
+bool BranchHistory::areEventTimesValid(const TopologyNode &node) const
+{
+    
+    double lower_boundary = node.getAge();
+    double upper_boundary = lower_boundary + node.getBranchLength();
+    double event_age;
+    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
+    for (it = history.begin(); it != history.end(); it++)
+    {
+        event_age = (*it)->getAge();
+        if ( event_age > upper_boundary || event_age < lower_boundary)
+        {
+            return false;
+        }
+    }
+    
+    return true;
+}
 
 BranchHistory* BranchHistory::clone(void) const
 {
@@ -160,25 +178,37 @@ void BranchHistory::clearEvents(void)
 
 void BranchHistory::clearEvents(const std::set<size_t>& indexSet)
 {
+    
     std::set<size_t>::iterator it_idx;
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h, it_tmp;
-
+    std::set<CharacterEvent*> to_be_deleted;
+    
     // for each event in history, delete if index matches indexSet
-    for (it_h = history.begin(); it_h != history.end(); )
+    for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
-        if ( indexSet.find( (*it_h)->getCharacterIndex() ) != indexSet.end() )
+        if ( indexSet.find( (*it_h)->getSiteIndex() ) != indexSet.end() )
         {
-            it_tmp = it_h;
-            ++it_tmp;
-            history.erase(it_h);
-            //delete *it_h;
-            it_h = it_tmp;
-        }
-        else
-        {
-            ++it_h;
+            to_be_deleted.insert(*it_h);
         }
     }
+    
+    std::set<CharacterEvent*>::iterator it_d;
+    for (it_d = to_be_deleted.begin(); it_d != to_be_deleted.end(); it_d++)
+    {
+        history.erase(*it_d);
+    }
+
+//            it_tmp = it_h;
+//            ++it_tmp;
+//            history.erase(it_h);
+//            //delete *it_h;
+//            it_h = it_tmp;
+//        }
+//        else
+//        {
+//            ++it_h;
+//        }
+//    }
 }
 
 void BranchHistory::removeEvent(CharacterEvent* evt)
@@ -190,51 +220,64 @@ void BranchHistory::removeEvent(CharacterEvent* evt)
 
 void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<CharacterEvent*>& parentSet, const std::set<CharacterEvent*>& childSet, const std::set<size_t>& indexSet)
 {
-    
+
     /*
     // erase events on branchHistory for indices in indexSet
     clearEvents(indexSet);
-    
+
     // insert elements into history
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     for (it_h = updateSet.begin(); it_h != updateSet.end(); it_h++)
         history.insert(*it_h);
     */
-    
+
     updateHistory(updateSet, indexSet);
-    
+
     // update events on terminal vectors
     std::set<CharacterEvent*>::iterator it_idx;
     for (it_idx = parentSet.begin(); it_idx != parentSet.end(); it_idx++)
-        parentCharacters[ (*it_idx)->getCharacterIndex() ] = *it_idx;
+        parentCharacters[ (*it_idx)->getSiteIndex() ] = *it_idx;
     for (it_idx = childSet.begin(); it_idx != childSet.end(); it_idx++)
-        childCharacters[ (*it_idx)->getCharacterIndex() ] = *it_idx;
-    
+        childCharacters[ (*it_idx)->getSiteIndex() ] = *it_idx;
+
 }
 
 void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<size_t>& indexSet)
 {
     // erase events on branchHistory for indices in indexSet
     clearEvents(indexSet);
-    
+
     // insert elements into history
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     for (it_h = updateSet.begin(); it_h != updateSet.end(); it_h++)
     {
         history.insert(*it_h);
     }
-    
+
 }
 
+void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet)
+{
+    // erase events on branchHistory for indices in indexSet
+    clearEvents();
+
+    // insert elements into history
+    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+    for (it_h = updateSet.begin(); it_h != updateSet.end(); it_h++)
+    {
+        history.insert(*it_h);
+    }
+
+}
 
 void BranchHistory::setChildCharacters(const std::vector<CharacterEvent*>& s)
 {
     std::vector<CharacterEvent*>::const_iterator it;
     for (it = s.begin(); it != s.end(); it++)
     {
-        childCharacters[ (*it)->getCharacterIndex() ] = *it;//new CharacterEvent(**it);
+        childCharacters[ (*it)->getSiteIndex() ] = *it;//new CharacterEvent(**it);
     }
-    
+
 }
 
 void BranchHistory::setChildCharacters(const std::set<CharacterEvent*>& s)
@@ -242,9 +285,9 @@ void BranchHistory::setChildCharacters(const std::set<CharacterEvent*>& s)
     std::set<CharacterEvent*>::iterator it;
     for (it = s.begin(); it != s.end(); it++)
     {
-        childCharacters[ (*it)->getCharacterIndex() ] = *it;//new CharacterEvent(**it);
+        childCharacters[ (*it)->getSiteIndex() ] = *it;//new CharacterEvent(**it);
     }
-    
+
 }
 
 void BranchHistory::setParentCharacters(const std::vector<CharacterEvent*>& s)
@@ -252,9 +295,9 @@ void BranchHistory::setParentCharacters(const std::vector<CharacterEvent*>& s)
     std::vector<CharacterEvent*>::const_iterator it;
     for (it = s.begin(); it != s.end(); it++)
     {
-        parentCharacters[ (*it)->getCharacterIndex() ] = *it;//new CharacterEvent(**it);
+        parentCharacters[ (*it)->getSiteIndex() ] = *it;//new CharacterEvent(**it);
     }
-    
+
 }
 
 void BranchHistory::setParentCharacters(const std::set<CharacterEvent*>& s)
@@ -262,9 +305,9 @@ void BranchHistory::setParentCharacters(const std::set<CharacterEvent*>& s)
     std::set<CharacterEvent*>::iterator it;
     for (it = s.begin(); it != s.end(); it++)
     {
-        parentCharacters[ (*it)->getCharacterIndex() ] = *it;//new CharacterEvent(**it);
+        parentCharacters[ (*it)->getSiteIndex() ] = *it;//new CharacterEvent(**it);
     }
-    
+
 }
 
 
@@ -275,7 +318,7 @@ void BranchHistory::setHistory(const std::set<CharacterEvent*,CharacterEventComp
     {
         history.insert(*it);
     }
-    
+
 }
 
 void BranchHistory::setHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& s)
@@ -288,14 +331,14 @@ void BranchHistory::print(void) const
 {
     std::set<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     std::vector<CharacterEvent*>::iterator it_v;
-    
+
 //    std::cout << parentCharacters.size() << "\n";
 //    for (size_t i = 0; i < parentCharacters.size(); i++)
 //        std::cout << parentCharacters[i] << " ";
 //    std::cout << "\n";
-    
+
     std::vector<CharacterEvent*> tmp = parentCharacters;
-    
+
     std::cout << "BranchHistory " << branch_index << " size=" << history.size() << "  " << this << "\n";
     std::cout << "                             ";
     for (size_t i = 0; i < n_characters; i++)
@@ -304,22 +347,22 @@ void BranchHistory::print(void) const
         else std::cout << " ";
     }
     std::cout << "\n";
-    std::cout << "                       0.0 : ";
+    std::cout << "                     start : ";
     for (it_v = parentCharacters.begin(); it_v != parentCharacters.end(); it_v++)
     {
 //        std::cout << (*it_v)->getState();
         std::cout << (*it_v)->getStateStr();
     }
     std::cout << "\n";
-    
+
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         std::cout << *it_h << "   ";
-        std::cout << std::setw(12) << std::setprecision(6) << (*it_h)->getTime() << " : ";
-        tmp[ (*it_h)->getCharacterIndex() ] = *it_h;
+        std::cout << std::setw(12) << std::setprecision(6) << (*it_h)->getAge() << " : ";
+        tmp[ (*it_h)->getSiteIndex() ] = *it_h;
         for (size_t i = 0; i < n_characters; i++)
         {
-            if (i != (*it_h)->getCharacterIndex())
+            if (i != (*it_h)->getSiteIndex())
             {
                 std::cout << " ";
             }
@@ -327,14 +370,14 @@ void BranchHistory::print(void) const
             {
                 std::cout << (*it_h)->getStateStr();
             }
-            
+
 //                std::cout << (*it_h)->getState();
             //std::cout << " ";
         }
         std::cout << "\n";
-        
+
     }
-    std::cout << "                       1.0 : ";
+    std::cout << "                       end : ";
     for (it_v = childCharacters.begin(); it_v != childCharacters.end(); it_v++)
     {
 //        std::cout << (*it_v)->getState();
@@ -367,15 +410,15 @@ CharacterEvent* BranchHistory::getEvent(size_t i)
     {
         ++it;
     }
-    
+
     return (*it);
 }
 
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const BranchHistory& x)
 {
-    
+
     o << x.getNumberEvents();
-    
+
     return o;
 }

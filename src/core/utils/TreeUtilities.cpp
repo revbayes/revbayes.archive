@@ -188,13 +188,13 @@ RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(con
     
     RevBayesCore::MatrixReal* matrix = new MatrixReal( tree.getNumberOfTips() );
     
-    std::vector<std::string> names = tree.getTipNames( ) ;
+    std::vector<Taxon> names = tree.getTaxa( ) ;
     
     std::map< std::string, int > namesToId;
     
     for(size_t i = 0; i < names.size(); ++i)
     {
-        namesToId[ names[i] ] = int(i);
+        namesToId[ names[i].getName() ] = int(i);
     }
     
     std::vector< std::pair<std::string, double> > distsToRoot;

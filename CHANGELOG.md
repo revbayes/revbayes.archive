@@ -6,7 +6,10 @@ This file contains a list of notable upgrades and features introduced to each re
 #### Added
 - `CHANGELOG.md` added
 - Support to provide autotuned acceptance rates for `mvScale`, `mvSlide`, and `mvSimplex` moves using the `tuneTarget` argument
+<<<<<<< HEAD
+=======
 - Support to store simulated character states of internal nodes for `dnPhyloCTMC` and `dnPhyloCTMCClado` using the `storeInternalNodes` argument
+>>>>>>> development
 
 #### Changed
 

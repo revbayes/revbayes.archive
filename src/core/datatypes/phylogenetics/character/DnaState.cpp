@@ -533,6 +533,3 @@ void DnaState::setStateByIndex(size_t index)
     }
 
 }
-
-
-

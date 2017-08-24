@@ -47,7 +47,7 @@ namespace RevBayesCore {
         double                                          offset;
 
         CharacterEvent*                                 stored_value;                                                                        //!< The stored value of the Proposal used for rejections.
-        double                                          stored_time;                                                                              //!< The value we propose.
+        double                                          stored_age;                                                                              //!< The value we propose.
         size_t                                          stored_branch_index;                                                                              //!< The value we propose.
         bool                                            failed;
     };

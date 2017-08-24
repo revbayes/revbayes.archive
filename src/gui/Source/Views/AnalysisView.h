@@ -2,6 +2,7 @@
 #import <Foundation/Foundation.h>
 #import "RbView.h"
 @class InOutlet;
+@class ScalingScrollView;
 @class Tool;
 
 #define UP      0
@@ -13,8 +14,8 @@
 
 @interface AnalysisView : RbView {
 
-    BOOL            isLocked;
-    BOOL            cancelAnalysis;
+    BOOL                            isLocked;
+    BOOL                            cancelAnalysis;
 }
 
 @property (nonatomic) BOOL        isLocked;

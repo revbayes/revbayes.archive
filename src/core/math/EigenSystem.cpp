@@ -1276,13 +1276,28 @@ void EigenSystem::update(void)
 	
 	// compute eigenvalues and eigenvectors
 	hqr2(low, high, A, realEigenvalues, imaginaryEigenvalues, eigenvectors);
+    
+    // mrm 2/22/17
+    // Is this really necessary? It breaks eigen decomposition for VCV matrices, which may have positive eigenvalues.
+    // For now, I am making a copy of this function that does not involve this truncation.
+    for (std::vector<double>::iterator it = realEigenvalues.begin(); it != realEigenvalues.end(); ++it)
+    {
+        if ( *it > 0.0 )
+        {
+            *it = 0.0;
+        }
+    }
 	
 	// reverse balancing to obtain eigenvectors
 	balback(low, high, scale, eigenvectors);
     
 	// checks whether there are complex eigenvalues
 	complex = checkForComplexEigenvalues();
-	
+    
+    // mrm 2/22/17
+    // these computations are seriously unstable for VCV matrices.
+    // the smallest eigenvector is off by many orders of magnitude!!!
+    
 	// invert eigenvectors
 	if ( isComplex() == false ) 
     {
@@ -1295,6 +1310,72 @@ void EigenSystem::update(void)
 		initializeComplexEigenvectors();
 		invertComplexMatrix(complexEigenvectors, complexInverseEigenvectors);
     }
+
+    
+    
+}
+
+/*!
+ * This function first checks that the input matrix has the same
+ * dimensions as the matrix used to construct the eigensystem. Then
+ * it calculates and stores the eigensystem for the input matrix. The
+ * function allocates or deallocates memory for complex eigenvectors
+ * depending on need.
+ *
+ * \brief Update eigensystem
+ * \parameter m Matrix for which we should calculate eigensystem
+ * \return MbError(MbError::ERROR)
+ */
+void EigenSystem::updatePositiveEigenvalues(void)
+{
+    
+    // copy the rate matrix into A because we don't want to destroy
+    // the rate matrix
+    MatrixReal A(*qPtr);
+    
+    // check that the dimension of A is right
+    assert(A.getNumberOfRows() == n && A.getNumberOfColumns() == n);
+    
+    // balance the n X n matrix
+    int low = 0, high = 0;
+    std::vector<double> scale(n);
+    //Vector<Real> scale(n, 0.0);
+    balance(A, scale, &low, &high);
+    
+    // transform to upper Hessenberg form
+    std::vector<int> cnt(n, 0);
+    elmhes(low, high, A, cnt);
+    
+    // initialize the eigenvectors
+    elmtrans(low, high, A, cnt, eigenvectors);
+    
+    // compute eigenvalues and eigenvectors
+    hqr2(low, high, A, realEigenvalues, imaginaryEigenvalues, eigenvectors);
+    
+    // reverse balancing to obtain eigenvectors
+    balback(low, high, scale, eigenvectors);
+    
+    // checks whether there are complex eigenvalues
+    complex = checkForComplexEigenvalues();
+    
+    // mrm 2/22/17
+    // these computations are seriously unstable for VCV matrices.
+    // the smallest eigenvector is off by many orders of magnitude!!!
+    
+    // invert eigenvectors
+    if ( isComplex() == false )
+    {
+        //A.inject(eigenvectors);
+        A = eigenvectors;
+        invertMatrix(A, inverseEigenvectors);
+    }
+    else
+    {
+        initializeComplexEigenvectors();
+        invertComplexMatrix(complexEigenvectors, complexInverseEigenvectors);
+    }
+    
+    
     
 }
 

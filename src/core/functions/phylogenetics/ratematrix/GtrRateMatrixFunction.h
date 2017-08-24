@@ -38,7 +38,6 @@ namespace RevBayesCore {
     private:
         
         // members
-        
         const TypedDagNode< Simplex >*                      exchangeability_rates;
         const TypedDagNode< Simplex >*                      base_frequencies;
         

@@ -398,7 +398,7 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
             o << node_comments[i];
             needsComma = true;
         }
-
+        
         for (size_t i = 0; i < fossil_comments.size(); ++i)
         {
             if ( needsComma == true )
@@ -707,6 +707,16 @@ bool TopologyNode::equals(const TopologyNode& node) const
     return true;
 }
 
+
+void TopologyNode::fireTreeChangeEvent( const unsigned& m ) {
+    
+    // fire tree change event
+    if ( tree != NULL )
+    {
+        tree->getTreeChangeEventHandler().fire( *this, m );
+    }
+
+}
 
 /*
  * Get the Age.

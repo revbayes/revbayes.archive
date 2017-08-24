@@ -10,24 +10,24 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 NaturalNumbersState::NaturalNumbersState(size_t n) : DiscreteCharacterState( n ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(n)
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(n)
 {
-
+    
 }
 
 
 
 /** Constructor that sets the observation */
 NaturalNumbersState::NaturalNumbersState(const std::string &s, int m) : DiscreteCharacterState( m ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(m)
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(m)
 {
     setState(s);
 }
@@ -35,11 +35,11 @@ NaturalNumbersState::NaturalNumbersState(const std::string &s, int m) : Discrete
 
 /** Constructor that sets the observation */
 NaturalNumbersState::NaturalNumbersState(int s, int m) : DiscreteCharacterState( m ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(m)
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(m)
 {
     setStateByIndex( s );
 }
@@ -99,7 +99,7 @@ std::string NaturalNumbersState::getStateLabels( void ) const
         labels += boost::lexical_cast<std::string>(n);
     }
     return labels;
-	
+    
 }
 
 std::string NaturalNumbersState::getStringValue(void) const
@@ -115,8 +115,8 @@ std::string NaturalNumbersState::getStringValue(void) const
         return "-";
     }
     
-	return boost::lexical_cast<std::string>(index_single_state);
-	
+    return boost::lexical_cast<std::string>(index_single_state);
+    
 }
 
 
