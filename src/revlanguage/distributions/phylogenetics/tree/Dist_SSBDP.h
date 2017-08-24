@@ -46,9 +46,13 @@ namespace RevLanguage {
         std::string                                             startCondition;                                                                         //!< The process start condition
         RevPtr<const RevVariable>                               lambda;                                                                                 //!< The speciation rate(s)
         RevPtr<const RevVariable>                               mu;                                                                                     //!< The extinction rate(s)
-        RevPtr<const RevVariable>                               psi;                                                                                    //!< The fossilization rate(s)
-        RevPtr<const RevVariable>                               timeline;                                                                                  //!< The epoch times
-        
+        RevPtr<const RevVariable>                               psi;                                                                                    //!< The serial sampling rate(s)
+        RevPtr<const RevVariable>                               timeline;                                                                               //!< The interval change times
+        RevPtr<const RevVariable>                               lambda_timeline;                                                                        //!< The speciation rate change times
+        RevPtr<const RevVariable>                               mu_timeline;                                                                            //!< The extinction rate change times
+        RevPtr<const RevVariable>                               psi_timeline;                                                                           //!< The serial sampling rate change times
+        RevPtr<const RevVariable>                               rho_timeline;                                                                           //!< The episodic taxon sampling fraction change times
+
     };
     
 }
