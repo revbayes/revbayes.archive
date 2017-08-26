@@ -52,7 +52,7 @@ void Move_MatrixRealSymmetricSlide::constructInternalObject( void )
     delete value;
   
     // now allocate a new wishart simple move
-    double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
+    double l = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* tmp = static_cast<const MatrixRealSymmetric &>( mat->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *matrix = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *>( tmp );
@@ -109,7 +109,7 @@ const MemberRules& Move_MatrixRealSymmetricSlide::getParameterRules(void) const
     {
         
         move_member_rules.push_back( new ArgumentRule( "x"     , MatrixRealSymmetric::getClassTypeSpec(), "The matrix variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        move_member_rules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()            , "The sliding window size.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Real(1.0) ) );
+        move_member_rules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()            , "The sliding window size.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Real(1.0) ) );
         move_member_rules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()          , "Should we tune the move during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
@@ -155,8 +155,8 @@ void Move_MatrixRealSymmetricSlide::setConstParameter(const std::string& name, c
     if ( name == "x" ) {
         mat = var;
     }
-    else if ( name == "lambda" ) {
-        lambda = var;
+    else if ( name == "delta" ) {
+        delta = var;
     }
     else if ( name == "weight" ) {
         weight = var;

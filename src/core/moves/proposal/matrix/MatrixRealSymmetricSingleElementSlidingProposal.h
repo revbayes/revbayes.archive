@@ -16,9 +16,9 @@ namespace RevBayesCore {
      * This move randomly picks an element of a matrix of positive real numbers.
      * That means, that we randomly pick the i-th row and j-th column with equal probability.
      * Then, we propose a sliding distance and slide the value.
-     * The actual sliding distance is computed by delta = lambda * ( u - 0.5 )
+     * The actual sliding distance is computed by delta = delta * ( u - 0.5 )
      * where u ~ Uniform(0,1).
-     * The proposal is thus m[i][j] += lambda * ( u - 0.5 )
+     * The proposal is thus m[i][j] += delta * ( u - 0.5 )
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Nicolas Lartillot)
@@ -48,7 +48,7 @@ namespace RevBayesCore {
         
         StochasticNode<MatrixReal >*                        variable;
         
-        double                                              lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
+        double                                              delta;                                                                             //!< The Sliding parameter of the move (larger delta -> larger proposals).
         //!< The two indices of the last modified element.
         size_t                                              indexa;
         size_t                                              indexb;

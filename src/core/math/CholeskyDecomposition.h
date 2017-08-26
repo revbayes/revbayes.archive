@@ -17,6 +17,7 @@ namespace RevBayesCore {
         void                                    update(void);
         const MatrixReal                        getInverse(void) const { return inverseMatrix; }
         double                                  computeLogDet(void);
+        const MatrixReal                        getLowerCholeskyFactor(void) const { return L;}
 
     private:
 

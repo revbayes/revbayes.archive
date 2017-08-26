@@ -4,6 +4,7 @@
 #include "TreeDiscreteCharacterData.h"
 #include "CladogeneticSpeciationRateMatrix.h"
 #include "RateMatrix.h"
+#include "RateMatrix_JC.h"
 #include "Simplex.h"
 #include "SSE_ODE.h"
 #include "Taxon.h"
@@ -43,7 +44,8 @@ namespace RevBayesCore {
         double                                                          computeLnProbability(void);
         const AbstractHomologousDiscreteCharacterData&                  getCharacterData() const;
         virtual void                                                    redrawValue(void);
-        void                                                            setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
+        void                                                            setCladogenesisMatrix(const TypedDagNode< CladogeneticSpeciationRateMatrix > *r);
+        void                                                            setSerialSamplingRates(const TypedDagNode< RbVector<double> > *r);
         void                                                            setSampleCharacterHistory(bool sample_history);                                                     //!< Set whether or not we are sampling the character history along branches.
         void                                                            setSpeciationRates(const TypedDagNode< RbVector<double> > *r);
         void                                                            setNumberOfTimeSlices(double n);                                                                    //!< Set the number of time slices for the numerical ODE.
@@ -57,6 +59,10 @@ namespace RevBayesCore {
         
     protected:
         
+        double                                                          getEventRate(void) const;
+        const RateGenerator&                                            getEventRateMatrix(void) const;
+        std::vector<double>                                             getRootFrequencies(void) const;
+
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                    getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                  //!< get affected nodes
         virtual void                                                    keepSpecialization(DagNode* affecter);
@@ -69,6 +75,7 @@ namespace RevBayesCore {
         
         // helper functions
         void                                                            buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
+        std::vector<double>                                             pExtinction(double start, double end) const;                                                        //!< Compute the probability of extinction of the process (without incomplete taxon sampling).
         virtual double                                                  pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         void                                                            simulateTree(void);
         void                                                            computeNodeProbability(const TopologyNode &n, size_t nIdx) const;
@@ -93,15 +100,17 @@ namespace RevBayesCore {
         bool                                                            sample_character_history;                                                                           //!< are we sampling the character history along branches?
         
         // parameters
-        const TypedDagNode< MatrixReal >*                               cladogenesis_matrix;
+        const TypedDagNode< CladogeneticSpeciationRateMatrix >*                               cladogenesis_matrix;
         const TypedDagNode<double>*                                     root_age;                                                                                           //!< Time since the origin.
         const TypedDagNode<RbVector<double> >*                          mu;
         const TypedDagNode<RbVector<double> >*                          lambda;
+        const TypedDagNode<RbVector<double> >*                          psi;
         const TypedDagNode<Simplex >*                                   pi;                                                                                                 //!< The root frequencies (probabilities of the root states).
         const TypedDagNode<RateGenerator>*                              Q;
         const TypedDagNode<double>*                                     rate;                                                                                               //!< Sampling probability of each species.
         const TypedDagNode<double>*                                     rho;                                                                                                //!< Sampling probability of each species.
         
+        RateMatrix_JC                                                   Q_default;
         double                                                          NUM_TIME_SLICES;
     };
     
