@@ -409,7 +409,7 @@ void Mcmc::initializeSampler( bool prior_only )
     
     
     int num_tries     = 0;
-    int max_num_tries = 100;
+    int max_num_tries = 10000;
     double ln_probability = 0.0;
     for ( ; num_tries < max_num_tries; ++num_tries )
     {
