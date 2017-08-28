@@ -4,6 +4,7 @@
 #include "Dist_bdp_complete.h"
 #include "ModelVector.h"
 #include "Natural.h"
+#include "OptionRule.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -166,18 +167,12 @@ const MemberRules& Dist_bdp_complete::getParameterRules(void) const
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
         
-        std::vector<std::string> include;
-        //include.push_back("rootAge");
-        include.push_back("condition");
-        include.push_back("taxa");
-
-        for( size_t i = 0; i < parentRules.size(); i++)
-        {
-            if( std::find(include.begin(), include.end(), parentRules[i].getArgumentLabel()) != include.end() )
-            {
-                dist_member_rules.insert(dist_member_rules.begin(), &const_cast<ArgumentRule&>(parentRules[i]));
-            }
-        }
+        std::vector<std::string> optionsCondition;
+        optionsCondition.push_back( "time" );
+        optionsCondition.push_back( "survival" );
+        optionsCondition.push_back( "nTaxa" );
+        dist_member_rules.push_back( new OptionRule( "condition", new RlString("time"), optionsCondition, "The condition of the process." ) );
+        dist_member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         rules_set = true;
     }
