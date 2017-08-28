@@ -29,25 +29,12 @@ using namespace RevBayesCore;
  */
 AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNode<double> *ra, const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new Tree() ),
     root_age( ra ),
-    num_taxa( tn.size() ),
     taxa( tn )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( root_age );
-    
-    // the combinatorial factor for the probability of a labelled history is
-    // 2^{n-1} / ( n! * (n-1)! )
-    // but since the probability of the divergence times contains the factor (n-1)! we simply store
-    // 2^{n-1} / n!
-    double lnFact = 0.0;
-    for (size_t i = 2; i <= num_taxa; i++)
-    {
-        lnFact += std::log(i);
-    }
-    
-    log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
 
     std::set<std::string> found;
     for(size_t i = 0; i < taxa.size(); i++)
@@ -75,7 +62,7 @@ AbstractRootedTreeDistribution::~AbstractRootedTreeDistribution(void)
 void AbstractRootedTreeDistribution::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
 {
     
-    if (tips.size() < num_taxa)
+    if (tips.size() < taxa.size() )
     {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -189,8 +176,8 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
 
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeLnProbabilityDivergenceTimes();
-    
-    return lnProbTimes + log_tree_topology_prob;
+
+    return lnProbTimes + lnProbTreeShape();
 }
 
 
@@ -266,7 +253,7 @@ void AbstractRootedTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affect
  *
  * \return     A vector of ages. The caller needs to deallocate this vector.
  */
-std::vector<double>* AbstractRootedTreeDistribution::getAgesOfInternalNodesFromMostRecentSample( void ) const
+std::vector<double> AbstractRootedTreeDistribution::getAgesOfInternalNodesFromMostRecentSample( void ) const
 {
     
     double minTipAge = 0.0;
@@ -289,7 +276,7 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfInternalNodesFromM
     }
     
     // retrieved the speciation times
-    std::vector<double> *ages = new std::vector<double>();
+    std::vector<double> ages;
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         
@@ -297,12 +284,12 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfInternalNodesFromM
         if ( n.isInternal() == true )
         {
             double t = n.getAge() - minTipAge;
-            ages->push_back(t);
+            ages.push_back(t);
         }
         
     }
     // sort the vector of times in ascending order
-    std::sort(ages->begin(), ages->end());
+    std::sort(ages.begin(), ages.end());
     
     return ages;
 }
@@ -314,7 +301,7 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfInternalNodesFromM
  *
  * \return     A vector of ages. The caller needs to deallocate this vector.
  */
-std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecentSample( void ) const
+std::vector<double> AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecentSample( void ) const
 {
     
     double minTipAge = 0.0;
@@ -337,7 +324,7 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
     }
     
     // retrieved the speciation times
-    std::vector<double> *ages = new std::vector<double>();
+    std::vector<double> ages;
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         
@@ -345,14 +332,14 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
         if ( n.isTip() == true && n.isSampledAncestor() == false )
         {
             double t = n.getAge() - minTipAge;
-            ages->push_back(t);
+            ages.push_back(t);
             
         }
         
     }
     
     // sort the vector of times in ascending order
-    std::sort(ages->begin(), ages->end());
+    std::sort(ages.begin(), ages.end());
     
     return ages;
 }
@@ -360,8 +347,8 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
 
 size_t AbstractRootedTreeDistribution::getNumberOfTaxa( void ) const
 {
-    
-    return num_taxa;
+
+    return taxa.size();
 }
 
 /**
@@ -400,6 +387,17 @@ void AbstractRootedTreeDistribution::keepSpecialization(DagNode *affecter)
         dag_node->keepAffected();
     }
     
+}
+
+
+double AbstractRootedTreeDistribution::lnProbTreeShape(void) const
+{
+    // the number of ranked non-oriented labeled trees is
+    // n! (n-1)! / 2^(n-1)
+
+    size_t num_taxa = value->getNumberOfTips();
+
+    return (num_taxa - 1) * RbConstants::LN2 - 2.0 * RbMath::lnFactorial(num_taxa) + log(num_taxa);
 }
 
 
@@ -511,7 +509,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 
         }
         
-        if ( n.size() > 2 && current_age >= age  ) throw RbException("Unexpected number of taxa ('remaining #taxa was " + StringUtilities::toString(n.size()) + "' and age was " + current_age + " with maximum age of " + age + ") in constrained tree simulation");
+        if ( n.size() > 2 && current_age >= age  ) throw RbException("Unexpected number of taxa (remaining #taxa was " + StringUtilities::toString(n.size()) + " and age was " + current_age + " with maximum age of " + age + ") in tree simulation");
         
     }
 
@@ -539,7 +537,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
     }
     else
     {
-        throw RbException("Unexpected number of taxa ('#taxa was " + StringUtilities::toString(n.size()) + "') in constrained tree simulation");
+        throw RbException("Unexpected number of taxa (" + StringUtilities::toString(n.size()) + ") in tree simulation");
     }
 
 
@@ -550,12 +548,10 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 double AbstractRootedTreeDistribution::simulateNextAge(size_t n, double start, double end, double present) const
 {
 
-    std::vector<double> *times = simulateDivergenceTimes(n, start, end, present);
+    std::vector<double> times = simulateDivergenceTimes(n, start, end, present);
 
-    double next_time = (*times)[times->size()-1];
+    double next_time = times.back();
 //    double next_time = (*times)[0];
-
-    delete times;
     
 //    double next_time = simulateDivergenceTime(start, end);
 
@@ -579,7 +575,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 
     // create the tip nodes
     std::vector<TopologyNode*> nodes;
-    for (size_t i=0; i<num_taxa; ++i)
+    for (size_t i=0; i<taxa.size(); ++i)
     {
 
         // create the i-th taxon
@@ -587,11 +583,6 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 
         // set the age of this tip node
         node->setAge( taxa[i].getAge() );
-
-        if (node->getAge() > 0)
-        {
-            node->setFossil(true);
-        }
 
         // add the new node to the list
         nodes.push_back( node );
@@ -637,7 +628,6 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 }
 
 
-
 /**
  * Restore the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
@@ -667,8 +657,7 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
     
     // delegate to super class
     TypedDistribution<Tree>::setValue(v, f);
-    
-    
+
     if ( root_age != NULL )
     {
         const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);

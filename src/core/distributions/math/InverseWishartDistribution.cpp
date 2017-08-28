@@ -152,6 +152,5 @@ void InverseWishartDistribution::redrawValue(void)
     {
         throw RbException("error in inverse wishart: no parameter\n");
     }
-    
 
 }

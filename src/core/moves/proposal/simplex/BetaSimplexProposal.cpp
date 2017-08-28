@@ -82,10 +82,6 @@ double BetaSimplexProposal::propose( Simplex &value )
     
     // we need to know the number of categories
     size_t cats = value.size();
-
-    // mrm 08-07-2017: I've noticed the sum of this
-    // simplex can gradually drift until it the sum
-    // is substantially different from one.
     
     // store the value
     storedValue = value;
@@ -114,6 +110,9 @@ double BetaSimplexProposal::propose( Simplex &value )
         sum += value[i];
     }
     
+    // mrm 08-07-2017: I've noticed the sum of this
+    // simplex can gradually drift until it the sum
+    // is substantially different from one.
     // normalize the vector to enforce sum = 1
     for(size_t i = 0; i < cats; ++i)
     {

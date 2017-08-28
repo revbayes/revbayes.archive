@@ -26,14 +26,14 @@ using namespace RevBayesCore;
  */
 TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDistribution<Tree>* base_dist, const std::vector<Clade> &c) : TypedDistribution<Tree>( NULL ),
 //    active_backbone_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSet() ),
-backbone_topology(NULL),
-backbone_topologies(NULL),
-active_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSet() ),
-base_distribution( base_dist ),
-dirty_nodes( base_dist->getValue().getNumberOfNodes(), true ),
-monophyly_constraints( c ),
-num_backbones( 0 ),
-use_multiple_backbones( false )
+    active_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSet() ),
+    backbone_topology(NULL),
+    backbone_topologies(NULL),
+    base_distribution( base_dist ),
+    dirty_nodes( base_dist->getValue().getNumberOfNodes(), true ),
+    monophyly_constraints( c ),
+    num_backbones( 0 ),
+    use_multiple_backbones( false )
 
 {
     AbstractRootedTreeDistribution* tree_base_distribution = dynamic_cast<AbstractRootedTreeDistribution*>(base_distribution);
@@ -550,11 +550,6 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
         
         // set the age of this tip node
         node->setAge( taxa[i].getAge() );
-        
-        if (node->getAge() > 0)
-        {
-            node->setFossil(true);
-        }
         
         // add the new node to the list
         nodes.push_back( node );

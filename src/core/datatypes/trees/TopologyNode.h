@@ -124,7 +124,6 @@ namespace RevBayesCore {
         bool                                        isInternal(void) const;                                                             //!< Is node internal?
         bool                                        isRoot(void) const;                                                                 //!< Is node root?
         bool                                        isSampledAncestor(void) const;                                                      //!< Is node a sampled ancestor?
-        bool                                        isConstrained(void) const;                                                          //!< Is node topologically constrained?
         bool                                        isTip(void) const;                                                                  //!< Is node tip?
         void                                        makeBifurcating(void);                                                              //!< Make this and all its descendants bifurcating.
         void                                        renameNodeParameter(const std::string &old_name, const std::string &new_name);
@@ -133,8 +132,6 @@ namespace RevBayesCore {
         void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
         void                                        setAge(double a, bool propagate = true );                                                                   //!< Set the age of this node (should only be done for tips).
         void                                        setBranchLength(double b);                                                          //!< Set the length of the branch leading to this node.
-        void                                        setConstrained(bool tf);                                                            //!< Set if the node is topologically constrained
-        void                                        setFossil(bool tf);                                                                 //!< Set if the node is a fossil node
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
 
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
@@ -166,9 +163,7 @@ namespace RevBayesCore {
         bool                                        interior_node;
         bool                                        root_node;
         bool                                        tip_node;
-        bool                                        fossil;
         bool                                        sampled_ancestor;
-        bool                                        constrained;
         
         // information for newick representation
         std::vector<std::string>                    node_comments;
