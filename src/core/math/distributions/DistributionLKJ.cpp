@@ -7,6 +7,7 @@
 //
 
 #include <cmath>
+#include "CholeskyDecomposition.h"
 #include "DistributionBeta.h"
 #include "DistributionLKJ.h"
 #include "RandomNumberFactory.h"
@@ -49,31 +50,38 @@ double RbStatistics::LKJ::pdf(double eta, const MatrixReal &z) {
  */
 double RbStatistics::LKJ::lnPdf(double eta, const MatrixReal &z)
 {
-
+    
     size_t dim = z.getNumberOfRows();
     
-//    // check that all rows are 1 and all colums are between -1 and 1
-//    for(size_t r = 0; r < dim; ++r)
-//    {
-//        
-//        if(z[r][r] != 1.0) {
-//            return RbConstants::Double::neginf;
-//        }
-//        
-//        for(size_t c = r; c < dim; ++c)
-//        {
-//            if(c > r)
-//            {
-//                if( z[r][c] > 1.0 | z[r][c] < -1.0 )
-//                {
-//                    return RbConstants::Double::neginf;
-//                }
-//            }
-//        }
-//    }
+    // check that all rows are 1 and all colums are between -1 and 1
+    for(size_t r = 0; r < dim; ++r)
+    {
+        
+        if(z[r][r] != 1.0) {
+            return RbConstants::Double::neginf;
+        }
+        
+        for(size_t c = r; c < dim; ++c)
+        {
+            if(c > r)
+            {
+                if( z[r][c] > 1.0 | z[r][c] < -1.0 )
+                {
+                    return RbConstants::Double::neginf;
+                }
+            }
+        }
+    }
     
     z.setCholesky(true);
-        
+
+    // check that the matrix is positive definite
+    if ( z.getCholeskyDecomposition().checkPositiveSemidefinite() == false )
+    {
+//        std::cout << "Rejecting non-positive-definite matrix!" << std::endl;
+        return RbConstants::Double::neginf;
+    }
+
     return (eta - 1) * z.getLogDet();
 
 }
@@ -92,8 +100,6 @@ double RbStatistics::LKJ::lnPdf(double eta, const MatrixReal &z)
 MatrixReal RbStatistics::LKJ::rv(double eta, size_t dim, RandomNumberGenerator& rng)
 {
 
-    // TODO: let's make this actually stochastic
-    
     MatrixReal P(dim); // this matrix holds the partial correlations
     MatrixReal S(dim); // this matrix holds the product-moment correlation matrix
     

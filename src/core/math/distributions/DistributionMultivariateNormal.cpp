@@ -178,6 +178,11 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
         return logDet;
     }
     
+    if ( omega.getCholeskyDecomposition().checkPositiveSemidefinite() == false )
+    {
+        return RbConstants::Double::neginf;
+    }
+
     size_t dim = x.size();
     std::vector<double> tmp = std::vector<double>(dim,0.0);
     
@@ -195,6 +200,7 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
     double lnProb = dim * logNormalize + 0.5 * (logDet - dim * log(scale) - s2 / scale);
 
     return lnProb;
+    
 }
 
 
