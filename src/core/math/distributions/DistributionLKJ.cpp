@@ -183,6 +183,8 @@ double RbStatistics::LKJ::pdfPartial(double eta, const MatrixReal &z) {
 double RbStatistics::LKJ::lnPdfPartial(double eta, const MatrixReal &z)
 {
     
+    return 0.0;
+    
     size_t dim = z.getNumberOfRows();
     
     // compute the correlation matrix
@@ -219,7 +221,7 @@ double RbStatistics::LKJ::lnPdfPartial(double eta, const MatrixReal &z)
 //        }
 //    }
 //    jacobian = 1 / pow(jacobian, 0.5);
-//    double ln_j = log(jacobian);
+//    double ln_jacobian = log(jacobian);
     
     double ln_jacobian = 0.0;
     for(size_t k = 0; k < dim - 2; ++k)
@@ -233,7 +235,7 @@ double RbStatistics::LKJ::lnPdfPartial(double eta, const MatrixReal &z)
 
     // compute the probability of the induced correlation matrix
     double ln_prob = lnPdf(eta, P);
-
+    
     return ln_prob - ln_jacobian;
     
 }

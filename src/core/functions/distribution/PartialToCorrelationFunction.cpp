@@ -52,8 +52,6 @@ void PartialToCorrelation::update(void) {
             (*value)[k][i] = p;
         }
     }
-
-    double dummy = 0.0;
     
     return;
     

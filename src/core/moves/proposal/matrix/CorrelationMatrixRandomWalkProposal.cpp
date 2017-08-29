@@ -91,56 +91,6 @@ double CorrelationMatrixRandomWalkProposal::doProposal( void )
     }
     variable->touch(true);
     
-//    MatrixReal& v = variable->getValue();
-//    // choose an index
-//    indexa = size_t( rng->uniform01() * v.getNumberOfRows() );
-//    indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
-//    
-//    // make sure we don't get a diagonal
-//    while (indexb == indexa)
-//    {
-//        indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
-//    }
-//    
-//    // copy the current value
-//    storedValue = v[indexa][indexb];
-//    double current_value = storedValue;
-//    
-//    // transform the current value from [-1, 1] to [0, 1]
-//    current_value = (current_value + 1.0) / 2.0;
-//    
-//    // draw new rates and compute the hastings ratio at the same time
-//    double a = alpha + 1.0;
-//    double b = (a - 1.0) / current_value - a + 2.0;
-////    double a = alpha * current_value;
-////    double b = alpha * (1 - current_value);
-//    double new_value = RbStatistics::Beta::rv(a, b, *rng);
-//
-//    // set the value (for both sides of the matrix!)
-//    double new_value_transformed = new_value * 2.0 - 1.0;
-//    v[indexa][indexb] = new_value_transformed;
-//    v[indexb][indexa] = new_value_transformed;
-//    
-//    variable->addTouchedElementIndex(indexa);
-//    variable->addTouchedElementIndex(indexb);
-//    
-//    double ln_Hastings_ratio = 0.0;
-//    try
-//    {
-//        // compute the Hastings ratio
-//        double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
-//        double new_a = alpha + 1.0;
-//        double new_b = (a - 1.0) / new_value - a + 2.0;
-////        double new_a = alpha * new_value;
-////        double new_b = alpha * (1 - new_value);
-//        double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
-//        ln_Hastings_ratio = backward - forward;
-//    }
-//    catch (RbException e)
-//    {
-//        ln_Hastings_ratio = RbConstants::Double::neginf;
-//    }
-    
     return 0.0;
     
 }
