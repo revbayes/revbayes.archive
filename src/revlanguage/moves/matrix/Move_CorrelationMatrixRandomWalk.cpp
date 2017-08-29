@@ -1,17 +1,17 @@
 /* 
- * File:   Move_CorrelationMatrixSingleElementBeta.cpp
+ * File:   Move_CorrelationMatrixRandomWalk.cpp
  * Author: Michael R. May
  *
  * Created on 5 August 2017
  */
 
-#include "Move_CorrelationMatrixSingleElementBeta.h"
+#include "Move_CorrelationMatrixRandomWalk.h"
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "MatrixReal.h"
-#include "CorrelationMatrixElementBetaProposal.h"
+#include "CorrelationMatrixRandomWalkProposal.h"
 #include "MetropolisHastingsMove.h"
 #include "Natural.h"
 #include "Probability.h"
@@ -26,7 +26,7 @@
 
 using namespace RevLanguage;
 
-Move_CorrelationMatrixSingleElementBeta::Move_CorrelationMatrixSingleElementBeta() : Move()
+Move_CorrelationMatrixRandomWalk::Move_CorrelationMatrixRandomWalk() : Move()
 {
     
 }
@@ -37,42 +37,42 @@ Move_CorrelationMatrixSingleElementBeta::Move_CorrelationMatrixSingleElementBeta
  *
  * \return A new copy of the process.
  */
-Move_CorrelationMatrixSingleElementBeta* Move_CorrelationMatrixSingleElementBeta::clone(void) const
+Move_CorrelationMatrixRandomWalk* Move_CorrelationMatrixRandomWalk::clone(void) const
 {
     
-	return new Move_CorrelationMatrixSingleElementBeta(*this);
+	return new Move_CorrelationMatrixRandomWalk(*this);
 }
 
 
-void Move_CorrelationMatrixSingleElementBeta::constructInternalObject( void )
+void Move_CorrelationMatrixRandomWalk::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
-    double a = static_cast<const RealPos &>( alpha->getRevObject() ).getValue();
+    double s = static_cast<const RealPos &>( sigma->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double r = static_cast<const Probability &>( tuneTarget->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* tmp = static_cast<const MatrixReal &>( v->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::CorrelationMatrixElementBetaProposal(n,a,r);
+    RevBayesCore::Proposal *p = new RevBayesCore::CorrelationMatrixRandomWalkProposal(n,s,r);
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
 
 }
 
 
 /** Get class name of object */
-const std::string& Move_CorrelationMatrixSingleElementBeta::getClassType(void) { 
+const std::string& Move_CorrelationMatrixRandomWalk::getClassType(void) { 
     
-    static std::string revClassType = "Move_CorrelationMatrixSingleElementBeta";
+    static std::string revClassType = "Move_CorrelationMatrixRandomWalk";
     
 	return revClassType; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_CorrelationMatrixSingleElementBeta::getClassTypeSpec(void)
+const TypeSpec& Move_CorrelationMatrixRandomWalk::getClassTypeSpec(void)
 {
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -86,10 +86,10 @@ const TypeSpec& Move_CorrelationMatrixSingleElementBeta::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_CorrelationMatrixSingleElementBeta::getMoveName( void ) const
+std::string Move_CorrelationMatrixRandomWalk::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "CorrelationMatrixSingleElementBeta";
+    std::string c_name = "CorrelationMatrixRandomWalk";
     
     return c_name;
 }
@@ -97,7 +97,7 @@ std::string Move_CorrelationMatrixSingleElementBeta::getMoveName( void ) const
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_CorrelationMatrixSingleElementBeta::getParameterRules(void) const
+const MemberRules& Move_CorrelationMatrixRandomWalk::getParameterRules(void) const
 {
     
     static MemberRules move_member_rules;
@@ -107,7 +107,7 @@ const MemberRules& Move_CorrelationMatrixSingleElementBeta::getParameterRules(vo
     {
         
         move_member_rules.push_back( new ArgumentRule( "x"     , MatrixReal::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        move_member_rules.push_back( new ArgumentRule( "alpha",  RealPos::getClassTypeSpec()   , "The shape of the beta distribution to draw from.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(10.0) ) );
+        move_member_rules.push_back( new ArgumentRule( "sigma",  RealPos::getClassTypeSpec()   , "The standard deviation of the normal distribution to draw from.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(0.1) ) );
         move_member_rules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec() , "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
@@ -121,7 +121,7 @@ const MemberRules& Move_CorrelationMatrixSingleElementBeta::getParameterRules(vo
 }
 
 /** Get type spec */
-const TypeSpec& Move_CorrelationMatrixSingleElementBeta::getTypeSpec( void ) const
+const TypeSpec& Move_CorrelationMatrixRandomWalk::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -131,10 +131,10 @@ const TypeSpec& Move_CorrelationMatrixSingleElementBeta::getTypeSpec( void ) con
 
 
 /** Get type spec */
-void Move_CorrelationMatrixSingleElementBeta::printValue(std::ostream &o) const
+void Move_CorrelationMatrixRandomWalk::printValue(std::ostream &o) const
 {
     
-    o << "Move_CorrelationMatrixSingleElementBeta(";
+    o << "Move_CorrelationMatrixRandomWalk(";
     if (v != NULL)
     {
         o << v->getName();
@@ -148,15 +148,15 @@ void Move_CorrelationMatrixSingleElementBeta::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Move_CorrelationMatrixSingleElementBeta::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_CorrelationMatrixRandomWalk::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" )
     {
         v = var;
     }
-    else if ( name == "alpha" )
+    else if ( name == "sigma" )
     {
-        alpha = var;
+        sigma = var;
     }
     else if ( name == "weight" ) {
         weight = var;

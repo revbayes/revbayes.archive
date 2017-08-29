@@ -1,5 +1,5 @@
-#include "CorrelationMatrixElementBetaProposal.h"
-#include "DistributionBeta.h"
+#include "CorrelationMatrixRandomWalkProposal.h"
+#include "DistributionNormal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -15,10 +15,10 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-CorrelationMatrixElementBetaProposal::CorrelationMatrixElementBetaProposal( StochasticNode<MatrixReal> *n, double a, double p) : Proposal(p),
+CorrelationMatrixRandomWalkProposal::CorrelationMatrixRandomWalkProposal( StochasticNode<MatrixReal> *n, double s, double p) : Proposal(p),
     variable( n ),
-    alpha( a ),
-    storedValue( 0.0 )
+    sigma( s ),
+    stored_matrix()
 {
     // tell the base class to add the node
     addNode( variable );
@@ -31,7 +31,7 @@ CorrelationMatrixElementBetaProposal::CorrelationMatrixElementBetaProposal( Stoc
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void CorrelationMatrixElementBetaProposal::cleanProposal( void )
+void CorrelationMatrixRandomWalkProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -42,10 +42,10 @@ void CorrelationMatrixElementBetaProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-CorrelationMatrixElementBetaProposal* CorrelationMatrixElementBetaProposal::clone( void ) const
+CorrelationMatrixRandomWalkProposal* CorrelationMatrixRandomWalkProposal::clone( void ) const
 {
     
-    return new CorrelationMatrixElementBetaProposal( *this );
+    return new CorrelationMatrixRandomWalkProposal( *this );
 }
 
 
@@ -54,9 +54,9 @@ CorrelationMatrixElementBetaProposal* CorrelationMatrixElementBetaProposal::clon
  *
  * \return The Proposals' name.
  */
-const std::string& CorrelationMatrixElementBetaProposal::getProposalName( void ) const
+const std::string& CorrelationMatrixRandomWalkProposal::getProposalName( void ) const
 {
-    static std::string name = "MatrixRealSingleElementBetaMove";
+    static std::string name = "CorrelationMatrixRandomWalk";
     
     return name;
 }
@@ -72,63 +72,76 @@ const std::string& CorrelationMatrixElementBetaProposal::getProposalName( void )
  *
  * \return The hastings ratio.
  */
-double CorrelationMatrixElementBetaProposal::doProposal( void )
+double CorrelationMatrixRandomWalkProposal::doProposal( void )
 {
     
-    // Get random number generator
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
+    stored_matrix = variable->getValue();
+    size_t dim = stored_matrix.size();
     
-    MatrixReal& v = variable->getValue();
-    // choose an index
-    indexa = size_t( rng->uniform01() * v.getNumberOfRows() );
-    indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
-    
-    // make sure we don't get a diagonal
-    while (indexb == indexa)
+    MatrixReal& current_matrix = variable->getValue();
+    for(size_t i = 0; i < (dim - 1); ++i)
     {
-        indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
+        for(size_t j = i+1; j < dim; ++j)
+        {
+            current_matrix[i][j] = RbStatistics::Normal::rv(stored_matrix[i][j], sigma, *GLOBAL_RNG);
+            current_matrix[j][i] = current_matrix[i][j];
+            variable->addTouchedElementIndex(i);
+            variable->addTouchedElementIndex(j);
+        }
     }
+    variable->touch(true);
     
-    // copy the current value
-    storedValue = v[indexa][indexb];
-    double current_value = storedValue;
+//    MatrixReal& v = variable->getValue();
+//    // choose an index
+//    indexa = size_t( rng->uniform01() * v.getNumberOfRows() );
+//    indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
+//    
+//    // make sure we don't get a diagonal
+//    while (indexb == indexa)
+//    {
+//        indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
+//    }
+//    
+//    // copy the current value
+//    storedValue = v[indexa][indexb];
+//    double current_value = storedValue;
+//    
+//    // transform the current value from [-1, 1] to [0, 1]
+//    current_value = (current_value + 1.0) / 2.0;
+//    
+//    // draw new rates and compute the hastings ratio at the same time
+//    double a = alpha + 1.0;
+//    double b = (a - 1.0) / current_value - a + 2.0;
+////    double a = alpha * current_value;
+////    double b = alpha * (1 - current_value);
+//    double new_value = RbStatistics::Beta::rv(a, b, *rng);
+//
+//    // set the value (for both sides of the matrix!)
+//    double new_value_transformed = new_value * 2.0 - 1.0;
+//    v[indexa][indexb] = new_value_transformed;
+//    v[indexb][indexa] = new_value_transformed;
+//    
+//    variable->addTouchedElementIndex(indexa);
+//    variable->addTouchedElementIndex(indexb);
+//    
+//    double ln_Hastings_ratio = 0.0;
+//    try
+//    {
+//        // compute the Hastings ratio
+//        double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
+//        double new_a = alpha + 1.0;
+//        double new_b = (a - 1.0) / new_value - a + 2.0;
+////        double new_a = alpha * new_value;
+////        double new_b = alpha * (1 - new_value);
+//        double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
+//        ln_Hastings_ratio = backward - forward;
+//    }
+//    catch (RbException e)
+//    {
+//        ln_Hastings_ratio = RbConstants::Double::neginf;
+//    }
     
-    // transform the current value from [-1, 1] to [0, 1]
-    current_value = (current_value + 1.0) / 2.0;
-    
-    // draw new rates and compute the hastings ratio at the same time
-    double a = alpha + 1.0;
-    double b = (a - 1.0) / current_value - a + 2.0;
-//    double a = alpha * current_value;
-//    double b = alpha * (1 - current_value);
-    double new_value = RbStatistics::Beta::rv(a, b, *rng);
-
-    // set the value (for both sides of the matrix!)
-    double new_value_transformed = new_value * 2.0 - 1.0;
-    v[indexa][indexb] = new_value_transformed;
-    v[indexb][indexa] = new_value_transformed;
-    
-    variable->addTouchedElementIndex(indexa);
-    variable->addTouchedElementIndex(indexb);
-    
-    double ln_Hastings_ratio = 0.0;
-    try
-    {
-        // compute the Hastings ratio
-        double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
-        double new_a = alpha + 1.0;
-        double new_b = (a - 1.0) / new_value - a + 2.0;
-//        double new_a = alpha * new_value;
-//        double new_b = alpha * (1 - new_value);
-        double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
-        ln_Hastings_ratio = backward - forward;
-    }
-    catch (RbException e)
-    {
-        ln_Hastings_ratio = RbConstants::Double::neginf;
-    }
-    
-    return ln_Hastings_ratio;
+    return 0.0;
     
 }
 
@@ -136,7 +149,7 @@ double CorrelationMatrixElementBetaProposal::doProposal( void )
 /**
  *
  */
-void CorrelationMatrixElementBetaProposal::prepareProposal( void )
+void CorrelationMatrixRandomWalkProposal::prepareProposal( void )
 {
     
 }
@@ -150,10 +163,10 @@ void CorrelationMatrixElementBetaProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void CorrelationMatrixElementBetaProposal::printParameterSummary(std::ostream &o) const
+void CorrelationMatrixRandomWalkProposal::printParameterSummary(std::ostream &o) const
 {
     
-    o << "alpha = " << alpha;
+    o << "sigma = " << sigma;
     
 }
 
@@ -165,12 +178,18 @@ void CorrelationMatrixElementBetaProposal::printParameterSummary(std::ostream &o
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void CorrelationMatrixElementBetaProposal::undoProposal( void )
+void CorrelationMatrixRandomWalkProposal::undoProposal( void )
 {
     
-    MatrixReal& v = variable->getValue();
-    v[indexa][indexb] = storedValue;
-    v[indexb][indexa] = storedValue;
+    MatrixReal& current_matrix = variable->getValue();
+    size_t size = current_matrix.getNumberOfRows();
+    for(size_t i = 0; i < size; ++i)
+    {
+        for(size_t j = i; j < size; ++j){
+            current_matrix[i][j] = stored_matrix[i][j];
+            current_matrix[j][i] = stored_matrix[i][j];
+        }
+    }
     variable->clearTouchedElementIndices();
     
 }
@@ -182,7 +201,7 @@ void CorrelationMatrixElementBetaProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void CorrelationMatrixElementBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void CorrelationMatrixRandomWalkProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
@@ -197,18 +216,18 @@ void CorrelationMatrixElementBetaProposal::swapNodeInternal(DagNode *oldN, DagNo
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void CorrelationMatrixElementBetaProposal::tune( double rate )
+void CorrelationMatrixRandomWalkProposal::tune( double rate )
 {
     
     double p = this->targetAcceptanceRate;
     
     if ( rate > p )
     {
-        alpha /= (1.0 + ((rate-p)/(1.0 - p)) );
+        sigma *= (1.0 + ((rate-p)/(1.0 - p)) );
     }
     else
     {
-        alpha *= (2.0 - rate/p);
+        sigma /= (2.0 - rate/p);
     }
     
 }

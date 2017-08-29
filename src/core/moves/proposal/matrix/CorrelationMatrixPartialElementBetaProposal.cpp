@@ -110,7 +110,7 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
     {
         for(size_t i = k + 1; i < dim; ++i)
         {
-            ln_jacobian += (dim - k - 1) * std::log(1 - partial_correlations[k][i]);
+            ln_jacobian += (dim - k - 1) * std::log(1 - pow(partial_correlations[k][i],2) );
         }
     }
     ln_jacobian *= -1/2;
@@ -138,7 +138,6 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
     double b = (a - 1.0) / current_value - a + 2.0;
     double new_value = RbStatistics::Beta::rv(a, b, *rng);
     
-
     // set the value (for both sides of the matrix!)
     double new_value_transformed = new_value * 2.0 - 1.0;
     partial_correlations[indexa][indexb] = new_value_transformed;
@@ -158,12 +157,11 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
             P[i][k] = p;
             P[k][i] = p;
         }
-        
     }
 
     variable->setValue( P.clone() );
 
-    double ln_Hastings_ratio = 0.0;
+    double ln_hastings_ratio = 0.0;
     try
     {
         // compute the Hastings ratio
@@ -173,14 +171,14 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
 //        double new_a = alpha * new_value + 1.0;
 //        double new_b = alpha * (1.0 - new_value) + 1.0;
         double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
-        ln_Hastings_ratio = backward - forward;
+        ln_hastings_ratio = backward - forward;
     }
     catch (RbException e)
     {
-        ln_Hastings_ratio = RbConstants::Double::neginf;
+        ln_hastings_ratio = RbConstants::Double::neginf;
     }
     
-    return ln_jacobian + ln_Hastings_ratio;
+    return ln_hastings_ratio - ln_jacobian;
     
 }
 
@@ -250,16 +248,16 @@ void CorrelationMatrixPartialElementBetaProposal::swapNodeInternal(DagNode *oldN
 void CorrelationMatrixPartialElementBetaProposal::tune( double rate )
 {
     
-//    double p = this->targetAcceptanceRate;
-//    
-//    if ( rate > p )
-//    {
-//        alpha /= (1.0 + ((rate-p)/(1.0 - p)) );
-//    }
-//    else
-//    {
-//        alpha *= (2.0 - rate/p);
-//    }
+    double p = this->targetAcceptanceRate;
+    
+    if ( rate > p )
+    {
+        alpha /= (1.0 + ((rate-p)/(1.0 - p)) );
+    }
+    else
+    {
+        alpha *= (2.0 - rate/p);
+    }
     
 }
 

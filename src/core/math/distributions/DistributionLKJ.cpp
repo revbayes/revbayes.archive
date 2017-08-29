@@ -147,3 +147,42 @@ MatrixReal RbStatistics::LKJ::rv(double eta, size_t dim, RandomNumberGenerator& 
     return S;
     
 }
+
+/*!
+ * This function generates a LKJ-distributed random variable (the partial correlations).
+ *
+ * \brief LKJ random variable.
+ * \param eta is the parameter of the LKJ distribution
+ * \param rng is a pointer to a random number object.
+ * \return Returns a vector containing the LKJ random variable (the partial correlations).
+ * \throws Does not throw an error.
+ */
+MatrixReal RbStatistics::LKJ::rvPartial(double eta, size_t dim, RandomNumberGenerator& rng)
+{
+    
+    MatrixReal P(dim); // this matrix holds the partial correlations
+    
+    // this algorithm is only safe for eta > 1.
+    // if eta < 1, we'll just return the identity matrix.
+    // during MCMC, this only means that the initial value will not be from the prior
+    if (eta < 1)
+    {
+        return P;
+    }
+    
+    // initialize beta
+    double beta = eta + (dim - 1) / 2;
+    
+    for(int k = 0; k < dim - 1; ++k)
+    {
+        // decrement beta
+        beta -= 0.5;
+        for(int i = k + 1; i < dim; ++i)
+        {
+            P[k][i] = RbStatistics::Beta::rv(beta, beta, rng) * 2.0 - 1.0; // sample the partial correlation
+        }
+    }
+    
+    return P;
+    
+}

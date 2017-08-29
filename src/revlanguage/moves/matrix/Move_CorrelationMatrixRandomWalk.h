@@ -1,12 +1,12 @@
 /* 
- * File:   Move_CorrelationMatrixSingleElementBeta.h
+ * File:   Move_CorrelationMatrixRandomWalk.h
  * Author: Michael R. May
  *
  * Created on 5 August 2017
  */
 
-#ifndef Move_CorrelationMatrixSingleElementBeta_H
-#define Move_CorrelationMatrixSingleElementBeta_H
+#ifndef Move_CorrelationMatrixRandomWalk_H
+#define Move_CorrelationMatrixRandomWalk_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -16,14 +16,14 @@
 
 namespace RevLanguage {
     
-    class Move_CorrelationMatrixSingleElementBeta : public Move {
+    class Move_CorrelationMatrixRandomWalk : public Move {
         
     public:
         
-        Move_CorrelationMatrixSingleElementBeta(void);                                                                                                //!< Default constructor
+        Move_CorrelationMatrixRandomWalk(void);                                                                                                //!< Default constructor
         
         // Basic utility functions
-        virtual Move_CorrelationMatrixSingleElementBeta* clone(void) const;                                                                      //!< Clone object
+        virtual Move_CorrelationMatrixRandomWalk* clone(void) const;                                                                      //!< Clone object
         void                                             constructInternalObject(void);                                                          //!< We construct the a new internal move.
         static const std::string&                        getClassType(void);                                                                     //!< Get class name
         static const TypeSpec&                           getClassTypeSpec(void);                                                                 //!< Get class type spec
@@ -37,7 +37,7 @@ namespace RevLanguage {
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         RevPtr<const RevVariable>                   v;
-        RevPtr<const RevVariable>                   alpha;
+        RevPtr<const RevVariable>                   sigma;
         RevPtr<const RevVariable>                   weight;
         RevPtr<const RevVariable>                   tune;
         
@@ -46,5 +46,5 @@ namespace RevLanguage {
 }
 
 
-#endif	/* MOVE_CorrelationMatrixSingleElementBeta_H */
+#endif	/* MOVE_CorrelationMatrixRandomWalk */
 

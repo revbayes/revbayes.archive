@@ -25,14 +25,14 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class CorrelationMatrixElementBetaProposal : public Proposal {
+    class CorrelationMatrixRandomWalkProposal : public Proposal {
         
     public:
-        CorrelationMatrixElementBetaProposal( StochasticNode<MatrixReal> *n, double a, double p=0.234);                                                                      //!<  constructor
+        CorrelationMatrixRandomWalkProposal( StochasticNode<MatrixReal> *n, double s, double p=0.44);                                                                      //!<  constructor
         
         // Basic utility functions
         void                                     cleanProposal(void);                                                                //!< Clean up proposal
-        CorrelationMatrixElementBetaProposal*    clone(void) const;                                                                  //!< Clone object
+        CorrelationMatrixRandomWalkProposal*     clone(void) const;                                                                  //!< Clone object
         double                                   doProposal(void);                                                                   //!< Perform proposal
         const std::string&                       getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                     printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
@@ -47,12 +47,9 @@ namespace RevBayesCore {
         // parameters
         
         StochasticNode<MatrixReal >*             variable;
+        double                                   sigma;
+        MatrixReal                               stored_matrix;                                                                          //!< The value we propose.
         
-        double                                   alpha;                                                                             //!< The Beta parameter of the move (larger lambda -> larger proposals).
-        //!< The two indices of the last modified element.
-        size_t                                   indexa;
-        size_t                                   indexb;
-        double                                   storedValue;                                                                          //!< The value we propose.
     };
     
 }

@@ -99,6 +99,7 @@
 #include "Move_ConjugateInverseWishart.h"
 #include "Move_CorrelationMatrixUpdate.h"
 #include "Move_CorrelationMatrixElementSwap.h"
+#include "Move_CorrelationMatrixRandomWalk.h"
 #include "Move_CorrelationMatrixSingleElementBeta.h"
 #include "Move_CorrelationMatrixSpecificElementBeta.h"
 //#include "Move_CorrelationMatrixPartialSingleElementBeta.h"
@@ -230,6 +231,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         
         /* Moves on matrices of correlations */
         addTypeWithConstructor( new Move_CorrelationMatrixUpdate()                   );
+        addTypeWithConstructor( new Move_CorrelationMatrixRandomWalk()               );
         addTypeWithConstructor( new Move_CorrelationMatrixSingleElementBeta()        );
         addTypeWithConstructor( new Move_CorrelationMatrixSpecificElementBeta()      );
         addTypeWithConstructor( new Move_CorrelationMatrixElementSwap()              );
