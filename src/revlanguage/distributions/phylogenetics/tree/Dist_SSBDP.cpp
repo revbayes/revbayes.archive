@@ -56,7 +56,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
     // get the parameters
     
     // the start age
-    RevBayesCore::TypedDagNode<double>* sa       = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* sa       = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
 
     // the start condition
     bool uo = ( startCondition == "originAge" ? true : false );
@@ -204,7 +204,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
             ht = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
         }
 
-        d = new RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess(sa, l, m, p, r, ht, lt, mt, pt, rt, uo, cond, t);
+        d = new RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess(sa, l, m, p, r, ht, lt, mt, pt, rt, cond, t, uo);
     }
     else
     {
@@ -217,7 +217,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
         // sampling probability
         RevBayesCore::TypedDagNode<double>* r       = static_cast<const RealPos &>( rho->getRevObject() ).getDagNode();
 
-        d = new RevBayesCore::ConstantRateSerialSampledBirthDeathProcess(sa, l, m, p, r, uo, cond, t);
+        d = new RevBayesCore::ConstantRateSerialSampledBirthDeathProcess(sa, l, m, p, r, cond, t, uo);
     }
 
     return d;
@@ -264,6 +264,7 @@ std::vector<std::string> Dist_SSBDP::getDistributionFunctionAliases( void ) cons
     a_names.push_back( "SSBDP" );
     a_names.push_back( "FossilizedBirthDeath" );
     a_names.push_back( "FBDP" );
+    a_names.push_back( "SkylineBDP" );
     
     return a_names;
 }
@@ -303,40 +304,35 @@ const MemberRules& Dist_SSBDP::getParameterRules(void) const
     
     if ( !rules_set )
     {
-
         std::vector<std::string> aliases;
         aliases.push_back("rootAge");
         aliases.push_back("originAge");
-        dist_member_rules.push_back( new ArgumentRule( aliases,   RealPos::getClassTypeSpec(), "The start age of the process, either the root age or the origin time.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        
+        dist_member_rules.push_back( new ArgumentRule( aliases, RealPos::getClassTypeSpec()    , "The start time of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+
         std::vector<TypeSpec> paramTypes;
         paramTypes.push_back( RealPos::getClassTypeSpec() );
         paramTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         dist_member_rules.push_back( new ArgumentRule( "lambda",  paramTypes, "The speciation rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "mu",      paramTypes, "The extinction rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         dist_member_rules.push_back( new ArgumentRule( "psi",     paramTypes, "The serial sampling rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+
         std::vector<TypeSpec> rho_paramTypes;
         rho_paramTypes.push_back( Probability::getClassTypeSpec() );
         rho_paramTypes.push_back( ModelVector<Probability>::getClassTypeSpec() );
-        dist_member_rules.push_back( new ArgumentRule( "rho",     rho_paramTypes, "The episodic taxon sampling fraction(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "rho",     rho_paramTypes, "The taxon sampling fraction(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
 
         dist_member_rules.push_back( new ArgumentRule( "timeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "lambdaTimes", ModelVector<RealPos>::getClassTypeSpec(), "The speciation rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "muTimes",     ModelVector<RealPos>::getClassTypeSpec(), "The extinction rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "psiTimes",    ModelVector<RealPos>::getClassTypeSpec(), "The serial sampling rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        dist_member_rules.push_back( new ArgumentRule( "rhoTimes",    ModelVector<RealPos>::getClassTypeSpec(), "The episodic sampling probability change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "rhoTimes",    ModelVector<RealPos>::getClassTypeSpec(), "The taxon sampling fraction change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
-
-        // add the rules from the base class
-        const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
-        for (size_t i = 0; i < parentRules.size(); i++)
-        {
-            if ( parentRules[i].getArgumentLabel() != "rootAge" && parentRules[i].getArgumentLabel() != "rho" )
-            {
-                ArgumentRule* tmp = parentRules[i].clone();
-                dist_member_rules.push_back( tmp );
-            }
-        }
+        std::vector<std::string> optionsCondition;
+        optionsCondition.push_back( "time" );
+        optionsCondition.push_back( "survival" );
+        optionsCondition.push_back( "nTaxa" );
+        dist_member_rules.push_back( new OptionRule( "condition", new RlString("time"), optionsCondition, "The condition of the process." ) );
+        dist_member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }
@@ -371,18 +367,22 @@ const TypeSpec& Dist_SSBDP::getTypeSpec( void ) const
  */
 void Dist_SSBDP::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
-    if (name == "rootAge" || name == "originAge")
-    {
-        startCondition = name;
-        rootAge = var;
-    }
-    else if ( name == "lambda" )
+    if ( name == "lambda" )
     {
         lambda = var;
     }
     else if ( name == "mu" )
     {
         mu = var;
+    }
+    else if ( name == "rho" )
+    {
+        rho = var;
+    }
+    else if( name == "rootAge" || name == "originAge" )
+    {
+        startAge = var;
+        startCondition = name;
     }
     else if ( name == "psi" )
     {

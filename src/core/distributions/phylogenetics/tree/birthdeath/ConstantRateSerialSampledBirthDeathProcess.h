@@ -14,21 +14,15 @@ namespace RevBayesCore {
         ConstantRateSerialSampledBirthDeathProcess(const TypedDagNode<double> *o,
                                                 const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                                 const TypedDagNode<double> *p, const TypedDagNode<double> *r,
-                                                const bool& uo, const std::string &cdt, const std::vector<Taxon> &tn);
+                                                const std::string &cdt, const std::vector<Taxon> &tn, bool uo );
         
         // public member functions
         ConstantRateSerialSampledBirthDeathProcess*         clone(void) const;
-        virtual double                                      getRootAge(void) const;
-        virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
 
     protected:
         double                                              computeLnProbabilityDivergenceTimes(void) const;                                //!< Compute the log-transformed probability of the current value.
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
-        
-        // virtual methods that may be overwritten, but then the derived class should call this methods
-        virtual void                                        restoreSpecialization(DagNode *restorer);
-        virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
         
         // helper functions
         double                                              computeLnProbabilityTimes(void) const;                                          //!< Compute the log-transformed probability of the current value.
@@ -45,7 +39,6 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                         mu;                                                                             //!< The extinction rate.
         const TypedDagNode<double>*                         psi;                                                                            //!< The sampling probability of a just extinct species.
         const TypedDagNode<double>*                         rho;                                                                            //!< The sampling probability of extant taxa.
-        bool                                                useOrigin;
 
     };
 

@@ -43,12 +43,10 @@ namespace RevBayesCore {
                                                       const TypedDagNode< RbVector<double> > *mt,
                                                       const TypedDagNode< RbVector<double> > *pt,
                                                       const TypedDagNode< RbVector<double> > *rt,
-                                                      bool uo, const std::string &cdt, const std::vector<Taxon> &tn);  //!< Constructor
+                                                      const std::string &cdt, const std::vector<Taxon> &tn, bool uo );  //!< Constructor
         
         // public member functions
         PiecewiseConstantSerialSampledBirthDeathProcess*   clone(void) const;                                         //!< Create an independent clone
-        virtual double                                  getRootAge(void) const;
-        virtual void                                    setValue(Tree *v, bool f=false);
 
         double                                          getExtinctionRate( size_t index = 0 ) const;
         double                                          getSerialSamplingRate( size_t index = 0 ) const;
@@ -61,10 +59,6 @@ namespace RevBayesCore {
         // Parameter management functions
         void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
 
-        // virtual methods that may be overwritten, but then the derived class should call this methods
-        virtual void                                    restoreSpecialization(DagNode *restorer);
-        virtual void                                    touchSpecialization(DagNode *toucher, bool touchAll);
-        
         // helper functions
         double                                          computeLnProbabilityTimes(void) const;                     //!< Compute the log-transformed probability of the current value.
         size_t                                          l(double t) const;                                         //!< Find the index so that times[index-1] < t < times[index]
@@ -93,8 +87,6 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*          mu_timeline;                                           //!< The times of the instantaneous extinction rate change events.
         const TypedDagNode<RbVector<double> >*          psi_timeline;                                          //!< The times of the instantaneous serial sampling rate change events.
         const TypedDagNode<RbVector<double> >*          rho_timeline;                                          //!< The times of the instantaneous sampling events.
-
-        bool                                            useOrigin;
 
         mutable std::vector<double>                     timeline;
         mutable std::vector<double>                     lambda_times;

@@ -35,15 +35,14 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
                                                                                            const TypedDagNode< RbVector<double> > *mt,
                                                                                            const TypedDagNode< RbVector<double> > *pt,
                                                                                            const TypedDagNode< RbVector<double> > *rt,
-                                                                                           bool uo,
                                                                                            const std::string &cdt,
-                                                                                           const std::vector<Taxon> &tn ) : AbstractBirthDeathProcess( ra, cdt, tn ),
+                                                                                           const std::vector<Taxon> &tn,
+                                                                                           bool uo ) : AbstractBirthDeathProcess( ra, cdt, tn, uo ),
     homogeneous_timeline(ht),
     lambda_timeline(lt),
     mu_timeline(mt),
     psi_timeline(pt),
-    rho_timeline(rt),
-    useOrigin(uo)
+    rho_timeline(rt)
 {
     // initialize all the pointers to NULL
     homogeneous_lambda   = NULL;
@@ -267,28 +266,6 @@ PiecewiseConstantSerialSampledBirthDeathProcess* PiecewiseConstantSerialSampledB
 
 
 /**
- * If conditioning on the origin, then return the age of the root node
- * or zero if the tree is empty
- */
-double PiecewiseConstantSerialSampledBirthDeathProcess::getRootAge( void ) const
-{
-    if(useOrigin)
-    {
-        if(value->getNumberOfNodes() > 0)
-        {
-            return value->getRoot().getAge();
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
-        return getOriginTime();
-}
-
-
-/**
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
@@ -313,11 +290,11 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
 {
     // variable declarations and initialization
     double lnProbTimes = 0.0;
-    double process_time = getOriginTime();
+    double process_time = getOriginAge();
     size_t num_initial_lineages = 0;
     TopologyNode* root = &value->getRoot();
 
-    if (useOrigin) {
+    if (use_origin) {
         // If we are conditioning on survival from the origin,
         // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
         // TODO: Generalize AbstractBirthDeathProcess to allow conditioning on the origin
@@ -368,7 +345,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         }
         else if ( n.isInternal() && !n.getChild(0).isSampledAncestor() && !n.getChild(1).isSampledAncestor() )
         {
-            if(!n.isRoot() || useOrigin)
+            if(!n.isRoot() || use_origin)
             {
                 // node is bifurcation event (a "true" node)
                 internal_node_ages.push_back( n.getAge() );
@@ -900,58 +877,6 @@ int PiecewiseConstantSerialSampledBirthDeathProcess::survivors(double t) const
 
 
 /**
- * Restore the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
-void PiecewiseConstantSerialSampledBirthDeathProcess::restoreSpecialization(DagNode *affecter)
-{
-
-    if ( affecter == root_age )
-    {
-        if( useOrigin )
-        {
-            if ( dag_node != NULL )
-            {
-                dag_node->touchAffected();
-            }
-        }
-        else
-        {
-            AbstractRootedTreeDistribution::restoreSpecialization(affecter);
-        }
-    }
-
-}
-
-
-/**
- * Set the current value.
- */
-void PiecewiseConstantSerialSampledBirthDeathProcess::setValue(Tree *v, bool f )
-{
-
-    // delegate to super class
-    TypedDistribution<Tree>::setValue(v, f);
-
-
-    if ( root_age != NULL && !useOrigin )
-    {
-        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);
-        if ( stoch_root_age != NULL )
-        {
-            const_cast<StochasticNode<double> *>(stoch_root_age)->setValue( new double( value->getRoot().getAge() ), f);
-        }
-        else
-        {
-            value->getRoot().setAge( root_age->getValue() );
-        }
-
-    }
-
-}
-
-
-/**
  * Swap the parameters held by this distribution.
  * 
  * \param[in]    oldP      Pointer to the old parameter.
@@ -1016,29 +941,4 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::swapParameterInternal(cons
         // delegate the super-class
         AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
-}
-
-
-/**
- * Touch the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
-void PiecewiseConstantSerialSampledBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
-{
-
-    if ( affecter == root_age )
-    {
-        if( useOrigin )
-        {
-            if ( dag_node != NULL )
-            {
-                dag_node->touchAffected();
-            }
-        }
-        else
-        {
-            AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
-        }
-    }
-
 }
