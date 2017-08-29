@@ -148,6 +148,97 @@ MatrixReal RbStatistics::LKJ::rv(double eta, size_t dim, RandomNumberGenerator& 
     
 }
 
+
+
+
+
+
+/*!
+ * This function calculates the probability density
+ * for a LKJ-distributed random variable.
+ *
+ * \brief LKJ probability density.
+ * \param eta is the parameter of the LKJ distribution
+ * \param z is a reference to a matrix containing the random variables.
+ * \return Returns the probability density.
+ * \throws Throws an RbException::ERROR.
+ */
+double RbStatistics::LKJ::pdfPartial(double eta, const MatrixReal &z) {
+    
+    return exp(lnPdfPartial(eta, z));
+}
+
+
+
+/*!
+ * This function calculates the natural log of the probability density
+ * for a LKJ-distributed random variable.
+ *
+ * \brief Natural log of LKJ probability density.
+ * \param eta is the parameter of the LKJ distribution
+ * \param z is a reference to a matrix containing the random variables.
+ * \return Returns the natural log of the probability density.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::LKJ::lnPdfPartial(double eta, const MatrixReal &z)
+{
+    
+    size_t dim = z.getNumberOfRows();
+    
+    // compute the correlation matrix
+    MatrixReal P(dim);
+    
+    // P must start as an identity matrix
+    for(size_t i = 0; i < dim; ++i)
+    {
+        P[i][i] = 1.0;
+    }
+
+    for(int k = 0; k < dim - 1; ++k)
+    {
+        for(int i = k + 1; i < dim; ++i)
+        {
+            double p = z[k][i]; // initial value for the product-moment correlation
+            for(int l = k - 1; l >= 0; --l)
+            {
+                p = p * pow( ( 1.0 - pow(z[l][i], 2) ) * ( 1.0 - pow(z[l][k], 2) ), 0.5) + z[l][i] * z[l][k];
+            }
+            P[i][k] = p;
+            P[k][i] = p;
+        }
+    }
+    
+    // compute the Jacobian
+//    double jacobian = 1.0;
+//    for(int k = 0; k < dim - 2; ++k)
+//    {
+//        for(int i = k + 1; i < dim; ++i)
+//        {
+//            std::cout << z[k][i] << " -- " << dim - k - 2 << " -- " << pow( 1.0 - pow(z[k][i],2), dim - k - 2 ) << std::endl;
+//            jacobian *= pow( 1.0 - pow(z[k][i],2), dim - k - 2);
+//        }
+//    }
+//    jacobian = 1 / pow(jacobian, 0.5);
+//    double ln_j = log(jacobian);
+    
+    double ln_jacobian = 0.0;
+    for(size_t k = 0; k < dim - 2; ++k)
+    {
+        for(size_t i = k + 1; i < dim; ++i)
+        {
+            ln_jacobian += (dim - k - 2) * log(1.0 - pow(z[k][i], 2.0));
+        }
+    }
+    ln_jacobian *= -0.5;
+
+    // compute the probability of the induced correlation matrix
+    double ln_prob = lnPdf(eta, P);
+
+    return ln_prob - ln_jacobian;
+    
+}
+
+
 /*!
  * This function generates a LKJ-distributed random variable (the partial correlations).
  *
@@ -161,8 +252,12 @@ MatrixReal RbStatistics::LKJ::rvPartial(double eta, size_t dim, RandomNumberGene
 {
     
     MatrixReal P(dim); // this matrix holds the partial correlations
+    for(int i = 0; i < dim; ++i)
+    {
+        P[i][i] = 1.0;
+    }
     
-    // this algorithm is only safe for eta > 1.
+    // I think this algorithm is only safe for eta > 1.
     // if eta < 1, we'll just return the identity matrix.
     // during MCMC, this only means that the initial value will not be from the prior
     if (eta < 1)
@@ -180,6 +275,7 @@ MatrixReal RbStatistics::LKJ::rvPartial(double eta, size_t dim, RandomNumberGene
         for(int i = k + 1; i < dim; ++i)
         {
             P[k][i] = RbStatistics::Beta::rv(beta, beta, rng) * 2.0 - 1.0; // sample the partial correlation
+            P[i][k] = P[k][i];
         }
     }
     

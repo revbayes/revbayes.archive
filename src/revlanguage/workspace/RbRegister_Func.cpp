@@ -280,6 +280,7 @@
 #include "Func_stirling.h"
 #include "Func_varianceCovarianceMatrix.h"
 #include "Func_decomposedVarianceCovarianceMatrix.h"
+#include "Func_partialToCorrelationMatrix.h"
 
 #include "RlDiscreteCharacterState.h"
 
@@ -527,11 +528,12 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_discretizePositiveDistribution( ) );
 
         // return a discretized gamma distribution (for gamma-dist rates)
-        addFunction( new Func_discretizeBeta( )   );
+        addFunction( new Func_discretizeBeta( )    );
         addFunction( new Func_discretizeGamma( )   );
 
-        addFunction( new Func_varianceCovarianceMatrix( )   );
-        addFunction( new Func_decomposedVarianceCovarianceMatrix( )   );
+        addFunction( new Func_varianceCovarianceMatrix( )           );
+        addFunction( new Func_decomposedVarianceCovarianceMatrix( ) );
+        addFunction( new Func_partialToCorrelationMatrix( )         );
 
 
     }

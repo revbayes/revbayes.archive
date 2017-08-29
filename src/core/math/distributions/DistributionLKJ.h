@@ -24,7 +24,9 @@ namespace RevBayesCore {
             double                          pdf(double eta, const MatrixReal& z);
             double                          lnPdf(double eta, const MatrixReal& z);
             MatrixReal                      rv(double eta, size_t dim, RandomNumberGenerator& rng);
-            
+
+            double                          pdfPartial(double eta, const MatrixReal& z);
+            double                          lnPdfPartial(double eta, const MatrixReal& z);
             MatrixReal                      rvPartial(double eta, size_t dim, RandomNumberGenerator& rng);
 
         }
