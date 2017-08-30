@@ -55,7 +55,7 @@ CorrelationMatrixElementSwapProposal* CorrelationMatrixElementSwapProposal::clon
  */
 const std::string& CorrelationMatrixElementSwapProposal::getProposalName( void ) const
 {
-    static std::string name = "MatrixRealElementSwapMove";
+    static std::string name = "CorrelationMatrixElementSwapMove";
     
     return name;
 }

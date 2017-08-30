@@ -58,7 +58,7 @@ CorrelationMatrixSpecificElementBetaProposal* CorrelationMatrixSpecificElementBe
  */
 const std::string& CorrelationMatrixSpecificElementBetaProposal::getProposalName( void ) const
 {
-    static std::string name = "MatrixRealSingleSpecificElementBetaMove";
+    static std::string name = "CorrelationMatrixSpecificElementBeta";
     
     return name;
 }

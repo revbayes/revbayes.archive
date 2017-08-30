@@ -56,7 +56,7 @@ CorrelationMatrixElementBetaProposal* CorrelationMatrixElementBetaProposal::clon
  */
 const std::string& CorrelationMatrixElementBetaProposal::getProposalName( void ) const
 {
-    static std::string name = "MatrixRealSingleElementBetaMove";
+    static std::string name = "CorrelationMatrixSingleElementBeta";
     
     return name;
 }
