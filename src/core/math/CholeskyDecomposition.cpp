@@ -18,6 +18,8 @@ CholeskyDecomposition::CholeskyDecomposition( const MatrixReal* m )
         throw RbException("Matrix must be square for Cholesky decomposition.");
     }
     
+    is_positive_semidefinite = true;
+    
     // set the pointer to the matrix
     qPtr = m;
     
@@ -84,6 +86,8 @@ void CholeskyDecomposition::decomposeMatrix( void )
     L.clear();
     L.resize(n, n);
 
+    is_positive_semidefinite = true;
+    
     for (size_t r = 0; r < n; ++r)
     {
         for (size_t c = 0; c <= r; ++c)
@@ -96,6 +100,9 @@ void CholeskyDecomposition::decomposeMatrix( void )
                     sum += L[c][j] * L[c][j];
                 }
                 L[c][c] = std::sqrt((*qPtr)[c][c] - sum);
+                if( ((*qPtr)[c][c] - sum) < 0.0) {
+                    is_positive_semidefinite = false;
+                }
             }
             else
             {

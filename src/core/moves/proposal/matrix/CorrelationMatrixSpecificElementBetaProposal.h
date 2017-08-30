@@ -1,5 +1,5 @@
-#ifndef CorrelationMatrixPartialElementBetaProposal_H
-#define CorrelationMatrixPartialElementBetaProposal_H
+#ifndef CorrelationMatrixSpecificElementBetaProposal_H
+#define CorrelationMatrixSpecificElementBetaProposal_H
 
 #include <set>
 #include <string>
@@ -13,8 +13,8 @@ namespace RevBayesCore {
     /**
      * The Beta operator.
      *
-     * This move randomly picks an element of a matrix of positive real numbers.
-     * That means, that we randomly pick the i-th row and j-th column with equal probability.
+     * This move randomly picks a specific element of a matrix of positive real numbers.
+     * That means, that we select the i-th row and j-th column.
      * Then, we propose a Beta distance and slide the value.
      * The actual Beta distance is computed by delta = lambda * ( u - 0.5 )
      * where u ~ Uniform(0,1).
@@ -25,14 +25,14 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class CorrelationMatrixPartialElementBetaProposal : public Proposal {
+    class CorrelationMatrixSpecificElementBetaProposal : public Proposal {
         
     public:
-        CorrelationMatrixPartialElementBetaProposal( StochasticNode<MatrixReal> *n, double a);                                                                      //!<  constructor
+        CorrelationMatrixSpecificElementBetaProposal( StochasticNode<MatrixReal> *n, size_t i, size_t j, double a, double p=0.234);                                                                      //!<  constructor
         
         // Basic utility functions
         void                                     cleanProposal(void);                                                                //!< Clean up proposal
-        CorrelationMatrixPartialElementBetaProposal*    clone(void) const;                                                                  //!< Clone object
+        CorrelationMatrixSpecificElementBetaProposal*    clone(void) const;                                                                  //!< Clone object
         double                                   doProposal(void);                                                                   //!< Perform proposal
         const std::string&                       getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                     printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
@@ -49,8 +49,11 @@ namespace RevBayesCore {
         StochasticNode<MatrixReal >*             variable;
         
         double                                   alpha;                                                                             //!< The Beta parameter of the move (larger lambda -> larger proposals).
-        //!< The two indices of the last modified element.
-        MatrixReal                               stored_matrix;                                                                          //!< The value we propose.
+        //!< The two indices of the last modified SpecificElement.
+        size_t                                   indexa;
+        size_t                                   indexb;
+        double                                   storedValue;                                                                          //!< The value we propose.
+    
     };
     
 }
