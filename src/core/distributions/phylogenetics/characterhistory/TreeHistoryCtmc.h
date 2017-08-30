@@ -154,7 +154,6 @@ RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TypedDagNode<Tree
     treatUnknownAsGap( true ),
     treatAmbiguousAsGaps( true ),
     tipsInitialized( false ),
-    template_state(),
     useDirtyNodes(false)
 {
     // initialize with default parameters
