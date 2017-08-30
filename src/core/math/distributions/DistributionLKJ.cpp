@@ -81,8 +81,20 @@ double RbStatistics::LKJ::lnPdf(double eta, const MatrixReal &z)
 //        std::cout << "Rejecting non-positive-definite matrix!" << std::endl;
         return RbConstants::Double::neginf;
     }
-
-    return (eta - 1) * z.getLogDet();
+    
+    // compute the normalizing constant
+    // equation 16 from Lewandowski, Kurowicka and Joe 2009
+    double s = 0.0;
+    double p = 0.0;
+    for(int k = 1; k <= dim - 1; ++k)
+    {
+        s += (2 * eta - 2 + dim - k) * (dim - k);
+        p += (dim - k) * RbMath::lnBeta(eta + 0.5 * (dim - k - 1), eta + 0.5 * (dim - k - 1));
+    }
+    
+    double c = s * log(2) + p; // the log normalizing constant
+    
+    return c + (eta - 1) * z.getLogDet();
 
 }
 
@@ -148,11 +160,6 @@ MatrixReal RbStatistics::LKJ::rv(double eta, size_t dim, RandomNumberGenerator& 
     
 }
 
-
-
-
-
-
 /*!
  * This function calculates the probability density
  * for a LKJ-distributed random variable.
@@ -209,18 +216,7 @@ double RbStatistics::LKJ::lnPdfPartial(double eta, const MatrixReal &z)
     }
     
     // compute the Jacobian
-//    double jacobian = 1.0;
-//    for(int k = 0; k < dim - 2; ++k)
-//    {
-//        for(int i = k + 1; i < dim; ++i)
-//        {
-//            std::cout << z[k][i] << " -- " << dim - k - 2 << " -- " << pow( 1.0 - pow(z[k][i],2), dim - k - 2 ) << std::endl;
-//            jacobian *= pow( 1.0 - pow(z[k][i],2), dim - k - 2);
-//        }
-//    }
-//    jacobian = 1 / pow(jacobian, 0.5);
-//    double ln_jacobian = log(jacobian);
-    
+    // equation 11 from Lewandowski, Kurowicka and Joe 2009
     double ln_jacobian = 0.0;
     for(size_t k = 0; k < dim - 2; ++k)
     {
