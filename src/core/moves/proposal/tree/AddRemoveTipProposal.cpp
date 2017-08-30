@@ -95,6 +95,11 @@ double AddRemoveTipProposal::doProposal( void )
     {
         TopologyNode* node = &t.getNode(i);
 
+        if( node->isSampledAncestor() )
+        {
+            continue;
+        }
+
         if( node->isTip() && ( ( node->getAge() > 0.0 && extinct == true ) || ( node->getAge() == 0.0 && extant == true ) ) && node->getParent().isRoot() == false )
         {
             tips.push_back(node);

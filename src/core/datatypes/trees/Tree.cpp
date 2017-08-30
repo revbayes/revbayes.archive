@@ -567,13 +567,13 @@ size_t Tree::getNumberOfTips( void ) const
  */
 size_t Tree::getNumberOfExtinctTips( void ) const
 {
-    size_t num_extant = 0;
+    size_t num_extinct = 0;
     for(size_t i = 0; i < num_tips; i++)
     {
-        num_extant += nodes[i]->isFossil();
+        num_extinct += nodes[i]->isFossil();
     }
 
-    return num_extant;
+    return num_extinct;
 }
 
 
@@ -583,6 +583,21 @@ size_t Tree::getNumberOfExtinctTips( void ) const
 size_t Tree::getNumberOfExtantTips( void ) const
 {
     return num_tips - getNumberOfExtinctTips();
+}
+
+
+/**
+ * return the number of tips.
+ */
+size_t Tree::getNumberOfSampledAncestors( void ) const
+{
+    size_t num_sa = 0;
+    for(size_t i = 0; i < num_tips; i++)
+    {
+        num_sa += nodes[i]->isSampledAncestor();
+    }
+
+    return num_sa;
 }
 
 

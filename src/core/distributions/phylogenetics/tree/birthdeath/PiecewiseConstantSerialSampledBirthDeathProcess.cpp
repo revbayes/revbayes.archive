@@ -313,8 +313,6 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     size_t num_nodes = value->getNumberOfNodes();
 
     // classify nodes
-    int num_sampled_ancestors = 0;
-    int num_fossil_taxa = 0;
     int num_extant_taxa = 0;
 
     // retrieved the speciation times
@@ -329,13 +327,11 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         if ( n.isTip() && n.isFossil() && n.isSampledAncestor() )
         {
             // node is sampled ancestor
-            num_sampled_ancestors++;
             sampled_ancestor_ages.push_back(n.getAge());
         }
         else if ( n.isTip() && n.isFossil() && !n.isSampledAncestor() )
         {
             // node is fossil leaf
-            num_fossil_taxa++;
             fossil_tip_ages.push_back( n.getAge() );
         }
         else if ( n.isTip() && !n.isFossil() )
@@ -437,11 +433,12 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         
         double t = internal_node_ages[i];
         size_t index = l(t);
-        lnProbTimes += log( 2.0 * q(index, t) * lambda[index - 1] );
+        lnProbTimes += log( q(index, t) * lambda[index - 1] );
     }
 
     // add the initial age term
-    lnProbTimes += num_initial_lineages * log( q(1, process_time ) );
+    size_t index = l(process_time);
+    lnProbTimes += num_initial_lineages * log( q(index, process_time ) );
 
     // condition on survival
     if ( condition == "survival" )
@@ -479,13 +476,15 @@ size_t PiecewiseConstantSerialSampledBirthDeathProcess::l(double t) const
 double PiecewiseConstantSerialSampledBirthDeathProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
-    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n-1} / ((n-m)! m!)
-    // where m is the number of extinct tips
+    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / (n!(m+k)!)
+    // where n is the number of extant tips, m is the number of extinct tips
+    // and k is the number of sampled ancestors
 
     size_t num_taxa = value->getNumberOfTips();
     size_t num_extinct = value->getNumberOfExtinctTips();
+    size_t num_sa = value->getNumberOfSampledAncestors();
 
-    return (num_taxa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct) - RbMath::lnFactorial(num_extinct);
+    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct) - RbMath::lnFactorial(num_extinct);
 }
 
 

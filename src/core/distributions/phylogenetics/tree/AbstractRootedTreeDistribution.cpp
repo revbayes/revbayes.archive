@@ -651,7 +651,7 @@ void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
     {
         if( use_origin == false )
         {
-            value->getNode( value->getRoot().getIndex() ).setAge( process_age->getValue() );
+            value->getRoot().setAge( process_age->getValue() );
         }
 
         if ( dag_node != NULL )
