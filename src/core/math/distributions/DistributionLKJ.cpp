@@ -183,8 +183,6 @@ double RbStatistics::LKJ::pdfPartial(double eta, const MatrixReal &z) {
 double RbStatistics::LKJ::lnPdfPartial(double eta, const MatrixReal &z)
 {
     
-//    return 0.0;
-    
     size_t dim = z.getNumberOfRows();
     
     // compute the correlation matrix
