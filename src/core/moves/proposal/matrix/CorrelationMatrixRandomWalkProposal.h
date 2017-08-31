@@ -1,5 +1,5 @@
-#ifndef CorrelationMatrixPartialElementBetaProposal_H
-#define CorrelationMatrixPartialElementBetaProposal_H
+#ifndef CorrelationMatrixElementBetaProposal_H
+#define CorrelationMatrixElementBetaProposal_H
 
 #include <set>
 #include <string>
@@ -25,14 +25,14 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class CorrelationMatrixPartialElementBetaProposal : public Proposal {
+    class CorrelationMatrixRandomWalkProposal : public Proposal {
         
     public:
-        CorrelationMatrixPartialElementBetaProposal( StochasticNode<MatrixReal> *n, double a);                                                                      //!<  constructor
+        CorrelationMatrixRandomWalkProposal( StochasticNode<MatrixReal> *n, double s, double p=0.44);                                                                      //!<  constructor
         
         // Basic utility functions
         void                                     cleanProposal(void);                                                                //!< Clean up proposal
-        CorrelationMatrixPartialElementBetaProposal*    clone(void) const;                                                                  //!< Clone object
+        CorrelationMatrixRandomWalkProposal*     clone(void) const;                                                                  //!< Clone object
         double                                   doProposal(void);                                                                   //!< Perform proposal
         const std::string&                       getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                     printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
@@ -47,10 +47,9 @@ namespace RevBayesCore {
         // parameters
         
         StochasticNode<MatrixReal >*             variable;
-        
-        double                                   alpha;                                                                             //!< The Beta parameter of the move (larger lambda -> larger proposals).
-        //!< The two indices of the last modified element.
+        double                                   sigma;
         MatrixReal                               stored_matrix;                                                                          //!< The value we propose.
+        
     };
     
 }
