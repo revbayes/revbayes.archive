@@ -50,7 +50,7 @@ namespace RevBayesCore {
         
         double                                   alpha;                                                                             //!< The Beta parameter of the move (larger lambda -> larger proposals).
         //!< The two indices of the last modified element.
-        MatrixReal                               storedValue;                                                                          //!< The value we propose.
+        MatrixReal                               stored_matrix;                                                                          //!< The value we propose.
     };
     
 }

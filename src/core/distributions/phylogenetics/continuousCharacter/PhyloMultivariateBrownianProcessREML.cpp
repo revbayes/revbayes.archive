@@ -16,6 +16,8 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     partial_likelihoods( std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) ) ),
     contrasts( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0.0) ) ) ),
     contrast_uncertainty( std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) ) ),
+    independent_contrasts( std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0.0) ) ),
+    independent_contrasts_sds( std::vector<double>(this->num_nodes, 0.0) ),
     active_likelihood( std::vector<size_t>(this->num_nodes, 0) ),
     changed_nodes( std::vector<bool>(this->num_nodes, false) ),
     dirty_nodes( std::vector<bool>(this->num_nodes, true) )
@@ -113,6 +115,40 @@ void PhyloMultivariateBrownianProcessREML::fireTreeChangeEvent( const TopologyNo
 }
 
 
+
+std::vector<std::vector<double> > PhyloMultivariateBrownianProcessREML::getContrasts()
+{
+
+    // make sure the necessary quantities are clean
+    computeLnProbability();
+    
+    // clean out the contrasts vector
+    independent_contrasts.clear();
+    independent_contrasts = std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0.0) );
+
+    independent_contrasts_sds.clear();
+    independent_contrasts_sds = std::vector<double>(this->num_nodes, 0.0);
+
+    // compute the constrasts by recursively calling the contrast calculation for each node
+    const TopologyNode &root = this->tau->getValue().getRoot();
+
+    // we start with the root and then traverse down the tree
+    size_t rootIndex = root.getIndex();
+
+    // compute the contrast at the root, and recursively compute the remaining contrasts up the tree
+    recursiveComputeContrasts( root, rootIndex );
+    
+    // remove the first n standardized contrasts, where n is the number of tips
+    size_t num_tips = this->tau->getValue().getNumberOfTips();
+    
+    independent_contrasts.erase(independent_contrasts.begin(), independent_contrasts.begin() + num_tips);
+    independent_contrasts_sds.erase(independent_contrasts_sds.begin(), independent_contrasts_sds.begin() + num_tips);
+
+    return independent_contrasts;
+    
+}
+
+
 void PhyloMultivariateBrownianProcessREML::keepSpecialization( DagNode* affecter )
 {
     
@@ -189,16 +225,16 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
 
             double branch_length = t_left + t_right;
             
-            std::vector<double> contrasts(num_sites);
+            std::vector<double> these_contrasts(num_sites);
             std::vector<double> means(num_sites, 0.0);
             for (size_t i = 0; i < this->num_sites; ++i)
             {
-                contrasts[i] = mu_left[i] - mu_right[i];
+                these_contrasts[i] = mu_left[i] - mu_right[i];
                 mu_node[i] = (mu_left[i] * t_right + mu_right[i] * t_left) / (t_left + t_right);
             }
             
 //            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfCovariance(means, rate_matrix->getValue(), contrasts, branch_length);
-            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfPrecision(means, precision_matrix, contrasts, branch_length);
+            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfPrecision(means, precision_matrix, these_contrasts, branch_length);
             p_node = lnl_contrast + p_left + p_right;
             
         } // end for-loop over all children
@@ -206,6 +242,72 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
     } // end if we need to compute something for this node.
 
 }
+
+
+void PhyloMultivariateBrownianProcessREML::recursiveComputeContrasts( const TopologyNode &node, size_t node_index )
+{
+    
+    // nothing to do for tips
+    if ( node.isTip() == false )
+    {
+
+        std::vector<double> &mu_node = this->independent_contrasts[node_index];
+        double              &sd_node = this->independent_contrasts_sds[node_index];
+
+        // get the number of children
+        size_t num_children = node.getNumberOfChildren();
+        
+        for (size_t j = 1; j < num_children; ++j)
+        {
+            
+            size_t left_index = node_index;
+            const TopologyNode *left = &node;
+            if ( j == 1 )
+            {
+                left = &node.getChild(0);
+                left_index = left->getIndex();
+                recursiveComputeContrasts( *left, left_index );
+            }
+            
+            const TopologyNode &right = node.getChild(j);
+            size_t right_index = right.getIndex();
+            recursiveComputeContrasts( right, right_index );
+            
+            // get the per node and site contrasts
+            const std::vector<double> &mu_left  = this->contrasts[this->active_likelihood[left_index]][left_index];
+            const std::vector<double> &mu_right = this->contrasts[this->active_likelihood[right_index]][right_index];
+            
+            // get the propagated uncertainties
+            double delta_left  = this->contrast_uncertainty[this->active_likelihood[left_index]][left_index];
+            double delta_right = this->contrast_uncertainty[this->active_likelihood[right_index]][right_index];
+            
+            // get the scaled branch lengths
+            double v_left  = 0;
+            if ( j == 1 )
+            {
+                v_left = this->computeBranchTime(left_index, left->getBranchLength());
+            }
+            double v_right = this->computeBranchTime(right_index, right.getBranchLength());
+            
+            // add the propagated uncertainty to the branch lengths
+            double t_left        = v_left  + delta_left;
+            double t_right       = v_right + delta_right;
+            double branch_length = t_left + t_right;
+            
+            sd_node = pow(branch_length, 0.5);
+            for (size_t i = 0; i < this->num_sites; ++i)
+            {
+//                mu_node[i] = (mu_left[i] - mu_right[i]) / pow(branch_length, 0.5);
+//                mu_node[i] = (mu_left[i] - mu_right[i]) / branch_length;
+                mu_node[i] = mu_left[i] - mu_right[i];
+            }
+            
+        } // end for-loop over all children
+        
+    } // end if we need to compute something for this node.
+    
+}
+
 
 void PhyloMultivariateBrownianProcessREML::recursivelyFlagNodeDirty( const TopologyNode &n )
 {

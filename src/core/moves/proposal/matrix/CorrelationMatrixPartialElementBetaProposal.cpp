@@ -18,13 +18,13 @@ using namespace RevBayesCore;
 CorrelationMatrixPartialElementBetaProposal::CorrelationMatrixPartialElementBetaProposal( StochasticNode<MatrixReal> *n, double a) : Proposal(),
     variable( n ),
     alpha( a ),
-    storedValue( n->getValue().getDim() )
+    stored_matrix( n->getValue().getDim() )
 {
     // tell the base class to add the node
     addNode( variable );
     
     // initialize the stored value
-//    storedValue = variable->getValue();
+//    stored_matrix = variable->getValue();
     
 }
 
@@ -82,9 +82,9 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     // first, store the old matrix
-    storedValue = variable->getValue();
+    stored_matrix = variable->getValue();
     
-    size_t dim = storedValue.getDim();
+    size_t dim = stored_matrix.getDim();
     
     // now, get the inverse of the matrix
     variable->getValue().setCholesky(true);
@@ -110,7 +110,7 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
     {
         for(size_t i = k + 1; i < dim; ++i)
         {
-            ln_jacobian += (dim - k - 1) * std::log(1 - partial_correlations[k][i]);
+            ln_jacobian += (dim - k - 1) * std::log(1 - pow(partial_correlations[k][i],2) );
         }
     }
     ln_jacobian *= -1/2;
@@ -132,13 +132,10 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
     current_value = (current_value + 1.0) / 2.0;
 
     // draw new rates and compute the hastings ratio at the same time
-//    double a = alpha * current_value + 1.0;
-//    double b = alpha * (1.0 - current_value) + 1.0;
     double a = alpha + 1.0;
     double b = (a - 1.0) / current_value - a + 2.0;
     double new_value = RbStatistics::Beta::rv(a, b, *rng);
     
-
     // set the value (for both sides of the matrix!)
     double new_value_transformed = new_value * 2.0 - 1.0;
     partial_correlations[indexa][indexb] = new_value_transformed;
@@ -158,29 +155,38 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
             P[i][k] = p;
             P[k][i] = p;
         }
-        
     }
 
-    variable->setValue( P.clone() );
+    // now set the value of the variable
+    MatrixReal& current_matrix = variable->getValue();
+    for(size_t i = 0; i < (dim - 1); ++i)
+    {
+        for(size_t j = i+1; j < dim; ++j)
+        {
+            current_matrix[i][j] = P[i][j];
+            current_matrix[j][i] = P[i][j];
+            variable->addTouchedElementIndex(i);
+            variable->addTouchedElementIndex(j);
+        }
+    }
+    variable->touch(true);
 
-    double ln_Hastings_ratio = 0.0;
+    double ln_hastings_ratio = 0.0;
     try
     {
         // compute the Hastings ratio
         double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
         double new_a = alpha + 1.0;
         double new_b = (a - 1.0) / new_value - a + 2.0;
-//        double new_a = alpha * new_value + 1.0;
-//        double new_b = alpha * (1.0 - new_value) + 1.0;
         double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
-        ln_Hastings_ratio = backward - forward;
+        ln_hastings_ratio = backward - forward;
     }
     catch (RbException e)
     {
-        ln_Hastings_ratio = RbConstants::Double::neginf;
+        ln_hastings_ratio = RbConstants::Double::neginf;
     }
     
-    return ln_jacobian + ln_Hastings_ratio;
+    return ln_hastings_ratio - ln_jacobian;
     
 }
 
@@ -221,7 +227,16 @@ void CorrelationMatrixPartialElementBetaProposal::undoProposal( void )
 {
     
     // swap current value and stored value
-    variable->setValue( storedValue.clone() );
+    MatrixReal& current_matrix = variable->getValue();
+    size_t size = current_matrix.getNumberOfRows();
+    for(size_t i = 0; i < size; ++i)
+    {
+        for(size_t j = i; j < size; ++j){
+            current_matrix[i][j] = stored_matrix[i][j];
+            current_matrix[j][i] = stored_matrix[i][j];
+        }
+    }
+    variable->clearTouchedElementIndices();
     
 }
 
@@ -250,16 +265,16 @@ void CorrelationMatrixPartialElementBetaProposal::swapNodeInternal(DagNode *oldN
 void CorrelationMatrixPartialElementBetaProposal::tune( double rate )
 {
     
-//    double p = this->targetAcceptanceRate;
-//    
-//    if ( rate > p )
-//    {
-//        alpha /= (1.0 + ((rate-p)/(1.0 - p)) );
-//    }
-//    else
-//    {
-//        alpha *= (2.0 - rate/p);
-//    }
+    double p = this->targetAcceptanceRate;
+    
+    if ( rate > p )
+    {
+        alpha /= (1.0 + ((rate-p)/(1.0 - p)) );
+    }
+    else
+    {
+        alpha *= (2.0 - rate/p);
+    }
     
 }
 

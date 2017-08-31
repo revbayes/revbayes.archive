@@ -80,7 +80,7 @@ MatrixReal::MatrixReal( const MatrixReal &m ) :
     eigen_needs_update( true ),
     cholesky_decomp( NULL ),
     cholesky_needs_update( true ),
-    use_cholesky_decomp( false )
+    use_cholesky_decomp( m.use_cholesky_decomp )
 {
     
 }
@@ -89,6 +89,7 @@ MatrixReal::MatrixReal( const MatrixReal &m ) :
 MatrixReal::~MatrixReal( void )
 {
     delete eigensystem;
+    delete cholesky_decomp;
 }
 
 
@@ -251,6 +252,24 @@ const EigenSystem& MatrixReal::getEigenSystem( void ) const
     return *eigensystem;
 }
 
+CholeskyDecomposition& MatrixReal::getCholeskyDecomposition( void )
+{
+    // update the cholesky decomposition if necessary
+    update();
+    
+    return *cholesky_decomp;
+}
+
+
+const CholeskyDecomposition& MatrixReal::getCholeskyDecomposition( void ) const
+{
+    // update the cholesky decomposition if necessary
+    update();
+    
+    return *cholesky_decomp;
+}
+
+
 double MatrixReal::getDet() const
 {
     
@@ -394,6 +413,22 @@ size_t MatrixReal::getNumberOfRows( void ) const
     return n_rows;
 }
 
+MatrixReal MatrixReal::getTranspose( void )
+{
+    
+    MatrixReal T(n_cols, n_rows, 0);
+    for(size_t i = 0; i < n_rows; ++i)
+    {
+        for(size_t j = 0; j < n_cols; ++j)
+        {
+            T[j][i] = elements[i][j];
+        }
+    }
+    
+    return T;
+    
+}
+
 RbVector<double> MatrixReal::getUpperTriangle( void ) const
 {
     
@@ -491,7 +526,7 @@ void MatrixReal::setCholesky(bool c) const
 
 size_t MatrixReal::size( void ) const
 {
-    return n_rows*n_cols;
+    return n_rows;
 }
 
 

@@ -55,18 +55,18 @@
 #include "ModelVector.h"
 #include "WorkspaceVector.h"
 
-/* Evolution types (in folder "datatypes/evolution") */
+/* Evolution types (in folder "datatypes/phylogenetics") */
 
-/* Character state types (in folder "datatypes/evolution/character") */
+/* Character state types (in folder "datatypes/phylogenetics/character") */
 #include "RlAminoAcidState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
 #include "RlStandardState.h"
 
-/* Character data types (in folder "datatypes/evolution/datamatrix") */
+/* Character data types (in folder "datatypes/phylogenetics/characterdata") */
 #include "RlAbstractCharacterData.h"
 
-/* Tree types (in folder "datatypes/evolution/trees") */
+/* Tree types (in folder "datatypes/phylogenetics/trees") */
 #include "RlClade.h"
 #include "RlRootedTripletDistribution.h"
 
@@ -94,16 +94,16 @@
 
 #include "Dist_EmpiricalSample.h"
 
-/* Character evolution models (in folder "distributions/evolution/character") */
+/* Character evolution models (in folder "distributions/phylogenetics/character") */
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloCTMCDASequence.h"
 #include "Dist_phyloCTMCDASiteIID.h"
 #include "Dist_phyloCTMCClado.h"
 #include "Dist_phyloCTMCDollo.h"
 
-/* Branch rate priors (in folder "distributions/evolution/tree") */
+/* Branch rate priors (in folder "distributions/phylogenetics/tree") */
 
-/* Trait evolution models (in folder "distributions/evolution/branchrates") */
+/* Trait evolution models (in folder "distributions/phylogenetics/branchrates") */
 #include "Dist_PhyloBrownian.h"
 #include "Dist_PhyloBrownianMVN.h"
 #include "Dist_PhyloBrownianREML.h"
@@ -116,8 +116,7 @@
 
 /* Tree priors (in folder "distributions/phylogenetics/tree") */
 #include "Dist_bdp.h"
-#include "Dist_bdpTopology.h"
-#include "Dist_BirthDeathMultiRate.h"
+#include "Dist_bdp_complete.h"
 #include "Dist_CharacterDependentBirthDeathProcess.h"
 #include "Dist_StateDependentSpeciationExtinctionProcess.h"
 #include "Dist_Coalescent.h"
@@ -125,9 +124,8 @@
 #include "Dist_ConstrainedTopology.h"
 #include "Dist_ConstrainedNodeOrder.h"
 #include "Dist_WeightedConstrainedNodeOrder.h"
-#include "Dist_constFBDP.h"
+#include "Dist_FBDPRange.h"
 #include "Dist_constPopMultispCoal.h"
-#include "Dist_constSSBDP.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
 #include "Dist_episodicBirthDeath.h"
@@ -139,6 +137,7 @@
 #include "Dist_outgroupBirthDeath.h"
 #include "Dist_phyloDistanceGamma.h"
 #include "Dist_sampledSpeciationBirthDeathProcess.h"
+#include "Dist_SSBDP.h"
 #include "Dist_uniformTimeTree.h"
 #include "Dist_uniformTopology.h"
 
@@ -165,6 +164,7 @@
 #include "Dist_inverseGamma.h"
 #include "Dist_inverseWishart.h"
 #include "Dist_LKJ.h"
+#include "Dist_LKJPartial.h"
 #include "Dist_lnorm.h"
 #include "Dist_lnormOffset.h"
 #include "Dist_lnormOffsetPositive.h"
@@ -219,14 +219,14 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         ///////////////////////////////////////////////////
         
         
-        /* Evolutionary processes (in folder "distributions/evolution") */
+        /* Evolutionary processes (in folder "distributions/phylogenetics") */
 
-        /* Branch rate processes (in folder "distributions/evolution/branchrate") */
-
+        /* Branch rate processes (in folder "distributions/phylogenetics/branchrate") */
+        
         // white noise process
         AddDistribution< ModelVector<RealPos>       >(  new Dist_PhyloWhiteNoise()          );
-
-        /* trait evolution (in folder "distributions/evolution/branchrate") */
+        
+        /* trait evolution (in folder "distributions/phylogenetics/branchrate") */
 
         // brownian motion
         AddDistribution< ModelVector<Real>          >( new Dist_PhyloBrownian()                 );
@@ -239,9 +239,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // multivariate brownian motion
         AddDistribution< ModelVector< ModelVector<Real> > >( new Dist_PhyloMvtBrownian() );
-
-        /* Character state evolution processes (in folder "distributions/evolution/character") */
-
+  
+        /* Character state evolution processes (in folder "distributions/phylogenetics/character") */
+        
         // simple phylogenetic CTMC on fixed number of discrete states
 //        AddDistribution< AbstractHomologousDiscreteCharacterData >( new Dist_phyloCTMC() );
 //        AddDistribution< AbstractHomologousDiscreteCharacterData >( new Dist_phyloDACTMC() );
@@ -252,25 +252,24 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( new Dist_phyloCTMCClado() );
         addDistribution( new Dist_phyloCTMCDollo() );
         
-        /* Tree distributions (in folder "distributions/evolution/tree") */
-
+        /* Tree distributions (in folder "distributions/phylogenetics/tree") */
+        
         // constant rate birth-death process
         AddDistribution< TimeTree                   >( new Dist_bdp());
-        AddDistribution< TimeTree                   >( new Dist_bdpTopology() );
+        AddDistribution< TimeTree                   >( new Dist_bdp_complete());
 
-        AddDistribution< TimeTree                   >( new Dist_BirthDeathMultiRate() );
         AddDistribution< TimeTree                   >( new Dist_CharacterDependentBirthDeathProcess() );
         AddDistribution< TimeTree                   >( new Dist_StateDependentSpeciationExtinctionProcess() );
         AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_outgroupBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_sampledSpeciationBirthDeathProcess() );
-
-
-        // constant rate fossil-birth-death process
-        AddDistribution< TimeTree                   >( new Dist_constFBDP());
-
-        // constant rate serial-sampled-birth-death process
-        AddDistribution< TimeTree                   >( new Dist_constSSBDP());
+        
+        
+        // fossilized-birth-death stratigraphic range process
+        AddDistribution< MatrixReal                 >( new Dist_FBDPRange());
+        
+        // serial-sampled-birth-death process
+        AddDistribution< TimeTree                   >( new Dist_SSBDP());
         
         // diversity-dependent pure-birth process
         AddDistribution< TimeTree                   >( new Dist_divDepYuleProcess() );
@@ -411,6 +410,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // LKJ distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_LKJ() );
+        AddDistribution< MatrixRealSymmetric        >( new Dist_LKJPartial() );
         
         // Wishart distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_wishart() );
