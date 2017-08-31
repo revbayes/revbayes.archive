@@ -124,7 +124,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     int num_sampled_ancestors = 0;
     int num_extant_taxa = 0;
 
-    std::vector<double> fossil_tip_ages = std::vector<double>();
+    std::vector<double> serial_tip_ages = std::vector<double>();
     std::vector<double> internal_node_ages = std::vector<double>();
     for (size_t i = 0; i < num_nodes; i++)
     {
@@ -137,8 +137,8 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         }
         else if ( n.isFossil() && !n.isSampledAncestor() )
         {
-            // node is fossil leaf
-            fossil_tip_ages.push_back( n.getAge() );
+            // node is serial leaf
+            serial_tip_ages.push_back( n.getAge() );
         }
         else if ( n.isTip() && !n.isFossil() )
         {
@@ -155,17 +155,18 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         }
     }
     
-    // add the log probability for the fossilization events
+    // add the log probability for the serial sampling events
     if (serial_rate == 0.0)
     {
-        if( fossil_tip_ages.size() + num_sampled_ancestors > 0 )
+        if( serial_tip_ages.size() + num_sampled_ancestors > 0 )
         {
-            throw RbException("The serial sampling rate is zero, but the tree has serial sampled tips.");
+            return RbConstants::Double::neginf;
+            //throw RbException("The serial sampling rate is zero, but the tree has serial sampled tips.");
         }
     }
     else
     {
-        lnProbTimes += (fossil_tip_ages.size() + num_sampled_ancestors) * log( serial_rate );
+        lnProbTimes += (serial_tip_ages.size() + num_sampled_ancestors) * log( serial_rate );
     }
     
     // add the log probability for sampling the extant taxa
@@ -182,10 +183,10 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         lnProbTimes -= lnQ(t, c1, c2);
     }
 
-    // add the log probability for the fossil tip ages
-    for(size_t f=0; f < fossil_tip_ages.size(); f++)
+    // add the log probability for the serial tip ages
+    for(size_t f=0; f < serial_tip_ages.size(); f++)
     {
-        double t = fossil_tip_ages[f];
+        double t = serial_tip_ages[f];
         lnProbTimes += log(pZero(t, c1, c2)) + lnQ(t, c1, c2);
     }
 
@@ -209,7 +210,7 @@ double ConstantRateSerialSampledBirthDeathProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
     // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / (n!(m+k)!)
-    // where n is the number of extant tips, m is the number of extinct tips
+    // where n is the number of extant tips, m is the number of sampled extinct tips
     // and k is the number of sampled ancestors
 
     size_t num_taxa = value->getNumberOfTips();

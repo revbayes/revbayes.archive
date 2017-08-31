@@ -43,7 +43,8 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   tree;
         RevPtr<const RevVariable>                   extant;
         RevPtr<const RevVariable>                   extinct;
-        
+        RevPtr<const RevVariable>                   sampled_ancestors;
+
     };
     
 }

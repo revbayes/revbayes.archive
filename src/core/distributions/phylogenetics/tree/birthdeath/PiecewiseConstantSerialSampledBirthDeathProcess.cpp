@@ -18,7 +18,7 @@ using namespace RevBayesCore;
  *
  * \param[in]    s              Speciation rates.
  * \param[in]    e              Extinction rates.
- * \param[in]    p              Fossil sampling rates.
+ * \param[in]    p              Serial sampling rates.
  * \param[in]    r              Instantaneous sampling probabilities.
  * \param[in]    t              Rate change times.
  * \param[in]    cdt            Condition of the process (none/survival/#Taxa).
@@ -284,7 +284,6 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityDive
 /**
  * Compute the log probability of the current value under the current parameter values.
  * Tip-dating (Theorem 1, Stadler et al. 2013 PNAS)
- * Ancestral fossils will be considered in the future.
  */
 double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
@@ -316,7 +315,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     int num_extant_taxa = 0;
 
     // retrieved the speciation times
-    std::vector<double> fossil_tip_ages = std::vector<double>();
+    std::vector<double> serial_tip_ages = std::vector<double>();
     std::vector<double> sampled_ancestor_ages = std::vector<double>();
     std::vector<double> internal_node_ages = std::vector<double>();
 
@@ -331,8 +330,8 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         }
         else if ( n.isTip() && n.isFossil() && !n.isSampledAncestor() )
         {
-            // node is fossil leaf
-            fossil_tip_ages.push_back( n.getAge() );
+            // node is serial leaf
+            serial_tip_ages.push_back( n.getAge() );
         }
         else if ( n.isTip() && !n.isFossil() )
         {
@@ -349,23 +348,24 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         }
     }
     
-    // add the fossil tip age terms
-    for (size_t i = 0; i < fossil_tip_ages.size(); ++i)
+    // add the serial tip age terms
+    for (size_t i = 0; i < serial_tip_ages.size(); ++i)
     {
         if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }
         
-        double t = fossil_tip_ages[i];
+        double t = serial_tip_ages[i];
         size_t index = l(t);
 
-        // add the log probability for the fossilization events
+        // add the log probability for the serial sampling events
         if (psi[index - 1] == 0.0)
         {
-            std::stringstream ss;
-            ss << "The serial sampling rate in interval " << index << " is zero, but the tree has serial sampled tips in this interval.";
-            throw RbException(ss.str());
+            return RbConstants::Double::neginf;
+            //std::stringstream ss;
+            //ss << "The serial sampling rate in interval " << index << " is zero, but the tree has serial sampled tips in this interval.";
+            //throw RbException(ss.str());
         }
         else
         {
@@ -596,8 +596,8 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
 
         if( psi_timeline != NULL )
         {
-            const std::vector<double>& fossilTimes = psi_timeline->getValue();
-            for (std::vector<double>::const_iterator it = fossilTimes.begin(); it != fossilTimes.end(); ++it)
+            const std::vector<double>& serialTimes = psi_timeline->getValue();
+            for (std::vector<double>::const_iterator it = serialTimes.begin(); it != serialTimes.end(); ++it)
             {
                 eventTimes.insert( *it );
             }
