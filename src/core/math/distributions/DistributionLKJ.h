@@ -21,9 +21,13 @@ namespace RevBayesCore {
         
         namespace LKJ {
             
-            double                          pdf(double eta, const MatrixReal& z);                   /*!< Dirichlet(a[]) probability density */
-            double                          lnPdf(double eta, const MatrixReal& z);                 /*!< Dirichlet(a[]) log_e probability density */
-            MatrixReal                      rv(double eta, size_t dim, RandomNumberGenerator& rng); /*!< Dirichlet(a[]) random variable */
+            double                          pdf(double eta, const MatrixReal& z);
+            double                          lnPdf(double eta, const MatrixReal& z);
+            MatrixReal                      rv(double eta, size_t dim, RandomNumberGenerator& rng);
+
+            double                          pdfPartial(double eta, const MatrixReal& z);
+            double                          lnPdfPartial(double eta, const MatrixReal& z);
+            MatrixReal                      rvPartial(double eta, size_t dim, RandomNumberGenerator& rng);
 
         }
     }

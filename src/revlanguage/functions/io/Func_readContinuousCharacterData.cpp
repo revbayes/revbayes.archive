@@ -130,6 +130,7 @@ RevPtr<RevVariable> Func_readContinuousCharacterData::execute( void )
                 if ( dType == "Continuous" )
                 {
                     RevBayesCore::ContinuousCharacterData *coreM = static_cast<RevBayesCore::ContinuousCharacterData *>( *it );
+                    
                     ContinuousCharacterData mCC = ContinuousCharacterData (coreM );
                     m->push_back( mCC );
                 }

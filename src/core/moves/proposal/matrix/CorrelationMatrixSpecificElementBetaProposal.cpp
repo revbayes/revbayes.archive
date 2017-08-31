@@ -1,4 +1,4 @@
-#include "CorrelationMatrixElementBetaProposal.h"
+#include "CorrelationMatrixSpecificElementBetaProposal.h"
 #include "DistributionBeta.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -15,8 +15,10 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-CorrelationMatrixElementBetaProposal::CorrelationMatrixElementBetaProposal( StochasticNode<MatrixReal> *n, double a, double p) : Proposal(p),
+CorrelationMatrixSpecificElementBetaProposal::CorrelationMatrixSpecificElementBetaProposal( StochasticNode<MatrixReal> *n, size_t i, size_t j, double a, double p) : Proposal(p),
     variable( n ),
+    indexa( i - 1 ),
+    indexb( j - 1 ),
     alpha( a ),
     storedValue( 0.0 )
 {
@@ -31,7 +33,7 @@ CorrelationMatrixElementBetaProposal::CorrelationMatrixElementBetaProposal( Stoc
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void CorrelationMatrixElementBetaProposal::cleanProposal( void )
+void CorrelationMatrixSpecificElementBetaProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -42,10 +44,10 @@ void CorrelationMatrixElementBetaProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-CorrelationMatrixElementBetaProposal* CorrelationMatrixElementBetaProposal::clone( void ) const
+CorrelationMatrixSpecificElementBetaProposal* CorrelationMatrixSpecificElementBetaProposal::clone( void ) const
 {
     
-    return new CorrelationMatrixElementBetaProposal( *this );
+    return new CorrelationMatrixSpecificElementBetaProposal( *this );
 }
 
 
@@ -54,9 +56,9 @@ CorrelationMatrixElementBetaProposal* CorrelationMatrixElementBetaProposal::clon
  *
  * \return The Proposals' name.
  */
-const std::string& CorrelationMatrixElementBetaProposal::getProposalName( void ) const
+const std::string& CorrelationMatrixSpecificElementBetaProposal::getProposalName( void ) const
 {
-    static std::string name = "CorrelationMatrixSingleElementBeta";
+    static std::string name = "CorrelationMatrixSpecificElementBeta";
     
     return name;
 }
@@ -66,28 +68,19 @@ const std::string& CorrelationMatrixElementBetaProposal::getProposalName( void )
  * Perform the proposal.
  *
  * A Beta proposal draws a random uniform number u ~ unif(-0.5,0.5)
- * and MatrixRealSingleElementBetas the current vale by
+ * and MatrixRealSingleSpecificElementBetas the current vale by
  * delta = lambda * u
  * where lambda is the tuning parameter of the proposal to influence the size of the proposals.
  *
  * \return The hastings ratio.
  */
-double CorrelationMatrixElementBetaProposal::doProposal( void )
+double CorrelationMatrixSpecificElementBetaProposal::doProposal( void )
 {
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     MatrixReal& v = variable->getValue();
-    // choose an index
-    indexa = size_t( rng->uniform01() * v.getNumberOfRows() );
-    indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
-    
-    // make sure we don't get a diagonal
-    while (indexb == indexa)
-    {
-        indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
-    }
     
     // copy the current value
     storedValue = v[indexa][indexb];
@@ -136,7 +129,7 @@ double CorrelationMatrixElementBetaProposal::doProposal( void )
 /**
  *
  */
-void CorrelationMatrixElementBetaProposal::prepareProposal( void )
+void CorrelationMatrixSpecificElementBetaProposal::prepareProposal( void )
 {
     
 }
@@ -150,7 +143,7 @@ void CorrelationMatrixElementBetaProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void CorrelationMatrixElementBetaProposal::printParameterSummary(std::ostream &o) const
+void CorrelationMatrixSpecificElementBetaProposal::printParameterSummary(std::ostream &o) const
 {
     
     o << "alpha = " << alpha;
@@ -165,7 +158,7 @@ void CorrelationMatrixElementBetaProposal::printParameterSummary(std::ostream &o
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void CorrelationMatrixElementBetaProposal::undoProposal( void )
+void CorrelationMatrixSpecificElementBetaProposal::undoProposal( void )
 {
     
     MatrixReal& v = variable->getValue();
@@ -182,7 +175,7 @@ void CorrelationMatrixElementBetaProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void CorrelationMatrixElementBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void CorrelationMatrixSpecificElementBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
@@ -197,7 +190,7 @@ void CorrelationMatrixElementBetaProposal::swapNodeInternal(DagNode *oldN, DagNo
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void CorrelationMatrixElementBetaProposal::tune( double rate )
+void CorrelationMatrixSpecificElementBetaProposal::tune( double rate )
 {
     
     double p = this->targetAcceptanceRate;

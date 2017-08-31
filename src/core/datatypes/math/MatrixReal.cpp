@@ -89,6 +89,7 @@ MatrixReal::MatrixReal( const MatrixReal &m ) :
 MatrixReal::~MatrixReal( void )
 {
     delete eigensystem;
+    delete cholesky_decomp;
 }
 
 
