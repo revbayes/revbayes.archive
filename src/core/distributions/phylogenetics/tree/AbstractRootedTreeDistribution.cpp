@@ -474,8 +474,8 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 
         }
 
-        // only simulate if there are at least to valid/active nodes
-        if ( active_nodes.size() < 2 )
+        // only simulate if there are at least two valid/active nodes
+        if ( active_nodes.size() <= 2 )
         {
             current_age = next_node_age;
         }
