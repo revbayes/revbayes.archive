@@ -34,13 +34,14 @@ namespace RevBayesCore {
         double          computeRobinsonFouldDistance(const Tree &a, const Tree &b);
         Tree*           convertTree(const Tree &t, bool resetIndex=true);
 //        AdmixtureTree*  convertToAdmixtureTree(const Tree &t, std::vector<std::string> names); // , const std::vector<std::string> names);
+        void            getAges(Tree *t, TopologyNode *n, std::vector<double>& ages, bool internalsOnly=true);
         DistanceMatrix* getDistanceMatrix(const Tree& tree);
         void            getOldestTip(Tree* t, TopologyNode *n, double& oldest);
         void            getTaxaInSubtree(TopologyNode *n, std::vector<TopologyNode*> &taxa );
+        void            offsetTree(Tree *t, TopologyNode *n, double factor);
         void            rescaleSubtree(Tree *t, TopologyNode *n, double factor, bool v=false);
-        void            setAges(Tree *t, TopologyNode *n, std::vector<double>& ages);
-        void            getAges(Tree *t, TopologyNode *n, std::vector<double>& ages, bool internalsOnly=true);
         void            rescaleTree(Tree *t, TopologyNode *n, double factor);
+        void            setAges(Tree *t, TopologyNode *n, std::vector<double>& ages);
         std::string     uniqueNewickTopology(const Tree &t);
 
         // internal helper functions

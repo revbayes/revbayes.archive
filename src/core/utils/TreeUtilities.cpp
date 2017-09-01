@@ -94,7 +94,6 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
     }
 
     // set the node flags
-    tn->setFossil( n.isFossil() );
     tn->setSampledAncestor( n.isSampledAncestor() );
 
     // remember the node
@@ -124,7 +123,6 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
 
     if ( tn->getNumberOfChildren() == 1 )
     {
-        tn->setFossil( true );
         tn->setSampledAncestor( true );
     }
 
@@ -162,15 +160,31 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t, bool
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         nodes[i]->setAge( ages[i] );
-
-        if ( nodes[i]->isTip() && ages[i] > 0.0)
-        {
-            nodes[i]->setFossil( true );
-        }
-
     }
 
     return tt;
+}
+
+
+
+void RevBayesCore::TreeUtilities::getAges(Tree *t, TopologyNode *n, std::vector<double>& ages, bool internalsOnly)
+{
+    // we only get internal node ages if internalsOnly==true
+    if (n->isTip() == false )
+    {
+        // get the age of the node
+        ages[n->getIndex()] = n->getAge();
+
+        // get both children ages
+        std::vector<TopologyNode*> children = n->getChildren();
+        for(size_t i = 0; i < children.size(); i++)
+            getAges( t, children[i], ages);
+    }
+    else if (!internalsOnly) {
+      // get the age of the tip if internalsOnly==false
+      ages[n->getIndex()] = n->getAge();
+    }
+
 }
 
 
@@ -252,6 +266,47 @@ void RevBayesCore::TreeUtilities::getTaxaInSubtree(TopologyNode *n, std::vector<
 }
 
 
+void RevBayesCore::TreeUtilities::offsetTree(Tree *t, TopologyNode *n, double factor)
+{
+    // rescale the time of the node
+    double newAge = n->getAge() + factor;
+    t->getNode(n->getIndex()).setAge( newAge);
+
+    // offset all children
+    std::vector<TopologyNode*> children = n->getChildren();
+    for(size_t i = 0; i < children.size(); i++)
+    {
+        offsetTree( t, children[i], factor);
+    }
+
+}
+
+
+void RevBayesCore::TreeUtilities::rescaleTree(Tree *t, TopologyNode *n, double factor)
+{
+    // rescale the time of the node
+    double newAge = n->getAge() * factor;
+    t->getNode(n->getIndex()).setAge( newAge);
+
+    // recursive call for internal nodes
+    if ( n->isTip() == false )
+    {
+
+        // assertion that we have binary trees
+#ifdef ASSERTIONS_TREE
+        if ( n->getNumberOfChildren() != 2 )
+        {
+            throw RbException("Tree scaling  is only implemented for binary trees!");
+        }
+#endif
+
+        // rescale both children
+        rescaleTree( t, &n->getChild(0), factor);
+        rescaleTree( t, &n->getChild(1), factor);
+    }
+
+}
+
 
 void RevBayesCore::TreeUtilities::rescaleSubtree(Tree *t, TopologyNode *n, double factor, bool verbose)
 {
@@ -293,54 +348,6 @@ void RevBayesCore::TreeUtilities::setAges(Tree *t, TopologyNode *n, std::vector<
     }
 
 }
-
-
-void RevBayesCore::TreeUtilities::getAges(Tree *t, TopologyNode *n, std::vector<double>& ages, bool internalsOnly)
-{
-    // we only get internal node ages if internalsOnly==true
-    if (n->isTip() == false )
-    {
-        // get the age of the node
-        ages[n->getIndex()] = n->getAge();
-
-        // get both children ages
-        std::vector<TopologyNode*> children = n->getChildren();
-        for(size_t i = 0; i < children.size(); i++)
-            getAges( t, children[i], ages);
-    }
-    else if (!internalsOnly) {
-      // get the age of the tip if internalsOnly==false
-      ages[n->getIndex()] = n->getAge();
-    }
-
-}
-
-
-void RevBayesCore::TreeUtilities::rescaleTree(Tree *t, TopologyNode *n, double factor)
-{
-    // rescale the time of the node
-    double newAge = n->getAge() * factor;
-    t->getNode(n->getIndex()).setAge( newAge);
-
-    // recursive call for internal nodes
-    if ( n->isTip() == false )
-    {
-
-        // assertion that we have binary trees
-#ifdef ASSERTIONS_TREE
-        if ( n->getNumberOfChildren() != 2 )
-        {
-            throw RbException("Tree scaling  is only implemented for binary trees!");
-        }
-#endif
-
-        // rescale both children
-        rescaleTree( t, &n->getChild(0), factor);
-        rescaleTree( t, &n->getChild(1), factor);
-    }
-
-}
-
 
 
 std::string RevBayesCore::TreeUtilities::uniqueNewickTopology(const Tree &t)
