@@ -29,27 +29,26 @@
 namespace RevBayesCore {
 
     namespace TreeUtilities {
-    
+
         // these function are for public use
         double          computeRobinsonFouldDistance(const Tree &a, const Tree &b);
         Tree*           convertTree(const Tree &t, bool resetIndex=true);
 //        AdmixtureTree*  convertToAdmixtureTree(const Tree &t, std::vector<std::string> names); // , const std::vector<std::string> names);
-        void            getAges(Tree *t, TopologyNode *n, std::vector<double>& ages);
         DistanceMatrix* getDistanceMatrix(const Tree& tree);
         void            getOldestTip(Tree* t, TopologyNode *n, double& oldest);
         void            getTaxaInSubtree(TopologyNode *n, std::vector<TopologyNode*> &taxa );
-        void            offsetTree(Tree *t, TopologyNode *n, double factor);
         void            rescaleSubtree(Tree *t, TopologyNode *n, double factor, bool v=false);
-        void            rescaleTree(Tree *t, TopologyNode *n, double factor);
         void            setAges(Tree *t, TopologyNode *n, std::vector<double>& ages);
+        void            getAges(Tree *t, TopologyNode *n, std::vector<double>& ages, bool internalsOnly=true);
+        void            rescaleTree(Tree *t, TopologyNode *n, double factor);
         std::string     uniqueNewickTopology(const Tree &t);
-    
+
         // internal helper functions
         void            constructTimeTreeRecursively(TopologyNode *tn, const TopologyNode &n, std::vector<TopologyNode*> &nodes, std::vector<double> &ages, double depth);
 //        void            constructAdmixtureTreeRecursively(AdmixtureNode *tn, const TopologyNode &n, std::vector<AdmixtureNode*> &nodes, std::vector<double> &ages);
         std::string     uniqueNewickTopologyRecursive(const TopologyNode &n);
-		
-		
+
+
 		void            processDistsInSubtree(const TopologyNode& node, MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId);
         void            climbUpTheTree(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromNodeToRoot) ;
         double          getAgeOfMRCARecursive(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) ;
@@ -59,7 +58,7 @@ namespace RevBayesCore {
 
 
     }
-    
+
 }
 
 
