@@ -16,7 +16,7 @@ using namespace RevBayesCore;
  */
 MatrixRealSymmetricSingleElementSlidingProposal::MatrixRealSymmetricSingleElementSlidingProposal( StochasticNode<MatrixReal> *n, double l) : Proposal(),
 variable( n ),
-lambda( l ),
+delta( l ),
 storedValue( 0.0 )
 {
     // tell the base class to add the node
@@ -66,8 +66,8 @@ const std::string& MatrixRealSymmetricSingleElementSlidingProposal::getProposalN
  *
  * A sliding proposal draws a random uniform number u ~ unif(-0.5,0.5)
  * and MatrixRealSingleElementSlidings the current vale by
- * delta = lambda * u
- * where lambda is the tuning parameter of the proposal to influence the size of the proposals.
+ * delta = delta * u
+ * where delta is the tuning parameter of the proposal to influence the size of the proposals.
  *
  * \return The hastings ratio.
  */
@@ -87,11 +87,15 @@ double MatrixRealSymmetricSingleElementSlidingProposal::doProposal( void )
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
-    double slidingFactor = lambda * ( u - 0.5 );
+    double slidingFactor = delta * ( u - 0.5 );
     v[indexa][indexb] += slidingFactor;
     
-    variable->addTouchedElementIndex(indexa);
-    variable->addTouchedElementIndex(indexb);
+    if(indexa != indexb)
+    {
+        v[indexb][indexa] += slidingFactor;
+    }
+
+    variable->addTouchedElementIndex(indexa*v.getNumberOfRows() + indexb);
     
     // this is a symmetric proposal so the hasting ratio is 0.0
     return 0.0;
@@ -118,7 +122,7 @@ void MatrixRealSymmetricSingleElementSlidingProposal::prepareProposal( void )
 void MatrixRealSymmetricSingleElementSlidingProposal::printParameterSummary(std::ostream &o) const
 {
     
-    o << "delta = " << lambda;
+    o << "delta = " << delta;
     
 }
 
@@ -135,6 +139,7 @@ void MatrixRealSymmetricSingleElementSlidingProposal::undoProposal( void )
     
     MatrixReal& v = variable->getValue();
     v[indexa][indexb] = storedValue;
+    v[indexb][indexa] = storedValue;
     variable->clearTouchedElementIndices();
     
 }
@@ -166,14 +171,14 @@ void MatrixRealSymmetricSingleElementSlidingProposal::tune( double rate )
     
     if ( rate > 0.44 )
     {
-        lambda *= (1.0 + ((rate-0.44)/0.56) );
+        delta *= (1.0 + ((rate-0.44)/0.56) );
     }
     else
     {
-        lambda /= (2.0 - rate/0.44 );
+        delta /= (2.0 - rate/0.44 );
     }
     
-    lambda = fmin(10000, lambda);
+    delta = fmin(10000, delta);
     
 }
 

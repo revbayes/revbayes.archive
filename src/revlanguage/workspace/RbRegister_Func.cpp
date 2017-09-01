@@ -92,6 +92,7 @@
 #include "Func_seq.h"
 #include "Func_setOption.h"
 #include "Func_setwd.h"
+#include "Func_sort.h"
 #include "Func_structure.h"
 #include "Func_system.h"
 #include "Func_type.h"
@@ -279,6 +280,7 @@
 #include "Func_stirling.h"
 #include "Func_varianceCovarianceMatrix.h"
 #include "Func_decomposedVarianceCovarianceMatrix.h"
+#include "Func_partialToCorrelationMatrix.h"
 
 #include "RlDiscreteCharacterState.h"
 
@@ -458,6 +460,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // simplex constructor function (from vector of RealPos values)
         addFunction( new Func_simplexFromVector()        );
 
+        // sort vector function
+        addFunction( new Func_sort() );
+
 		// square root function
         addFunction( new Func_sqrt()  );
 
@@ -523,11 +528,12 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_discretizePositiveDistribution( ) );
 
         // return a discretized gamma distribution (for gamma-dist rates)
-        addFunction( new Func_discretizeBeta( )   );
+        addFunction( new Func_discretizeBeta( )    );
         addFunction( new Func_discretizeGamma( )   );
 
-        addFunction( new Func_varianceCovarianceMatrix( )   );
-        addFunction( new Func_decomposedVarianceCovarianceMatrix( )   );
+        addFunction( new Func_varianceCovarianceMatrix( )           );
+        addFunction( new Func_decomposedVarianceCovarianceMatrix( ) );
+        addFunction( new Func_partialToCorrelationMatrix( )         );
 
 
     }

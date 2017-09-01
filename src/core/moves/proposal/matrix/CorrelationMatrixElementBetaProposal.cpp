@@ -56,7 +56,7 @@ CorrelationMatrixElementBetaProposal* CorrelationMatrixElementBetaProposal::clon
  */
 const std::string& CorrelationMatrixElementBetaProposal::getProposalName( void ) const
 {
-    static std::string name = "MatrixRealSingleElementBetaMove";
+    static std::string name = "CorrelationMatrixSingleElementBeta";
     
     return name;
 }
@@ -97,10 +97,10 @@ double CorrelationMatrixElementBetaProposal::doProposal( void )
     current_value = (current_value + 1.0) / 2.0;
     
     // draw new rates and compute the hastings ratio at the same time
-//    double a = alpha + 1.0;
-//    double b = (a - 1.0) / current_value - a + 2.0;
-    double a = alpha * current_value;
-    double b = alpha * (1 - current_value);
+    double a = alpha + 1.0;
+    double b = (a - 1.0) / current_value - a + 2.0;
+//    double a = alpha * current_value;
+//    double b = alpha * (1 - current_value);
     double new_value = RbStatistics::Beta::rv(a, b, *rng);
 
     // set the value (for both sides of the matrix!)
@@ -116,10 +116,10 @@ double CorrelationMatrixElementBetaProposal::doProposal( void )
     {
         // compute the Hastings ratio
         double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
-//        double new_a = alpha + 1.0;
-//        double new_b = (a - 1.0) / new_value - a + 2.0;
-        double new_a = alpha * new_value;
-        double new_b = alpha * (1 - new_value);
+        double new_a = alpha + 1.0;
+        double new_b = (a - 1.0) / new_value - a + 2.0;
+//        double new_a = alpha * new_value;
+//        double new_b = alpha * (1 - new_value);
         double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
         ln_Hastings_ratio = backward - forward;
     }

@@ -19,9 +19,9 @@ Tree::Tree(void) :
     root( NULL ),
     binary( true ),
     rooted( false ),
+    is_negative_constraint( false ),
     num_tips( 0 ),
-    num_nodes( 0 ),
-    is_negative_constraint( false )
+    num_nodes( 0 )
 {
     
 }
@@ -33,10 +33,10 @@ Tree::Tree(const Tree& t) :
     root( NULL ),
     binary( t.binary ),
     rooted( t.rooted ),
+    is_negative_constraint( t.is_negative_constraint ),
     num_tips( t.num_tips ),
     num_nodes( t.num_nodes ),
-    taxon_bitset_map( t.taxon_bitset_map ),
-    is_negative_constraint( t.is_negative_constraint )
+    taxon_bitset_map( t.taxon_bitset_map )
 {
         
     // need to perform a deep copy of the BranchLengthTree nodes
@@ -315,6 +315,14 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
             rv += nodes[i]->isSampledAncestor();
         }
     }
+    else if (n == "nnodes")
+    {
+        rv = nodes.size();
+    }
+    else if (n == "ntips")
+    {
+        rv = num_tips;
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");
@@ -551,6 +559,45 @@ size_t Tree::getNumberOfTips( void ) const
 {
     
     return num_tips;
+}
+
+
+/**
+ * return the number of tips.
+ */
+size_t Tree::getNumberOfExtinctTips( void ) const
+{
+    size_t num_extinct = 0;
+    for(size_t i = 0; i < num_tips; i++)
+    {
+        num_extinct += nodes[i]->isFossil();
+    }
+
+    return num_extinct;
+}
+
+
+/**
+ * return the number of tips.
+ */
+size_t Tree::getNumberOfExtantTips( void ) const
+{
+    return num_tips - getNumberOfExtinctTips();
+}
+
+
+/**
+ * return the number of tips.
+ */
+size_t Tree::getNumberOfSampledAncestors( void ) const
+{
+    size_t num_sa = 0;
+    for(size_t i = 0; i < num_tips; i++)
+    {
+        num_sa += nodes[i]->isSampledAncestor();
+    }
+
+    return num_sa;
 }
 
 

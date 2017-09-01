@@ -109,8 +109,44 @@ MatrixReal RbStatistics::InverseWishart::rv(const MatrixReal &sigma0, size_t df,
         }
     }
 
+    z.setCholesky(true);
     return z.computeInverse();
 //    return z;
+}
+
+/*!
+ * This function generates a InverseWishart-distributed random variable.
+ *
+ * \brief InverseWishart random variable.
+ * \param sigma0 is a reference to the scale matrix (a covariance matrix)
+ * \param df is the numger of degrees of freedom
+ * \param rng is a pointer to a random number object.
+ * \return Returns a vector containing the InverseWishart random variable.
+ * \throws Does not throw an error.
+ */
+MatrixReal RbStatistics::InverseWishart::rvCovariance(const MatrixReal &sigma0, size_t df, RandomNumberGenerator& rng)
+{
+    
+    size_t dim = sigma0.getDim();
+    
+    MatrixReal z = MatrixReal(dim);
+    std::vector<double> mean = std::vector<double>(dim, 0.0);
+    
+    for (size_t k=0; k<df; k++)
+    {
+        std::vector<double> tmp = RbStatistics::MultivariateNormal::rvCovariance(mean, sigma0, rng);
+        for (size_t i=0; i<dim; i++)
+        {
+            for (size_t j=0; j<dim; j++)
+            {
+                z[i][j] += tmp[i] * tmp[j];
+            }
+        }
+    }
+    
+    z.setCholesky(true);
+    return z.computeInverse();
+    //    return z;
 }
 
 

@@ -319,7 +319,7 @@ double RateGeneratorSequence_Biogeography::getSiteRate( size_t from, size_t to, 
     return rate;
 }
 
-double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterEvent*> from, unsigned* counts, double age, double r) const
+double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterEvent*> from, std::vector<size_t> counts, double age, double r) const
 {
 
     if (useUnnormalizedRates)
@@ -387,14 +387,16 @@ double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterE
 
 double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterEvent*> from, double age, double r) const
 {
-    unsigned n1 = (unsigned)numOn(from);
-    unsigned n0 = (unsigned)(num_characters - n1);
-    unsigned counts[2] = {n0,n1};
+    size_t n1 = numOn(from);
 
-    return RateGeneratorSequence_Biogeography::getSumOfRates( from, counts, r, age);
+    std::vector<size_t> c;
+    c.push_back(num_characters - n1);
+    c.push_back(n1);
+
+    return RateGeneratorSequence_Biogeography::getSumOfRates( from, c, r, age);
 }
 
-double RateGeneratorSequence_Biogeography::getUnnormalizedSumOfRates( std::vector<CharacterEvent*> from, unsigned* counts, double age, double r) const
+double RateGeneratorSequence_Biogeography::getUnnormalizedSumOfRates( std::vector<CharacterEvent*> from, std::vector<size_t> counts, double age, double r) const
 {
 
     size_t epochIdx = getEpochIndex(age);

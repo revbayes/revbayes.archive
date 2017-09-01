@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class EmpiricalTreeProposal : public Proposal {
         
     public:
-        EmpiricalTreeProposal( StochasticNode<Tree> *n);                                               //!<  constructor
+        EmpiricalTreeProposal( StochasticNode<Tree> *n, bool mh);                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
@@ -45,7 +45,8 @@ namespace RevBayesCore {
     private:
         
         StochasticNode<Tree>*                   variable;
-        size_t                                  oldTreeIndex;
+        size_t                                  old_tree_index;
+        bool                                    metropolisHastings;
         
     };
     

@@ -23,7 +23,7 @@ using namespace RevBayesCore;
  * \param[in]    t   If auto tuning should be used.
  */
 MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) : AbstractMove(p->getNodes(), w, t),
-    numAccepted( 0 ),
+    num_accepted( 0 ),
     proposal( p )
 {
     
@@ -40,7 +40,7 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
  *
  */
 MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) : AbstractMove(m),
-    numAccepted( m.numAccepted ),
+    num_accepted( m.num_accepted ),
     proposal( m.proposal->clone() )
 {
     
@@ -74,7 +74,7 @@ MetropolisHastingsMove& MetropolisHastingsMove::operator=(const RevBayesCore::Me
         // free memory
         delete proposal;
         
-        numAccepted     = m.numAccepted;
+        num_accepted    = m.num_accepted;
         proposal        = m.proposal->clone();
         
         proposal->setMove( this );
@@ -116,7 +116,7 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 size_t MetropolisHastingsMove::getNumberAccepted( void ) const
 {
     
-    return numAccepted;
+    return num_accepted;
 }
 
 
@@ -217,7 +217,7 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
     else
     {
         
-        numAccepted++;
+        num_accepted++;
             
         // call accept for each node
         for (size_t i = 0; i < nodes.size(); ++i)
@@ -256,8 +256,8 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
         the_node->touch();
     }
     
-    double lnPriorRatio = 0.0;
-    double lnLikelihoodRatio = 0.0;
+    double ln_prior_ratio = 0.0;
+    double ln_likelihood_ratio = 0.0;
 
     
     // compute the probability of the current value for each node
@@ -266,15 +266,15 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
         // get the pointer to the current node
         DagNode* the_node = nodes[i];
         
-        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(ln_hastings_ratio) )
+        if ( RbMath::isAComputableNumber(ln_prior_ratio) && RbMath::isAComputableNumber(ln_likelihood_ratio) && RbMath::isAComputableNumber(ln_hastings_ratio) )
         {
             if ( the_node->isClamped() )
             {
-                lnLikelihoodRatio += the_node->getLnProbabilityRatio();
+                ln_likelihood_ratio += the_node->getLnProbabilityRatio();
             }
             else
             {
-                lnPriorRatio += the_node->getLnProbabilityRatio();
+                ln_prior_ratio += the_node->getLnProbabilityRatio();
             }
             
         }
@@ -286,15 +286,15 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     {
         DagNode *the_node = *it;
 
-        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(ln_hastings_ratio) )
+        if ( RbMath::isAComputableNumber(ln_prior_ratio) && RbMath::isAComputableNumber(ln_likelihood_ratio) && RbMath::isAComputableNumber(ln_hastings_ratio) )
         {
             if ( the_node->isClamped() )
             {
-                lnLikelihoodRatio += the_node->getLnProbabilityRatio();
+                ln_likelihood_ratio += the_node->getLnProbabilityRatio();
             }
             else
             {
-                lnPriorRatio += the_node->getLnProbabilityRatio();
+                ln_prior_ratio += the_node->getLnProbabilityRatio();
             }
         }
 
@@ -302,7 +302,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     
     // exponentiate with the chain heat
     double ln_posterior_ratio;
-    ln_posterior_ratio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
+    ln_posterior_ratio = pHeat * (lHeat * ln_likelihood_ratio + ln_prior_ratio);
 	
     bool rejected = false;
     
@@ -330,7 +330,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
         {
 
             
-            numAccepted++;
+            num_accepted++;
         
             // call accept for each node
             for (size_t i = 0; i < nodes.size(); ++i)
@@ -364,7 +364,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
             if (u < r)
             {
                 
-                numAccepted++;
+                num_accepted++;
             
                 // call accept for each node
                 for (size_t i = 0; i < nodes.size(); ++i)
@@ -455,17 +455,17 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     
     // print the number of accepted
     int a_length = 9;
-    if (numAccepted > 0) a_length -= (int)log10(numAccepted);
+    if (num_accepted > 0) a_length -= (int)log10(num_accepted);
     
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << numAccepted;
+    o << num_accepted;
     o << " ";
     
     // print the acceptance ratio
-    double ratio = numAccepted / (double)num_tried;
+    double ratio = num_accepted / (double)num_tried;
     if (num_tried == 0) ratio = 0;
     int r_length = 5;
     
@@ -492,7 +492,7 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
  */
 void MetropolisHastingsMove::resetMoveCounters( void )
 {
-    numAccepted = 0;
+    num_accepted = 0;
 }
 
 
@@ -519,7 +519,7 @@ void MetropolisHastingsMove::tune( void )
     
     if ( num_tried > 2 )
     {
-        double rate = numAccepted / double(num_tried);
+        double rate = num_accepted / double(num_tried);
     
         proposal->tune( rate );
     }

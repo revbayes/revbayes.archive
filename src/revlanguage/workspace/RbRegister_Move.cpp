@@ -92,13 +92,19 @@
 #include "Move_VectorSlide.h"
 
 /* Moves on real valued matrices */
+#include "Move_MatrixSingleElementScale.h"
 #include "Move_MatrixSingleElementSlide.h"
+
 /* Moves on correlation matrices */
 #include "Move_ConjugateInverseWishart.h"
 #include "Move_CorrelationMatrixUpdate.h"
-#include "Move_CorrelationMatrixSingleElementBeta.h"
 #include "Move_CorrelationMatrixElementSwap.h"
-#include "Move_CorrelationMatrixPartialSingleElementBeta.h"
+#include "Move_CorrelationMatrixRandomWalk.h"
+#include "Move_CorrelationMatrixSingleElementBeta.h"
+#include "Move_CorrelationMatrixSpecificElementBeta.h"
+//#include "Move_CorrelationMatrixPartialSingleElementBeta.h"
+//#include "Move_CorrelationMatrixReparameterization.h"
+//#include "Move_CorrelationMatrixExpansion.h"
 
 /* Moves on continuous character data (real valued matrices) */
 #include "Move_ContinuousCharacterDataSlide.h"
@@ -137,11 +143,11 @@
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-#include "Move_AddRemoveFossil.h"
+#include "Move_AddRemoveTip.h"
 #include "Move_CollapseExpandFossilBranch.h"
 #include "Move_EmpiricalTree.h"
 #include "Move_FNPR.h"
-#include "Move_FossilTimeSlideUniform.h"
+#include "Move_TipTimeSlideUniform.h"
 #include "Move_GibbsPruneAndRegraft.h"
 #include "Move_LayeredScaleProposal.h"
 #include "Move_NarrowExchange.h"
@@ -221,13 +227,19 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_SynchronizedVectorFixedSingleElementSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor( new Move_MatrixSingleElementSlide()           );
+        addTypeWithConstructor( new Move_MatrixSingleElementScale() );
+        addTypeWithConstructor( new Move_MatrixSingleElementSlide() );
 
         /* Moves on matrices of correlations */
         addTypeWithConstructor( new Move_CorrelationMatrixUpdate()                   );
+        addTypeWithConstructor( new Move_CorrelationMatrixRandomWalk()               );
         addTypeWithConstructor( new Move_CorrelationMatrixSingleElementBeta()        );
+        addTypeWithConstructor( new Move_CorrelationMatrixSpecificElementBeta()      );
         addTypeWithConstructor( new Move_CorrelationMatrixElementSwap()              );
-        addTypeWithConstructor( new Move_CorrelationMatrixPartialSingleElementBeta() );
+
+//        addTypeWithConstructor( new Move_CorrelationMatrixPartialSingleElementBeta() );
+//        addTypeWithConstructor( new Move_CorrelationMatrixReparameterization()       );
+//        addTypeWithConstructor( new Move_CorrelationMatrixExpansion()                );
 
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_MatrixRealSymmetricSlide() );
@@ -285,11 +297,10 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-        //addTypeWithConstructor( new Move_AddRemoveFossil()     );
+        addTypeWithConstructor( new Move_AddRemoveTip()     );
         addTypeWithConstructor( new Move_CollapseExpandFossilBranch()     );
 		addTypeWithConstructor( new Move_EmpiricalTree()                  );
         addTypeWithConstructor( new Move_FNPR()                           );
-        addTypeWithConstructor( new Move_FossilTimeSlideUniform()           );
         addTypeWithConstructor( new Move_GibbsPruneAndRegraft()           );
         addTypeWithConstructor( new Move_LayeredScaleProposal()                 );
         addTypeWithConstructor( new Move_NarrowExchange()                 );
@@ -307,10 +318,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_SpeciesNodeTimeSlideUniform()    );
         addTypeWithConstructor( new Move_SpeciesSubtreeScale()            );
         addTypeWithConstructor( new Move_SpeciesSubtreeScaleBeta()        );
+        addTypeWithConstructor( new Move_TipTimeSlideUniform()            );
         addTypeWithConstructor( new Move_SpeciesTreeScale()               );
         addTypeWithConstructor( new Move_TreeScale()                      );
-//        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
-//        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
         addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()       );
 
         /* Moves on character histories / data augmentation */
