@@ -151,8 +151,8 @@ RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal
 //<<<<<<< HEAD
     q_map_site( NULL ),
     q_map_sequence( NULL ),
-    numStates(2),
     numCharacters(n->getValue().getNumberOfCharacters()),
+    numStates(2),
     node( NULL ),
 //=======
 //    tau(t),
@@ -224,8 +224,6 @@ double RevBayesCore::NodeRejectionSampleProposal<charType>::computeLnProposal(vo
         {
             throw RbException("Failed cast.");
         }
-
-        size_t num_sites = c->getNumberOfSites();
 
         std::vector<BranchHistory*> histories = c->getHistories();
 
@@ -452,8 +450,6 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
         {
             throw RbException("Failed cast.");
         }
-
-        size_t num_sites = c->getNumberOfSites();
 
         const std::vector<BranchHistory*>& histories = c->getHistories();
 

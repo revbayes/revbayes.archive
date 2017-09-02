@@ -16,13 +16,14 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-AddRemoveTipProposal::AddRemoveTipProposal( StochasticNode<Tree> *n, bool exa, bool exi ) : Proposal(),
+AddRemoveTipProposal::AddRemoveTipProposal( StochasticNode<Tree> *n, bool exa, bool exi, bool sa) : Proposal(),
     tau( n ),
     storedSibling(NULL),
     storedTip(NULL),
     removed(false),
     extant(exa),
-    extinct(exi)
+    extinct(exi),
+    sampled_ancestors(sa)
 {
     // tell the base class to add the node
     addNode( tau );
@@ -94,6 +95,11 @@ double AddRemoveTipProposal::doProposal( void )
     for (size_t i = 0; i < t.getNumberOfNodes(); ++i)
     {
         TopologyNode* node = &t.getNode(i);
+
+        if( sampled_ancestors == false && node->isSampledAncestor() )
+        {
+            continue;
+        }
 
         if( node->isTip() && ( ( node->getAge() > 0.0 && extinct == true ) || ( node->getAge() == 0.0 && extant == true ) ) && node->getParent().isRoot() == false )
         {
@@ -199,14 +205,22 @@ double AddRemoveTipProposal::addTip(TopologyNode *n)
 
     if( u < 0.5 )
     {
-        double v = rng->uniform01();
+        if( sampled_ancestors == false )
+        {
+            double v = rng->uniform01();
 
-        lnJacobian += log(new_parent_node->getAge());
+            lnJacobian += log(new_parent_node->getAge());
 
-        // draw the new age for the fossil node
-        double new_tip_age = new_parent_node->getAge() * v;
+            // draw the new age for the fossil node
+            double new_tip_age = new_parent_node->getAge() * v;
 
-        storedTip->setAge(new_tip_age);
+            storedTip->setAge(new_tip_age);
+        }
+        else
+        {
+            storedTip->setAge( new_parent_node->getAge() );
+            storedTip->setSampledAncestor(true);
+        }
 
         hr = log( t.getNumberOfExtinctTips() );
     }
@@ -261,7 +275,10 @@ double AddRemoveTipProposal::removeTip(TopologyNode *n)
 
     if( storedTip->getAge() > 0.0 )
     {
-        lnJacobian -= log(parent->getAge());
+        if( sampled_ancestors == false )
+        {
+            lnJacobian -= log(parent->getAge());
+        }
         hr = - log( t.getNumberOfExtinctTips() + 1 );
     }
     else

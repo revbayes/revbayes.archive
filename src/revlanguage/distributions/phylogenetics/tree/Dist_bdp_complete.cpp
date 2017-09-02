@@ -53,7 +53,7 @@ RevBayesCore::ConstantRateCompleteBirthDeathProcess* Dist_bdp_complete::createDi
     // get the parameters
     
     // the root age
-    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
 
     // the start condition
     bool uo = ( startCondition == "originAge" ? true : false );
@@ -164,9 +164,6 @@ const MemberRules& Dist_bdp_complete::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
 
-        // add the rules from the base class
-        const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
-        
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
         optionsCondition.push_back( "survival" );
@@ -211,7 +208,7 @@ void Dist_bdp_complete::setConstParameter(const std::string& name, const RevPtr<
     if ( name == "rootAge" || name == "originAge" || name == "mrcaAge" )
     {
         startCondition = name;
-        rootAge = var;
+        startAge = var;
     }
     else if ( name == "lambda" )
     {

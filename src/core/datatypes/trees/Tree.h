@@ -81,6 +81,7 @@ namespace RevBayesCore {
         size_t                                              getNumberOfNodes(void) const;                                                                       //!< Get the number of nodes in the Tree
         size_t                                              getNumberOfExtantTips(void) const;                                                                  //!< Get the number of extant tip nodes in the Tree
         size_t                                              getNumberOfExtinctTips(void) const;                                                                 //!< Get the number of extinct tip nodes in the Tree
+        size_t                                              getNumberOfSampledAncestors(void) const;                                                            //!< Get the number of sampled ancestors
         size_t                                              getNumberOfTips(void) const;                                                                        //!< Get the number of tip nodes in the Tree
         const TopologyNode&                                 getInteriorNode(size_t indx) const;                                                                 //!< Get a pointer to interior node i
         const std::vector<std::vector<double> >             getAdjacencyMatrix(void) const;                                                                     //!< Get a 2d-vector adjacency matrix weighted by branch lengths

@@ -47,6 +47,7 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                       lambda_rates;                                                                           //!< The speciation rates
         RevPtr<const RevVariable>                       lambda_times;                                                                           //!< The speciation rate change times
+        RevPtr<const RevVariable>                       rho;                                                                                    //!< The taxon sampling fraction
         RevPtr<const RevVariable>                       mu_rates;                                                                               //!< The extinction rates
         RevPtr<const RevVariable>                       mu_times;                                                                               //!< The extinction rate change times
         

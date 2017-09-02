@@ -27,8 +27,6 @@ namespace RevBayesCore {
         
         // public member functions
         ConstantRateCompleteBirthDeathProcess*              clone(void) const;                                                          //!< Create an independent clone
-        virtual double                                      getRootAge(void) const;
-        virtual void                                        setValue(Tree *v, bool f=false);
         
     protected:
         // pure virtual helper functions
@@ -40,10 +38,6 @@ namespace RevBayesCore {
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
 
-        // virtual methods that may be overwritten, but then the derived class should call this methods
-        virtual void                                        restoreSpecialization(DagNode *restorer);
-        virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
-
         // helper functions
         virtual double                                      simulateDivergenceTime(double origin, double present) const;                //!< Simulate a speciation event.
         size_t                                              num_extant( const TopologyNode & node, double * tl ) const;
@@ -51,8 +45,7 @@ namespace RevBayesCore {
         // members
         const TypedDagNode<double>*                         speciation;
         const TypedDagNode<double>*                         extinction;
-        bool                                                useMrca;
-        bool                                                useOrigin;
+        bool                                                use_mrca;
     };
     
 }

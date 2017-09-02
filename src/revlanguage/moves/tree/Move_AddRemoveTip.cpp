@@ -49,12 +49,14 @@ void Move_AddRemoveTip::constructInternalObject( void )
 
     bool exi = static_cast<const RlBoolean &>( extinct->getRevObject() ).getValue();
 
+    bool sa = static_cast<const RlBoolean &>( sampled_ancestors->getRevObject() ).getValue();
+
     if(exa == false && exi == false)
     {
         throw(RbException("In mvAddRemoveTip, 'extant' and 'extinct' cannot both be false"));
     }
 
-    RevBayesCore::Proposal *p = new RevBayesCore::AddRemoveTipProposal( t, exa, exi );
+    RevBayesCore::Proposal *p = new RevBayesCore::AddRemoveTipProposal( t, exa, exi, sa );
     value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
 }
 
@@ -105,6 +107,8 @@ const MemberRules& Move_AddRemoveTip::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), "The tree on which this moves operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "extant", RlBoolean::getClassTypeSpec(), "Should we add/remove extant tips?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
         memberRules.push_back( new ArgumentRule( "extinct", RlBoolean::getClassTypeSpec(), "Should we add/remove extinct tips?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        memberRules.push_back( new ArgumentRule( "sa", RlBoolean::getClassTypeSpec(), "Should we add/remove extinct tips as sampled ancestors?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -159,6 +163,10 @@ void Move_AddRemoveTip::setConstParameter(const std::string& name, const RevPtr<
     else if ( name == "extinct" )
     {
         extinct = var;
+    }
+    else if ( name == "sa" )
+    {
+        sampled_ancestors = var;
     }
     else
     {

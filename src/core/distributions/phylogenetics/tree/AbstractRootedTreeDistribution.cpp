@@ -27,14 +27,15 @@ using namespace RevBayesCore;
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNode<double> *ra, const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new Tree() ),
-    root_age( ra ),
-    taxa( tn )
+AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNode<double> *ra, const std::vector<Taxon> &tn, bool uo ) : TypedDistribution<Tree>( new Tree() ),
+    process_age( ra ),
+    taxa( tn ),
+    use_origin( uo )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
-    addParameter( root_age );
+    addParameter( process_age );
 
     std::set<std::string> found;
     for(size_t i = 0; i < taxa.size(); i++)
@@ -156,7 +157,7 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
     // present time
     double ra = value->getRoot().getAge();
     
-    if ( ra > getOriginTime() || ra != getRootAge() )
+    if ( ra > getOriginAge() || ra != getRootAge() )
     {
         return RbConstants::Double::neginf;
     }
@@ -191,7 +192,7 @@ void AbstractRootedTreeDistribution::recomputeDivergenceTimesSinceOrigin( void )
 {
     
     // get the time of the process
-    double org = root_age->getValue();
+    double org = process_age->getValue();
     
     // retrieved the speciation times
     divergence_times = std::vector<double>();
@@ -239,7 +240,7 @@ int AbstractRootedTreeDistribution::diversity(double t) const
 void AbstractRootedTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
     
-    if ( affecter == root_age)
+    if ( affecter == process_age)
     {
         dag_node->getAffectedNodes( affected );
     }
@@ -358,13 +359,25 @@ size_t AbstractRootedTreeDistribution::getNumberOfTaxa( void ) const
 double AbstractRootedTreeDistribution::getRootAge( void ) const
 {
     
-    return getOriginTime();
+    if(use_origin)
+    {
+        if(value->getNumberOfNodes() > 0)
+        {
+            return value->getRoot().getAge();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+        return getOriginAge();
 }
 
-double AbstractRootedTreeDistribution::getOriginTime( void ) const
+double AbstractRootedTreeDistribution::getOriginAge( void ) const
 {
 
-	return root_age->getValue();
+	return process_age->getValue();
 }
 
 
@@ -382,7 +395,7 @@ const std::vector<Taxon>& AbstractRootedTreeDistribution::getTaxa( void ) const
 void AbstractRootedTreeDistribution::keepSpecialization(DagNode *affecter)
 {
     
-    if ( affecter == root_age && dag_node != NULL)
+    if ( affecter == process_age && dag_node != NULL)
     {
         dag_node->keepAffected();
     }
@@ -461,8 +474,8 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 
         }
 
-        // only simulate if there are at least to valid/active nodes
-        if ( active_nodes.size() < 2 )
+        // only simulate if there are at least two valid/active nodes
+        if ( active_nodes.size() <= 2 )
         {
             current_age = next_node_age;
         }
@@ -591,7 +604,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 
 
     double ra = getRootAge();
-    double max_age = getOriginTime();
+    double max_age = getOriginAge();
 
     double max_node_age = 0;
     for (size_t j = 0; j < nodes.size(); ++j)
@@ -634,16 +647,17 @@ void AbstractRootedTreeDistribution::simulateTree( void )
  */
 void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
 {
-    
-    if ( affecter == root_age )
+    if ( affecter == process_age )
     {
-        value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        
+        if( use_origin == false )
+        {
+            value->getRoot().setAge( process_age->getValue() );
+        }
+
         if ( dag_node != NULL )
         {
             dag_node->restoreAffected();
         }
-        
     }
     
 }
@@ -658,21 +672,21 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
     // delegate to super class
     TypedDistribution<Tree>::setValue(v, f);
 
-    if ( root_age != NULL )
+    if ( process_age != NULL && use_origin == false )
     {
-        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);
-        if ( stoch_root_age != NULL )
+        const StochasticNode<double> *stoch_process_age = dynamic_cast<const StochasticNode<double>* >(process_age);
+        if ( stoch_process_age != NULL )
         {
-            const_cast<StochasticNode<double> *>(stoch_root_age)->setValue( new double( value->getRoot().getAge() ), f);
+            const_cast<StochasticNode<double> *>(stoch_process_age)->setValue( new double( value->getRoot().getAge() ), f);
         }
         else
         {
-            //            double factor = root_age->getValue() / value->getRoot().getAge();
+            //            double factor = process_age->getValue() / value->getRoot().getAge();
             //            TreeUtilities::rescaleTree( value, &value->getRoot(), factor);
-            if (root_age->getValue() != value->getRoot().getAge()) {
+            if (process_age->getValue() != value->getRoot().getAge()) {
                 RbException("Tree height and root age values must match when root age is not a stochastic node.");
             }
-            value->getRoot().setAge( root_age->getValue() );
+            value->getRoot().setAge( process_age->getValue() );
         }
         
     }
@@ -690,9 +704,9 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
 void AbstractRootedTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     
-    if ( oldP == root_age )
+    if ( oldP == process_age )
     {
-        root_age = static_cast<const TypedDagNode<double>* >( newP );
+        process_age = static_cast<const TypedDagNode<double>* >( newP );
     }
     
 }
@@ -706,10 +720,12 @@ void AbstractRootedTreeDistribution::swapParameterInternal( const DagNode *oldP,
 void AbstractRootedTreeDistribution::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     
-    if ( affecter == root_age )
+    if ( affecter == process_age )
     {
-        
-        value->getRoot().setAge( root_age->getValue() );
+        if( use_origin == false)
+        {
+            value->getRoot().setAge( process_age->getValue() );
+        }
         
         if ( dag_node != NULL )
         {

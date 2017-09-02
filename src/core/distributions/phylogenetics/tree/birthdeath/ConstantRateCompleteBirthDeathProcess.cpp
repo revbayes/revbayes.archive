@@ -12,11 +12,10 @@
 
 using namespace RevBayesCore;
 
-ConstantRateCompleteBirthDeathProcess::ConstantRateCompleteBirthDeathProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const std::string &cdt, const std::vector<Taxon> &tn, bool uo, bool mr) : AbstractBirthDeathProcess( ra, cdt, tn ),
+ConstantRateCompleteBirthDeathProcess::ConstantRateCompleteBirthDeathProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const std::string &cdt, const std::vector<Taxon> &tn, bool uo, bool mr) : AbstractBirthDeathProcess( ra, cdt, tn, uo ),
     speciation( s ),
     extinction( e ),
-    useMrca( mr ),
-    useOrigin( uo )
+    use_mrca( mr )
 {
     addParameter( speciation );
     addParameter( extinction );
@@ -50,14 +49,14 @@ double ConstantRateCompleteBirthDeathProcess::computeLnProbabilityTimes( void ) 
     size_t num_extant_left  = num_extant(value->getRoot().getChild(0), &ln_prob_times);
     size_t num_extant_right = num_extant(value->getRoot().getChild(1), &ln_prob_times);
 
-    if( useMrca == true && (num_extant_left == 0 || num_extant_right == 0) )
+    if( use_mrca == true && (num_extant_left == 0 || num_extant_right == 0) )
     {
         return RbConstants::Double::neginf;
     }
 
-    if( useMrca == false )
+    if( use_mrca == false )
     {
-        ln_prob_times += getOriginTime() - getRootAge();
+        ln_prob_times += getOriginAge() - getRootAge();
     }
 
     ln_prob_times *= - ( speciation->getValue() + extinction->getValue() );
@@ -73,28 +72,6 @@ double ConstantRateCompleteBirthDeathProcess::computeLnProbabilityTimes( void ) 
     }
 
     return ln_prob_times;
-}
-
-
-/**
- * If conditioning on the origin, then return the age of the root node
- * or zero if the tree is empty
- */
-double ConstantRateCompleteBirthDeathProcess::getRootAge( void ) const
-{
-    if(useOrigin)
-    {
-        if(value->getNumberOfNodes() > 0)
-        {
-            return value->getRoot().getAge();
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
-        return getOriginTime();
 }
 
 
@@ -194,58 +171,6 @@ double ConstantRateCompleteBirthDeathProcess::pSurvival(double start, double end
 }
 
 
-/**
- * Restore the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
-void ConstantRateCompleteBirthDeathProcess::restoreSpecialization(DagNode *affecter)
-{
-
-    if ( affecter == root_age )
-    {
-        if( useOrigin )
-        {
-            if ( dag_node != NULL )
-            {
-                dag_node->restoreAffected();
-            }
-        }
-        else
-        {
-            AbstractBirthDeathProcess::restoreSpecialization(affecter);
-        }
-    }
-
-}
-
-
-/**
- * Set the current value.
- */
-void ConstantRateCompleteBirthDeathProcess::setValue(Tree *v, bool f )
-{
-
-    // delegate to super class
-    TypedDistribution<Tree>::setValue(v, f);
-
-
-    if ( root_age != NULL && !useOrigin )
-    {
-        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);
-        if ( stoch_root_age != NULL )
-        {
-            const_cast<StochasticNode<double> *>(stoch_root_age)->setValue( new double( value->getRoot().getAge() ), f);
-        }
-        else
-        {
-            value->getRoot().setAge( root_age->getValue() );
-        }
-
-    }
-
-}
-
-
 double ConstantRateCompleteBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
 
@@ -294,31 +219,6 @@ void ConstantRateCompleteBirthDeathProcess::swapParameterInternal(const DagNode 
     {
         // delegate the super-class
         AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
-    }
-
-}
-
-
-/**
- * Touch the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
-void ConstantRateCompleteBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
-{
-
-    if ( affecter == root_age )
-    {
-        if( useOrigin )
-        {
-            if ( dag_node != NULL )
-            {
-                dag_node->touchAffected();
-            }
-        }
-        else
-        {
-            AbstractBirthDeathProcess::touchSpecialization(affecter, touchAll);
-        }
     }
 
 }
