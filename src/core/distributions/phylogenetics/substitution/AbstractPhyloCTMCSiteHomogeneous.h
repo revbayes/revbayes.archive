@@ -1705,7 +1705,8 @@ std::vector<double> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::ge
 {
     std::vector<double> probs(num_site_mixtures, 1.0/num_site_mixtures);
     std::vector<double> rates_probs(num_site_rates, 1.0/num_site_rates);
-    std::vector<double> matrix_probs(1, 1.0);
+    size_t num_site_matrices = num_site_mixtures/num_site_rates;
+    std::vector<double> matrix_probs(num_site_matrices, 1.0/num_site_matrices);
     
     if ( site_rates_probs != NULL )
     {
@@ -1717,13 +1718,44 @@ std::vector<double> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::ge
         matrix_probs = site_matrix_probs->getValue();
     }
     
-    for (size_t matrix = 0; matrix < matrix_probs.size(); ++matrix)
+    for (size_t matrix = 0; matrix < num_site_matrices; ++matrix)
     {
         for (size_t j = 0; j < this->num_site_rates; ++j)
         {
-            probs[j * matrix_probs.size() + matrix] = matrix_probs[matrix] * rates_probs[j];
+            probs[j * num_site_matrices + matrix] = matrix_probs[matrix] * rates_probs[j];
         }
     }
+    
+    //for debugging
+//    std::cout << "rates_probs" << endl;
+//    double rates_probs_sum = 0.0;
+//    for (const auto i: rates_probs)
+//    {
+//        std::cout << i << ", ";
+//        rates_probs_sum += i;
+//    }
+//    std::cout << endl;
+//    std::cout << "rates_probs_sum = " << rates_probs_sum << endl;
+//    
+//    std::cout << "matrix_probs" << endl;
+//    double matrix_probs_sum = 0.0;
+//    for (const auto i: matrix_probs)
+//    {
+//        std::cout << i << ", ";
+//        matrix_probs_sum += i;
+//    }
+//    std::cout << endl;
+//    std::cout << "matrix_probs_sum = " << matrix_probs_sum << endl;
+//    
+//    std::cout << "probs" << endl;
+//    double probs_sum = 0.0;
+//    for (const auto i: probs)
+//    {
+//        std::cout << i << ", ";
+//        probs_sum += i;
+//    }
+//    std::cout << endl;
+//    std::cout << "probs_sum = " << probs_sum << endl;
     
     return probs;
 }
