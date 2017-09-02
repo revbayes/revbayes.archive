@@ -31,14 +31,13 @@ ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathP
                                                                                   const TypedDagNode<double> *e,
                                                                                   const TypedDagNode<double> *p,
                                                                                   const TypedDagNode<double> *r,
-                                                                                  const bool& uo,
                                                                                   const std::string& cdt,
-                                                                                  const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, cdt, tn ),
+                                                                                  const std::vector<Taxon> &tn,
+                                                                                  bool uo ) : AbstractBirthDeathProcess( o, cdt, tn, uo ),
     lambda( s ),
     mu( e ), 
     psi( p ), 
-    rho( r ),
-    useOrigin( uo )
+    rho( r )
 {
     addParameter( lambda );
     addParameter( mu );
@@ -59,27 +58,6 @@ ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSampledBirthDeathP
 {
     
     return new ConstantRateSerialSampledBirthDeathProcess( *this );
-}
-
-/**
- * If conditioning on the origin, then return the age of the root node
- * or zero if the tree is empty
- */
-double ConstantRateSerialSampledBirthDeathProcess::getRootAge( void ) const
-{
-    if(useOrigin)
-    {
-        if(value->getNumberOfNodes() > 0)
-        {
-            return value->getRoot().getAge();
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
-        return getOriginTime();
 }
 
 
@@ -108,11 +86,11 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
 {
     
     double lnProbTimes = 0.0;
-    double process_time = getOriginTime();
+    double process_time = getOriginAge();
     size_t num_initial_lineages = 0;
     TopologyNode* root = &value->getRoot();
     
-    if (useOrigin) {
+    if (use_origin) {
         // If we are conditioning on survival from the origin,
         // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
         // TODO: Generalize AbstractBirthDeathProcess to allow conditioning on the origin
@@ -124,6 +102,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     {
         if (root->getChild(0).isSampledAncestor() || root->getChild(1).isSampledAncestor())
             return RbConstants::Double::neginf;
+
         num_initial_lineages = 2;
     }
 
@@ -143,11 +122,9 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
 
     // classify nodes
     int num_sampled_ancestors = 0;
-    int num_fossil_taxa = 0;
     int num_extant_taxa = 0;
-    int num_internal_nodes = 0;
 
-    std::vector<double> fossil_tip_ages = std::vector<double>();
+    std::vector<double> serial_tip_ages = std::vector<double>();
     std::vector<double> internal_node_ages = std::vector<double>();
     for (size_t i = 0; i < num_nodes; i++)
     {
@@ -160,9 +137,8 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         }
         else if ( n.isFossil() && !n.isSampledAncestor() )
         {
-            // node is fossil leaf
-            num_fossil_taxa++;
-            fossil_tip_ages.push_back( n.getAge() );
+            // node is serial leaf
+            serial_tip_ages.push_back( n.getAge() );
         }
         else if ( n.isTip() && !n.isFossil() )
         {
@@ -171,41 +147,47 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         }
         else if ( n.isInternal() && !n.getChild(0).isSampledAncestor() && !n.getChild(1).isSampledAncestor() )
         {
-            // node is bifurcation event (a "true" node)
-            internal_node_ages.push_back( n.getAge() );
-            num_internal_nodes++;
+            if(!n.isRoot() || use_origin)
+            {
+                // node is bifurcation event (a "true" node)
+                internal_node_ages.push_back( n.getAge() );
+            }
         }
     }
     
-    // add the log probability for the fossilization events
-    if (serial_rate == 0.0 && num_fossil_taxa + num_sampled_ancestors > 0)
+    // add the log probability for the serial sampling events
+    if (serial_rate == 0.0)
     {
-        throw RbException("The serial sampling rate is zero, but the tree has serial sampled tips.");
+        if( serial_tip_ages.size() + num_sampled_ancestors > 0 )
+        {
+            return RbConstants::Double::neginf;
+            //throw RbException("The serial sampling rate is zero, but the tree has serial sampled tips.");
+        }
     }
     else
     {
-        lnProbTimes += (num_fossil_taxa + num_sampled_ancestors) * log( serial_rate );
+        lnProbTimes += (serial_tip_ages.size() + num_sampled_ancestors) * log( serial_rate );
     }
     
     // add the log probability for sampling the extant taxa
-    lnProbTimes += num_extant_taxa * log( sampling_prob );
-    
+    lnProbTimes += num_extant_taxa * log( 4.0 * sampling_prob );
+
     // add the log probability of the initial sequences
-    lnProbTimes += lnQ(process_time, c1, c2) - (num_initial_lineages - 1) * log(birth_rate);
-    
+    lnProbTimes += -lnQ(process_time, c1, c2) * num_initial_lineages;
+
     // add the log probability for the internal node ages
-    lnProbTimes += internal_node_ages.size() * log(2.0 * birth_rate);
+    lnProbTimes += internal_node_ages.size() * log( birth_rate );
     for(size_t i=0; i<internal_node_ages.size(); i++)
     {
         double t = internal_node_ages[i];
-        lnProbTimes += lnQ(t, c1, c2);
+        lnProbTimes -= lnQ(t, c1, c2);
     }
 
-    // add the log probability for the fossil tip ages
-    for(size_t f=0; f < fossil_tip_ages.size(); f++)
+    // add the log probability for the serial tip ages
+    for(size_t f=0; f < serial_tip_ages.size(); f++)
     {
-        double t = fossil_tip_ages[f];
-        lnProbTimes += log(pZero(t, c1, c2)) - lnQ(t, c1, c2);
+        double t = serial_tip_ages[f];
+        lnProbTimes += log(pZero(t, c1, c2)) + lnQ(t, c1, c2);
     }
 
     // condition on survival
@@ -227,13 +209,15 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
 double ConstantRateSerialSampledBirthDeathProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
-    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n-1} / ((n-m)! m!)
-    // where m is the number of extinct tips
+    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / (n!(m+k)!)
+    // where n is the number of extant tips, m is the number of sampled extinct tips
+    // and k is the number of sampled ancestors
 
     size_t num_taxa = value->getNumberOfTips();
     size_t num_extinct = value->getNumberOfExtinctTips();
+    size_t num_sa = value->getNumberOfSampledAncestors();
 
-    return (num_taxa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct) - RbMath::lnFactorial(num_extinct);
+    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct) - RbMath::lnFactorial(num_extinct);
 }
 
 
@@ -306,9 +290,10 @@ double ConstantRateSerialSampledBirthDeathProcess::pZero(double t, double c1, do
 
 double ConstantRateSerialSampledBirthDeathProcess::lnQ(double t, double c1, double c2) const
 {
+    //return log( 2*(1-c2*c2) + exp(-c1*t)*(1-c2)*(1-c2) + exp(c1*t)*(1+c2)*(1+c2) );
+
     // numerically safe code
-    double lnQt = log(4.0) - c1*t - 2 * log( exp(-c1*t) * (1-c2) + (1+c2));
-    return lnQt;
+    return c1*t + 2 * log( exp(-c1*t) * (1-c2) + (1+c2));
 }
 
 
@@ -319,57 +304,6 @@ double ConstantRateSerialSampledBirthDeathProcess::pHatZero(double t) const
     double r = rho->getValue();
     double val = r * (b-d) / (b*r + (b*(1-r)-d)*exp(-(b-d)*t));
     return 1.0 - val;
-}
-
-/**
- * Restore the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
-void ConstantRateSerialSampledBirthDeathProcess::restoreSpecialization(DagNode *affecter)
-{
-
-    if ( affecter == root_age )
-    {
-        if( useOrigin )
-        {
-            if ( dag_node != NULL )
-            {
-                dag_node->restoreAffected();
-            }
-        }
-        else
-        {
-            AbstractRootedTreeDistribution::restoreSpecialization(affecter);
-        }
-    }
-
-}
-
-
-/**
- * Set the current value.
- */
-void ConstantRateSerialSampledBirthDeathProcess::setValue(Tree *v, bool f )
-{
-
-    // delegate to super class
-    TypedDistribution<Tree>::setValue(v, f);
-
-
-    if ( root_age != NULL && !useOrigin )
-    {
-        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);
-        if ( stoch_root_age != NULL )
-        {
-            const_cast<StochasticNode<double> *>(stoch_root_age)->setValue( new double( value->getRoot().getAge() ), f);
-        }
-        else
-        {
-            value->getRoot().setAge( root_age->getValue() );
-        }
-
-    }
-
 }
 
 
@@ -402,31 +336,6 @@ void ConstantRateSerialSampledBirthDeathProcess::swapParameterInternal(const Dag
     {
         // delegate the super-class
         AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
-    }
-
-}
-
-
-/**
- * Touch the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
-void ConstantRateSerialSampledBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
-{
-
-    if ( affecter == root_age )
-    {
-        if( useOrigin )
-        {
-            if ( dag_node != NULL )
-            {
-                dag_node->touchAffected();
-            }
-        }
-        else
-        {
-            AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
-        }
     }
 
 }

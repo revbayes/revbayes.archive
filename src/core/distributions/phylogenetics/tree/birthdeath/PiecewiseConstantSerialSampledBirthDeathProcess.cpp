@@ -18,7 +18,7 @@ using namespace RevBayesCore;
  *
  * \param[in]    s              Speciation rates.
  * \param[in]    e              Extinction rates.
- * \param[in]    p              Fossil sampling rates.
+ * \param[in]    p              Serial sampling rates.
  * \param[in]    r              Instantaneous sampling probabilities.
  * \param[in]    t              Rate change times.
  * \param[in]    cdt            Condition of the process (none/survival/#Taxa).
@@ -35,15 +35,14 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
                                                                                            const TypedDagNode< RbVector<double> > *mt,
                                                                                            const TypedDagNode< RbVector<double> > *pt,
                                                                                            const TypedDagNode< RbVector<double> > *rt,
-                                                                                           bool uo,
                                                                                            const std::string &cdt,
-                                                                                           const std::vector<Taxon> &tn ) : AbstractBirthDeathProcess( ra, cdt, tn ),
+                                                                                           const std::vector<Taxon> &tn,
+                                                                                           bool uo ) : AbstractBirthDeathProcess( ra, cdt, tn, uo ),
     homogeneous_timeline(ht),
     lambda_timeline(lt),
     mu_timeline(mt),
     psi_timeline(pt),
-    rho_timeline(rt),
-    useOrigin(uo)
+    rho_timeline(rt)
 {
     // initialize all the pointers to NULL
     homogeneous_lambda   = NULL;
@@ -267,28 +266,6 @@ PiecewiseConstantSerialSampledBirthDeathProcess* PiecewiseConstantSerialSampledB
 
 
 /**
- * If conditioning on the origin, then return the age of the root node
- * or zero if the tree is empty
- */
-double PiecewiseConstantSerialSampledBirthDeathProcess::getRootAge( void ) const
-{
-    if(useOrigin)
-    {
-        if(value->getNumberOfNodes() > 0)
-        {
-            return value->getRoot().getAge();
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
-        return getOriginTime();
-}
-
-
-/**
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
@@ -307,17 +284,16 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityDive
 /**
  * Compute the log probability of the current value under the current parameter values.
  * Tip-dating (Theorem 1, Stadler et al. 2013 PNAS)
- * Ancestral fossils will be considered in the future.
  */
 double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
     // variable declarations and initialization
     double lnProbTimes = 0.0;
-    double process_time = getOriginTime();
+    double process_time = getOriginAge();
     size_t num_initial_lineages = 0;
     TopologyNode* root = &value->getRoot();
 
-    if (useOrigin) {
+    if (use_origin) {
         // If we are conditioning on survival from the origin,
         // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
         // TODO: Generalize AbstractBirthDeathProcess to allow conditioning on the origin
@@ -336,12 +312,10 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     size_t num_nodes = value->getNumberOfNodes();
 
     // classify nodes
-    int num_sampled_ancestors = 0;
-    int num_fossil_taxa = 0;
     int num_extant_taxa = 0;
 
     // retrieved the speciation times
-    std::vector<double> fossil_tip_ages = std::vector<double>();
+    std::vector<double> serial_tip_ages = std::vector<double>();
     std::vector<double> sampled_ancestor_ages = std::vector<double>();
     std::vector<double> internal_node_ages = std::vector<double>();
 
@@ -352,14 +326,12 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         if ( n.isTip() && n.isFossil() && n.isSampledAncestor() )
         {
             // node is sampled ancestor
-            num_sampled_ancestors++;
             sampled_ancestor_ages.push_back(n.getAge());
         }
         else if ( n.isTip() && n.isFossil() && !n.isSampledAncestor() )
         {
-            // node is fossil leaf
-            num_fossil_taxa++;
-            fossil_tip_ages.push_back( n.getAge() );
+            // node is serial leaf
+            serial_tip_ages.push_back( n.getAge() );
         }
         else if ( n.isTip() && !n.isFossil() )
         {
@@ -368,7 +340,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         }
         else if ( n.isInternal() && !n.getChild(0).isSampledAncestor() && !n.getChild(1).isSampledAncestor() )
         {
-            if(!n.isRoot() || useOrigin)
+            if(!n.isRoot() || use_origin)
             {
                 // node is bifurcation event (a "true" node)
                 internal_node_ages.push_back( n.getAge() );
@@ -376,23 +348,24 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         }
     }
     
-    // add the fossil tip age terms
-    for (size_t i = 0; i < fossil_tip_ages.size(); ++i)
+    // add the serial tip age terms
+    for (size_t i = 0; i < serial_tip_ages.size(); ++i)
     {
         if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }
         
-        double t = fossil_tip_ages[i];
+        double t = serial_tip_ages[i];
         size_t index = l(t);
 
-        // add the log probability for the fossilization events
+        // add the log probability for the serial sampling events
         if (psi[index - 1] == 0.0)
         {
-            std::stringstream ss;
-            ss << "The serial sampling rate in interval " << index << " is zero, but the tree has serial sampled tips in this interval.";
-            throw RbException(ss.str());
+            return RbConstants::Double::neginf;
+            //std::stringstream ss;
+            //ss << "The serial sampling rate in interval " << index << " is zero, but the tree has serial sampled tips in this interval.";
+            //throw RbException(ss.str());
         }
         else
         {
@@ -460,11 +433,12 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         
         double t = internal_node_ages[i];
         size_t index = l(t);
-        lnProbTimes += log( 2.0 * q(index, t) * lambda[index - 1] );
+        lnProbTimes += log( q(index, t) * lambda[index - 1] );
     }
 
     // add the initial age term
-    lnProbTimes += num_initial_lineages * log( q(1, process_time ) );
+    size_t index = l(process_time);
+    lnProbTimes += num_initial_lineages * log( q(index, process_time ) );
 
     // condition on survival
     if ( condition == "survival" )
@@ -502,13 +476,15 @@ size_t PiecewiseConstantSerialSampledBirthDeathProcess::l(double t) const
 double PiecewiseConstantSerialSampledBirthDeathProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
-    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n-1} / ((n-m)! m!)
-    // where m is the number of extinct tips
+    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / (n!(m+k)!)
+    // where n is the number of extant tips, m is the number of extinct tips
+    // and k is the number of sampled ancestors
 
     size_t num_taxa = value->getNumberOfTips();
     size_t num_extinct = value->getNumberOfExtinctTips();
+    size_t num_sa = value->getNumberOfSampledAncestors();
 
-    return (num_taxa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct) - RbMath::lnFactorial(num_extinct);
+    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct) - RbMath::lnFactorial(num_extinct);
 }
 
 
@@ -620,8 +596,8 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
 
         if( psi_timeline != NULL )
         {
-            const std::vector<double>& fossilTimes = psi_timeline->getValue();
-            for (std::vector<double>::const_iterator it = fossilTimes.begin(); it != fossilTimes.end(); ++it)
+            const std::vector<double>& serialTimes = psi_timeline->getValue();
+            for (std::vector<double>::const_iterator it = serialTimes.begin(); it != serialTimes.end(); ++it)
             {
                 eventTimes.insert( *it );
             }
@@ -900,58 +876,6 @@ int PiecewiseConstantSerialSampledBirthDeathProcess::survivors(double t) const
 
 
 /**
- * Restore the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
-void PiecewiseConstantSerialSampledBirthDeathProcess::restoreSpecialization(DagNode *affecter)
-{
-
-    if ( affecter == root_age )
-    {
-        if( useOrigin )
-        {
-            if ( dag_node != NULL )
-            {
-                dag_node->touchAffected();
-            }
-        }
-        else
-        {
-            AbstractRootedTreeDistribution::restoreSpecialization(affecter);
-        }
-    }
-
-}
-
-
-/**
- * Set the current value.
- */
-void PiecewiseConstantSerialSampledBirthDeathProcess::setValue(Tree *v, bool f )
-{
-
-    // delegate to super class
-    TypedDistribution<Tree>::setValue(v, f);
-
-
-    if ( root_age != NULL && !useOrigin )
-    {
-        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);
-        if ( stoch_root_age != NULL )
-        {
-            const_cast<StochasticNode<double> *>(stoch_root_age)->setValue( new double( value->getRoot().getAge() ), f);
-        }
-        else
-        {
-            value->getRoot().setAge( root_age->getValue() );
-        }
-
-    }
-
-}
-
-
-/**
  * Swap the parameters held by this distribution.
  * 
  * \param[in]    oldP      Pointer to the old parameter.
@@ -1016,29 +940,4 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::swapParameterInternal(cons
         // delegate the super-class
         AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
-}
-
-
-/**
- * Touch the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
-void PiecewiseConstantSerialSampledBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
-{
-
-    if ( affecter == root_age )
-    {
-        if( useOrigin )
-        {
-            if ( dag_node != NULL )
-            {
-                dag_node->touchAffected();
-            }
-        }
-        else
-        {
-            AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
-        }
-    }
-
 }

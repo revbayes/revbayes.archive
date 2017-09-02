@@ -184,6 +184,7 @@
 #include "Dist_UniformInteger.h"
 #include "Dist_UniformNatural.h"
 #include "Dist_varianceGamma.h"
+#include "Dist_whiteNoise.h"
 #include "Dist_wishart.h"
 #include "Process_OrnsteinUhlenbeck.h"
 
@@ -261,7 +262,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_CharacterDependentBirthDeathProcess() );
         AddDistribution< TimeTree                   >( new Dist_StateDependentSpeciationExtinctionProcess() );
         AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
-        AddDistribution< TimeTree                   >( new Dist_outgroupBirthDeath() );
+        //AddDistribution< TimeTree                   >( new Dist_outgroupBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_sampledSpeciationBirthDeathProcess() );
         
         
@@ -407,6 +408,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< Integer                    >( new Dist_UniformInteger() );
         AddDistribution< Natural                    >( new Dist_UniformNatural() );
         AddContinuousDistribution< Real             >( new Dist_varianceGamma() );
+        
+        // White-Noise process
+        AddContinuousDistribution< RealPos          >( new Dist_whiteNoise() );
 
         // LKJ distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_LKJ() );

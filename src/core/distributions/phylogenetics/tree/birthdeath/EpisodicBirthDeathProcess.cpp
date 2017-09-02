@@ -104,7 +104,7 @@ void EpisodicBirthDeathProcess::prepareProbComputation( void ) const
     birth.clear();
     death.clear();
     
-    double present_time = root_age->getValue();
+    double present_time = process_age->getValue();
     
     std::set<double> event_times;
     

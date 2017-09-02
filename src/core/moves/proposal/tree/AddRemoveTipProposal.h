@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class AddRemoveTipProposal : public Proposal {
         
     public:
-        AddRemoveTipProposal( StochasticNode<Tree> *n, bool exa, bool exi);               //!<  constructor
+        AddRemoveTipProposal( StochasticNode<Tree> *n, bool exa, bool exi, bool sa);               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
@@ -57,6 +57,7 @@ namespace RevBayesCore {
         bool                                    extant;
         bool                                    extinct;
     
+        bool                                    sampled_ancestors;
     };
     
 }
