@@ -1726,37 +1726,6 @@ std::vector<double> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::ge
         }
     }
     
-    //for debugging
-//    std::cout << "rates_probs" << endl;
-//    double rates_probs_sum = 0.0;
-//    for (const auto i: rates_probs)
-//    {
-//        std::cout << i << ", ";
-//        rates_probs_sum += i;
-//    }
-//    std::cout << endl;
-//    std::cout << "rates_probs_sum = " << rates_probs_sum << endl;
-//    
-//    std::cout << "matrix_probs" << endl;
-//    double matrix_probs_sum = 0.0;
-//    for (const auto i: matrix_probs)
-//    {
-//        std::cout << i << ", ";
-//        matrix_probs_sum += i;
-//    }
-//    std::cout << endl;
-//    std::cout << "matrix_probs_sum = " << matrix_probs_sum << endl;
-//    
-//    std::cout << "probs" << endl;
-//    double probs_sum = 0.0;
-//    for (const auto i: probs)
-//    {
-//        std::cout << i << ", ";
-//        probs_sum += i;
-//    }
-//    std::cout << endl;
-//    std::cout << "probs_sum = " << probs_sum << endl;
-    
     return probs;
 }
 

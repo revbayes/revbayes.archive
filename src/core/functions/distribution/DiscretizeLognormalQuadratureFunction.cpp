@@ -101,17 +101,4 @@ void RevBayesCore::DiscretizeLognormalQuadratureFunction::update( void )
         j++;
     }
     
-    // for debugging
-//    double mean_weight = 0.0;
-//    double mean = 0.0;
-//    
-//    for (size_t j=0; j<nCats; j++)
-//    {
-//        mean_weight += (*value)[1][j];
-//        mean += (*value)[0][j] * (*value)[1][j];
-//    }
-//    
-//    std::cout.precision(6);
-//    std::cout << mean_weight << " " << mean << std::endl;
-
 }
