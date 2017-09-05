@@ -9,7 +9,7 @@ namespace RevBayesCore {
     class NormalDistribution : public ContinuousDistribution {
         
     public:
-        NormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s);
+        NormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s, const TypedDagNode<double> *mi, const TypedDagNode<double> *ma );
         virtual                                            ~NormalDistribution(void);                                                   //!< Virtual destructor
         
         // public member functions
@@ -30,6 +30,9 @@ namespace RevBayesCore {
         // members
         const TypedDagNode<double>*                         mean;
         const TypedDagNode<double>*                         stDev;
+        const TypedDagNode<double>*                         min;
+        const TypedDagNode<double>*                         max;
+
     };
     
 }

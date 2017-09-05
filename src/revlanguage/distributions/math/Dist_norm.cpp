@@ -1,4 +1,4 @@
-#include "ArgumentRule.h"
+ #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
 #include "Dist_norm.h"
@@ -36,7 +36,9 @@ RevBayesCore::NormalDistribution* Dist_norm::createDistribution( void ) const
     // get the parameters
     RevBayesCore::TypedDagNode<double>* m = static_cast<const Real &>( mean->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( sd->getRevObject() ).getDagNode();
-    RevBayesCore::NormalDistribution*   d = new RevBayesCore::NormalDistribution(m, s);
+    RevBayesCore::TypedDagNode<double>* mi  = static_cast<const Real &>( min->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ma  = static_cast<const Real &>( max->getRevObject() ).getDagNode();
+    RevBayesCore::NormalDistribution*   d = new RevBayesCore::NormalDistribution(m, s, mi, ma);
 
     return d;
 }
@@ -250,6 +252,8 @@ const MemberRules& Dist_norm::getParameterRules(void) const
     {
         distNormMemberRules.push_back( new ArgumentRule( "mean", Real::getClassTypeSpec()   , "The mean parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         distNormMemberRules.push_back( new ArgumentRule( "sd"  , RealPos::getClassTypeSpec(), "The standard deviation parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        distNormMemberRules.push_back( new ArgumentRule( "min", Real::getClassTypeSpec(), "The minimum.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(RbConstants::Double::neginf)));
+        distNormMemberRules.push_back( new ArgumentRule( "max", Real::getClassTypeSpec(), "The maximum.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(RbConstants::Double::inf)));
 
         rules_set = true;
     }
@@ -318,6 +322,14 @@ void Dist_norm::setConstParameter(const std::string& name, const RevPtr<const Re
     else if ( name == "sd" )
     {
         sd = var;
+    }
+    else if ( name == "min")
+    {
+        min = var;
+    }
+    else if( name == "max")
+    {
+        max = var;
     }
     else
     {
