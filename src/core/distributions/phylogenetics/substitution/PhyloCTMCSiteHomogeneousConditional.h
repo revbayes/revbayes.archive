@@ -473,6 +473,8 @@ template<class charType>
 void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipCorrection(const TopologyNode &node, size_t node_index)
 {
     std::vector<double>::iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[node_index]*this->activeCorrectionOffset + node_index*correctionNodeOffset;
+    
+    size_t data_tip_index = this->taxon_name_2_tip_index_map[ node.getName() ];
 
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
@@ -482,7 +484,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipCorr
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
-            bool gap = correctionMaskMatrix[mask][node_index];
+            bool gap = correctionMaskMatrix[mask][data_tip_index];
 
             // iterate over ancestral (non-autapomorphic) states
             for(size_t a = 0; a < this->num_chars; a++)
