@@ -20,8 +20,7 @@
 using namespace RevBayesCore;
 
 ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) : Cloneable( ), Parallelizable( ),
-    num_runs( n ),
-    credible_interval_size( 0.9 )
+    num_runs( n )
 {
     
     std::string directory = "output";
@@ -109,8 +108,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
 
 
 ValidationAnalysis::ValidationAnalysis(const ValidationAnalysis &a) : Cloneable( a ), Parallelizable( a ),
-    num_runs( a.num_runs ),
-    credible_interval_size( a.credible_interval_size )
+    num_runs( a.num_runs )
 {
     
     runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
@@ -169,7 +167,7 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
         simulation_values.clear();
         
         num_runs                    = a.num_runs;
-        credible_interval_size      = a.credible_interval_size;
+//        credible_interval_size      = a.credible_interval_size;
         
         
         runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
@@ -330,7 +328,7 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
 
 
 
-void ValidationAnalysis::summarizeAll( void )
+void ValidationAnalysis::summarizeAll( double credible_interval_size )
 {
     
     // print some information to the screen but only if we are the active process
@@ -353,7 +351,7 @@ void ValidationAnalysis::summarizeAll( void )
     {
         
         // summarize the i-th simulation
-        summarizeSim(i);
+        summarizeSim(credible_interval_size, i);
         
     }
     
@@ -407,7 +405,7 @@ void ValidationAnalysis::summarizeAll( void )
 
 
 
-void ValidationAnalysis::summarizeSim(size_t idx)
+void ValidationAnalysis::summarizeSim(double credible_interval_size, size_t idx)
 {
     
     std::stringstream ss;
