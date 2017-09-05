@@ -177,7 +177,7 @@ void AbstractPhyloContinuousCharacterProcess::setBranchRate(const TypedDagNode<R
     this->removeParameter( homogeneous_clock_rate );
     this->removeParameter( heterogeneous_clock_rates );
     homogeneous_clock_rate      = NULL;
-    heterogeneous_clock_rates    = NULL;
+    heterogeneous_clock_rates   = NULL;
     
     
     // set the value
