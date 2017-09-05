@@ -3093,6 +3093,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::swapParameterInte
     {
         root_frequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
+    else if (oldP == site_matrix_probs)
+    {
+        site_matrix_probs = static_cast<const TypedDagNode< Simplex >* >( newP );
+    }
     else if (oldP == site_rates)
     {
         site_rates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
