@@ -298,15 +298,20 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
         {
             std::ostringstream msg;
 
-            msg << "Argument or label mismatch for function call '" << name << "' with arguments (";
+            // get whitespace offset from function name (+2 for " (")
+            std::string whitespace(name.size() + 2, ' ');
+            
+            msg << "Argument or label mismatch for function call.\n";
+            msg << "Provided call:\n";
+            msg << name << " (";
 
             // print the passed arguments
             for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) 
             {
-                // add a comma before the every argument except the first
+                // add a comma and whitespace before the every argument except the first
                 if (it != args.begin()) 
                 {
-                    msg << ",";
+                    msg << ",\n" << whitespace;
                 }
                 
                 // create the default type of the passed-in argument
@@ -316,7 +321,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 {
                     type = it->getVariable()->getRevObject().getType();
                 }
-                msg << " " << type;
+                msg << type;
                 
                 // create the default DAG type of the passed-in argument
                 std::string dagtype = "";
@@ -347,7 +352,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                     msg << " '" << it->getLabel() << "'";
                 }
             }
-            msg << " )." << std::endl;
+            msg << " )\n" << std::endl;
             msg << "Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg, true );
             msg << std::endl;

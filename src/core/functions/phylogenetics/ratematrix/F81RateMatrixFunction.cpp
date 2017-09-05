@@ -3,6 +3,7 @@
 
 using namespace RevBayesCore;
 
+
 F81RateMatrixFunction::F81RateMatrixFunction(const TypedDagNode< Simplex > *bf) : TypedFunction<RateGenerator>( new RateMatrix_F81(bf->getValue().size()) ),
     base_frequencies( bf )
 {

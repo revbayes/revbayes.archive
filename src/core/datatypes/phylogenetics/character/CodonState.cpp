@@ -611,4 +611,3 @@ void CodonState::setStateByIndex(size_t index)
     state.set( index );
 }
 
-

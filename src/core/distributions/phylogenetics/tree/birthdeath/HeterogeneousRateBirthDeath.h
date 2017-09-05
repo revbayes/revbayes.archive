@@ -90,7 +90,6 @@ namespace RevBayesCore {
 
         bool                                                allow_same_category;
         bool                                                shift_same_category;
-        
     };
     
 }

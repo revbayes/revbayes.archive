@@ -1,3 +1,11 @@
+//
+//  Func_SampledCladogenesisRootFrequencies.h
+//  revbayes-proj
+//
+//  Created by Michael Landis on 8/11/16.
+//  Copyright © 2016 Michael Landis. All rights reserved.
+//
+
 #ifndef Func_SampledCladogenesisRootFrequencies_h
 #define Func_SampledCladogenesisRootFrequencies_h
 

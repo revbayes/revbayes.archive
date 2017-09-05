@@ -79,7 +79,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     int k = capacity->getValue();
     double lastTime = 0.0;
     double speciationRate, timeInterval;
-    for (size_t i = 1; i < num_taxa-1; ++i)
+    for (size_t i = 1; i < value->getNumberOfTips()-1; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 

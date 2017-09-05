@@ -104,7 +104,7 @@ void EpisodicBirthDeathProcess::prepareProbComputation( void ) const
     birth.clear();
     death.clear();
     
-    double present_time = root_age->getValue();
+    double present_time = process_age->getValue();
     
     std::set<double> event_times;
     
@@ -191,6 +191,10 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
     // compute the rate
     double rate = death[j+1] - birth[j+1];
     
+    size_t num_taxa = value->getNumberOfTips();
+
+    log_p_survival  = std::vector<double>(num_taxa-2,0.0);
+
     double prev_end = end;
     for ( size_t i=num_taxa-2; i>0; --i )
     {
@@ -314,6 +318,10 @@ void EpisodicBirthDeathProcess::prepareRateIntegral(double end) const
     // compute the rate
     rate = death[j+1] - birth[j+1];
     
+    size_t num_taxa = value->getNumberOfTips();
+
+    rate_integral  = std::vector<double>(num_taxa-2,0.0);
+
     double prev_end = end;
     for ( size_t i=num_taxa-2; i>0; --i )
     {
@@ -390,7 +398,7 @@ double EpisodicBirthDeathProcess::rateIntegral(double start, double end) const
 
 
 
-double EpisodicBirthDeathProcess::simulateDivergenceTime(double origin, double present, double rho) const
+double EpisodicBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
     
     // Get the rng
@@ -400,6 +408,7 @@ double EpisodicBirthDeathProcess::simulateDivergenceTime(double origin, double p
     double age = present - origin;
     double b = lambda_rates->getValue()[0];
     double d = mu_rates->getValue()[0];
+    double r = rho->getValue();
     
     
     // get a random draw
@@ -409,11 +418,11 @@ double EpisodicBirthDeathProcess::simulateDivergenceTime(double origin, double p
     double t = 0.0;
     if ( b > d )
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
     }
     else
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(rho*b*exp((b-d)*age)+(b*(1-rho)-d) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
     }
     
     

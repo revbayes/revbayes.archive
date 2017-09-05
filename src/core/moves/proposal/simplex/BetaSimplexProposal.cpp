@@ -78,57 +78,64 @@ double BetaSimplexProposal::propose( Simplex &value )
 {
     
     // Get random number generator
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
-    
-    // store the value
-    storedValue = value;
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // we need to know the number of categories
     size_t cats = value.size();
     
+    // store the value
+    storedValue = value;
     
     // randomly draw a new index
     size_t chosen_index = size_t( floor(rng->uniform01()*double(cats)) );
     double current_value = value[chosen_index];
     
-    
     // draw new rates and compute the hastings ratio at the same time
     double a = alpha + 1.0;
-    double b = (a-1.0) / current_value - a + 2.0;
+    double b = (a - 1.0) / current_value - a + 2.0;
     double new_value = RbStatistics::Beta::rv(a, b, *rng);
-    
     
     // set the value
     value[chosen_index] = new_value;
 
-    double scaling_factor_other_values = (1.0-new_value) / (1.0-current_value);
+    double scaling_factor_other_values = (1.0 - new_value) / (1.0 - current_value);
     
-    for(size_t i=0; i<cats; i++)
+    double sum = 0.0;
+    for(size_t i = 0; i < cats; i++)
     {
         if ( i != chosen_index )
         {
             value[i] *= scaling_factor_other_values;
         }
+        sum += value[i];
     }
     
-    double ln_Hastins_ratio = 0;
+    // mrm 08-07-2017: I've noticed the sum of this
+    // simplex can gradually drift until it the sum
+    // is substantially different from one.
+    // normalize the vector to enforce sum = 1
+    for(size_t i = 0; i < cats; ++i)
+    {
+        value[i] /= sum;
+    }
+    
+    double ln_Hastings_ratio = 0.0;
     try
     {
-        
         // compute the Hastings ratio
         double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
         double new_a = alpha + 1.0;
         double new_b = (a-1.0) / value[chosen_index] - a + 2.0;
         double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
         
-        ln_Hastins_ratio = backward - forward;
+        ln_Hastings_ratio = backward - forward;
     }
     catch (RbException e)
     {
-        ln_Hastins_ratio = RbConstants::Double::neginf;
+        ln_Hastings_ratio = RbConstants::Double::neginf;
     }
     
-    return ln_Hastins_ratio;
+    return ln_Hastings_ratio;
 }
 
 

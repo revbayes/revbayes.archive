@@ -12,7 +12,6 @@
 #include "CorrelationMatrixProposal.h"
 #include "RlBoolean.h"
 #include "MatrixReal.h"
-#include "MatrixRealSingleElementSlidingProposal.h"
 #include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Natural.h"

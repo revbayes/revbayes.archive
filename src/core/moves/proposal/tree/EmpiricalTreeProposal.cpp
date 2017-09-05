@@ -1,10 +1,15 @@
 #include "EmpiricalTreeProposal.h"
 #include "EmpiricalTreeDistribution.h"
+#include "RandomNumberGenerator.h"
+#include "RandomNumberFactory.h"
+#include "Move.h"
+#include "RbConstants.h"
 
 using namespace RevBayesCore;
 
-EmpiricalTreeProposal::EmpiricalTreeProposal( StochasticNode<Tree> *v) : Proposal(),
-    variable( v )
+EmpiricalTreeProposal::EmpiricalTreeProposal( StochasticNode<Tree> *v, bool mh) : Proposal(),
+    variable( v ),
+    metropolisHastings( mh )
 {
     
     addNode( variable );
@@ -47,13 +52,41 @@ double EmpiricalTreeProposal::doProposal( void )
     
     EmpiricalTreeDistribution& dist = static_cast<EmpiricalTreeDistribution &>( variable->getDistribution() );
     
-    // get the current tree index
-    oldTreeIndex = dist.getCurrentTreeIndex();
+    size_t total_tree_samples = dist.getNumberOfTrees();
+    size_t burnin = dist.getBurnin();
     
-    // draw a new tree
-    dist.redrawValue();
+    // just in case there is only one tree in the empirical tree sample
+    if(total_tree_samples - burnin > 1)
+    {
+        // get the current tree index
+        old_tree_index = dist.getCurrentTreeIndex();
+        
+        // draw a new tree
+        // in the old way we simply proposed any tree, even the current tree
+        // dist.redrawValue();
+        // we try to be more efficient by not proposing the same tree again
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        
+        // draw a new tree index until it is different from the old tree index
+        double u = rng->uniform01();
+        size_t new_tree_index = (size_t)( u * (total_tree_samples - burnin) + burnin );
+        
+        while ( new_tree_index == old_tree_index )
+        {
+            u = rng->uniform01();
+            new_tree_index = (size_t)( u * (total_tree_samples - burnin) + burnin );
+        }
+        
+        dist.setCurrentTree( new_tree_index );
+        
+    }
     
     variable->touch( true );
+    
+    if(metropolisHastings == false)
+    {
+        return RbConstants::Double::inf;
+    }
     
     return 0.0;
 }
@@ -81,7 +114,7 @@ void EmpiricalTreeProposal::undoProposal( void )
     
     // reset to the old tree
     EmpiricalTreeDistribution& dist = static_cast<EmpiricalTreeDistribution &>( variable->getDistribution() );
-    dist.setCurrentTree( oldTreeIndex );
+    dist.setCurrentTree( old_tree_index );
     
 }
 

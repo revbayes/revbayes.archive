@@ -37,7 +37,8 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
-        RevPtr<const RevVariable>                   tree;                                                                                                      
+        RevPtr<const RevVariable>                   tree;
+        RevPtr<const RevVariable>                   metropolisHastings;
     };
     
 }

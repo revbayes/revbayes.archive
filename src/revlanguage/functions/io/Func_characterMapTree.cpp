@@ -149,20 +149,24 @@ const ArgumentRules& Func_characterMapTree::getArgumentRules( void ) const
     if (!rules_set)
     {
         
+
         argumentRules.push_back( new ArgumentRule( "tree",                         Tree::getClassTypeSpec(),                                 "The input tree to summarize the character history over.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "ancestral_state_trace_vector", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), "A vector of ancestral state traces.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "tree_trace",                   TraceTree::getClassTypeSpec(),                            "A trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "character_file",               RlString::getClassTypeSpec(),                             "The name of the file to store the tree annotated with the MAP character history.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "posterior_file",               RlString::getClassTypeSpec(),                             "The name of the file to store the tree annotated with the posterior probabilities for the MAP character history.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+
 		std::vector<TypeSpec> burnin_types;
         burnin_types.push_back( Probability::getClassTypeSpec() );
         burnin_types.push_back( Integer::getClassTypeSpec() );
         argumentRules.push_back( new ArgumentRule( "burnin"   , burnin_types  , "The fraction/number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
+   
         std::vector<std::string> reconstruction;
         reconstruction.push_back( "conditional" );
         reconstruction.push_back( "joint" );
         reconstruction.push_back( "marginal" );
         argumentRules.push_back( new OptionRule( "reconstruction", new RlString("marginal"), reconstruction, "'joint' and 'conditional' should only be used to summarize character maps sampled from the joint distribution. 'marginal' can be used for character maps sampled from the joint or marginal distribution." ) );
+
         argumentRules.push_back( new ArgumentRule( "num_time_slices",              Integer::getClassTypeSpec(),                              "The number of time slices to discretize the character history. Should be the same as used for the numeric ODE.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(500) ) );
         argumentRules.push_back( new ArgumentRule( "verbose",                      RlBoolean::getClassTypeSpec(),                            "Printing verbose output", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
@@ -222,3 +226,4 @@ const TypeSpec& Func_characterMapTree::getReturnType( void ) const
     static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();
     return returnTypeSpec;
 }
+

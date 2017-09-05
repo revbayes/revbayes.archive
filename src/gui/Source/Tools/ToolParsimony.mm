@@ -552,7 +552,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = @" Parsimony Tool ";
+    NSString* myTip = @" Parsimony Tool (PAUP*) ";
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 

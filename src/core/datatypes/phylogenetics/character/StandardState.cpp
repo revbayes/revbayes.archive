@@ -9,12 +9,12 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 StandardState::StandardState(size_t n) : DiscreteCharacterState( n ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(n),
-    labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" )
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(n),
+labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" )
 {
     labels = labels.substr(0, n);
 }
@@ -22,24 +22,24 @@ StandardState::StandardState(size_t n) : DiscreteCharacterState( n ),
 
 /** Default constructor */
 StandardState::StandardState(const std::string &s) : DiscreteCharacterState( 32 ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(32),
-    labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" )
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(32),
+labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" )
 {
     setState(s);
     
 }
 
 StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState( l.size() ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(l.size()),
-    labels( l )
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(l.size()),
+labels( l )
 {
     setState(s);
 }

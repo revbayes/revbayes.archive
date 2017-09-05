@@ -161,7 +161,6 @@ void RbBitSet::flip(size_t i)
     num_set_bits += ( value[i] ? 1 : -1 );
 }
 
-
 size_t RbBitSet::getFirstSetBit( void ) const
 {
     size_t index = 0;
@@ -172,7 +171,6 @@ size_t RbBitSet::getFirstSetBit( void ) const
     
     return index;
 }
-
 
 size_t RbBitSet::getNumberSetBits( void ) const
 {
@@ -194,9 +192,11 @@ void RbBitSet::resize(size_t size)
 
 void RbBitSet::set(size_t i)
 {
+    if(value[i] == false)
+        ++num_set_bits;
+
     // set the internal value
     value[i] = true;
-    ++num_set_bits;
 }
 
 
@@ -209,9 +209,11 @@ size_t RbBitSet::size(void) const
 
 void RbBitSet::unset(size_t i)
 {
+    if(value[i] == true)
+        --num_set_bits;
+
     // set the internal value
     value[i] = false;
-    --num_set_bits;
 }
 
 

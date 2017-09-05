@@ -63,7 +63,7 @@
 /* Math types (in folder "datatypes/math") */
 #include "RlMatrixReal.h"
 #include "RlMatrixRealSymmetric.h"
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 
@@ -92,6 +92,7 @@
 #include "Func_seq.h"
 #include "Func_setOption.h"
 #include "Func_setwd.h"
+#include "Func_sort.h"
 #include "Func_structure.h"
 #include "Func_system.h"
 #include "Func_type.h"
@@ -170,8 +171,13 @@
 
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
+#include "Func_adjacentRateModifier.h"
 #include "Func_biogeo_de.h"
-#include "Func_biogeo_grm.h"
+#include "Func_distanceRateModifier.h"
+#include "Func_generalRateGeneratorSequence.h"
+#include "Func_rangeEvolutionRateModifier.h"
+#include "Func_siteRateModifier.h"
+#include "Func_phylogeneticDistanceRateModifier.h"
 
 
 /* Cladogeneic state prob function */
@@ -182,6 +188,7 @@
 #include "Func_chromosomesCladoProbs.h"
 #include "Func_chromosomesCladoEventsBD.h"
 #include "Func_chromosomesPloidyCladoEventsBD.h"
+#include "Func_cladogeneticSpeciationRateMatrix.h"
 #include "Func_MixtureCladoProbs.h"
 #include "Func_SampledCladogenesisRootFrequencies.h"
 
@@ -245,6 +252,7 @@
 #include "Func_powerVector.h"
 #include "Func_probability.h"
 #include "Func_round.h"
+#include "Func_shortestDistance.h"
 #include "Func_simplex.h"
 #include "Func_simplexFromVector.h"
 #include "Func_sum.h"
@@ -254,6 +262,7 @@
 #include "Func_standardDeviation.h"
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
+#include "Func_upperTriangle.h"
 #include "Func_variance.h"
 #include "Func_vectorFlatten.h"
 
@@ -271,6 +280,7 @@
 #include "Func_stirling.h"
 #include "Func_varianceCovarianceMatrix.h"
 #include "Func_decomposedVarianceCovarianceMatrix.h"
+#include "Func_partialToCorrelationMatrix.h"
 
 #include "RlDiscreteCharacterState.h"
 
@@ -322,8 +332,13 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_wag()                      );
 
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
+        addFunction( new Func_adjacentRateModifier() );
         addFunction( new Func_biogeo_de() );
-        addFunction( new Func_biogeo_grm() );
+        addFunction( new Func_distanceRateModifier() );
+        addFunction( new Func_generalRateGeneratorSequence() );
+        addFunction( new Func_phylogeneticDistanceRateModifier() );
+        addFunction( new Func_rangeEvolutionRateModifier() );
+        addFunction( new Func_siteRateModifier() );
 
         /* cladogenic probs used for e.g. DEC models (in folder "functions/phylogenetics") */
         addFunction( new Func_DECCladoProbs() );
@@ -333,6 +348,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_chromosomesCladoProbs() );
         addFunction( new Func_chromosomesCladoEventsBD() );
         addFunction( new Func_chromosomesPloidyCladoEventsBD() );
+        addFunction( new Func_cladogeneticSpeciationRateMatrix() );
         addFunction( new Func_MixtureCladoProbs() );
         addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
@@ -444,6 +460,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // simplex constructor function (from vector of RealPos values)
         addFunction( new Func_simplexFromVector()        );
 
+        // sort vector function
+        addFunction( new Func_sort() );
+
 		// square root function
         addFunction( new Func_sqrt()  );
 
@@ -458,8 +477,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // geographical distance function
         addFunction( new Func_geographicalDistance() );
-
-        // hyperbolic tangent function
+        addFunction( new Func_shortestDistance() );
+        
+                // hyperbolic tangent function
         addFunction( new Func_hyperbolicTangent() );
 
         // hyperbolic sine function
@@ -469,6 +489,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_trunc<Real,Integer>()  );
         addFunction( new Func_trunc<RealPos,Natural>()  );
 
+        // upper triangle of a matrix function
+        addFunction( new Func_upperTriangle()  );
+        
         // variance function
         addFunction( new Func_variance()  );
 
@@ -505,11 +528,12 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_discretizePositiveDistribution( ) );
 
         // return a discretized gamma distribution (for gamma-dist rates)
-        addFunction( new Func_discretizeBeta( )   );
+        addFunction( new Func_discretizeBeta( )    );
         addFunction( new Func_discretizeGamma( )   );
 
-        addFunction( new Func_varianceCovarianceMatrix( )   );
-        addFunction( new Func_decomposedVarianceCovarianceMatrix( )   );
+        addFunction( new Func_varianceCovarianceMatrix( )           );
+        addFunction( new Func_decomposedVarianceCovarianceMatrix( ) );
+        addFunction( new Func_partialToCorrelationMatrix( )         );
 
 
     }

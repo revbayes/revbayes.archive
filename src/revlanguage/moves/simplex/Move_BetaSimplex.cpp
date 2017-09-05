@@ -45,6 +45,7 @@ void Move_BetaSimplex::constructInternalObject( void )
     double a = static_cast<const RealPos &>( alpha->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double r = static_cast<const RealPos &>( tuneTarget->getRevObject() ).getValue();
+
     RevBayesCore::TypedDagNode< RevBayesCore::Simplex>* tmp = static_cast<const Simplex &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< RevBayesCore::Simplex> *n = static_cast<RevBayesCore::StochasticNode< RevBayesCore::Simplex > *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();

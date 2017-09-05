@@ -21,12 +21,12 @@ TreeNodeAgeUpdateProposal::TreeNodeAgeUpdateProposal( StochasticNode<Tree> *sp )
 {
     // tell the base class to add the node
     addNode( speciesTree );
-    
+
     for (size_t i=0; i < geneTrees.size(); ++i)
     {
         addNode( geneTrees[i] );
     }
-    
+
 }
 
 
@@ -46,14 +46,14 @@ void TreeNodeAgeUpdateProposal::addGeneTree(StochasticNode<Tree> *gt)
             break;
         }
     }
-    
+
     // only add this variable if it doesn't exist in our list already
     if ( exists == false )
     {
         geneTrees.push_back( gt );
         addNode( gt );
     }
-    
+
 }
 
 
@@ -75,7 +75,7 @@ void TreeNodeAgeUpdateProposal::cleanProposal( void )
  */
 TreeNodeAgeUpdateProposal* TreeNodeAgeUpdateProposal::clone( void ) const
 {
-    
+
     return new TreeNodeAgeUpdateProposal( *this );
 }
 
@@ -88,7 +88,7 @@ TreeNodeAgeUpdateProposal* TreeNodeAgeUpdateProposal::clone( void ) const
 const std::string& TreeNodeAgeUpdateProposal::getProposalName( void ) const
 {
     static std::string name = "SpeciesNodeTimeSlideUniform";
-    
+
     return name;
 }
 
@@ -100,23 +100,23 @@ const std::string& TreeNodeAgeUpdateProposal::getProposalName( void ) const
  */
 double TreeNodeAgeUpdateProposal::doProposal( void )
 {
-    
+
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
-    
+
     Tree& tau = speciesTree->getValue();
-    
-    // pick a random node which is not the root and neither the direct descendant of the root
+
+    // pick a random node which is not the root and not a tip
     TopologyNode* node;
     do {
         double u = rng->uniform01();
         size_t index = size_t( std::floor(tau.getNumberOfNodes() * u) );
         node = &tau.getNode(index);
     } while ( node->isRoot() || node->isTip() );
-    
+
     TopologyNode& parent = node->getParent();
-    
-    // we need to work with the times
+
+    // we need to work with the times: find the boundaries for the new age
     double parent_age  = parent.getAge();
     double my_age      = node->getAge();
     double child_Age   = node->getChild( 0 ).getAge();
@@ -124,52 +124,53 @@ double TreeNodeAgeUpdateProposal::doProposal( void )
     {
         child_Age = node->getChild( 1 ).getAge();
     }
-    
+
     // now we store all necessary values
     storedNode = node;
     storedAge = my_age;
-    
+
     // draw new ages and compute the hastings ratio at the same time
     double my_new_age = (parent_age-child_Age) * rng->uniform01() + child_Age;
-    
+
     // Sebastian: This is for debugging to test if the proposal's acceptance rate is 1.0 as it should be!
-//    my_new_age = my_age; 
-    
+//    my_new_age = my_age;
+
     int upslideNodes = 0;
     int downslideNodes = 0;
-    
+
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
         Tree& geneTree = geneTrees[i]->getValue();
-        
+
         std::vector<TopologyNode*> nodes = getNodesInPopulation(geneTree, *node );
-        
+
         for (size_t j=0; j<nodes.size(); ++j)
         {
-            
+
             double a = nodes[j]->getAge();
             double new_a = a;
-            if ( a > my_age )
+            if ( a > my_age ) // gene coalescence was above speciation
             {
                 ++upslideNodes;
                 new_a = parent_age - (parent_age - my_new_age)/(parent_age - my_age) * (parent_age - a);
             }
             else
             {
+              //std::cout << "##########################a < my_age"<<std::endl;
                 ++downslideNodes;
                 new_a = child_Age + (my_new_age - child_Age)/(my_age - child_Age) * (a - child_Age);
             }
-            
+
             // set the new age of this gene tree node
             geneTree.getNode( nodes[j]->getIndex() ).setAge( new_a );
         }
-        
+
         // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
 //        geneTrees[i]->touch( true );
-        
+
     }
-    
+
     // Sebastian: We need to work on a mechanism to make these proposal safe for non-ultrametric trees!
     //    if (min_age != 0.0)
     //    {
@@ -181,37 +182,39 @@ double TreeNodeAgeUpdateProposal::doProposal( void )
     //            }
     //        }
     //    }
-    
-    
+
+
     // set the age of the species tree node
     tau.getNode( node->getIndex() ).setAge( my_new_age );
-    
+
     // compute the Hastings ratio
     double lnHastingsratio = upslideNodes * log( (parent_age - my_new_age)/(parent_age - my_age) ) + downslideNodes * log( (my_new_age - child_Age)/(my_age - child_Age) );
-    
+
+  //  std::cout << "RUBBER BAND: parent_age: "<< parent_age << " my_age: "<< my_age << " my_new_age: "<< my_new_age << " child_Age: " << child_Age << " lnHastingsratio: " << lnHastingsratio<<std::endl;
+
     return lnHastingsratio;
-    
+
 }
 
 
 std::vector<TopologyNode*> TreeNodeAgeUpdateProposal::getNodesInPopulation( Tree &tau, TopologyNode &n )
 {
-    
+
     // I need all the oldest nodes/subtrees that have the same tips.
     // Those nodes need to be scaled too.
-    
+
     // get the beginning and ending age of the population
     double max_age = -1.0;
     if ( n.isRoot() == false )
     {
         max_age = n.getParent().getAge();
     }
-    
+
     // get all the taxa from the species tree that are descendants of node i
     double min_age_left = n.getChild(0).getAge();
     std::vector<TopologyNode*> speciesTaxa_left;
     TreeUtilities::getTaxaInSubtree( &n.getChild(0), speciesTaxa_left );
-    
+
     // get all the individuals
     std::set<TopologyNode*> individualTaxa_left;
     for (size_t i = 0; i < speciesTaxa_left.size(); ++i)
@@ -223,22 +226,22 @@ std::vector<TopologyNode*> TreeNodeAgeUpdateProposal::getNodesInPopulation( Tree
             individualTaxa_left.insert( ind[j] );
         }
     }
-    
+
     // create the set of the nodes within this population
     std::set<TopologyNode*> nodesInPopulationSet;
-    
+
     // now go through all nodes in the gene
     while ( individualTaxa_left.empty() == false )
     {
         // get the first element
         std::set<TopologyNode*>::iterator it = individualTaxa_left.begin();
-        
+
         // store the pointer
         TopologyNode *geneNode = *it;
-        
+
         // and now remove the element from the list
         individualTaxa_left.erase( it );
-        
+
         // add this node to our list of node we need to scale, if:
         // a) this is the root node
         // b) this is not the root and the age of the parent node is larger than the parent's age of the species node
@@ -247,20 +250,20 @@ std::vector<TopologyNode*> TreeNodeAgeUpdateProposal::getNodesInPopulation( Tree
             // add this node if it is within the age of our population
             nodesInPopulationSet.insert( geneNode );
         }
-        
+
         if ( geneNode->isRoot() == false && ( max_age == -1.0 || max_age > geneNode->getParent().getAge() ) )
         {
             // push the parent to our current list
             individualTaxa_left.insert( &geneNode->getParent() );
         }
-        
+
     }
-    
+
     // get all the taxa from the species tree that are descendants of node i
     double min_age_right = n.getChild(1).getAge();
     std::vector<TopologyNode*> speciesTaxa_right;
     TreeUtilities::getTaxaInSubtree( &n.getChild(1), speciesTaxa_right );
-    
+
     // get all the individuals
     std::set<TopologyNode*> individualTaxa_right;
     for (size_t i = 0; i < speciesTaxa_right.size(); ++i)
@@ -272,19 +275,19 @@ std::vector<TopologyNode*> TreeNodeAgeUpdateProposal::getNodesInPopulation( Tree
             individualTaxa_right.insert( ind[j] );
         }
     }
-    
+
     // now go through all nodes in the gene
     while ( individualTaxa_right.empty() == false )
     {
         // get the first element
         std::set<TopologyNode*>::iterator it = individualTaxa_right.begin();
-        
+
         // store the pointer
         TopologyNode *geneNode = *it;
-        
+
         // and now remove the element from the list
         individualTaxa_right.erase( it );
-        
+
         // add this node to our list of node we need to scale, if:
         // a) this is the root node
         // b) this is not the root and the age of the parent node is larger than the parent's age of the species node
@@ -293,25 +296,25 @@ std::vector<TopologyNode*> TreeNodeAgeUpdateProposal::getNodesInPopulation( Tree
             // add this node if it is within the age of our population
             nodesInPopulationSet.insert( geneNode );
         }
-        
+
         if ( geneNode->isRoot() == false && ( max_age == -1.0 || max_age > geneNode->getParent().getAge() ) )
         {
             // push the parent to our current list
             individualTaxa_right.insert( &geneNode->getParent() );
         }
-        
+
     }
-    
-    
-    
-    
+
+
+
+
     // convert the set into a vector
     std::vector<TopologyNode*> nodesInPopulation;
     for (std::set<TopologyNode*>::iterator it = nodesInPopulationSet.begin(); it != nodesInPopulationSet.end(); ++it)
     {
         nodesInPopulation.push_back( *it );
     }
-    
+
     return nodesInPopulation;
 }
 
@@ -321,7 +324,7 @@ std::vector<TopologyNode*> TreeNodeAgeUpdateProposal::getNodesInPopulation( Tree
  */
 void TreeNodeAgeUpdateProposal::prepareProposal( void )
 {
-    
+
 }
 
 
@@ -335,9 +338,9 @@ void TreeNodeAgeUpdateProposal::prepareProposal( void )
  */
 void TreeNodeAgeUpdateProposal::printParameterSummary(std::ostream &o) const
 {
-    
+
     // no parameters
-    
+
 }
 
 
@@ -350,12 +353,12 @@ void TreeNodeAgeUpdateProposal::printParameterSummary(std::ostream &o) const
  */
 void TreeNodeAgeUpdateProposal::undoProposal( void )
 {
-    
+
     // undo the proposal
-    
-    
+
+
     TopologyNode& parent = storedNode->getParent();
-    
+
     // we need to work with the times
     double parent_age  = parent.getAge();
     double my_new_age      = storedNode->getAge();
@@ -364,17 +367,17 @@ void TreeNodeAgeUpdateProposal::undoProposal( void )
     {
         child_Age = storedNode->getChild( 1 ).getAge();
     }
-    
+
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
         Tree& geneTree = geneTrees[i]->getValue();
-        
+
         std::vector<TopologyNode*> nodes = getNodesInPopulation(geneTree, *storedNode );
-        
+
         for (size_t j=0; j<nodes.size(); ++j)
         {
-            
+
             double new_a = nodes[j]->getAge();
             double a = new_a;
             if ( new_a > my_new_age )
@@ -385,13 +388,13 @@ void TreeNodeAgeUpdateProposal::undoProposal( void )
             {
                 a = child_Age + (storedAge - child_Age)/(my_new_age - child_Age) * (new_a - child_Age);
             }
-            
+
             // set the new age of this gene tree node
             geneTree.getNode( nodes[j]->getIndex() ).setAge( a );
         }
-        
+
     }
-    
+
     // set the age of the species tree node
     speciesTree->getValue().getNode( storedNode->getIndex() ).setAge( storedAge );
 }
@@ -412,7 +415,7 @@ void TreeNodeAgeUpdateProposal::removeGeneTree(StochasticNode<Tree> *gt)
             --i;
         }
     }
-    
+
 }
 
 
@@ -424,7 +427,7 @@ void TreeNodeAgeUpdateProposal::removeGeneTree(StochasticNode<Tree> *gt)
  */
 void TreeNodeAgeUpdateProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    
+
     if ( oldN == speciesTree )
     {
         speciesTree = static_cast<StochasticNode<Tree>* >(newN) ;
@@ -439,7 +442,7 @@ void TreeNodeAgeUpdateProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
             }
         }
     }
-    
+
 }
 
 
@@ -452,8 +455,7 @@ void TreeNodeAgeUpdateProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
  */
 void TreeNodeAgeUpdateProposal::tune( double rate )
 {
-    
-    // nothing to tune
-    
-}
 
+    // nothing to tune
+
+}

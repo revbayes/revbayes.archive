@@ -85,7 +85,16 @@ namespace RevBayesCore {
         void                                                printElement(std::ostream &o, size_t i, std::string sep="\t", int l=-1, bool left=true) const { std::stringstream ss; ss << this->operator[](i); std::string s = ss.str(); StringUtilities::fillWithSpaces( s, l, left ); o << s; } //!< Print the i-th element
         
 //        StringUtilities::fillWithSpaces( s, columnWidth, false );
-        void                                                sort(void) { std::sort(this->std::vector<double>::begin(), this->std::vector<double>::end() ); }
+        void                                                sort(bool ascending = true) {
+                                                                if( ascending == true)
+                                                                {
+                                                                    std::sort(this->std::vector<double>::begin(), this->std::vector<double>::end() );
+                                                                }
+                                                                else
+                                                                {
+                                                                    std::sort(this->std::vector<double>::rbegin(), this->std::vector<double>::rend() );
+                                                                }
+                                                            }
         
         
     };

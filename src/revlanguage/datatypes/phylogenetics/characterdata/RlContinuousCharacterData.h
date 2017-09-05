@@ -25,8 +25,6 @@ namespace RevLanguage {
         virtual ~ContinuousCharacterData();
         
         
-//        typedef RevBayesCore::ContinuousCharacterData valueType;
-
         // Basic utility functions
         ContinuousCharacterData*                                clone(void) const;                                                                          //!< Clone object
         ContinuousCharacterData*                                concatenate(const RevObject& d, std::string type = "") const;                                                      //!< Concatenate two sequences
@@ -34,16 +32,16 @@ namespace RevLanguage {
         static const std::string&                               getClassType(void);                                                                         //!< Get Rev type
         static const TypeSpec&                                  getClassTypeSpec(void);                                                                     //!< Get class type spec
         const TypeSpec&                                         getTypeSpec(void) const;                                                                    //!< Get language type of the object
-
+        
         RevPtr<RevVariable>                                     executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found);     //!< Execute member method
         
-
+        
     private:
-
+        
         void                                                    initMethods(void);
-
+        
     };
     
 }
 
-#endif /* defined(__revbayes__RlContinuousCharacterData__) */
+#endif 

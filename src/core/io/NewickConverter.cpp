@@ -290,7 +290,6 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     
     if (node->getNumberOfChildren() == 1)
     {
-        node->setFossil( true );
         node->setSampledAncestor( true );
     }
 

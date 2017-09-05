@@ -38,7 +38,6 @@ ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharact
     HomologousCharacterData( )
 {
     
-    
     initMethods();
 }
 
@@ -48,7 +47,7 @@ ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<Rev
 {
     
     initMethods();
-    
+
 }
 
 

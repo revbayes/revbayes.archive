@@ -284,7 +284,7 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
         {
             CharacterEvent* event = *it;
-            double curr_time = event->getTime();
+            double curr_time = event->getAge(); // CHECK THIS AGE
             double time_interval = curr_time - prev_time;
             double curr_age = prev_age - time_interval;
 
@@ -410,7 +410,7 @@ void SampledSpeciationBirthDeathProcess::executeMethod(const std::string &n, con
             std::multiset<CharacterEvent*, CharacterEventCompare> h = branch_histories[i].getHistory();
             for ( std::multiset<CharacterEvent*, CharacterEventCompare>::iterator it = h.begin(); it != h.end(); it++ )
             {
-                rv[i][j++] = (*it)->getTime();
+                rv[i][j++] = (*it)->getAge(); // CHECK THIS AGE
                 if (j > num_slots) break;
             }
         }

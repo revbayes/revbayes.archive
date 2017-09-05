@@ -31,12 +31,12 @@ namespace RevBayesCore {
         DnaState*                       clone(void) const;                                  //!< Get a copy of this object
 
         // Discrete character observation functions
+
         void                            addState(const std::string &symbol);                //!< Add a character state to the set of character states
 //        size_t                          getNumberOfStates(void) const;                      //!< Get the number of discrete states for the character
         RbBitSet                        getState(void) const;                               //!< Get the state (as the bitset)
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
         void                            setStateByIndex(size_t index);                      //!< Set the discrete observation
-
         std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
         std::string                     getStateLabels(void) const;                         //!< Get valid state labels
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
@@ -49,7 +49,6 @@ namespace RevBayesCore {
     private:
         
         char                            state;
-
     
     };
     

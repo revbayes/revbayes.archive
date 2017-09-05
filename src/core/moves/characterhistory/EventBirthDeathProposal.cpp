@@ -96,7 +96,7 @@ double EventBirthDeathProposal::doProposal( void )
     {
         p_birth = 0.5;
     }
-    
+
     double proposal_prob = 0.0;
     if ( u < p_birth )
     {

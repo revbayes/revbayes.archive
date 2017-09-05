@@ -44,7 +44,9 @@ void Move_EmpiricalTree::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
-    RevBayesCore::Proposal *p = new RevBayesCore::EmpiricalTreeProposal( t );
+    bool mh = static_cast<const RlBoolean &>( metropolisHastings->getRevObject() ).getValue();
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::EmpiricalTreeProposal(t, mh);
     value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
     
 }
@@ -92,7 +94,8 @@ const MemberRules& Move_EmpiricalTree::getParameterRules(void) const
     if ( !rules_set )
     {
         move_member_rules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The stochastic tree variable on which this moves operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        
+        move_member_rules.push_back( new ArgumentRule( "metropolisHastings"   , RlBoolean::getClassTypeSpec(), "When propose a new tree from the empirical tree distribution, should we accept or reject this move based on the acceptance ratio (as a regular Metropolis-Hastings move so that we are approximating the joint posterior correctly through a valid MCMC) or should we simply always accept this move (so that we are effectively sampling every tree uniformly and combining the the estimates on each tree without weighting them according to the marginal likelihood of each tree)?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
+
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
         move_member_rules.insert( move_member_rules.end(), inheritedRules.begin(), inheritedRules.end() );
@@ -136,6 +139,10 @@ void Move_EmpiricalTree::setConstParameter(const std::string& name, const RevPtr
     if ( name == "tree" )
     {
         tree = var;
+    }
+    else if ( name == "metropolisHastings" )
+    {
+        metropolisHastings = var;
     }
     else
     {

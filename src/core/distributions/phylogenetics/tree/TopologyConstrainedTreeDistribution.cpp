@@ -26,9 +26,9 @@ using namespace RevBayesCore;
  */
 TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDistribution<Tree>* base_dist, const std::vector<Clade> &c) : TypedDistribution<Tree>( NULL ),
 //    active_backbone_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSet() ),
+    active_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSet() ),
     backbone_topology(NULL),
     backbone_topologies(NULL),
-    active_clades( base_dist->getValue().getNumberOfInteriorNodes(), RbBitSet() ),
     base_distribution( base_dist ),
     dirty_nodes( base_dist->getValue().getNumberOfNodes(), true ),
     monophyly_constraints( c ),
@@ -41,7 +41,7 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
     {
         throw(RbException("Can only constrain tree distributions of type AbstractRootedTreeDistribution"));
     }
-
+    
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
@@ -54,7 +54,7 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
     }
     
     value = &base_distribution->getValue();
-
+    
     initializeBitSets();
     redrawValue();
 }
@@ -69,19 +69,19 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
  * \param[in]    c         Clade constraints.
  */
 TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(const TopologyConstrainedTreeDistribution &d) : TypedDistribution<Tree>( d ),
-    active_backbone_clades( d.active_backbone_clades ),
-    active_clades( d.active_clades ),
-    backbone_constraints( d.backbone_constraints ),
-    backbone_mask( d.backbone_mask ),
-    backbone_topology( d.backbone_topology ),
-    backbone_topologies( d.backbone_topologies ),
-    base_distribution( d.base_distribution->clone() ),
-    dirty_nodes( d.dirty_nodes ),
-    monophyly_constraints( d.monophyly_constraints ),
-    stored_backbone_clades( d.stored_backbone_clades ),
-    stored_clades( d.stored_clades ),
-    num_backbones( d.num_backbones ),
-    use_multiple_backbones( d.use_multiple_backbones )
+active_backbone_clades( d.active_backbone_clades ),
+active_clades( d.active_clades ),
+backbone_constraints( d.backbone_constraints ),
+backbone_mask( d.backbone_mask ),
+backbone_topology( d.backbone_topology ),
+backbone_topologies( d.backbone_topologies ),
+base_distribution( d.base_distribution->clone() ),
+dirty_nodes( d.dirty_nodes ),
+monophyly_constraints( d.monophyly_constraints ),
+stored_backbone_clades( d.stored_backbone_clades ),
+stored_clades( d.stored_clades ),
+num_backbones( d.num_backbones ),
+use_multiple_backbones( d.use_multiple_backbones )
 {
     // the copy constructor of the TypedDistribution creates a new copy of the value
     // however, here we want to hold exactly the same value as the base-distribution
@@ -91,7 +91,7 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(const T
     
     // and then set it to the value of the base distribution
     value = &base_distribution->getValue();
-
+    
     value->getTreeChangeEventHandler().addListener( this );
 }
 
@@ -103,7 +103,7 @@ TopologyConstrainedTreeDistribution::~TopologyConstrainedTreeDistribution()
     delete base_distribution;
     
     //value->getTreeChangeEventHandler().removeListener( this );
-
+    
     // DO NOT DELETE THE VALUE
     // the base distribution is the actual owner of the value!!!
     // we simply avoid the deletion of the value by setting its pointer to NULL
@@ -159,7 +159,7 @@ void TopologyConstrainedTreeDistribution::initializeBitSets(void)
                 const std::string &name = monophyly_constraints[i].getTaxonName(j);
                 std::map<std::string, size_t>::const_iterator it = taxon_map.find( name );
                 size_t k = it->second;
-
+                
                 b.set(k);
             }
             monophyly_constraints[i].setBitRepresentation( b );
@@ -184,7 +184,7 @@ void TopologyConstrainedTreeDistribution::initializeBitSets(void)
         }
         
     }
-
+    
     // reset the backbone constraints and mask
     backbone_constraints.clear();
     backbone_mask.clear();
@@ -204,7 +204,7 @@ void TopologyConstrainedTreeDistribution::initializeBitSets(void)
         backbone_mask[0] = RbBitSet( value->getNumberOfTips() );
         backbone_mask[0] |= recursivelyAddBackboneConstraints( backbone_topology->getValue().getRoot(), 0 );
     }
-
+    
 }
 
 
@@ -212,7 +212,7 @@ void TopologyConstrainedTreeDistribution::fireTreeChangeEvent(const TopologyNode
 {
     if (m == TreeChangeEventMessage::DEFAULT || m == TreeChangeEventMessage::TOPOLOGY)
     {
-
+        
         recursivelyFlagNodesDirty(n);
     }
 }
@@ -226,8 +226,8 @@ void TopologyConstrainedTreeDistribution::fireTreeChangeEvent(const TopologyNode
  */
 bool TopologyConstrainedTreeDistribution::matchesBackbone( void )
 {
-
-//    std::cout << base_distribution->getValue() << "\n";
+    
+    //    std::cout << base_distribution->getValue() << "\n";
     // ensure that each backbone constraint is found in the corresponding active_backbone_clades
     for (size_t i = 0; i < num_backbones; i++)
     {
@@ -353,22 +353,22 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
 
 void TopologyConstrainedTreeDistribution::recursivelyFlagNodesDirty(const TopologyNode& n)
 {
-
-
+    
+    
     dirty_nodes[ n.getIndex() ] = true;
-
+    
     if ( n.isRoot() )
         return;
-
+    
     recursivelyFlagNodesDirty(n.getParent());
-
+    
 }
 
 
 RbBitSet TopologyConstrainedTreeDistribution::recursivelyAddBackboneConstraints( const TopologyNode& node, size_t backbone_idx )
 {
     RbBitSet tmp( value->getNumberOfTips() );
-
+    
     if ( node.isTip() )
     {
         const std::map<std::string, size_t>& taxon_map = value->getTaxonBitSetMap();
@@ -383,7 +383,7 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyAddBackboneConstraints(
         {
             tmp |= recursivelyAddBackboneConstraints( node.getChild(i), backbone_idx );
         }
-
+        
         if ( node.isRoot() == false )
         {
             backbone_constraints[backbone_idx].push_back(tmp);
@@ -413,10 +413,10 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyUpdateClades( const Top
             {
                 recursivelyUpdateClades( node.getChild(i) );
             }
-
+            
             dirty_nodes[node.getIndex()] = false;
         }
-
+        
         return RbBitSet( value->getNumberOfTips(), true );
     }
     else
@@ -428,7 +428,7 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyUpdateClades( const Top
             {
                 tmp |= recursivelyUpdateClades( node.getChild(i) );
             }
-
+            
             // update the clade
             active_clades[node.getIndex() - value->getNumberOfTips()] = tmp;
             
@@ -437,10 +437,10 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyUpdateClades( const Top
                 active_backbone_clades[i][node.getIndex() - value->getNumberOfTips()] = tmp & backbone_mask[i];
             }
             
-
+            
             dirty_nodes[node.getIndex()] = false;
         }
-
+        
         return active_clades[node.getIndex() - value->getNumberOfTips()];
     }
 }
@@ -454,10 +454,10 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
     
     Tree* new_value = simulateTree();
     // base_distribution->redrawValue();
-
+    
     value->getTreeChangeEventHandler().removeListener( this );
     new_value->getTreeChangeEventHandler().addListener( this );
-
+    
     // if we don't own the tree, then we just replace the current pointer with the pointer
     // to the new value of the base distribution
     value = new_value;
@@ -465,9 +465,9 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
     
     // recompute the active clades
     dirty_nodes = std::vector<bool>( value->getNumberOfNodes(), true );
-
+    
     recursivelyUpdateClades( value->getRoot() );
-
+    
     stored_clades          = active_clades;
     stored_backbone_clades = active_backbone_clades;
 }
@@ -551,11 +551,6 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
         // set the age of this tip node
         node->setAge( taxa[i].getAge() );
         
-        if (node->getAge() > 0)
-        {
-            node->setFossil(true);
-        }
-        
         // add the new node to the list
         nodes.push_back( node );
         
@@ -563,7 +558,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
     
     
     double ra = tree_base_distribution->getRootAge();
-    double max_age = tree_base_distribution->getOriginTime();
+    double max_age = tree_base_distribution->getOriginAge();
     
     // we need a sorted vector of constraints, starting with the smallest
     std::set<Clade> sorted_clades;
@@ -728,7 +723,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
             
             clade_age = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
         }
-
+        
         tree_base_distribution->simulateClade(nodes_in_clade, clade_age, max_age);
         nodes.push_back( nodes_in_clade[0] );
         
@@ -743,7 +738,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
     
     // initialize the topology by setting the root
     psi->setRoot(root, true);
-
+    
     return psi;
 }
 
@@ -771,24 +766,24 @@ void TopologyConstrainedTreeDistribution::setStochasticNode( StochasticNode<Tree
 void TopologyConstrainedTreeDistribution::setValue(Tree *v, bool f )
 {
     value->getTreeChangeEventHandler().removeListener( this );
-
+    
     // we set our value to the same value as the base distribution
     // but first we need to make sure that our base class doesn't delete the value
     value = NULL;
-
+    
     // and the we can set it for both ourselves and the base distribution
     TypedDistribution<Tree>::setValue(v, f);
     base_distribution->setValue(v, f);
-
+    
     value->getTreeChangeEventHandler().addListener( this );
-
+    
     initializeBitSets();
-
+    
     // recompute the active clades
     dirty_nodes = std::vector<bool>( value->getNumberOfNodes(), true );
-
+    
     recursivelyUpdateClades( value->getRoot() );
-
+    
     stored_clades          = active_clades;
     stored_backbone_clades = active_backbone_clades;
 }
@@ -827,7 +822,7 @@ void TopologyConstrainedTreeDistribution::touchSpecialization(DagNode *affecter,
 {
     stored_clades = active_clades;
     stored_backbone_clades = active_backbone_clades;
-
+    
     // if the root age wasn't the affecter, we'll set it in the base distribution here
     base_distribution->touch(affecter, touchAll);
 }
@@ -836,7 +831,7 @@ void TopologyConstrainedTreeDistribution::keepSpecialization(DagNode *affecter)
 {
     stored_clades = active_clades;
     stored_backbone_clades = active_backbone_clades;
-
+    
     base_distribution->keep(affecter);
 }
 
@@ -844,7 +839,7 @@ void TopologyConstrainedTreeDistribution::restoreSpecialization(DagNode *restore
 {
     active_clades = stored_clades;
     active_backbone_clades = stored_backbone_clades;
-
+    
     base_distribution->restore(restorer);
-
+    
 }
