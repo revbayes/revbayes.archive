@@ -84,6 +84,20 @@ const TypeSpec& Dist_normalTruncated::getClassTypeSpec(void)
     return rev_type_spec;
 }
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_normalTruncated::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "norm" );
+    
+    return a_names;
+}
+
 
 /**
  * Get the Rev name for the distribution.
