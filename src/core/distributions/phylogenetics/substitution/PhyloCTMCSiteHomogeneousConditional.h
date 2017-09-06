@@ -815,6 +815,8 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
     
     std::vector<double> perMaskCorrections = std::vector<double>(numCorrectionMasks, 0.0);
     
+    std::vector<double> mixtureProbs = this->getMixtureProbs();
+    
     // iterate over each correction mask
     for(size_t mask = 0; mask < numCorrectionMasks; mask++)
     {
@@ -874,7 +876,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
                 prob = RbConstants::Double::nan;
             }
 
-            perMaskCorrections[mask] += prob;
+//            perMaskCorrections[mask] += prob;
         
             // add corrections for invariant sites
             double prob_invariant = this->getPInv();
@@ -887,24 +889,25 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
                     prob += prob_invariant;
                 }
             }
-        
-            perMaskMixtureCorrections[mask*this->num_site_mixtures + mixture] = 1.0 - prob;
+            
+            perMaskCorrections[mask] += prob * mixtureProbs[mixture];
+            perMaskMixtureCorrections[mask*this->num_site_mixtures + mixture] = (1.0 - prob) * mixtureProbs[mixture];
         }
         
         // add corrections for invariant sites
-        double prob_invariant = this->getPInv();
-        if(prob_invariant > 0.0)
-        {
-            perMaskCorrections[mask] *= (1.0 - prob_invariant);
-
-            if(coding != AscertainmentBias::ALL)
-            {
-                perMaskCorrections[mask] += prob_invariant * this->num_site_mixtures;
-            }
-        }
+//        double prob_invariant = this->getPInv();
+//        if(prob_invariant > 0.0)
+//        {
+//            perMaskCorrections[mask] *= (1.0 - prob_invariant);
+//
+//            if(coding != AscertainmentBias::ALL)
+//            {
+//                perMaskCorrections[mask] += prob_invariant * this->num_site_mixtures;
+//            }
+//        }
 
         // normalize the log-probability
-        perMaskCorrections[mask] /= this->num_site_mixtures;
+//        perMaskCorrections[mask] /= this->num_site_mixtures;
 
         // impose a per-mask boundary
         if(perMaskCorrections[mask] < 0.0 || perMaskCorrections[mask] >= 1.0)
