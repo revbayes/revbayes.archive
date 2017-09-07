@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
+#include "DistributionPoisson.h"
 #include "EigenSystem.h"
 #include "MatrixComplex.h"
 #include "MatrixReal.h"
@@ -23,37 +24,85 @@ using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
 RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ),
-    rescale(true)
+    rescale(true),
+    useScalingAndSquaring(true),
+    useUniformization(false),
+    useEigen(false)
 {
     
     theEigenSystem       = new EigenSystem(the_rate_matrix);
     c_ijk.resize(num_states * num_states * num_states);
     cc_ijk.resize(num_states * num_states * num_states);
+    
+    matrixProducts = new std::vector<MatrixReal>();
     
     update();
 }
 
 
 RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r) : GeneralRateMatrix( n ),
-    rescale(r)
+    rescale(r),
+    useScalingAndSquaring(true),
+    useUniformization(false),
+    useEigen(false)
 {
     
     theEigenSystem       = new EigenSystem(the_rate_matrix);
     c_ijk.resize(num_states * num_states * num_states);
     cc_ijk.resize(num_states * num_states * num_states);
     
+    matrixProducts = new std::vector<MatrixReal>();
+    
+    update();
+}
+
+RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r, std::string method) : GeneralRateMatrix( n ),
+    rescale(r),
+    useScalingAndSquaring(false),
+    useUniformization(false),
+    useEigen(false)
+{
+    
+    // determine the type of matrix exponentiation
+    if(method == "scalingAndSquaring")
+    {
+        useScalingAndSquaring = true;
+    }
+    else if (method == "uniformization")
+    {
+        useUniformization = true;
+    }
+    else if (method == "eigen")
+    {
+        useEigen = true;
+    }
+    
+    // create the eigen system so the destructor has something to delete
+    theEigenSystem       = new EigenSystem(the_rate_matrix);
+    c_ijk.resize(num_states * num_states * num_states);
+    cc_ijk.resize(num_states * num_states * num_states);
+    
+    matrixProducts = new std::vector<MatrixReal>();
+    
     update();
 }
 
 
 /** Copy constructor */
-RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m )
+RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m ),
+    singleStepMatrix(num_states)
 {
     
-    rescale              = m.rescale;
-    theEigenSystem       = new EigenSystem( *m.theEigenSystem );
-    c_ijk                = m.c_ijk;
-    cc_ijk               = m.cc_ijk;
+    rescale               = m.rescale;
+    useScalingAndSquaring = m.useScalingAndSquaring;
+    useUniformization     = m.useUniformization;
+    useEigen              = m.useEigen;
+    
+    matrixProducts        = new std::vector<MatrixReal>();
+    
+    theEigenSystem        = new EigenSystem( *m.theEigenSystem );
+    c_ijk                 = m.c_ijk;
+    cc_ijk                = m.cc_ijk;
 
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 }
@@ -64,6 +113,7 @@ RateMatrix_FreeK::~RateMatrix_FreeK(void)
 {
     
     delete theEigenSystem;
+    delete matrixProducts;
 }
 
 
@@ -177,21 +227,41 @@ void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double 
     // The eigensystem code was returning NaN likelihood values when transition rates
     // were close to 0.0, so now we use the scaling and squaring method.
     double t = rate * (startAge - endAge);
-    exponentiateMatrixByScalingAndSquaring(t, P);
+    if (useScalingAndSquaring == true)
+    {
+        exponentiateMatrixByScalingAndSquaring(t, P);
+    }
+    else if (useUniformization == true)
+    {
+        tiProbsUniformization(t, P);
+    }
+    else if (useEigen == true)
+    {
+        if ( theEigenSystem->isComplex() == false )
+        {
+            tiProbsEigens(t, P);
+        }
+        else
+        {
+            tiProbsComplexEigens(t, P);
+        }
+    }
     
-    //    double t = rate * (startAge - endAge);
-    //	if ( theEigenSystem->isComplex() == false )
-    //    {
-    //		tiProbsEigens(t, P);
-    //    }
-    //	else
-    //    {
-    //		tiProbsComplexEigens(t, P);
-    //    }
-
 }
 
+void RateMatrix_FreeK::expandUniformization(int truncation) const
+{
 
+    int n = (int)matrixProducts->size();
+    int k = truncation - n;
+    
+    for(int i = 0; i < k; ++i)
+    {
+        MatrixReal m = singleStepMatrix * matrixProducts->at(n - 1 + i);
+        matrixProducts->push_back(m);
+    }
+    
+}
 
 void RateMatrix_FreeK::exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const {
     
@@ -351,6 +421,43 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
 }
 
 
+/** Calculate the transition probabilities for the real case */
+void RateMatrix_FreeK::tiProbsUniformization(double t, TransitionProbabilityMatrix& P) const
+{
+    
+    // compute the appropriate truncation given t
+    double lambda = -maxRate * t;
+    int truncation = std::ceil(4 + 6 * sqrt(lambda) + lambda);
+
+    expandUniformization(truncation);
+    
+    // update the matrix products if necessary
+    
+    // compute the transition probability by weighted average
+    MatrixReal result(num_states);
+    for(size_t i = 0; i < truncation; ++i)
+    {
+        
+        // compute the poisson probability
+        double p = RbStatistics::Poisson::pdf(lambda, (int)i);
+
+        // add the weighted transition probability matrix to the result
+        result += matrixProducts->at(i) * p;
+        
+    }
+    
+    // fill in P from result
+    for(size_t i = 0; i < num_states; ++i)
+    {
+        for(size_t j = 0; j < num_states; ++j)
+        {
+            P[i][j] = (result[i][j] < 0.0) ? 0.0 : result[i][j];
+        }
+    }
+    
+}
+
+
 /** Update the eigen system */
 void RateMatrix_FreeK::updateEigenSystem(void)
 {
@@ -360,6 +467,49 @@ void RateMatrix_FreeK::updateEigenSystem(void)
     
 }
 
+void RateMatrix_FreeK::updateUniformization(void)
+{
+    
+    // we need to fill in the single-step transition probability matrix
+    
+    // find the diagonial element of the matrix with the maximal value
+    MatrixReal& m = *the_rate_matrix;
+    maxRate = m[0][0];
+    for(size_t i = 1; i < num_states; ++i)
+    {
+        if(m[i][i] < maxRate )
+        {
+            maxRate = m[i][i];
+        }
+    }
+    
+    // for the given max rate, fill in the single-step transition probability matrix
+    singleStepMatrix = MatrixReal(num_states);
+    for(size_t i = 0; i < num_states; ++i)
+    {
+        singleStepMatrix[i][i] = 1 - m[i][i] / maxRate;
+        for(size_t j = i + 1; j < num_states; ++j)
+        {
+            singleStepMatrix[i][j] = -m[i][j] / maxRate;
+            singleStepMatrix[j][i] = -m[j][i] / maxRate;
+        }
+    }
+    
+    // finally, clear the vector of matrix products
+//    delete matrixProducts;
+//    matrixProducts = new std::vector<MatrixReal>();
+
+    matrixProducts->clear();
+    
+    // add the identity matrix
+    MatrixReal identity_matrix(num_states);
+    for(size_t i = 0; i < num_states; ++i)
+    {
+        identity_matrix[i][i] = 1.0;
+    }
+    matrixProducts->push_back(identity_matrix);
+    
+}
 
 void RateMatrix_FreeK::update( void )
 {
@@ -375,8 +525,16 @@ void RateMatrix_FreeK::update( void )
             rescaleToAverageRate( 1.0 );
         }
 
-        // now update the eigensystem
-//        updateEigenSystem();
+        // update the uniformization system if necessary
+        if(useUniformization == true)
+        {
+            updateUniformization();
+        }
+        // update the eigensystem if necessary
+        if(useEigen == true)
+        {
+            updateEigenSystem();
+        }
         
         // clean flags
         needs_update = false;

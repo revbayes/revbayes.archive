@@ -2,6 +2,7 @@
 #include "FreeKRateMatrixFunction.h"
 #include "ModelVector.h"
 #include "Natural.h"
+#include "OptionRule.h"
 #include "RateMatrix_JC.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -38,17 +39,18 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_FreeK::createFu
 {
     
     bool rescale = static_cast<const RlBoolean &>( this->args[1].getVariable()->getRevObject() ).getDagNode()->getValue();
+    const std::string method = static_cast<const RlString &>( this->args[2].getVariable()->getRevObject() ).getDagNode()->getValue();
     // flat transition rates
     if ( this->args[0].getVariable()->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-        RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr, rescale );
+        RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr, rescale, method );
         return f;
     }
     else
     {
         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* tr = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-        RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr, rescale );
+        RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr, rescale, method );
         return f;
     }
 }
@@ -68,6 +70,13 @@ const ArgumentRules& Func_FreeK::getArgumentRules( void ) const
         transitionRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         argumentRules.push_back( new ArgumentRule( "transition_rates", transitionRateTypes,           "Transition rates between states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "rescaled",         RlBoolean::getClassTypeSpec(), "Should the matrix be normalized?", ArgumentRule::BY_VALUE,              ArgumentRule::ANY, new RlBoolean(true) ) );
+        
+        std::vector<std::string> optionsMethod;
+        optionsMethod.push_back( "scalingAndSquaring" );
+        optionsMethod.push_back( "uniformization" );
+        optionsMethod.push_back( "eigen" );
+        argumentRules.push_back( new OptionRule( "method", new RlString("scalingAndSquaring"), optionsMethod, "The method used to compute the matrix exponential." ) );
+        
         rules_set = true;
     }
     

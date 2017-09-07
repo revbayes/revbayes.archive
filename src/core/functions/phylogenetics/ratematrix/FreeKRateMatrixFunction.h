@@ -24,8 +24,8 @@ namespace RevBayesCore {
     class FreeKRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        FreeKRateMatrixFunction(const TypedDagNode< RbVector<double> > *trf, bool rescale);
-        FreeKRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > > *tr, bool rescale);
+        FreeKRateMatrixFunction(const TypedDagNode< RbVector<double> > *trf, bool rescale, std::string method);
+        FreeKRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > > *tr, bool rescale, std::string method);
         virtual                                            ~FreeKRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
