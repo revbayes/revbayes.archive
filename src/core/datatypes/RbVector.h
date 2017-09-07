@@ -45,28 +45,6 @@ namespace RevBayesCore {
 
     };
     
-//    template<>
-//    class RbVector<long> : public RbVectorImpl<int, IsAbstract<int>::Is > {
-//        
-//    public:
-//        // constructor(s)
-//        RbVector() : RbVectorImpl<int, IsAbstract<int>::Is  >( ) {}
-//        RbVector(size_t n) : RbVectorImpl<int, IsAbstract<int>::Is  >( n ) {}
-//        RbVector(size_t n, const int &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( n, v ) {}
-//        RbVector(const RbVectorImpl<int, IsAbstract<int>::Is >::vectorType &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( v ) {}
-//        RbVector(const RbVector<double> &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( ) {  for (size_t i=0; i<v.size(); ++i) push_back( int(v[i]) ); }
-//        RbVector(const RbVector<long> &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( v ) {}
-//        virtual                                            ~RbVector(void) {}
-//        
-//        // public member functions
-//        RbVector<long>*                                      clone(void) const { return new RbVector<long>( *this ); }                                                                            //!< Create an independent clone
-//        void                                                printElement(std::ostream &o, size_t i, std::string sep="\t", int l=-1, bool left=true) const { o << this->operator[](i); }         //!< Print the i-th element
-//        
-//        void                                                sort(void) { std::sort(this->std::vector<int>::begin(), this->std::vector<int>::end() ); }
-//        
-//        
-//    };
-    
     template<>
     class RbVector<double> : public RbVectorImpl<double, IsAbstract<double>::Is > {
         
@@ -74,7 +52,7 @@ namespace RevBayesCore {
         // constructor(s)
         RbVector() : RbVectorImpl<double, IsAbstract<double>::Is  >( ) {}
         RbVector(size_t n) : RbVectorImpl<double, IsAbstract<double>::Is  >( n ) {}
-        RbVector(size_t n, const double &v) : RbVectorImpl<double, IsAbstract<int>::Is  >( n, v ) {}
+        RbVector(size_t n, const double &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( n, v ) {}
         RbVector(const std::vector<double> &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( v ) {}
         RbVector(const RbVector<long> &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( ) {  for (size_t i=0; i<v.size(); ++i) push_back( double(v[i]) ); }
         RbVector(const RbVector<double> &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( v ) {}
