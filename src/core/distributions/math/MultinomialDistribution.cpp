@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-MultinomialDistribution::MultinomialDistribution(const TypedDagNode<Simplex> *p, const TypedDagNode<int> *n) : TypedDistribution< RbVector<int> >( new RbVector<int>() ),
+MultinomialDistribution::MultinomialDistribution(const TypedDagNode<Simplex> *p, const TypedDagNode<long> *n) : TypedDistribution< RbVector<long> >( new RbVector<long>() ),
     p( p ),
     n( n )
 {
@@ -54,6 +54,6 @@ void MultinomialDistribution::swapParameterInternal(const DagNode *oldP, const D
     }
     else if (oldP == n)
     {
-        n = static_cast<const TypedDagNode<int>* >(newP);
+        n = static_cast<const TypedDagNode<long>* >(newP);
     }
 }

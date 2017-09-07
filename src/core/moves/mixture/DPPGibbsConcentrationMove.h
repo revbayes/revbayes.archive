@@ -33,7 +33,7 @@ namespace RevBayesCore {
     class DPPGibbsConcentrationMove : public AbstractGibbsMove {
 		
     public:
-        DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<int>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w);                                                                      //!< Internal constructor
+        DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<long>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w);                                                                      //!< Internal constructor
 		
         // Basic utility functions
         DPPGibbsConcentrationMove*                              clone(void) const;                                                                  //!< Clone object
@@ -46,7 +46,7 @@ namespace RevBayesCore {
     private:
 		
         StochasticNode<double>*									variable;
-		DeterministicNode<int>*									numCats;
+		DeterministicNode<long>*									numCats;
 		TypedDagNode< double >*									gammaShape;
 		TypedDagNode< double >*									gammaRate;
 		int														numElem;

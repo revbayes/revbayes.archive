@@ -95,14 +95,14 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
         addParameter( heterogeneous_mu );
     }
 
-    const TypedDagNode<RbVector<int> > *tmp_cv = dynamic_cast<const TypedDagNode<RbVector<int> >*>(incounts);
-    const TypedDagNode<int > *tmp_cc = dynamic_cast<const TypedDagNode<int >*>(incounts);
+    const TypedDagNode<RbVector<long> > *tmp_cv = dynamic_cast<const TypedDagNode<RbVector<long> >*>(incounts);
+    const TypedDagNode<long> *tmp_cc = dynamic_cast<const TypedDagNode<long> *>(incounts);
 
     if(tmp_cv == NULL && tmp_cc == NULL)
     {
         throw(RbException("Fossil counts rate must be of type Int or Int[]"));
     }
-    else if(tmp_cv == NULL)
+    else if (tmp_cv == NULL)
     {
         homogeneous_fossil_counts = tmp_cc;
         addParameter( homogeneous_fossil_counts );
@@ -696,10 +696,10 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::swapParameterInternal(co
     }
     else if (oldP == homogeneous_fossil_counts)
     {
-        homogeneous_fossil_counts = static_cast<const TypedDagNode< int >* >( newP );
+        homogeneous_fossil_counts = static_cast<const TypedDagNode< long >* >( newP );
     }
     else if (oldP == heterogeneous_fossil_counts)
     {
-        heterogeneous_fossil_counts = static_cast<const TypedDagNode< RbVector<int> >* >( newP );
+        heterogeneous_fossil_counts = static_cast<const TypedDagNode< RbVector<long> >* >( newP );
     }
 }

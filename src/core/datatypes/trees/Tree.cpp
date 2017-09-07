@@ -279,12 +279,12 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     }
     else if ( n == "branchLength" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         rv = getNode( index ).getBranchLength();
     }
     else if ( n == "nodeAge" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         rv = getNode( index ).getAge();
     }
     else if ( n == "treeLength" )
@@ -304,7 +304,7 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     
     if ( n == "parent" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         rv = int( getNode( index ).getParent().getIndex() )+1;
     }
     else if ( n == "numSampledAncestors")
@@ -336,7 +336,7 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     
     if ( n == "isContainedInClade" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         Clade clade = static_cast<const TypedDagNode<Clade> *>( args[1] )->getValue();
         clade.resetTaxonBitset( getTaxonBitSetMap() );
         

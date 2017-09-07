@@ -34,7 +34,7 @@ namespace RevBayesCore {
     class ReversiblePomoRateMatrixFunction : public TypedFunction<RateGenerator> {
 
     public:
-        ReversiblePomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateGenerator > *mm );
+        ReversiblePomoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RateGenerator > *mm );
 
         virtual                                             ~ReversiblePomoRateMatrixFunction(void);                                                    //!< Virtual destructor
 
@@ -49,7 +49,7 @@ namespace RevBayesCore {
 
         // members
 
-        const TypedDagNode< int >*                          populationSize;
+        const TypedDagNode< long >*                          populationSize;
         const TypedDagNode< RateGenerator >*                   mutationMatrix;
 
         // private member functions

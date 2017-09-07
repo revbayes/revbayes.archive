@@ -15,7 +15,7 @@
 
 using namespace RevBayesCore;
 
-DispersalExtinctionRateStructureFunction::DispersalExtinctionRateStructureFunction(const TypedDagNode<RbVector<RbVector<double> > >* dr, TypedDagNode<RbVector<double> >* er, TypedDagNode<int>* rs) : TypedFunction<RbVector<double> >( new RbVector<double>() ),
+DispersalExtinctionRateStructureFunction::DispersalExtinctionRateStructureFunction(const TypedDagNode<RbVector<RbVector<double> > >* dr, TypedDagNode<RbVector<double> >* er, TypedDagNode<long>* rs) : TypedFunction<RbVector<double> >( new RbVector<double>() ),
     dispersalRates( dr ),
     extinctionRates( er ),
     maxRangeSize(rs)
@@ -225,6 +225,6 @@ void DispersalExtinctionRateStructureFunction::swapParameterInternal(const DagNo
     }
     else if (oldP == maxRangeSize)
     {
-        maxRangeSize = static_cast<const TypedDagNode<int>* >( newP );
+        maxRangeSize = static_cast<const TypedDagNode<long>* >( newP );
     }
 }

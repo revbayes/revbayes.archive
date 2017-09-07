@@ -22,7 +22,7 @@ namespace RevLanguage {
      * @since 2014-03-18, version 1.0
      *
      */
-    class Dist_poisson :  public TypedDistribution<Natural> {
+    class Dist_poisson : public TypedDistribution<Natural> {
         
     public:
         Dist_poisson( void );                                                                                                                           //!< Default constructor

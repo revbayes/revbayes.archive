@@ -19,7 +19,7 @@ namespace RevBayesCore {
      * @since 2013-04-12, version 1.0
      *
      */
-    class PoissonDistribution : public TypedDistribution<int> {
+    class PoissonDistribution : public TypedDistribution<long> {
         
     public:
         PoissonDistribution(const TypedDagNode<double> *l);

@@ -16,7 +16,7 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      *
      */
-    class GeometricDistribution : public TypedDistribution<int> {
+    class GeometricDistribution : public TypedDistribution<long> {
         
     public:
         GeometricDistribution(const TypedDagNode<double> *p);

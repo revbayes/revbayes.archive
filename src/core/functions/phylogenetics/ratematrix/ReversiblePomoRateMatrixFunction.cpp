@@ -6,7 +6,7 @@ using namespace RevBayesCore;
 
 
  //MJL 140822: caused compile error
-ReversiblePomoRateMatrixFunction::ReversiblePomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateGenerator > *mm ) : TypedFunction<RateGenerator>( new RateMatrix_ReversiblePomo(4 + 6*(ps->getValue() - 1), mm->getValue(), ps->getValue() ) ), populationSize( ps ), mutationMatrix( mm ) {
+ReversiblePomoRateMatrixFunction::ReversiblePomoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RateGenerator > *mm ) : TypedFunction<RateGenerator>( new RateMatrix_ReversiblePomo(4 + 6*(ps->getValue() - 1), mm->getValue(), ps->getValue() ) ), populationSize( ps ), mutationMatrix( mm ) {
     // add the lambda parameter as a parent
     addParameter( populationSize );
     addParameter( mutationMatrix );

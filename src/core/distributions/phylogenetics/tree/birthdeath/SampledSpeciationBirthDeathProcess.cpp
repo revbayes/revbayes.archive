@@ -371,7 +371,7 @@ double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
 }
 
 
-void SampledSpeciationBirthDeathProcess::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<int> &rv) const
+void SampledSpeciationBirthDeathProcess::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<long> &rv) const
 {
     
     if ( n == "numberEvents" )

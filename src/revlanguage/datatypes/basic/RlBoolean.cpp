@@ -51,11 +51,11 @@ RevObject* RlBoolean::convertTo(const TypeSpec& type) const
         
         if ( dag_node->getValue() == true )
         {
-            return new Natural(1);
+            return new Natural( long(1) );
         }
         else
         {
-            return new Natural(0);
+            return new Natural( long(0) );
         }
         
     }
@@ -64,11 +64,11 @@ RevObject* RlBoolean::convertTo(const TypeSpec& type) const
         
         if ( dag_node->getValue() == true )
         {
-            return new Integer(1);
+            return new Integer( long(1) );
         }
         else
         {
-            return new Integer(0);
+            return new Integer( long(0) );
         }
             
     }

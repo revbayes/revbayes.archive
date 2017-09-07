@@ -17,7 +17,7 @@
 
 using namespace RevBayesCore;
 
-WishartDistribution::WishartDistribution(const TypedDagNode<MatrixReal> *inomega0, const TypedDagNode<int>* indf)  :
+WishartDistribution::WishartDistribution(const TypedDagNode<MatrixReal> *inomega0, const TypedDagNode<long>* indf)  :
 TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal(inomega0->getValue().getDim())),
     omega0(inomega0),
     kappa(NULL),
@@ -33,7 +33,7 @@ TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal(inomega0->getValue().
     redrawValue();
 }
 
-WishartDistribution::WishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf)  :
+WishartDistribution::WishartDistribution(const TypedDagNode<long>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<long>* indf)  :
 TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal( size_t(indim->getValue()) )),
     omega0(NULL),
     kappa(inkappa),
@@ -73,11 +73,11 @@ void WishartDistribution::swapParameterInternal(const DagNode *oldP, const DagNo
     }
     if (oldP == dim)
     {
-        dim = static_cast<const TypedDagNode<int>* >(newP);
+        dim = static_cast<const TypedDagNode<long>* >(newP);
     }
     if (oldP == df)
     {
-        df = static_cast<const TypedDagNode<int>* >(newP);
+        df = static_cast<const TypedDagNode<long>* >(newP);
     }
 }
 

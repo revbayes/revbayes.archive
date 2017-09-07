@@ -5,7 +5,7 @@
 
 using namespace RevBayesCore;
 
-PoissonDistribution::PoissonDistribution(const TypedDagNode<double> *l) : TypedDistribution<int>( new int( 1 ) ),
+PoissonDistribution::PoissonDistribution(const TypedDagNode<double> *l) : TypedDistribution<long>( new long( 1 ) ),
     lambda( l )
 {
     // add the parameters to our set (in the base class)

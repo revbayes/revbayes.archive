@@ -16,8 +16,8 @@ using namespace RevBayesCore;
 
 SiteRateModifier::SiteRateModifier(size_t ns, size_t nc) : CharacterHistoryRateModifier(ns, nc),
     rate_multipliers( RbVector<RbVector<double> >() ),
-    event_classes( RbVector<RbVector<int> >() ),
-    site_classes( RbVector<int>() ),
+    event_classes( RbVector<RbVector<long> >() ),
+    site_classes( RbVector<long>() ),
     num_event_classes( 0 ),
     num_site_classes( 0 )
 {
@@ -100,7 +100,7 @@ void SiteRateModifier::setRateMultipliers(const RbVector<RbVector<double> >& rm)
     rate_multipliers = rm;
 }
 
-void SiteRateModifier::setEventClasses(const RbVector<RbVector<int> >& ec)
+void SiteRateModifier::setEventClasses(const RbVector<RbVector<long> >& ec)
 {
     event_classes = ec;
     std::set<size_t> s;
@@ -111,7 +111,7 @@ void SiteRateModifier::setEventClasses(const RbVector<RbVector<int> >& ec)
     num_event_classes = s.size();
 }
 
-void SiteRateModifier::setSiteClasses(const RbVector<int>& sc)
+void SiteRateModifier::setSiteClasses(const RbVector<long>& sc)
 {
     site_classes = sc;
     std::set<size_t> s( site_classes.begin(), site_classes.end() );

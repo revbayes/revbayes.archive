@@ -5,7 +5,7 @@
 
 using namespace RevBayesCore;
 
-BinomialDistribution::BinomialDistribution(const TypedDagNode<int> *m, const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 0 ) ),
+BinomialDistribution::BinomialDistribution(const TypedDagNode<long> *m, const TypedDagNode<double> *q) : TypedDistribution<long>( new long( 0 ) ),
     n( m ),
     p( q )
 {
@@ -54,7 +54,8 @@ void BinomialDistribution::redrawValue( void ) {
 
 
 /** Swap a parameter of the distribution */
-void BinomialDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void BinomialDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
 
     if (oldP == p)
     {
@@ -62,7 +63,7 @@ void BinomialDistribution::swapParameterInternal(const DagNode *oldP, const DagN
     }
     else if (oldP == n)
     {
-        n = static_cast<const TypedDagNode<int>* >( newP );
+        n = static_cast<const TypedDagNode<long>* >( newP );
     }
 
 }
