@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Natural.h"
+#include "Probability.h"
 #include "ValidationAnalysis.h"
 #include "RbException.h"
 #include "RlMonteCarloAnalysis.h"
@@ -13,19 +14,21 @@ using namespace RevLanguage;
 
 ValidationAnalysis::ValidationAnalysis() : WorkspaceToCoreWrapperObject<RevBayesCore::ValidationAnalysis>()
 {
+
+    initializeMethods();
     
-    ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generation to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
-    
-    ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The number of iterations after which we tune the parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
-    
-    ArgumentRules* summarizeArgRules = new ArgumentRules();
-//    summarizeArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generation to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
+//    ArgumentRules* runArgRules = new ArgumentRules();
+//    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generation to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+//    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
+//    
+//    ArgumentRules* burninArgRules = new ArgumentRules();
+//    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+//    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The number of iterations after which we tune the parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+//    methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
+//    
+//    ArgumentRules* summarizeArgRules = new ArgumentRules();
+////    summarizeArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generation to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+//    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
     
 }
 
@@ -80,7 +83,8 @@ RevPtr<RevVariable> ValidationAnalysis::executeMethod(std::string const &name, c
         
         found = true;
         
-        // get the member with give index
+        // get the member with given index
+        
         int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         value->runAll( size_t(gen) );
         
@@ -90,7 +94,7 @@ RevPtr<RevVariable> ValidationAnalysis::executeMethod(std::string const &name, c
     {
         found = true;
         
-        // get the member with give index
+        // get the member with given index
         int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         value->burnin( size_t(gen), size_t(tuningInterval) );
@@ -101,7 +105,9 @@ RevPtr<RevVariable> ValidationAnalysis::executeMethod(std::string const &name, c
     {
         found = true;
         
-        value->summarizeAll();
+        double coverage = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
+        
+        value->summarizeAll(coverage);
         
         return NULL;
     }
@@ -157,6 +163,25 @@ const TypeSpec& ValidationAnalysis::getTypeSpec( void ) const
     static TypeSpec type_spec = getClassTypeSpec();
     
     return type_spec;
+}
+
+
+void ValidationAnalysis::initializeMethods()
+{
+    
+    ArgumentRules* runArgRules = new ArgumentRules();
+    runArgRules->push_back( new ArgumentRule( "generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
+    
+    ArgumentRules* burninArgRules = new ArgumentRules();
+    burninArgRules->push_back( new ArgumentRule( "generations"   , Natural::getClassTypeSpec(), "The number of generation to run this burnin simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+    burninArgRules->push_back( new ArgumentRule( "tuningInterval", Natural::getClassTypeSpec(), "The interval when to update the tuning parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+    methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
+
+    ArgumentRules* summarizeArgRules = new ArgumentRules();
+    summarizeArgRules->push_back( new ArgumentRule( "coverageProbability", Probability::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.9) ) );
+    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
+    
 }
 
 

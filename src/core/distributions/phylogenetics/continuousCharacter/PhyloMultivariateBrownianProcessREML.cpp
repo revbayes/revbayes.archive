@@ -20,7 +20,9 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     independent_contrasts_sds( std::vector<double>(this->num_nodes, 0.0) ),
     active_likelihood( std::vector<size_t>(this->num_nodes, 0) ),
     changed_nodes( std::vector<bool>(this->num_nodes, false) ),
-    dirty_nodes( std::vector<bool>(this->num_nodes, true) )
+    dirty_nodes( std::vector<bool>(this->num_nodes, true) ),
+    active_matrix(0),
+    precision_matrices( std::vector<MatrixReal>( 2, MatrixReal(num_sites) ) )
 {
     
     // add the parameters to our set
@@ -30,12 +32,15 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     rate_matrix->getValue().setCholesky(true);
     
     // compute the inverse variance-covariance matrix (the precision matrix)
-    precision_matrix = rate_matrix->getValue().computeInverse();
-
+    precision_matrices[0] = rate_matrix->getValue().computeInverse();
+    precision_matrices[0].setCholesky(true);
+    precision_matrices[1] = rate_matrix->getValue().computeInverse();
+    precision_matrices[1].setCholesky(true);
+    
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
 
-    // now we need to reset the valuz
+    // now we need to reset the values
     this->redrawValue();
     
     // we need to reset the contrasts
@@ -80,8 +85,6 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
         tau->getValue().getTreeChangeEventHandler().addListener( this );
         dirty_nodes = std::vector<bool>(tau->getValue().getNumberOfNodes(), true);
     }
-    
-    precision_matrix = rate_matrix->getValue().computeInverse();
     
     // compute the ln probability by recursively calling the probability calculation for each node
     const TopologyNode &root = this->tau->getValue().getRoot();
@@ -233,8 +236,7 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
                 mu_node[i] = (mu_left[i] * t_right + mu_right[i] * t_left) / (t_left + t_right);
             }
             
-//            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfCovariance(means, rate_matrix->getValue(), contrasts, branch_length);
-            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfPrecision(means, precision_matrix, these_contrasts, branch_length);
+            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfPrecision(means, precision_matrices[active_matrix], these_contrasts, branch_length);
             p_node = lnl_contrast + p_left + p_right;
             
         } // end for-loop over all children
@@ -383,7 +385,6 @@ void PhyloMultivariateBrownianProcessREML::resetValue( void )
         }
     }
     
-    
     // finally we set all the flags for recomputation
     for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
     {
@@ -403,12 +404,11 @@ void PhyloMultivariateBrownianProcessREML::resetValue( void )
 void PhyloMultivariateBrownianProcessREML::restoreSpecialization( DagNode* affecter )
 {
     
-    
-//    if ( affecter == rate_matrix )
-//    {
-//        // compute the inverse variance-covariance matrix (the precision matrix)
-//        precision_matrix = rate_matrix->getValue().computeInverse();
-//    }
+    // reset the precision matrix if necessary
+    if ( affecter == rate_matrix )
+    {
+        active_matrix = (active_matrix == 0 ? 1 : 0);
+    }
     
     // reset the flags
     for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
@@ -459,10 +459,8 @@ void PhyloMultivariateBrownianProcessREML::simulateRecursively( const TopologyNo
         size_t child_index   = child.getIndex();
         double branch_length = this->computeBranchTime(child_index, child.getBranchLength());
         
-//        this->computeBranchTime(child_index, child.getBranchLength());
-        
         ContinuousTaxonData &taxon = taxa[ child.getIndex() ];
-        std::vector<double> c = RbStatistics::MultivariateNormal::rvPrecision(parent_state, precision_matrix, *rng, branch_length);
+        std::vector<double> c = RbStatistics::MultivariateNormal::rvPrecision(parent_state, precision_matrices[active_matrix], *rng, branch_length);
         
         for ( size_t i = 0; i < num_sites; ++i )
         {
@@ -501,12 +499,6 @@ std::vector<double> PhyloMultivariateBrownianProcessREML::simulateRootCharacters
 void PhyloMultivariateBrownianProcessREML::touchSpecialization( DagNode* affecter, bool touchAll )
 {
  
-//    if ( affecter == rate_matrix )
-//    {
-//        // compute the inverse variance-covariance matrix (the precision matrix)
-//        precision_matrix = rate_matrix->getValue().computeInverse();
-//    }
-    
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == this->heterogeneous_clock_rates )
     {
@@ -516,7 +508,7 @@ void PhyloMultivariateBrownianProcessREML::touchSpecialization( DagNode* affecte
         // maybe all of them have been touched or the flags haven't been set properly
         if ( indices.size() == 0 )
         {
-            // just flag everyting for recomputation
+            // just flag everything for recomputation
             touchAll = true;
         }
         else
@@ -528,6 +520,16 @@ void PhyloMultivariateBrownianProcessREML::touchSpecialization( DagNode* affecte
                 this->recursivelyFlagNodeDirty( *nodes[*it] );
             }
         }
+    }
+    else if ( affecter == rate_matrix )
+    {
+        // compute the inverse variance-covariance matrix (the precision matrix)
+        active_matrix = (active_matrix == 0 ? 1 : 0);
+        precision_matrices[active_matrix] = rate_matrix->getValue().computeInverse();
+        precision_matrices[active_matrix].setCholesky(true);
+        
+        // we need to recompute the likelihood
+        touchAll = true;
     }
     else if ( affecter != this->tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     {
@@ -569,6 +571,11 @@ void PhyloMultivariateBrownianProcessREML::swapParameterInternal(const DagNode *
     if (oldP == this->rate_matrix)
     {
         rate_matrix = static_cast<const TypedDagNode< MatrixReal >* >( newP );
+        active_matrix = 0;
+        precision_matrices[0] = rate_matrix->getValue().computeInverse();
+        precision_matrices[0].setCholesky(true);
+        precision_matrices[1] = rate_matrix->getValue().computeInverse();
+        precision_matrices[1].setCholesky(true);
     }
     else
     {

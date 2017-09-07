@@ -336,6 +336,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__ne<             Integer,             Real >()             );
         addFunction( new Func__ne<                Real,          Integer >()             );
         addFunction( new Func__ne<           RlBoolean,        RlBoolean >()             );
+        addFunction( new Func__ne<            RlString,         RlString >()             );
         addFunction( new Func__ne<       RateGenerator,    RateGenerator >()             );
         addFunction( new Func__ne<             Simplex,          Simplex >()             );
         addFunction( new Func__ne<            TimeTree,         TimeTree >()             );
