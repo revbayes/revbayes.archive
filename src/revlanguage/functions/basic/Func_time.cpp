@@ -64,10 +64,11 @@ RevPtr<RevVariable> Func_time::execute( void )
         boost::posix_time::ptime t1 = boost::posix_time::microsec_clock::local_time();
         boost::posix_time::ptime t2(boost::posix_time::min_date_time);
         boost::posix_time::time_duration duration = t1-t2;
+         
         time = duration.total_milliseconds();
     }
     
-    return RevPtr<RevVariable>( new RevVariable( new Natural( int(time)) ) );
+    return RevPtr<RevVariable>( new RevVariable( new Natural( time ) ) );
 }
 
 
