@@ -192,7 +192,7 @@ void RbBitSet::resize(size_t size)
 
 void RbBitSet::set(size_t i)
 {
-    if(value[i] == false)
+    if (value[i] == false)
         ++num_set_bits;
 
     // set the internal value

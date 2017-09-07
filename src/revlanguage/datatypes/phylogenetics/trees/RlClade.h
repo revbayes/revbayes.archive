@@ -33,13 +33,13 @@ namespace RevLanguage {
                                                     Clade(RevBayesCore::Clade *v);                                                      //!< Constructor requires character type
                                                     Clade(const RevBayesCore::Clade &v);                                                //!< Constructor requires character type
                                                     Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n);                          //!< Constructor requires character type
-                                                    Clade(const Clade& d);                                                              //!< Constructor requires character type
             
             typedef RevBayesCore::Clade             valueType;
             
             // Basic utility functions
             Clade*                                  clone(void) const;                                                                  //!< Clone object
             void                                    constructInternalObject(void);                                                      //!< We construct the a new internal MCMC object.
+            virtual RevPtr<RevVariable>             executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f); //!< Map member methods to internal functions
             static const std::string&               getClassType(void);                                                                 //!< Get Rev type
             static const TypeSpec&                  getClassTypeSpec(void);                                                             //!< Get class type spec
             std::string                             getConstructorFunctionName(void) const;                                             //!< Get the name used for the constructor function in Rev.
@@ -50,6 +50,7 @@ namespace RevLanguage {
             std::string                             getGuiInfo(void) { return ""; }
             
         protected:
+            void                                    initMethods(void);
             void                                    setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);   //!< Set member variable
         
             std::vector<RevPtr<const RevVariable> > names;
