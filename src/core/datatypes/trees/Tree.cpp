@@ -299,13 +299,13 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
 }
 
 
-void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, long &rv) const
 {
     
     if ( n == "parent" )
     {
-        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
-        rv = int( getNode( index ).getParent().getIndex() )+1;
+        long index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
+        rv = long( getNode( index ).getParent().getIndex() )+1;
     }
     else if ( n == "numSampledAncestors")
     {

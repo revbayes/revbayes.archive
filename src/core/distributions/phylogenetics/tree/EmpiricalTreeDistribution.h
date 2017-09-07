@@ -26,7 +26,7 @@
 
 namespace RevBayesCore {
     
-    class EmpiricalTreeDistribution : public TypedDistribution<Tree>, public MemberObject<int> {
+    class EmpiricalTreeDistribution : public TypedDistribution<Tree>, public MemberObject<long> {
         
     public:
 		
@@ -36,7 +36,7 @@ namespace RevBayesCore {
 
 		EmpiricalTreeDistribution*                          clone(void) const;                                          //!< Create an independent clone
 		double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
-        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;     //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;     //!< Map the member methods to internal function calls
         size_t                                              getBurnin(void) const;
         size_t                                              getCurrentTreeIndex(void) const;
         size_t                                              getNumberOfTrees(void) const;
