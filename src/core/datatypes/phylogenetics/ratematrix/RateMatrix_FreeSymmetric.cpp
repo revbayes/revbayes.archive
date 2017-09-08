@@ -276,8 +276,6 @@ void RateMatrix_FreeSymmetric::expandUniformization(int truncation, double toler
         matrixProducts->push_back(m);
     }
     
-//    std::cout << "i = " << i << std::endl;
-    
     // if the current size of the matrix products is still smaller than the truncation, fill all the remaining terms with the same converged matrix
     MatrixReal m = matrixProducts->at(n - 1 + i);
     for(int j = i; j < d; ++j)
@@ -311,8 +309,6 @@ void RateMatrix_FreeSymmetric::expMatrixTaylor(MatrixReal &A, MatrixReal &F, dou
     int e = ceil(log2(normA)) + 4;
     int s = (e < 0) ? 0 : e;
     
-//    std::cout << "s = " << s << std::endl;
-    
     // scale the matrix by 2^s
     double scale = pow(2, s);
     A *= 1.0/scale;
@@ -342,7 +338,6 @@ void RateMatrix_FreeSymmetric::expMatrixTaylor(MatrixReal &A, MatrixReal &F, dou
         fact *= it;
         A *= A;
     }
-//    std::cout << "it = " << it << std::endl;
     
     //now repeated squaring result s times
     for (size_t i = 0; i < s; i++)
@@ -458,7 +453,6 @@ inline void RateMatrix_FreeSymmetric::multiplyMatrices(TransitionProbabilityMatr
 }
 
 
-
 /** Calculate the transition probabilities for the real case */
 void RateMatrix_FreeSymmetric::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
 {
@@ -558,7 +552,6 @@ void RateMatrix_FreeSymmetric::tiProbsScalingAndSquaring(double t, TransitionPro
             truncation = 4;
         }
         RbMath::expMatrixPade(m, result, truncation);
-//        std::cout << "truncation = " << truncation << std::endl;
     }
     else if(useScalingAndSquaringTaylor == true)
     {
@@ -584,7 +577,6 @@ void RateMatrix_FreeSymmetric::tiProbsUniformization(double t, TransitionProbabi
     // compute the appropriate truncation given t
     double lambda = -maxRate * t;
     int truncation = std::ceil(4 + 6 * sqrt(lambda) + lambda);
-//    std::cout << "truncation = " << truncation << std::endl;
     
     double tol = RbSettings::userSettings().getTolerance();
     

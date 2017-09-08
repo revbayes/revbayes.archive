@@ -286,8 +286,6 @@ void RateMatrix_FreeK::expandUniformization(int truncation, double tolerance) co
         matrixProducts->push_back(m);
     }
     
-//    std::cout << "i = " << i << std::endl;
-    
     // if the current size of the matrix products is still smaller than the truncation, fill all the remaining terms with the same converged matrix
     MatrixReal m = matrixProducts->at(n - 1 + i);
     for(int j = i; j < d; ++j)
@@ -321,8 +319,6 @@ void RateMatrix_FreeK::expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tole
     int e = ceil(log2(normA)) + 4;
     int s = (e < 0) ? 0 : e;
     
-//    std::cout << "s = " << s << std::endl;
-    
     // scale the matrix by 2^s
     double scale = pow(2, s);
     A *= 1.0/scale;
@@ -352,7 +348,6 @@ void RateMatrix_FreeK::expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tole
         fact *= it;
         A *= A;
     }
-//    std::cout << "it = " << it << std::endl;
     
     //now repeated squaring result s times
     for (size_t i = 0; i < s; i++)
@@ -472,42 +467,6 @@ inline void RateMatrix_FreeK::multiplyMatrices(TransitionProbabilityMatrix& p,  
 }
 
 
-//void RateMatrix_FreeK::padeApproximation(int truncation, MatrixReal &x) const
-//{
-//    double c = 0.5;
-//    MatrixReal X = x;
-//    MatrixReal cX = X * c;
-//    MatrixReal D(num_states);
-//    for (size_t i = 0; i < num_states; ++i)
-//    {
-//        D[i][i] = 1.0;
-//    }
-//    MatrixReal E = D + cX;
-//    D -= cX;
-//    bool p = true;
-//    
-//    for (int k = 2; k <= truncation; ++k)
-//    {
-//        c *= (truncation - k + 1) / (k * (2 * truncation - k + 1));
-//        X *= x;
-//        cX = X * c;
-//        E += cX;
-//        if(p == true)
-//        {
-//            D += cX;
-//        }
-//        else
-//        {
-//            D -= cX;
-//        }
-//        p = !p;
-//    }
-//
-//    RbMath::gaussianElimination(D, E, x);
-//
-//}
-
-
 /** Calculate the transition probabilities for the real case */
 void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
 {
@@ -607,7 +566,6 @@ void RateMatrix_FreeK::tiProbsScalingAndSquaring(double t, TransitionProbability
             truncation = 4;
         }
         RbMath::expMatrixPade(m, result, truncation);
-//        std::cout << "truncation = " << truncation << std::endl;
     }
     else if(useScalingAndSquaringTaylor == true)
     {
@@ -633,7 +591,6 @@ void RateMatrix_FreeK::tiProbsUniformization(double t, TransitionProbabilityMatr
     // compute the appropriate truncation given t
     double lambda = -maxRate * t;
     int truncation = std::ceil(4 + 6 * sqrt(lambda) + lambda);
-//    std::cout << "truncation = " << truncation << std::endl;
     
     double tol = RbSettings::userSettings().getTolerance();
     
@@ -673,6 +630,7 @@ void RateMatrix_FreeK::updateEigenSystem(void)
     calculateCijk();
     
 }
+
 
 void RateMatrix_FreeK::updateUniformization(void)
 {
@@ -715,6 +673,7 @@ void RateMatrix_FreeK::updateUniformization(void)
     matrixProducts->push_back(singleStepMatrix);
 
 }
+
 
 void RateMatrix_FreeK::update( void )
 {
