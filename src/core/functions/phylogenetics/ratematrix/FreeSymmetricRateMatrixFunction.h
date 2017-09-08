@@ -24,7 +24,7 @@ namespace RevBayesCore {
     class FreeSymmetricRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        FreeSymmetricRateMatrixFunction(const TypedDagNode< RbVector<double> > *tr , bool r);
+        FreeSymmetricRateMatrixFunction(const TypedDagNode< RbVector<double> > *tr , bool r, std::string method);
         virtual                                            ~FreeSymmetricRateMatrixFunction(void);                                      //!< Virtual destructor
         
         // public member functions

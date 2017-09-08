@@ -73,9 +73,11 @@ const ArgumentRules& Func_FreeK::getArgumentRules( void ) const
         
         std::vector<std::string> optionsMethod;
         optionsMethod.push_back( "scalingAndSquaring" );
+        optionsMethod.push_back( "scalingAndSquaringPade" );
+        optionsMethod.push_back( "scalingAndSquaringTaylor" );
         optionsMethod.push_back( "uniformization" );
         optionsMethod.push_back( "eigen" );
-        argumentRules.push_back( new OptionRule( "method", new RlString("scalingAndSquaring"), optionsMethod, "The method used to compute the matrix exponential." ) );
+        argumentRules.push_back( new OptionRule( "matrixExponentialMethod", new RlString("scalingAndSquaring"), optionsMethod, "The method used to compute the matrix exponential." ) );
         
         rules_set = true;
     }

@@ -53,15 +53,23 @@ namespace RevBayesCore {
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
         void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case
         void                                tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
-        void                                tiProbsUniformization(double t, TransitionProbabilityMatrix& P) const;              //!< Calculate transition probabilities for uniformization
+        void                                tiProbsUniformization(double t, TransitionProbabilityMatrix& P) const;              //!< Calculate transition probabilities with uniformization
+        void                                tiProbsScalingAndSquaring(double t, TransitionProbabilityMatrix& P) const;          //!< Calculate transition probabilities with scaling and squaring
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
         void                                updateUniformization(void);                                                         //!< Update the system for uniformization
-        void                                expandUniformization(int truncation) const;
+        void                                expandUniformization(int truncation, double tolerance) const;
+        void                                expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tolerance) const;
+        void                                checkMatrixTolerance(MatrixReal x, double tolerance, bool& diff) const;
         
         bool                                rescale;
         bool                                useScalingAndSquaring;
+        bool                                useScalingAndSquaringPade;
+        bool                                useScalingAndSquaringTaylor;
         bool                                useUniformization;
         bool                                useEigen;
+        
+        void                                exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
+        inline void                         multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
         
         // members for uniformization
         MatrixReal                          singleStepMatrix;
@@ -72,9 +80,7 @@ namespace RevBayesCore {
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >  cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
-        
-        void                                exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
-        inline void                         multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
+
     };
     
 }

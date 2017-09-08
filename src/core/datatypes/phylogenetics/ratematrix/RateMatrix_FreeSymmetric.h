@@ -33,7 +33,9 @@ namespace RevBayesCore {
     class RateMatrix_FreeSymmetric : public GeneralRateMatrix {
         
     public:
-        RateMatrix_FreeSymmetric(size_t k, bool r);                                                                             //!< Construct rate matrix with n states
+        RateMatrix_FreeSymmetric(size_t k);                                                                                     //!< Construct rate matrix with n states
+        RateMatrix_FreeSymmetric(size_t k, bool r);
+        RateMatrix_FreeSymmetric(size_t k, bool r, std::string method);
         RateMatrix_FreeSymmetric(const RateMatrix_FreeSymmetric& m);                                                            //!< Copy constructor
         virtual                            ~RateMatrix_FreeSymmetric(void);                                                     //!< Destructor
         
@@ -51,7 +53,25 @@ namespace RevBayesCore {
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
         void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case
         void                                tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
+        void                                tiProbsUniformization(double t, TransitionProbabilityMatrix& P) const;              //!< Calculate transition probabilities with uniformization
+        void                                tiProbsScalingAndSquaring(double t, TransitionProbabilityMatrix& P) const;          //!< Calculate transition probabilities with scaling and squaring
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
+        void                                updateUniformization(void);                                                         //!< Update the system for uniformization
+        void                                expandUniformization(int truncation, double tolerance) const;
+        void                                expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tolerance) const;
+        
+        bool                                rescale;
+        bool                                useScalingAndSquaring;
+        bool                                useScalingAndSquaringPade;
+        bool                                useScalingAndSquaringTaylor;
+        bool                                useUniformization;
+        bool                                useEigen;
+        void                                checkMatrixTolerance(MatrixReal x, double tolerance, bool& diff) const;
+        
+        // members for uniformization
+        MatrixReal                          singleStepMatrix;
+        std::vector<MatrixReal>*            matrixProducts;
+        double                              maxRate;
 
         void                                exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
         inline void                         multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
@@ -59,7 +79,6 @@ namespace RevBayesCore {
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >  cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
-        bool                                rescaled;
         
     };
     

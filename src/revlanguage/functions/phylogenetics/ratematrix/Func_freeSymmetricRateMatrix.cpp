@@ -2,6 +2,7 @@
 #include "FreeSymmetricRateMatrixFunction.h"
 #include "ModelVector.h"
 #include "Natural.h"
+#include "OptionRule.h"
 #include "RateMatrix_JC.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -39,8 +40,9 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_freeSymmetricRa
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     bool r = static_cast<const RlBoolean &>( this->args[1].getVariable()->getRevObject() ).getDagNode()->getValue();
+    const std::string method = static_cast<const RlString &>( this->args[2].getVariable()->getRevObject() ).getDagNode()->getValue();
     
-    RevBayesCore::FreeSymmetricRateMatrixFunction* f = new RevBayesCore::FreeSymmetricRateMatrixFunction( tr, r );
+    RevBayesCore::FreeSymmetricRateMatrixFunction* f = new RevBayesCore::FreeSymmetricRateMatrixFunction( tr, r, method);
     
     return f;
 }
@@ -57,6 +59,15 @@ const ArgumentRules& Func_freeSymmetricRateMatrix::getArgumentRules( void ) cons
     {
         argumentRules.push_back( new ArgumentRule( "transition_rates",   ModelVector<RealPos>::getClassTypeSpec(),   "The transition rates between states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "rescaled",          RlBoolean::getClassTypeSpec(),              "Should the matrix be normalized?", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        
+        std::vector<std::string> optionsMethod;
+        optionsMethod.push_back( "scalingAndSquaring" );
+        optionsMethod.push_back( "scalingAndSquaringPade" );
+        optionsMethod.push_back( "scalingAndSquaringTaylor" );
+        optionsMethod.push_back( "uniformization" );
+        optionsMethod.push_back( "eigen" );
+        argumentRules.push_back( new OptionRule( "matrixExponentialMethod", new RlString("scalingAndSquaring"), optionsMethod, "The method used to compute the matrix exponential." ) );
+        
         rules_set = true;
     }
     
