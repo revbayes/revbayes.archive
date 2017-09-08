@@ -36,7 +36,7 @@
 
 
 
-RevBayesCore::DPPGibbsConcentrationMove::DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<int>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w) : AbstractGibbsMove( w ),
+RevBayesCore::DPPGibbsConcentrationMove::DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<long>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w) : AbstractGibbsMove( w ),
     variable( n ),
     numCats(v),
     gammaShape(gS),
@@ -122,7 +122,7 @@ void RevBayesCore::DPPGibbsConcentrationMove::swapNodeInternal(DagNode *oldN, Da
     
     if (oldN == numCats)
     {
-        numCats = static_cast<DeterministicNode<int>* >(newN);
+        numCats = static_cast<DeterministicNode<long>* >(newN);
     }
 	
     if (oldN == gammaShape)

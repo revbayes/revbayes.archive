@@ -50,7 +50,7 @@ namespace RevBayesCore {
     // createTraceObject //
     ///////////////////////
     template<>
-    inline Trace*                                TypedDagNode<int>::createTraceObject(void) const { return new TraceNumeric(); }
+    inline Trace*                                TypedDagNode<long>::createTraceObject(void) const { return new TraceNumeric(); }
 
     template<>
     inline Trace*                                TypedDagNode<double>::createTraceObject(void) const { return new TraceNumeric(); }
@@ -69,13 +69,13 @@ namespace RevBayesCore {
     // isSimpleNumeric //
     /////////////////////
     template<>
-    inline bool                                  TypedDagNode<int>::isSimpleNumeric(void) const { return true; } 
+    inline bool                                  TypedDagNode<long>::isSimpleNumeric(void) const { return true; } 
     
     template<>
     inline bool                                  TypedDagNode<double>::isSimpleNumeric(void) const { return true; }
 
     template<>
-    inline bool                                  TypedDagNode<RbVector<int> >::isSimpleNumeric(void) const { return true; }
+    inline bool                                  TypedDagNode<RbVector<long> >::isSimpleNumeric(void) const { return true; }
     
     template<>
     inline bool                                  TypedDagNode<RbVector<double> >::isSimpleNumeric(void) const { return true; }
@@ -105,7 +105,7 @@ namespace RevBayesCore {
 
     
     template<>
-    inline void TypedDagNode<int>::printValue(std::ostream &o, const std::string &sep, int l, bool left, bool user, bool simple) const
+    inline void TypedDagNode<long>::printValue(std::ostream &o, const std::string &sep, int l, bool left, bool user, bool simple) const
     {
         
         std::stringstream ss;

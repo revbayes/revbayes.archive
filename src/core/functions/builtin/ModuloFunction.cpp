@@ -2,7 +2,7 @@
 
 using namespace RevBayesCore;
 
-ModuloFunction::ModuloFunction(const TypedDagNode<int> *l, const TypedDagNode<int> *r) : TypedFunction<int>( new int(0) ),
+ModuloFunction::ModuloFunction(const TypedDagNode<long> *l, const TypedDagNode<long> *r) : TypedFunction<long>( new long(0) ),
     left( l ),
     right( r )
 {
@@ -40,12 +40,12 @@ void ModuloFunction::swapParameterInternal(const DagNode *oldP, const DagNode *n
     
     if ( oldP == left )
     {
-        left = static_cast<const TypedDagNode<int>* >( newP );
+        left = static_cast<const TypedDagNode<long>* >( newP );
     }
     
     if ( oldP == right )
     {
-        right = static_cast<const TypedDagNode<int>* >( newP );
+        right = static_cast<const TypedDagNode<long>* >( newP );
     }
     
 }

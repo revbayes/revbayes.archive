@@ -20,7 +20,7 @@ namespace RevBayesCore {
      * @since 2013-10-09, version 1.0
      *
      */
-    class BernoulliDistribution : public TypedDistribution<int> {
+    class BernoulliDistribution : public TypedDistribution<long> {
         
     public:
         BernoulliDistribution(const TypedDagNode<double> *p);

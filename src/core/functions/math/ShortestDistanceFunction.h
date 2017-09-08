@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class ShortestDistanceFunction : public TypedFunction<RbVector<RbVector<double> > > {
         
     public:
-        ShortestDistanceFunction(const TypedDagNode<RbVector<RbVector<int> > >* adj, const TypedDagNode<RbVector<RbVector<double> > >* dist);
+        ShortestDistanceFunction(const TypedDagNode<RbVector<RbVector<long> > >* adj, const TypedDagNode<RbVector<RbVector<double> > >* dist);
         
         ShortestDistanceFunction*                               clone(void) const;                                                  //!< Create a clone.
         void                                                    update(void);                                                       //!< Recompute the value
@@ -39,12 +39,12 @@ namespace RevBayesCore {
         void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);    //!< Implementation of swaping parameters
         
     private:
-        std::vector<std::set<size_t> >                          createAdjacencySets(const RbVector<RbVector<int> >& adj);
-        RbVector<RbVector<double> >                             findShortestPaths(const RbVector<RbVector<int> >& adj, const RbVector<RbVector<double> >& dist);
+        std::vector<std::set<size_t> >                          createAdjacencySets(const RbVector<RbVector<long> >& adj);
+        RbVector<RbVector<double> >                             findShortestPaths(const RbVector<RbVector<long> >& adj, const RbVector<RbVector<double> >& dist);
         
         size_t                                                  num_nodes;
         
-        const TypedDagNode<RbVector<RbVector<int> > >*          adjacencies;
+        const TypedDagNode<RbVector<RbVector<long> > >*          adjacencies;
         const TypedDagNode<RbVector<RbVector<double> > >*       distances;
     };
 }

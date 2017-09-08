@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-SegregatingSitesFunction::SegregatingSitesFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool excl) : TypedFunction<int>( new int(0) ),
+SegregatingSitesFunction::SegregatingSitesFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool excl) : TypedFunction<long>( new long(0) ),
     alignment( a ),
     exclude_ambiguous( excl )
 {

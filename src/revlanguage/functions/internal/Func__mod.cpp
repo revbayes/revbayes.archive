@@ -22,11 +22,11 @@ Func__mod* Func__mod::clone( void ) const
 }
 
 
-RevBayesCore::TypedFunction<int>* Func__mod::createFunction( void ) const
+RevBayesCore::TypedFunction<long>* Func__mod::createFunction( void ) const
 {
     
-    const RevBayesCore::TypedDagNode<int>* leftVal = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getDagNode();
-    const RevBayesCore::TypedDagNode<int>* rightVal = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<long>* leftVal = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<long>* rightVal = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::ModuloFunction *func = new RevBayesCore::ModuloFunction( leftVal, rightVal );
     

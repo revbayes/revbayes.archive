@@ -77,27 +77,6 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
-#include "Func_clear.h"
-#include "Func_exists.h"
-#include "Func_getOption.h"
-#include "Func_getwd.h"
-#include "Func_license.h"
-#include "Func_ls.h"
-#include "Func_modelVector.h"
-#include "Func_printSeed.h"
-#include "Func_quit.h"
-#include "Func_range.h"
-#include "Func_rep.h"
-#include "Func_seed.h"
-#include "Func_seq.h"
-#include "Func_setOption.h"
-#include "Func_setwd.h"
-#include "Func_sort.h"
-#include "Func_structure.h"
-#include "Func_system.h"
-#include "Func_type.h"
-#include "Func_workspaceVector.h"
-
 
 /* Functions related to evolution (in folder "functions/phylogenetics") */
 #include "Func_branchScoreDistance.h"
@@ -255,6 +234,7 @@
 #include "Func_shortestDistance.h"
 #include "Func_simplex.h"
 #include "Func_simplexFromVector.h"
+#include "Func_sort.h"
 #include "Func_sum.h"
 #include "Func_sumPositive.h"
 #include "Func_sumInteger.h"

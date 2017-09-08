@@ -102,7 +102,7 @@ const MemberRules& Dist_PhyloBrownian::getParameterRules(void) const
     {
         dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree along which the continuous character evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec() , "The branch-length multiplier to scale the variance of the Brownian motion.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist.push_back( new ArgumentRule( "drift", Real::getClassTypeSpec()    , "The drift parameter of the Brownian motion.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0) ) );
+        dist.push_back( new ArgumentRule( "drift", Real::getClassTypeSpec()    , "The drift parameter of the Brownian motion.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         rules_set = true;
     }
     

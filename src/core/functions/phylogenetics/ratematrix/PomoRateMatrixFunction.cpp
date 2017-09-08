@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< RbVector<double>  > *sc) : TypedFunction<RateGenerator>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mr->getValue(), sc->getValue()) ),
+PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< RbVector<double>  > *sc) : TypedFunction<RateGenerator>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mr->getValue(), sc->getValue()) ),
     populationSize( ps ),
     mutationRates( mr ),
     selectionCoefficients ( sc )
@@ -21,7 +21,7 @@ PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, co
 
 
  //MJL 140822: caused compile error
-PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< RbVector<double>  > *sc) : TypedFunction<RateGenerator>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mm->getValue(), sc->getValue()) ), populationSize( ps ), mutationMatrix( mm ), selectionCoefficients ( sc ) {
+PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< RbVector<double>  > *sc) : TypedFunction<RateGenerator>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mm->getValue(), sc->getValue()) ), populationSize( ps ), mutationMatrix( mm ), selectionCoefficients ( sc ) {
     useMutationMatrix = true;
     // add the lambda parameter as a parent
     addParameter( populationSize );

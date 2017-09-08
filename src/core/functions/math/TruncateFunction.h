@@ -22,7 +22,7 @@
 
 namespace RevBayesCore {
     
-    class TruncateFunction : public TypedFunction<int> {
+    class TruncateFunction : public TypedFunction<long> {
         
     public:
         TruncateFunction(const TypedDagNode<double> *a);
