@@ -7,7 +7,7 @@
 
 
 
-RevBayesCore::DiscretizeBetaQuadratureFunction::DiscretizeBetaQuadratureFunction(const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<int> *nc) : TypedFunction< MatrixReal >( new MatrixReal(2, nc->getValue(), 1.0) ),
+RevBayesCore::DiscretizeBetaQuadratureFunction::DiscretizeBetaQuadratureFunction(const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<long> *nc) : TypedFunction< MatrixReal >( new MatrixReal(2, nc->getValue(), 1.0) ),
 alpha( a ),
 beta( b ),
 numCats(nc)
@@ -42,7 +42,7 @@ void RevBayesCore::DiscretizeBetaQuadratureFunction::swapParameterInternal(const
     
     if (oldP == numCats)
     {
-        numCats = static_cast<const TypedDagNode<int>* >( newP );
+        numCats = static_cast<const TypedDagNode<long>* >( newP );
     }
     
 }
@@ -60,8 +60,8 @@ void RevBayesCore::DiscretizeBetaQuadratureFunction::update( void )
     std::vector<double> a_prime(nCats, 1.0);
     std::vector<double> b_prime(nCats, 1.0);
     
-    for ( int i = 0; i < nCats; i++ ) {
-        if ( i == 0 && a == 1.0 && b == 1.0 ) {
+    for (int i = 0; i < nCats; ++i) {
+        if (i == 0 && a == 1.0 && b == 1.0) {
             a_prime[i] = 0.5;
         } else {
             a_prime[i] = (a*gamma+(2*i-2)*a+2*i*b+i*(2*i-2))/((gamma+2*i)*(gamma+2*i-2));
@@ -74,7 +74,7 @@ void RevBayesCore::DiscretizeBetaQuadratureFunction::update( void )
     MatrixReal Jacobi(nCats);
     Jacobi[0][0] = a_prime[0];
     
-    for (size_t i=1; i<nCats; i++)
+    for (size_t i = 1; i < nCats; ++i)
     {
         Jacobi[i][i] = a_prime[i];
         Jacobi[i][i-1] = sqrt(b_prime[i]);

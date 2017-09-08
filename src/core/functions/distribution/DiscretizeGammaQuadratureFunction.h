@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class DiscretizeGammaQuadratureFunction : public TypedFunction< MatrixReal >{
         
     public:
-        DiscretizeGammaQuadratureFunction(const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<int> *nc);
+        DiscretizeGammaQuadratureFunction(const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<long> *nc);
         
         DiscretizeGammaQuadratureFunction*  clone(void) const;                                                  //!< Create a clon.
         void                                update(void);                                                       //!< Recompute the value
@@ -40,7 +40,7 @@ namespace RevBayesCore {
     private:
         const TypedDagNode<double>*         shape;
         const TypedDagNode<double>*         rate;
-        const TypedDagNode<int>*            numCats;
+        const TypedDagNode<long>*           numCats;
     };
 }
 

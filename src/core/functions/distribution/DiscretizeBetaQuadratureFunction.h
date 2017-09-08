@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class DiscretizeBetaQuadratureFunction : public TypedFunction< MatrixReal >{
         
     public:
-        DiscretizeBetaQuadratureFunction(const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<int> *nc);
+        DiscretizeBetaQuadratureFunction(const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<long> *nc);
         
         DiscretizeBetaQuadratureFunction*   clone(void) const;                                                  //!< Create a clon.
         void                                update(void);                                                       //!< Recompute the value
@@ -40,7 +40,7 @@ namespace RevBayesCore {
     private:
         const TypedDagNode<double>*         alpha;
         const TypedDagNode<double>*         beta;
-        const TypedDagNode<int>*            numCats;
+        const TypedDagNode<long>*           numCats;
     };
 }
 

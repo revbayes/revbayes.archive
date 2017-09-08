@@ -8,7 +8,7 @@
 
 
 
-RevBayesCore::DiscretizeLognormalQuadratureFunction::DiscretizeLognormalQuadratureFunction(const TypedDagNode<double> *m, const TypedDagNode<double> *s, const TypedDagNode<int> *nc) : TypedFunction< MatrixReal >( new MatrixReal(2, nc->getValue(), 1.0) ),
+RevBayesCore::DiscretizeLognormalQuadratureFunction::DiscretizeLognormalQuadratureFunction(const TypedDagNode<double> *m, const TypedDagNode<double> *s, const TypedDagNode<long> *nc) : TypedFunction< MatrixReal >( new MatrixReal(2, nc->getValue(), 1.0) ),
     mean( m ),
     sd( s ),
     numCats(nc)
@@ -43,7 +43,7 @@ void RevBayesCore::DiscretizeLognormalQuadratureFunction::swapParameterInternal(
     
     if (oldP == numCats)
     {
-        numCats = static_cast<const TypedDagNode<int>* >( newP );
+        numCats = static_cast<const TypedDagNode<long>* >( newP );
     }
     
 }
@@ -63,7 +63,7 @@ void RevBayesCore::DiscretizeLognormalQuadratureFunction::update( void )
     std::vector<double> a_prime(nCats, 1.0);
     std::vector<double> b_prime(nCats, 1.0);
     
-    for (int i=0; i<nCats; i++)
+    for (int i = 0; i < nCats; ++i)
     {
         a_prime[i] = pow(zeta, (2*i-1)/2.0) * (pow(zeta, i) * (zeta + 1.0) - 1.0) * lambda;
         b_prime[i] = pow(zeta, 3*i-2) * (pow(zeta, i) - 1.0) * lambda2;
@@ -74,7 +74,7 @@ void RevBayesCore::DiscretizeLognormalQuadratureFunction::update( void )
     MatrixReal Jacobi(nCats);
     Jacobi[0][0] = a_prime[0];
     
-    for (size_t i=1; i<nCats; i++)
+    for (size_t i = 1; i < nCats; ++i)
     {
         Jacobi[i][i] = a_prime[i];
         Jacobi[i][i-1] = sqrt(b_prime[i]);
