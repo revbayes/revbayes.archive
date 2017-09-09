@@ -314,9 +314,14 @@ void RateMatrix_FreeK::expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tole
     
     // then use the norm to determine the appropriate scaling parameter s
     // here plus 4 is a decision made under the guidance of Table 1 in Moler and Van Loan, 2003 and my experiments
-    // if that turns out to be insufficient, a larger number should be considered
+    // the original implementation in R expm package for Pade approximation was s = max(0, [log2(norm)]+1), which seems not enough for Taylor series
+    // and it turns out the intermediate norm values are those that tends to be the most problematic ones under the formula
+    // but they actually would be the most common ones for the usage in phylogenetics (branch length around 0.1)
+    // so I decide to jack it up by 11 here, which results in a transition probability matrix
+    // whose sum differ from the ones computed under the eigen method by about 1e-9 under 0.1 branch length
+    // if that turns out to be still insufficient, a larger number should be considered
     // Jiansi Gao 09/07/2017
-    int e = ceil(log2(normA)) + 4;
+    int e = ceil(log2(normA)) + 12;
     int s = (e < 0) ? 0 : e;
     
     // scale the matrix by 2^s
@@ -335,6 +340,7 @@ void RateMatrix_FreeK::expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tole
     while (true)
     {
         MatrixReal m = A * (1.0/fact);
+        F += m;
         
         bool diff = true;
         checkMatrixTolerance(m, tolerance, diff);
@@ -343,7 +349,6 @@ void RateMatrix_FreeK::expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tole
             break;
         }
         
-        F += m;
         ++it;
         fact *= it;
         A *= A;
@@ -589,6 +594,10 @@ void RateMatrix_FreeK::tiProbsUniformization(double t, TransitionProbabilityMatr
 {
     
     // compute the appropriate truncation given t
+    // the formula is taken from Tataru and Hobolth, 2011, BMC Bioinformatics
+    // which seems to be pretty generous in most cases, so it should be sufficient for now
+    // if not, a larger number should be considered
+    // Jiansi Gao 09/07/2017
     double lambda = -maxRate * t;
     int truncation = std::ceil(4 + 6 * sqrt(lambda) + lambda);
     
