@@ -104,7 +104,7 @@ RevPtr<RevVariable> HomologousCharacterData::executeCharacterDataMethod(std::str
         RevBayesCore::HomologousCharacterData &v = *charDataObject;
         size_t nChars = v.getNumberOfCharacters();
         
-        RevBayesCore::RbVector<int> indices;
+        RevBayesCore::RbVector<long> indices;
         for (size_t i = 0; i < nChars; i++)
         {
             bool excluded = v.isCharacterExcluded(i);

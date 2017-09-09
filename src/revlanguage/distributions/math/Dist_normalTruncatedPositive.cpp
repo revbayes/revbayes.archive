@@ -44,6 +44,8 @@ RevBayesCore::TruncatedNormalDistribution* Dist_normalTruncatedPositive::createD
 }
 
 
+
+
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
@@ -83,6 +85,21 @@ const TypeSpec& Dist_normalTruncatedPositive::getClassTypeSpec(void)
     
     return rev_type_spec;
 }
+
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_normalTruncatedPositive::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "norm" );
+    
+    return a_names;
+}
+
 
 
 /**

@@ -21,7 +21,7 @@ namespace RevBayesCore {
     class SiteRateModifierFunction : public TypedFunction<CharacterHistoryRateModifier> {
         
     public:
-        SiteRateModifierFunction(const TypedDagNode<RbVector<RbVector<double> > >* rm, const TypedDagNode<RbVector<RbVector<int> > >* ec, const TypedDagNode<RbVector<int> >* sc);
+        SiteRateModifierFunction(const TypedDagNode<RbVector<RbVector<double> > >* rm, const TypedDagNode<RbVector<RbVector<long> > >* ec, const TypedDagNode<RbVector<long> >* sc);
         SiteRateModifierFunction(const SiteRateModifierFunction& m);
         virtual ~SiteRateModifierFunction(void);                                                                                                  //!< Virtual destructor
         
@@ -36,8 +36,8 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<RbVector<RbVector<double> > >*                            rate_multipliers;
-        const TypedDagNode<RbVector<RbVector<int> > >*                               event_classes;
-        const TypedDagNode<RbVector<int> >*                                          site_classes;
+        const TypedDagNode<RbVector<RbVector<long> > >*                               event_classes;
+        const TypedDagNode<RbVector<long> >*                                          site_classes;
         
     };
 }

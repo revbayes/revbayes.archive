@@ -151,13 +151,18 @@ void TopologyConstrainedTreeDistribution::initializeBitSets(void)
     for (size_t i = 0; i < monophyly_constraints.size(); i++)
     {
         // clade constraint has only one match
-        if (monophyly_constraints[i].isOptionalMatch() == false) {
+        if (monophyly_constraints[i].isOptionalMatch() == false)
+        {
             RbBitSet b( value->getNumberOfTips() );
             for (size_t j = 0; j < monophyly_constraints[i].size(); j++)
             {
                 const std::map<std::string, size_t> &taxon_map = value->getTaxonBitSetMap();
                 const std::string &name = monophyly_constraints[i].getTaxonName(j);
                 std::map<std::string, size_t>::const_iterator it = taxon_map.find( name );
+                if ( it == taxon_map.end() )
+                {
+                    throw RbException("Could not find taxon with name '" + name + "'.");
+                }
                 size_t k = it->second;
                 
                 b.set(k);
@@ -165,15 +170,21 @@ void TopologyConstrainedTreeDistribution::initializeBitSets(void)
             monophyly_constraints[i].setBitRepresentation( b );
         }
         // clade constraint allows optional matches
-        else {
+        else
+        {
             std::vector<Clade> optional_constraints = monophyly_constraints[i].getOptionalConstraints();
-            for (size_t j = 0; j < optional_constraints.size(); j++) {
+            for (size_t j = 0; j < optional_constraints.size(); j++)
+            {
                 RbBitSet b( value->getNumberOfTips() );
                 for (size_t k = 0; k < optional_constraints[j].size(); k++)
                 {
                     const std::map<std::string, size_t> &taxon_map = value->getTaxonBitSetMap();
                     const std::string &name = optional_constraints[j].getTaxonName(k);
                     std::map<std::string, size_t>::const_iterator it = taxon_map.find( name );
+                    if ( it == taxon_map.end() )
+                    {
+                        throw RbException("Could not find taxon with name '" + name + "'.");
+                    }
                     size_t s = it->second;
                     
                     b.set(s);
@@ -194,7 +205,8 @@ void TopologyConstrainedTreeDistribution::initializeBitSets(void)
     // add the backbone constraints
     if ( backbone_topologies != NULL && use_multiple_backbones )
     {
-        for (size_t i = 0; i < num_backbones; i++) {
+        for (size_t i = 0; i < num_backbones; i++)
+        {
             backbone_mask[i] = RbBitSet( value->getNumberOfTips() );
             backbone_mask[i] |= recursivelyAddBackboneConstraints( backbone_topologies->getValue()[i].getRoot(), i );
         }

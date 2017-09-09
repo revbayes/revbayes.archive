@@ -16,7 +16,7 @@ namespace RevBayesCore {
      * \since Version 1.0, 2012-08-13
      *
      */
-    class CeilFunction : public TypedFunction<int> {
+    class CeilFunction : public TypedFunction<long> {
         
     public:
         CeilFunction(const TypedDagNode<double> *a);

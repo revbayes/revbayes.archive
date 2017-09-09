@@ -27,7 +27,7 @@ namespace RevBayesCore {
      *
      */
     template <class valueType>
-    class UniformPartitioningDistribution : public TypedDistribution< RbVector<valueType> >, public MemberObject<int> {
+    class UniformPartitioningDistribution : public TypedDistribution< RbVector<valueType> >, public MemberObject<long> {
         
     public:
         // constructor(s)
@@ -37,7 +37,7 @@ namespace RevBayesCore {
         // public member functions
         UniformPartitioningDistribution*                    clone(void) const;                                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
-        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;     //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;     //!< Map the member methods to internal function calls
         const std::vector<valueType>&                       getParameterValues(void) const;
         int                                                 getCurrentIndex(void) const;
         RbVector<valueType>*                                getPartition(void);
@@ -194,12 +194,12 @@ double RevBayesCore::UniformPartitioningDistribution<valueType>::computeLnProbab
 
 
 template <class valueType>
-void RevBayesCore::UniformPartitioningDistribution<valueType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+void RevBayesCore::UniformPartitioningDistribution<valueType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, long &rv) const
 {
     
     if ( n == "getAllocationIndex" )
     {
-        rv = int(index);
+        rv = long(index);
     }
     else
     {

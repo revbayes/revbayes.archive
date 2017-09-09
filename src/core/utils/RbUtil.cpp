@@ -130,6 +130,27 @@ std::vector<int> RevBayesCore::operator+(const std::vector<int>& x, const std::v
 }
 
 
+std::vector<long> RevBayesCore::operator+(const std::vector<long>& x, const std::vector<long>& y)
+{
+    
+    size_t n = x.size();
+    
+    if ( n != y.size() )
+    {
+        throw RbException("Can only add vectors of same size!");
+    }
+    
+    std::vector<long> z(n,0);
+    
+    for (size_t i = 0; i < n; ++i)
+    {
+        z[i] = x[i] + y[i];
+    }
+    
+    return z;
+}
+
+
 std::vector<double> RevBayesCore::operator+(const std::vector<double>& x, const std::vector<double>& y)
 {
     
@@ -162,6 +183,27 @@ std::vector<int> RevBayesCore::operator-(const std::vector<int>& x, const std::v
     }
     
     std::vector<int> z(n,0);
+    
+    for (size_t i = 0; i < n; ++i)
+    {
+        z[i] = x[i] - y[i];
+    }
+    
+    return z;
+}
+
+
+std::vector<long> RevBayesCore::operator-(const std::vector<long>& x, const std::vector<long>& y)
+{
+    
+    size_t n = x.size();
+    
+    if ( n != y.size() )
+    {
+        throw RbException("Can only subtract vectors of same size!");
+    }
+    
+    std::vector<long> z(n,0);
     
     for (size_t i = 0; i < n; ++i)
     {
@@ -214,6 +256,27 @@ std::vector<int> RevBayesCore::operator*(const std::vector<int>& x, const std::v
 }
 
 
+std::vector<long> RevBayesCore::operator*(const std::vector<long>& x, const std::vector<long>& y)
+{
+    
+    size_t n = x.size();
+    
+    if ( n != y.size() )
+    {
+        throw RbException("Can only multiply vectors of same size!");
+    }
+    
+    std::vector<long> z(n,0);
+    
+    for (size_t i = 0; i < n; ++i)
+    {
+        z[i] = x[i] * y[i];
+    }
+    
+    return z;
+}
+
+
 std::vector<double> RevBayesCore::operator*(const std::vector<double>& x, const std::vector<double>& y)
 {
     
@@ -256,6 +319,27 @@ std::vector<double> RevBayesCore::operator/(const std::vector<int>& x, const std
 }
 
 
+std::vector<double> RevBayesCore::operator/(const std::vector<long>& x, const std::vector<long>& y)
+{
+    
+    size_t n = x.size();
+    
+    if ( n != y.size() )
+    {
+        throw RbException("Can only divide vectors of same size!");
+    }
+    
+    std::vector<double> z(n,0);
+    
+    for (size_t i = 0; i < n; ++i)
+    {
+        z[i] = x[i] / double(y[i]);
+    }
+    
+    return z;
+}
+
+
 std::vector<double> RevBayesCore::operator/(const std::vector<int>& x, const std::vector<double>& y)
 {
     
@@ -277,7 +361,49 @@ std::vector<double> RevBayesCore::operator/(const std::vector<int>& x, const std
 }
 
 
+std::vector<double> RevBayesCore::operator/(const std::vector<long>& x, const std::vector<double>& y)
+{
+    
+    size_t n = x.size();
+    
+    if ( n != y.size() )
+    {
+        throw RbException("Can only divide vectors of same size!");
+    }
+    
+    std::vector<double> z(n,0);
+    
+    for (size_t i = 0; i < n; ++i)
+    {
+        z[i] = x[i] / y[i];
+    }
+    
+    return z;
+}
+
+
 std::vector<double> RevBayesCore::operator/(const std::vector<double>& x, const std::vector<int>& y)
+{
+    
+    size_t n = x.size();
+    
+    if ( n != y.size() )
+    {
+        throw RbException("Can only divide vectors of same size!");
+    }
+    
+    std::vector<double> z(n,0);
+    
+    for (size_t i = 0; i < n; ++i)
+    {
+        z[i] = x[i] / y[i];
+    }
+    
+    return z;
+}
+
+
+std::vector<double> RevBayesCore::operator/(const std::vector<double>& x, const std::vector<long>& y)
 {
     
     size_t n = x.size();

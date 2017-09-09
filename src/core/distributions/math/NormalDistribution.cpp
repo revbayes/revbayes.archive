@@ -6,17 +6,33 @@
 
 using namespace RevBayesCore;
 
-NormalDistribution::NormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s) : ContinuousDistribution( new double( 0.0 ) ),
+NormalDistribution::NormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s, const TypedDagNode<double> *mi = NULL, const TypedDagNode<double> *ma = NULL) : ContinuousDistribution( new double( 0.0 ) ),
     mean( m ),
-    stDev( s )
+    stDev( s ),
+    min( mi ),
+    max( ma )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( mean );
     addParameter( stDev );
-    
-    *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);
+    addParameter( min );
+    addParameter( max );
+    if(min->getValue() != RbConstants::Double::neginf && max->getValue() != RbConstants::Double::inf){
+        if ( min->getValue() >= max->getValue() )
+        {
+            throw RbException("The minimum value must be smaller then the maximum value for the truncated normal distribution.");
+        }
+        
+        do {
+            *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), min->getValue(), max->getValue(), *GLOBAL_RNG);
+        } while ( *value < min->getValue() && *value > max->getValue() );
+        
+
+    }
+    else
+        *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);
 }
 
 
@@ -26,7 +42,11 @@ NormalDistribution::~NormalDistribution( void ) {
 
 
 double NormalDistribution::cdf( void ) const {
-    return RbStatistics::Normal::cdf( mean->getValue(), stDev->getValue(), *value);
+    if(min->getValue() != RbConstants::Double::neginf && max->getValue() != RbConstants::Double::inf)
+        return RbStatistics::Normal::cdf( mean->getValue(), stDev->getValue(), *value, min->getValue(), max->getValue());
+    else
+        return RbStatistics::Normal::cdf( mean->getValue(), stDev->getValue(), *value);
+
 }
 
 
@@ -36,27 +56,66 @@ NormalDistribution* NormalDistribution::clone( void ) const {
 
 
 double NormalDistribution::computeLnProbability( void ) {
-    return RbStatistics::Normal::lnPdf(mean->getValue(), stDev->getValue(), *value);
+    if(min->getValue() != RbConstants::Double::neginf && max->getValue() != RbConstants::Double::inf){
+        if ( min->getValue() > *value )
+        {
+            return RbConstants::Double::neginf;
+        }
+    
+        if ( max->getValue() < *value )
+        {
+            return RbConstants::Double::neginf;
+        }
+
+        return RbStatistics::Normal::lnPdf(mean->getValue(), stDev->getValue(), *value, min->getValue(), max->getValue());
+    }
+    else
+        return RbStatistics::Normal::lnPdf(mean->getValue(), stDev->getValue(), *value);
+
 }
 
 
 double NormalDistribution::getMax( void ) const {
-    return RbConstants::Double::inf;
+    if(max->getValue() != RbConstants::Double::inf){
+        return max->getValue();
+    }
+    else{
+        return RbConstants::Double::inf;
+    }
 }
 
 
 double NormalDistribution::getMin( void ) const {
-    return RbConstants::Double::neginf;
+    if(min->getValue() != RbConstants::Double::neginf){
+        return min->getValue();
+    }
+    else{
+        return RbConstants::Double::neginf;
+    }
 }
 
 
 double NormalDistribution::quantile(double p) const {
-    return RbStatistics::Normal::quantile(mean->getValue(), stDev->getValue(), p);
+    if(min->getValue() != RbConstants::Double::neginf && max->getValue() != RbConstants::Double::inf)
+        return RbStatistics::Normal::quantile(mean->getValue(), stDev->getValue(), p, min->getValue(), max->getValue());
+    else
+        return RbStatistics::Normal::quantile(mean->getValue(), stDev->getValue(), p);
 }
 
 
 void NormalDistribution::redrawValue( void ) {
-    *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);
+    if(min->getValue() != RbConstants::Double::neginf && max->getValue() != RbConstants::Double::inf){
+        if ( min->getValue() >= max->getValue() )
+        {
+            throw RbException("The minimum value must be smaller then the maximum value for the truncated normal distribution.");
+        }
+        
+        do {
+            *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), min->getValue(), max->getValue(), *GLOBAL_RNG);
+        } while ( *value < min->getValue() && *value > max->getValue() );
+    }
+    else
+        *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);
 }
 
 
@@ -70,5 +129,13 @@ void NormalDistribution::swapParameterInternal(const DagNode *oldP, const DagNod
     if (oldP == stDev)
     {
         stDev = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    if (oldP == min)
+    {
+        min = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    if (oldP == max)
+    {
+        max = static_cast<const TypedDagNode<double>* >( newP );
     }
 }

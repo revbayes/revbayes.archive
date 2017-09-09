@@ -27,7 +27,7 @@ namespace RevBayesCore {
     class ChromosomesPloidyRateMatrixFunction : public TypedFunction<RateGenerator> {
 
     public:
-        ChromosomesPloidyRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *g_d, const TypedDagNode<double> *d_d, const TypedDagNode<double> *r_d, const TypedDagNode<double> *e_d, const TypedDagNode<double> *g_dl, const TypedDagNode<double> *d_dl, const TypedDagNode<double> *g_p, const TypedDagNode<double> *d_p, const TypedDagNode<double> *r_p, const TypedDagNode<double> *e_p, const TypedDagNode<double> *g_pl, const TypedDagNode<double> *d_pl, const TypedDagNode<double> *b);
+        ChromosomesPloidyRateMatrixFunction(const TypedDagNode<long> *n, const TypedDagNode<double> *g_d, const TypedDagNode<double> *d_d, const TypedDagNode<double> *r_d, const TypedDagNode<double> *e_d, const TypedDagNode<double> *g_dl, const TypedDagNode<double> *d_dl, const TypedDagNode<double> *g_p, const TypedDagNode<double> *d_p, const TypedDagNode<double> *r_p, const TypedDagNode<double> *e_p, const TypedDagNode<double> *g_pl, const TypedDagNode<double> *d_pl, const TypedDagNode<double> *b);
         
         virtual                                     ~ChromosomesPloidyRateMatrixFunction(void);                                                    //!< Virtual destructor
         
@@ -41,7 +41,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<int>*                    n;
+        const TypedDagNode<long>*                    n;
         const TypedDagNode<double>*                 gamma_d;
         const TypedDagNode<double>*                 delta_d;
         const TypedDagNode<double>*                 rho_d;

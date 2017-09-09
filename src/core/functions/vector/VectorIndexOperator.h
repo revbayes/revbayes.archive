@@ -31,7 +31,7 @@ namespace RevBayesCore {
     class VectorIndexOperator : public TypedFunction<valueType> {
         
     public:
-        VectorIndexOperator(const TypedDagNode< RbVector<valueType> >* v, const TypedDagNode<int>* idx);
+        VectorIndexOperator(const TypedDagNode< RbVector<valueType> >* v, const TypedDagNode<long>* idx);
         virtual                                            ~VectorIndexOperator(void);                                              //!< Virtual destructor
         
         // public member functions
@@ -44,7 +44,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<int>*                            index;
+        const TypedDagNode<long>*                            index;
         const TypedDagNode<RbVector<valueType> >*           vector;
         
     };
@@ -55,7 +55,7 @@ namespace RevBayesCore {
 #include "RbException.h"
 
 template <class valueType>
-RevBayesCore::VectorIndexOperator<valueType>::VectorIndexOperator( const TypedDagNode< RbVector<valueType> >* v, const TypedDagNode<int> *idx) : TypedFunction<valueType>( NULL ), index( idx ), vector( v ) {
+RevBayesCore::VectorIndexOperator<valueType>::VectorIndexOperator( const TypedDagNode< RbVector<valueType> >* v, const TypedDagNode<long> *idx) : TypedFunction<valueType>( NULL ), index( idx ), vector( v ) {
     // add the vector parameter as a parent
     this->addParameter( vector );
     this->addParameter( index );
@@ -109,7 +109,7 @@ void RevBayesCore::VectorIndexOperator<valueType>::swapParameterInternal(const D
     }
     else if (oldP == index)
     {
-        index = static_cast<const TypedDagNode<int>* >( newP );
+        index = static_cast<const TypedDagNode<long>* >( newP );
     }
     
 }

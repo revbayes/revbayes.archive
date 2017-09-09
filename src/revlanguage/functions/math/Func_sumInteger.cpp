@@ -27,10 +27,10 @@ Func_sumInteger* Func_sumInteger::clone( void ) const
 }
 
 
-RevBayesCore::TypedFunction<int>* Func_sumInteger::createFunction( void ) const
+RevBayesCore::TypedFunction<long>* Func_sumInteger::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<int> >* arg = static_cast<const ModelVector<Integer> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<long> >* arg = static_cast<const ModelVector<Integer> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::SumIntegerFunction* f = new RevBayesCore::SumIntegerFunction( arg );
     
     return f;

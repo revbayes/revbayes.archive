@@ -18,10 +18,10 @@ namespace RevBayesCore {
      * \since Version 1.0, 2014-07-27
      *
      */
-    class SumIntegerFunction : public TypedFunction<int> {
+    class SumIntegerFunction : public TypedFunction<long> {
         
     public:
-        SumIntegerFunction(const TypedDagNode<RbVector<int> > * v);
+        SumIntegerFunction(const TypedDagNode<RbVector<long> > * v);
         virtual                                            ~SumIntegerFunction(void);                                                         //!< Virtual destructor
         
         // public member functions
@@ -34,7 +34,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<RbVector<int> >*                 vals;
+        const TypedDagNode<RbVector<long> >*                vals;
         
     };
     
