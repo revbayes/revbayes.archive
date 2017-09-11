@@ -24,6 +24,7 @@
 
 #include "RateMatrix_ReversiblePomo.h"
 #include "RbVector.h"
+#include "MatrixReal.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -34,7 +35,8 @@ namespace RevBayesCore {
     class ReversiblePomoRateMatrixFunction : public TypedFunction<RateGenerator> {
 
     public:
-        ReversiblePomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateGenerator > *mm );
+        // ReversiblePomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateGenerator > *mm );
+        ReversiblePomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RbVector<double> > *rho, const TypedDagNode< Simplex > *pi  );
 
         virtual                                             ~ReversiblePomoRateMatrixFunction(void);                                                    //!< Virtual destructor
 
@@ -50,7 +52,10 @@ namespace RevBayesCore {
         // members
 
         const TypedDagNode< int >*                          populationSize;
-        const TypedDagNode< RateGenerator >*                   mutationMatrix;
+        // const TypedDagNode< RateGenerator >*                mutationMatrix;
+        const TypedDagNode< RbVector<double> >*                   exchangeabilities;
+        const TypedDagNode< Simplex >*                   equilibriumFrequencies;
+
 
         // private member functions
 
