@@ -123,18 +123,6 @@ FALSE                                   {
 TRUE                                    {
                                             return TRUE;
                                         }
-const                                   {
-                                            return MOD_CONST;
-                                        }
-dynamic                                 {
-                                            return MOD_DYNAMIC;
-                                        }
-stochastic                              {
-                                            return MOD_STOCHASTIC;
-                                        }
-deterministic                           {
-                                            return MOD_DETERMINISTIC;
-                                        }
 protected                               {
                                             return PROTECTED;
                                         }

@@ -24,7 +24,6 @@ namespace RevBayesCore {
         
         // Hidden member variables
         double                                          movesPerIteration;
-        std::vector<double>                             weights;
     };
     
 }

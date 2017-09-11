@@ -45,7 +45,7 @@ namespace RevBayesCore {
         void                                                    decrementTriedCounter(void);                        //!< Get update weight of InferenceMove
         virtual size_t                                          getNumberAccepted(void) const;                                      //!< Get update weight of InferenceMove
         size_t                                                  getNumberTried(void) const;                                         //!< Get the number of tries for this move since the last reset
-        double                                                  getUpdateWeight(void) const;                                        //!< Get update weight of move
+        virtual double                                          getUpdateWeight(void) const;                                        //!< Get update weight of move
         bool                                                    isActive(unsigned long gen) const;                                  //!< Is the move active at the generation 'gen'?
         void                                                    performMcmcStep(double lHeat, double pHeat);                        //!< Perform the move.
         void                                                    performHillClimbingStep(double lHeat, double pHeat);                //!< Perform the move.

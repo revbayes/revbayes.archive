@@ -16,9 +16,10 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-TipTimeSlideUniformProposal::TipTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o ) : Proposal(),
+TipTimeSlideUniformProposal::TipTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o, bool dyn ) : Proposal(),
     tree( n ),
-    origin( o )
+    origin( o ),
+    dynamic( dyn )
 {
     // tell the base class to add the node
     addNode( tree );
@@ -60,6 +61,17 @@ const std::string& TipTimeSlideUniformProposal::getProposalName( void ) const
     static std::string name = "TipTimeSlideUniform";
     
     return name;
+}
+
+
+/**
+ * Get the update weight of how often the move should be used.
+ *
+ * \return    The update weight.
+ */
+double TipTimeSlideUniformProposal::getUpdateWeight( void ) const
+{
+    return dynamic ? tree->getValue().getNumberOfTips() : 1.0;
 }
 
 
