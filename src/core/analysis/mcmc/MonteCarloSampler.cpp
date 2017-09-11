@@ -11,7 +11,6 @@
 #include "RbMathLogic.h"
 #include "RbOptions.h"
 #include "RlUserInterface.h"
-#include "SequenctialMoveSchedule.h"
 #include "SingleRandomMoveSchedule.h"
 #include "RandomMoveSchedule.h"
 #include "ExtendedNewickTreeMonitor.h"
@@ -20,6 +19,7 @@
 #include <iomanip>
 #include <sstream>
 #include <typeinfo>
+#include "SequentialMoveSchedule.h"
 
 using namespace RevBayesCore;
 

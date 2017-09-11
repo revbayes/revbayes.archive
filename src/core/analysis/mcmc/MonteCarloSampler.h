@@ -9,9 +9,8 @@
 #include "Parallelizable.h"
 #include "RandomMoveSchedule.h"
 #include "RbVector.h"
-#include "SequenctialMoveSchedule.h"
-
 #include <vector>
+#include "SequentialMoveSchedule.h"
 
 namespace RevBayesCore {
     

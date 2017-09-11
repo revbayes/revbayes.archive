@@ -10,10 +10,9 @@
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RbOptions.h"
-#include "SequenctialMoveSchedule.h"
-
 #include <cmath>
 #include <typeinfo>
+#include "SequentialMoveSchedule.h"
 
 
 #ifdef RB_MPI

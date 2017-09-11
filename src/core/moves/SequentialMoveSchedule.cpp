@@ -6,10 +6,10 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "SequenctialMoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbIterator.h"
+#include "SequentialMoveSchedule.h"
 
 using namespace RevBayesCore;
 
