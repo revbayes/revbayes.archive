@@ -55,7 +55,7 @@ Real::Real( RevBayesCore::TypedDagNode<double> *v ) : ModelObject<double>( v )
 
 
 /* Construct from int */
-Real::Real(int v) : ModelObject<double>( new double(v) )
+Real::Real(long v) : ModelObject<double>( new double(v) )
 {
 
 }

@@ -121,6 +121,7 @@
 #include "Func_setwd.h"
 #include "Func_structure.h"
 #include "Func_system.h"
+#include "Func_time.h"
 #include "Func_type.h"
 #include "Func_workspaceVector.h"
 
@@ -255,39 +256,40 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         /* Basic functions (in folder "functions/basic") */
 
         // regular functions
-        addFunction( new Func_append<Integer>()          );
-        addFunction( new Func_append<Real>()             );
-        addFunction( new Func_append<Natural>()          );
-        addFunction( new Func_append<RealPos>()          );
-        addFunction( new Func_append<RlString>()         );
-        addFunction( new Func_append<RlBoolean>()        );
-        addFunction( new Func_clear()                    );
-        addFunction( new Func_exists()                   );
-        addFunction( new Func_getwd()                    );
-        addFunction( new Func_getOption()                );
-        addFunction( new Func_ifelse<Natural>()          );
-        addFunction( new Func_ifelse<Integer>()          );
-        addFunction( new Func_ifelse<Real>()             );
-        addFunction( new Func_ifelse<RealPos>()          );
-        addFunction( new Func_ifelse<RlString>()         );
-        addFunction( new Func_license()                  );
-        addFunction( new Func_ls()                       );
-        addFunction( new Func_printSeed()                );
-        addFunction( new Func_quit()                     );
-        addFunction( new Func_replicate<Integer>()       );
-        addFunction( new Func_replicate<Real>()          );
-        addFunction( new Func_replicate<Natural>()       );
-        addFunction( new Func_replicate<RealPos>()       );
-        addFunction( new Func_replicate<RlString>()      );
-        addFunction( new Func_replicate<RlBoolean>()     );
-        addFunction( new Func_seed()                     );
-        addFunction( new Func_seq<Integer>()             );
-        addFunction( new Func_seq<Real>()                );
-        addFunction( new Func_setOption()                );
-        addFunction( new Func_setwd()                    );
-        addFunction( new Func_structure()                );
-        addFunction( new Func_system()                   );
-        addFunction( new Func_type()                     );
+        addFunction( new Func_append<Integer>()             );
+        addFunction( new Func_append<Real>()                );
+        addFunction( new Func_append<Natural>()             );
+        addFunction( new Func_append<RealPos>()             );
+        addFunction( new Func_append<RlString>()            );
+        addFunction( new Func_append<RlBoolean>()           );
+        addFunction( new Func_clear()                       );
+        addFunction( new Func_exists()                      );
+        addFunction( new Func_getwd()                       );
+        addFunction( new Func_getOption()                   );
+        addFunction( new Func_ifelse<Natural>()             );
+        addFunction( new Func_ifelse<Integer>()             );
+        addFunction( new Func_ifelse<Real>()                );
+        addFunction( new Func_ifelse<RealPos>()             );
+        addFunction( new Func_ifelse<RlString>()            );
+        addFunction( new Func_license()                     );
+        addFunction( new Func_ls()                          );
+        addFunction( new Func_printSeed()                   );
+        addFunction( new Func_quit()                        );
+        addFunction( new Func_replicate<Integer>()          );
+        addFunction( new Func_replicate<Real>()             );
+        addFunction( new Func_replicate<Natural>()          );
+        addFunction( new Func_replicate<RealPos>()          );
+        addFunction( new Func_replicate<RlString>()         );
+        addFunction( new Func_replicate<RlBoolean>()        );
+        addFunction( new Func_seed()                        );
+        addFunction( new Func_seq<Integer>()                );
+        addFunction( new Func_seq<Real>()                   );
+        addFunction( new Func_setOption()                   );
+        addFunction( new Func_setwd()                       );
+        addFunction( new Func_structure()                   );
+        addFunction( new Func_system()                      );
+        addFunction( new Func_time()                        );
+        addFunction( new Func_type()                        );
 
         /* Internal functions (in folder "functions/internal") */
         /* Note: These are functions that are called implicitly, and the name of which, if
@@ -334,6 +336,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__ne<             Integer,             Real >()             );
         addFunction( new Func__ne<                Real,          Integer >()             );
         addFunction( new Func__ne<           RlBoolean,        RlBoolean >()             );
+        addFunction( new Func__ne<            RlString,         RlString >()             );
         addFunction( new Func__ne<       RateGenerator,    RateGenerator >()             );
         addFunction( new Func__ne<             Simplex,          Simplex >()             );
         addFunction( new Func__ne<            TimeTree,         TimeTree >()             );

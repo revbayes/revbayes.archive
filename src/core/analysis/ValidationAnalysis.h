@@ -37,8 +37,8 @@ namespace RevBayesCore {
         void                                    burnin(size_t g, size_t ti);
         void                                    runAll(size_t g);
         void                                    runSim(size_t idx, size_t g);
-        void                                    summarizeAll(void);
-        void                                    summarizeSim(size_t idx);
+        void                                    summarizeAll(double c);
+        void                                    summarizeSim(double c, size_t idx);
         
     private:
                 
@@ -46,7 +46,6 @@ namespace RevBayesCore {
         size_t                                  num_runs;
         std::vector<MonteCarloAnalysis*>        runs;
         std::vector<Model*>                     simulation_values;
-        double                                  credible_interval_size;
 
         std::map<std::string, int>              coverage_count;
     };

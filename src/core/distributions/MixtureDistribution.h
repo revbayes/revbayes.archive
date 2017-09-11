@@ -24,7 +24,7 @@ namespace RevBayesCore {
      * @since 2014-11-18, version 1.0
      */
     template <class mixtureType>
-    class MixtureDistribution : public TypedDistribution<mixtureType>, public MemberObject<int> {
+    class MixtureDistribution : public TypedDistribution<mixtureType>, public MemberObject<long> {
         
     public:
         // constructor(s)
@@ -33,7 +33,7 @@ namespace RevBayesCore {
         // public member functions
         MixtureDistribution*                                clone(void) const;                                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
-        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;     //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;     //!< Map the member methods to internal function calls
         const std::vector<mixtureType>&                     getParameterValues(void) const;
         size_t                                              getCurrentIndex(void) const;
         size_t                                              getNumberOfCategories(void) const;
@@ -107,12 +107,12 @@ double RevBayesCore::MixtureDistribution<mixtureType>::computeLnProbability( voi
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+void RevBayesCore::MixtureDistribution<mixtureType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, long &rv) const
 {
     
     if ( n == "getAllocationIndex" )
     {
-        rv = int(index);
+        rv = long(index);
     }
     else
     {

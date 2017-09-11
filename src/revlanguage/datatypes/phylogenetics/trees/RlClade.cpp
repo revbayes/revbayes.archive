@@ -15,32 +15,32 @@ using namespace RevLanguage;
 /** Default constructor */
 Clade::Clade(void) : ModelObject<RevBayesCore::Clade>()
 {
+    
+    initMethods();
 
 }
 
 /** Construct from core Clade */
 Clade::Clade(RevBayesCore::Clade *c) : ModelObject<RevBayesCore::Clade>( c )
 {
+    
+    initMethods();
 
 }
 
 /** Construct from core Clade */
 Clade::Clade(const RevBayesCore::Clade &t) : ModelObject<RevBayesCore::Clade>( new RevBayesCore::Clade( t ) )
 {
+    
+    initMethods();
 
 }
 
 /** Construct from DAG node */
 Clade::Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n) : ModelObject<RevBayesCore::Clade>( n )
 {
-
-}
-
-
-
-/** Construct */
-Clade::Clade(const Clade &t) : ModelObject<RevBayesCore::Clade>( t )
-{
+    
+    initMethods();
 
 }
 
@@ -61,93 +61,125 @@ Clade* Clade::clone(void) const
 void Clade::constructInternalObject( void )
 {
   // we free the memory first
-  if ( dag_node != NULL )
+    if ( dag_node != NULL )
     {
-      if ( dag_node->decrementReferenceCount() == 0 )
+        if ( dag_node->decrementReferenceCount() == 0 )
         {
-	  delete dag_node;
+            delete dag_node;
         }
     }
 
-  // get clade constraint flags
-  bool match = static_cast<const RlBoolean &>( optional_match->getRevObject() ).getValue();
-  bool neg = static_cast<const RlBoolean &>( is_negative_constraint->getRevObject() ).getValue();
+    // get clade constraint flags
+    bool match = static_cast<const RlBoolean &>( optional_match->getRevObject() ).getValue();
+    bool neg = static_cast<const RlBoolean &>( is_negative_constraint->getRevObject() ).getValue();
 
-  // now allocate a new Clade
-  std::vector<RevBayesCore::Taxon> n;
-  for (std::vector<RevPtr<const RevVariable> >::iterator it = names.begin(); it != names.end(); ++it)
+    // now allocate a new Clade
+    std::vector<RevBayesCore::Taxon> n;
+    for (std::vector<RevPtr<const RevVariable> >::iterator it = names.begin(); it != names.end(); ++it)
     {
-      RevBayesCore::Taxon t = RevBayesCore::Taxon(static_cast<const RlString &>( (*it)->getRevObject() ).getValue());
-      n.push_back( t );
+        RevBayesCore::Taxon t = RevBayesCore::Taxon(static_cast<const RlString &>( (*it)->getRevObject() ).getValue());
+        n.push_back( t );
     }
 
-  // now add names to new clade
-  for (std::vector<RevPtr<const RevVariable> >::iterator it = names_vector.begin(); it != names_vector.end(); ++it)
+    // now add names to new clade
+    for (std::vector<RevPtr<const RevVariable> >::iterator it = names_vector.begin(); it != names_vector.end(); ++it)
     {
-      const ModelVector<RlString> &tmp = static_cast<const ModelVector<RlString> &>( (*it)->getRevObject() );
+        const ModelVector<RlString> &tmp = static_cast<const ModelVector<RlString> &>( (*it)->getRevObject() );
 
-      for(size_t i=0; i<tmp.size(); ++i)
+        for(size_t i=0; i<tmp.size(); ++i)
         {
-	  RevBayesCore::Taxon t = RevBayesCore::Taxon( tmp.getElement(i)->getValue() );
-	  n.push_back( t );
+            RevBayesCore::Taxon t = RevBayesCore::Taxon( tmp.getElement(i)->getValue() );
+            n.push_back( t );
         }
 
     }
 
-  // now allocate a new Clade
-  std::vector<RevBayesCore::Clade> optional_constraints;
-  for (std::vector<RevPtr<const RevVariable> >::iterator it = clades.begin(); it != clades.end(); ++it)
+    // now allocate a new Clade
+    std::vector<RevBayesCore::Clade> optional_constraints;
+    for (std::vector<RevPtr<const RevVariable> >::iterator it = clades.begin(); it != clades.end(); ++it)
     {
 
-      const RevBayesCore::Clade &c = static_cast<const Clade &>( (*it)->getRevObject() ).getValue();
+        const RevBayesCore::Clade &c = static_cast<const Clade &>( (*it)->getRevObject() ).getValue();
 
-      if (match) {
-	optional_constraints.push_back(c);
-      }
-
-      const std::vector<RevBayesCore::Taxon> &taxa = c.getTaxa();
-      for(size_t i=0; i<taxa.size(); ++i)
+        if (match)
         {
-	  const RevBayesCore::Taxon &t = taxa[i];
-	  n.push_back( t );
+            optional_constraints.push_back(c);
+        }
+
+        const std::vector<RevBayesCore::Taxon> &taxa = c.getTaxa();
+        for(size_t i=0; i<taxa.size(); ++i)
+        {
+            const RevBayesCore::Taxon &t = taxa[i];
+            n.push_back( t );
         }
     }
 
 
-  RevBayesCore::Clade *c = new RevBayesCore::Clade(n);
+    RevBayesCore::Clade *c = new RevBayesCore::Clade(n);
 
-  // set the age if provided
-  if ( age->getRevObject() != RevNullObject::getInstance() )
+    // set the age if provided
+    if ( age->getRevObject() != RevNullObject::getInstance() )
     {
-      double a = static_cast<const RealPos &>( age->getRevObject() ).getValue();
-      c->setAge( a );
+        double a = static_cast<const RealPos &>( age->getRevObject() ).getValue();
+        c->setAge( a );
     }
 
-  // set the number of missing if provided
-  if ( missing->getRevObject() != RevNullObject::getInstance() )
+    // set the number of missing if provided
+    if ( missing->getRevObject() != RevNullObject::getInstance() )
     {
-      int n = static_cast<const Natural &>( missing->getRevObject() ).getValue();
-      c->setNumberMissingTaxa( n );
+        long n = static_cast<const Natural &>( missing->getRevObject() ).getValue();
+        c->setNumberMissingTaxa( n );
     }
 
-  // set optional clade constraints if provided
-  if (match && optional_constraints.size() > 0)
+    // set optional clade constraints if provided
+    if (match && optional_constraints.size() > 0)
     {
-      c->setOptionalConstraints( optional_constraints );
+        c->setOptionalConstraints( optional_constraints );
     }
 
 
-  // set optional match clade constraint
-  c->setOptionalMatch( match );
+    // set optional match clade constraint
+    c->setOptionalMatch( match );
 
-  // set negative clade constraint
-  c->setNegativeConstraint( neg );
+    // set negative clade constraint
+    c->setNegativeConstraint( neg );
 
 
-  dag_node = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", c);
-  dag_node->incrementReferenceCount();
+    dag_node = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", c);
+    dag_node->incrementReferenceCount();
 
 }
+
+/* Map calls to member methods */
+RevLanguage::RevPtr<RevLanguage::RevVariable> Clade::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
+    
+    if (name == "size")
+    {
+        found = true;
+        
+        return new RevVariable( new RlBoolean( this->dag_node->getValue().size() ) );
+    }
+    else if (name == "getTaxonName" )
+    {
+        found = true;
+        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        
+        std::string t = this->dag_node->getValue().getTaxonName( index );
+        return new RevVariable( new RlString( t ) );
+    }
+    else if (name == "getTaxo" )
+    {
+        found = true;
+        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        
+        RevBayesCore::Taxon t = this->dag_node->getValue().getTaxon( index );
+        return new RevVariable( new Taxon( t ) );
+    }
+    
+    return ModelObject<RevBayesCore::Clade>::executeMethod( name, args, found );
+}
+
 
 
 /**
@@ -157,10 +189,10 @@ void Clade::constructInternalObject( void )
  */
 std::string Clade::getConstructorFunctionName( void ) const
 {
-  // create a constructor function name variable that is the same for all instance of this class
-  std::string c_name = "clade";
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "clade";
 
-  return c_name;
+    return c_name;
 }
 
 
@@ -168,26 +200,26 @@ std::string Clade::getConstructorFunctionName( void ) const
 const MemberRules& Clade::getParameterRules(void) const
 {
 
-  static MemberRules memberRules;
-  static bool rules_set = false;
+    static MemberRules memberRules;
+    static bool rules_set = false;
 
-  if ( !rules_set )
+    if ( !rules_set )
     {
 
-      memberRules.push_back( new Ellipsis( "Taxon names as string values.", RlString::getClassTypeSpec() ) );
-      memberRules.push_back( new Ellipsis("Taxon names as a vector of string values.", ModelVector<RlString>::getClassTypeSpec() ) );
-      memberRules.push_back( new Ellipsis( "Taxa as clade objects.", Clade::getClassTypeSpec() ) );
-      memberRules.push_back( new Ellipsis( "Taxon names as taxon values", Taxon::getClassTypeSpec() ) );
-      memberRules.push_back( new Ellipsis( "Taxon names as a vector of taxons", ModelVector<Taxon>::getClassTypeSpec() ) );
-      memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-      memberRules.push_back( new ArgumentRule("missing", Natural::getClassTypeSpec(), "Number of missing taxa in the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-      memberRules.push_back( new ArgumentRule("negative", RlBoolean::getClassTypeSpec(), "Is this a negative clade constraint?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-      memberRules.push_back( new ArgumentRule("optional_match", RlBoolean::getClassTypeSpec(), "Clade constraint satisfied when any Clade argument matched", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        memberRules.push_back( new Ellipsis( "Taxon names as string values.", RlString::getClassTypeSpec() ) );
+        memberRules.push_back( new Ellipsis("Taxon names as a vector of string values.", ModelVector<RlString>::getClassTypeSpec() ) );
+        memberRules.push_back( new Ellipsis( "Taxa as clade objects.", Clade::getClassTypeSpec() ) );
+        memberRules.push_back( new Ellipsis( "Taxon names as taxon values", Taxon::getClassTypeSpec() ) );
+        memberRules.push_back( new Ellipsis( "Taxon names as a vector of taxons", ModelVector<Taxon>::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule("missing", Natural::getClassTypeSpec(), "Number of missing taxa in the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule("negative", RlBoolean::getClassTypeSpec(), "Is this a negative clade constraint?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        memberRules.push_back( new ArgumentRule("optional_match", RlBoolean::getClassTypeSpec(), "Clade constraint satisfied when any Clade argument matched", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
 
-      rules_set = true;
+        rules_set = true;
     }
 
-  return memberRules;
+    return memberRules;
 }
 
 
@@ -204,9 +236,9 @@ const std::string& Clade::getClassType(void)
 const TypeSpec& Clade::getClassTypeSpec(void)
 {
 
-  static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::Clade>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::Clade>::getClassTypeSpec() ) );
 
-  return rev_type_spec;
+    return rev_type_spec;
 }
 
 
@@ -214,9 +246,31 @@ const TypeSpec& Clade::getClassTypeSpec(void)
 const TypeSpec& Clade::getTypeSpec( void ) const
 {
 
-  static TypeSpec type_spec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
 
-  return type_spec;
+    return type_spec;
+}
+
+
+/**
+ * Initialize the member methods.
+ */
+void Clade::initMethods( void )
+{
+    
+    
+    ArgumentRules* ntipsArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "size", RlUtils::Void, ntipsArgRules ) );
+    
+    ArgumentRules* namesArgRules = new ArgumentRules();
+    namesArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "getTaxonName", RlString::getClassTypeSpec(), namesArgRules ) );
+    
+    ArgumentRules* taxaArgRules = new ArgumentRules();
+    taxaArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "getTaxon", Taxon::getClassTypeSpec(), taxaArgRules ) );
+    
+    
 }
 
 
@@ -224,17 +278,17 @@ const TypeSpec& Clade::getTypeSpec( void ) const
 void Clade::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
 
-  if ( name == "taxonName" || (name == "" && var->getRevObject().getTypeSpec() == RlString::getClassTypeSpec() ) )
+    if ( name == "taxonName" || (name == "" && var->getRevObject().getTypeSpec() == RlString::getClassTypeSpec() ) )
     {
-      names.push_back( var );
+        names.push_back( var );
     }
-  else if ( name == "" && var->getRevObject().getTypeSpec() == Clade::getClassTypeSpec() )
+    else if ( name == "" && var->getRevObject().getTypeSpec() == Clade::getClassTypeSpec() )
     {
-      clades.push_back( var );
+        clades.push_back( var );
     }
-  else if ( name == "" && var->getRevObject().getTypeSpec() == ModelVector<RlString>::getClassTypeSpec() )
+    else if ( name == "" && var->getRevObject().getTypeSpec() == ModelVector<RlString>::getClassTypeSpec() )
     {
-      names_vector.push_back( var );
+        names_vector.push_back( var );
     }
     //Alternatively, one could provide taxons, not names
     else if ( name == "taxonName" || (name == "" && var->getRevObject().getTypeSpec() == Taxon::getClassTypeSpec() ) )
@@ -246,37 +300,38 @@ void Clade::setConstParameter(const std::string& name, const RevPtr<const RevVar
     else if ( name == "" && var->getRevObject().getTypeSpec() == ModelVector<Taxon>::getClassTypeSpec() )
     {
         ModelVector<RlString> rlvector = ModelVector<RlString>();
-        for (size_t i = 0; i<static_cast<const ModelVector<Taxon> &>( var->getRevObject()).size(); ++i) {
-          std::string name = static_cast<const ModelVector<Taxon> &>( var->getRevObject())[i].getSpeciesName();
-          //const RevPtr<const RevVariable> rlName = new const RevVariable(new RlString( name )) ;
-          const RlString rlName  = RlString (name);
-          rlvector.push_back(rlName);
+        for (size_t i = 0; i<static_cast<const ModelVector<Taxon> &>( var->getRevObject()).size(); ++i)
+        {
+            std::string name = static_cast<const ModelVector<Taxon> &>( var->getRevObject())[i].getSpeciesName();
+            //const RevPtr<const RevVariable> rlName = new const RevVariable(new RlString( name )) ;
+            const RlString rlName  = RlString (name);
+            rlvector.push_back(rlName);
         }
         const RevPtr<const RevVariable>  rvptr = new const RevVariable(new ModelVector<RlString> (rlvector) );
         names_vector.push_back( rvptr );
     }
-  else if ( name == "age")
+    else if ( name == "age")
     {
-      age = var;
+        age = var;
     }
-  else if ( name == "missing")
+    else if ( name == "missing")
     {
-      missing = var;
+        missing = var;
     }
-  else if ( name == "negative" )
+    else if ( name == "negative" )
     {
-      is_negative_constraint = var;
+        is_negative_constraint = var;
     }
-  else if ( name == "optional_match" )
+    else if ( name == "optional_match" )
     {
-      optional_match = var;
+        optional_match = var;
     }
   //    else if ( name == "optional_constraints" )
   //    {
   //        optional_constraints = var;
   //    }
-  else
+    else
     {
-      RevObject::setConstParameter(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }

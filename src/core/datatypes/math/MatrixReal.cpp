@@ -178,7 +178,7 @@ void MatrixReal::executeMethod(const std::string &n, const std::vector<const Dag
     
     if ( n == "[]" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         rv = elements[index];
     }
     else

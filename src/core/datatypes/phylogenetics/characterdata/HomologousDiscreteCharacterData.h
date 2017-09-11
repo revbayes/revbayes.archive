@@ -816,7 +816,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
     }
 
     int max;
-    for(max = observed.size() - 1; max >= 0; max--)
+    for (max = long(observed.size()) - 1; max >= 0; max--)
     {
         if(observed.isSet(max))
         {

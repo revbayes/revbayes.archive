@@ -172,8 +172,6 @@
 #include "Dist_multinomial.h"
 #include "Dist_multivariateNorm.h"
 #include "Dist_norm.h"
-#include "Dist_normalTruncated.h"
-#include "Dist_normalTruncatedPositive.h"
 #include "Dist_poisson.h"
 #include "Dist_scaledDirichlet.h"
 #include "Dist_softBoundUniformNormal.h"
@@ -184,6 +182,7 @@
 #include "Dist_UniformInteger.h"
 #include "Dist_UniformNatural.h"
 #include "Dist_varianceGamma.h"
+#include "Dist_whiteNoise.h"
 #include "Dist_wishart.h"
 #include "Process_OrnsteinUhlenbeck.h"
 
@@ -390,8 +389,6 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // normal distribution
         AddContinuousDistribution< Real             >( new Dist_norm() );
-        AddContinuousDistribution< Real             >( new Dist_normalTruncated() );
-        AddContinuousDistribution< RealPos          >( new Dist_normalTruncatedPositive() );
 
         // LogUniform distribution
         AddContinuousDistribution< RealPos          >( new Dist_logUniform() );
@@ -407,6 +404,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< Integer                    >( new Dist_UniformInteger() );
         AddDistribution< Natural                    >( new Dist_UniformNatural() );
         AddContinuousDistribution< Real             >( new Dist_varianceGamma() );
+        
+        // White-Noise process
+        AddContinuousDistribution< RealPos          >( new Dist_whiteNoise() );
 
         // LKJ distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_LKJ() );

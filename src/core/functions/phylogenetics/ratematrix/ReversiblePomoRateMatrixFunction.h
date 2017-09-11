@@ -36,7 +36,7 @@ namespace RevBayesCore {
 
     public:
         // ReversiblePomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateGenerator > *mm );
-        ReversiblePomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RbVector<double> > *rho, const TypedDagNode< Simplex > *pi  );
+        ReversiblePomoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RbVector<double> > *rho, const TypedDagNode< Simplex > *pi  );
 
         virtual                                             ~ReversiblePomoRateMatrixFunction(void);                                                    //!< Virtual destructor
 

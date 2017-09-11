@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-FloorFunction::FloorFunction(const TypedDagNode<double> *x) : TypedFunction<int>( new int(0) ),
+FloorFunction::FloorFunction(const TypedDagNode<double> *x) : TypedFunction<long>( new long(0) ),
     a( x )
 {
     addParameter( x );

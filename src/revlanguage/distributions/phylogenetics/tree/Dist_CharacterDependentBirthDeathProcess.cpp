@@ -47,7 +47,7 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     
     // Get the parameters
     RevBayesCore::TypedDagNode<double>* ra   = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
-//    RevBayesCore::TypedDagNode<int>*    rs   = static_cast<const Natural &>( root_state->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode<long>*    rs   = static_cast<const Natural &>( root_state->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sp  = static_cast<const ModelVector<RealPos> &>( speciation_rates->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ex  = static_cast<const ModelVector<RealPos> &>( extinction_rates->getRevObject() ).getDagNode();
 

@@ -45,7 +45,7 @@ RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_
     
     RevBayesCore::TypedDagNode<double>* gf = static_cast<const Real&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* lf = static_cast<const Real&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<int>* w = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<long>* w = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* c = NULL;
     if ( this->args[3].getVariable()->getRevObject().isType( ModelVector<ModelVector<Real> >::getClassTypeSpec() ) )
     {

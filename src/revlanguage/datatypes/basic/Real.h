@@ -25,7 +25,7 @@ namespace RevLanguage {
         Real(void);                                                                                             //!< Default constructor (0.0)
         Real(RevBayesCore::TypedDagNode<double> *v);                                                            //!< Construct from DAG node
         Real(double v);                                                                                         //!< Construct from double
-        Real(int v);                                                                                            //!< Construct from int 
+        Real(long v);                                                                                           //!< Construct from int
         Real(const Real& x);                                                                                    //!< Copy constructor
         
         // Basic operator functions

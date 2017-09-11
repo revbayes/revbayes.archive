@@ -28,14 +28,14 @@ namespace RevBayesCore {
     namespace RbStatistics {
     
         namespace Multinomial {
-            double                      pdf(const std::vector<double>& p, const std::vector<unsigned int>& x);  /*!< Multinomial(p[]) probability */
-            double                      pdf(const std::vector<double>& p, const std::vector<int>& x);           /*!< Multinomial(p[]) probability */
-            double                      pdf(const std::vector<double>& p, const std::vector<double>& x);        /*!< Multinomial(p[]) probability */
-            double                      lnPdf(const std::vector<double>& p, const std::vector<unsigned int>& x);/*!< Multinomial(p[]) log_e probability */
-            double                      lnPdf(const std::vector<double>& p, const std::vector<int>& x);         /*!< Multinomial(p[]) log_e probability */
-            double                      lnPdf(const std::vector<double>& p, const std::vector<double>& x);      /*!< Multinomial(p[]) log_e probability */
-            std::vector<int>            rv(const std::vector<double>& p, RandomNumberGenerator& rng);           /*!< Multinomial(p[]) random variable */
-            std::vector<int>            rv(const std::vector<double>& p, size_t n, RandomNumberGenerator& rng);    /*!< Multinomial(p[]) random variable */
+            double                      pdf(const std::vector<double>& p, const std::vector<unsigned int>& x);      /*!< Multinomial(p[]) probability */
+            double                      pdf(const std::vector<double>& p, const std::vector<long>& x);              /*!< Multinomial(p[]) probability */
+            double                      pdf(const std::vector<double>& p, const std::vector<double>& x);            /*!< Multinomial(p[]) probability */
+            double                      lnPdf(const std::vector<double>& p, const std::vector<unsigned int>& x);    /*!< Multinomial(p[]) log_e probability */
+            double                      lnPdf(const std::vector<double>& p, const std::vector<long>& x);            /*!< Multinomial(p[]) log_e probability */
+            double                      lnPdf(const std::vector<double>& p, const std::vector<double>& x);          /*!< Multinomial(p[]) log_e probability */
+            std::vector<long>           rv(const std::vector<double>& p, RandomNumberGenerator& rng);               /*!< Multinomial(p[]) random variable */
+            std::vector<long>           rv(const std::vector<double>& p, size_t n, RandomNumberGenerator& rng);     /*!< Multinomial(p[]) random variable */
         }
     }
 }
