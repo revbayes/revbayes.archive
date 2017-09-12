@@ -785,6 +785,12 @@ double RbStatistics::Helper::rndGamma4(double s, RandomNumberGenerator& rng) {
     if ( alpha_scaled == true ) {
         double u = rng.uniform01();
         x *= pow(u, 1 / s);
+        
+        // make sure that x cannot be exactly 0
+        if(x == 0) {
+            x = 1e-300;
+        }
+        
     }
     
     return x;
