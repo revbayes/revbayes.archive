@@ -194,7 +194,7 @@ double DirichletSimplexProposal::doProposal( void )
         {
             // Hastings ratio
             lnProposalRatio  = RbStatistics::Dirichlet::lnPdf(alphaReverse, x) - RbStatistics::Dirichlet::lnPdf(alphaForward, z); // Hastings Ratio
-            lnProposalRatio += (n - nCategories) * log(factor); // Jacobian
+            lnProposalRatio += (n - nCategories - 1) * log(factor); // Jacobian
         }
         catch (RbException e)
         {
