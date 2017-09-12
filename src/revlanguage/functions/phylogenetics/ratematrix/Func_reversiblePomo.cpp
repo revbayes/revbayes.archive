@@ -9,6 +9,7 @@
 
 #include "ReversiblePomoRateMatrixFunction.h"
 #include "Func_reversiblePomo.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RateMatrix_ReversiblePomo.h"
 #include "Real.h"
@@ -40,15 +41,20 @@ Func_reversiblePomo* Func_reversiblePomo::clone( void ) const {
 
 RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_reversiblePomo::createFunction( void ) const
 {
+    RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* bf = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
-  RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator >* q = static_cast<const RateMatrix &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    if ( er->getValue().size() != (bf->getValue().size() * (bf->getValue().size()-1) / 2.0) )
+    {
+        throw RbException("The dimensions between the base frequencies and the substitution rates do not match (they should be 4 and 6).");
+    }
 
-  //  RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix >* q = static_cast<const RateMatrix &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    //RevBayesCore::TypedDagNode< double >* root_pol = static_cast<const double &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::TypedDagNode< long >* n = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+  //RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator >* q = static_cast<const RateMatrix &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::ReversiblePomoRateMatrixFunction* f = new RevBayesCore::ReversiblePomoRateMatrixFunction( n, q );
+    RevBayesCore::TypedDagNode< long >* n = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+
+    RevBayesCore::ReversiblePomoRateMatrixFunction* f = new RevBayesCore::ReversiblePomoRateMatrixFunction( n, er, bf );
 
     return f;
 }
