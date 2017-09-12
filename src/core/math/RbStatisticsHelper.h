@@ -36,6 +36,8 @@ namespace RevBayesCore {
             double                      rndGamma(double s, RandomNumberGenerator& rng);
             double                      rndGamma1(double s, RandomNumberGenerator& rng);
             double                      rndGamma2(double s, RandomNumberGenerator& rng);
+            double                      rndGamma3(double a, RandomNumberGenerator& rng);
+            double                      rndGamma4(double s, RandomNumberGenerator& rng);
 		
             template <class T> void		randomlySelectFromVectorWithReplacement(std::vector<T>& sourceV, std::vector<T>& destV, size_t k, RandomNumberGenerator& rng) {
             
