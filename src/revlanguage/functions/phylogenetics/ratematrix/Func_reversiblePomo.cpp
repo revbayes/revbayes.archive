@@ -64,19 +64,21 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_reversiblePomo:
 const ArgumentRules& Func_reversiblePomo::getArgumentRules( void ) const
 {
 
-    static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rules_set = false;
+  static ArgumentRules argumentRules = ArgumentRules();
+  static bool          rules_set = false;
 
-    if ( !rules_set )
-    {
+  if ( !rules_set )
+  {
+    argumentRules.push_back( new ArgumentRule( "baseFrequencies", Simplex::getClassTypeSpec(), "The stationary frequencies of the 4 DNA states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    argumentRules.push_back( new ArgumentRule( "exchangeRates"      , ModelVector<Real>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
-        argumentRules.push_back( new ArgumentRule( "mutationRates", RateGenerator::getClassTypeSpec()    , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "virtualNe"    , Natural::getClassTypeSpec()          , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    //argumentRules.push_back( new ArgumentRule( "mutationRates", RateGenerator::getClassTypeSpec()    , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    argumentRules.push_back( new ArgumentRule( "virtualNe"    , Natural::getClassTypeSpec()          , "The virtual population size", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
-        rules_set = true;
-    }
+    rules_set = true;
+  }
 
-    return argumentRules;
+  return argumentRules;
 }
 
 

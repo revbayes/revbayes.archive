@@ -108,6 +108,13 @@ double BetaSimplexProposal::propose( Simplex &value )
         {
             value[i] *= scaling_factor_other_values;
         }
+        
+        // test for 0-values
+        if ( value[i] < 1E-100)
+        {
+            return RbConstants::Double::neginf;
+        }
+        
         sum += value[i];
     }
     
