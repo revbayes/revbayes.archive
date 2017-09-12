@@ -15,7 +15,7 @@ using namespace RevBayesCore;
 // }
 
 
-ReversiblePomoRateMatrixFunction::ReversiblePomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RbVector<double> > *rho, const TypedDagNode< Simplex > *pi   ) : TypedFunction<RateGenerator>( new RateMatrix_ReversiblePomo(4 + 6*(ps->getValue() - 1), rho->getValue(), pi->getValue(), ps->getValue() ) ), populationSize( ps ), exchangeabilities( rho ), equilibriumFrequencies( pi ) {
+ReversiblePomoRateMatrixFunction::ReversiblePomoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RbVector<double> > *rho, const TypedDagNode< Simplex > *pi   ) : TypedFunction<RateGenerator>( new RateMatrix_ReversiblePomo(4 + 6*(ps->getValue() - 1), rho->getValue(), pi->getValue(), ps->getValue() ) ), populationSize( ps ), exchangeabilities( rho ), equilibriumFrequencies( pi ) {
    // add the lambda parameter as a parent
    addParameter( populationSize );
    addParameter( exchangeabilities );
