@@ -178,7 +178,7 @@ double RateMatrix_ReversiblePomo::mutCoeff(int nt1, int nt2) {
       r = pi[0]*rho[0];
     }
     else if (nt2 == 2) {
-      r = pi[1]*rho[3];
+      r = pi[2]*rho[3];
     }
     else if (nt2 == 3) {
       r = pi[3]*rho[4];
