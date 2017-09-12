@@ -89,7 +89,7 @@ double DirichletSimplexProposal::doProposal( void )
     
     const RbVector<double>& curVal = variable->getValue();
     RbVector<double> newVal = curVal;
-    size_t              n      = curVal.size();
+    size_t           n      = curVal.size();
     
     /* We update the simplex values by proposing new values from a Dirichlet centered
      on the current values. The i-th parameter of the Dirichlet is the i-th value

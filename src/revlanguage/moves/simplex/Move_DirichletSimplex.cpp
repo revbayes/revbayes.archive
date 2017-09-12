@@ -42,7 +42,7 @@ void Move_DirichletSimplex::constructInternalObject( void )
     
     // now allocate a new sliding move
     double a = static_cast<const RealPos &>( alpha->getRevObject() ).getValue();
-    int nc = static_cast<const Natural &>( numCats->getRevObject() ).getValue();
+    int nc   = static_cast<const Natural &>( numCats->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double o = static_cast<const RealPos &>( offset->getRevObject() ).getValue();
     double r = static_cast<const RealPos &>( tuneTarget->getRevObject() ).getValue();
