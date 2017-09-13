@@ -6,7 +6,7 @@
 
 using namespace RevBayesCore;
 
-NormalDistribution::NormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s, const TypedDagNode<double> *mi = NULL, const TypedDagNode<double> *ma = NULL) : ContinuousDistribution( new double( 0.0 ) ),
+NormalDistribution::NormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s, const TypedDagNode<double> *mi, const TypedDagNode<double> *ma) : ContinuousDistribution( new double( 0.0 ) ),
     mean( m ),
     stDev( s ),
     min( mi ),
