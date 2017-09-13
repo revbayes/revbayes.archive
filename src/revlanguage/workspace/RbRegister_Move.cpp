@@ -154,6 +154,7 @@
 #include "Move_NNIClock.h"
 #include "Move_NNINonclock.h"
 #include "Move_NodeTimeScale.h"
+#include "Move_NodeTimeSlice.h"
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideBeta.h"
 #include "Move_RateAgeBetaShift.h"
@@ -302,15 +303,16 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 		addTypeWithConstructor( new Move_EmpiricalTree()                  );
         addTypeWithConstructor( new Move_FNPR()                           );
         addTypeWithConstructor( new Move_GibbsPruneAndRegraft()           );
-        addTypeWithConstructor( new Move_LayeredScaleProposal()                 );
+        addTypeWithConstructor( new Move_LayeredScaleProposal()           );
         addTypeWithConstructor( new Move_NarrowExchange()                 );
         addTypeWithConstructor( new Move_NNIClock()                       );
         addTypeWithConstructor( new Move_NNINonclock()                    );
         addTypeWithConstructor( new Move_NodeTimeScale()                  );
+        addTypeWithConstructor( new Move_NodeTimeSlice()                  );
         addTypeWithConstructor( new Move_NodeTimeSlideUniform()           );
         addTypeWithConstructor( new Move_NodeTimeSlideBeta()              );
         addTypeWithConstructor( new Move_RateAgeBetaShift()               );
-        addTypeWithConstructor( new Move_RootTimeScaleBactrian()           );
+        addTypeWithConstructor( new Move_RootTimeScaleBactrian()          );
         addTypeWithConstructor( new Move_RootTimeSlideUniform()           );
         addTypeWithConstructor( new Move_SubtreeScale()                   );
         addTypeWithConstructor( new Move_SPRNonclock()                    );
