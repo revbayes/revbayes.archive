@@ -43,6 +43,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   alpha;
         RevPtr<const RevVariable>                   numCats;
         RevPtr<const RevVariable>                   offset;
+        RevPtr<const RevVariable>                   kappa;
         RevPtr<const RevVariable>                   tune;
         
     };
