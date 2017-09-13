@@ -614,11 +614,11 @@ double RbStatistics::Helper::rndGamma3(double a, RandomNumberGenerator& rng) {
             p = e * rng.uniform01();
             if (p >= 1.0) {
                 x = -log((e - p) / a);
-                if (exp( rng.uniform01() ) >= (1.0 - a) * log(x))
+                if (-log( 1.0 - rng.uniform01() ) >= (1.0 - a) * log(x))
                     break;
             } else {
                 x = exp(log(p) / a);
-                if (exp( rng.uniform01() ) >= x)
+                if (-log( 1.0 - rng.uniform01() ) >= x)
                     break;
             }
         }
@@ -696,7 +696,7 @@ double RbStatistics::Helper::rndGamma3(double a, RandomNumberGenerator& rng) {
         /* Step 8: e = standard exponential deviate
          *	u =  0,1 -uniform deviate
          *	t = (b,si)-double exponential (laplace) sample */
-        e = exp( rng.uniform01() );
+        e = -log( 1.0 - rng.uniform01() );
         u = rng.uniform01();
         u = u + u - 1.0;
         if (u < 0.0)
@@ -793,10 +793,10 @@ double RbStatistics::Helper::rndGamma4(double s, RandomNumberGenerator& rng) {
         double u = rng.uniform01();
         x *= pow(u, 1 / s);
         
-        // make sure that x cannot be exactly 0
-        if(x == 0) {
-            x = 1e-300;
-        }
+//        // make sure that x cannot be exactly 0
+//        if(x == 0) {
+//            x = 1e-300;
+//        }
         
     }
     
