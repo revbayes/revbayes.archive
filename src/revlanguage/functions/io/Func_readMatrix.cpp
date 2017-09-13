@@ -1,16 +1,16 @@
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "DistanceMatrix.h"
-#include "DistanceMatrixReader.h"
+#include "MatrixReal.h"
+#include "MatrixReader.h"
 #include "Ellipsis.h"
-#include "Func_readDistanceMatrix.h"
+#include "Func_readMatrix.h"
 #include "ModelVector.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RevNullObject.h"
 #include "RlBoolean.h"
-#include "RlDistanceMatrix.h"
+#include "RlMatrixReal.h"
 #include "RlString.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
@@ -29,29 +29,32 @@ using namespace RevLanguage;
  *
  * \return A new copy of the process.
  */
-Func_readDistanceMatrix* Func_readDistanceMatrix::clone( void ) const
+Func_readMatrix* Func_readMatrix::clone( void ) const
 {
 	
-	return new Func_readDistanceMatrix( *this );
+	return new Func_readMatrix( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_readDistanceMatrix::execute( void )
+RevPtr<RevVariable> Func_readMatrix::execute( void )
 {
 	
 	// get the information from the arguments for reading the file
-	const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
-	
-	RevBayesCore::DistanceMatrixReader* dmr = new RevBayesCore::DistanceMatrixReader( fn.getValue(), ' ' );
-	RevBayesCore::DistanceMatrix* dm = new RevBayesCore::DistanceMatrix(dmr);
-		
-	return new RevVariable( new DistanceMatrix(dm) );
+	const RlString&    fn  = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
+    const std::string& del = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
+
+    RevBayesCore::MatrixReader* mr = new RevBayesCore::MatrixReader( fn.getValue(), del[0] );
+    RevBayesCore::MatrixReal    m  = mr->getMatrix();
+    MatrixReal*                 rm = new MatrixReal( m );
+
+    return new RevVariable( rm );
+    
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readDistanceMatrix::getArgumentRules( void ) const
+const ArgumentRules& Func_readMatrix::getArgumentRules( void ) const
 {
 	
 	static ArgumentRules argumentRules = ArgumentRules();
@@ -61,6 +64,7 @@ const ArgumentRules& Func_readDistanceMatrix::getArgumentRules( void ) const
 	{
 		
 		argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "Relative or absolute name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
 		rules_set = true;
 		
 	}
@@ -70,17 +74,17 @@ const ArgumentRules& Func_readDistanceMatrix::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_readDistanceMatrix::getClassType(void)
+const std::string& Func_readMatrix::getClassType(void)
 {
 	
-	static std::string rev_type = "Func_readDistanceMatrix";
+	static std::string rev_type = "Func_readMatrix";
 	
 	return rev_type;
 }
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readDistanceMatrix::getClassTypeSpec(void)
+const TypeSpec& Func_readMatrix::getClassTypeSpec(void)
 {
 	
 	static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -92,17 +96,17 @@ const TypeSpec& Func_readDistanceMatrix::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_readDistanceMatrix::getFunctionName( void ) const
+std::string Func_readMatrix::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "readDistanceMatrix";
+    std::string f_name = "readMatrix";
     
     return f_name;
 }
 
 
 /** Get type spec */
-const TypeSpec& Func_readDistanceMatrix::getTypeSpec( void ) const
+const TypeSpec& Func_readMatrix::getTypeSpec( void ) const
 {
 	
 	static TypeSpec type_spec = getClassTypeSpec();
@@ -112,10 +116,10 @@ const TypeSpec& Func_readDistanceMatrix::getTypeSpec( void ) const
 
 
 /** Get return type */
-const TypeSpec& Func_readDistanceMatrix::getReturnType( void ) const
+const TypeSpec& Func_readMatrix::getReturnType( void ) const
 {
 	
-	static TypeSpec returnTypeSpec = DistanceMatrix::getClassTypeSpec();
+	static TypeSpec returnTypeSpec = MatrixReal::getClassTypeSpec();
 	return returnTypeSpec;
 }
 

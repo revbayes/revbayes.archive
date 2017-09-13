@@ -1,5 +1,5 @@
-#ifndef DistanceMatrixReader_H
-#define DistanceMatrixReader_H
+#ifndef MatrixReader_H
+#define MatrixReader_H
 
 #include "DelimitedDataReader.h"
 #include "MatrixReal.h"
@@ -22,21 +22,23 @@ namespace RevBayesCore {
 	 * @since 2015-03-03, version 1.0
 	 *
 	 */
-	class DistanceMatrixReader : public DelimitedDataReader {
+	class MatrixReader {
 		
-	public:
-		
-		DistanceMatrixReader(const std::string &fn, char d='\t', size_t ns=0);
-		
-		const std::vector<Taxon>&                       getTaxa(void);
-		const MatrixReal&   							getMatrix(void);
-		
-		
-		
-	protected:
-		
-		std::vector<Taxon>                              taxa;
-		MatrixReal          							matrix;
+    public:
+        MatrixReader(const std::string &fn, char d='\t', size_t ls=0);
+        
+        void                                                readData( size_t ls);
+        const std::string&                                  getFilename(void);
+        const MatrixReal&   							    getMatrix(void);
+
+        
+        
+    protected:
+        
+        // protected member only accessible for derived classes
+        std::string                                         filename;
+        char                                                delimiter;
+		MatrixReal                                          matrix;
 		
 	};
 	

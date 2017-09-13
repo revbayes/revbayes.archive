@@ -1,5 +1,5 @@
-#ifndef Func_readDistanceMatrix_H
-#define Func_readDistanceMatrix_H
+#ifndef Func_readMatrix_H
+#define Func_readMatrix_H
 
 #include "Procedure.h"
 #include "RbFileManager.h"
@@ -15,11 +15,11 @@ namespace RevLanguage {
  * This is the interface for a class that reads in a distance matrix, in Phylip format.
  */
 
-class Func_readDistanceMatrix : public Procedure {
+class Func_readMatrix : public Procedure {
     
     public:
         // Basic utility functions
-        Func_readDistanceMatrix*     		clone(void) const;                                                      //!< Clone the object
+        Func_readMatrix*     		        clone(void) const;                                                      //!< Clone the object
         static const std::string&           getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
         std::string                         getFunctionName(void) const;                                            //!< Get the primary name of the function in Rev

@@ -190,6 +190,7 @@
 #include "Func_readTreeTrace.h"
 #include "Func_readAncestralStateTreeTrace.h"
 #include "Func_readAncestralStateTrace.h"
+#include "Func_readMatrix.h"
 #include "Func_source.h"
 #include "Func_summarizeCharacterMaps.h"
 #include "Func_TaxonReader.h"
@@ -481,6 +482,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_readDiscreteCharacterData()               );
 		addFunction( new Func_readDistanceMatrix()                      );
         addFunction( new Func_readCharacterDataUniversal()              );
+        addFunction( new Func_readMatrix()                              );
         addFunction( new Func_readRelativeNodeAgeConstraints()          );
         addFunction( new Func_readRelativeNodeAgeWeightedConstraints()  );
         addFunction( new Func_TaxonReader()                             );

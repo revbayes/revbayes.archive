@@ -30,7 +30,7 @@ namespace RevLanguage {
      * @since 2014-03-27, version 1.0
      *
      */
-    class MatrixRealSymmetric : public MatrixReal  {
+    class MatrixRealSymmetric : public MatrixReal {
         
     public:
         
