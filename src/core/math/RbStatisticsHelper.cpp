@@ -614,11 +614,11 @@ double RbStatistics::Helper::rndGamma3(double a, RandomNumberGenerator& rng) {
             p = e * rng.uniform01();
             if (p >= 1.0) {
                 x = -log((e - p) / a);
-                if (exp( rng.uniform01() ) >= (1.0 - a) * log(x))
+                if (-log( 1.0 - rng.uniform01() ) >= (1.0 - a) * log(x))
                     break;
             } else {
                 x = exp(log(p) / a);
-                if (exp( rng.uniform01() ) >= x)
+                if (-log( 1.0 - rng.uniform01() ) >= x)
                     break;
             }
         }
@@ -696,7 +696,7 @@ double RbStatistics::Helper::rndGamma3(double a, RandomNumberGenerator& rng) {
         /* Step 8: e = standard exponential deviate
          *	u =  0,1 -uniform deviate
          *	t = (b,si)-double exponential (laplace) sample */
-        e = exp( rng.uniform01() );
+        e = -log( 1.0 - rng.uniform01() );
         u = rng.uniform01();
         u = u + u - 1.0;
         if (u < 0.0)
@@ -739,7 +739,6 @@ double RbStatistics::Helper::rndGamma3(double a, RandomNumberGenerator& rng) {
  */
 double RbStatistics::Helper::rndGamma4(double s, RandomNumberGenerator& rng) {
     
-
     // This algorithm is based on:
     // G. Marsaglia and W. Tsang. A simple method for generating gamma variables. ACM Transactions on Mathematical Software, 26(3):363-372, 2000
     
@@ -759,7 +758,6 @@ double RbStatistics::Helper::rndGamma4(double s, RandomNumberGenerator& rng) {
         alpha_scaled = true;
     }
     
-    
     double d = alpha - 1.0 / 3.0;
     double c = 1 / sqrt(9 * d);
     
@@ -767,13 +765,22 @@ double RbStatistics::Helper::rndGamma4(double s, RandomNumberGenerator& rng) {
     while(true) {
         
         double z = RbStatistics::Normal::rv(rng);
-        double u = rng.uniform01();
+        while(z <= -1 / c)
+        {
+            z = RbStatistics::Normal::rv(rng);
+        }
         double v = pow(1 + c * z, 3);
         
-        double log_u = log(u);
-        double rhs   = 0.5 * pow(z, 2) + d - d * v + d * log(v);
+        double u = rng.uniform01();
+        if( u < 1 - 0.0331 * pow(z, 4) )
+        {
+            x = d * v;
+            break;
+        }
         
-        if( z > (-1 / c) && log_u < rhs )
+        double log_u = log(u);
+        double rhs   = 0.5 * pow(z, 2) + d * (1 - v + log(v));
+        if( log_u < rhs )
         {
             x = d * v;
             break;
@@ -786,10 +793,10 @@ double RbStatistics::Helper::rndGamma4(double s, RandomNumberGenerator& rng) {
         double u = rng.uniform01();
         x *= pow(u, 1 / s);
         
-        // make sure that x cannot be exactly 0
-        if(x == 0) {
-            x = 1e-300;
-        }
+//        // make sure that x cannot be exactly 0
+//        if(x == 0) {
+//            x = 1e-300;
+//        }
         
     }
     
