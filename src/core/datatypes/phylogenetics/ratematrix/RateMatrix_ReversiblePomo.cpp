@@ -15,14 +15,16 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(size_t n) : AbstractRateMatrix( n ), rho( 6 ), pi(4), N( 10 ), matrixSize( n )
+RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(size_t n) : AbstractRateMatrix( n ), rho( 6, 1.0 ), pi(4, 0.25), N( 10 ), matrixSize( n )
 {
-
+    // theEigenSystem       = new EigenSystem(the_rate_matrix);
+    // c_ijk.resize(num_states * num_states * num_states);
+    // cc_ijk.resize(num_states * num_states * num_states);
     update();
 }
 
 /** Construct rate matrix with n states and a matrix of mutation rates */
-// RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(size_t n,  const RateGenerator &Qmut) : abstractRatematrix( n ), Q_mut( static_cast< const Ratematrix_GtR& >( Qmut ) ), N( 10 ), matrixSize( n )
+// RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(size_t n,  const RateGenerator &Qmut) : AbstractRateMatrix( n ), Q_mut( static_cast< const Ratematrix_GtR& >( Qmut ) ), N( 10 ), matrixSize( n )
 // {
 //
 //     stationary_freqs = Q_mut.getstationaryFrequencies();
@@ -30,7 +32,7 @@ RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(size_t n) : AbstractRateMat
 // }
 //
 // /** Construct rate matrix with n states, a matrix of mutation rates, and a virtual population size */
-// RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(const size_t n,  const RateGenerator &Qmut, const size_t vps )  : abstractRatematrix( n ), Q_mut( static_cast< const Ratematrix_GtR& > ( Qmut ) ), N( vps ), matrixSize( n )
+// RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(const size_t n,  const RateGenerator &Qmut, const size_t vps )  : AbstractRateMatrix( n ), Q_mut( static_cast< const Ratematrix_GtR& > ( Qmut ) ), N( vps ), matrixSize( n )
 // {
 //   stationary_freqs = Q_mut.getstationaryFrequencies();
 //   update();
@@ -40,14 +42,56 @@ RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(size_t n) : AbstractRateMat
 /** Construct rate matrix with n states, an exchangeability matrix, a simplex of equilibrium frequencies, and a virtual population size */
 RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(const size_t n,  const std::vector<double> &rh, const Simplex p, const size_t vps  )  : AbstractRateMatrix( n ), rho(rh), pi(p), N( vps ), matrixSize( n )
 {
+
+  // theEigenSystem       = new EigenSystem(the_rate_matrix);
+  // c_ijk.resize(num_states * num_states * num_states);
+  // cc_ijk.resize(num_states * num_states * num_states);
+
   update();
+
 }
+
+/** Copy constructor */
+RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(const RateMatrix_ReversiblePomo& m) : AbstractRateMatrix( m ), rho(m.rho), pi(m.pi), N( m.N ), matrixSize( m.matrixSize )
+{
+
+    // theEigenSystem       = new EigenSystem( *m.theEigenSystem );
+    // c_ijk                = m.c_ijk;
+    // cc_ijk               = m.cc_ijk;
+    //
+    // theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+}
+
+
+RateMatrix_ReversiblePomo& RateMatrix_ReversiblePomo::operator=(const RateMatrix_ReversiblePomo &r)
+{
+
+  if (this != &r)
+  {
+    AbstractRateMatrix::operator=( r );
+    rho = r.rho;
+    pi = r.pi;
+    N = r.N;
+    matrixSize = r.matrixSize ;
+    // delete theEigenSystem;
+    //
+    // theEigenSystem       = new EigenSystem( *r.theEigenSystem );
+    // c_ijk                = r.c_ijk;
+    // cc_ijk               = r.cc_ijk;
+    //
+    // theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+  }
+
+  return *this;
+}
+
 
 
 
 /** Destructor */
 RateMatrix_ReversiblePomo::~RateMatrix_ReversiblePomo(void)
 {
+    // delete theEigenSystem;
 
 }
 
@@ -160,7 +204,6 @@ double RateMatrix_ReversiblePomo::mutCoeff(int nt1, int nt2) {
   // r[4][2*N+3] <- abs(pi[1]*rho[3]) //ta
   // r[4][4*N+1] <- abs(pi[2]*rho[5]) //tC
   // r[4][5*N]   <- abs(pi[3]*rho[6]) //tG
-
   double r = 0.0;
   if (nt1 == 0) {
     if (nt2 == 1) {
@@ -315,69 +358,33 @@ void RateMatrix_ReversiblePomo::buildRateMatrix(void)
 
 }
 
+
 /** Calculate the transition probabilities */
-void RateMatrix_ReversiblePomo::calculateTransitionProbabilities(double startage, double endage, double rate, TransitionProbabilityMatrix& P) const {
-   // std::cout << "In calculatetransitionProbabilities: "<< t <<std::endl;
+void RateMatrix_ReversiblePomo::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
 
-    //Now the instantaneous rate matrix has been filled up entirely.
-    //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
-    double t = rate * (startage - endage);
-    computeExponentialMatrixByRepeatedSquaring(t, P);
 
-/*    for (size_t i = 0 ; i<58; ++i) {
-      //  for (size_t j = 0 ; j<58; ++j) {
-            std::cout << "t: "<< t <<  " Diag "<< i << " : "<< P.getElement(i, i)<<std::endl;
-        //}
+  // We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+      // Mayrose et al. 2010 also used this method for chromosome evolution (named the squaring and scaling method in Moler and Van Loan 2003).
+  double t = rate * (startAge - endAge);
+  exponentiateMatrixByScalingAndSquaring(t, P);
 
-    }*/
+  //
+  //  // std::cout << "In calculatetransitionProbabilities: "<< t <<std::endl;
+   //
+  //   //Now the instantaneous rate matrix has been filled up entirely.
+  //   //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+  //   double t = rate * (startage - endage);
+  //   computeExponentialMatrixByRepeatedSquaring(t, P);
+   //
+  //   for (size_t i = 0 ; i<58; ++i) {
+  //     //  for (size_t j = 0 ; j<58; ++j) {
+  //           std::cout << "t: "<< t <<  " Diag "<< i << " : "<< P.getElement(i, i)<<std::endl;
+  //       //}
+   //
+  //   }
 
     return;
 }
-
-void RateMatrix_ReversiblePomo::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const {
-    //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
-    //Ideally one should dynamically decide how many squarings are necessary.
-    //For the moment, we arbitrarily do 10 such squarings, as it seems to perform well in practice (N. Lartillot, personal communication).
-    //first, multiply the matrix by the right scalar
-    //2^10 = 1024
-    double tOver2s = t/(1024);
-    for ( size_t i = 0; i < matrixSize; i++ ) {
-        for ( size_t j = 0; j < matrixSize; j++ ) {
-            P[i][j] = (*the_rate_matrix)[i][j] * tOver2s;
-        }
-    }
-    //add the identity matrix:
-     for ( size_t i = 0; i < matrixSize; i++ ) {
-         P[i][i] += 1;
-     }
-     //Now we can do the multiplications
-     TransitionProbabilityMatrix P2 (matrixSize);
-     squareMatrix (P, P2); //P2 at power 2
-     squareMatrix (P2, P); //P at power 4
-     squareMatrix (P, P2); //P2 at power 8
-     squareMatrix (P2, P); //P at power 16
-     squareMatrix (P, P2); //P2 at power 32
-     squareMatrix (P2, P); //P at power 64
-     squareMatrix (P, P2); //P2 at power 128
-     squareMatrix (P2, P); //P at power 256
-     squareMatrix (P, P2); //P2 at power 512
-     squareMatrix (P2, P); //P at power 1024
-
-     return;
-}
-
-inline void RateMatrix_ReversiblePomo::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const {
-    //Could probably use boost::ublas here, for the moment we do it ourselves.
-    for ( size_t i = 0; i < matrixSize; i++ ) {
-        for ( size_t j = 0; j < matrixSize; j++ ) {
-            P2.getElement ( i, j ) = 0;
-            for ( size_t k = 0; k < matrixSize; k++ ) {
-                P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
-                }
-            }
-        }
-    }
-
 
 
 RateMatrix_ReversiblePomo* RateMatrix_ReversiblePomo::clone( void ) const
@@ -414,8 +421,8 @@ std::vector<double> RateMatrix_ReversiblePomo::getStationaryFrequencies( void ) 
 
   //stationary frequencies of the polymorphic states
   size_t ind = 5;
-  for (size_t i = 0; i < 7; ++i) {
-    for (size_t j = 0; j < N; ++j) {
+  for (size_t i = 0; i < 6; ++i) {
+    for (size_t j = 0; j < N-1; ++j) {
       stationaryVector[ind] = rho[i]*pi[i1[i]]*pi[i2[i]]*N/(j*(N-j));
       sum += stationaryVector[ind];
       ind = ind+1;
@@ -426,6 +433,7 @@ std::vector<double> RateMatrix_ReversiblePomo::getStationaryFrequencies( void ) 
   for (size_t i = 0; i < numElements; ++i ){
     stationaryVector[i] = stationaryVector[i]/sum;
   }
+
   return stationaryVector;
 }
 
@@ -436,10 +444,71 @@ void RateMatrix_ReversiblePomo::update( void )
     if ( needs_update )
     {
         buildRateMatrix();
+
+        // rescale
+        //rescaleToAverageRate( 1.0 );
+
+        // now update the eigensystem
+//        updateEigenSystem();
+
         // clean flags
         needs_update = false;
     }
 }
+
+
+// OLD CODE:
+
+
+
+//
+// void RateMatrix_ReversiblePomo::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const {
+//     //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+//     //Ideally one should dynamically decide how many squarings are necessary.
+//     //For the moment, we arbitrarily do 10 such squarings, as it seems to perform well in practice (N. Lartillot, personal communication).
+//     //first, multiply the matrix by the right scalar
+//     //2^10 = 1024
+//     double tOver2s = t/(1024);
+//     for ( size_t i = 0; i < matrixSize; i++ ) {
+//         for ( size_t j = 0; j < matrixSize; j++ ) {
+//             P[i][j] = (*the_rate_matrix)[i][j] * tOver2s;
+//         }
+//     }
+//     //add the identity matrix:
+//      for ( size_t i = 0; i < matrixSize; i++ ) {
+//          P[i][i] += 1;
+//      }
+//      //Now we can do the multiplications
+//      TransitionProbabilityMatrix P2 (matrixSize);
+//      squareMatrix (P, P2); //P2 at power 2
+//      squareMatrix (P2, P); //P at power 4
+//      squareMatrix (P, P2); //P2 at power 8
+//      squareMatrix (P2, P); //P at power 16
+//      squareMatrix (P, P2); //P2 at power 32
+//      squareMatrix (P2, P); //P at power 64
+//      squareMatrix (P, P2); //P2 at power 128
+//      squareMatrix (P2, P); //P at power 256
+//      squareMatrix (P, P2); //P2 at power 512
+//      squareMatrix (P2, P); //P at power 1024
+//
+//      return;
+// }
+//
+// inline void RateMatrix_ReversiblePomo::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const {
+//     //Could probably use boost::ublas here, for the moment we do it ourselves.
+//     for ( size_t i = 0; i < matrixSize; i++ ) {
+//         for ( size_t j = 0; j < matrixSize; j++ ) {
+//             P2.getElement ( i, j ) = 0;
+//             for ( size_t k = 0; k < matrixSize; k++ ) {
+//                 P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
+//                 }
+//             }
+//         }
+//     }
+//
+
+
+
 
 //
 // void RateMatrix_ReversiblePomo::setmutationRates(const Ratematrix& mm)

@@ -30,6 +30,7 @@
 
 namespace RevBayesCore {
 
+    class EigenSystem;
     class TransitionProbabilityMatrix;
 
     class RateMatrix_ReversiblePomo : public AbstractRateMatrix {
@@ -43,6 +44,10 @@ namespace RevBayesCore {
 //        RateMatrix_ReversiblePomo(size_t n,  const RateGenerator &Qmut, const size_t vps);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a virtual population size
         //RateMatrix_ReversiblePomo(const size_t n,  const RateGenerator &Qmut, const size_t vps ) ;
         RateMatrix_ReversiblePomo(const size_t n,  const std::vector<double> &rh, const Simplex p, const size_t vps  );
+
+        RateMatrix_ReversiblePomo(const RateMatrix_ReversiblePomo& m) ;
+
+        RateMatrix_ReversiblePomo& operator=(const RateMatrix_ReversiblePomo &r) ;
         virtual                         ~RateMatrix_ReversiblePomo(void);                     //!< Destructor
 
         // RateMatrix functions
@@ -53,27 +58,28 @@ namespace RevBayesCore {
         std::vector<double>             getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, which are the stationary frequencies of the Q_mut matrix
 
         void                            update(void);
-        //void setMutationRates(const std::vector<double>& mr);
-      //  void setMutationRates(const RateMatrix& mm);
 
 
     private:
+
+       std::vector<double> rho; //!< Holds the exchangeabilities
+       Simplex                 pi;        //!< Holds the stationary frequencies
+
         size_t N;							 //!< Number of individuals in idealized population
         size_t matrixSize;                  //!< Number of elements in a row or column of the rate matrix
-//        const TypedDagNode< RateMatrix_GTR >* Q_mut; //!< GTR matrix used to set the mutations
-//        RateMatrix_GTR Q_mut;  //!< GTR matrix used to set the mutations
         double precision;                  //!< Precision for exponentiation through repeated squaring
-//        std::vector<double>                 stationary_freqs;        //!< Holds the stationary frequencies, derived from Q_mut
-        Simplex                 pi;        //!< Holds the stationary frequencies
-        std::vector<double> rho; //!< Holds the exchangeabilities
 
         void decomposeState(int state, int &i, int &nt1, int &nt2) ;
         double mutCoeff(int nt1, int nt2) ;
         double computeProbBoundaryMutation(int state1, int state2) ;
+        void buildRateMatrix(void) ;
+        void calculateCijk(void) ;
+        void tiProbsEigens(double t, TransitionProbabilityMatrix& P) const ;
+        void tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const ;
+        void updateEigenSystem(void);
 
-        void buildRateMatrix(void);
-        void computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const;
-        inline void squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
+        void computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const ;
+        inline void squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const ;
     };
 
 }
