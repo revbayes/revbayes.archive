@@ -602,8 +602,8 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         
         const DiscreteCharacterState &char_state = taxon_data.getCharacter(0);
         
-        // we need to treat ambiguous state differently
-        if ( char_state.isAmbiguous() == false )
+        // get the observed state at the tip if it is known, otherwise simulate it
+        if ( char_state.isAmbiguous() == false && char_state.isMissingState() == false )
         {
             endStates[node_index] = char_state.getStateIndex();
         }
@@ -627,19 +627,19 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
             {
                 if ( char_state.isMissingState() == true || char_state.isGapState() == true || char_state.isStateSet(i) == true )
                 {
-                    total_prob += branch_conditional_probs[i];
+                    total_prob += branch_conditional_probs[ num_states + i ];
                 }
             }
             
             RandomNumberGenerator* rng = GLOBAL_RNG;
-            size_t u = rng->uniform01() * total_prob;
+            double u = rng->uniform01() * total_prob;
             
             for (size_t i = 0; i < num_states; ++i)
             {
                 
                 if ( char_state.isMissingState() == true || char_state.isGapState() == true || char_state.isStateSet(i) == true )
                 {
-                    u -= branch_conditional_probs[i];
+                    u -= branch_conditional_probs[ num_states + i ];
                     if ( u <= 0.0 )
                     {
                         endStates[node_index] = i;
