@@ -12,11 +12,13 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/math/special_functions/factorials.hpp>
 #include <iomanip>
 #include <vector>
 #include <limits>
 #include <cmath>
 #include <map>
+#include <iostream>
 
 
 using namespace RevBayesCore;
@@ -2208,32 +2210,32 @@ double TreeSummary::cladeProbability(const RevBayesCore::Clade &c, bool verbose 
 }
 
 
-double TreeSummary::computeEntropy( double credible_interval_size, bool verbose )
+double TreeSummary::computeEntropy( double credible_interval_size, int numTaxa, bool verbose )
 {
     summarize( verbose );
-    
     NewickConverter converter;
     double total_prob = 0;
     double total_samples = trace.size();
     double entropy = 0.0;
-    double tree_count = 0.0;
+    /*double tree_count = 0.0;*/
     for (std::vector<Sample<std::string> >::const_reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
     {
         double freq = it->getFrequency();
         double p = freq/(total_samples-burnin);
+        /*double p = freq/(total_samples);*/
         total_prob += p;
-        
-        ++tree_count;
         entropy += (p * log(p));
-        
         if ( total_prob >= credible_interval_size )
         {
             break;
         }
         
     }
-    
-    entropy += log( tree_count );
+
+    /*This calculation is directly from AMP / Jeremy's paper.*/
+    double ntopologies = (boost::math::factorial<double>(((2*numTaxa)-5))) / (boost::math::factorial<double>((numTaxa-3)) * (pow(2, numTaxa-3)));
+    entropy += log( ntopologies );
+    /*std::cout << ntopologies << '\n';*/
     
     return entropy;
 }
@@ -2242,7 +2244,6 @@ double TreeSummary::computeEntropy( double credible_interval_size, bool verbose 
 std::vector<double> TreeSummary::computePairwiseRFDistance( double credible_interval_size, bool verbose )
 {
     summarize( verbose );
-    
     std::vector<Tree> unique_trees;
     std::vector<size_t> sample_count;
     NewickConverter converter;

@@ -55,6 +55,8 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                          mean;
         RevPtr<const RevVariable>                          sd;
+        RevPtr<const RevVariable>                          min;
+        RevPtr<const RevVariable>                          max;
     
     };
     

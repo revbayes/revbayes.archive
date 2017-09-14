@@ -2,7 +2,7 @@
 
 using namespace RevBayesCore;
 
-SumIntegerFunction::SumIntegerFunction(const TypedDagNode<RbVector<int> > *v) : TypedFunction<int>( new int(0.0) ), vals( v )
+SumIntegerFunction::SumIntegerFunction(const TypedDagNode<RbVector<long> > *v) : TypedFunction<long>( new long(0.0) ), vals( v )
 {
     // add the parameters as parents
     this->addParameter( vals );
@@ -28,8 +28,8 @@ void SumIntegerFunction::update( void )
 {
     
     double m = 0;
-    const RbVector<int> &v = vals->getValue();
-    for ( RbConstIterator<int> it = v.begin(); it != v.end(); ++it)
+    const RbVector<long> &v = vals->getValue();
+    for ( RbConstIterator<long> it = v.begin(); it != v.end(); ++it)
     {
         m += *it;
     }
@@ -45,7 +45,7 @@ void SumIntegerFunction::swapParameterInternal(const DagNode *oldP, const DagNod
     
     if ( oldP == vals )
     {
-        vals = static_cast<const TypedDagNode<RbVector<int> >* >( newP );
+        vals = static_cast<const TypedDagNode<RbVector<long> >* >( newP );
     }
     
 }

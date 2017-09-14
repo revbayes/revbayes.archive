@@ -17,10 +17,10 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      *
      */
-    class UniformIntegerDistribution : public TypedDistribution<int> {
+    class UniformIntegerDistribution : public TypedDistribution<long> {
         
     public:
-        UniformIntegerDistribution(const TypedDagNode<int> *min, const TypedDagNode<int> *max);
+        UniformIntegerDistribution(const TypedDagNode<long> *min, const TypedDagNode<long> *max);
         virtual                                            ~UniformIntegerDistribution(void);                                                  //!< Virtual destructor
         
         // public member functions
@@ -35,8 +35,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<int>*                            min;
-        const TypedDagNode<int>*                            max;
+        const TypedDagNode<long>*                            min;
+        const TypedDagNode<long>*                            max;
         
     };
     

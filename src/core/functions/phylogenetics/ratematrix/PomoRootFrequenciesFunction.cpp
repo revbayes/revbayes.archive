@@ -5,7 +5,7 @@
 
 using namespace RevBayesCore;
 
-PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< int > *ps) : TypedFunction< Simplex > ( new Simplex() ),
+PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< long > *ps) : TypedFunction< Simplex > ( new Simplex() ),
     fixedNucleotideRootFrequencies( fnrf ),
     frequencyOfPolymorphismsAtTheRoot( fopar ),
     mutationRates(mr), populationSize(ps)
@@ -25,7 +25,7 @@ PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< Sim
 }
 
 
-PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< int > *ps): TypedFunction< Simplex > ( new Simplex() ),
+PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< long > *ps): TypedFunction< Simplex > ( new Simplex() ),
     fixedNucleotideRootFrequencies( fnrf ),
     frequencyOfPolymorphismsAtTheRoot( fopar ),
     mutationMatrix( mm ),
@@ -124,7 +124,7 @@ void PomoRootFrequenciesFunction::swapParameterInternal(const DagNode *oldP, con
     }
     else if (oldP == populationSize)
     {
-        populationSize = static_cast<const TypedDagNode< int >* >( newP );
+        populationSize = static_cast<const TypedDagNode< long >* >( newP );
     }
 
     

@@ -36,8 +36,8 @@ namespace RevBayesCore
         double                              computeSiteRateMultiplier(const TopologyNode& node, unsigned currState, unsigned newState, unsigned charIdx=0, double age=0.0);
         
         void                                setRateMultipliers(const RbVector<RbVector<double> >& rm);
-        void                                setEventClasses(const RbVector<RbVector<int> >& ec);
-        void                                setSiteClasses(const RbVector<int>& sc);
+        void                                setEventClasses(const RbVector<RbVector<long> >& ec);
+        void                                setSiteClasses(const RbVector<long>& sc);
         
         void                                update(void);
         SiteRateModifier*                   clone(void) const;
@@ -47,8 +47,8 @@ namespace RevBayesCore
         
     private:
         RbVector<RbVector<double> >         rate_multipliers;
-        RbVector<RbVector<int> >            event_classes;
-        RbVector<int>                       site_classes;
+        RbVector<RbVector<long> >            event_classes;
+        RbVector<long>                       site_classes;
         
         size_t                              num_event_classes;
         size_t                              num_site_classes;

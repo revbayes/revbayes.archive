@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-TruncateFunction::TruncateFunction(const TypedDagNode<double> *x) : TypedFunction<int>( new int(0) ),
+TruncateFunction::TruncateFunction(const TypedDagNode<double> *x) : TypedFunction<long>( new long(0) ),
     a( x )
 {
     addParameter( x );

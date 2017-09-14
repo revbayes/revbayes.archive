@@ -6,7 +6,7 @@
 
 using namespace RevBayesCore;
 
-GeometricDistribution::GeometricDistribution(const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 1 ) ),
+GeometricDistribution::GeometricDistribution(const TypedDagNode<double> *q) : TypedDistribution<long>( new long( 1 ) ),
     p( q )
 {
     // add the parameters to our set (in the base class)

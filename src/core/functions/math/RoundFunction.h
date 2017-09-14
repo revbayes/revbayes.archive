@@ -18,7 +18,7 @@ namespace RevBayesCore {
      * \since Version 1.0, 2012-08-13
      *
      */
-    class RoundFunction : public TypedFunction<int> {
+    class RoundFunction : public TypedFunction<long> {
         
     public:
         RoundFunction(const TypedDagNode<double> *a);

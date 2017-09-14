@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-AdjacentRateModifierFunction::AdjacentRateModifierFunction(const TypedDagNode<double>* gf, const TypedDagNode<double>* lf, const TypedDagNode<int>* w, const TypedDagNode<RbVector<RbVector<double> > >* c, size_t ns, size_t nc) : TypedFunction<CharacterHistoryRateModifier>( new AdjacentRateModifier(ns, nc) ),
+AdjacentRateModifierFunction::AdjacentRateModifierFunction(const TypedDagNode<double>* gf, const TypedDagNode<double>* lf, const TypedDagNode<long>* w, const TypedDagNode<RbVector<RbVector<double> > >* c, size_t ns, size_t nc) : TypedFunction<CharacterHistoryRateModifier>( new AdjacentRateModifier(ns, nc) ),
     gainFactor(gf),
     lossFactor(lf),
     width(w),
@@ -96,7 +96,7 @@ void AdjacentRateModifierFunction::swapParameterInternal(const DagNode *oldP, co
     }
     else if (oldP == width)
     {
-        width = static_cast<const TypedDagNode<int>* >( newP );
+        width = static_cast<const TypedDagNode<long>* >( newP );
     }
     else if (oldP == context_matrix)
     {

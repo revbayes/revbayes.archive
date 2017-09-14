@@ -10,7 +10,8 @@
 using namespace RevLanguage;
     
 /** Default constructor */
-RealPos::RealPos( void ) : Real( 1.0 ) {
+RealPos::RealPos( void ) : Real( 1.0 )
+{
 
 }
 
@@ -23,6 +24,7 @@ RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x )
     {
         throw RbException( "Nonpositive value for " + getClassType() );
     }
+    
 }
 
 
@@ -39,7 +41,7 @@ RealPos::RealPos( double x ) : Real( x )
 
 
 /** Construct from int */
-RealPos::RealPos( int x ) : Real( x )
+RealPos::RealPos( long x ) : Real( double(x) )
 {
 
     if ( x < 0 )

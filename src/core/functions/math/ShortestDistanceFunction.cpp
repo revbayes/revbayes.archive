@@ -16,7 +16,7 @@
 
 using namespace RevBayesCore;
 
-ShortestDistanceFunction::ShortestDistanceFunction(const TypedDagNode<RbVector<RbVector<int> > >* adj, const TypedDagNode<RbVector<RbVector<double> > >* dist) : TypedFunction<RbVector<RbVector<double> > >( new RbVector<RbVector<double> >() ),
+ShortestDistanceFunction::ShortestDistanceFunction(const TypedDagNode<RbVector<RbVector<long> > >* adj, const TypedDagNode<RbVector<RbVector<double> > >* dist) : TypedFunction<RbVector<RbVector<double> > >( new RbVector<RbVector<double> >() ),
 num_nodes( adj->getValue().size() ),
 adjacencies( adj ),
 distances( dist )
@@ -38,7 +38,7 @@ ShortestDistanceFunction* ShortestDistanceFunction::clone( void ) const
 }
 
 
-std::vector<std::set<size_t> > ShortestDistanceFunction::createAdjacencySets(const RbVector<RbVector<int> >& adj)
+std::vector<std::set<size_t> > ShortestDistanceFunction::createAdjacencySets(const RbVector<RbVector<long> >& adj)
 {
 
     std::vector<std::set<size_t> > s;
@@ -58,7 +58,7 @@ std::vector<std::set<size_t> > ShortestDistanceFunction::createAdjacencySets(con
     return s;
 }
 
-RbVector<RbVector<double> > ShortestDistanceFunction::findShortestPaths(const RbVector<RbVector<int> >& adj, const RbVector<RbVector<double> >& dist)
+RbVector<RbVector<double> > ShortestDistanceFunction::findShortestPaths(const RbVector<RbVector<long> >& adj, const RbVector<RbVector<double> >& dist)
 {
     
     std::vector<std::set<size_t> > adj_set = createAdjacencySets(adj);
@@ -157,7 +157,7 @@ void ShortestDistanceFunction::swapParameterInternal(const DagNode *oldP, const 
     
     if (oldP == adjacencies)
     {
-        adjacencies = static_cast<const TypedDagNode<RbVector<RbVector<int> > >* >( newP );
+        adjacencies = static_cast<const TypedDagNode<RbVector<RbVector<long> > >* >( newP );
     }
     else if (oldP == distances)
     {
@@ -169,7 +169,7 @@ void ShortestDistanceFunction::swapParameterInternal(const DagNode *oldP, const 
 void ShortestDistanceFunction::update( void )
 {
     // get the new values
-    const RbVector<RbVector<int> >& adj = adjacencies->getValue();
+    const RbVector<RbVector<long> >& adj = adjacencies->getValue();
     const RbVector<RbVector<double> >& dist = distances->getValue();
     
     // find all the shortest paths

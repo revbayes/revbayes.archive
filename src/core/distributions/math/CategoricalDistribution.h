@@ -25,7 +25,7 @@ namespace RevBayesCore {
      * \author Fredrik Ronquist
      */
 
-    class CategoricalDistribution : public TypedDistribution<int> {
+    class CategoricalDistribution : public TypedDistribution<long> {
         
     public:
         CategoricalDistribution(const TypedDagNode< Simplex >* p);

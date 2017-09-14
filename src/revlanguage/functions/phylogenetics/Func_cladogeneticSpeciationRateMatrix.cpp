@@ -33,7 +33,7 @@ Func_cladogeneticSpeciationRateMatrix* Func_cladogeneticSpeciationRateMatrix::cl
 RevBayesCore::TypedFunction< RevBayesCore::CladogeneticSpeciationRateMatrix >* Func_cladogeneticSpeciationRateMatrix::createFunction( void ) const
 {
    
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<int> > >* events = static_cast<const ModelVector<ModelVector<Natural> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* events = static_cast<const ModelVector<ModelVector<Natural> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* spec_rates = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     int n_states = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
     

@@ -35,7 +35,7 @@ Func_concatenateFromVector* Func_concatenateFromVector::clone( void ) const
 /** Execute function */
 RevPtr<RevVariable> Func_concatenateFromVector::execute( void )
 {
-    const WorkspaceVector<AbstractHomologousDiscreteCharacterData>& v = static_cast<const WorkspaceVector<AbstractHomologousDiscreteCharacterData> &>( args[0].getVariable()->getRevObject() );
+    const ModelVector<AbstractHomologousDiscreteCharacterData>& v = static_cast<const ModelVector<AbstractHomologousDiscreteCharacterData> &>( args[0].getVariable()->getRevObject() );
 //    const WorkspaceVector<AbstractHomologousDiscreteCharacterData>& v = static_cast<const WorkspaceVector<AbstractHomologousDiscreteCharacterData> &>( args[0].getVariable()->getRevObject() );
     const std::string& type = static_cast<const RlString &>( args[1].getVariable()->getRevObject() ).getValue();
     
@@ -63,7 +63,7 @@ const ArgumentRules& Func_concatenateFromVector::getArgumentRules( void ) const
     if ( rules_set == false )
     {
         
-        argument_rules.push_back( new ArgumentRule( "x", WorkspaceVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec(), "First character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new ArgumentRule( "x", ModelVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec(), "First character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "union" );

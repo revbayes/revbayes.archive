@@ -64,8 +64,9 @@ namespace RevBayesCore {
     private:
         
         const TypedDagNode< MatrixReal >*                                   rate_matrix;
-        MatrixReal                                                          precision_matrix;
-                
+        size_t                                                              active_matrix;
+        std::vector<MatrixReal>                                             precision_matrices;
+        
     };
     
 }

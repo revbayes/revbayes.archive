@@ -1,31 +1,36 @@
-#ifndef Dist_normalTruncatedPositiveal_H
-#define Dist_normalTruncatedPositiveal_H
+#ifndef Dist_whiteNoise_H
+#define Dist_whiteNoise_H
 
-#include "TruncatedNormalDistribution.h"
+#include "WhiteNoiseDistribution.h"
 #include "RlPositiveContinuousDistribution.h"
 
 namespace RevLanguage {
     
     
     /**
-     * The RevLanguage wrapper of the normal distribution.
+     * The RevLanguage wrapper of the gamma distribution.
      *
-     * The RevLanguage wrapper of the normal distribution takes care of create the internal distribution object
-     * and provides the RevLanguage object that can be used within Rev.
+     * The RevLanguage wrapper of the gamma distribution simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal distribution object can be constructed and hooked up
+     * in a model graph.
+     * See the GammaDistribution for more details.
      *
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2012-08-06, version 1.0
+     * @since 2012-08-08, version 1.0
      *
      */
-    class Dist_normalTruncatedPositive :  public PositiveContinuousDistribution {
+    class Dist_whiteNoise : public PositiveContinuousDistribution {
         
-    public:
-        Dist_normalTruncatedPositive( void );
+        public:
+        
+        Dist_whiteNoise( void );
+        virtual ~Dist_whiteNoise();
         
         // Basic utility functions
-        Dist_normalTruncatedPositive*                   clone(void) const;                                                                      //!< Clone the object
+        Dist_whiteNoise*                                clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
@@ -35,9 +40,9 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::TruncatedNormalDistribution*      createDistribution(void) const;
+        RevBayesCore::WhiteNoiseDistribution*           createDistribution(void) const;
         
-    protected:
+        protected:
         
         std::vector<std::string>                        getHelpAuthor(void) const;                                                              //!< Get the author(s) of this function
         std::vector<std::string>                        getHelpDescription(void) const;                                                         //!< Get the description for this function
@@ -50,12 +55,11 @@ namespace RevLanguage {
         void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         
-    private:
+        private:
         
-        RevPtr<const RevVariable>                       mean;
-        RevPtr<const RevVariable>                       sd;
-        RevPtr<const RevVariable>                       min;
-        RevPtr<const RevVariable>                       max;
+        RevPtr<const RevVariable>                       mu;
+        RevPtr<const RevVariable>                       sigma;
+        RevPtr<const RevVariable>                       time;
         
     };
     

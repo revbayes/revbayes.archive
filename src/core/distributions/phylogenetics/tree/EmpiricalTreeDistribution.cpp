@@ -49,12 +49,12 @@ EmpiricalTreeDistribution* EmpiricalTreeDistribution::clone( void ) const
     return new EmpiricalTreeDistribution( *this );
 }
 
-void EmpiricalTreeDistribution::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+void EmpiricalTreeDistribution::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, long &rv) const
 {
     
     if ( n == "getTreeIndex" )
     {
-        rv = int(current_tree_index) + 1;
+        rv = long(current_tree_index) + 1;
     }
     else
     {

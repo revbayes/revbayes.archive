@@ -16,7 +16,7 @@
 
 using namespace RevBayesCore;
 
-InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<MatrixReal> *insigma0, const TypedDagNode<int>* indf)  :
+InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<MatrixReal> *insigma0, const TypedDagNode<long>* indf)  :
 TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal(insigma0->getValue().getDim())),
 sigma0(insigma0),
 kappaVector(NULL),
@@ -33,7 +33,7 @@ dim( NULL )  {
     redrawValue();
 }
 
-InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<RbVector<double> > *inkappaVector, const TypedDagNode<int>* indf)  :
+InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<RbVector<double> > *inkappaVector, const TypedDagNode<long>* indf)  :
 TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal( inkappaVector->getValue().size()) ),
     sigma0(NULL),
     kappaVector(inkappaVector),
@@ -51,7 +51,7 @@ TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal( inkappaVector->getVa
     redrawValue();
 }
 
-InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf)  :
+InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<long>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<long>* indf)  :
 TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal( size_t(indim->getValue()) )),
     sigma0(NULL),
     kappaVector(NULL),
@@ -95,12 +95,12 @@ void InverseWishartDistribution::swapParameterInternal(const DagNode *oldP, cons
     
     if (oldP == dim)
     {
-        dim = static_cast<const TypedDagNode<int>* >(newP);
+        dim = static_cast<const TypedDagNode<long>* >(newP);
     }
     
     if (oldP == df)
     {
-        df = static_cast<const TypedDagNode<int>* >(newP);
+        df = static_cast<const TypedDagNode<long>* >(newP);
     }
     
 }

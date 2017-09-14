@@ -20,10 +20,10 @@ namespace RevBayesCore {
      * @since Version 1.0, 2014-07-04
      *
      */
-    class ModuloFunction : public TypedFunction<int> {
+    class ModuloFunction : public TypedFunction<long> {
         
     public:
-        ModuloFunction(const TypedDagNode<int> * l, const TypedDagNode<int> *r);
+        ModuloFunction(const TypedDagNode<long> * l, const TypedDagNode<long> *r);
         virtual                                            ~ModuloFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -36,8 +36,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<int>*                            left;
-        const TypedDagNode<int>*                            right;
+        const TypedDagNode<long>*                            left;
+        const TypedDagNode<long>*                            right;
         
     };
     

@@ -77,27 +77,6 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
-#include "Func_clear.h"
-#include "Func_exists.h"
-#include "Func_getOption.h"
-#include "Func_getwd.h"
-#include "Func_license.h"
-#include "Func_ls.h"
-#include "Func_modelVector.h"
-#include "Func_printSeed.h"
-#include "Func_quit.h"
-#include "Func_range.h"
-#include "Func_rep.h"
-#include "Func_seed.h"
-#include "Func_seq.h"
-#include "Func_setOption.h"
-#include "Func_setwd.h"
-#include "Func_sort.h"
-#include "Func_structure.h"
-#include "Func_system.h"
-#include "Func_type.h"
-#include "Func_workspaceVector.h"
-
 
 /* Functions related to evolution (in folder "functions/phylogenetics") */
 #include "Func_branchScoreDistance.h"
@@ -255,6 +234,7 @@
 #include "Func_shortestDistance.h"
 #include "Func_simplex.h"
 #include "Func_simplexFromVector.h"
+#include "Func_sort.h"
 #include "Func_sum.h"
 #include "Func_sumPositive.h"
 #include "Func_sumInteger.h"
@@ -270,7 +250,10 @@
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
 #include "Func_discretizeBeta.h"
+#include "Func_discretizeBetaQuadrature.h"
 #include "Func_discretizeGamma.h"
+#include "Func_discretizeGammaQuadrature.h"
+#include "Func_discretizeLognormalQuadrature.h"
 #include "Func_discretizeDistribution.h"
 #include "Func_discretizePositiveDistribution.h"
 #include "Func_dppConcFromMean.h"
@@ -529,7 +512,10 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // return a discretized gamma distribution (for gamma-dist rates)
         addFunction( new Func_discretizeBeta( )    );
+        addFunction( new Func_discretizeBetaQuadrature( )    );
         addFunction( new Func_discretizeGamma( )   );
+        addFunction( new Func_discretizeGammaQuadrature( )   );
+        addFunction( new Func_discretizeLognormalQuadrature( )   );
 
         addFunction( new Func_varianceCovarianceMatrix( )           );
         addFunction( new Func_decomposedVarianceCovarianceMatrix( ) );

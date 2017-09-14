@@ -530,7 +530,8 @@ std::string& StringUtilities::firstCharToUpper(std::string& str)
 
 
 /** Global operator for appending double to std::string */
-std::string operator+( const std::string& A, double B ) {
+std::string operator+( const std::string& A, double B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -539,7 +540,8 @@ std::string operator+( const std::string& A, double B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string operator+( const std::string& A, int B ) {
+std::string operator+( const std::string& A, int B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -548,7 +550,8 @@ std::string operator+( const std::string& A, int B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string operator+( const std::string& A, size_t B ) {
+std::string operator+( const std::string& A, long B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -557,7 +560,8 @@ std::string operator+( const std::string& A, size_t B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string operator+( double A, const std::string& B ) {
+std::string operator+( const std::string& A, size_t B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -566,7 +570,8 @@ std::string operator+( double A, const std::string& B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string operator+( int A, const std::string& B ) {
+std::string operator+( double A, const std::string& B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -575,7 +580,8 @@ std::string operator+( int A, const std::string& B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string operator+( size_t A, const std::string& B ) {
+std::string operator+( int A, const std::string& B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -584,7 +590,8 @@ std::string operator+( size_t A, const std::string& B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevLanguage::operator+( const std::string& A, double B ) {
+std::string operator+( long A, const std::string& B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -593,7 +600,8 @@ std::string RevLanguage::operator+( const std::string& A, double B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevLanguage::operator+( const std::string& A, int B ) {
+std::string operator+( size_t A, const std::string& B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -602,7 +610,8 @@ std::string RevLanguage::operator+( const std::string& A, int B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevLanguage::operator+( const std::string& A, size_t B ) {
+std::string RevLanguage::operator+( const std::string& A, double B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -611,7 +620,8 @@ std::string RevLanguage::operator+( const std::string& A, size_t B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevLanguage::operator+( double A, const std::string& B ) {
+std::string RevLanguage::operator+( const std::string& A, int B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -620,7 +630,8 @@ std::string RevLanguage::operator+( double A, const std::string& B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevLanguage::operator+( int A, const std::string& B ) {
+std::string RevLanguage::operator+( const std::string& A, long B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -629,7 +640,8 @@ std::string RevLanguage::operator+( int A, const std::string& B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevLanguage::operator+( size_t A, const std::string& B ) {
+std::string RevLanguage::operator+( const std::string& A, size_t B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -638,7 +650,8 @@ std::string RevLanguage::operator+( size_t A, const std::string& B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevBayesCore::operator+( const std::string& A, double B ) {
+std::string RevLanguage::operator+( double A, const std::string& B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -647,7 +660,8 @@ std::string RevBayesCore::operator+( const std::string& A, double B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevBayesCore::operator+( const std::string& A, int B ) {
+std::string RevLanguage::operator+( int A, const std::string& B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -656,7 +670,8 @@ std::string RevBayesCore::operator+( const std::string& A, int B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevBayesCore::operator+( const std::string& A, size_t B ) {
+std::string RevLanguage::operator+( long A, const std::string& B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -665,7 +680,8 @@ std::string RevBayesCore::operator+( const std::string& A, size_t B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevBayesCore::operator+( double A, const std::string& B ) {
+std::string RevLanguage::operator+( size_t A, const std::string& B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -674,7 +690,8 @@ std::string RevBayesCore::operator+( double A, const std::string& B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevBayesCore::operator+( int A, const std::string& B ) {
+std::string RevBayesCore::operator+( const std::string& A, double B )
+{
     
     std::stringstream o;
     o << A << B;
@@ -683,7 +700,68 @@ std::string RevBayesCore::operator+( int A, const std::string& B ) {
 
 
 /** Global operator for appending double to std::string */
-std::string RevBayesCore::operator+( size_t A, const std::string& B ) {
+std::string RevBayesCore::operator+( const std::string& A, int B )
+{
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( const std::string& A, long B )
+{
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( const std::string& A, size_t B )
+{
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( double A, const std::string& B )
+{
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( int A, const std::string& B )
+{
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( long A, const std::string& B )
+{
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( size_t A, const std::string& B )
+{
     
     std::stringstream o;
     o << A << B;

@@ -149,6 +149,7 @@
 #include "Move_FNPR.h"
 #include "Move_TipTimeSlideUniform.h"
 #include "Move_GibbsPruneAndRegraft.h"
+#include "Move_LayeredScaleProposal.h"
 #include "Move_NarrowExchange.h"
 #include "Move_NNIClock.h"
 #include "Move_NNINonclock.h"
@@ -189,10 +190,10 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_Slide() );
         addTypeWithConstructor( new Move_SlideBactrian() );
         addTypeWithConstructor( new Move_SliceSampling() );
-        
+
         /* Moves on probability */
         addTypeWithConstructor( new Move_BetaProbability() );
-		
+
         /* compound moves */
 //        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
         addTypeWithConstructor( new Move_UpDownTreeScale() );
@@ -211,7 +212,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_DirichletSimplex() );
         addTypeWithConstructor( new Move_BetaSimplex() );
         addTypeWithConstructor( new Move_ElementSwapSimplex() );
-        
+
         /* Moves on vectors of real values */
         addTypeWithConstructor( new Move_SingleElementSlide() );
         addTypeWithConstructor( new Move_SingleElementScale() );
@@ -224,28 +225,28 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_VectorSingleElementSlide() );
         addTypeWithConstructor( new Move_VectorFixedSingleElementSlide() );
         addTypeWithConstructor( new Move_SynchronizedVectorFixedSingleElementSlide() );
-        
+
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_MatrixSingleElementScale() );
         addTypeWithConstructor( new Move_MatrixSingleElementSlide() );
-        
+
         /* Moves on matrices of correlations */
         addTypeWithConstructor( new Move_CorrelationMatrixUpdate()                   );
         addTypeWithConstructor( new Move_CorrelationMatrixRandomWalk()               );
         addTypeWithConstructor( new Move_CorrelationMatrixSingleElementBeta()        );
         addTypeWithConstructor( new Move_CorrelationMatrixSpecificElementBeta()      );
         addTypeWithConstructor( new Move_CorrelationMatrixElementSwap()              );
+
 //        addTypeWithConstructor( new Move_CorrelationMatrixPartialSingleElementBeta() );
 //        addTypeWithConstructor( new Move_CorrelationMatrixReparameterization()       );
 //        addTypeWithConstructor( new Move_CorrelationMatrixExpansion()                );
-        
-        
+
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_MatrixRealSymmetricSlide() );
 
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_ConjugateInverseWishart() );
-        
+
         /* Moves on continuous character data (matrices of real values) */
         addTypeWithConstructor( new Move_ContinuousCharacterDataSlide() );
 
@@ -278,7 +279,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Simplex>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RateGenerator>( ) );
         addTypeWithConstructor( new Move_UPPAllocation<RealPos>() );
-        
+
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Real>( )                  );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<RealPos>( )               );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Natural>( )               );
@@ -301,6 +302,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 		addTypeWithConstructor( new Move_EmpiricalTree()                  );
         addTypeWithConstructor( new Move_FNPR()                           );
         addTypeWithConstructor( new Move_GibbsPruneAndRegraft()           );
+        addTypeWithConstructor( new Move_LayeredScaleProposal()                 );
         addTypeWithConstructor( new Move_NarrowExchange()                 );
         addTypeWithConstructor( new Move_NNIClock()                       );
         addTypeWithConstructor( new Move_NNINonclock()                    );

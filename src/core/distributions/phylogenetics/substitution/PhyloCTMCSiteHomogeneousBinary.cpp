@@ -106,6 +106,8 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousBinary::sumRootLikelihood( void )
     
     std::vector<double> perMaskCorrections = std::vector<double>(numCorrectionMasks, 0.0);
     
+    std::vector<double> mixtureProbs = this->getMixtureProbs();
+    
     // iterate over each correction mask
     for(size_t mask = 0; mask < numCorrectionMasks; mask++)
     {
@@ -153,7 +155,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousBinary::sumRootLikelihood( void )
                 prob = RbConstants::Double::nan;
             }
             
-            perMaskCorrections[mask] += prob;
+            perMaskCorrections[mask] += prob * mixtureProbs[mixture];
             
             // add corrections for invariant sites
             double prob_invariant = getPInv();
@@ -168,7 +170,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousBinary::sumRootLikelihood( void )
                     prob += f[1]*prob_invariant;
             }
             
-            perMaskMixtureCorrections[mask*num_site_mixtures + mixture] = 1.0 - prob;
+            perMaskMixtureCorrections[mask*this->num_site_mixtures + mixture] = (1.0 - prob) * mixtureProbs[mixture];
         }
         
         // add corrections for invariant sites
@@ -189,11 +191,11 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousBinary::sumRootLikelihood( void )
             
             mean /= ff.size();
             
-            perMaskCorrections[mask] += mean * prob_invariant * this->num_site_mixtures;
+            perMaskCorrections[mask] += mean * prob_invariant;
         }
         
         // normalize the log-probability
-        perMaskCorrections[mask] /= this->num_site_mixtures;
+//        perMaskCorrections[mask] /= this->num_site_mixtures;
         
         // impose a per-mask boundary
         if(perMaskCorrections[mask] <= 0.0 || perMaskCorrections[mask] >= 1.0)

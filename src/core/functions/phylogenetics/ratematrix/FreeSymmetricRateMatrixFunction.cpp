@@ -6,7 +6,7 @@
 
 using namespace RevBayesCore;
 
-FreeSymmetricRateMatrixFunction::FreeSymmetricRateMatrixFunction(const TypedDagNode< RbVector<double> > *tr, bool r) : TypedFunction<RateGenerator>( NULL ),
+FreeSymmetricRateMatrixFunction::FreeSymmetricRateMatrixFunction(const TypedDagNode< RbVector<double> > *tr, bool r, std::string method) : TypedFunction<RateGenerator>( NULL ),
     transition_rates( tr )
 {
     double num_off_diag_states = 2*tr->getValue().size();

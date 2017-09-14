@@ -101,12 +101,20 @@ double BetaSimplexProposal::propose( Simplex &value )
     double scaling_factor_other_values = (1.0 - new_value) / (1.0 - current_value);
     
     double sum = 0.0;
+    double ln_Hastings_ratio = 0.0;
     for(size_t i = 0; i < cats; i++)
     {
         if ( i != chosen_index )
         {
             value[i] *= scaling_factor_other_values;
         }
+        
+        // test for 0-values
+        if ( value[i] < 1E-100)
+        {
+            return RbConstants::Double::neginf;
+        }
+        
         sum += value[i];
     }
     
@@ -119,7 +127,6 @@ double BetaSimplexProposal::propose( Simplex &value )
         value[i] /= sum;
     }
     
-    double ln_Hastings_ratio = 0.0;
     try
     {
         // compute the Hastings ratio
@@ -134,7 +141,10 @@ double BetaSimplexProposal::propose( Simplex &value )
     {
         ln_Hastings_ratio = RbConstants::Double::neginf;
     }
-    
+
+    // include the Jacobian for the scaling of the other values
+    ln_Hastings_ratio += (cats - 2) * log(scaling_factor_other_values);
+
     return ln_Hastings_ratio;
 }
 

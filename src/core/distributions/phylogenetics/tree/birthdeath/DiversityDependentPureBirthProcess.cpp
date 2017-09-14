@@ -20,7 +20,7 @@ using namespace RevBayesCore;
  * \param[in]    tn     Taxa.
  * \param[in]    c      Clades conditioned to be present.
  */
-DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<int> *k,
+DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<long> *k,
                                                                        const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
         initialSpeciation( s ), 
         capacity( k ) 
@@ -198,7 +198,7 @@ void DiversityDependentPureBirthProcess::swapParameterInternal(const DagNode *ol
     }
     else if (oldP == capacity) 
     {
-        capacity = static_cast<const TypedDagNode<int>* >( newP );
+        capacity = static_cast<const TypedDagNode<long>* >( newP );
     }
     else 
     {

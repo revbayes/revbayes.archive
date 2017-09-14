@@ -36,7 +36,7 @@ namespace RevBayesCore {
     
     class TopologyNode;
 
-    class Tree : public Cloneable, public MemberObject<double>, public MemberObject<int>, public MemberObject<Boolean>, public Serializable {
+    class Tree : public Cloneable, public MemberObject<double>, public MemberObject<long>, public MemberObject<Boolean>, public Serializable {
     
     public:
         Tree(void);                                                                                                                                             //!< Default constructor
@@ -69,7 +69,7 @@ namespace RevBayesCore {
         void                                                collapseNegativeBranchLengths(double length);                                                                //!< Don't allow parents to be younger than their children (TimeTrees only)
         void                                                dropTipNodeWithName(const std::string &n);                                                          //!< Get a pointer to tip node i
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
-        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;        //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;        //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Boolean &rv) const;    //!< Map the member methods to internal function calls
         std::vector<Taxon>                                  getFossilTaxa() const;                                                                              //!< Get all the taxa in the tree
         std::string                                         getNewickRepresentation() const;                                                                    //!< Get the newick representation of this Tree

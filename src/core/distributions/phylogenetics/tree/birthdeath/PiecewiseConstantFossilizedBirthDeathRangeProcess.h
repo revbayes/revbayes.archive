@@ -88,8 +88,8 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*          heterogeneous_psi;                                     //!< The heterogeneous speciation rates.
         const TypedDagNode<double >*                    homogeneous_rho;                                       //!< The homogeneous speciation rates.
         const TypedDagNode<RbVector<double> >*          timeline;                                              //!< The times of the instantaneous sampling events.
-        const TypedDagNode<int>*                        homogeneous_fossil_counts;                             //!< The number of fossil observations, per interval.
-        const TypedDagNode<RbVector<int> >*             heterogeneous_fossil_counts;                           //!< The number of fossil observations, per interval.
+        const TypedDagNode<long>*                        homogeneous_fossil_counts;                             //!< The number of fossil observations, per interval.
+        const TypedDagNode<RbVector<long> >*             heterogeneous_fossil_counts;                           //!< The number of fossil observations, per interval.
 
         std::vector<double>                             birth;
         std::vector<double>                             death;

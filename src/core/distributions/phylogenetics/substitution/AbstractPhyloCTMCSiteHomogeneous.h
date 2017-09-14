@@ -106,6 +106,7 @@ namespace RevBayesCore {
         void                                                                setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm);
         void                                                                setRootFrequencies(const TypedDagNode< Simplex > *f);
         void                                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
+        void                                                                setSiteRatesProbs(const TypedDagNode< Simplex > *rp);
         void                                                                setUseMarginalLikelihoods(bool tf);
         void                                                                setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s = NULL);
         
@@ -212,7 +213,7 @@ namespace RevBayesCore {
         const TypedDagNode< Simplex >*                                      root_frequencies;
         const TypedDagNode< RbVector< double > >*                           site_rates;
         const TypedDagNode< Simplex >*                                      site_matrix_probs;
-        const TypedDagNode< RbVector< double > >*                           site_rates_probs;
+        const TypedDagNode< Simplex >*                                      site_rates_probs;
         const TypedDagNode< double >*                                       p_inv;
         
         
@@ -1703,19 +1704,25 @@ template<class charType>
 std::vector<double> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getMixtureProbs( void ) const
 {
     std::vector<double> probs(num_site_mixtures, 1.0/num_site_mixtures);
+    std::vector<double> rates_probs(num_site_rates, 1.0/num_site_rates);
+    size_t num_site_matrices = num_site_mixtures/num_site_rates;
+    std::vector<double> matrix_probs(num_site_matrices, 1.0/num_site_matrices);
+    
+    if ( site_rates_probs != NULL )
+    {
+        rates_probs = site_rates_probs->getValue();
+    }
     
     if ( site_matrix_probs != NULL )
     {
-        std::vector<double> matrix_probs = site_matrix_probs->getValue();
-        
-        for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
+        matrix_probs = site_matrix_probs->getValue();
+    }
+    
+    for (size_t matrix = 0; matrix < num_site_matrices; ++matrix)
+    {
+        for (size_t j = 0; j < this->num_site_rates; ++j)
         {
-            // get matrix index
-            size_t matrix = mixture % num_matrices;
-            
-            // multiply matrix prob and uniform site rate prob
-            // TODO: allow non-uniform site rate probs
-            probs[mixture] = matrix_probs[matrix] / num_site_rates;
+            probs[j * num_site_matrices + matrix] = matrix_probs[matrix] * rates_probs[j];
         }
     }
     
@@ -2713,6 +2720,34 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setSiteRates(cons
 
 
 template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setSiteRatesProbs(const TypedDagNode< Simplex > *rp)
+{
+    
+    // remove the old parameter first
+    if ( site_rates_probs != NULL )
+    {
+        this->removeParameter( site_rates_probs );
+        site_rates_probs = NULL;
+    }
+    
+    if (rp != NULL)
+    {
+        // set the value
+        site_rates_probs = rp;
+    }
+    
+    // add the new parameter
+    this->addParameter( site_rates_probs );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+}
+
+
+template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseMarginalLikelihoods(bool tf)
 {
     
@@ -3058,13 +3093,17 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::swapParameterInte
     {
         root_frequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
+    else if (oldP == site_matrix_probs)
+    {
+        site_matrix_probs = static_cast<const TypedDagNode< Simplex >* >( newP );
+    }
     else if (oldP == site_rates)
     {
         site_rates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else if (oldP == site_rates_probs)
     {
-        site_rates_probs = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+        site_rates_probs = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
     else if (oldP == p_inv)
     {

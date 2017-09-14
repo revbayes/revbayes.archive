@@ -21,7 +21,7 @@ namespace RevBayesCore {
     class RandomIntegerWalkProposal : public Proposal {
         
     public:
-        RandomIntegerWalkProposal( StochasticNode<int> *n);                                                                    //!<  constructor
+        RandomIntegerWalkProposal( StochasticNode<long> *n);                                                                    //!<  constructor
         
         // Basic utility functions
         void                                cleanProposal(void);                                                                //!< Clean up proposal
@@ -41,8 +41,8 @@ namespace RevBayesCore {
     private:
         // parameters
         
-        StochasticNode<int>*                variable;                                                                           //!< The variable the Proposal is working on
-        int                                 storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
+        StochasticNode<long>*               variable;                                                                           //!< The variable the Proposal is working on
+        long                                stored_value;                                                                        //!< The stored value of the Proposal used for rejections.
     };
     
 }

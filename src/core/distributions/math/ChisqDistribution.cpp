@@ -6,7 +6,7 @@
 using namespace RevBayesCore;
 
 
-ChisqDistribution::ChisqDistribution(const TypedDagNode<int> *df) : ContinuousDistribution( new double( 0.0 ) ),
+ChisqDistribution::ChisqDistribution(const TypedDagNode<long> *df) : ContinuousDistribution( new double( 0.0 ) ),
     degrees( df )
 {
     // add the parameters to our set (in the base class)
@@ -80,7 +80,7 @@ void ChisqDistribution::swapParameterInternal(const DagNode *oldP, const DagNode
     
     if (oldP == degrees)
     {
-        degrees = static_cast<const TypedDagNode<int>* >( newP );
+        degrees = static_cast<const TypedDagNode<long>* >( newP );
     }
     
 }

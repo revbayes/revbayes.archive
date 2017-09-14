@@ -259,7 +259,7 @@ RevPtr<RevVariable> WorkspaceVector<rlType>::executeMethod( std::string const &n
     {
         found = true;
         
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        long index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         return RevPtr<RevVariable>( new RevVariable( getElement( index ) ) );
     }
 //    else if ( name == "sort" )

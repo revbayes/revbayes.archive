@@ -14,9 +14,9 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-RandomIntegerWalkProposal::RandomIntegerWalkProposal( StochasticNode<int> *n) : Proposal(),
+RandomIntegerWalkProposal::RandomIntegerWalkProposal( StochasticNode<long> *n) : Proposal(),
     variable( n ),
-    storedValue( 0 )
+    stored_value( 0 )
 {
     // tell the base class to add the node
     addNode( variable );
@@ -75,10 +75,10 @@ double RandomIntegerWalkProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    int &val = variable->getValue();
+    long &val = variable->getValue();
     
     // copy value
-    storedValue = val;
+    stored_value = val;
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
@@ -130,7 +130,7 @@ void RandomIntegerWalkProposal::printParameterSummary(std::ostream &o) const
 void RandomIntegerWalkProposal::undoProposal( void )
 {
     // swap current value and stored value
-    variable->setValue( new int(storedValue) );
+    variable->setValue( new long(stored_value) );
     
 }
 
@@ -144,7 +144,7 @@ void RandomIntegerWalkProposal::undoProposal( void )
 void RandomIntegerWalkProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<int>* >(newN) ;
+    variable = static_cast<StochasticNode<long>* >(newN) ;
     
 }
 

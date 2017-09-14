@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-ChooseFunction::ChooseFunction(const TypedDagNode<int> *a, const TypedDagNode<int> *b) : TypedFunction<int>( new int(0) ),
+ChooseFunction::ChooseFunction(const TypedDagNode<long> *a, const TypedDagNode<long> *b) : TypedFunction<long>( new long(0) ),
 n( a ),
 k( b )
 {
@@ -36,11 +36,11 @@ void ChooseFunction::swapParameterInternal(const DagNode *oldP, const DagNode *n
     
     if (oldP == n)
     {
-        n = static_cast<const TypedDagNode<int>* >( newP );
+        n = static_cast<const TypedDagNode<long>* >( newP );
     }
     else if (oldP == k)
     {
-        k = static_cast<const TypedDagNode<int>* >( newP );
+        k = static_cast<const TypedDagNode<long>* >( newP );
     }
     
 }
