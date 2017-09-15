@@ -21,6 +21,7 @@
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
+#include "RlAbstractNonHomologousDiscreteCharacterData.h"
 #include "RevNullObject.h"
 #include "Workspace.h"
 #include "WorkspaceVector.h"
@@ -812,7 +813,7 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core and stored in the WorkspaceVector
-    const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
+    const WorkspaceVector<RevObject> *dnc = dynamic_cast<const WorkspaceVector<RevObject> *>( &dv );
     if (dnc != NULL)
         {
         if (dnc->size() == 0)
@@ -824,7 +825,25 @@
         for (int i=0; i<dnc->size(); i++)
             {
             RbData* newMatrix = NULL;
-            const RevBayesCore::AbstractCharacterData* cd = &((*dnc)[i].getValue());
+                
+            const RevBayesCore::AbstractCharacterData* cd = NULL;
+                
+            if ( dynamic_cast<const ModelObject<RevBayesCore::AbstractHomologousDiscreteCharacterData> *>( &((*dnc)[i] ) ) != NULL )
+            {
+                cd = &dynamic_cast<const ModelObject<RevBayesCore::AbstractHomologousDiscreteCharacterData> *>( &((*dnc)[i] ) )->getValue();
+            }
+            else if ( dynamic_cast<const ModelObject<RevBayesCore::AbstractNonHomologousDiscreteCharacterData> *>( &((*dnc)[i] ) ) != NULL )
+            {
+                cd = &dynamic_cast<const ModelObject<RevBayesCore::AbstractNonHomologousDiscreteCharacterData> *>( &((*dnc)[i] ) )->getValue();
+            }
+            else if ( dynamic_cast<const ModelObject<RevBayesCore::ContinuousCharacterData> *>( &((*dnc)[i] ) ) != NULL )
+            {
+                cd = &dynamic_cast<const ModelObject<RevBayesCore::ContinuousCharacterData> *>( &((*dnc)[i] ) )->getValue();
+            }
+            else
+            {
+                throw RbException("Error while converting character data object.");
+            }
             
             if (cd->isHomologyEstablished() == true)
                 {

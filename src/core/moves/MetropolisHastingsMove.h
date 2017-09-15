@@ -51,7 +51,7 @@ namespace RevBayesCore {
     private:
         
         // parameters
-        unsigned int                                            numAccepted;                                            //!< Number of times accepted
+        unsigned int                                            num_accepted;                                            //!< Number of times accepted
         Proposal*                                               proposal;                                               //!< The proposal distribution
     };
     

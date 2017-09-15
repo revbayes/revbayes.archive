@@ -14,13 +14,13 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-Integer::Integer(void) : ModelObject<int>()
+Integer::Integer(void) : ModelObject<long>()
 {
     
 }
 
 
-Integer::Integer( RevBayesCore::TypedDagNode<int> *v ) : ModelObject<int>( v )
+Integer::Integer( RevBayesCore::TypedDagNode<long> *v ) : ModelObject<long>( v )
 {
     
 }
@@ -28,16 +28,9 @@ Integer::Integer( RevBayesCore::TypedDagNode<int> *v ) : ModelObject<int>( v )
 
 
 /* Construct from int */
-Integer::Integer(int v) : ModelObject<int>( new int(v) )
+Integer::Integer(long v) : ModelObject<long>( new long(v) )
 {
 
-}
-
-
-/* Construct from unsigned int (ambiguous between int and bool otherwise) */
-Integer::Integer(unsigned int v) : ModelObject<int>( new int( int(v) ) )
-{
-    
 }
 
 
@@ -58,7 +51,7 @@ RevObject* Integer::add( const RevObject& rhs ) const
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
         return add( static_cast<const Integer&>( rhs ) );
     
-    return ModelObject<int>::add( rhs );
+    return ModelObject<long>::add( rhs );
 }
 
 
@@ -131,7 +124,7 @@ RevObject* Integer::convertTo( const TypeSpec& type ) const
 
     if ( type == RealPos::getClassTypeSpec() && dag_node->getValue() > 0 )
     {
-        return new RealPos( dag_node->getValue() );
+        return new RealPos( double(dag_node->getValue()) );
     }
     
     if ( type == Natural::getClassTypeSpec() && dag_node->getValue() >= 0)
@@ -176,7 +169,7 @@ RevObject* Integer::divide( const RevObject& rhs ) const
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
         return divide( static_cast<const Integer&>( rhs ) );
     
-    return ModelObject<int>::divide( rhs );
+    return ModelObject<long>::divide( rhs );
 }
 
 
@@ -322,7 +315,7 @@ RevObject* Integer::multiply( const RevObject& rhs ) const
         return multiply( static_cast<const Integer&>( rhs ) );
     }
     
-    return ModelObject<int>::multiply( rhs );
+    return ModelObject<long>::multiply( rhs );
 }
 
 
@@ -381,7 +374,7 @@ RevObject* Integer::subtract( const RevObject& rhs ) const
         return subtract( static_cast<const Integer&>( rhs ) );
     }
     
-    return ModelObject<int>::subtract( rhs );
+    return ModelObject<long>::subtract( rhs );
 }
 
 

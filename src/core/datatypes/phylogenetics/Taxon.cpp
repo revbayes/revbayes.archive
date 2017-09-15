@@ -7,8 +7,7 @@ using namespace RevBayesCore;
  * Default constructor.
  */
 Taxon::Taxon( void ) :
-    age( 0 ),
-    date(  ),
+    age_range(  ),
     name( "" ),
     species_name( "" )
 {
@@ -22,8 +21,7 @@ Taxon::Taxon( void ) :
  * \param[in]    n     The name of the taxon.
  */
 Taxon::Taxon(const std::string &n) :
-    age( 0 ),
-    date(  ),
+    age_range(  ),
     name( n ),
     species_name( n )
 {
@@ -48,12 +46,7 @@ bool Taxon::operator==(const RevBayesCore::Taxon &t) const
         return false;
     }
     
-    if ( date != t.date)
-    {
-        return false;
-    }
-    
-    if ( age != t.age)
+    if ( age_range != t.age_range)
     {
         return false;
     }
@@ -142,7 +135,7 @@ bool Taxon::operator>=(const RevBayesCore::Taxon &t) const
  */
 double Taxon::getAge( void ) const
 {
-    return age;
+    return age_range.getStart();
 }
 
 
@@ -151,9 +144,9 @@ double Taxon::getAge( void ) const
  *
  * \return    The date.
  */
-const TimeAndDate& Taxon::getDate( void ) const
+const TimeInterval& Taxon::getAgeRange( void ) const
 {
-    return date;
+    return age_range;
 }
 
 
@@ -186,7 +179,8 @@ const std::string& Taxon::getSpeciesName( void ) const
  */
 void Taxon::setAge(double a)
 {
-    age = a;
+    age_range.setStart(a);
+    age_range.setEnd(a);
 }
 
 
@@ -195,9 +189,9 @@ void Taxon::setAge(double a)
  *
  * \param[in]    d     The date.
  */
-void Taxon::setDate( const TimeAndDate &d )
+void Taxon::setAgeRange( const TimeInterval &d )
 {
-    date = d;
+    age_range = d;
 }
 
 

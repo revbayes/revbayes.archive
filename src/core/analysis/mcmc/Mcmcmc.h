@@ -38,7 +38,7 @@ namespace RevBayesCore {
         Mcmcmc*                                 clone(void) const;
         void                                    finishMonitors(size_t n);                           //!< Finish the monitors
         const Model&                            getModel(void) const;
-        double                                  getModelLnProbability(void);
+        double                                  getModelLnProbability(bool likelihood_only);
         RbVector<Monitor>&                      getMonitors( void );
         std::string                             getStrategyDescription(void) const;                 //!< Get the discription of the strategy used for this sampler.
         void                                    initializeSampler(bool priorOnly=false);            //!< Initialize objects for mcmc sampling
@@ -65,7 +65,7 @@ namespace RevBayesCore {
         void                                    swapChains(void);
         void                                    swapNeighborChains(void);
         void                                    swapRandomChains(void);
-        void                                    synchronizeValues(void);
+        void                                    synchronizeValues(bool likelihood_only);
         void                                    synchronizeHeats(void);
         void                                    updateChainState(size_t j);
         double                                  computeBeta(double d, size_t i);                    // incremental temperature schedule

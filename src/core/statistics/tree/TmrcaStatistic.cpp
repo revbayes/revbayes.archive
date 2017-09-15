@@ -82,10 +82,10 @@ void TmrcaStatistic::fireTreeChangeEvent(const TopologyNode &n, const unsigned& 
 
 void TmrcaStatistic::initialize( void )
 {
+    
     clade.resetTaxonBitset( tree->getValue().getTaxonBitSetMap() );
     taxa_count = clade.size();
     index = -RbConstants::Integer::max;
-    
 }
 
 

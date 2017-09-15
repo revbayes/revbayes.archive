@@ -32,7 +32,7 @@ namespace RevBayesCore {
     class StudentTDistribution : public ContinuousDistribution {
         
     public:
-        StudentTDistribution(const TypedDagNode<int> *df);
+        StudentTDistribution(const TypedDagNode<long> *df);
         virtual                                            ~StudentTDistribution(void);                                             //!< Virtual destructor
         
         // public member functions
@@ -51,7 +51,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<int>*                            degrees;
+        const TypedDagNode<long>*                            degrees;
     };
     
 }

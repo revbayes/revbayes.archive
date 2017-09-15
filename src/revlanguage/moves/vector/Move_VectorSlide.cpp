@@ -41,7 +41,7 @@ void Move_VectorSlide::constructInternalObject( void )
     delete value;
     
     // now allocate a new vector-slide move
-    const RevBayesCore::RbVector<int> &e = static_cast<const ModelVector<Natural> &>( inidices->getRevObject() ).getValue();
+    const RevBayesCore::RbVector<long> &e = static_cast<const ModelVector<Natural> &>( inidices->getRevObject() ).getValue();
     double l = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();

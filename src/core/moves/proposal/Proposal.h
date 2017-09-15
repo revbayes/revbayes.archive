@@ -31,7 +31,8 @@ namespace RevBayesCore {
         const std::vector<DagNode*>&                            getNodes(void) const;                                                                   //!< Get the vector of nodes for which the proposal is drawing new values.
         void                                                    swapNode(DagNode *oldN, DagNode *newN);                                                 //!< Swap the pointers to the variable on which the move works on.
         void                                                    setMove(Move *m);                                                                       //!< Set the pointer to move object holding this proposal
-        
+        const Move*                                             getMove(void) const;                                                                    //!< Get the pointer to move object holding this proposal
+
         // pure virtual public methods
         virtual void                                            cleanProposal(void) = 0;                                                                //!< Cleanup proposal
         virtual Proposal*                                       clone(void) const = 0;                                                                  //!< Make a deep copy

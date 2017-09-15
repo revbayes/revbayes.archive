@@ -12,17 +12,17 @@ namespace RevLanguage {
     
     class Real;
     
-    class RlDistanceMatrix : public ModelObject<RevBayesCore::DistanceMatrix>  {
+    class DistanceMatrix : public ModelObject<RevBayesCore::DistanceMatrix>  {
             
         public:
             
-                                                RlDistanceMatrix(void);                                                                 //!< Default constructor
-                                                RlDistanceMatrix(const RevBayesCore::DistanceMatrix &m);                                //!< Default constructor
-                                                RlDistanceMatrix(RevBayesCore::DistanceMatrix *m);                                      //!< Default constructor
-                                                RlDistanceMatrix(RevBayesCore::TypedDagNode<RevBayesCore::DistanceMatrix> *d);          //!< Default constructor
+                                                DistanceMatrix(void);                                                                 //!< Default constructor
+                                                DistanceMatrix(const RevBayesCore::DistanceMatrix &m);                                //!< Default constructor
+                                                DistanceMatrix(RevBayesCore::DistanceMatrix *m);                                      //!< Default constructor
+                                                DistanceMatrix(RevBayesCore::TypedDagNode<RevBayesCore::DistanceMatrix> *d);          //!< Default constructor
 
             // Basic utility functions
-            RlDistanceMatrix*                   clone(void) const;                                                                      //!< Clone object
+            DistanceMatrix*                     clone(void) const;                                                                      //!< Clone object
             static const std::string&           getClassType(void);                                                                     //!< Get Rev type
             static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
             const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
@@ -47,4 +47,5 @@ namespace RevLanguage {
 
 	
 }
-#endif /* defined(RlDistanceMatrix_H) */
+
+#endif

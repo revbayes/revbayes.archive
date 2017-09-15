@@ -81,6 +81,11 @@ double NodeTimeSlideUniformProposal::doProposal( void )
     
     Tree& tau = variable->getValue();
     
+    if(tau.getNumberOfTips() <= 2)
+    {
+        return 0.0;
+    }
+
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
     do {

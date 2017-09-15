@@ -20,10 +20,10 @@ namespace RevBayesCore {
      * @since 2013-04-12, version 1.0
      *
      */
-    class BinomialDistribution : public TypedDistribution<int> {
+    class BinomialDistribution : public TypedDistribution<long> {
         
     public:
-        BinomialDistribution(const TypedDagNode<int> *n, const TypedDagNode<double> *p);
+        BinomialDistribution(const TypedDagNode<long> *n, const TypedDagNode<double> *p);
         virtual                                            ~BinomialDistribution(void);                                             //!< Virtual destructor
         
         // public member functions
@@ -38,7 +38,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<int>*                            n;
+        const TypedDagNode<long>*                            n;
         const TypedDagNode<double>*                         p;
     };
     

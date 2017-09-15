@@ -24,7 +24,7 @@ namespace RevBayesCore {
     class DiscretizeDistributionFunction : public TypedFunction< RbVector<double> > {
         
     public:
-        DiscretizeDistributionFunction(ContinuousDistribution *d, const TypedDagNode<int> *nc);
+        DiscretizeDistributionFunction(ContinuousDistribution *d, const TypedDagNode<long> *nc);
         DiscretizeDistributionFunction(const DiscretizeDistributionFunction &pdf);
         virtual                            ~DiscretizeDistributionFunction();
         
@@ -40,7 +40,7 @@ namespace RevBayesCore {
     private:
 
         ContinuousDistribution *            dist;
-        const TypedDagNode<int>*            numCats;
+        const TypedDagNode<long>*            numCats;
     
     };
 }

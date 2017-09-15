@@ -35,9 +35,9 @@ namespace RevBayesCore {
     class PomoRootFrequenciesFunction : public TypedFunction< Simplex > {
         
     public:
-        PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< int > *ps);
+        PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< long > *ps);
         
-        PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< int > *ps);
+        PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< long > *ps);
 
         virtual                                            ~PomoRootFrequenciesFunction(void);                                                    //!< Virtual destructor
         
@@ -55,7 +55,7 @@ namespace RevBayesCore {
         const TypedDagNode< double >*                       frequencyOfPolymorphismsAtTheRoot;
         const TypedDagNode< RbVector<double> >*             mutationRates;
         const TypedDagNode< RateGenerator >*                mutationMatrix;
-        const TypedDagNode< int >*                          populationSize;
+        const TypedDagNode< long >*                          populationSize;
         bool                                                useMutationMatrix;
 
         // Private member functions

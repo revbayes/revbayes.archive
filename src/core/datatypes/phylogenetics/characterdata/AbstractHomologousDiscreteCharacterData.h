@@ -5,6 +5,7 @@
 #include "AbstractTaxonData.h"
 #include "CharacterState.h"
 #include "DiscreteCharacterState.h"
+#include "DistanceMatrix.h"
 #include "HomologousCharacterData.h"
 #include "MatrixReal.h"
 
@@ -62,6 +63,7 @@ namespace RevBayesCore {
         virtual double                                          getAveragePaiwiseSequenceDifference(bool excl) const = 0;                                   //!< Get the average pairwise sequence distance.
         virtual size_t                                          getMaxPaiwiseSequenceDifference(bool excl) const = 0;                                       //!< Get the average pairwise sequence distance.
         virtual size_t                                          getMinPaiwiseSequenceDifference(bool excl) const = 0;                                       //!< Get the average pairwise sequence distance.
+        virtual DistanceMatrix                                  getPaiwiseSequenceDifference(bool excl) const = 0;                                       //!< Get the average pairwise sequence distance.
         virtual AbstractDiscreteTaxonData&                      getTaxonData(size_t tn) = 0;                                                                //!< Return a reference to a sequence in the character matrix
         virtual const AbstractDiscreteTaxonData&                getTaxonData(size_t tn) const = 0;                                                          //!< Return a reference to a sequence in the character matrix
         virtual AbstractDiscreteTaxonData&                      getTaxonData(const std::string &tn) = 0;                                                    //!< Return a reference to a sequence in the character matrix

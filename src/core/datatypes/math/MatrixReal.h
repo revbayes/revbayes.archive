@@ -20,6 +20,7 @@
 
 #include "Cloneable.h"
 #include "MemberObject.h"
+#include "MatrixReal.h"
 #include "RbVector.h"
 
 #include <cstddef>
@@ -29,6 +30,7 @@
 namespace RevBayesCore {
     
     class EigenSystem;
+    class CholeskyDecomposition;
     
     class MatrixReal : public Cloneable, public MemberObject<RbVector<double> > {
         
@@ -71,27 +73,32 @@ namespace RevBayesCore {
 //        std::vector<std::vector<double> >::const_iterator       end(void) const;
 //        std::vector<std::vector<double> >::iterator             end(void);
         
-        
-        
-        // utility funcions
+        // utility functions
         void                                    clear(void);
         MatrixReal*                             clone(void) const;
         MatrixReal                              computeInverse(void) const;
         void                                    executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;       //!< Map the member methods to internal function calls
-        RbVector<double>                        getColumn(size_t i) const;                                                                                      //!< Get the i-th column
+        RbVector<double>                        getColumn(size_t i) const;                                                                               //!< Get the i-th column
+        RbVector<double>                        getDiagonal(void) const;
         size_t                                  getDim() const;
         EigenSystem&                            getEigenSystem(void);
         const EigenSystem&                      getEigenSystem(void) const ;
+        CholeskyDecomposition&                  getCholeskyDecomposition(void);
+        const CholeskyDecomposition&            getCholeskyDecomposition(void) const ;
         double                                  getDet() const;
         double                                  getLogDet() const;
         size_t                                  getNumberOfColumns(void) const;
         double                                  getMax(void) const;
         double                                  getMin(void) const;
         size_t                                  getNumberOfRows(void) const;
+        MatrixReal                              getTranspose(void);
+        RbVector<double>                        getUpperTriangle(void) const;
         bool                                    isDiagonal(void) const;
         bool                                    isPositive() const;
         bool                                    isSquareMatrix(void) const;
         bool                                    isSymmetric(void) const;
+        void                                    setCholesky(bool c) const;
+        
         size_t                                  size(void) const;
         void                                    resize(size_t r, size_t c);
         
@@ -101,10 +108,15 @@ namespace RevBayesCore {
         
         // members
         RbVector<RbVector<double> >             elements;
+
         size_t                                  n_rows;
         size_t                                  n_cols;
         mutable EigenSystem*                    eigensystem;
         mutable bool                            eigen_needs_update;
+        
+        mutable bool                            use_cholesky_decomp;
+        mutable CholeskyDecomposition*          cholesky_decomp;
+        mutable bool                            cholesky_needs_update;
         
     };
     

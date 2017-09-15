@@ -28,7 +28,7 @@ namespace RevLanguage {
         virtual BirthDeathProcess*                          clone(void) const = 0;                                                              //!< Clone the object
 
         // Basic utility functions you may want to overwrite
-        const MemberRules&                                  getParameterRules(void) const;                                                         //!< Get member rules (const)
+        const MemberRules&                                  getParameterRules(void) const;                                                      //!< Get member rules (const)
         
         // Basic utility functions
         static const std::string&                           getClassType(void);                                                                 //!< Get Rev type
@@ -40,15 +40,14 @@ namespace RevLanguage {
         
     protected:
         
-        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var); //!< Set member variable
+        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);   //!< Set member variable
     
         // members        
-        RevPtr<const RevVariable>                           rootAge;                                                                             //!< The time of the process since the origin
-        RevPtr<const RevVariable>                           rho;                                                                                //!< The sampling probability of a species at present
-        RevPtr<const RevVariable>                           samplingStrategy;                                                                   //!< The applied sampling strategy (uniform/diversified)
         RevPtr<const RevVariable>                           condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
+        RevPtr<const RevVariable>                           incomplete_clades;                                                                  //!< The rev taxon objects that will be applied to the initally simulated tree
+        RevPtr<const RevVariable>                           samplingStrategy;                                                                   //!< The applied sampling strategy (uniform/diversified)
+        RevPtr<const RevVariable>                           startAge;                                                                           //!< The start time of the process since the origin
         RevPtr<const RevVariable>                           taxa;                                                                               //!< The rev taxon objects that will be applied to the initally simulated tree
-        RevPtr<const RevVariable>                           incomplete_clades;                                                                               //!< The rev taxon objects that will be applied to the initally simulated tree
         
     };
     

@@ -42,6 +42,7 @@
 #include "RlMonitor.h"
 #include "Mntr_AncestralState.h"
 #include "Mntr_JointConditionalAncestralState.h"
+#include "Mntr_JointConditionalCharacterMapping.h"
 #include "Mntr_StochasticCharacterMapping.h"
 #include "Mntr_File.h"
 #include "Mntr_ExtendedNewickFile.h"
@@ -64,6 +65,7 @@ void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
 
 		addTypeWithConstructor( new Mntr_AncestralState()                       );
         addTypeWithConstructor( new Mntr_JointConditionalAncestralState()       );
+        addTypeWithConstructor( new Mntr_JointConditionalCharacterMapping()     );
         addTypeWithConstructor( new Mntr_StochasticCharacterMapping()           );
         addTypeWithConstructor( new Mntr_ExtendedNewickFile()                   );
         addTypeWithConstructor( new Mntr_File()                                 );

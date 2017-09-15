@@ -13,7 +13,7 @@ MaximumTreeFunction::MaximumTreeFunction( const TypedDagNode< RbVector<Tree> > *
 {
     // add the lambda parameter as a parent
     addParameter( ts );
-    
+
     update();
 }
 
@@ -41,9 +41,9 @@ void MaximumTreeFunction::update( void )
 
 void MaximumTreeFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
-    
+
         trees = static_cast<const TypedDagNode< RbVector<Tree> >* >( newP );
-    
+
 }
 
 /**---------------------------------------------------------------------
@@ -63,7 +63,6 @@ void MaximumTreeFunction::swapParameterInternal(const DagNode *oldP, const DagNo
 
 void MaximumTreeFunction::getMinDepthMatrix (  )
 {
-    
     depthMatrix.clear();
 
     // First we get the list of all species present in the gene trees
@@ -94,7 +93,7 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
             {
                 maxDepth = age;
             }
-            
+
         }
     }
 
@@ -106,28 +105,31 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
     boost::dynamic_bitset<> speciesAbsent = boost::dynamic_bitset<> ( numSpecies ) ;
     //All leaves are present in completeBitVector:
     size_t index = 0;
+
     for (it = speciesNames.begin(); it != speciesNames.end() ; ++it)
     {
         speciesAbsent[index] = 0;
-        speciesNamesV[index] =  *it;
-        speciesToIndex[*it] = index;
+        speciesNamesV.push_back( *it );
+        std::pair<std::string, size_t> pair = std::pair<std::string, size_t> (*it, index);
+        speciesToIndex.insert( pair );
         index = index + 1;
+
     }
 
     // Set initial max depth for upper triangular matrix
     size_t numUpperTriang = (numSpecies * (numSpecies - 1)) / 2;
     for (size_t i=0; i<numUpperTriang; i++)
         depthMatrix.push_back( maxDepth );
-    
 
-    
+
+
     speciesPairSets.clear();
     for (size_t i=0; i<numSpecies-1; i++) {
         for (size_t j=i+1; j<numSpecies; j++) {
             speciesPairSets.push_back( std::pair< std::string, std::string > ( speciesNamesV[i], speciesNamesV[j] ) ) ;
         }
     }
-    
+
 
     // Now we are ready to cycle over gene trees
     std::vector < boost::dynamic_bitset<> > allBitsets;
@@ -160,7 +162,7 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
 
         // Now we have bitsets and ages for all nodes in the gene tree
         // nodeAgesToSpeciesBitset is ordered according to node age, which is useful for the next loop.
-        
+
         // Finally find the minimum for each cell in the upper triangular matrix
         // This is the time critical step with complexity O(n^3) in the simplest
         // algorithm version. This algorithm should do a little better in most cases.
@@ -178,6 +180,7 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
             }
 
          }
+
     }   // Next gene tree
 
         return ;
@@ -201,14 +204,13 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
  ----------------------------------------------------------------------*/
 Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
 {
-    
+
     //We need to go through depthMatrix from smallest to largest.
     boost::dynamic_bitset<> speciesAbsent = boost::dynamic_bitset<> ( numSpecies ) ;
     for (size_t i = 0; i < numSpecies ; ++i)
     {
         speciesAbsent[i] = 0;
     }
-    std::cout << "numSpecies" << numSpecies <<std::endl;
     //std::map< double, std::pair< std::string, std::string >  > depthToPairs ;
     std::map< double, boost::dynamic_bitset< > > depthToPairs ;
 
@@ -265,7 +267,7 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
                 currentBestPair = it;
                 found=true;
             }
-            
+
             if ( it->first > currentMinDepth )
             {
                 break;
@@ -317,45 +319,47 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
             totalDepth = currentBl;
             Root = nodeR;
         }
+
         bitSpeciesDone[spToAddId] = 1;
         speciesDone.push_back( speciesNamesV[spToAddId] );
         depthToPairs.erase( currentBestPair );
     }
 
-    
+
     //In principle we have just built a proper ultrametric tree.
     //Now we make a tree of it.
     Tree* tree = new Tree();
     tree->setRoot ( Root, true );
-    
+
     // set the branch lengths
     std::map < TopologyNode*, double >::iterator jt;
 
-    
+
     for (jt = nodeToBl.begin() ; jt != nodeToBl.end(); ++jt)
     {
         tree->getNode( jt->first->getIndex() ).setBranchLength( jt->second );
     }
-    
+
+
     Tree* ttree = TreeUtilities::convertTree ( *tree ) ;
-    
+
     // return the tree, the caller is responsible for destruction
     return ttree;
 
-    
-    
-    
-//    
-//    
+
+
+
+//
+//
 //    int         i, j, numUpperTriang, nLongsNeeded, index, nextNodeIndex;
 //    Depth       *minDepth;
 //    PolyTree    *polyTree;
 //    PolyNode    *p, *q, *r, *u, *qPrev, *rPrev;
-//    
+//
 //    nLongsNeeded    = ((numSpecies - 1) / nBitsInALong) + 1;
 //    numUpperTriang  = numSpecies*(numSpecies - 1) / 2;
 //    minDepth        = (Depth *) SafeCalloc (numUpperTriang, sizeof(Depth));
-//    
+//
 //	// Convert depthMatrix to an array of Depth structs
 //    index = 0;
 //    for(i=0; i<numSpecies; i++) {
@@ -365,18 +369,18 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
 //            index++;
 //        }
 //	}
-//    
+//
 //    // Sort the array of distance structs (O(log n^2))
 //    qsort((void *)(minDepth), (size_t)(numUpperTriang), sizeof(Depth), CompareDepths);
-//    
+//
 //    // The algorithm below reduces the upper triangular matrix (n choose 2) to an n-1
 //    // array in O(n^2log(n)) time. We build the tree at the same time, since we can
 //    // find included pairs in the tree in log(n) time. We use a polytomous tree for this.
-//    
+//
 //    // Allocate space for polytomous tree and set up partitions
 //    polyTree = AllocatePolyTree(numSpecies);
 //    AllocatePolyTreePartitions(polyTree);
-//    
+//
 //    // Build initial tree (a bush)
 //    polyTree->isRooted = YES;
 //    polyTree->isClock = YES;
@@ -402,23 +406,23 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
 //    polyTree->nIntNodes = 1;
 //    GetPolyDownPass(polyTree);
 //    ResetPolyTreePartitions(polyTree);      /* set bitsets (partitions) for initial tree */
-//    
+//
 //    // Resolve bush using sorted depth structs
 //    nextNodeIndex = numSpecies;
 //    for(i=0; i<numUpperTriang; i++) {
-//        
+//
 //        // Find tip corresponding to first taxon in pair
 //        p = &polyTree->nodes[FirstTaxonInPartition(minDepth[i].pairSet, nLongsNeeded)];
-//        
+//
 //        // Descend tree until we find a node within which the pair set is nested
 //        do {
 //            p = p->anc;
 //        } while (!IsPartNested(minDepth[i].pairSet, p->partition, nLongsNeeded));
-//        
+//
 //        if (p->left->sib->sib != NULL) {
-//            
+//
 //            // This node is still a polytomy
-//            
+//
 //            // Find left and right descendants of new node
 //            qPrev = NULL;
 //            for (q=p->left; IsSectionEmpty(q->partition, minDepth[i].pairSet, nLongsNeeded); q=q->sib)
@@ -426,7 +430,7 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
 //            rPrev = q;
 //            for (r=q->sib;  IsSectionEmpty(r->partition, minDepth[i].pairSet, nLongsNeeded); r=r->sib)
 //                rPrev = r;
-//            
+//
 //            // Introduce the new node
 //            u = &polyTree->nodes[nextNodeIndex];
 //            u->index = nextNodeIndex;
@@ -450,11 +454,11 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
 //                u->sib = q->sib;
 //            u->depth = minDepth[i].depth;   // because minDepth structs are sorted, we know this is the min depth
 //            assert (u->depth > 0.0);
-//            
+//
 //            // Create new taxon set with bitfield operations
 //            for (j=0; j<nLongsNeeded; j++)
 //                u->partition[j] = q->partition[j] | r->partition[j];
-//            
+//
 //            // Patch the tree together with the new node added
 //            q->sib  = r;
 //            r->sib = NULL;
@@ -462,21 +466,21 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
 //            r->anc = u;
 //        }
 //        else if (p == polyTree->root && p->depth < 0.0) {
-//            
+//
 //            // This is the first time we hit the root of the tree && it is resolved
 //            p->depth = minDepth[i].depth;
 //            assert (p->depth > 0.0);
-//            
+//
 //        }
 //        // other cases should not be added to tree
 //    }
-//    
+//
 //    // Make sure we have a complete species tree
 //    assert (polyTree->nIntNodes == numSpecies - 1);
-//    
+//
 //    // Set traversal sequences
 //    GetPolyDownPass(polyTree);
-//    
+//
 //    // Set branch lengths from node depths (not done automatically for us)
 //    // Make sure all branch lengths are nonnegative (we can have 0.0 brlens, they
 //    // should not be problematic in a species tree; they occur when there are
@@ -493,15 +497,13 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
 //            return (ERROR);
 //        }
 //    }
-//    
+//
 //    // Copy to species tree from polytomous tree
 //    CopyToSpeciesTreeFromPolyTree (speciesTree, polyTree);
-//    
+//
 //    // Free locally allocated variables
 //    FreePolyTree(polyTree);
 //    free (minDepth);
-//    
+//
 //    return(NO_ERROR);
 }
-
-

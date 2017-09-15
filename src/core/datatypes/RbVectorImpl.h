@@ -47,7 +47,6 @@ namespace RevBayesCore {
         {
             this->clear();
             std::string sub = s.substr( 1, s.size()-2);
-//            std::string sub = s.substr( 2, s.size()-4);
             std::vector<std::string> elements;
             StringUtilities::stringSplit(sub,",", elements);
             for (size_t i=0; i<elements.size(); ++i)
@@ -96,14 +95,13 @@ namespace RevBayesCore {
                 {
                     o << ",";
                 }
-//                o << " ";
+                o << " ";
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForUser( this->operator[](i), o, sep, l, left );
             }
             o << "]";
         }
         void                                                printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
-            o << "[";
             for (size_t i=0; i<size(); ++i)
             {
                 if (i > 0)
@@ -113,7 +111,6 @@ namespace RevBayesCore {
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForSimpleStoring( this->operator[](i), o, sep, l, left );
 
             }
-            o << "]";
         }
         void                                                printForComplexStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
@@ -124,7 +121,6 @@ namespace RevBayesCore {
                 {
                     o << ",";
                 }
-//                o << " ";
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForComplexStoring( this->operator[](i), o, sep, l, left );
 
             }
@@ -242,7 +238,6 @@ namespace RevBayesCore {
                 {
                     o << ",";
                 }
-                o << " ";
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForComplexStoring( this->operator[](i), o, sep, l, left );
             }
             o << "]";

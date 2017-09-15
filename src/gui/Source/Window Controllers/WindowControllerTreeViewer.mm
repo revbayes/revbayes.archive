@@ -44,9 +44,12 @@
     //configure carousel
     [self.window makeFirstResponder:self.carousel];
     [carousel reloadData];
+<<<<<<< HEAD
+=======
 
     if ([self activeTree] != nil)
         [carousel scrollToItemAtIndex:(NSInteger)(0) duration:0.5];
+>>>>>>> development
     
     [infoLabel setHidden:YES];
 }
@@ -123,9 +126,15 @@
     GuiTree* t = [myTool getTreeIndexed:(unsigned)[carousel currentItemIndex]];
     return t;
 }
+<<<<<<< HEAD
 
 - (void)dealloc {
 
+=======
+
+- (void)dealloc {
+
+>>>>>>> development
 	//it's a good idea to set these to nil here to avoid
 	//sending messages to a deallocated window or view controller
 	carousel.delegate = nil;

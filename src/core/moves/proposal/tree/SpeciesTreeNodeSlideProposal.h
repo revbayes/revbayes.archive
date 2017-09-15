@@ -8,7 +8,7 @@
 #include "Tree.h"
 
 namespace RevBayesCore {
-    
+
     /**
      * The species-subtree-scale operator.
      *
@@ -24,11 +24,11 @@ namespace RevBayesCore {
      *
      */
     class SpeciesTreeNodeSlideProposal : public Proposal {
-        
+
     public:
         SpeciesTreeNodeSlideProposal(StochasticNode<Tree> *sp, StochasticNode<double> *r, double d );                   //!<  constructor
         virtual ~SpeciesTreeNodeSlideProposal(void);
-        
+
         // Basic utility functions
         void                                            addGeneTree(StochasticNode<Tree> *gt);                          //!< Add a DAG Node holding a gene tree on which this move should operate on
         void                                            cleanProposal(void);                                                //!< Clean up proposal
@@ -40,14 +40,14 @@ namespace RevBayesCore {
         void                                            removeGeneTree(StochasticNode<Tree> *gt);                       //!< Remove a DAG Node holding a gene tree on which this move should operate on
         void                                            tune(double r);                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                            undoProposal(void);                                                 //!< Reject the proposal
-        
+
     protected:
-        
+
         void                                            swapNodeInternal(DagNode *oldN, DagNode *newN);                     //!< Swap the DAG nodes on which the Proposal is working on
-        
-        
+
+
     private:
-        
+
         // helper methods
         void                                            mauCanonical(Tree &tree, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwapped);
         size_t                                          mauCanonicalSub(Tree &tree, TopologyNode *node, size_t loc, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwaped);
@@ -55,26 +55,25 @@ namespace RevBayesCore {
         TopologyNode*                                   mauReconstructSub(Tree &tree, size_t from, size_t to, std::vector<TopologyNode*> &order, std::vector<bool>&wasSwaped);
         void                                            fillPreorderIndices(Tree &t, std::vector<size_t> &);
         size_t                                          fillPreorderIndices(TopologyNode &n, size_t loc, std::vector<size_t> &);
-        
+
         // parameters
         StochasticNode<Tree>*                           speciesTree;                                                        //!< The variable the Proposal is working on
         std::vector< StochasticNode<Tree> *>            geneTrees;
         StochasticNode<double>*                         rootAge;
-        
+
         // parameters
         double                                          delta;
-        
+
         // stored objects to undo proposal
         double                                          storedAge;
         TopologyNode*                                   storedNode;
         std::vector<bool>                               swappedNodes;
         std::vector<TopologyNode*>                      orderedNodes;
-        
+
 //        std::vector<size_t>                             preOrderIndexBefore;
 //        std::vector<size_t>                             preOrderIndexAfter;
     };
-    
+
 }
 
 #endif
-

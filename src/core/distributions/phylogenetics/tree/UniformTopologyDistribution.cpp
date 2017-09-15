@@ -1,4 +1,5 @@
 #include "UniformTopologyDistribution.h"
+#include "Clade.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -28,7 +29,6 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
         {
 			nodeLnFact += std::log(i);
         }
-        
 	}
     
     logTreeTopologyProb = (num_taxa - 2 - !rooted) * RbConstants::LN2 + nodeLnFact - branchLnFact;
@@ -59,7 +59,7 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
     }
 
     RbBitSet b( num_taxa );
-    for (size_t j = 0; j < outgroup.size(); ++j)
+    for (size_t j = 0; j < outgroup.size(); j++)
     {
         size_t k = taxon_bitset_map[ outgroup.getTaxonName(j) ];
 

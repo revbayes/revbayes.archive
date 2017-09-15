@@ -54,7 +54,7 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
     // get the parameters
     
     // the root age
-    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
     
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
@@ -165,9 +165,9 @@ const MemberRules& Dist_bdp::getParameterRules(void) const
     
     if ( !rules_set ) 
     {
-        
-        dist_member_rules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "lambda",  RealPos::getClassTypeSpec(), "The speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "mu",      RealPos::getClassTypeSpec(), "The extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "rho",     Probability::getClassTypeSpec(), "The taxon sampling fraction.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
 
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
@@ -214,6 +214,10 @@ void Dist_bdp::setConstParameter(const std::string& name, const RevPtr<const Rev
     else if ( name == "mu" ) 
     {
         mu = var;
+    }
+    else if ( name == "rho" )
+    {
+        rho = var;
     }
     else
     {

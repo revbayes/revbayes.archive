@@ -214,8 +214,8 @@ void ContinuousCharacterData::executeMethod(const std::string &n, const std::vec
     
     if ( n == "get" )
     {
-        int index_taxon = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
-        int index_site = static_cast<const TypedDagNode<int> *>( args[1] )->getValue()-1;
+        int index_taxon = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
+        int index_site = static_cast<const TypedDagNode<long> *>( args[1] )->getValue()-1;
         rv = getTaxonData(index_taxon)[index_site];
     }
     else
@@ -288,7 +288,8 @@ size_t ContinuousCharacterData::getNumberOfCharacters(void) const
  *
  * \return    The total number of characters
  */
-size_t ContinuousCharacterData::getNumberOfIncludedCharacters(void) const {
+size_t ContinuousCharacterData::getNumberOfIncludedCharacters(void) const
+{
     
     if (getNumberOfTaxa() > 0) 
     {

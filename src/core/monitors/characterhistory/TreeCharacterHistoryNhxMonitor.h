@@ -88,7 +88,7 @@ namespace RevBayesCore {
     
 }
 
-#include "AbstractTreeHistoryCtmc.h"
+#include "TreeHistoryCtmc.h"
 #include "Model.h"
 #include "RbException.h"
 
@@ -183,7 +183,7 @@ template<class charType>
 void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::updateCharacterCounts(TopologyNode* n, std::string brEnd)
 {
     
-    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
     const BranchHistory& bh = p->getHistory(*n);
 
     std::vector<CharacterEvent*> characters;
@@ -206,7 +206,7 @@ template<class charType>
 std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::buildCharacterHistoryString(TopologyNode* n, std::string brEnd)
 {
     size_t nd_idx = n->getIndex();
-    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
     const BranchHistory& bh = p->getHistory(*n);
 
     std::vector<CharacterEvent*> characters;

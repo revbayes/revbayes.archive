@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-DiscretizeDistributionFunction::DiscretizeDistributionFunction(ContinuousDistribution *d, const TypedDagNode<int> *nc) : TypedFunction< RbVector<double> >( new RbVector<double>(nc->getValue(), 1.0) ),
+DiscretizeDistributionFunction::DiscretizeDistributionFunction(ContinuousDistribution *d, const TypedDagNode<long> *nc) : TypedFunction< RbVector<double> >( new RbVector<double>(nc->getValue(), 1.0) ),
     dist( d ),
     numCats(nc)
 {
@@ -68,7 +68,7 @@ void DiscretizeDistributionFunction::swapParameterInternal(const DagNode *oldP, 
     
     if (oldP == numCats)
     {
-        numCats = static_cast<const TypedDagNode<int>* >( newP );
+        numCats = static_cast<const TypedDagNode<long>* >( newP );
     }
     else
     {

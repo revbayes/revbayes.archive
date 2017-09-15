@@ -52,7 +52,7 @@ RevPtr<RevVariable> Func_range::execute( void )
     int f = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getValue();
     int l = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
     
-    ModelVector<Integer> *range = new ModelVector<Integer>( RevBayesCore::RbVector<int>() );
+    ModelVector<Integer> *range = new ModelVector<Integer>( RevBayesCore::RbVector<long>() );
     if (f < l)
     {
         for ( int i = f; i <= l; i++ )

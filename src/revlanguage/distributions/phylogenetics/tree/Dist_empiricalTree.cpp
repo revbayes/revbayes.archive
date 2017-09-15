@@ -7,6 +7,7 @@
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlDistributionMemberFunction.h"
 #include "RlString.h"
 #include "StochasticNode.h"
 #include "EmpiricalTreeDistribution.h"
@@ -104,6 +105,20 @@ std::string Dist_empiricalTree::getDistributionFunctionName( void ) const
     std::string d_name = "EmpiricalTree";
     
     return d_name;
+}
+
+
+MethodTable Dist_empiricalTree::getDistributionMethods( void ) const
+{
+    
+    MethodTable methods = TypedDistribution<Tree>::getDistributionMethods();
+    
+    // member functions
+    ArgumentRules* get_tree_index_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_empiricalTree, Natural >( "getTreeIndex", variable, get_tree_index_arg_rules   ) );
+    
+    
+    return methods;
 }
 
 

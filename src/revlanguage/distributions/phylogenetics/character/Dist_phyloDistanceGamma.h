@@ -9,7 +9,7 @@
 
 namespace RevLanguage {
     
-    class Dist_phyloDistanceGamma :  public TypedDistribution< RlDistanceMatrix > {
+    class Dist_phyloDistanceGamma : public TypedDistribution< DistanceMatrix > {
         
     public:
         Dist_phyloDistanceGamma( void );

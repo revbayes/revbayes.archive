@@ -5,7 +5,7 @@
 
 
 
-RevBayesCore::DiscretizeBetaFunction::DiscretizeBetaFunction(const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<int> *nc, bool med) : TypedFunction< RbVector<double> >( new RbVector<double>(nc->getValue(), 1.0) ),
+RevBayesCore::DiscretizeBetaFunction::DiscretizeBetaFunction(const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<long> *nc, bool med) : TypedFunction< RbVector<double> >( new RbVector<double>(nc->getValue(), 1.0) ),
 alpha( a ),
 beta( b ),
 numCats(nc),
@@ -41,7 +41,7 @@ void RevBayesCore::DiscretizeBetaFunction::swapParameterInternal(const DagNode *
     
     if (oldP == numCats)
     {
-        numCats = static_cast<const TypedDagNode<int>* >( newP );
+        numCats = static_cast<const TypedDagNode<long>* >( newP );
     }
     
 }

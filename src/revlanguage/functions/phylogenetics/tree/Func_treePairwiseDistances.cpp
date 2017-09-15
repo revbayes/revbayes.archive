@@ -1,11 +1,3 @@
-//
-//  Func_treePairwiseDistances.cpp
-//  RevBayesCore
-//
-//  Created by Bastien Boussau on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "Func_treePairwiseDistances.h"
 #include "DistanceMatrix.h"
 #include "ModelVector.h"
@@ -20,7 +12,7 @@ using namespace RevLanguage;
 
 
 /** default constructor */
-Func_treePairwiseDistances::Func_treePairwiseDistances( void ) : TypedFunction< RlDistanceMatrix >( )
+Func_treePairwiseDistances::Func_treePairwiseDistances( void ) : TypedFunction< DistanceMatrix >( )
 {
     
 }

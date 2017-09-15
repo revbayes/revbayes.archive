@@ -10,7 +10,7 @@
 using namespace RevLanguage;
 
 
-Dist_phyloDistanceGamma::Dist_phyloDistanceGamma() : TypedDistribution< RlDistanceMatrix >()
+Dist_phyloDistanceGamma::Dist_phyloDistanceGamma() : TypedDistribution< DistanceMatrix >()
 {
     
 }
@@ -39,10 +39,10 @@ RevBayesCore::TypedDistribution< RevBayesCore::DistanceMatrix >* Dist_phyloDista
     const std::vector<std::string>      &nam  = static_cast<const ModelVector<RlString> &>( names->getRevObject() ).getDagNode()->getValue();
     
     RevBayesCore::TypedDagNode< RevBayesCore::DistanceMatrix >* varianceNode = NULL;
-    varianceNode = static_cast<const RlDistanceMatrix &>( varianceMatrix->getRevObject() ).getDagNode();
+    varianceNode = static_cast<const DistanceMatrix &>( varianceMatrix->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode< RevBayesCore::DistanceMatrix >* distanceNode = NULL;
-    distanceNode = static_cast<const RlDistanceMatrix &>( distanceMatrix->getRevObject() ).getDagNode();
+    distanceNode = static_cast<const DistanceMatrix &>( distanceMatrix->getRevObject() ).getDagNode();
     
     RevBayesCore::PhyloDistanceGamma* d = new RevBayesCore::PhyloDistanceGamma( tau );
     
@@ -70,7 +70,7 @@ const std::string& Dist_phyloDistanceGamma::getClassType(void)
 const TypeSpec& Dist_phyloDistanceGamma::getClassTypeSpec(void)
 {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< RlDistanceMatrix >::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< DistanceMatrix >::getClassTypeSpec() ) );
     
     return rev_type_spec;
 }
@@ -103,8 +103,8 @@ const MemberRules& Dist_phyloDistanceGamma::getParameterRules(void) const
     {
         
         dist_member_rules.push_back( new ArgumentRule( "tree"             , Tree::getClassTypeSpec()                  , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "distanceMatrix"   , RlDistanceMatrix::getClassTypeSpec()      , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "varianceMatrix"   , RlDistanceMatrix::getClassTypeSpec()      , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "distanceMatrix"   , DistanceMatrix::getClassTypeSpec()      , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "varianceMatrix"   , DistanceMatrix::getClassTypeSpec()      , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "names"            , ModelVector<RlString>::getClassTypeSpec() , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rules_set = true;
@@ -178,7 +178,7 @@ void Dist_phyloDistanceGamma::setConstParameter(const std::string& name, const R
     }
     else
     {
-        TypedDistribution< RlDistanceMatrix >::setConstParameter(name, var);
+        TypedDistribution< DistanceMatrix >::setConstParameter(name, var);
     }
     
 }

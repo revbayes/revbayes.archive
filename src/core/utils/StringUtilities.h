@@ -64,9 +64,11 @@ namespace RevLanguage {
 
     std::string                     operator+(const std::string& A, double B);
     std::string                     operator+(const std::string& A, int B);
+    std::string                     operator+(const std::string& A, long B);
     std::string                     operator+(const std::string& A, size_t B);
     std::string                     operator+(double A, const std::string& B);
     std::string                     operator+(int A, const std::string& B);
+    std::string                     operator+(long A, const std::string& B);
     std::string                     operator+(size_t A, const std::string& B);
 
 }
@@ -75,18 +77,22 @@ namespace RevBayesCore {
     
     std::string                     operator+(const std::string& A, double B);
     std::string                     operator+(const std::string& A, int B);
+    std::string                     operator+(const std::string& A, long B);
     std::string                     operator+(const std::string& A, size_t B);
     std::string                     operator+(double A, const std::string& B);
     std::string                     operator+(int A, const std::string& B);
+    std::string                     operator+(long A, const std::string& B);
     std::string                     operator+(size_t A, const std::string& B);
     
 }
 
 std::string                     operator+(const std::string& A, double B);
 std::string                     operator+(const std::string& A, int B);
+std::string                     operator+(const std::string& A, long B);
 std::string                     operator+(const std::string& A, size_t B);
 std::string                     operator+(double A, const std::string& B);
 std::string                     operator+(int A, const std::string& B);
+std::string                     operator+(long A, const std::string& B);
 std::string                     operator+(size_t A, const std::string& B);
 
 

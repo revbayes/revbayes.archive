@@ -133,6 +133,56 @@ ArgumentRule::ArgumentRule(const std::vector<std::string>& argNames, const std::
 }
 
 
+/**
+ * Construct rule with single type;
+ * use "" for no label.
+ */
+ArgumentRule::ArgumentRule(const std::vector<std::string>& argNames, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt, RevObject *defVal) :
+    argTypeSpecs( 1, argTypeSp ),
+    defaultVar( new RevVariable( defVal ) ),
+    evalType( et ),
+    nodeType( dt ),
+    aliases( argNames ),
+    description( argDesc ),
+    hasDefaultVal( true )
+{
+    label = "";
+    for(size_t i = 0; i < argNames.size(); i++)
+    {
+        if(i > 0)
+        {
+            label += "/";
+        }
+        label += argNames[i];
+    }
+}
+
+
+/**
+ * Construct rule with multiple types;
+ * use "" for no label.
+ */
+ArgumentRule::ArgumentRule(const std::vector<std::string>& argNames, const std::vector<TypeSpec>& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt, RevObject *defVal) :
+    argTypeSpecs( argTypeSp ),
+    defaultVar( new RevVariable( defVal ) ),
+    evalType( et ),
+    nodeType( dt ),
+    aliases( argNames ),
+    description( argDesc ),
+    hasDefaultVal( true )
+{
+    label = "";
+    for(size_t i = 0; i < argNames.size(); i++)
+    {
+        if(i > 0)
+        {
+            label += "/";
+        }
+        label += argNames[i];
+    }
+}
+
+
 ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
 {
 

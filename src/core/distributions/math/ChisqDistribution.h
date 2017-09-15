@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class ChisqDistribution : public ContinuousDistribution {
         
     public:
-        ChisqDistribution(const TypedDagNode<int> *df);
+        ChisqDistribution(const TypedDagNode<long> *df);
         virtual                                            ~ChisqDistribution(void);                                             //!< Virtual destructor
         
         // public member functions
@@ -41,7 +41,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<int>*                            degrees;
+        const TypedDagNode<long>*                            degrees;
     };
     
 }

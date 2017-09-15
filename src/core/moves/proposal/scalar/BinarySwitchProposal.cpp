@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-BinarySwitchProposal::BinarySwitchProposal( StochasticNode<int> *n) : Proposal(),
+BinarySwitchProposal::BinarySwitchProposal( StochasticNode<long> *n) : Proposal(),
     variable( n ),
     storedValue( 0 )
 {
@@ -70,7 +70,7 @@ const std::string& BinarySwitchProposal::getProposalName( void ) const
 double BinarySwitchProposal::doProposal( void )
 {
     
-    int &val = variable->getValue();
+    long &val = variable->getValue();
     
     // copy value
     storedValue = val;
@@ -124,7 +124,7 @@ void BinarySwitchProposal::printParameterSummary(std::ostream &o) const
 void BinarySwitchProposal::undoProposal( void )
 {
     // swap current value and stored value
-    variable->setValue( new int(storedValue) );
+    variable->setValue( new long(storedValue) );
     
 }
 
@@ -138,7 +138,7 @@ void BinarySwitchProposal::undoProposal( void )
 void BinarySwitchProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<int>* >(newN) ;
+    variable = static_cast<StochasticNode<long>* >(newN) ;
     
 }
 

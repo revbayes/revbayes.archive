@@ -17,7 +17,7 @@ using namespace RevLanguage;
 
 
 Func_write::Func_write( void ) :
-    process_ID( 0 )
+process_ID( 0 )
 {
 #if defined (RB_MPI)
     MPI_Comm_rank(MPI_COMM_WORLD, &process_ID);
@@ -50,28 +50,28 @@ RevPtr<RevVariable> Func_write::execute( void )
     
     if ( process_ID == 0 )
     {
-
+        
         if ( fn != "" )
         {
-        
+            
             RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
             fm.createDirectoryForFile();
-        
+            
             std::ofstream out_stream;
-        
+            
             if ( append == true )
             {
-            
+                
                 // open the stream to the file
                 out_stream.open(fn.c_str(), std::fstream::out | std::fstream::app);
             }
             else
             {
-            
+                
                 // open the stream to the file
                 out_stream.open(fn.c_str(), std::fstream::out);
             }
-        
+            
             // print the arguments
             args[0].getVariable()->getRevObject().printValue(out_stream, false);
             for (size_t i = 4; i < args.size(); i++)
@@ -85,9 +85,9 @@ RevPtr<RevVariable> Func_write::execute( void )
         }
         else
         {
-        
+            
             std::ostream& o = std::cout;
-        
+            
             // print the arguments
             args[0].getVariable()->getRevObject().printValue( o, false );
             for (size_t i = 4; i < args.size(); i++)
@@ -98,7 +98,7 @@ RevPtr<RevVariable> Func_write::execute( void )
             o << std::endl;
         }
     }
-
+    
     return NULL;
 }
 
@@ -110,7 +110,7 @@ const ArgumentRules& Func_write::getArgumentRules( void ) const
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rules_set = false;
     
-    if (!rules_set) 
+    if (!rules_set)
     {
         
         argumentRules.push_back( new ArgumentRule( "", RevObject::getClassTypeSpec(), "A variable to write.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -131,7 +131,7 @@ const std::string& Func_write::getClassType(void)
     
     static std::string rev_type = "Func_write";
     
-	return rev_type; 
+    return rev_type;
 }
 
 
@@ -141,7 +141,7 @@ const TypeSpec& Func_write::getClassTypeSpec(void)
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rev_type_spec; 
+    return rev_type_spec;
 }
 
 

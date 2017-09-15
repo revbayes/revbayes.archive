@@ -46,7 +46,7 @@ RevPtr<RevVariable> Func_readDistanceMatrix::execute( void )
 	RevBayesCore::DistanceMatrixReader* dmr = new RevBayesCore::DistanceMatrixReader( fn.getValue(), ' ' );
 	RevBayesCore::DistanceMatrix* dm = new RevBayesCore::DistanceMatrix(dmr);
 		
-	return new RevVariable( new RlDistanceMatrix(dm) );
+	return new RevVariable( new DistanceMatrix(dm) );
 }
 
 
@@ -115,7 +115,7 @@ const TypeSpec& Func_readDistanceMatrix::getTypeSpec( void ) const
 const TypeSpec& Func_readDistanceMatrix::getReturnType( void ) const
 {
 	
-	static TypeSpec returnTypeSpec = RlDistanceMatrix::getClassTypeSpec();
+	static TypeSpec returnTypeSpec = DistanceMatrix::getClassTypeSpec();
 	return returnTypeSpec;
 }
 

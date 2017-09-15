@@ -133,5 +133,3 @@ void AminoAcidState::setStateByIndex(size_t index)
     state.clear();
     state.set( index );
 }
-
-

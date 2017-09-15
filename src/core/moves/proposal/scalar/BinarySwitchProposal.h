@@ -21,11 +21,11 @@ namespace RevBayesCore {
     class BinarySwitchProposal : public Proposal {
         
     public:
-        BinarySwitchProposal( StochasticNode<int> *n);                                                                    //!<  constructor
+        BinarySwitchProposal( StochasticNode<long> *n);                                                                    //!<  constructor
         
         // Basic utility functions
         void                                cleanProposal(void);                                                                //!< Clean up proposal
-        BinarySwitchProposal*          clone(void) const;                                                                  //!< Clone object
+        BinarySwitchProposal*               clone(void) const;                                                                  //!< Clone object
         double                              doProposal(void);                                                                   //!< Perform proposal
         const std::string&                  getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                prepareProposal(void);                                                              //!< Prepare the proposal
@@ -41,8 +41,8 @@ namespace RevBayesCore {
     private:
         // parameters
         
-        StochasticNode<int>*                variable;                                                                           //!< The variable the Proposal is working on
-        int                                 storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
+        StochasticNode<long>*               variable;                                                                           //!< The variable the Proposal is working on
+        long                                storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
     };
     
 }

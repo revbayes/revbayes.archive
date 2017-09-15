@@ -56,7 +56,7 @@ RevBayesCore::EpisodicBirthDeathProcess* Dist_episodicBirthDeath::createDistribu
     // get the parameters
     
     // the root age
-    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
     
     // speciation rates
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sr = NULL;
@@ -141,8 +141,6 @@ RevBayesCore::EpisodicBirthDeathProcess* Dist_episodicBirthDeath::createDistribu
     
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
     std::vector<RevBayesCore::Taxon> t                                      = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
-    
-    
     
     // create the internal distribution object
     RevBayesCore::EpisodicBirthDeathProcess* d = new RevBayesCore::EpisodicBirthDeathProcess(ra, sr, st, er, et, r, strategy, inc_clades, cond, t);
@@ -237,6 +235,8 @@ const MemberRules& Dist_episodicBirthDeath::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "muRates"    , rateTypes, "The piecewise-constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "muTimes"    , rateTypes, "The constant extinction rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         
+        dist_member_rules.push_back( new ArgumentRule( "rho",      Probability::getClassTypeSpec(), "The taxon sampling fraction(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
+
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
         dist_member_rules.insert(dist_member_rules.end(), parentRules.begin(), parentRules.end());
@@ -282,6 +282,10 @@ void Dist_episodicBirthDeath::setConstParameter(const std::string& name, const R
     else if ( name == "muRates" )
     {
         mu_rates = var;
+    }
+    else if ( name == "rho" )
+    {
+        rho = var;
     }
     else if ( name == "lambdaTimes" )
     {

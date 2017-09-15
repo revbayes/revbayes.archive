@@ -29,14 +29,14 @@ namespace RevBayesCore {
     class DecomposedInverseWishartDistribution : public TypedDistribution<MatrixReal>   {
         
     public:
-                                                    DecomposedInverseWishartDistribution(const TypedDagNode<MatrixReal> *insigma0, const TypedDagNode<int>* indf);
-                                                    DecomposedInverseWishartDistribution(const TypedDagNode<RbVector<double> > *inkappaVector, const TypedDagNode<int>* indf);
-                                                    DecomposedInverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf);
+                                                    DecomposedInverseWishartDistribution(const TypedDagNode<MatrixReal> *insigma0, const TypedDagNode<long>* indf);
+                                                    DecomposedInverseWishartDistribution(const TypedDagNode<RbVector<double> > *inkappaVector, const TypedDagNode<long>* indf);
+                                                    DecomposedInverseWishartDistribution(const TypedDagNode<long>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<long>* indf);
         virtual                                    ~DecomposedInverseWishartDistribution(void) {}
         DecomposedInverseWishartDistribution*       clone(void) const;                                                          //!< Create an independent clone
         double                                      computeLnProbability(void);
         void                                        redrawValue(void);
-        int                                         getDF(void) const {return df->getValue();}
+        long                                        getDF(void) const {return df->getValue();}
         
     protected:
         void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
@@ -45,8 +45,8 @@ namespace RevBayesCore {
         const TypedDagNode<MatrixReal>*             sigma0;
         const TypedDagNode<RbVector<double> >*      kappaVector;
         const TypedDagNode<double>*                 kappa;
-        const TypedDagNode<int>*                    df;
-        const TypedDagNode<int>*                    dim;
+        const TypedDagNode<long>*                    df;
+        const TypedDagNode<long>*                    dim;
     };
     
 }

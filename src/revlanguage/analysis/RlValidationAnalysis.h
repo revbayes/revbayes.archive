@@ -43,6 +43,7 @@ namespace RevLanguage {
         
     protected:
         
+        void                                        initializeMethods(void);                                                                    //!< Initialize the member methods
         virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);          //!< Set member variable
         

@@ -269,14 +269,20 @@ const Model& Mcmc::getModel( void ) const
  * Get the joint posterior probability of the current state for this model.
  * Note that the joint posterior is the true, unscaled and unheated value.
  */
-double Mcmc::getModelLnProbability(void)
+double Mcmc::getModelLnProbability(bool likelihood_only)
 {
     double pp = 0.0;
     
     const std::vector<DagNode*> &n = model->getDagNodes();
     for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
     {
-        pp += (*it)->getLnProbability();
+        
+        DagNode *the_node = *it;
+        if ( likelihood_only == true && the_node->isClamped() == true )
+        {
+            pp += the_node->getLnProbability();
+        }
+
     }
     
     return pp;

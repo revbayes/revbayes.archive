@@ -267,6 +267,16 @@ int Clade::getNumberMissingTaxa( void ) const
     return num_missing;
 }
 
+/**
+ * Get number of missing taxa.
+ *
+ * \return       The number of missing taxa.
+ */
+size_t Clade::getNumberOfTaxa( void ) const
+{
+    return taxa.size();
+}
+
 
 /**
  * Get the vector of optional clade constraints.
@@ -277,16 +287,6 @@ int Clade::getNumberMissingTaxa( void ) const
 std::vector<Clade> Clade::getOptionalConstraints(void) const
 {
     return optional_constraints;
-}
-
-/**
- * Get number of missing taxa.
- *
- * \return       The number of missing taxa.
- */
-size_t Clade::getNumberOfTaxa( void ) const
-{
-    return taxa.size();
 }
 
 

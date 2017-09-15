@@ -18,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-ChromosomesRateMatrixFunction::ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *g, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *e, const TypedDagNode<double> *g_l, const TypedDagNode<double> *d_l) : TypedFunction<RateGenerator>( new RateMatrix_Chromosomes(n->getValue()) ), gamma( g ), delta( d ), rho( r ), eta( e ), gamma_l( g_l ), delta_l( d_l ) {
+ChromosomesRateMatrixFunction::ChromosomesRateMatrixFunction(const TypedDagNode<long> *n, const TypedDagNode<double> *g, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *e, const TypedDagNode<double> *g_l, const TypedDagNode<double> *d_l) : TypedFunction<RateGenerator>( new RateMatrix_Chromosomes(n->getValue()) ), gamma( g ), delta( d ), rho( r ), eta( e ), gamma_l( g_l ), delta_l( d_l ) {
 
     addParameter( gamma );
     addParameter( delta );

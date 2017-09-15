@@ -1,7 +1,7 @@
 #ifndef Taxon_H
 #define Taxon_H
 
-#include "TimeAndDate.h"
+#include "TimeInterval.h"
 
 #include <string>
 
@@ -35,19 +35,18 @@ namespace RevBayesCore {
         
         // public methods
         double                              getAge(void) const;                         //!< Get the age for this taxon.
-        const TimeAndDate&                  getDate(void) const;                        //!< Get the date info for this taxon.
+        const TimeInterval&                 getAgeRange(void) const;                    //!< Get the date info for this taxon.
         const std::string&                  getName(void) const;                        //!< Get the name for this taxon.
         const std::string&                  getSpeciesName(void) const;                 //!< Get the name of the species.
         void                                setAge(double a);                           //!< Set the age.
-        void                                setDate(const TimeAndDate &d);              //!< Set the date info.
+        void                                setAgeRange(const TimeInterval &d);         //!< Set the date info.
         void                                setName(const std::string &n);              //!< Set the name.
         void                                setSpeciesName(const std::string &n);       //!< Set the name of the species.
         
     private:
         
         // private members
-        double                              age;
-        TimeAndDate                         date;
+        TimeInterval                        age_range;
         std::string                         name;
         std::string                         species_name;
     

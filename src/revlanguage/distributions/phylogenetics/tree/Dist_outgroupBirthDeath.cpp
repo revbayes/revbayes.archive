@@ -63,7 +63,7 @@ RevBayesCore::ConstantRateOutgroupBirthDeathProcess* Dist_outgroupBirthDeath::cr
     // get the parameters
     
     // the start age
-    RevBayesCore::TypedDagNode<double>* ra      = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ra      = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
@@ -73,9 +73,9 @@ RevBayesCore::ConstantRateOutgroupBirthDeathProcess* Dist_outgroupBirthDeath::cr
     // sampling probability (outgroup)
     RevBayesCore::TypedDagNode<double>* ro       = static_cast<const Probability &>( rhoOutgroup->getRevObject() ).getDagNode();
     
-    // sampling condition
-    const std::string& cond                     = "time"; // just conditions on sampling at T=time
-    
+    // condition
+    const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
+
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
     std::vector<RevBayesCore::Taxon> t          = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     
@@ -168,6 +168,7 @@ const MemberRules& Dist_outgroupBirthDeath::getParameterRules(void) const
         
         dist_member_rules.push_back( new ArgumentRule( "lambda",          RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "mu",              RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "rho",             Probability::getClassTypeSpec(), "The ingroup sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         dist_member_rules.push_back( new ArgumentRule( "rhoOutgroup",     Probability::getClassTypeSpec(), "The outgroup sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
         // add the rules from the base class
@@ -214,6 +215,10 @@ void Dist_outgroupBirthDeath::setConstParameter(const std::string& name, const R
     else if ( name == "mu" )
     {
         mu = var;
+    }
+    else if ( name == "rho" )
+    {
+        rho = var;
     }
     else if ( name == "rhoOutgroup" )
     {

@@ -254,7 +254,9 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::normalizeVector(std::vect
 	double sum = 0.0;
 	for (size_t i=0; i<n; i++)
     {
-		if ( v[i] < -300.0 )
+        // round anything below exp(-100) = 3.7e-44
+        // to 0.0 to avoid NaN
+        if ( v[i] < -100.0 )
         {
 			v[i] = 0.0;
         }

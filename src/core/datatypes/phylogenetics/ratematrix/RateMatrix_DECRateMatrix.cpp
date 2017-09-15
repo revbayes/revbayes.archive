@@ -102,11 +102,8 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     useStoredTransitionProbabilities = m.useStoredTransitionProbabilities;
     changedAreas = m.changedAreas;
     affectingAreas = m.affectingAreas;
-//    stationaryMatrix     = m.stationaryMatrix;
     
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
-//    initializeStationaryMatrix();
-    
     update();
 
 }
@@ -161,8 +158,7 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
 //        stationaryMatrix     = r.stationaryMatrix;
 
         theEigenSystem->setRateMatrixPtr(the_rate_matrix);
-//        initializeStationaryMatrix();
-        
+
         update();
         
     }
@@ -339,6 +335,7 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
     if (t != 0.0) {
         double digits = 8;
         double factor = std::pow(10.0, digits - std::ceil(std::log10(std::fabs(t))));
+
         t = round(t * factor) / factor;
     }
     
@@ -594,6 +591,7 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
             lossOrGain[i].push_back(tmp[j]);
             
             std::vector<unsigned> a;
+
             changedAreas[i].push_back((unsigned)j);
             for (size_t k = 0; k < b.size(); k++)
             {
@@ -603,7 +601,6 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
                 }
             }
             affectingAreas[i].push_back(a);
-
         }
     }
 }
@@ -637,7 +634,6 @@ void RateMatrix_DECRateMatrix::setBirthRate(const double &br)
     birthRate = br;
     needs_update = true;
 }
-
 
 /** Calculate the transition probabilities for the real case */
 void RateMatrix_DECRateMatrix::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const

@@ -26,7 +26,7 @@
 
 namespace RevLanguage {
 
-    class Func_treePairwiseDistances : public TypedFunction< RlDistanceMatrix > {
+    class Func_treePairwiseDistances : public TypedFunction< DistanceMatrix > {
         
     public:
         Func_treePairwiseDistances( void );

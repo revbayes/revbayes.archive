@@ -48,7 +48,7 @@ namespace RevBayesCore {
 //        virtual void                            run(size_t g) = 0;
         virtual void                            finishMonitors(size_t n) = 0;                       //!< Finish the monitors
         virtual const Model&                    getModel(void) const = 0;
-        virtual double                          getModelLnProbability(void) = 0;
+        virtual double                          getModelLnProbability(bool like_only) = 0;
         virtual RbVector<Monitor>&              getMonitors() = 0;
         virtual std::string                     getStrategyDescription(void) const = 0;             //!< Get the discription of the strategy used for this sampler.
         virtual void                            initializeSampler(bool priorOnly=false) = 0;        //!< Initialize objects for mcmc sampling

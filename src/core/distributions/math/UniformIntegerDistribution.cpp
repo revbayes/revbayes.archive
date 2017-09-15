@@ -5,7 +5,7 @@
 
 using namespace RevBayesCore;
 
-UniformIntegerDistribution::UniformIntegerDistribution(const TypedDagNode<int> *mi, const TypedDagNode<int> *ma) : TypedDistribution<int>( new int( 0 ) ),
+UniformIntegerDistribution::UniformIntegerDistribution(const TypedDagNode<long> *mi, const TypedDagNode<long> *ma) : TypedDistribution<long>( new long( 0 ) ),
     min( mi ),
     max( ma )
 {
@@ -62,11 +62,11 @@ void UniformIntegerDistribution::swapParameterInternal(const DagNode *oldP, cons
     
     if (oldP == min)
     {
-        min = static_cast<const TypedDagNode<int>* >( newP );
+        min = static_cast<const TypedDagNode<long>* >( newP );
     }
     else if (oldP == max)
     {
-        max = static_cast<const TypedDagNode<int>* >( newP );
+        max = static_cast<const TypedDagNode<long>* >( newP );
     }
     
 }

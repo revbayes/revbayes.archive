@@ -36,6 +36,13 @@ const AbstractHomologousDiscreteCharacterData& TreeDiscreteCharacterData::getCha
 }
 
 
+bool TreeDiscreteCharacterData::hasCharacterData( void ) const
+{
+
+    return character_data != NULL;
+}
+
+
 /**
  * Initialize this object from a file
  *
