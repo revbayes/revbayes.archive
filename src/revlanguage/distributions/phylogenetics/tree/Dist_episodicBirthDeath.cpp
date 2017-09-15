@@ -56,7 +56,7 @@ RevBayesCore::EpisodicBirthDeathProcess* Dist_episodicBirthDeath::createDistribu
     // get the parameters
     
     // the root age
-    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( start_age->getRevObject() ).getDagNode();
     
     // speciation rates
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sr = NULL;
@@ -129,7 +129,7 @@ RevBayesCore::EpisodicBirthDeathProcess* Dist_episodicBirthDeath::createDistribu
     // sampling probability
     RevBayesCore::TypedDagNode<double>* r                                   = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     // sampling strategy
-    const std::string &strategy                                             = static_cast<const RlString &>( samplingStrategy->getRevObject() ).getValue();
+    const std::string &strategy                                             = static_cast<const RlString &>( sampling_strategy->getRevObject() ).getValue();
     // incompletely sampled clades
     std::vector<RevBayesCore::Clade> inc_clades;
     if ( incomplete_clades->getRevObject() != RevNullObject::getInstance() )

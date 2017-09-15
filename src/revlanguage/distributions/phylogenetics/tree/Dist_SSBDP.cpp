@@ -56,10 +56,10 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
     // get the parameters
     
     // the start age
-    RevBayesCore::TypedDagNode<double>* sa       = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* sa       = static_cast<const RealPos &>( start_age->getRevObject() ).getDagNode();
 
     // the start condition
-    bool uo = ( startCondition == "originAge" ? true : false );
+    bool uo = ( start_condition == "originAge" ? true : false );
     
     // sampling condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
@@ -381,8 +381,8 @@ void Dist_SSBDP::setConstParameter(const std::string& name, const RevPtr<const R
     }
     else if( name == "rootAge" || name == "originAge" )
     {
-        startAge = var;
-        startCondition = name;
+        start_age = var;
+        start_condition = name;
     }
     else if ( name == "psi" )
     {

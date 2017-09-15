@@ -63,7 +63,7 @@ RevBayesCore::ConstantRateOutgroupBirthDeathProcess* Dist_outgroupBirthDeath::cr
     // get the parameters
     
     // the start age
-    RevBayesCore::TypedDagNode<double>* ra      = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ra      = static_cast<const RealPos &>( start_age->getRevObject() ).getDagNode();
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // extinction rate

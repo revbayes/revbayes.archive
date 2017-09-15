@@ -87,23 +87,19 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     
     double lnProbTimes = 0.0;
     double process_time = getOriginAge();
-    size_t num_initial_lineages = 0;
-    TopologyNode* root = &value->getRoot();
+    size_t num_initial_lineages = 2;
+    const TopologyNode& root = value->getRoot();
     
     if (use_origin) {
         // If we are conditioning on survival from the origin,
         // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
-        // TODO: Generalize AbstractBirthDeathProcess to allow conditioning on the origin
         num_initial_lineages = 1;
     }
     
     // if conditioning on root, root node must be a "true" bifurcation event
-    else
+    else if (root.getChild(0).isSampledAncestor() || root.getChild(1).isSampledAncestor())
     {
-        if (root->getChild(0).isSampledAncestor() || root->getChild(1).isSampledAncestor())
-            return RbConstants::Double::neginf;
-
-        num_initial_lineages = 2;
+        return RbConstants::Double::neginf;
     }
 
     // variable declarations and initialization
