@@ -132,6 +132,17 @@ Proposal& MetropolisHastingsMove::getProposal( void )
 }
 
 
+/**
+ * Get the update weight of how often the move should be used.
+ *
+ * \return    The update weight.
+ */
+double MetropolisHastingsMove::getUpdateWeight( void ) const
+{
+    return AbstractMove::getUpdateWeight() * proposal->getUpdateWeight();
+}
+
+
 void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat )
 {
     

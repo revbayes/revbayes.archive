@@ -179,14 +179,13 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     lnProbTimes += internal_node_ages.size() * log( birth_rate );
     for(size_t i=0; i<internal_node_ages.size(); i++)
     {
-        double t = internal_node_ages[i];
-        lnProbTimes -= lnQ(t, c1, c2);
+        lnProbTimes -= lnQ(internal_node_ages[i], c1, c2);
     }
 
     // add the log probability for the serial tip ages
-    for(size_t f=0; f < serial_tip_ages.size(); f++)
+    for(size_t i=0; i < serial_tip_ages.size(); i++)
     {
-        double t = serial_tip_ages[f];
+        double t = serial_tip_ages[i];
         lnProbTimes += log(pZero(t, c1, c2)) + lnQ(t, c1, c2);
     }
 

@@ -37,6 +37,7 @@ namespace RevBayesCore {
         const std::string&                                      getMoveName(void) const;                                //!< Get the name of the move for summary printing
         size_t                                                  getNumberAccepted(void) const;                        //!< Get update weight of InferenceMove
         Proposal&                                               getProposal(void);                                      //!< Get the proposal of the move
+        double                                                  getUpdateWeight(void) const;                            //!< Get update weight of move
         void                                                    printSummary(std::ostream &o) const;                    //!< Print the move summary
         void                                                    tune(void);                                             //!< Specific tuning of the move
         

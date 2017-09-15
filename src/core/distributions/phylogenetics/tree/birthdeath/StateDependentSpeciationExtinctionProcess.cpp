@@ -39,15 +39,14 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    const std::string &cdt,
                                                                                    const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     condition( cdt ),
-    num_taxa( tn.size() ),
-    active_likelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
+    taxa( tn ),
+    active_likelihood( std::vector<bool>(2*tn.size()-1, 0) ),
     changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
     dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
     node_partial_likelihoods( std::vector<std::vector<std::vector<double> > >(2*tn.size()-1, std::vector<std::vector<double> >(2,std::vector<double>(2*ext->getValue().size(),0))) ),
     extinction_probabilities( std::vector<std::vector<double> >( 500.0, std::vector<double>( ext->getValue().size(), 0) ) ),
     num_states( ext->getValue().size() ),
     scaling_factors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
-    total_scaling( 0.0 ),
     use_cladogenetic_events( false ),
     sample_character_history( false ),
     cladogenesis_matrix( NULL ),
@@ -72,18 +71,8 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     
     // set the length of the time slices used by the ODE for numerical integration
     dt = root_age->getValue() / NUM_TIME_SLICES * 50.0;
-    
-    // the combinatorial factor for the probability of a labelled history is
-    // 2^{n-1} / ( n! * (n-1)! )
-    // but since the probability of the divergence times contains the factor (n-1)! we simply store
-    // 2^{n-1} / n!
-    double lnFact = 0.0;
-    for (size_t i = 2; i <= num_taxa; ++i)
-    {
-        lnFact += std::log(i);
-    }
-    
-    log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
+
+    value->getTreeChangeEventHandler().addListener( this );
 
 }
 
@@ -96,9 +85,24 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
  */
 StateDependentSpeciationExtinctionProcess* StateDependentSpeciationExtinctionProcess::clone( void ) const
 {
-    return new StateDependentSpeciationExtinctionProcess( *this );
+    StateDependentSpeciationExtinctionProcess* tmp = new StateDependentSpeciationExtinctionProcess( *this );
+    tmp->getValue().getTreeChangeEventHandler().addListener(tmp);
+    return tmp;
 }
 
+
+/**
+ * Destructor. Because we added ourselves as a reference to tau when we added a listener to its
+ * TreeChangeEventHandler, we need to remove ourselves as a reference and possibly delete tau
+ * when we die. All other parameters are handled by others.
+ */
+StateDependentSpeciationExtinctionProcess::~StateDependentSpeciationExtinctionProcess( void )
+{
+    // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
+
+    // remove myself from the tree listeners
+    value->getTreeChangeEventHandler().removeListener( this );
+}
 
 
 /**
@@ -169,13 +173,14 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
         }
     }
     
-    // mark all nodes as dirty
-    for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
+    if( value->getNumberOfNodes() != dirty_nodes.size() )
     {
-        const TopologyNode &the_node = *(*it);
-        dirty_nodes[the_node.getIndex()] = true;
+        dirty_nodes = std::vector<bool>(value->getNumberOfNodes(), true);
+        changed_nodes = std::vector<bool>(value->getNumberOfNodes(), false);
+        active_likelihood = std::vector<bool>(value->getNumberOfNodes(), false);
+        node_partial_likelihoods = std::vector<std::vector<std::vector<double> > >(value->getNumberOfNodes(), std::vector<std::vector<double> >(2,std::vector<double>(2*mu->getValue().size(),0)));
+        scaling_factors = std::vector<std::vector<double> >(value->getNumberOfNodes(), std::vector<double>(2,0.0) );
     }
-    
     
     // variable declarations and initialization
     double lnProbTimes = 0;
@@ -186,13 +191,10 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
         lnProbTimes = - 2*log( pSurvival(0, ra) );
     }
     
-    // reset the total scaling
-    total_scaling = 0.0;
-    
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeRootLikelihood();
     
-    return lnProbTimes + log_tree_topology_prob;
+    return lnProbTimes + lnProbTreeShape();
 }
 
 
@@ -200,13 +202,14 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
 {
     
     // check for recomputation
-//    if ( dirty_nodes[node_index] == true )
-    if ( true )
+    if ( dirty_nodes[node_index] == true )
+//    if ( true )
     {
         // mark as computed
         dirty_nodes[node_index] = false;
         
-        std::vector<double> node_likelihood = std::vector<double>(2 * num_states, 0);
+        std::vector<double> &node_likelihood  = node_partial_likelihoods[node_index][active_likelihood[node_index]];
+
         if ( node.isTip() == true )
         {
             // this is a tip node
@@ -281,7 +284,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             bool speciation_node = true;
             if( left.isSampledAncestor() || right.isSampledAncestor() )
             {
-                speciation_node = psi == NULL;
+                speciation_node = (psi == NULL);
             }
 
             // merge descendant likelihoods
@@ -362,25 +365,33 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             }
         }
         
-        // rescale the conditional likelihoods at the "end" of the branch
-        double max = 0.0;
-        for (size_t i=0; i<num_states; ++i)
+        if ( RbSettings::userSettings().getUseScaling() == true && node_index % RbSettings::userSettings().getScalingDensity() == 0 )
         {
-            if ( node_likelihood[num_states+i] > max )
+            // rescale the conditional likelihoods at the "end" of the branch
+            double max = 0.0;
+            for (size_t i=0; i<num_states; ++i)
             {
-                max = node_likelihood[num_states+i];
+                if ( node_likelihood[num_states+i] > max )
+                {
+                    max = node_likelihood[num_states+i];
+                }
+            }
+            for (size_t i=0; i<num_states; ++i)
+            {
+                node_likelihood[num_states+i] /= max;
+            }
+
+            scaling_factors[node_index][active_likelihood[node_index]] = log(max);
+
+            if( node.isTip() == false )
+            {
+                const TopologyNode          &left           = node.getChild(0);
+                size_t                      left_index      = left.getIndex();
+                const TopologyNode          &right          = node.getChild(1);
+                size_t                      right_index     = right.getIndex();
+                scaling_factors[node_index][active_likelihood[node_index]] += scaling_factors[left_index][active_likelihood[left_index]] + scaling_factors[right_index][active_likelihood[right_index]];
             }
         }
-        for (size_t i=0; i<num_states; ++i)
-        {
-            node_likelihood[num_states+i] /= max;
-        }
-        scaling_factors[node_index][active_likelihood[node_index]] = log(max);
-        total_scaling += scaling_factors[node_index][active_likelihood[node_index]] - scaling_factors[node_index][active_likelihood[node_index]^1];
-        
-        // store the likelihoods for this node
-        node_partial_likelihoods[node_index][active_likelihood[node_index]] = node_likelihood;
-
     }
     
 }
@@ -418,7 +429,7 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     bool speciation_node = true;
     if( left.isSampledAncestor() || right.isSampledAncestor() )
     {
-        speciation_node = psi == NULL;
+        speciation_node = (psi == NULL);
     }
 
     // merge descendant likelihoods
@@ -461,8 +472,20 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     // store the likelihoods
     node_partial_likelihoods[node_index][active_likelihood[node_index]] = node_likelihood;
     
-    return log(prob) + total_scaling;
+    scaling_factors[node_index][active_likelihood[node_index]] = scaling_factors[left_index][active_likelihood[left_index]] + scaling_factors[right_index][active_likelihood[right_index]];
+
+    return log(prob) + scaling_factors[node_index][active_likelihood[node_index]];
 }
+
+
+void StateDependentSpeciationExtinctionProcess::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n, const unsigned& m )
+{
+
+    // call a recursive flagging of all node above (closer to the root) and including this node
+    recursivelyFlagNodeDirty( n );
+
+}
+
 
 const AbstractHomologousDiscreteCharacterData& StateDependentSpeciationExtinctionProcess::getCharacterData() const
 {
@@ -778,6 +801,35 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         recursivelyDrawJointConditionalAncestralStates(right, startStates, endStates);
     }
     
+}
+
+
+void StateDependentSpeciationExtinctionProcess::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n ) {
+
+    // we need to flag this node and all ancestral nodes for recomputation
+    size_t index = n.getIndex();
+
+    // if this node is already dirty, the also all the ancestral nodes must have been flagged as dirty
+    if ( dirty_nodes[index] == false )
+    {
+        // the root doesn't have an ancestor
+        if ( n.isRoot() == false )
+        {
+            recursivelyFlagNodeDirty( n.getParent() );
+        }
+
+        // set the flag
+        dirty_nodes[index] = true;
+
+        // if we previously haven't touched this node, then we need to change the active likelihood pointer
+        if ( changed_nodes[index] == false )
+        {
+            active_likelihood[index] = (active_likelihood[index] == 0 ? 1 : 0);
+            changed_nodes[index] = true;
+        }
+
+    }
+
 }
 
 
@@ -1313,8 +1365,33 @@ void StateDependentSpeciationExtinctionProcess::keepSpecialization(DagNode *affe
         dag_node->keepAffected();
     }
     
+    // reset all flags
+    for (std::vector<bool>::iterator it = this->dirty_nodes.begin(); it != this->dirty_nodes.end(); ++it)
+    {
+        (*it) = false;
+    }
+
+    for (std::vector<bool>::iterator it = this->changed_nodes.begin(); it != this->changed_nodes.end(); ++it)
+    {
+        (*it) = false;
+    }
+
 }
 
+
+double StateDependentSpeciationExtinctionProcess::lnProbTreeShape(void) const
+{
+    // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
+    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / (n!(m+k)!)
+    // where n is the number of extant tips, m is the number of extinct tips
+    // and k is the number of sampled ancestors
+
+    size_t num_taxa = value->getNumberOfTips();
+    size_t num_extinct = value->getNumberOfExtinctTips();
+    size_t num_sa = value->getNumberOfSampledAncestors();
+
+    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct) - RbMath::lnFactorial(num_extinct);
+}
 
 
 std::vector<double> StateDependentSpeciationExtinctionProcess::pExtinction(double start, double end) const
@@ -1374,10 +1451,30 @@ void StateDependentSpeciationExtinctionProcess::restoreSpecialization(DagNode *a
     
     if ( affecter == root_age )
     {
-        value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
+        value->getRoot().setAge( root_age->getValue() );
         dag_node->restoreAffected();
     }
     
+    // reset the flags
+    for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
+    {
+        (*it) = false;
+    }
+
+    // restore the active likelihoods vector
+    for (size_t index = 0; index < changed_nodes.size(); ++index)
+    {
+        // we have to restore, that means if we have changed the active likelihood vector
+        // then we need to revert this change
+        if ( changed_nodes[index] == true )
+        {
+            active_likelihood[index] = (active_likelihood[index] == 0 ? 1 : 0);
+        }
+
+        // set all flags to false
+        changed_nodes[index] = false;
+    }
+
 }
 
 
@@ -1468,12 +1565,15 @@ void StateDependentSpeciationExtinctionProcess::setNumberOfTimeSlices( double n 
  */
 void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
 {
-    
+
+    value->getTreeChangeEventHandler().removeListener( this );
+
     // delegate to super class
     //    TypedDistribution<Tree>::setValue(v, f);
     static_cast<TreeDiscreteCharacterData *>(this->value)->setTree( *v );
     delete v;
     
+    value->getTreeChangeEventHandler().addListener( this );
     
     if ( root_age != NULL )
     {
@@ -1560,15 +1660,13 @@ void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagN
 void StateDependentSpeciationExtinctionProcess::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     
-    touchAll = true;
-    
     if ( affecter == root_age )
     {
         value->getRoot().setAge( root_age->getValue() );
         dag_node->touchAffected();
     }
     
-    if ( touchAll )
+    if ( affecter != this->dag_node )
     {
         
         for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)

@@ -96,18 +96,19 @@ double AddRemoveTipProposal::doProposal( void )
     {
         TopologyNode* node = &t.getNode(i);
 
-        if( sampled_ancestors == false && node->isSampledAncestor() )
+        if( node->isTip() == true && node->getParent().isRoot() == false )
         {
-            continue;
+            if( ( extinct == true && node->isFossil() == true && node->isSampledAncestor() == sampled_ancestors ) ||
+                (  extant == true && node->isFossil() == false ) )
+            {
+                tips.push_back(node);
+            }
         }
 
-        if( node->isTip() && ( ( node->getAge() > 0.0 && extinct == true ) || ( node->getAge() == 0.0 && extant == true ) ) && node->getParent().isRoot() == false )
+        if( node->isRoot() == false && node->isSampledAncestor() == false )
         {
-            tips.push_back(node);
-        }
-
-        if( node->isRoot() == false )
             siblings.push_back(node);
+        }
 
     }
 
