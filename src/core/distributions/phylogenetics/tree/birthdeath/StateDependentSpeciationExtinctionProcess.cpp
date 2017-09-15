@@ -30,14 +30,15 @@ using namespace RevBayesCore;
  * The constructor connects the parameters of the birth-death process (DAG structure)
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  */
-StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionProcess(const TypedDagNode<double> *ra,
+StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionProcess(const TypedDagNode<double> *age,
                                                                                    const TypedDagNode<RbVector<double> > *ext,
                                                                                    const TypedDagNode<RateGenerator>* q,
                                                                                    const TypedDagNode<double>* r,
                                                                                    const TypedDagNode< Simplex >* p,
                                                                                    const TypedDagNode<double> *rh,
                                                                                    const std::string &cdt,
-                                                                                   const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
+                                                                                   const std::vector<Taxon> &tn,
+                                                                                   bool uo) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     condition( cdt ),
     taxa( tn ),
     active_likelihood( std::vector<bool>(2*tn.size()-1, 0) ),
@@ -48,9 +49,10 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     num_states( ext->getValue().size() ),
     scaling_factors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
     use_cladogenetic_events( false ),
+    use_origin( uo ),
     sample_character_history( false ),
     cladogenesis_matrix( NULL ),
-    root_age( ra ),
+    process_age( age ),
     mu( ext ),
     lambda(NULL),
     psi( NULL),
@@ -67,10 +69,10 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     addParameter( Q );
     addParameter( rho );
     addParameter( rate );
-    addParameter( root_age );
+    addParameter( process_age );
     
     // set the length of the time slices used by the ODE for numerical integration
-    dt = root_age->getValue() / NUM_TIME_SLICES * 50.0;
+    dt = process_age->getValue() / NUM_TIME_SLICES * 50.0;
 
     value->getTreeChangeEventHandler().addListener( this );
 
@@ -156,15 +158,32 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
         
     }
     
-    double ra = value->getRoot().getAge();
+    size_t num_initial_lineages = 2;
+    const TopologyNode& root = value->getRoot();
+
+    if (use_origin) {
+        // If we are conditioning on survival from the origin,
+        // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
+        num_initial_lineages = 1;
+    }
+
+    // if conditioning on root, root node must be a "true" bifurcation event
+    else if (root.getChild(0).isSampledAncestor() || root.getChild(1).isSampledAncestor())
+    {
+        return RbConstants::Double::neginf;
+    }
+
+    // present time
+    double ra = root.getAge();
+    double process_time = getOriginAge();
     
-    if ( ra != root_age->getValue() )
+    if ( ra > process_time || ra != getRootAge() )
     {
         return RbConstants::Double::neginf;
     }
     
-    const std::vector<TopologyNode*> &c = value->getRoot().getChildren();
-    
+    const std::vector<TopologyNode*> &c = root.getChildren();
+
     for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
     {
         if ( ra < (*it)->getAge() )
@@ -172,7 +191,7 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
             return RbConstants::Double::neginf;
         }
     }
-    
+
     if( value->getNumberOfNodes() != dirty_nodes.size() )
     {
         dirty_nodes = std::vector<bool>(value->getNumberOfNodes(), true);
@@ -188,7 +207,7 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
     // conditioning on survival
     if ( condition == "survival" )
     {
-        lnProbTimes = - 2*log( pSurvival(0, ra) );
+        lnProbTimes = - num_initial_lineages*log( pSurvival(0, process_time) );
     }
     
     // multiply the probability of a descendant of the initial species
@@ -399,7 +418,22 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
 
 double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) const
 {
-    
+    // get the likelihoods of descendant nodes
+    const TopologyNode     &root            = value->getRoot();
+    size_t                  node_index      = root.getIndex();
+    const TopologyNode     &left            = root.getChild(0);
+    size_t                  left_index      = left.getIndex();
+    computeNodeProbability( left, left_index );
+    const TopologyNode     &right           = root.getChild(1);
+    size_t                  right_index     = right.getIndex();
+    computeNodeProbability( right, right_index );
+
+    // get the likelihoods of descendant nodes
+    const std::vector<double> &left_likelihoods  = node_partial_likelihoods[left_index][active_likelihood[left_index]];
+    const std::vector<double> &right_likelihoods = node_partial_likelihoods[right_index][active_likelihood[right_index]];
+
+    std::vector<double> &node_likelihood  = node_partial_likelihoods[node_index][active_likelihood[node_index]];
+
     std::map<std::vector<unsigned>, double> eventMap;
     std::vector<double> speciation_rates;
     if ( use_cladogenetic_events == true )
@@ -415,16 +449,6 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     {
         speciation_rates = lambda->getValue();
     }
-    
-    // get the likelihoods of descendant nodes
-    const TopologyNode     &root            = value->getRoot();
-    size_t                  node_index      = root.getIndex();
-    const TopologyNode     &left            = root.getChild(0);
-    size_t                  left_index      = left.getIndex();
-    computeNodeProbability( left, left_index );
-    const TopologyNode     &right           = root.getChild(1);
-    size_t                  right_index     = right.getIndex();
-    computeNodeProbability( right, right_index );
 
     bool speciation_node = true;
     if( left.isSampledAncestor() || right.isSampledAncestor() )
@@ -433,17 +457,13 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     }
 
     // merge descendant likelihoods
-    const std::vector<double> &left_likelihoods  = node_partial_likelihoods[left_index][active_likelihood[left_index]];
-    const std::vector<double> &right_likelihoods = node_partial_likelihoods[right_index][active_likelihood[right_index]];
-    const RbVector<double> &freqs = getRootFrequencies();
-    double prob = 0.0;
-    state_type node_likelihood = std::vector<double>(2 * num_states, 0);
-    for (size_t i = 0; i < num_states; ++i)
+    for (size_t i=0; i<num_states; ++i)
     {
-        
+        node_likelihood[i] = left_likelihoods[i];
+
         if ( use_cladogenetic_events == true && speciation_node == true )
         {
-            
+
             double like_sum = 0.0;
             std::map<std::vector<unsigned>, double>::iterator it;
             for (it = eventMap.begin(); it != eventMap.end(); it++)
@@ -453,25 +473,75 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
                 if (i == states[0])
                 {
                     double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
-                    like_sum += likelihoods * speciation_rate;
+                    like_sum += speciation_rate * likelihoods;
                 }
             }
-            // weight by root frequencies
-            node_likelihood[i] = left_likelihoods[i];
-            node_likelihood[num_states + i] = freqs[i] * like_sum;
-            prob += freqs[i] * like_sum;
+            node_likelihood[num_states + i] = like_sum;
 
         }
         else
         {
-            prob += freqs[i] * left_likelihoods[num_states + i] * right_likelihoods[num_states + i];
+            node_likelihood[num_states + i] = left_likelihoods[num_states + i] * right_likelihoods[num_states + i];
+            node_likelihood[num_states + i] *= speciation_node ? speciation_rates[i] : 1.0;
         }
-        
     }
     
-    // store the likelihoods
-    node_partial_likelihoods[node_index][active_likelihood[node_index]] = node_likelihood;
-    
+    // calculate likelihoods for the root branch
+    if( use_origin )
+    {
+        double begin_age = getRootAge();
+        double end_age = getOriginAge();
+
+        if ( sample_character_history == false )
+        {
+            // numerically integrate over the entire branch length
+            numericallyIntegrateProcess(node_likelihood, begin_age, end_age, true, false);
+        }
+        else
+        {
+            // calculate the conditional likelihoods for each time slice moving
+            // along this branch backwards in time from the tip towards the root
+
+            std::vector<std::vector<double> > branch_likelihoods;
+            size_t current_dt = 0;
+
+            // calculate partial likelihoods for each time slice and store them in branch_likelihoods
+            while ( (current_dt * dt) + begin_age < end_age )
+            {
+
+                std::vector<double> dt_likelihood;
+
+                double current_dt_start = (current_dt * dt) + begin_age;
+                double current_dt_end = ((current_dt + 1) * dt) + begin_age;
+                if (current_dt_end > end_age)
+                {
+                    current_dt_end = end_age;
+                }
+                numericallyIntegrateProcess(node_likelihood, current_dt_start, current_dt_end, true, false);
+
+                std::vector<double>::const_iterator first = node_likelihood.begin() + num_states;
+                std::vector<double>::const_iterator last = node_likelihood.begin() + (num_states * 2);
+                dt_likelihood = std::vector<double>(first, last);
+
+                branch_likelihoods.push_back(dt_likelihood);
+                current_dt++;
+
+            }
+
+            // save the branch conditional likelihoods
+            branch_partial_likelihoods[node_index] = branch_likelihoods;
+        }
+    }
+
+    // sum the root likelihoods
+    const RbVector<double> &freqs = getRootFrequencies();
+    double prob = 0.0;
+
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        prob += freqs[i] * node_likelihood[num_states + i];
+    }
+
     scaling_factors[node_index][active_likelihood[node_index]] = scaling_factors[left_index][active_likelihood[left_index]] + scaling_factors[right_index][active_likelihood[right_index]];
 
     return log(prob) + scaling_factors[node_index][active_likelihood[node_index]];
@@ -1292,7 +1362,7 @@ void StateDependentSpeciationExtinctionProcess::executeProcedure(const std::stri
 void StateDependentSpeciationExtinctionProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
     
-    if ( affecter == root_age)
+    if ( affecter == process_age)
     {
         dag_node->getAffectedNodes( affected );
     }
@@ -1336,6 +1406,36 @@ const RateGenerator& StateDependentSpeciationExtinctionProcess::getEventRateMatr
 }
 
 
+double StateDependentSpeciationExtinctionProcess::getOriginAge( void ) const
+{
+
+    return process_age->getValue();
+}
+
+
+/**
+ * By default, the root age is assumed to be equal to the origin time.
+ * This should be overridden if a distinct root age is needed
+ */
+double StateDependentSpeciationExtinctionProcess::getRootAge( void ) const
+{
+
+    if(use_origin)
+    {
+        if(value->getNumberOfNodes() > 0)
+        {
+            return value->getRoot().getAge();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+        return getOriginAge();
+}
+
+
 /**
  * Get the stationary root frequencies
  */
@@ -1360,7 +1460,7 @@ std::vector<double> StateDependentSpeciationExtinctionProcess::getRootFrequencie
 void StateDependentSpeciationExtinctionProcess::keepSpecialization(DagNode *affecter)
 {
     
-    if ( affecter == root_age )
+    if ( affecter == process_age )
     {
         dag_node->keepAffected();
     }
@@ -1449,10 +1549,17 @@ void StateDependentSpeciationExtinctionProcess::redrawValue( void )
 void StateDependentSpeciationExtinctionProcess::restoreSpecialization(DagNode *affecter)
 {
     
-    if ( affecter == root_age )
+    if ( affecter == process_age )
     {
-        value->getRoot().setAge( root_age->getValue() );
-        dag_node->restoreAffected();
+        if( use_origin == false )
+        {
+            value->getRoot().setAge( process_age->getValue() );
+        }
+
+        if ( dag_node != NULL )
+        {
+            dag_node->restoreAffected();
+        }
     }
     
     // reset the flags
@@ -1555,7 +1662,7 @@ void StateDependentSpeciationExtinctionProcess::setNumberOfTimeSlices( double n 
 {
     
     NUM_TIME_SLICES = n;
-    dt = root_age->getValue() / NUM_TIME_SLICES;
+    dt = process_age->getValue() / NUM_TIME_SLICES;
     
 }
 
@@ -1575,16 +1682,16 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
     
     value->getTreeChangeEventHandler().addListener( this );
     
-    if ( root_age != NULL )
+    if ( process_age != NULL && use_origin == false )
     {
-        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);
-        if ( stoch_root_age != NULL )
+        const StochasticNode<double> *stoch_process_age = dynamic_cast<const StochasticNode<double>* >(process_age);
+        if ( stoch_process_age != NULL )
         {
-            const_cast<StochasticNode<double> *>(stoch_root_age)->setValue( new double( value->getRoot().getAge() ), f);
+            const_cast<StochasticNode<double> *>(stoch_process_age)->setValue( new double( value->getRoot().getAge() ), f);
         }
         else
         {
-            value->getRoot().setAge( root_age->getValue() );
+            value->getRoot().setAge( process_age->getValue() );
         }
         
     }
@@ -1612,9 +1719,9 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
 void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if ( oldP == root_age )
+    if ( oldP == process_age )
     {
-        root_age = static_cast<const TypedDagNode<double>* >( newP );
+        process_age = static_cast<const TypedDagNode<double>* >( newP );
     }
     if ( oldP == mu )
     {
@@ -1660,10 +1767,17 @@ void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagN
 void StateDependentSpeciationExtinctionProcess::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     
-    if ( affecter == root_age )
+    if ( affecter == process_age )
     {
-        value->getRoot().setAge( root_age->getValue() );
-        dag_node->touchAffected();
+        if( use_origin == false)
+        {
+            value->getRoot().setAge( process_age->getValue() );
+        }
+
+        if ( dag_node != NULL )
+        {
+            dag_node->touchAffected();
+        }
     }
     
     if ( affecter != this->dag_node )

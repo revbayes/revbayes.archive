@@ -37,7 +37,8 @@ namespace RevBayesCore {
                                                   const TypedDagNode<Simplex>* p,
                                                   const TypedDagNode<double> *rh,
                                                   const std::string &cdt,
-                                                  const std::vector<Taxon> &tn);
+                                                  const std::vector<Taxon> &tn,
+                                                  bool uo);
         
         // pure virtual member functions
         virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
@@ -46,6 +47,8 @@ namespace RevBayesCore {
         double                                                          computeLnProbability(void);
         void                                                            fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                                 //!< The tree has changed and we want to know which part.
         const AbstractHomologousDiscreteCharacterData&                  getCharacterData() const;
+        double                                                          getOriginAge(void) const;
+        double                                                          getRootAge(void) const;
         virtual void                                                    redrawValue(void);
         void                                                            setCladogenesisMatrix(const TypedDagNode< CladogeneticSpeciationRateMatrix > *r);
         void                                                            setSerialSamplingRates(const TypedDagNode< RbVector<double> > *r);
@@ -100,11 +103,12 @@ namespace RevBayesCore {
         size_t                                                          num_states;
         mutable std::vector<std::vector<double> >                       scaling_factors;
         bool                                                            use_cladogenetic_events;                                                                            //!< do we use the speciation rates from the cladogenetic event map?
+        bool                                                            use_origin;
         bool                                                            sample_character_history;                                                                           //!< are we sampling the character history along branches?
         
         // parameters
         const TypedDagNode< CladogeneticSpeciationRateMatrix >*         cladogenesis_matrix;
-        const TypedDagNode<double>*                                     root_age;                                                                                           //!< Time since the origin.
+        const TypedDagNode<double>*                                     process_age;                                                                                           //!< Time since the origin.
         const TypedDagNode<RbVector<double> >*                          mu;
         const TypedDagNode<RbVector<double> >*                          lambda;
         const TypedDagNode<RbVector<double> >*                          psi;

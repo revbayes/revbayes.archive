@@ -46,7 +46,7 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
 {
     
     // Get the parameters
-    RevBayesCore::TypedDagNode<double>* ra   = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ra   = static_cast<const RealPos &>( start_age->getRevObject() ).getDagNode();
 //    RevBayesCore::TypedDagNode<long>*    rs   = static_cast<const Natural &>( root_state->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sp  = static_cast<const ModelVector<RealPos> &>( speciation_rates->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ex  = static_cast<const ModelVector<RealPos> &>( extinction_rates->getRevObject() ).getDagNode();
@@ -75,8 +75,10 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     
+    // the start condition
+    bool uo = ( start_condition == "originAge" ? true : false );
     
-    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, t );
+    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, t, uo );
     d->setSpeciationRates( sp );
     
     // set the number of time slices for the numeric ODE
@@ -176,7 +178,10 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
     if ( !rules_set )
     {
         
-        memberRules.push_back( new ArgumentRule( "rootAge"   , RealPos::getClassTypeSpec()              , "The age of the root."                        , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
+        std::vector<std::string> aliases;
+        aliases.push_back("rootAge");
+        aliases.push_back("originAge");
+        memberRules.push_back( new ArgumentRule( aliases, RealPos::getClassTypeSpec()    , "The start time of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         std::vector<std::string> slabels;
         slabels.push_back("speciationRates");
         slabels.push_back("lambda");
@@ -219,9 +224,10 @@ const TypeSpec& Dist_CharacterDependentBirthDeathProcess::getTypeSpec( void ) co
 void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "rootAge" )
+    if( name == "rootAge" || name == "originAge" )
     {
-        root_age = var;
+        start_age = var;
+        start_condition = name;
     }
     else if ( name == "pi" )
     {
