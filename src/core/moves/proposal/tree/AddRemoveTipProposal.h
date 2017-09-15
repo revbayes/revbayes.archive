@@ -56,7 +56,7 @@ namespace RevBayesCore {
         bool                                    removed;
         bool                                    extant;
         bool                                    extinct;
-    
+        bool                                    failed;
         bool                                    sampled_ancestors;
     };
     

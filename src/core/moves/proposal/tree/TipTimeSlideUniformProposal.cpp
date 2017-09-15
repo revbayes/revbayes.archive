@@ -19,7 +19,8 @@ using namespace RevBayesCore;
 TipTimeSlideUniformProposal::TipTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o, bool dyn ) : Proposal(),
     tree( n ),
     origin( o ),
-    dynamic( dyn )
+    dynamic( dyn ),
+    failed( false )
 {
     // tell the base class to add the node
     addNode( tree );
@@ -35,7 +36,7 @@ TipTimeSlideUniformProposal::TipTimeSlideUniformProposal( StochasticNode<Tree> *
  */
 void TipTimeSlideUniformProposal::cleanProposal( void )
 {
-    ; // do nothing
+    failed = false; // do nothing
 }
 
 /**
@@ -89,6 +90,7 @@ double TipTimeSlideUniformProposal::getUpdateWeight( void ) const
  */
 double TipTimeSlideUniformProposal::doProposal( void )
 {
+    failed = false;
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -109,6 +111,7 @@ double TipTimeSlideUniformProposal::doProposal( void )
 
     if( tips.empty() )
     {
+        failed = true;
         return 0;
     }
 
@@ -198,7 +201,10 @@ void TipTimeSlideUniformProposal::undoProposal( void )
 {
     
     // undo the proposal
-    storedNode->setAge( storedAge );
+    if( failed == false )
+    {
+        storedNode->setAge( storedAge );
+    }
 }
 
 

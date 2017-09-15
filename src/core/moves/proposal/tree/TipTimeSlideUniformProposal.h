@@ -54,7 +54,7 @@ namespace RevBayesCore {
         double                                  storedAge;
         
         bool                                    dynamic;
-
+        bool                                    failed;
     };
     
 }
