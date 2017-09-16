@@ -58,6 +58,11 @@
 #include "Move_Slide.h"
 #include "Move_SlideBactrian.h"
 
+/* Gibbs moves for normal random variable */
+#include "Move_NormalMeanGibbs.h"
+#include "Move_NormalVarianceGibbs.h"
+
+
 /* Moves on probability values */
 #include "Move_BetaProbability.h"
 
@@ -90,6 +95,7 @@
 #include "Move_VectorFixedSingleElementSlide.h"
 #include "Move_VectorScale.h"
 #include "Move_VectorSlide.h"
+#include "Move_VectorSlideRecenter.h"
 
 /* Moves on real valued matrices */
 #include "Move_MatrixSingleElementScale.h"
@@ -191,6 +197,10 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_SlideBactrian() );
         addTypeWithConstructor( new Move_SliceSampling() );
 
+        /* Gibbs moves for normal random variables */
+        addTypeWithConstructor( new Move_NormalMeanGibbs() );
+        addTypeWithConstructor( new Move_NormalVarianceGibbs() );
+        
         /* Moves on probability */
         addTypeWithConstructor( new Move_BetaProbability() );
 
@@ -219,6 +229,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ShrinkExpand() );
         addTypeWithConstructor( new Move_VectorScale() );
         addTypeWithConstructor( new Move_VectorSlide() );
+        addTypeWithConstructor( new Move_VectorSlideRecenter() );
         addTypeWithConstructor( new Move_ElementScale() );
         addTypeWithConstructor( new Move_ElementSlide() );
         addTypeWithConstructor( new Move_VectorSingleElementScale() );
