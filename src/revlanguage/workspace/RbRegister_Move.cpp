@@ -58,10 +58,6 @@
 #include "Move_Slide.h"
 #include "Move_SlideBactrian.h"
 
-/* Gibbs moves for normal random variable */
-#include "Move_NormalMeanGibbs.h"
-#include "Move_NormalVarianceGibbs.h"
-
 
 /* Moves on probability values */
 #include "Move_BetaProbability.h"
@@ -196,10 +192,6 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_Slide() );
         addTypeWithConstructor( new Move_SlideBactrian() );
         addTypeWithConstructor( new Move_SliceSampling() );
-
-        /* Gibbs moves for normal random variables */
-        addTypeWithConstructor( new Move_NormalMeanGibbs() );
-        addTypeWithConstructor( new Move_NormalVarianceGibbs() );
         
         /* Moves on probability */
         addTypeWithConstructor( new Move_BetaProbability() );
