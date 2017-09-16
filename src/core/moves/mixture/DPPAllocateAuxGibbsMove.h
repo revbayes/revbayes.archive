@@ -143,7 +143,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void )
 		for(size_t j=0; j<numAuxiliary; ++j)
         {
 			g0->redrawValue();
-			const valueType &newV = g0->getValue();
+			valueType newV = g0->getValue();
 			tempTables.push_back(newV);
 			elementVals[i] = newV;
 			variable->touch();
@@ -207,11 +207,7 @@ double RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::getLnProbabilityForMove
     {
         DagNode *the_node = *it;
 		double lp = the_node->getLnProbability();
-        
-        if ( RbMath::isAComputableNumber(lp) == true )
-        {
-            lnProb += lp;
-        }
+        lnProb += lp;
 	}
 	return lnProb;
 }
@@ -238,7 +234,8 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::normalizeVector(std::vect
 
 	size_t n = v.size();
 	double max = v[0];
-	for (size_t i=1; i<n; ++i)
+	
+    for (size_t i=1; i<n; ++i)
     {
 		if (v[i] > max)
         {
@@ -254,9 +251,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::normalizeVector(std::vect
 	double sum = 0.0;
 	for (size_t i=0; i<n; i++)
     {
-        // round anything below exp(-100) = 3.7e-44
-        // to 0.0 to avoid NaN
-        if ( v[i] < -100.0 )
+        if ( v[i] < -300.0 || isnan(v[i]) )
         {
 			v[i] = 0.0;
         }
@@ -265,7 +260,6 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::normalizeVector(std::vect
 			v[i] = exp( v[i] );
         }
         sum += v[i];
-	
     }
 	
 	for (size_t i=0; i<n; ++i)
