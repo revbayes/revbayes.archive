@@ -23,6 +23,7 @@ AddRemoveTipProposal::AddRemoveTipProposal( StochasticNode<Tree> *n, bool exa, b
     removed(false),
     extant(exa),
     extinct(exi),
+    failed(false),
     sampled_ancestors(sa)
 {
     // tell the base class to add the node
@@ -43,6 +44,8 @@ void AddRemoveTipProposal::cleanProposal( void )
         removed = false;
         delete &storedTip->getParent();
     }
+
+    failed = false;
 }
 
 /**
@@ -85,6 +88,8 @@ const std::string& AddRemoveTipProposal::getProposalName( void ) const
  */
 double AddRemoveTipProposal::doProposal( void )
 {
+    failed = false;
+
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
@@ -96,18 +101,19 @@ double AddRemoveTipProposal::doProposal( void )
     {
         TopologyNode* node = &t.getNode(i);
 
-        if( sampled_ancestors == false && node->isSampledAncestor() )
+        if( node->isTip() == true && node->getParent().isRoot() == false )
         {
-            continue;
+            if( ( extinct == true && node->isFossil() == true && node->isSampledAncestor() == sampled_ancestors ) ||
+                (  extant == true && node->isFossil() == false ) )
+            {
+                tips.push_back(node);
+            }
         }
 
-        if( node->isTip() && ( ( node->getAge() > 0.0 && extinct == true ) || ( node->getAge() == 0.0 && extant == true ) ) && node->getParent().isRoot() == false )
+        if( node->isRoot() == false && node->isSampledAncestor() == false )
         {
-            tips.push_back(node);
-        }
-
-        if( node->isRoot() == false )
             siblings.push_back(node);
+        }
 
     }
 
@@ -125,6 +131,7 @@ double AddRemoveTipProposal::doProposal( void )
     {
         if(tips.empty())
         {
+            failed = true;
             return 0.0;
         }
 
@@ -323,6 +330,9 @@ void AddRemoveTipProposal::printParameterSummary(std::ostream &o) const
  */
 void AddRemoveTipProposal::undoProposal( void )
 {
+    if( failed == true )
+        return;
+
     Tree &t = tau->getValue();
 
     TopologyNode *parent = &storedTip->getParent();

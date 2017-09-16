@@ -93,8 +93,8 @@ double RbStatistics::InverseGamma::pdf(double shape, double rate, double x, bool
  */
 double RbStatistics::InverseGamma::lnPdf(double shape, double rate, double x)
 {
-    
-	return shape * log(rate) - RbMath::lnGamma(shape) + (-(shape + 1.0)) * log(x) - (rate/x);
+    double scale = 1.0 / rate;
+	return shape * log(scale) - RbMath::lnGamma(shape) + (-(shape + 1.0)) * log(x) - (scale/x);
 }
 
 /*!
@@ -141,6 +141,6 @@ double RbStatistics::InverseGamma::quantile(double shape, double rate, double p)
 double RbStatistics::InverseGamma::rv(double shape, double rate, RandomNumberGenerator& rng)
 {
     
-	return (RbStatistics::Helper::rndGamma(shape, rng) * rate);
+	return (1.0 / (RbStatistics::Helper::rndGamma(shape, rng) * rate) );
 }
 

@@ -39,7 +39,7 @@ namespace RevLanguage {
     private:
         
         RevPtr<const RevVariable>                                   cladoEvents;
-        RevPtr<const RevVariable>                                   root_age;
+        RevPtr<const RevVariable>                                   start_age;
         RevPtr<const RevVariable>                                   root_frequencies;
         RevPtr<const RevVariable>                                   extinction_rates;
         RevPtr<const RevVariable>                                   event_rate_matrix;
@@ -48,7 +48,8 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                                   condition;                                                                              //!< The condition of the process (none/survival/#Taxa)
         RevPtr<const RevVariable>                                   taxa;
         RevPtr<const RevVariable>                                   num_time_slices;
-        
+        std::string                                                 start_condition;                                                                     //!< The start condition of the process (rootAge/originAge)
+
     };
     
 }

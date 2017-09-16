@@ -45,8 +45,8 @@ namespace RevLanguage {
         // members        
         RevPtr<const RevVariable>                           condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
         RevPtr<const RevVariable>                           incomplete_clades;                                                                  //!< The rev taxon objects that will be applied to the initally simulated tree
-        RevPtr<const RevVariable>                           samplingStrategy;                                                                   //!< The applied sampling strategy (uniform/diversified)
-        RevPtr<const RevVariable>                           startAge;                                                                           //!< The start time of the process since the origin
+        RevPtr<const RevVariable>                           sampling_strategy;                                                                   //!< The applied sampling strategy (uniform/diversified)
+        RevPtr<const RevVariable>                           start_age;                                                                           //!< The start time of the process since the origin
         RevPtr<const RevVariable>                           taxa;                                                                               //!< The rev taxon objects that will be applied to the initally simulated tree
         
     };

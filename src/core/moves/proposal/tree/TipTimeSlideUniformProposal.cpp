@@ -16,9 +16,11 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-TipTimeSlideUniformProposal::TipTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o ) : Proposal(),
+TipTimeSlideUniformProposal::TipTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o, bool dyn ) : Proposal(),
     tree( n ),
-    origin( o )
+    origin( o ),
+    dynamic( dyn ),
+    failed( false )
 {
     // tell the base class to add the node
     addNode( tree );
@@ -34,7 +36,7 @@ TipTimeSlideUniformProposal::TipTimeSlideUniformProposal( StochasticNode<Tree> *
  */
 void TipTimeSlideUniformProposal::cleanProposal( void )
 {
-    ; // do nothing
+    failed = false; // do nothing
 }
 
 /**
@@ -64,6 +66,17 @@ const std::string& TipTimeSlideUniformProposal::getProposalName( void ) const
 
 
 /**
+ * Get the update weight of how often the move should be used.
+ *
+ * \return    The update weight.
+ */
+double TipTimeSlideUniformProposal::getUpdateWeight( void ) const
+{
+    return dynamic ? tree->getValue().getNumberOfTips() : 1.0;
+}
+
+
+/**
  * Perform the proposal.
  *
  * A Uniform-simplex proposal randomly changes some values of a simplex, although the other values
@@ -77,6 +90,7 @@ const std::string& TipTimeSlideUniformProposal::getProposalName( void ) const
  */
 double TipTimeSlideUniformProposal::doProposal( void )
 {
+    failed = false;
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -97,6 +111,7 @@ double TipTimeSlideUniformProposal::doProposal( void )
 
     if( tips.empty() )
     {
+        failed = true;
         return 0;
     }
 
@@ -186,7 +201,10 @@ void TipTimeSlideUniformProposal::undoProposal( void )
 {
     
     // undo the proposal
-    storedNode->setAge( storedAge );
+    if( failed == false )
+    {
+        storedNode->setAge( storedAge );
+    }
 }
 
 

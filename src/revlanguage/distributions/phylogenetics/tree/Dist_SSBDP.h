@@ -52,7 +52,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                               mu_timeline;                                                                            //!< The extinction rate change times
         RevPtr<const RevVariable>                               psi_timeline;                                                                           //!< The serial sampling rate change times
         RevPtr<const RevVariable>                               rho_timeline;                                                                           //!< The episodic taxon sampling fraction change times
-        std::string                                             startCondition;                                                                     //!< The start condition of the process (rootAge/originAge)
+        std::string                                             start_condition;                                                                     //!< The start condition of the process (rootAge/originAge)
 
     };
     

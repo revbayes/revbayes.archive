@@ -8,7 +8,8 @@
 
 using namespace RevBayesCore;
 
-TreeDiscreteCharacterData::TreeDiscreteCharacterData()
+TreeDiscreteCharacterData::TreeDiscreteCharacterData() :
+        character_data(NULL)
 {
     
 }

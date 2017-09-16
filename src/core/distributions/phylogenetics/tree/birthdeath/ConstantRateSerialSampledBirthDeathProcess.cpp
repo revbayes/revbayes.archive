@@ -87,23 +87,19 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     
     double lnProbTimes = 0.0;
     double process_time = getOriginAge();
-    size_t num_initial_lineages = 0;
-    TopologyNode* root = &value->getRoot();
+    size_t num_initial_lineages = 2;
+    const TopologyNode& root = value->getRoot();
     
     if (use_origin) {
         // If we are conditioning on survival from the origin,
         // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
-        // TODO: Generalize AbstractBirthDeathProcess to allow conditioning on the origin
         num_initial_lineages = 1;
     }
     
     // if conditioning on root, root node must be a "true" bifurcation event
-    else
+    else if (root.getChild(0).isSampledAncestor() || root.getChild(1).isSampledAncestor())
     {
-        if (root->getChild(0).isSampledAncestor() || root->getChild(1).isSampledAncestor())
-            return RbConstants::Double::neginf;
-
-        num_initial_lineages = 2;
+        return RbConstants::Double::neginf;
     }
 
     // variable declarations and initialization
@@ -179,14 +175,13 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     lnProbTimes += internal_node_ages.size() * log( birth_rate );
     for(size_t i=0; i<internal_node_ages.size(); i++)
     {
-        double t = internal_node_ages[i];
-        lnProbTimes -= lnQ(t, c1, c2);
+        lnProbTimes -= lnQ(internal_node_ages[i], c1, c2);
     }
 
     // add the log probability for the serial tip ages
-    for(size_t f=0; f < serial_tip_ages.size(); f++)
+    for(size_t i=0; i < serial_tip_ages.size(); i++)
     {
-        double t = serial_tip_ages[f];
+        double t = serial_tip_ages[i];
         lnProbTimes += log(pZero(t, c1, c2)) + lnQ(t, c1, c2);
     }
 

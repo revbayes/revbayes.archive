@@ -48,7 +48,7 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentClad
 {
     
     // Get the parameters
-    RevBayesCore::TypedDagNode<double>* ra                              = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ra                              = static_cast<const RealPos &>( start_age->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ex     = static_cast<const ModelVector<Real> &>( extinction_rates->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* q          = static_cast<const RateGenerator &>( event_rate_matrix->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>*  r                              = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
@@ -57,8 +57,11 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentClad
     std::vector<RevBayesCore::Taxon> t                                  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     const std::string& cond                                             = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     
+    // the start condition
+    bool uo = ( start_condition == "originAge" ? true : false );
+
     //RevBayesCore::CharacterDependentCladoBirthDeathProcess* d = new RevBayesCore::CharacterDependentCladoBirthDeathProcess( ra, ex, q, r, rf, rh, cond, t );
-    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, rf, rh, cond, t );
+    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, rf, rh, cond, t, uo );
     
     // set the cladogenetic speciation rate event map
     RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticSpeciationRateMatrix>* cp = static_cast<const CladogeneticSpeciationRateMatrix &>( cladoEvents->getRevObject() ).getDagNode();
@@ -133,7 +136,10 @@ const MemberRules& Dist_CharacterDependentCladoBirthDeathProcess::getParameterRu
     if ( !rules_set )
     {
         
-        memberRules.push_back( new ArgumentRule( "rootAge",           RealPos::getClassTypeSpec(),              "The age of the root.",                                     ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        std::vector<std::string> aliases;
+        aliases.push_back("rootAge");
+        aliases.push_back("originAge");
+        memberRules.push_back( new ArgumentRule( aliases, RealPos::getClassTypeSpec()    , "The start time of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "cladoEventMap",     CladogeneticSpeciationRateMatrix::getClassTypeSpec(),           "The map of speciation rates to cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "extinctionRates",   ModelVector<Real>::getClassTypeSpec(),    "The vector of extinction rates for the observed states.",  ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "Q",                 RateGenerator::getClassTypeSpec(),        "The rate matrix of jumping between rate categories.",      ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -168,9 +174,10 @@ const TypeSpec& Dist_CharacterDependentCladoBirthDeathProcess::getTypeSpec( void
 void Dist_CharacterDependentCladoBirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "rootAge" )
+    if( name == "rootAge" || name == "originAge" )
     {
-        root_age = var;
+        start_age = var;
+        start_condition = name;
     }
     else if ( name == "cladoEventMap" )
     {

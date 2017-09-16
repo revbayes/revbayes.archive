@@ -54,7 +54,7 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
     // get the parameters
     
     // the root age
-    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( start_age->getRevObject() ).getDagNode();
     
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
@@ -66,7 +66,7 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     
     // sampling strategy
-    const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getRevObject() ).getValue();
+    const std::string &strategy                 = static_cast<const RlString &>( sampling_strategy->getRevObject() ).getValue();
     
     // incompletely sampled clades
     std::vector<RevBayesCore::Clade> inc_clades;

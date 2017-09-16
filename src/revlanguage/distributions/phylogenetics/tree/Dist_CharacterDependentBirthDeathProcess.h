@@ -40,7 +40,7 @@ namespace RevLanguage {
         
     private:
         
-        RevPtr<const RevVariable>                                   root_age;
+        RevPtr<const RevVariable>                                   start_age;
         RevPtr<const RevVariable>                                   root_frequencies;
         RevPtr<const RevVariable>                                   speciation_rates;
         RevPtr<const RevVariable>                                   extinction_rates;
@@ -51,6 +51,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                                   condition;                                                                              //!< The condition of the process (none/survival/#Taxa)
         RevPtr<const RevVariable>                                   taxa;
         RevPtr<const RevVariable>                                   num_time_slices;
+        std::string                                                 start_condition;                                                                     //!< The start condition of the process (rootAge/originAge)
 
     };
     

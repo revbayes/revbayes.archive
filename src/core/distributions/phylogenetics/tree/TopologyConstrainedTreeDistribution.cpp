@@ -386,6 +386,10 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyAddBackboneConstraints(
         const std::map<std::string, size_t>& taxon_map = value->getTaxonBitSetMap();
         const std::string& name = node.getName();
         std::map<std::string, size_t>::const_iterator it = taxon_map.find(name);
+        if (it == taxon_map.end()) {
+            
+            throw RbException("Taxon named " + it->first + " not found in tree's taxon map!");
+        }
         tmp.set( it->second );
     }
     else
@@ -442,11 +446,11 @@ RbBitSet TopologyConstrainedTreeDistribution::recursivelyUpdateClades( const Top
             }
             
             // update the clade
-            active_clades[node.getIndex() - value->getNumberOfTips()] = tmp;
+            size_t idx = node.getIndex() - value->getNumberOfTips();
+            active_clades[idx] = tmp;
             
             for (size_t i = 0; i < num_backbones; i++) {
-                
-                active_backbone_clades[i][node.getIndex() - value->getNumberOfTips()] = tmp & backbone_mask[i];
+                active_backbone_clades[i][idx] = tmp & backbone_mask[i];
             }
             
             

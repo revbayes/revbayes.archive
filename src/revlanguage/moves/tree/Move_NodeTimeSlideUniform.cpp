@@ -6,6 +6,7 @@
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
+#include "RlBoolean.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -41,9 +42,11 @@ void Move_NodeTimeSlideUniform::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
+    bool dyn = static_cast<const RlBoolean &>( dynamic->getRevObject() ).getValue();
+
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::NodeTimeSlideUniformProposal( t );
+    RevBayesCore::Proposal *p = new RevBayesCore::NodeTimeSlideUniformProposal( t, dyn );
     value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
 }
 
@@ -92,11 +95,13 @@ const MemberRules& Move_NodeTimeSlideUniform::getParameterRules(void) const
     {
         
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        
+
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
+        memberRules.push_back( new ArgumentRule( "dynamic", RlBoolean::getClassTypeSpec(), "Use dynamic weighting?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+
         rules_set = true;
     }
     
@@ -138,6 +143,10 @@ void Move_NodeTimeSlideUniform::setConstParameter(const std::string& name, const
     if ( name == "tree" )
     {
         tree = var;
+    }
+    else if(name == "dynamic")
+    {
+        dynamic = var;
     }
     else
     {

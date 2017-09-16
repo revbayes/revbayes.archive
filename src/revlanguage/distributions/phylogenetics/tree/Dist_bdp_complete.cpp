@@ -53,7 +53,7 @@ RevBayesCore::ConstantRateCompleteBirthDeathProcess* Dist_bdp_complete::createDi
     // get the parameters
     
     // the root age
-    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( start_age->getRevObject() ).getDagNode();
 
     // the start condition
     bool uo = ( startCondition == "originAge" ? true : false );
@@ -208,7 +208,7 @@ void Dist_bdp_complete::setConstParameter(const std::string& name, const RevPtr<
     if ( name == "rootAge" || name == "originAge" || name == "mrcaAge" )
     {
         startCondition = name;
-        startAge = var;
+        start_age = var;
     }
     else if ( name == "lambda" )
     {

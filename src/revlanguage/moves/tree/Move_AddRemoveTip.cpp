@@ -104,7 +104,7 @@ const MemberRules& Move_AddRemoveTip::getParameterRules(void) const
     if ( !rules_set )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), "The tree on which this moves operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), "The tree on which this moves operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "extant", RlBoolean::getClassTypeSpec(), "Should we add/remove extant tips?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
         memberRules.push_back( new ArgumentRule( "extinct", RlBoolean::getClassTypeSpec(), "Should we add/remove extinct tips?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         memberRules.push_back( new ArgumentRule( "sa", RlBoolean::getClassTypeSpec(), "Should we add/remove extinct tips as sampled ancestors?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );

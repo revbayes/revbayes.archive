@@ -116,11 +116,11 @@ void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<
     
     if ( name == "rootAge" )
     {
-        startAge = var;
+        start_age = var;
     }
     else if ( name == "samplingStrategy" ) 
     {
-        samplingStrategy = var;
+        sampling_strategy = var;
     }
     else if ( name == "taxa" )
     {
