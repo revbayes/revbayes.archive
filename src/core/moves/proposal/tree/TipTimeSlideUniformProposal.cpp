@@ -72,7 +72,7 @@ const std::string& TipTimeSlideUniformProposal::getProposalName( void ) const
  */
 double TipTimeSlideUniformProposal::getUpdateWeight( void ) const
 {
-    return dynamic ? tree->getValue().getNumberOfTips() : 1.0;
+    return dynamic ? tree->getValue().getNumberOfExtinctTips() : 1.0;
 }
 
 
