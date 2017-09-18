@@ -20,6 +20,11 @@ NormalDistribution::NormalDistribution(const TypedDagNode<double> *m, const Type
     addParameter( min );
     addParameter( max );
 
+    if ( getMin() >= getMax() )
+    {
+        throw RbException("The minimum value must be smaller then the maximum value for the truncated normal distribution.");
+    }
+
     redrawValue();
 }
 
@@ -76,9 +81,14 @@ double NormalDistribution::quantile(double p) const {
 
 
 void NormalDistribution::redrawValue( void ) {
-    //do {
+    if( getMin() == RbConstants::Double::neginf && getMax() == RbConstants::Double::inf )
+    {
+        *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);
+    }
+    else
+    {
         *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), getMin(), getMax(), *GLOBAL_RNG);
-    //} while ( *value < getMin() || *value > getMax() );
+    }
 }
 
 
