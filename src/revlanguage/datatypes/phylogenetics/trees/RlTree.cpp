@@ -226,6 +226,11 @@ void Tree::initMethods( void )
     parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<Tree, Natural>( "parent", this, parentArgRules   ) );
     
+    ArgumentRules* childArgRules = new ArgumentRules();
+    childArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    childArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the child of this node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<Tree, Natural>( "child", this, childArgRules   ) );
+    
     ArgumentRules* branchLengthArgRules = new ArgumentRules();
     branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<Tree, RealPos>( "branchLength", this, branchLengthArgRules   ) );
