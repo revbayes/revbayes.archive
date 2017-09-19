@@ -1,11 +1,3 @@
-//
-//  CheckNodeOrderConstraintsFunction.h
-//  revbayes-proj
-//
-//  Created by Bastien Boussau on 16/11/15.
-//  Copyright (c) 2015 Bastien Boussau. All rights reserved.
-//
-
 #ifndef CheckNodeOrderConstraintsFunction_H
 #define CheckNodeOrderConstraintsFunction_H
 

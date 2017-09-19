@@ -33,23 +33,24 @@ Func_pomoRootFrequencies::Func_pomoRootFrequencies( void ) : TypedFunction<Simpl
  *
  * \return A new copy of the process.
  */
-Func_pomoRootFrequencies* Func_pomoRootFrequencies::clone( void ) const {
+Func_pomoRootFrequencies* Func_pomoRootFrequencies::clone( void ) const
+{
     
     return new Func_pomoRootFrequencies( *this );
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >* Func_pomoRootFrequencies::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::Simplex >* Func_pomoRootFrequencies::createFunction( void ) const
 {
     //Four arguments, root_base_frequencies, root_polymorphism_proportion, Q, virtual_population_size
     
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rbf = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Simplex >* rbf = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode< double >* rpp = static_cast<const Real &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator >* q = static_cast<const RateGenerator &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::TypedDagNode< int >* n = static_cast<const Natural &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< long >* n = static_cast<const Natural &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
 
     RevBayesCore::PomoRootFrequenciesFunction* pomorf = new RevBayesCore::PomoRootFrequenciesFunction( rbf, rpp, q, n );
     

@@ -21,11 +21,11 @@ void MethodTable::insertInheritedMethods( const MethodTable& inheritedMethods )
     
     for ( MethodTable::const_iterator it = inheritedMethods.begin(); it != inheritedMethods.end(); ++it )
     {
-        Function* theFunction = (*it).second->clone();
+        Function* the_function = (*it).second->clone();
 
         try
         {
-            addFunction( theFunction );
+            addFunction( the_function );
         }
         catch ( RbException )
         {

@@ -12,7 +12,10 @@ namespace RevLanguage {
         
     public:
         MemberFunction(const std::string &name, const memberObjectType* o, ArgumentRules* argRules);                                             //!< Constructor
-        virtual ~MemberFunction(){};
+        MemberFunction(const MemberFunction &m);                                                                        //!< Constructor
+        virtual ~MemberFunction(void);
+        
+        MemberFunction&                                                 operator=(const MemberFunction &m);             //!< Assignment operator
         
         // Basic utility functions
         MemberFunction*                                                 clone(void) const;                              //!< Clone the object
@@ -53,6 +56,49 @@ RevLanguage::MemberFunction<memberObjectType, retType>::MemberFunction( const st
     the_member_object( o )
 {
     
+}
+
+
+/** copy constructor */
+template <typename memberObjectType, typename retType>
+RevLanguage::MemberFunction<memberObjectType, retType>::MemberFunction( const MemberFunction<memberObjectType, retType> &m) : TypedFunction<retType>(m),
+    argument_rules( new ArgumentRules(*m.argument_rules) ),
+    method_name( m.method_name ),
+    object( m.object ),
+    the_member_object( m.the_member_object )
+{
+    
+}
+
+
+/** default constructor */
+template <typename memberObjectType, typename retType>
+RevLanguage::MemberFunction<memberObjectType, retType>::~MemberFunction( void )
+{
+    delete argument_rules;
+}
+
+
+/** copy constructor */
+template <typename memberObjectType, typename retType>
+RevLanguage::MemberFunction<memberObjectType, retType>& RevLanguage::MemberFunction<memberObjectType, retType>::operator=( const MemberFunction<memberObjectType, retType> &m)
+{
+
+    // check for self-assignment
+    if ( this != &m )
+    {
+        TypedFunction<retType>::operator=(m);
+        
+        delete argument_rules;
+        
+        argument_rules      = new ArgumentRules(m.argument_rules);
+        method_name         = m.method_name;
+        object              = m.object;
+        the_member_object   = m.the_member_object;
+
+    }
+    
+    return *this;
 }
 
 

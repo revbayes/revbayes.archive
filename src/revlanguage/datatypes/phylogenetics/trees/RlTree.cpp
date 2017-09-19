@@ -81,7 +81,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
             taxon_name = static_cast<const Taxon&>( taxon ).getValue().getSpeciesName();
         }
 
-        this->dagNode->getValue().dropTipNodeWithName( taxon_name );
+        this->dag_node->getValue().dropTipNodeWithName( taxon_name );
         
         return NULL;
     }
@@ -91,28 +91,14 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         
         int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         
-        bool tf = this->dagNode->getValue().getNode((size_t)index).isInternal();
+        bool tf = this->dag_node->getValue().getNode((size_t)index).isInternal();
         return new RevVariable( new RlBoolean( tf ) );
-    }
-    else if (name == "nnodes")
-    {
-        found = true;
-        
-        size_t n = this->dagNode->getValue().getNumberOfNodes();
-        return new RevVariable( new Natural( n ) );
-    }
-    else if (name == "ntips")
-    {
-        found = true;
-        
-        size_t n = this->dagNode->getValue().getNumberOfTips();
-        return new RevVariable( new Natural( n ) );
     }
     else if (name == "names" || name == "taxa")
     {
         found = true;
         
-        std::vector<RevBayesCore::Taxon> t = this->dagNode->getValue().getTaxa();
+        std::vector<RevBayesCore::Taxon> t = this->dag_node->getValue().getTaxa();
         return new RevVariable( new ModelVector<Taxon>( t ) );
     }
     else if (name == "nodeName")
@@ -120,7 +106,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         found = true;
         
         int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
-        const std::string& n = this->dagNode->getValue().getNode((size_t)index).getName();
+        const std::string& n = this->dag_node->getValue().getNode((size_t)index).getName();
         return new RevVariable( new RlString( n ) );
     }
     else if (name == "rescale")
@@ -128,8 +114,29 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         found = true;
         
         double f = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
-        RevBayesCore::Tree &tree = dagNode->getValue();
+        RevBayesCore::Tree &tree = dag_node->getValue();
         RevBayesCore::TreeUtilities::rescaleTree(&tree, &tree.getRoot(), f);
+        
+        return NULL;
+    }
+    else if (name == "offset")
+    {
+        found = true;
+
+        double f = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
+        RevBayesCore::Tree &tree = dag_node->getValue();
+        RevBayesCore::TreeUtilities::offsetTree(&tree, &tree.getRoot(), f);
+
+        return NULL;
+    }
+    else if (name == "setNegativeConstraint")
+    {
+        found = true;
+        
+        double tf = static_cast<const RlBoolean&>( args[0].getVariable()->getRevObject() ).getValue();
+        RevBayesCore::Tree &tree = dag_node->getValue();
+        tree.setNegativeConstraint(tf);
+//        RevBayesCore::TreeUtilities::rescaleTree(&tree, &tree.getRoot(), f);
         
         return NULL;
     }
@@ -178,10 +185,10 @@ void Tree::initMethods( void )
     methods.addFunction( new MemberProcedure( "isInternal", RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
     
     ArgumentRules* nnodesArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "nnodes", Natural::getClassTypeSpec(), nnodesArgRules ) );
+    methods.addFunction( new MemberFunction<Tree, Natural>( "nnodes", this, nnodesArgRules ) );
     
     ArgumentRules* ntipsArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "ntips", Natural::getClassTypeSpec(), ntipsArgRules ) );
+    methods.addFunction( new MemberFunction<Tree, Natural>( "ntips", this, ntipsArgRules ) );
     
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );
@@ -205,11 +212,24 @@ void Tree::initMethods( void )
     rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "The scaling factor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "rescale", RlUtils::Void, rescaleArgRules ) );
     
+    ArgumentRules* offsetArgRules = new ArgumentRules();
+    offsetArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "The offset factor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "offset", RlUtils::Void, offsetArgRules ) );
+
+    ArgumentRules* setNegativeConstraint = new ArgumentRules();
+    setNegativeConstraint->push_back( new ArgumentRule( "flag", RlBoolean::getClassTypeSpec(), "Is the tree a negative constraint?.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setNegativeConstraint", RlUtils::Void, setNegativeConstraint ) );
+    
     
     // member functions
     ArgumentRules* parentArgRules = new ArgumentRules();
     parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<Tree, Natural>( "parent", this, parentArgRules   ) );
+    
+    ArgumentRules* childArgRules = new ArgumentRules();
+    childArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    childArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the child of this node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<Tree, Natural>( "child", this, childArgRules   ) );
     
     ArgumentRules* branchLengthArgRules = new ArgumentRules();
     branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );

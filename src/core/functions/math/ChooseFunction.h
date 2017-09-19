@@ -24,10 +24,10 @@ namespace RevBayesCore {
      * \since Version 1.0, 2012-08-13
      *
      */
-    class ChooseFunction : public TypedFunction<int> {
+    class ChooseFunction : public TypedFunction<long> {
         
     public:
-        ChooseFunction(const TypedDagNode<int> *a, const TypedDagNode<int> *b);
+        ChooseFunction(const TypedDagNode<long> *a, const TypedDagNode<long> *b);
         
         ChooseFunction*                      clone(void) const;                                                  //!< Create a clon.
         void                                update(void);                                                       //!< Recompute the value
@@ -36,8 +36,8 @@ namespace RevBayesCore {
         void                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);    //!< Implementation of swaping parameters
         
     private:
-        const TypedDagNode<int>*         n;
-        const TypedDagNode<int>*         k;
+        const TypedDagNode<long>*         n;
+        const TypedDagNode<long>*         k;
     };
 }
 

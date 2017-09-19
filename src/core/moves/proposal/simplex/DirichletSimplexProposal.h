@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Proposal.h"
+#include "Simplex.h"
 #include "StochasticNode.h"
 
 namespace RevBayesCore {
@@ -27,7 +28,7 @@ namespace RevBayesCore {
     class DirichletSimplexProposal : public Proposal {
         
     public:
-        DirichletSimplexProposal( StochasticNode<RbVector<double> > *n, double a, size_t nc, double o, double k=0.0, double p=0.234);                                                                    //!<  constructor
+        DirichletSimplexProposal( StochasticNode<Simplex> *n, double a, size_t nc, double o, double k=0.0, double p=0.234);                                                                    //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
@@ -47,8 +48,8 @@ namespace RevBayesCore {
     private:
         // parameters
         
-        StochasticNode<RbVector<double> >*      variable;                                                                           //!< The variable the Proposal is working on
-        RbVector<double>                        storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
+        StochasticNode<Simplex>*                variable;                                                                           //!< The variable the Proposal is working on
+        Simplex                                 storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
         double                                  alpha;                                                                             //!< The scaling parameter of the Proposal
         size_t                                  nCategories;
         double                                  offset;

@@ -39,6 +39,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       q;
         RevPtr<const RevVariable>                       rate;
         RevPtr<const RevVariable>                       site_rates;
+        RevPtr<const RevVariable>                       site_rates_probs;
         RevPtr<const RevVariable>                       site_matrices;
         RevPtr<const RevVariable>                       root_frequencies;
         RevPtr<const RevVariable>                       p_inv;

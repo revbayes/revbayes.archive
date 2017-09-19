@@ -31,10 +31,9 @@ namespace RevBayesCore {
         Move&                                           nextMove(unsigned long g);
         
     private:
-        
+
         // Hidden member variables
-        double                                          sumOfWeights;
-        std::vector<double>                             weights;
+        double                                          movesPerIteration;
     };
     
 }

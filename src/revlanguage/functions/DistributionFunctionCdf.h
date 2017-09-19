@@ -29,7 +29,9 @@ namespace RevLanguage {
         DistributionFunctionCdf(ContinuousDistribution *d); 
         DistributionFunctionCdf(PositiveContinuousDistribution *d);                                                                     //!< Object constructor
         DistributionFunctionCdf(const DistributionFunctionCdf& obj);                                                                    //!< Copy constructor
-        
+
+        virtual                                         ~DistributionFunctionCdf(void);                                                                    //!< Copy constructor
+
         // overloaded operators
         DistributionFunctionCdf&                        operator=(const DistributionFunctionCdf& c);
         

@@ -62,17 +62,19 @@ RevPtr<RevVariable> Func_readAncestralStateTrace::execute( void ) {
         throw RbException(errorStr);
     }
     
-    if ( !myFileManager.isFile() ) {
-		
+    if ( !myFileManager.isFile() ) 
+    {
         throw RbException("readAncestralStateTrace only takes as input a single ancestral state trace file.");
     
-	} else {
+	} 
+    else 
+    {
 		
 		RevBayesCore::RbVector<AncestralStateTrace> traceVector;
-		std::vector<RevBayesCore::AncestralStateTrace*> ancestral_states = readAncestralStates(myFileManager.getFullFileName(), sep);
+		std::vector<RevBayesCore::AncestralStateTrace> ancestral_states = readAncestralStates(myFileManager.getFullFileName(), sep);
 		for ( size_t i = 0; i < ancestral_states.size(); i++ )
 		{						
-			traceVector.push_back( AncestralStateTrace( *ancestral_states[i] ) );			
+			traceVector.push_back( AncestralStateTrace( ancestral_states[i] ) );			
 		}
 		
 		WorkspaceVector<AncestralStateTrace> *theVector = new WorkspaceVector<AncestralStateTrace>( traceVector );
@@ -95,7 +97,7 @@ const ArgumentRules& Func_readAncestralStateTrace::getArgumentRules( void ) cons
     if (!rules_set)
     {
 		
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file which holds the trace the trace", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file which holds the ancestral state trace.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), "The separater between sampled values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rules_set = true;
     }
@@ -155,13 +157,13 @@ const TypeSpec& Func_readAncestralStateTrace::getReturnType( void ) const
 }
 
 
-std::vector<RevBayesCore::AncestralStateTrace*> Func_readAncestralStateTrace::readAncestralStates(const std::string &fileName, const std::string &delimitter)
+std::vector<RevBayesCore::AncestralStateTrace> Func_readAncestralStateTrace::readAncestralStates(const std::string &fileName, const std::string &delimitter)
 {
     
     
-    std::vector<RevBayesCore::AncestralStateTrace*> data;
+    std::vector<RevBayesCore::AncestralStateTrace> data;
 	
-	bool hasHeaderBeenRead = false;
+	bool has_header_been_read = false;
 
 	
 	/* Open file */
@@ -189,47 +191,39 @@ std::vector<RevBayesCore::AncestralStateTrace*> Func_readAncestralStateTrace::re
 		}
 		
 		// removing comments
-		if (line[0] == '#') {
+		if (line[0] == '#') 
+        {
 			continue;
 		}
 		
-		// splitting every line into its columns
+        // split every line into its columns
 		std::vector<std::string> columns;
-		
-		// we should provide other delimiters too
 		StringUtilities::stringSplit(line, delimitter, columns);
-		
+	
 		// we assume a header at the first line of the file
-		if (!hasHeaderBeenRead) {
-			
-			for (size_t j=1; j<columns.size(); j++) {
-								
+		if (has_header_been_read == false) 
+        {
+			for (size_t j = 0; j < columns.size(); j++) 
+            {
 				// set up AncestralStateTrace objects for each node
-				RevBayesCore::AncestralStateTrace *t = new RevBayesCore::AncestralStateTrace();
+				RevBayesCore::AncestralStateTrace t = RevBayesCore::AncestralStateTrace();
 				std::string parmName = columns[j];
-				t->setParameterName(parmName);
-				t->setFileName(fileName);
+				t.setParameterName(parmName);
+				t.setFileName(fileName);
 				data.push_back( t );
 			}
-			
-			hasHeaderBeenRead = true;
-			
-		} else {
-			
-			for (size_t j=1; j<columns.size(); j++) {
-				
+			has_header_been_read = true;
+		} 
+        else 
+        {
+			for (size_t j = 0; j < columns.size(); j++) 
+            {
 				// add values to the AncestralStateTrace objects
-				RevBayesCore::AncestralStateTrace *t = data[j-1];
 				std::string anc_state = columns[j];
-				t->addObject( anc_state );
-
+			    data[j].addObject( anc_state );
 			}
 		}
 	}
 
 	return data;
 }
-
-
-
-

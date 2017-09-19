@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-OrderedRateMatrixFunction::OrderedRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *m) : TypedFunction<RateGenerator>( new RateMatrix_Ordered(n->getValue()) ),
+OrderedRateMatrixFunction::OrderedRateMatrixFunction(const TypedDagNode<long> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *m) : TypedFunction<RateGenerator>( new RateMatrix_Ordered(n->getValue()) ),
     lambda( l ),
     mu( m )
 {

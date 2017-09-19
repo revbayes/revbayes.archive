@@ -11,8 +11,10 @@ namespace RevLanguage {
     class TypedDistribution : public Distribution {
         
     public:
-        virtual                                         ~TypedDistribution(void);                                                                  //!< Destructor
         TypedDistribution<rlType>(const TypedDistribution<rlType> &x);                                                                //!< Copy constuctor
+        virtual                                         ~TypedDistribution(void);                                                                  //!< Destructor
+        
+        TypedDistribution<rlType>&                      operator=(const TypedDistribution<rlType> &d);
         
         // The value type definition
         typedef typename rlType::valueType              rbValueType;
@@ -50,7 +52,8 @@ namespace RevLanguage {
 #include "TypedDistribution.h"
 
 template <typename rlType>
-RevLanguage::TypedDistribution<rlType>::TypedDistribution() : Distribution()
+RevLanguage::TypedDistribution<rlType>::TypedDistribution() : Distribution(),
+    variable( NULL )
 {
     
 }
@@ -58,7 +61,8 @@ RevLanguage::TypedDistribution<rlType>::TypedDistribution() : Distribution()
 
 
 template <typename rlType>
-RevLanguage::TypedDistribution<rlType>::TypedDistribution( const TypedDistribution<rlType> &d ) : Distribution(d)
+RevLanguage::TypedDistribution<rlType>::TypedDistribution( const TypedDistribution<rlType> &d ) : Distribution(d),
+    variable( NULL )
 {
     
 }
@@ -68,6 +72,21 @@ RevLanguage::TypedDistribution<rlType>::TypedDistribution( const TypedDistributi
 template <typename rlType>
 RevLanguage::TypedDistribution<rlType>::~TypedDistribution()
 {
+    // We do not own the variable!
+//    delete variable;
+}
+
+template <typename rlType>
+RevLanguage::TypedDistribution<rlType>& TypedDistribution<rlType>::operator=( const TypedDistribution<rlType> &d )
+{
+
+    if ( this != &d )
+    {
+        Distribution::operator=(d);
+        variable = NULL;
+    }
+    
+    return *this;
     
 }
 
@@ -124,6 +143,7 @@ const RevLanguage::TypeSpec& RevLanguage::TypedDistribution<rlType>::getVariable
 template <typename rlType>
 void RevLanguage::TypedDistribution<rlType>::setVariable(rlType *v)
 {
+    
     variable = v;
 }
 

@@ -205,7 +205,7 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
 							object:nil];
 
         // register this view as drag source for an image
-        [self registerForDraggedTypes:[NSImage imagePasteboardTypes]];
+        [self registerForDraggedTypes:[NSImage imageTypes]];
 
 		// set default values for object variables
 		bottomRightCorner       = NSZeroPoint;

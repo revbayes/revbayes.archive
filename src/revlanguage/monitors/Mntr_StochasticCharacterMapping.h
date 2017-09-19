@@ -46,6 +46,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       separator;
         RevPtr<const RevVariable>                       append;
         RevPtr<const RevVariable>                       include_simmap;
+        RevPtr<const RevVariable>                       use_simmap_default;
 
     };
     

@@ -1,7 +1,10 @@
 #import <Cocoa/Cocoa.h>
+@class ModelView;
 @class Parm;
 @class ParmDraw;
 @class PaletteDrawer;
+@class Variable;
+@class WindowControllerModel;
 
 
 
@@ -19,13 +22,13 @@
     float                              parmSpacing;
     NSTimer*                           toolTipTimer;
     BOOL                               isToolTipTimerActive;
-	int                                potentialToolForToolTip;
-    int                                toolForToolTip;
+	Variable*                          potentialVariable;
+    Variable*                          variableForTip;
     int                                fireNum;
 	NSMutableArray*                    myTrackingAreas;
     NSMutableArray*                    drawElements;
     BOOL                               isOverParameterImage;
-    
+	IBOutlet WindowControllerModel*    myController;
 }
 
 - (void)drawParameterIndexed:(int)idx andWithAddress:(Parm*)pPtr inRect:(NSRect)r;

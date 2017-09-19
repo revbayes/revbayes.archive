@@ -10,10 +10,9 @@
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RbOptions.h"
-#include "SequenctialMoveSchedule.h"
-
 #include <cmath>
 #include <typeinfo>
+#include "SequentialMoveSchedule.h"
 
 
 #ifdef RB_MPI
@@ -164,7 +163,7 @@ void PowerPosteriorAnalysis::initMPI( void )
     
 #ifdef RB_MPI
     // wait until all processes are complete
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier(MPI_COMM_WORLD);
 #endif
     
 }
@@ -204,7 +203,7 @@ void PowerPosteriorAnalysis::runAll(size_t gen)
     
 #ifdef RB_MPI
     // wait until all chains complete
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier(MPI_COMM_WORLD);
 #endif
     if ( process_active == true )
     {
@@ -289,7 +288,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
         if ( k > burnin && k % sampleFreq == 0 )
         {
             // compute the joint likelihood
-            double likelihood = sampler->getModelLnProbability();
+            double likelihood = sampler->getModelLnProbability(true);
             outStream << k << "\t" << p << "\t" << likelihood << std::endl;
         }
             

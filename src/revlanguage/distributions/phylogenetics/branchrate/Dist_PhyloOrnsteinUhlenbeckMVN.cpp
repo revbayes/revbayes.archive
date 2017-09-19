@@ -112,6 +112,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
         dist->setSigma( s );
     }
     
+
     // set the root states
 //    if ( rootStates->getRevObject().isType( ModelVector<Real>::getClassTypeSpec() ) )
 //    {

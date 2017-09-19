@@ -43,6 +43,7 @@ namespace RevBayesCore {
         void                                                initFromString( const std::string &s );                                     //!< Serialize (resurrect) the object from a string value
 
         // CharacterData functions
+        double                                              computeMultinomialProfileLikelihood( void ) const;
         MatrixReal                                          computeStateFrequencies(void) const;
         void                                                concatenate(const HomologousDiscreteCharacterData &d, std::string type = "");                       //!< Concatenate data matrices
         void                                                concatenate(const AbstractCharacterData &d, std::string type = "");                                 //!< Concatenate data matrices
@@ -54,7 +55,8 @@ namespace RevBayesCore {
         std::string                                         getDataType(void) const;
         std::vector<double>                                 getEmpiricalBaseFrequencies(void) const;                                    //!< Compute the empirical base frequencies
         const std::set<size_t>&                             getExcludedCharacters(void) const;                                          //!< Returns the name of the file the data came from
-        size_t                                              getMaxObservedStateIndex(void) const;                                              //!< Get the number of observed states for the characters in this matrix
+        std::vector<size_t>                                 getIncludedSiteIndices(void) const;
+        size_t                                              getMaxObservedStateIndex(void) const;                                        //!< Get the number of observed states for the characters in this matrix
         size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                              getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
         size_t                                              getNumberOfInvariantSites(bool excl) const;                                 //!< Number of invariant sites
@@ -63,6 +65,7 @@ namespace RevBayesCore {
         double                                              getAveragePaiwiseSequenceDifference(bool excl) const;                       //!< Get the average pairwise sequence distance.
         size_t                                              getMaxPaiwiseSequenceDifference(bool excl) const;                           //!< Get the average pairwise sequence distance.
         size_t                                              getMinPaiwiseSequenceDifference(bool excl) const;                           //!< Get the average pairwise sequence distance.
+        DistanceMatrix                                      getPaiwiseSequenceDifference(bool excl) const;                              //!< Get the average pairwise sequence distance.
         DiscreteTaxonData<charType>&                        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
@@ -91,10 +94,7 @@ namespace RevBayesCore {
     
     protected:
         // Utility functions
-        bool                                                isCharacterConstant(size_t idx) const;                                      //!< Is the idx-th character a constant pattern?
         bool                                                isCharacterMissingOrAmbiguous(size_t idx) const;                            //!< Does the character have missing or ambiguous data?
-        size_t                                              numConstantPatterns(void) const;                                            //!< The number of constant patterns
-        size_t                                              numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
         
         // Member variables
         std::set<size_t>                                    deletedCharacters;                                                          //!< Set of deleted characters
@@ -174,6 +174,117 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>* RevBayesCore::Homologou
     return new HomologousDiscreteCharacterData<charType>(*this);
 }
 
+
+
+/**
+ * Compute the state frequencies per site.
+ *
+ * \return       A matrix of character frequencies where each column is a character and each row a taxon.
+ */
+template<class charType>
+double RevBayesCore::HomologousDiscreteCharacterData<charType>::computeMultinomialProfileLikelihood( void ) const
+{
+    
+    std::vector<double> pattern_counts;
+    
+    // resize the matrices
+    size_t num_sequences = this->taxa.size();
+    
+    // create a vector with the correct site indices
+    // some of the sites may have been excluded
+    std::vector<size_t> site_indices = getIncludedSiteIndices();
+
+    size_t num_sites = getNumberOfIncludedCharacters();
+    
+//    // check whether there are ambiguous characters (besides gaps)
+//    bool ambiguousCharacters = false;
+//    
+//    // find the unique site patterns and compute their respective frequencies
+//    for (size_t site = 0; site < num_sites; ++site)
+//    {
+//        
+//        for (size_t i = 0; i < num_sequences; ++i)
+//        {
+//            
+//            const DiscreteTaxonData<charType>& seq = this->getTaxonData(i);
+//            DiscreteCharacterState &c = seq.getCharacter(site_indices[site]);
+//                
+//            // if we treat unknown characters as gaps and this is an unknown character then we change it
+//            // because we might then have a pattern more
+//            if ( treatAmbiguousAsGaps && (c.isAmbiguous() || c.isMissingState()) )
+//            {
+//                c.setGapState( true );
+//            }
+//            else if ( treatUnknownAsGap && (c.getNumberOfStates() == c.getNumberObservedStates() || c.isMissingState()) )
+//            {
+//                c.setGapState( true );
+//            }
+//            else if ( !c.isGapState() && (c.isAmbiguous() || c.isMissingState()) )
+//            {
+//                ambiguousCharacters = true;
+//                break;
+//            }
+//            
+//        }
+//        
+//        // break the loop if there was an ambiguous character
+//        if ( ambiguousCharacters )
+//        {
+//            break;
+//        }
+//    }
+//    
+//    // set the global variable if we use ambiguous characters
+//    bool using_ambiguous_characters = ambiguousCharacters;
+    
+    // find the unique site patterns and compute their respective frequencies
+    std::map<std::string,size_t> patterns;
+    for (size_t site = 0; site < num_sites; ++site)
+    {
+        // create the site pattern
+        std::string pattern = "";
+        for (size_t i = 0; i < num_sequences; ++i)
+        {
+            
+            const DiscreteTaxonData<charType>& seq = this->getTaxonData(i);
+            const DiscreteCharacterState &c = seq.getCharacter(site_indices[site]);
+            pattern += c.getStringValue();
+            
+        }
+        
+        // check if we have already seen this site pattern
+        std::map<std::string, size_t>::const_iterator index = patterns.find( pattern );
+        if ( index != patterns.end() )
+        {
+
+            // we have already seen this pattern
+            // increase the frequency counter
+            pattern_counts[ index->second ]++;
+            
+        }
+        else
+        {
+
+            // insert this pattern with the corresponding index in the map
+            patterns.insert( std::pair<std::string,size_t>(pattern,pattern_counts.size()) );
+            
+            // create a new pattern frequency counter for this pattern
+            pattern_counts.push_back(1);
+                
+        }
+    }
+    
+    double lnl = 0.0;
+    for (size_t i=0; i<pattern_counts.size(); ++i)
+    {
+        double c = pattern_counts[i];
+        lnl += c*log(c);
+    }
+    lnl += double(num_sites) * log(num_sites);
+    
+    
+    return lnl;
+}
 
 
 /**
@@ -594,6 +705,45 @@ std::vector<double> RevBayesCore::HomologousDiscreteCharacterData<charType>::get
 }
 
 
+template<class charType>
+std::vector<size_t> RevBayesCore::HomologousDiscreteCharacterData<charType>::getIncludedSiteIndices(void) const
+{
+    // create a vector with the correct site indices
+    // some of the sites may have been excluded
+    std::vector<size_t> site_indices;
+    size_t site_index = 0;
+
+    size_t num_sites = getNumberOfIncludedCharacters();
+    for (size_t i = 0; i < num_sites; ++i)
+    {
+        while ( this->isCharacterExcluded(site_index) )
+        {
+            site_index++;
+            if ( site_index >= this->getNumberOfCharacters()  )
+            {
+                throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
+            }
+        }
+        
+        site_indices.push_back(site_index);
+        site_index++;
+    }
+    
+    // test if there were additional sites that we did not use
+    while ( site_index < this->getNumberOfCharacters() )
+    {
+        if ( !this->isCharacterExcluded(site_index)  )
+        {
+            throw RbException( "The character matrix cannot set to this variable because it has too many included characters." );
+        }
+        site_index++;
+    }
+    
+    return site_indices;
+}
+
+
+
 
 /** 
  * Get the number of characters in taxon data object. 
@@ -666,7 +816,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
     }
 
     int max;
-    for(max = observed.size() - 1; max >= 0; max--)
+    for (max = long(observed.size()) - 1; max >= 0; max--)
     {
         if(observed.isSet(max))
         {
@@ -923,6 +1073,58 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMinPaiwiseSeq
 }
 
 
+/**
+ * Get the minimum pairwise distance between the sequences.
+ *
+ * \return    The min pairwise distance.
+ */
+template<class charType>
+RevBayesCore::DistanceMatrix RevBayesCore::HomologousDiscreteCharacterData<charType>::getPaiwiseSequenceDifference( bool include_missing ) const
+{
+    size_t nt = this->getNumberOfIncludedTaxa();
+    MatrixReal distances = MatrixReal(nt);
+    
+    
+    for (size_t i=0; i<(nt-1); i++)
+    {
+        
+        const AbstractDiscreteTaxonData& firstTaxonData = this->getTaxonData(i);
+        size_t nc = firstTaxonData.getNumberOfCharacters();
+        
+        for (size_t j=i+1; j<nt; j++)
+        {
+            
+            const AbstractDiscreteTaxonData& secondTaxonData = this->getTaxonData(j);
+            size_t pd = 0.0;
+            
+            for (size_t k=0; k<nc; k++)
+            {
+                const DiscreteCharacterState& a = firstTaxonData[k];
+                const DiscreteCharacterState& b = secondTaxonData[k];
+                if ( include_missing == true || ( a.isAmbiguous() == false && b.isAmbiguous() == false) )
+                {
+                    if (a != b)
+                    {
+                        ++pd;
+                    }
+                }
+                
+            }
+            
+            distances[i][j] = pd;
+            distances[j][i] = pd;
+            
+        } // end loop over all second taxa
+        
+        distances[i][i] = 0;
+        
+    } // end loop over all first taxa
+    
+    
+    return DistanceMatrix(distances,getTaxa());
+}
+
+
 /** 
  * Get the taxon data object with index tn.
  *
@@ -1115,43 +1317,40 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromString(con
     throw RbException("Cannot initialize a discrete character data matrix from a string.");
 }
 
-
-
-/** 
- * Is this character pattern constant at site idx?
- * 
- * \param[in]   idx    The site at which we want to know if it is constant?
- */
-template<class charType>
-bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterConstant(size_t idx) const 
-{
-    
-    const CharacterState* f = NULL;
-    for ( size_t i=0; i<getNumberOfTaxa(); ++i )
-    {
-        if ( isTaxonExcluded(i) == false ) 
-        {
-            if ( f == NULL )
-            {
-                f = &getCharacter( i, idx );
-            }
-            else
-            {
-                const CharacterState* s = &getCharacter( i , idx );
-                if ( (*f) != (*s) )
-                {
-                    return false;
-                }
-                
-            }
-
-        }
-    
-    }
-    
-    return true;
-}
-
+///** 
+// * Is this character pattern constant at site idx?
+// * 
+// * \param[in]   idx    The site at which we want to know if it is constant?
+// */
+//template<class charType>
+//bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterConstant(size_t idx) const 
+//{
+//    
+//    const CharacterState* f = NULL;
+//    for ( size_t i=0; i<getNumberOfTaxa(); ++i )
+//    {
+//        if ( isTaxonExcluded(i) == false ) 
+//        {
+//            if ( f == NULL )
+//            {
+//                f = &getCharacter( i, idx );
+//            }
+//            else
+//            {
+//                const CharacterState* s = &getCharacter( i , idx );
+//                if ( (*f) != (*s) )
+//                {
+//                    return false;
+//                }
+//                
+//            }
+//
+//        }
+//    
+//    }
+//    
+//    return true;
+//}
 
 /** 
  * Is the character excluded?
@@ -1556,46 +1755,6 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numInvariableSit
     }
     
     return num_blocks;
-}
-
-
-
-/** 
- * Calculates and returns the number of constant characters.
- */
-template<class charType>
-size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numConstantPatterns( void ) const 
-{
-    
-    size_t nc = 0;
-    for (size_t i=0; i<getNumberOfCharacters(); i++)
-    {
-        if ( isCharacterExcluded(i) == false && isCharacterConstant(i) == true )
-        {
-            nc++;
-        }
-        
-    }
-    
-    return nc;
-}
-
-
-/** 
- * Returns the number of characters with missing or ambiguous data
- */
-template<class charType>
-size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numMissAmbig(void) const 
-{
-    
-    size_t nma = 0;
-    for (size_t i=0; i<getNumberOfCharacters(); i++)
-    {
-        if ( isCharacterExcluded(i) == false && isCharacterMissingOrAmbiguous(i) == true )
-            nma++;
-    }
-    
-    return nma;
 }
 
 

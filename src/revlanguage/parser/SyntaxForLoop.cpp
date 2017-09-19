@@ -21,7 +21,10 @@ SyntaxForLoop::SyntaxForLoop( const std::string& identifier, SyntaxElement* inEx
     nextIndex( 0 )
 {
     if ( inExpression == NULL )
+    {
         throw RbException("The 'in' expression of for loop is empty");
+    }
+    
 }
 
 
@@ -124,7 +127,7 @@ void SyntaxForLoop::initializeLoop( Environment& env )
     assert ( nextIndex == 0 );  // Check that we are not running already
 
     // Evaluate expression and check that we get a vector
-    const RevPtr<RevVariable>&      theVar      = inExpression->evaluateContent(env);
+    const RevPtr<RevVariable>&      theVar   = inExpression->evaluateContent(env);
     const RevObject&             theValue    = theVar->getRevObject();
 
     // Check that it is a container (the first dimension of which we will use)
@@ -135,8 +138,10 @@ void SyntaxForLoop::initializeLoop( Environment& env )
     }
     
     // Add the loop variable to the environment, if it is not already there
-    if ( !env.existsVariable( varName ) )
+    if ( env.existsVariable( varName ) == false )
+    {
         env.addVariable( varName, new RevVariable( NULL) );
+    }
     
     // Set the local smart pointer to the loop variable
     loopVariable = env.getVariable( varName );

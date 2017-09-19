@@ -47,7 +47,7 @@ class UserInterface {
         virtual                    ~UserInterface(void) {}                                      //!< Destructor
         UserInterface&              operator=(const UserInterface& w) { return (*this); }       //!< Prevent assignment
     
-        int                         processID;
+        int                         process_id;
 };
     
 }

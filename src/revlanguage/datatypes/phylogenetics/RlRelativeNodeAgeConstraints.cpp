@@ -67,7 +67,7 @@ RevPtr<RevVariable> RlRelativeNodeAgeConstraints::executeMethod(std::string cons
     {
         found = true;
         
-        std::string name = this->dagNode->getValue().getFilename();
+        std::string name = this->dag_node->getValue().getFilename();
         RlString *n = new RlString(name);
         return new RevVariable( n );
     }    
@@ -81,7 +81,7 @@ RevPtr<RevVariable> RlRelativeNodeAgeConstraints::executeMethod(std::string cons
 /*
 const Real* RlRelativeNodeAgeConstraints::getElement(size_t idx ) const
 {
-    double element = static_cast< RevBayesCore::RelativeNodeAgeConstraints& >( this->dagNode->getValue() ).getElement(idx - 1);
+    double element = static_cast< RevBayesCore::RelativeNodeAgeConstraints& >( this->dag_node->getValue() ).getElement(idx - 1);
     
     return new Real( element ) ;
     
@@ -93,7 +93,7 @@ const Real* RlRelativeNodeAgeConstraints::getElement(size_t idx ) const
  */
 size_t RlRelativeNodeAgeConstraints::getNumberOfConstraints( void ) const
 {
-    return this->dagNode->getValue().getNumberOfConstraints();
+    return this->dag_node->getValue().getNumberOfConstraints();
 }
 
 

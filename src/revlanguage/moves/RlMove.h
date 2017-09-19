@@ -41,6 +41,7 @@ namespace RevLanguage {
         virtual std::string                                 getConstructorExample(void) const { return ""; }
         virtual std::vector<std::string>                    getHelpAuthor(void) const { return std::vector<std::string>(); }
         virtual std::vector<std::string>                    getHelpDescription(void) const { return std::vector<std::string>(); }
+        virtual std::string                                 getHelpExample(void) const { return ""; }                                                       //!< Get an executable and instructive example
         virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
         virtual std::vector<std::string>                    getHelpSeeAlso(void) const { return std::vector<std::string>(); }
         virtual std::string                                 getHelpTitle(void) const { return ""; }

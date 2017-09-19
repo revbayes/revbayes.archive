@@ -14,38 +14,23 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-Integer::Integer(void) : ModelObject<int>()
+Integer::Integer(void) : ModelObject<long>()
 {
     
-    setGuiVariableName("Integer");
-    setGuiLatexSymbol("Z");
 }
 
 
-Integer::Integer( RevBayesCore::TypedDagNode<int> *v ) : ModelObject<int>( v )
+Integer::Integer( RevBayesCore::TypedDagNode<long> *v ) : ModelObject<long>( v )
 {
     
-    setGuiVariableName("Integer");
-    setGuiLatexSymbol("Z");
 }
 
 
 
 /* Construct from int */
-Integer::Integer(int v) : ModelObject<int>( new int(v) )
+Integer::Integer(long v) : ModelObject<long>( new long(v) )
 {
 
-    setGuiVariableName("Integer");
-    setGuiLatexSymbol("Z");
-}
-
-
-/* Construct from unsigned int (ambiguous between int and bool otherwise) */
-Integer::Integer(unsigned int v) : ModelObject<int>( new int( int(v) ) )
-{
-    
-    setGuiVariableName("Integer");
-    setGuiLatexSymbol("Z");
 }
 
 
@@ -66,7 +51,7 @@ RevObject* Integer::add( const RevObject& rhs ) const
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
         return add( static_cast<const Integer&>( rhs ) );
     
-    return ModelObject<int>::add( rhs );
+    return ModelObject<long>::add( rhs );
 }
 
 
@@ -81,7 +66,7 @@ RevObject* Integer::add( const RevObject& rhs ) const
 Real* Integer::add(const Real &rhs) const
 {
     
-    Real *n = new Real( dagNode->getValue() + rhs.getValue() );
+    Real *n = new Real( dag_node->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -98,7 +83,7 @@ Real* Integer::add(const Real &rhs) const
 Integer* Integer::add(const Integer &rhs) const
 {
     
-    Integer *n = new Integer( dagNode->getValue() + rhs.getValue() );
+    Integer *n = new Integer( dag_node->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -122,12 +107,12 @@ RevObject* Integer::convertTo( const TypeSpec& type ) const
 
     if ( type == RlBoolean::getClassTypeSpec() )
     {
-        return new RlBoolean( dagNode->getValue() == 0 );
+        return new RlBoolean( dag_node->getValue() == 0 );
     }
     
     if ( type == Real::getClassTypeSpec() )
     {
-        return new Real( dagNode->getValue() );
+        return new Real( dag_node->getValue() );
     }
     
     if ( type == RlString::getClassTypeSpec() ) 
@@ -137,19 +122,19 @@ RevObject* Integer::convertTo( const TypeSpec& type ) const
         return new RlString( o.str() );
     }
 
-    if ( type == RealPos::getClassTypeSpec() && dagNode->getValue() > 0 )
+    if ( type == RealPos::getClassTypeSpec() && dag_node->getValue() > 0 )
     {
-        return new RealPos( dagNode->getValue() );
+        return new RealPos( double(dag_node->getValue()) );
     }
     
-    if ( type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0)
+    if ( type == Natural::getClassTypeSpec() && dag_node->getValue() >= 0)
     {
-        return new Natural( dagNode->getValue() );
+        return new Natural( dag_node->getValue() );
     }
     
     if ( type == Probability::getClassTypeSpec() )
     {
-        return new Probability( dagNode->getValue() );
+        return new Probability( dag_node->getValue() );
     }
     
     return RevObject::convertTo( type );
@@ -162,7 +147,7 @@ RevObject* Integer::convertTo( const TypeSpec& type ) const
 void Integer::decrement( void ) 
 {
     
-    dagNode->getValue()--;
+    dag_node->getValue()--;
 
 }
 
@@ -184,7 +169,7 @@ RevObject* Integer::divide( const RevObject& rhs ) const
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
         return divide( static_cast<const Integer&>( rhs ) );
     
-    return ModelObject<int>::divide( rhs );
+    return ModelObject<long>::divide( rhs );
 }
 
 
@@ -199,7 +184,7 @@ RevObject* Integer::divide( const RevObject& rhs ) const
 Real* Integer::divide(const Real &rhs) const
 {
     
-    Real *n = new Real( dagNode->getValue() / rhs.getValue() );
+    Real *n = new Real( dag_node->getValue() / rhs.getValue() );
     
     return n;
 }
@@ -216,7 +201,7 @@ Real* Integer::divide(const Real &rhs) const
 Real* Integer::divide(const Integer &rhs) const
 {
     
-    Real *n = new Real( dagNode->getValue() / double( rhs.getValue() ) );
+    Real *n = new Real( dag_node->getValue() / double( rhs.getValue() ) );
     
     return n;
 }
@@ -263,7 +248,7 @@ const TypeSpec& Integer::getTypeSpec( void ) const
 void Integer::increment( void ) 
 {
     
-    dagNode->getValue()++;
+    dag_node->getValue()++;
     
 }
 
@@ -290,17 +275,17 @@ double Integer::isConvertibleTo( const TypeSpec& type, bool once ) const
         return 0.5;
     }
     
-    if ( once && type == RealPos::getClassTypeSpec() && dagNode->getValue() >= 0 )
+    if ( once && type == RealPos::getClassTypeSpec() && dag_node->getValue() >= 0 )
     {
         return 0.3;
     }
     
-    if ( once && type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0 )
+    if ( once && type == Natural::getClassTypeSpec() && dag_node->getValue() >= 0 )
     {
         return 0.1;
     }
     
-    if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1 && dagNode->getValue() >= 0)
+    if ( once == true && type == Probability::getClassTypeSpec() && dag_node->getValue() <= 1 && dag_node->getValue() >= 0)
     {
         return 0.2;
     }
@@ -330,7 +315,7 @@ RevObject* Integer::multiply( const RevObject& rhs ) const
         return multiply( static_cast<const Integer&>( rhs ) );
     }
     
-    return ModelObject<int>::multiply( rhs );
+    return ModelObject<long>::multiply( rhs );
 }
 
 
@@ -345,7 +330,7 @@ RevObject* Integer::multiply( const RevObject& rhs ) const
 Real* Integer::multiply(const Real &rhs) const
 {
     
-    Real *n = new Real( dagNode->getValue() * rhs.getValue() );
+    Real *n = new Real( dag_node->getValue() * rhs.getValue() );
     
     return n;
 }
@@ -362,7 +347,7 @@ Real* Integer::multiply(const Real &rhs) const
 Integer* Integer::multiply(const Integer &rhs) const
 {
     
-    Integer *n = new Integer( dagNode->getValue() * rhs.getValue() );
+    Integer *n = new Integer( dag_node->getValue() * rhs.getValue() );
     
     return n;
 }
@@ -389,7 +374,7 @@ RevObject* Integer::subtract( const RevObject& rhs ) const
         return subtract( static_cast<const Integer&>( rhs ) );
     }
     
-    return ModelObject<int>::subtract( rhs );
+    return ModelObject<long>::subtract( rhs );
 }
 
 
@@ -404,7 +389,7 @@ RevObject* Integer::subtract( const RevObject& rhs ) const
 Real* Integer::subtract(const Real &rhs) const
 {
     
-    Real *n = new Real( dagNode->getValue() - rhs.getValue() );
+    Real *n = new Real( dag_node->getValue() - rhs.getValue() );
     
     return n;
 }
@@ -421,7 +406,7 @@ Real* Integer::subtract(const Real &rhs) const
 Integer* Integer::subtract(const Integer &rhs) const
 {
     
-    Integer *n = new Integer( dagNode->getValue() - rhs.getValue() );
+    Integer *n = new Integer( dag_node->getValue() - rhs.getValue() );
     
     return n;
 }

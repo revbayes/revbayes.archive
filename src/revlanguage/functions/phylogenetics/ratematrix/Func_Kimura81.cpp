@@ -35,7 +35,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_Kimura81::creat
     
     RevBayesCore::TypedDagNode< double >* k1 = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* k2 = static_cast<const RealPos &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* bf = static_cast<const Simplex &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::Simplex >* bf = static_cast<const Simplex &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::Kimura81RateMatrixFunction* f = new RevBayesCore::Kimura81RateMatrixFunction( k1, k2, bf );
     

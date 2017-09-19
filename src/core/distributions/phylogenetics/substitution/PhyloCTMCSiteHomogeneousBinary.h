@@ -25,12 +25,13 @@ namespace RevBayesCore {
             PhyloCTMCSiteHomogeneousBinary(const TypedDagNode< Tree > *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding cod = BinaryAscertainmentBias::ALL, bool internal = false);
 
             // public member functions
-            PhyloCTMCSiteHomogeneousBinary*                clone(void) const;
+            PhyloCTMCSiteHomogeneousBinary*                     clone(void) const;
 
         protected:
 
             double                                              sumRootLikelihood( void );
             bool                                                isSitePatternCompatible(std::map<size_t, size_t>);
+            bool                                                isSitePatternCompatible(std::map<RbBitSet, size_t>);
         };
 
 }

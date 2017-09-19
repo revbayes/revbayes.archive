@@ -31,6 +31,7 @@ namespace RevBayesCore {
         const std::vector<std::string>&             getAuthor(void) const;
         const std::vector<std::string>&             getDescription(void) const;
         const std::vector<std::string>&             getDetails(void) const;
+        const std::string&                          getExample(void) const;
         const std::string&                          getName(void) const;
         const std::vector<RbHelpReference>&         getReferences(void) const;
         const std::vector<std::string>&             getSeeAlso(void) const;
@@ -41,6 +42,7 @@ namespace RevBayesCore {
         void                                        setAuthor(const std::vector<std::string> &a);
         void                                        setDetails(const std::vector<std::string> &d);
         void                                        setDescription(const std::vector<std::string> &d);
+        void                                        setExample(const std::string &e);
         void                                        setName(const std::string &n);
         void                                        setReferences(const std::vector<RbHelpReference> &r);
         void                                        setSeeAlso(const std::vector<std::string> &s);
@@ -53,6 +55,7 @@ namespace RevBayesCore {
         std::vector<std::string>                    author;
         std::vector<std::string>                    description;
         std::vector<std::string>                    details;
+        std::string                                 example;
         std::string                                 name;
         std::vector<RbHelpReference>                references;
         std::vector<std::string>                    seeAlso;

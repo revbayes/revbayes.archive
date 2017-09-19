@@ -73,7 +73,7 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
     
     // the vector of matrices;
-    WorkspaceVector<AbstractCharacterData>* m = new WorkspaceVector<AbstractCharacterData>();
+    WorkspaceVector<RevObject>* m = new WorkspaceVector<RevObject>();
     
     // the return value
     RevObject* retVal = NULL;

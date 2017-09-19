@@ -17,10 +17,10 @@ using namespace RevBayesCore;
 CovarionRateMatrixFunction::CovarionRateMatrixFunction(const TypedDagNode< RbVector<RateGenerator> > *rm,
                                                        const TypedDagNode< RateGenerator > *sr,
                                                        const TypedDagNode< RbVector<double> > *cr) :
-    TypedFunction<RateGenerator>( new RateMatrix_Covarion( rm->getValue()[0].size(), cr->getValue().size() ) ),
-    rate_matrices( rm ),
-    clock_rates( cr ),
-    switch_rates( sr )
+TypedFunction<RateGenerator>( new RateMatrix_Covarion( rm->getValue()[0].size(), cr->getValue().size() ) ),
+rate_matrices( rm ),
+clock_rates( cr ),
+switch_rates( sr )
 
 {
     // add the lambda parameter as a parent
@@ -48,7 +48,7 @@ void CovarionRateMatrixFunction::update( void )
 {
     
     // get the information from the arguments for reading the file
-//    const RbVector<RateMatrix>& rm = rate_matrices->getValue();
+    //    const RbVector<RateMatrix>& rm = rate_matrices->getValue();
     RbVector<MatrixReal> rm;
     for (size_t i = 0; i < rate_matrices->getValue().size(); i++)
     {
@@ -78,15 +78,16 @@ void CovarionRateMatrixFunction::swapParameterInternal(const DagNode *oldP, cons
     {
         rate_matrices = static_cast<const TypedDagNode< RbVector<RateGenerator> >* >( newP );
     }
-    else if (oldP == switch_rates)
+    
+    if (oldP == switch_rates)
     {
         switch_rates = static_cast<const TypedDagNode<RateGenerator>* >( newP );
     }
-    else if (oldP == clock_rates)
+    
+    if (oldP == clock_rates)
     {
         clock_rates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     
 }
-
 

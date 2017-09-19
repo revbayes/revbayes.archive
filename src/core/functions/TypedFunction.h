@@ -66,7 +66,7 @@ namespace RevBayesCore {
         virtual void                        swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;        //!< Exchange the parameter
 
         // members 
-        DeterministicNode<valueType>*       dagNode;                                                                    //!< The deterministic node holding this function. This is needed for delegated calls to the DAG, such as getAffected(), addTouchedElementIndex()...
+        DeterministicNode<valueType>*       dag_node;                                                                    //!< The deterministic node holding this function. This is needed for delegated calls to the DAG, such as getAffected(), addTouchedElementIndex()...
         valueType*                          value;
     
     };
@@ -83,7 +83,7 @@ namespace RevBayesCore {
 
 template <class valueType>
 RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function(),
-    dagNode( NULL ), 
+    dag_node( NULL ),
     value( v )
 {
     
@@ -91,7 +91,7 @@ RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function()
 
 template <class valueType>
 RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), 
-    dagNode( NULL ), 
+    dag_node( NULL ),
     value( NULL )
 {
     
@@ -148,7 +148,7 @@ template <class valueType>
 void RevBayesCore::TypedFunction<valueType>::setDeterministicNode(DeterministicNode<valueType> *n) 
 {
     
-    dagNode = n;
+    dag_node = n;
     
 }
 

@@ -17,7 +17,7 @@ using namespace RevBayesCore;
 
 DECRateMatrixFunction::DECRateMatrixFunction(   const TypedDagNode< RbVector<RbVector<double> > > *dr,
                                                 const TypedDagNode< RbVector<RbVector<double> > > *er,
-                                                const TypedDagNode< RbVector<double> > *rs,
+                                                const TypedDagNode< Simplex > *rs,
                                                 bool cs,
                                                 bool ex,
 //                                                bool os,
@@ -86,6 +86,6 @@ void DECRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const Dag
         extirpationRates = static_cast<const TypedDagNode< RbVector<RbVector<double> > >* >( newP );
     }
     else if (oldP == rangeSize) {
-        rangeSize = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        rangeSize = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
 }

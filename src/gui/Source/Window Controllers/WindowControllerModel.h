@@ -22,7 +22,7 @@
     IBOutlet NSButton*                 toggleParameterPaletteButton;
 	BOOL                               showParmNames;
 	IBOutlet NSPopUpButton*            connectedSourcesSelector;
-    IBOutlet NSPanel*                  parameterPalette;
+    IBOutlet NSView*                   palleteView;
 }
 
 @property (nonatomic) BOOL             showParmNames;
@@ -39,5 +39,6 @@
 - (void)setSourceInformation;
 - (IBAction)toggleShowParmNames:(id)sender;
 - (void)updateInletSelector;
+- (NSMutableArray*)variables;
 
 @end

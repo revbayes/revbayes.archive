@@ -108,9 +108,9 @@
                 }
             }
         }
-    
-    [carousel reloadData];
+
     [treePeeker updateTreePeekView];
+    [carousel reloadData];
 }
 
 - (IBAction)closeButtonAction:(id)sender {
@@ -174,6 +174,12 @@
             }
         [outgroupMenu setSubmenu:outgroupMenuMenu];
         }
+    [treeMenuMenu setDelegate:self];
+}
+
+- (void)menuDidClose:(NSMenu*)menu {
+
+    [carousel reloadData];
 }
 
 - (id)initWithTool:(ToolTreeSet*)t {

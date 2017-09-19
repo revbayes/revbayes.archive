@@ -119,7 +119,7 @@ void MultivariateNormalDistribution::executeProcedure(const std::string &name, c
     {
         found = true;
         
-        int    index = static_cast<const TypedDagNode<int>   *>( args[0] )->getValue() - 1;
+        int    index = static_cast<const TypedDagNode<long>   *>( args[0] )->getValue() - 1;
         double v     = static_cast<const TypedDagNode<double>*>( args[1] )->getValue();
         
         clampAt(index, v);

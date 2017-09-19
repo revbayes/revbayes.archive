@@ -99,17 +99,24 @@ RevPtr<RevVariable> UserFunction::executeCode( void )
         }
         else if ( retVar->getRevObject().isType( getReturnType() ) == true )
         {
-            // compatible but differing return value
-            if ( retVar->getRevObject().isConvertibleTo(getReturnType(),true) >= 0 )
+            if ( retVar->getRevObject().getTypeSpec() != getReturnType() )
             {
-                //convert the return value
-                retVar = new RevVariable( retVar->getRevObject().convertTo(getReturnType()) );
+                // compatible but differing return value
+                if ( retVar->getRevObject().isConvertibleTo(getReturnType(),true) >= 0 )
+                {
+                    //convert the return value
+                    retVar = new RevVariable( retVar->getRevObject().convertTo(getReturnType()) );
+                }
+                // incompatible return value?
+                else
+                {
+                    throw(RbException("Returning "+retVar->getRevObject().getTypeSpec().getType()+" in function '"+this->getFunctionName()+"' with incompatible return type "+getReturnType().getType()));
+                }
             }
-            // incompatible return value?
-            else
-            {
-                throw(RbException("Returning "+retVar->getRevObject().getTypeSpec().getType()+" in function '"+this->getFunctionName()+"' with incompatible return type "+getReturnType().getType()));
-            }
+        }
+        else
+        {
+            throw(RbException("Returning "+retVar->getRevObject().getTypeSpec().getType()+" in function '"+this->getFunctionName()+"' with incompatible return type "+getReturnType().getType()));
         }
     }
 

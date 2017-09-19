@@ -1,22 +1,15 @@
-//
-//  SimplexFunction.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 11/15/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "SimplexFunction.h"
 #include "TypedDagNode.h"
 
 using namespace RevBayesCore;
 
-SimplexFunction::SimplexFunction(const std::vector<const TypedDagNode<double> *> &args) : TypedFunction< RbVector<double> >( new RbVector<double>() ),
+SimplexFunction::SimplexFunction(const std::vector<const TypedDagNode<double> *> &args) : TypedFunction< Simplex >( new Simplex() ),
     simplexParams( args )
 {
     // add the lambda parameter as a parent
     std::vector<const TypedDagNode<double>* >::iterator it;
-    for (it = simplexParams.begin(); it != simplexParams.end(); ++it) {
+    for (it = simplexParams.begin(); it != simplexParams.end(); ++it)
+    {
         this->addParameter( *it );
     }
     
@@ -24,30 +17,36 @@ SimplexFunction::SimplexFunction(const std::vector<const TypedDagNode<double> *>
 }
 
 
-SimplexFunction::~SimplexFunction( void ) {
+SimplexFunction::~SimplexFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-SimplexFunction* SimplexFunction::clone( void ) const {
+SimplexFunction* SimplexFunction::clone( void ) const
+{
     return new SimplexFunction( *this );
 }
 
 
-void SimplexFunction::update( void ) {
+void SimplexFunction::update( void )
+{
     
     // empty current simplex
     value->clear();
     
     double sum = 0.0;
     std::vector<const TypedDagNode<double>* >::iterator it;
-    for (it = simplexParams.begin(); it != simplexParams.end(); ++it) {
+    for (it = simplexParams.begin(); it != simplexParams.end(); ++it)
+    {
         sum += (*it)->getValue();
     }
-    for (it = simplexParams.begin(); it != simplexParams.end(); ++it) {
+    for (it = simplexParams.begin(); it != simplexParams.end(); ++it)
+    {
         value->push_back( (*it)->getValue() / sum );
     }
+    
 }
 
 

@@ -1,14 +1,8 @@
-//
-//  Func_chromosomesCladoProbs.cpp
-//
-//  Created by will freyman on 12/14/15.
-//  Copyright (c) 2015 will freyman. All rights reserved.
-//
-
 #include "Func_chromosomesCladoProbs.h"
 #include "CladogeneticProbabilityMatrix.h"
 #include "ConstantNode.h"
 #include "ChromosomesCladogenicStateFunction.h"
+#include "Natural.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlCladogeneticProbabilityMatrix.h"
@@ -40,7 +34,7 @@ Func_chromosomesCladoProbs* Func_chromosomesCladoProbs::clone( void ) const {
 RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func_chromosomesCladoProbs::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ep = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* ep = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
 
     int ns = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
     

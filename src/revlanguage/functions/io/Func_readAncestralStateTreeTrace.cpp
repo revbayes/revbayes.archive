@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the impementation of Func_readAncestralStateTreeTrace.
- * This class is differentiated from Func_readTreeTrace only in the sense that
- * the trees put into the TraceTree have not been rerooted; the nodes keep the
- * indexes already assigned to them, which is necessary for ancestral state
- * reconstruction.
- *
- * @brief Impementation of Func_readAncestralStateTreeTrace
- *
- * (c) Copyright 2014- under GPL version 3
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- */
-
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "Ellipsis.h"

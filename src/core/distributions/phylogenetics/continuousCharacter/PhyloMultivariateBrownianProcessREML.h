@@ -29,14 +29,15 @@ namespace RevBayesCore {
         // non-virtual
         void                                                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                             //!< The tree has changed and we want to know which part.
         double                                                              computeLnProbability(void);
-        virtual void                                                        drawJointConditionalAncestralStates(std::vector< ContinuousTaxonData >& startStates, std::vector< ContinuousTaxonData >& endStates);
-        virtual void                                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode& node, std::vector< ContinuousTaxonData >& startStates, std::vector< ContinuousTaxonData >& endStates);
-
+        std::vector<std::vector<double> >                                   getContrasts(void);
+        std::vector<double>                                                 getContrastStDevs(void){ return independent_contrasts_sds;}
+        
     protected:
         
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
         void                                                                recursiveComputeLnProbability( const TopologyNode &node, size_t node_index );
+        void                                                                recursiveComputeContrasts( const TopologyNode &node, size_t node_index );
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         void                                                                resetValue( void );
         virtual void                                                        restoreSpecialization(DagNode *restorer);
@@ -53,6 +54,9 @@ namespace RevBayesCore {
         std::vector<std::vector<double> >                                   contrast_uncertainty;
         std::vector<size_t>                                                 active_likelihood;
         
+        std::vector<std::vector<double> >                                   independent_contrasts;
+        std::vector<double>                                                 independent_contrasts_sds;
+        
         // convenience variables available for derived classes too
         std::vector<bool>                                                   changed_nodes;
         std::vector<bool>                                                   dirty_nodes;
@@ -60,8 +64,9 @@ namespace RevBayesCore {
     private:
         
         const TypedDagNode< MatrixReal >*                                   rate_matrix;
-        MatrixReal                                                          precision_matrix;
-                
+        size_t                                                              active_matrix;
+        std::vector<MatrixReal>                                             precision_matrices;
+        
     };
     
 }

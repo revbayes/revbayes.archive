@@ -40,6 +40,7 @@ namespace RevLanguage {
         
     private:
         
+        RevPtr<const RevVariable>                       allow_same_category;
         RevPtr<const RevVariable>                       root_age;
         RevPtr<const RevVariable>                       root_state;
         RevPtr<const RevVariable>                       speciation;

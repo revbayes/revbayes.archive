@@ -31,7 +31,7 @@ namespace RevLanguage {
      * @since 2015-01-31, version 1.0
      *
      */
-    class Func_lnProbability :  public TypedFunction<Real> {
+    class Func_lnProbability : public TypedFunction<Real> {
         
     public:
         Func_lnProbability( void );

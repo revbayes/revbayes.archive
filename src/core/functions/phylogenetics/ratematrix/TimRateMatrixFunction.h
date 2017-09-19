@@ -2,7 +2,7 @@
 #define TimRateMatrixFunction_H
 
 #include "RateMatrix_TIM.h"
-#include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class TimRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        TimRateMatrixFunction(const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *bf);
+        TimRateMatrixFunction(const TypedDagNode< Simplex > *er, const TypedDagNode< Simplex > *bf);
         virtual                                            ~TimRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -39,8 +39,8 @@ namespace RevBayesCore {
         
         // members
         
-        const TypedDagNode< RbVector<double> >*             exchangeability_rates;
-        const TypedDagNode< RbVector<double> >*             base_frequencies;
+        const TypedDagNode< Simplex >*                      exchangeability_rates;
+        const TypedDagNode< Simplex >*                      base_frequencies;
         
     };
     

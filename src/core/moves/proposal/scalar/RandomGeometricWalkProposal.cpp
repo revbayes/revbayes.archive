@@ -15,9 +15,9 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-RandomGeometricWalkProposal::RandomGeometricWalkProposal( StochasticNode<int> *n, double a ) : Proposal(),
+RandomGeometricWalkProposal::RandomGeometricWalkProposal( StochasticNode<long> *n, double a ) : Proposal(),
     variable( n ),
-    storedValue( 0 ),
+    stored_value( 0 ),
     alpha( a )
 {
     // tell the base class to add the node
@@ -76,10 +76,10 @@ double RandomGeometricWalkProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    int &val = variable->getValue();
+    long &val = variable->getValue();
     
     // copy value
-    storedValue = val;
+    stored_value = val;
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
@@ -131,7 +131,7 @@ void RandomGeometricWalkProposal::printParameterSummary(std::ostream &o) const
 void RandomGeometricWalkProposal::undoProposal( void )
 {
     // swap current value and stored value
-    variable->setValue( new int(storedValue) );
+    variable->setValue( new long(stored_value) );
     
 }
 
@@ -145,7 +145,7 @@ void RandomGeometricWalkProposal::undoProposal( void )
 void RandomGeometricWalkProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<int>* >(newN) ;
+    variable = static_cast<StochasticNode<long>* >(newN) ;
     
 }
 

@@ -118,8 +118,7 @@ RevPtr<RevVariable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dy
     // Get function and create deterministic DAG node
     std::string funcName = "";
     
-    if ( operation != Range &&
-        operation != Exp)
+    if ( operation != Range && operation != Exp)
     {
         funcName += "_";
     }

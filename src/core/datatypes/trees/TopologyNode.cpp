@@ -27,9 +27,7 @@ TopologyNode::TopologyNode(size_t indx) :
     interior_node( false ),
     root_node( true ),
     tip_node( true ),
-    fossil( false ),
-    sampled_ancestor( false ),
-    constrained( false )
+    sampled_ancestor( false )
 {
     
 }
@@ -47,9 +45,7 @@ TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
     interior_node( false ),
     root_node( true ),
     tip_node( true ),
-    fossil( false ),
-    sampled_ancestor( false ),
-    constrained( false )
+    sampled_ancestor( false )
 {
     
 }
@@ -67,9 +63,7 @@ TopologyNode::TopologyNode(const std::string& n, size_t indx) :
     interior_node( false ),
     root_node( true ),
     tip_node( true ),
-    fossil( false ),
-    sampled_ancestor( false ),
-    constrained( false )
+    sampled_ancestor( false )
 {
     
 }
@@ -85,9 +79,7 @@ TopologyNode::TopologyNode(const TopologyNode &n) :
     interior_node( n.interior_node ),
     root_node( n.root_node ),
     tip_node( n.tip_node ),
-    fossil( n.fossil ),
     sampled_ancestor( n.sampled_ancestor ),
-    constrained( n.constrained ),
     node_comments( n.node_comments ),
     branch_comments( n.branch_comments )
 {
@@ -137,9 +129,7 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n)
         index                   = n.index;
         interior_node           = n.interior_node;
         tip_node                = n.tip_node;
-        fossil                  = n.fossil;
         sampled_ancestor        = n.sampled_ancestor;
-        constrained             = n.constrained;
         root_node               = n.root_node;
         node_comments           = n.node_comments;
         branch_comments         = n.branch_comments;
@@ -408,7 +398,7 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
             o << node_comments[i];
             needsComma = true;
         }
-
+        
         for (size_t i = 0; i < fossil_comments.size(); ++i)
         {
             if ( needsComma == true )
@@ -718,6 +708,16 @@ bool TopologyNode::equals(const TopologyNode& node) const
 }
 
 
+void TopologyNode::fireTreeChangeEvent( const unsigned& m ) {
+    
+    // fire tree change event
+    if ( tree != NULL )
+    {
+        tree->getTreeChangeEventHandler().fire( *this, m );
+    }
+
+}
+
 /*
  * Get the Age.
  * We internally store the age so can return it. However, if we invalidated the age ( age = Inf ),
@@ -807,11 +807,13 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
             }
             
         }
+    
+        // the clade is not one of my children, and we require strict identity
+        return RbConstants::Size_t::inf;
         
     }
     
-    // so the clade must be contained in my clade
-    // just return my index
+    // finally return my index
     return index;
 }
 
@@ -1296,17 +1298,11 @@ double TopologyNode::getTmrca(const std::vector<Taxon> &yourTaxa) const
     }
 }
 
-bool TopologyNode::isConstrained( void ) const
-{
-    
-    return constrained;
-}
-
 
 bool TopologyNode::isFossil( void ) const
 {
     
-    return fossil;
+    return age > 0.0 && tip_node;
 }
 
 
@@ -1366,9 +1362,7 @@ void TopologyNode::makeBifurcating( void )
                 new_fossil->setParent( this );
 
                 // set the fossil flags
-                setFossil( false );
                 setSampledAncestor( false );
-                new_fossil->setFossil( true );
                 new_fossil->setSampledAncestor( true );
 
                 // set the age and branch-length of the fossil
@@ -1551,19 +1545,6 @@ void TopologyNode::setBranchLength(double b)
     {
         tree->getTreeChangeEventHandler().fire( *this, RevBayesCore::TreeChangeEventMessage::BRANCH_LENGTH );
     }
-    
-}
-
-void TopologyNode::setConstrained(bool tf)
-{
-    constrained = tf;
-}
-
-
-void TopologyNode::setFossil(bool tf)
-{
-    
-    fossil = tf;
     
 }
 

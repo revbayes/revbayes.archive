@@ -1,7 +1,7 @@
 //
 //  iCarousel.h
 //
-//  Version 1.8.2
+//  Version 1.8.3
 //
 //  Created by Nick Lockwood on 01/04/2011.
 //  Copyright 2011 Charcoal Design
@@ -50,12 +50,42 @@ __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_8)
 
 
 #import <QuartzCore/QuartzCore.h>
+#if defined USING_CHAMELEON || defined __IPHONE_OS_VERSION_MAX_ALLOWED
+#define ICAROUSEL_IOS
+#else
+#define ICAROUSEL_MACOS
+#endif
+
+
+#ifdef ICAROUSEL_IOS
+#import <UIKit/UIKit.h>
+#else
 #import <Cocoa/Cocoa.h>
+typedef NSView UIView;
+#endif
+
 @class WindowControllerTreeViewer;
 
 
-typedef NS_ENUM(NSInteger, iCarouselOption) {
+typedef NS_ENUM(NSInteger, iCarouselType)
+{
+    iCarouselTypeLinear = 0,
+    iCarouselTypeRotary,
+    iCarouselTypeInvertedRotary,
+    iCarouselTypeCylinder,
+    iCarouselTypeInvertedCylinder,
+    iCarouselTypeWheel,
+    iCarouselTypeInvertedWheel,
+    iCarouselTypeCoverFlow,
+    iCarouselTypeCoverFlow2,
+    iCarouselTypeTimeMachine,
+    iCarouselTypeInvertedTimeMachine,
+    iCarouselTypeCustom
+};
 
+
+typedef NS_ENUM(NSInteger, iCarouselOption)
+{
     iCarouselOptionWrap = 0,
     iCarouselOptionShowBackfaces,
     iCarouselOptionOffsetMultiplier,
@@ -77,94 +107,103 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol iCarouselDataSource, iCarouselDelegate;
 
-@interface iCarousel : NSView {
+@interface iCarousel : UIView {
 
     IBOutlet WindowControllerTreeViewer*    windowControllerTreeViewPtr;
     NSTimer*                                mouseDownTimer;
 
 }
 
-@property (nonatomic,weak_delegate)                  IBOutlet __nullable id<iCarouselDataSource> dataSource;
-@property (nonatomic,weak_delegate)                  IBOutlet __nullable id<iCarouselDelegate>   delegate;
-@property (nonatomic,assign)                         CGFloat                                     perspective;
-@property (nonatomic,assign)                         CGFloat                                     decelerationRate;
-@property (nonatomic,assign)                         CGFloat                                     scrollSpeed;
-@property (nonatomic,assign)                         CGFloat                                     bounceDistance;
-@property (nonatomic,assign,getter=isScrollEnabled)  BOOL                                        scrollEnabled;
-@property (nonatomic,assign,getter=isPagingEnabled)  BOOL                                        pagingEnabled;
-@property (nonatomic,assign,getter=isVertical)       BOOL                                        vertical;
-@property (nonatomic,readonly,getter=isWrapEnabled)  BOOL                                        wrapEnabled;
-@property (nonatomic,assign)                         BOOL                                        bounces;
-@property (nonatomic,assign)                         CGFloat                                     scrollOffset;
-@property (nonatomic,readonly)                       CGFloat                                     offsetMultiplier;
-@property (nonatomic,assign)                         CGSize                                      contentOffset;
-@property (nonatomic,assign)                         CGSize                                      viewpointOffset;
-@property (nonatomic,readonly)                       NSInteger                                   numberOfItems;
-@property (nonatomic,readonly)                       NSInteger                                   numberOfPlaceholders;
-@property (nonatomic,assign)                         NSInteger                                   currentItemIndex;
-@property (nonatomic,strong,readonly)                NSView* __nullable                          currentItemView;
-@property (nonatomic,strong,readonly)                NSArray*                                    indexesForVisibleItems;
-@property (nonatomic,readonly)                       NSInteger                                   numberOfVisibleItems;
-@property (nonatomic,strong,readonly)                NSArray*                                    visibleItemViews;
-@property (nonatomic,readonly)                       CGFloat                                     itemWidth;
-@property (nonatomic,strong,readonly)                NSView*                                     contentView;
-@property (nonatomic,readonly)                       CGFloat                                     toggle;
-@property (nonatomic,assign)                         CGFloat                                     autoscroll;
-@property (nonatomic,assign)                         BOOL                                        stopAtItemBoundary;
-@property (nonatomic,assign)                         BOOL                                        scrollToItemBoundary;
-@property (nonatomic,assign)                         BOOL                                        ignorePerpendicularSwipes;
-@property (nonatomic,assign)                         BOOL                                        centerItemWhenSelected;
-@property (nonatomic,readonly,getter=isDragging)     BOOL                                        dragging;
-@property (nonatomic,readonly,getter=isDecelerating) BOOL                                        decelerating;
-@property (nonatomic,readonly,getter=isScrolling)    BOOL                                        scrolling;
+@property (nonatomic, weak_delegate) IBOutlet __nullable id<iCarouselDataSource> dataSource;
+@property (nonatomic, weak_delegate) IBOutlet __nullable id<iCarouselDelegate> delegate;
+@property (nonatomic, assign) iCarouselType type;
+@property (nonatomic, assign) CGFloat perspective;
+@property (nonatomic, assign) CGFloat decelerationRate;
+@property (nonatomic, assign) CGFloat scrollSpeed;
+@property (nonatomic, assign) CGFloat bounceDistance;
+@property (nonatomic, assign, getter = isScrollEnabled) BOOL scrollEnabled;
+@property (nonatomic, assign, getter = isPagingEnabled) BOOL pagingEnabled;
+@property (nonatomic, assign, getter = isVertical) BOOL vertical;
+@property (nonatomic, readonly, getter = isWrapEnabled) BOOL wrapEnabled;
+@property (nonatomic, assign) BOOL bounces;
+@property (nonatomic, assign) CGFloat scrollOffset;
+@property (nonatomic, readonly) CGFloat offsetMultiplier;
+@property (nonatomic, assign) CGSize contentOffset;
+@property (nonatomic, assign) CGSize viewpointOffset;
+@property (nonatomic, readonly) NSInteger numberOfItems;
+@property (nonatomic, readonly) NSInteger numberOfPlaceholders;
+@property (nonatomic, assign) NSInteger currentItemIndex;
+@property (nonatomic, strong, readonly) UIView * __nullable currentItemView;
+@property (nonatomic, strong, readonly) NSArray *indexesForVisibleItems;
+@property (nonatomic, readonly) NSInteger numberOfVisibleItems;
+@property (nonatomic, strong, readonly) NSArray *visibleItemViews;
+@property (nonatomic, readonly) CGFloat itemWidth;
+@property (nonatomic, strong, readonly) UIView *contentView;
+@property (nonatomic, readonly) CGFloat toggle;
+@property (nonatomic, assign) CGFloat autoscroll;
+@property (nonatomic, assign) BOOL stopAtItemBoundary;
+@property (nonatomic, assign) BOOL scrollToItemBoundary;
+@property (nonatomic, assign) BOOL ignorePerpendicularSwipes;
+@property (nonatomic, assign) BOOL centerItemWhenSelected;
+@property (nonatomic, readonly, getter = isDragging) BOOL dragging;
+@property (nonatomic, readonly, getter = isDecelerating) BOOL decelerating;
+@property (nonatomic, readonly, getter = isScrolling) BOOL scrolling;
 
 - (void)scrollByOffset:(CGFloat)offset duration:(NSTimeInterval)duration;
 - (void)scrollToOffset:(CGFloat)offset duration:(NSTimeInterval)duration;
 - (void)scrollByNumberOfItems:(NSInteger)itemCount duration:(NSTimeInterval)duration;
 - (void)scrollToItemAtIndex:(NSInteger)index duration:(NSTimeInterval)duration;
 - (void)scrollToItemAtIndex:(NSInteger)index animated:(BOOL)animated;
-- (nullable NSView*)itemViewAtIndex:(NSInteger)index;
-- (NSInteger)indexOfItemView:(NSView*)view;
-- (NSInteger)indexOfItemViewOrSubview:(NSView *)view;
+
+- (nullable UIView *)itemViewAtIndex:(NSInteger)index;
+- (NSInteger)indexOfItemView:(UIView *)view;
+- (NSInteger)indexOfItemViewOrSubview:(UIView *)view;
 - (CGFloat)offsetForItemAtIndex:(NSInteger)index;
-- (nullable NSView*)itemViewAtPoint:(CGPoint)point;
+- (nullable UIView *)itemViewAtPoint:(CGPoint)point;
+
 - (void)removeItemAtIndex:(NSInteger)index animated:(BOOL)animated;
 - (void)insertItemAtIndex:(NSInteger)index animated:(BOOL)animated;
 - (void)reloadItemAtIndex:(NSInteger)index animated:(BOOL)animated;
+
 - (void)reloadData;
+
 - (void)startMouseDownTimer;
 - (void)stopMouseDownTimer;
 
 @end
 
+
 @protocol iCarouselDataSource <NSObject>
 
-- (NSInteger)numberOfItemsInCarousel:(iCarousel*)carousel;
-- (NSView *)carousel:(iCarousel*)carousel viewForItemAtIndex:(NSInteger)index reusingView:(nullable NSView*)view;
+- (NSInteger)numberOfItemsInCarousel:(iCarousel *)carousel;
+- (UIView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSInteger)index reusingView:(nullable UIView *)view;
 
 @optional
 
-- (NSInteger)numberOfPlaceholdersInCarousel:(iCarousel*)carousel;
-- (NSView*)carousel:(iCarousel*)carousel placeholderViewAtIndex:(NSInteger)index reusingView:(nullable NSView*)view;
+- (NSInteger)numberOfPlaceholdersInCarousel:(iCarousel *)carousel;
+- (UIView *)carousel:(iCarousel *)carousel placeholderViewAtIndex:(NSInteger)index reusingView:(nullable UIView *)view;
 
 @end
+
 
 @protocol iCarouselDelegate <NSObject>
 @optional
 
-- (void)carouselWillBeginScrollingAnimation:(iCarousel*)carousel;
-- (void)carouselDidEndScrollingAnimation:(iCarousel*)carousel;
-- (void)carouselDidScroll:(iCarousel*)carousel;
-- (void)carouselCurrentItemIndexDidChange:(iCarousel*)carousel;
-- (void)carouselWillBeginDragging:(iCarousel*)carousel;
-- (void)carouselDidEndDragging:(iCarousel*)carousel willDecelerate:(BOOL)decelerate;
-- (void)carouselWillBeginDecelerating:(iCarousel*)carousel;
-- (void)carouselDidEndDecelerating:(iCarousel*)carousel;
-- (BOOL)carousel:(iCarousel*)carousel shouldSelectItemAtIndex:(NSInteger)index;
-- (void)carousel:(iCarousel*)carousel didSelectItemAtIndex:(NSInteger)index;
-- (CGFloat)carouselItemWidth:(iCarousel*)carousel;
-- (CATransform3D)carousel:(iCarousel*)carousel itemTransformForOffset:(CGFloat)offset baseTransform:(CATransform3D)transform;
-- (CGFloat)carousel:(iCarousel*)carousel valueForOption:(iCarouselOption)option withDefault:(CGFloat)value;
+- (void)carouselWillBeginScrollingAnimation:(iCarousel *)carousel;
+- (void)carouselDidEndScrollingAnimation:(iCarousel *)carousel;
+- (void)carouselDidScroll:(iCarousel *)carousel;
+- (void)carouselCurrentItemIndexDidChange:(iCarousel *)carousel;
+- (void)carouselWillBeginDragging:(iCarousel *)carousel;
+- (void)carouselDidEndDragging:(iCarousel *)carousel willDecelerate:(BOOL)decelerate;
+- (void)carouselWillBeginDecelerating:(iCarousel *)carousel;
+- (void)carouselDidEndDecelerating:(iCarousel *)carousel;
+
+- (BOOL)carousel:(iCarousel *)carousel shouldSelectItemAtIndex:(NSInteger)index;
+- (void)carousel:(iCarousel *)carousel didSelectItemAtIndex:(NSInteger)index;
+
+- (CGFloat)carouselItemWidth:(iCarousel *)carousel;
+- (CATransform3D)carousel:(iCarousel *)carousel itemTransformForOffset:(CGFloat)offset baseTransform:(CATransform3D)transform;
+- (CGFloat)carousel:(iCarousel *)carousel valueForOption:(iCarouselOption)option withDefault:(CGFloat)value;
 
 @end
 

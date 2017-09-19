@@ -1,4 +1,5 @@
 #include "ArgumentRule.h"
+#include "ArgumentRules.h"
 #include "Ellipsis.h"
 #include "MemberProcedure.h"
 #include "RbException.h"
@@ -11,12 +12,52 @@ using namespace RevLanguage;
 
 /** Constructor */
 MemberProcedure::MemberProcedure(const std::string &n, const TypeSpec retType, ArgumentRules* argRules) : Procedure(),
-    argumentRules( argRules ),
+    argument_rules( argRules ),
     proc_name( n ),
     object( NULL ),
     returnType( retType )
 {
     
+}
+
+
+
+MemberProcedure::MemberProcedure(const MemberProcedure &mp) : Procedure(mp),
+    argument_rules( new ArgumentRules(*mp.argument_rules) ),
+    proc_name( mp.proc_name ),
+    object( mp.object ),
+    returnType( mp.returnType )
+{
+    
+}
+
+
+MemberProcedure::~MemberProcedure( void )
+{
+    
+    delete argument_rules;
+}
+
+
+MemberProcedure& MemberProcedure::operator=(const MemberProcedure &mp)
+{
+    
+    // check for self-assignment
+    if ( this != &mp )
+    {
+        Procedure::operator=( mp );
+        
+        delete argument_rules;
+        
+        argument_rules  = new ArgumentRules(*mp.argument_rules);
+        proc_name       = mp.proc_name;
+        object          = mp.object;
+        returnType      = mp.returnType;
+
+    }
+    
+    
+    return *this;
 }
 
 
@@ -92,7 +133,7 @@ const TypeSpec& MemberProcedure::getTypeSpec( void ) const
 const ArgumentRules& MemberProcedure::getArgumentRules(void) const
 {
     
-    return *argumentRules;
+    return *argument_rules;
 }
 
 

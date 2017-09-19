@@ -24,6 +24,7 @@
 
 #include "RateMatrix.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -31,12 +32,12 @@
 
 namespace RevBayesCore {
     
-    class PomoRootFrequenciesFunction : public TypedFunction< RbVector<double> > {
+    class PomoRootFrequenciesFunction : public TypedFunction< Simplex > {
         
     public:
-        PomoRootFrequenciesFunction(const TypedDagNode< RbVector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< int > *ps);
+        PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< long > *ps);
         
-        PomoRootFrequenciesFunction(const TypedDagNode< RbVector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< int > *ps);
+        PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< long > *ps);
 
         virtual                                            ~PomoRootFrequenciesFunction(void);                                                    //!< Virtual destructor
         
@@ -50,11 +51,11 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< RbVector<double> >*             fixedNucleotideRootFrequencies;
+        const TypedDagNode< Simplex >*                      fixedNucleotideRootFrequencies;
         const TypedDagNode< double >*                       frequencyOfPolymorphismsAtTheRoot;
         const TypedDagNode< RbVector<double> >*             mutationRates;
-        const TypedDagNode< RateGenerator >*                   mutationMatrix;
-        const TypedDagNode< int >*                          populationSize;
+        const TypedDagNode< RateGenerator >*                mutationMatrix;
+        const TypedDagNode< long >*                          populationSize;
         bool                                                useMutationMatrix;
 
         // Private member functions

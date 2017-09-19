@@ -47,12 +47,12 @@ RevPtr<RevVariable> AbstractDiscreteTaxonData::executeMethod(std::string const &
         // get the member with give index
         const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
         
-        if (this->dagNode->getValue().getNumberOfCharacters() < (size_t)(index.getValue()) )
+        if (this->dag_node->getValue().getNumberOfCharacters() < (size_t)(index.getValue()) )
         {
             throw RbException("Index out of bounds in []");
         }
         
-        RevObject* element = new DiscreteCharacterState( this->dagNode->getValue().getCharacter( size_t(index.getValue()) - 1) );
+        RevObject* element = new DiscreteCharacterState( this->dag_node->getValue().getCharacter( size_t(index.getValue()) - 1) );
         return new RevVariable( element );
     }
     

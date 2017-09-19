@@ -32,9 +32,10 @@ void RevBayesCore::MpiUtilities::DebugWait(int rank) {
 void RevBayesCore::MpiUtilities::DebugMsg(const std::stringstream& s) {
 #ifdef RB_MPI
 #ifdef DEBUG_MPI_MCA
-    int pid = MPI::COMM_WORLD.Get_rank();
+    int pid = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &pid);
     std::cout << pid << "   before: " << s.str() << "\n";
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier();
     std::cout << pid << "   after:  " << s.str() << "\n";
 #endif
 #endif
@@ -43,9 +44,10 @@ void RevBayesCore::MpiUtilities::DebugMsg(const std::stringstream& s) {
 void RevBayesCore::MpiUtilities::DebugMsg(const std::string& s) {
 #ifdef RB_MPI
 #ifdef DEBUG_MPI_MCA
-    int pid = MPI::COMM_WORLD.Get_rank();
+    int pid = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &pid);
     std::cout << pid << "   before: " << s << "\n";
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier();
     std::cout << pid << "   after:  " << s << "\n";
 #endif
 #endif
@@ -56,9 +58,10 @@ void RevBayesCore::MpiUtilities::DebugMsg(const std::string& s, int x) {
 #ifdef DEBUG_MPI_MCA
     std::stringstream ss;
     ss << s << " " << x;
-    int pid = MPI::COMM_WORLD.Get_rank();
+    int pid = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &pid);
     std::cout << pid << "   before: " << ss.str() << "\n";
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier();
     std::cout << pid << "   after:  " << ss.str() << "\n";
 #endif
 #endif
@@ -69,11 +72,12 @@ void RevBayesCore::MpiUtilities::DebugMsg(const std::string& s, double x) {
 #ifdef DEBUG_MPI_MCA
     std::stringstream ss;
     ss << s << " " << x;
-    int pid = MPI::COMM_WORLD.Get_rank();
+    int pid = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &pid);
     std::cout << pid << "   before: " << ss.str() << "\n";
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier();
     if (pid == 0) std::cout << "\n";
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier();
     std::cout << pid << "   after:  " << ss.str() << "\n";
 #endif
 #endif
@@ -82,12 +86,13 @@ void RevBayesCore::MpiUtilities::DebugMsg(const std::string& s, double x) {
 void RevBayesCore::MpiUtilities::DebugMsgPid(const std::string& s, int p) {
 #ifdef RB_MPI
 #ifdef DEBUG_MPI_MCA
-    int pid = MPI::COMM_WORLD.Get_rank();
-    MPI::COMM_WORLD.Barrier();
+    int pid = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &pid);
+    MPI_Barrier();
     if (pid == p) {
         std::cout << s;
     }
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier();
 #endif
 #endif
 }

@@ -78,7 +78,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         
         // get data from file
         RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0], lines_to_skip);
-       
+
         int max = StringUtilities::asIntegerNumber( lab );
         
         // loop through data and get each NaturalNumbers value

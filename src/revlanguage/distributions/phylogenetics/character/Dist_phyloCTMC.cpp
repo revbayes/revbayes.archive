@@ -58,6 +58,24 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     {
         site_ratesNode = static_cast<const ModelVector<RealPos> &>( site_rates->getRevObject() ).getDagNode();
     }
+    
+    const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *site_rates_probsNode = NULL;
+    if ( site_rates_probs->getRevObject() != RevNullObject::getInstance() )
+    {
+        site_rates_probsNode = static_cast<const Simplex &>( site_rates_probs->getRevObject() ).getDagNode();
+    }
+    if (site_rates_probsNode != NULL)
+    {
+        if (site_ratesNode == NULL)
+        {
+            throw RbException( "Provided site rates probs but not using site rates." );
+        }
+        else if (site_rates_probsNode->getValue().size() != site_ratesNode->getValue().size())
+        {
+            throw RbException( "The number of site rates probs does not match the number of site rates." );
+        }
+    }
+    
     RevBayesCore::TypedDagNode< double >* p_invNode = NULL;
     if ( p_inv != NULL && p_inv->getRevObject() != RevNullObject::getInstance() )
     {
@@ -65,13 +83,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
 
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
-    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
+    const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *rf = NULL;
     if ( root_frequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     }
 
-    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *sp = NULL;
+    const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *sp = NULL;
 
     bool siteMatrices = false;
 
@@ -168,6 +186,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
+        if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
+        {
+            dist->setSiteRatesProbs( site_rates_probsNode );
+        }
+        
 
         d = dist;
     }
@@ -234,6 +257,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
+        if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
+        {
+            dist->setSiteRatesProbs( site_rates_probsNode );
+        }
+        
 
         d = dist;
     }
@@ -286,7 +314,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                 }
             }
 
-
             dist->setRateMatrix( rm );
         }
         else
@@ -298,6 +325,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         if ( site_ratesNode != NULL && site_ratesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( site_ratesNode );
+        }
+        
+        if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
+        {
+            dist->setSiteRatesProbs( site_rates_probsNode );
         }
         
 
@@ -379,6 +411,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         if ( site_ratesNode != NULL && site_ratesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( site_ratesNode );
+        }
+        
+        if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
+        {
+            dist->setSiteRatesProbs( site_rates_probsNode );
         }
         
 
@@ -488,6 +525,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
+        if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
+        {
+            dist->setSiteRatesProbs( site_rates_probsNode );
+        }
+        
 
         d = dist;
     }
@@ -567,6 +609,10 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
+        if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
+        {
+            dist->setSiteRatesProbs( site_rates_probsNode );
+        }
 
         d = dist;
     }
@@ -647,7 +693,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneousBinary *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousBinary(tau, true, n, ambig, RevBayesCore::BinaryAscertainmentBias::Coding(cd), internal);
+        RevBayesCore::PhyloCTMCSiteHomogeneousBinary *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousBinary(tau, true, (size_t)n, ambig, RevBayesCore::BinaryAscertainmentBias::Coding(cd), internal);
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -708,6 +754,10 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
+        if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
+        {
+            dist->setSiteRatesProbs( site_rates_probsNode );
+        }
 
         d = dist;
     }
@@ -798,6 +848,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
 
         dist_member_rules.push_back( new ArgumentRule( "siteMatrices", matrix_probs_types, "Simplex of site matrix mixture probabilities. Treats Q as vector of site mixture categories instead of branch-specific matrices.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "siteRates", ModelVector<RealPos>::getClassTypeSpec(), "The rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        dist_member_rules.push_back( new ArgumentRule( "siteRatesProbs", Simplex::getClassTypeSpec(), "The probability weights of rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "pInv", Probability::getClassTypeSpec(), "The probability of a site being invariant.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
 
         dist_member_rules.push_back( new ArgumentRule( "nSites", Natural::getClassTypeSpec(), "The number of sites, used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural() ) );
@@ -876,6 +927,15 @@ void Dist_phyloCTMC::printValue(std::ostream& o) const
     {
         o << "?";
     }
+    o << ", site_rates_probs=";
+    if ( site_rates_probs != NULL )
+    {
+        o << site_rates_probs->getName();
+    }
+    else
+    {
+        o << "?";
+    }
     o << ", site_matrices=";
     if ( site_matrices != NULL )
     {
@@ -931,6 +991,10 @@ void Dist_phyloCTMC::setConstParameter(const std::string& name, const RevPtr<con
     else if ( name == "siteRates" )
     {
         site_rates = var;
+    }
+    else if ( name == "siteRatesProbs" )
+    {
+        site_rates_probs = var;
     }
     else if ( name == "siteMatrices" )
     {

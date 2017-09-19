@@ -46,7 +46,9 @@ DistributionFunctionCdf::DistributionFunctionCdf( PositiveContinuousDistribution
 
 
 /** Constructor */
-DistributionFunctionCdf::DistributionFunctionCdf(const DistributionFunctionCdf& obj) : TypedFunction<Probability>(obj), argRules( obj.argRules )  {
+DistributionFunctionCdf::DistributionFunctionCdf(const DistributionFunctionCdf& obj) : TypedFunction<Probability>(obj),
+    argRules( obj.argRules )
+{
     
     if ( obj.templateObject != NULL )
     {
@@ -69,11 +71,23 @@ DistributionFunctionCdf::DistributionFunctionCdf(const DistributionFunctionCdf& 
 }
 
 
+/** Constructor */
+DistributionFunctionCdf::~DistributionFunctionCdf(void)
+{
+    
+    delete templateObject;
+    delete templateObjectPositive;
+    
+}
+
+
 DistributionFunctionCdf& DistributionFunctionCdf::operator=(const DistributionFunctionCdf &c) {
     
     if (this != &c)
     {
         Function::operator=(c);
+        delete templateObject;
+        delete templateObjectPositive;
         
         if ( c.templateObject != NULL )
         {

@@ -2,6 +2,7 @@
 #define DirichletDistribution_H
 
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -21,7 +22,7 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      *
      */
-    class DirichletDistribution : public TypedDistribution< RbVector<double> > {
+    class DirichletDistribution : public TypedDistribution< Simplex > {
         
     public:
         DirichletDistribution(const TypedDagNode< RbVector<double> > *l);

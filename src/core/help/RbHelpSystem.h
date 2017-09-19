@@ -57,8 +57,9 @@ namespace RevBayesCore {
         std::map<std::string, RbHelpType*>                              helpForTypes;
         std::set<std::string>                                           helpFunctionNames;                                  //!< Set of finction names without aliases
         std::set<std::string>                                           helpTypeNames;                                      //!< Set of finction names without aliases
-        
+    
     };
+    
     
     
     

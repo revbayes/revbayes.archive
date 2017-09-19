@@ -8,7 +8,8 @@
 
 using namespace RevBayesCore;
 
-TreeDiscreteCharacterData::TreeDiscreteCharacterData()
+TreeDiscreteCharacterData::TreeDiscreteCharacterData() :
+        character_data(NULL)
 {
     
 }
@@ -33,6 +34,13 @@ const AbstractHomologousDiscreteCharacterData& TreeDiscreteCharacterData::getCha
 {
     
     return *character_data;
+}
+
+
+bool TreeDiscreteCharacterData::hasCharacterData( void ) const
+{
+
+    return character_data != NULL;
 }
 
 
@@ -117,8 +125,8 @@ void TreeDiscreteCharacterData::setTree(const Tree &t)
     root = NULL;
     
     binary      = t.isBinary();
-    numTips     = t.getNumberOfTips();
-    num_nodes    = t.getNumberOfNodes();
+    num_tips    = t.getNumberOfTips();
+    num_nodes   = t.getNumberOfNodes();
     rooted      = t.isRooted();
     
     TopologyNode* newRoot = t.getRoot().clone();

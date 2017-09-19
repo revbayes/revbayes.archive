@@ -28,7 +28,7 @@
 namespace RevBayesCore {
     
 	template <class valueType>
-    class NumUniqueInVector : public TypedFunction<int> {
+    class NumUniqueInVector : public TypedFunction<long> {
         
     public:
 																NumUniqueInVector(const TypedDagNode< RbVector<valueType> >* v);        //!< Default constructor
@@ -54,7 +54,7 @@ namespace RevBayesCore {
 using namespace RevBayesCore;
 
 template<class valueType>
-NumUniqueInVector<valueType>::NumUniqueInVector(const TypedDagNode< RbVector<valueType> >* v) : TypedFunction<int>( new int(0) ), elementVals( v ) {
+NumUniqueInVector<valueType>::NumUniqueInVector(const TypedDagNode< RbVector<valueType> >* v) : TypedFunction<long>( new long(0) ), elementVals( v ) {
     // add the tree parameter as a parent
     addParameter( elementVals );
     update();

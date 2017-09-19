@@ -1,5 +1,6 @@
 #include "SymmetricDifferenceStatistic.h"
 #include "TreeBipartitions.h"
+#include "TreeUtilities.h"
 #include <algorithm>
 
 #include <boost/dynamic_bitset.hpp>
@@ -42,35 +43,7 @@ SymmetricDifferenceStatistic* SymmetricDifferenceStatistic::clone( void ) const
 void SymmetricDifferenceStatistic::update( void )
 {
     
-    //const TopologyNode& r = tree->getValue().getRoot();
-    std::vector<boost::dynamic_bitset<> > bipartitions1 = (TreeBipartitions(tree1)).getValue();
-    std::vector<boost::dynamic_bitset<> > bipartitions2 = (TreeBipartitions(tree2)).getValue();
-    bool found;
-    *value = 0.0;
-    for (size_t i = 0; i< bipartitions1.size(); ++i) {
-        found = false;
-        for (size_t j = 0; j < bipartitions2.size(); ++j) {
-            if (bipartitions1[i] == bipartitions2[j]) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            *value += 1.0;
-        }
-    }
-    for (size_t i = 0; i< bipartitions2.size(); ++i) {
-        found = false;
-        for (size_t j = 0; j < bipartitions1.size(); ++j) {
-            if (bipartitions2[i] == bipartitions1[j]) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            *value += 1.0;
-        }
-    }
+    *value = TreeUtilities::computeRobinsonFouldDistance(tree1->getValue(), tree2->getValue());
 
 }
 

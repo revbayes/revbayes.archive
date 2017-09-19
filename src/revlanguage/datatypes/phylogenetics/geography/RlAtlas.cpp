@@ -130,20 +130,20 @@ RevPtr<RevVariable> RlAtlas::executeMethod(std::string const &name, const std::v
     {
         found = true;
         
-        return new RevVariable(new Natural((int)this->dagNode->getValue().getNumAreas())) ;
+        return new RevVariable(new Natural((int)this->dag_node->getValue().getNumAreas())) ;
     }
     else if (name == "nEpochs")
     {
         found = true;
         
-        return new RevVariable(new Natural((int)this->dagNode->getValue().getNumEpochs())) ;
+        return new RevVariable(new Natural((int)this->dag_node->getValue().getNumEpochs())) ;
     }
     else if (name == "names")
     {
         found = true;
         
         ModelVector<RlString> *n = new ModelVector<RlString>();
-        const std::vector<std::vector<RevBayesCore::GeographicArea*> >& areas = this->dagNode->getValue().getAreas();
+        const std::vector<std::vector<RevBayesCore::GeographicArea*> >& areas = this->dag_node->getValue().getAreas();
         for (size_t i = 0; i < areas[0].size(); ++i)
         {
             std::string name = areas[0][i]->getName();
@@ -154,7 +154,7 @@ RevPtr<RevVariable> RlAtlas::executeMethod(std::string const &name, const std::v
     else if (name == "epochTimes")
     {
         found = true;
-        ModelVector<RealPos> *n = new ModelVector<RealPos>( this->dagNode->getValue().getEpochs() );
+        ModelVector<RealPos> *n = new ModelVector<RealPos>( this->dag_node->getValue().getEpochs() );
         return new RevVariable( n );
     }
     else if (name == "getValues")
@@ -163,7 +163,7 @@ RevPtr<RevVariable> RlAtlas::executeMethod(std::string const &name, const std::v
         
         // get the member with give index
         std::string value = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
-        std::vector<std::vector<RevBayesCore::GeographicArea*> > areas = this->dagNode->getValue().getAreas();        
+        std::vector<std::vector<RevBayesCore::GeographicArea*> > areas = this->dag_node->getValue().getAreas();        
         ModelVector<ModelVector<ModelVector<Real > > > *f = new ModelVector<ModelVector<ModelVector<Real > > >();
         for (size_t i = 0; i < areas.size(); i++)
         {

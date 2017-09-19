@@ -1,6 +1,7 @@
 #ifndef MultinomialDistribution_H
 #define MultinomialDistribution_H
 
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -22,10 +23,10 @@ namespace RevBayesCore {
      * @since 2014-05-06, version 1.0
      *
      */
-    class MultinomialDistribution : public TypedDistribution< RbVector<int> > {
+    class MultinomialDistribution : public TypedDistribution< RbVector<long> > {
         
     public:
-        MultinomialDistribution(const TypedDagNode< RbVector<double> > *p, const TypedDagNode<int> *n);
+        MultinomialDistribution(const TypedDagNode< Simplex > *p, const TypedDagNode<long> *n);
         virtual                                            ~MultinomialDistribution(void);                                                //!< Virtual destructor
         
         // public member functions
@@ -40,8 +41,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< RbVector<double> >*             p;
-        const TypedDagNode<int>*                            n;
+        const TypedDagNode<Simplex>*                        p;
+        const TypedDagNode<long>*                           n;
     };
     
 }

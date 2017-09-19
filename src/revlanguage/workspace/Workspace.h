@@ -52,7 +52,7 @@ namespace RevLanguage {
 
     class Workspace : public Environment {
     public:
-        virtual ~Workspace(void);                                                                                                     //!< Destrcutor
+        virtual ~Workspace(void);                                                                                       //!< Destrcutor
         
 
         // Environment (frame) functions you have to override

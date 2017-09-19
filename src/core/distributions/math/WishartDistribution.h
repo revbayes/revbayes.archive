@@ -24,9 +24,9 @@ namespace RevBayesCore {
     public:
         
         // inverse Wishart distribution of parameter sigma0 et df degrees of freedom
-        WishartDistribution(const TypedDagNode<MatrixReal> *insigma0, const TypedDagNode<int>* indf);
+        WishartDistribution(const TypedDagNode<MatrixReal> *insigma0, const TypedDagNode<long>* indf);
         // specialized version: inverse Wishart of parameter sigma0=kappa*I and df degrees of freedom
-        WishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf);
+        WishartDistribution(const TypedDagNode<long>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<long>* indf);
         
         virtual                                            ~WishartDistribution(void) {}
         
@@ -49,8 +49,8 @@ namespace RevBayesCore {
         
         const TypedDagNode<MatrixReal>*                     omega0;
         const TypedDagNode<double>*                         kappa;
-        const TypedDagNode<int>*                            df;
-        const TypedDagNode<int>*                            dim;
+        const TypedDagNode<long>*                            df;
+        const TypedDagNode<long>*                            dim;
         
     };
     

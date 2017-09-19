@@ -7,8 +7,8 @@
 
 using namespace RevBayesCore;
 
-CategoricalDistribution::CategoricalDistribution(const TypedDagNode< RbVector<double> > *p) :
-    TypedDistribution<int>( new int( 1 ) ),
+CategoricalDistribution::CategoricalDistribution(const TypedDagNode< Simplex > *p) :
+    TypedDistribution<long>( new long( 1 ) ),
     probs( p )
 {
     // add the parameters to our set (in the base class)
@@ -76,7 +76,7 @@ void CategoricalDistribution::swapParameterInternal( const DagNode *oldP, const 
 {
     if (oldP == probs)
     {
-        probs = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        probs = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
 }
 

@@ -16,7 +16,9 @@ namespace RevBayesCore {
 
         void                                    update(void);
         const MatrixReal                        getInverse(void) const { return inverseMatrix; }
-        const MatrixReal                        getMatrix(void) const { return L; }
+        double                                  computeLogDet(void);
+        const MatrixReal                        getLowerCholeskyFactor(void) const { return L; }
+        const bool                              checkPositiveSemidefinite(void) const { return is_positive_semidefinite; }
 
     private:
 
@@ -27,7 +29,7 @@ namespace RevBayesCore {
         const MatrixReal*                       qPtr;                                           //!< A pointer to the matrix for this cholesky decomposition
         MatrixReal                              L;
         MatrixReal                              inverseMatrix;
-        bool                                    isSemiPositiveDefinite;
+        bool                                    is_positive_semidefinite;
 
     };
     

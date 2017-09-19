@@ -102,7 +102,7 @@ template <class valueType>
 void RevBayesCore::VectorFunction<valueType>::keep( DagNode *toucher )
 {
     TypedFunction< RbVector<valueType> >::keep( toucher );
-    this->dagNode->clearTouchedElementIndices();
+    this->dag_node->clearTouchedElementIndices();
 }
 
 
@@ -113,7 +113,7 @@ void RevBayesCore::VectorFunction<valueType>::restore( DagNode *toucher )
     
     this->update();
     
-    this->dagNode->clearTouchedElementIndices();
+    this->dag_node->clearTouchedElementIndices();
 }
 
 
@@ -123,9 +123,9 @@ void RevBayesCore::VectorFunction<valueType>::update( void )
 {
     
     bool updateAll = true;
-    if ( this->dagNode != NULL )
+    if ( this->dag_node != NULL )
     {
-        const std::set<size_t> &indices = this->dagNode->getTouchedElementIndices();
+        const std::set<size_t> &indices = this->dag_node->getTouchedElementIndices();
         if ( indices.size() > 0 )
         {
             updateAll = false;
@@ -181,7 +181,7 @@ void RevBayesCore::VectorFunction<valueType>::touch( DagNode *toucher )
     {
         if (toucher == vectorParams[i]) 
         {
-            this->dagNode->addTouchedElementIndex( i );
+            this->dag_node->addTouchedElementIndex( i );
             // don't jump out of the loop because we could have the same parameter multiple times for this vector, e.g., v(a,a,b,a)
         }
     }

@@ -17,7 +17,7 @@ using namespace RevLanguage;
 /** Default constructor */
 Func_coala::Func_coala( void ) : TypedFunction< ModelVector<Real> >()
 {
-    
+
 }
 
 /**
@@ -38,10 +38,10 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_coala::creat
     const RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> > *coordinates = static_cast< ModelVector<Real> & >( args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::MatrixReal &coa = static_cast< MatrixReal& >( args[1].getVariable()->getRevObject() ).getValue();
     const std::vector<double> &w = static_cast< ModelVector<RealPos>& >( args[2].getVariable()->getRevObject() ).getValue();
-    
-    
+
+
     RevBayesCore::CoalaFunction* func = new RevBayesCore::CoalaFunction( coordinates, coa, w );
-    
+
     return func;
 }
 
@@ -49,10 +49,10 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_coala::creat
 /** Get argument rules */
 const ArgumentRules& Func_coala::getArgumentRules( void ) const
 {
-    
+
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rules_set = false;
-    
+
     if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "coordinates",   ModelVector<Real>::getClassTypeSpec(),    "A vector of coordinates.",  ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -61,7 +61,7 @@ const ArgumentRules& Func_coala::getArgumentRules( void ) const
 
         rules_set = true;
     }
-    
+
     return argumentRules;
 }
 
@@ -70,7 +70,7 @@ const ArgumentRules& Func_coala::getArgumentRules( void ) const
 const std::string& Func_coala::getClassType( void )
 {
     static std::string rev_type = "Func_coala";
-    
+
     return rev_type;
 }
 
@@ -79,7 +79,7 @@ const std::string& Func_coala::getClassType( void )
 const TypeSpec& Func_coala::getClassTypeSpec( void )
 {
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
-    
+
     return rev_type_spec;
 }
 
@@ -91,7 +91,7 @@ std::string Func_coala::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
     std::string f_name = "fnCoala";
-    
+
     return f_name;
 }
 
@@ -103,7 +103,8 @@ std::vector<std::string> Func_coala::getHelpAuthor(void) const
 {
     // create a vector of authors for this function
     std::vector<std::string> authors;
-    
+    authors.push_back( "Bastien Boussau" );
+
     return authors;
 }
 
@@ -115,7 +116,7 @@ std::vector<std::string> Func_coala::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    
+
     return descriptions;
 }
 
@@ -127,7 +128,7 @@ std::vector<std::string> Func_coala::getHelpDetails(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> details;
-    
+
     return details;
 }
 
@@ -141,7 +142,7 @@ std::string Func_coala::getHelpExample(void) const
 {
     // create an example as a single string variable.
     std::string example = "";
-    
+
     return example;
 }
 
@@ -154,8 +155,14 @@ std::vector<RevBayesCore::RbHelpReference> Func_coala::getHelpReferences(void) c
 {
     // create an entry for each reference
     std::vector<RevBayesCore::RbHelpReference> references;
-    
-    
+    RevBayesCore::RbHelpReference ref = RevBayesCore::RbHelpReference();
+    ref.setCitation("A branch-heterogeneous model of protein evolution for efficient inference of ancestral sequences. Groussin M, Boussau B, Gouy M. Syst Biol. 2013 Jul;62(4):523-38.");
+    ref.setDoi("10.1093/sysbio/syt016");
+    ref.setUrl("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3676677/");
+
+    references.push_back(ref);
+
+
     return references;
 }
 
@@ -167,8 +174,8 @@ std::vector<std::string> Func_coala::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
-    
-    
+
+
     return see_also;
 }
 
@@ -180,7 +187,7 @@ std::string Func_coala::getHelpTitle(void) const
 {
     // create a title variable
     std::string title = "";
-    
+
     return title;
 }
 
@@ -190,4 +197,3 @@ const TypeSpec& Func_coala::getTypeSpec( void ) const
 {
     return getClassTypeSpec();
 }
-

@@ -30,6 +30,10 @@ namespace RevLanguage {
         
     public:
         MemberProcedure(const std::string &name, const TypeSpec retType, ArgumentRules* argRules);                                               //!< Constructor
+        MemberProcedure(const MemberProcedure &mp);
+        virtual                                            ~MemberProcedure();
+        
+        MemberProcedure&                                    operator=(const MemberProcedure &mp);
         
         // Basic utility functions
         MemberProcedure*                                    clone(void) const;                                                          //!< Clone the object
@@ -49,10 +53,10 @@ namespace RevLanguage {
     protected:
 
         
-        const ArgumentRules*                                argumentRules;                                                              //!< Argument rules (different for different member functions)
-        const std::string                                   proc_name;
+        ArgumentRules*                                      argument_rules;                                                              //!< Argument rules (different for different member functions)
+        std::string                                         proc_name;
         RevPtr<RevVariable>                                 object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
-        const TypeSpec                                      returnType;                                                                 //!< Return type (different for different member functions)
+        TypeSpec                                            returnType;                                                                 //!< Return type (different for different member functions)
         
     };
     

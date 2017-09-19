@@ -152,7 +152,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
             delete( root);
             
 #ifdef RB_MPI
-            MPI::Finalize();
+            MPI_Finalize();
 #endif
             Workspace::userWorkspace().clear();
             Workspace::globalWorkspace().clear();
@@ -424,7 +424,7 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
             if (rbException.getExceptionType() == RbException::QUIT)
             {
 #ifdef RB_MPI
-                MPI::Finalize();
+                MPI_Finalize();
 #endif
                 Workspace::userWorkspace().clear();
                 Workspace::globalWorkspace().clear();

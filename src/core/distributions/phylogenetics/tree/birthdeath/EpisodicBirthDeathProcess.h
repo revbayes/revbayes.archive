@@ -36,7 +36,7 @@ namespace RevBayesCore {
         double                                              lnSpeciationRate(double t) const;
         double                                              rateIntegral(double t_low, double t_high) const;
         double                                              computeProbabilitySurvival(double start, double end) const;
-        double                                              simulateDivergenceTime(double origin, double present, double rho) const;                //!< Simulate a speciation event.
+        double                                              simulateDivergenceTime(double origin, double present) const;                //!< Simulate a speciation event.
 
     private:
         
@@ -56,7 +56,6 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*              lambda_times;                                                                                        //!< The time of the speciation rate changes.
         const TypedDagNode<RbVector<double> >*              mu_rates;                                                                                                 //!< The extinction rates.
         const TypedDagNode<RbVector<double> >*              mu_times;                                                                                            //!< The times of the extinction rate changes.
-        const TypedDagNode<double>*                         rho;                                                                                                //!< The instantaneous sampling probability.
 
         mutable std::vector<double>                         rate_change_times;
         mutable std::vector<double>                         birth;

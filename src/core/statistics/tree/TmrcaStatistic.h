@@ -47,15 +47,14 @@ namespace RevBayesCore {
         
     private:
         void                                        initialize(void);
-        void                                        initializeBitSet(void);
         
         // members
         const TypedDagNode<Tree>*                   tree;
         Clade                                       clade;
         bool                                        initialized;
-        bool                                        stemAge;
+        bool                                        stem_age;
         int                                         index;
-        size_t                                      taxaCount;
+        size_t                                      taxa_count;
     };
     
 }

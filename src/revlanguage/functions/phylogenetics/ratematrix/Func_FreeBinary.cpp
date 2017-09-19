@@ -1,6 +1,7 @@
 #include "Func_FreeBinary.h"
 #include "FreeBinaryRateMatrixFunction.h"
 #include "FreeBinaryRateMatrixFunction.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RateMatrix_JC.h"
 #include "Real.h"

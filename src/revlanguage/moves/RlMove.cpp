@@ -191,6 +191,8 @@ RevBayesCore::RbHelpMove* Move::getHelpEntry( void ) const
     
     helpEntry.setReferences( getHelpReferences() );
     
+    helpEntry.setExample( getHelpExample() );
+    
     // author
     helpEntry.setAuthor( getHelpAuthor() );
     

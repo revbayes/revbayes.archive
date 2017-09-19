@@ -12,16 +12,17 @@ namespace RevBayesCore {
     
     class Clade;
     
-    class HeterogeneousRateBirthDeath : public AbstractCharacterHistoryBirthDeathProcess, public MemberObject< RbVector<int> >, public MemberObject< RbVector<double> > {
+    class HeterogeneousRateBirthDeath : public AbstractCharacterHistoryBirthDeathProcess, public MemberObject< RbVector<long> >, public MemberObject< RbVector<double> > {
         
     public:
         HeterogeneousRateBirthDeath(const TypedDagNode<double> *a,
-                                    const TypedDagNode<int> *rs,
+                                    const TypedDagNode<long> *rs,
                                     const TypedDagNode<RbVector<double> > *s,
                                     const TypedDagNode<RbVector<double> > *e,
                                     const TypedDagNode<double> *ev,
                                     const TypedDagNode<double> *r,
                                     const std::string &cdt,
+                                    bool allow_same,
                                     const std::vector<Taxon> &n);                                                                                  //!< Constructor
         
         virtual                                            ~HeterogeneousRateBirthDeath(void);                          //!< Virtual destructor
@@ -29,7 +30,7 @@ namespace RevBayesCore {
         // public member functions
         HeterogeneousRateBirthDeath*                        clone(void) const;                                          //!< Create an independent clone
         double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
-        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<int> &rv) const;     //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<long> &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
         CharacterHistory&                                   getCharacterHistory(void);                                  //!< Get the character histories
         CharacterHistory                                    getCharacterHistory(void) const;                                  //!< Get the character histories
@@ -54,6 +55,7 @@ namespace RevBayesCore {
         // helper functions
         void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
         void                                                buildRandomBinaryHistory(std::vector<TopologyNode *> &tips);
+        size_t                                              computeStateIndex(size_t i, double time) const;
         size_t                                              computeStartIndex(size_t i) const;
         void                                                simulateTree(void);
         void                                                runMCMC(void);
@@ -61,7 +63,7 @@ namespace RevBayesCore {
 
         // members
         const TypedDagNode<double>*                         root_age;
-        const TypedDagNode<int>*                            root_state;
+        const TypedDagNode<long>*                            root_state;
         const TypedDagNode< RbVector<double> >*             speciation;
         const TypedDagNode< RbVector<double> >*             extinction;
         const TypedDagNode<double>*                         event_rate;
@@ -86,8 +88,8 @@ namespace RevBayesCore {
 
         const double                                        NUM_TIME_SLICES;
 
+        bool                                                allow_same_category;
         bool                                                shift_same_category;
-
     };
     
 }

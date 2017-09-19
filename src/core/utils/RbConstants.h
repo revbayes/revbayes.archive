@@ -82,11 +82,35 @@ namespace RbConstants {
     const double     LOG10_2        = 0.301029995663981195213738894724;	/* log10(2) */
     const double     SQRT_PI        = 1.772453850905516027298167483341;	/* sqrt(pi) */
     const double     SQRT_2PI       = 2.506628274631000502416;	/* sqrt(2*pi) */
-    const double     ONE_SQRT_2PI     = 0.398942280401432677939946059934;	/* 1/sqrt(2pi) */
+    const double     ONE_SQRT_2PI   = 0.398942280401432677939946059934;	/* 1/sqrt(2pi) */
     const double     SQRT_2dPI      = 0.797884560802865355879892119869;	/* sqrt(2/pi) */
     const double     LN_SQRT_PI     = 0.572364942924700087071713675677;	/* log(sqrt(pi)) == log(pi)/2 */
     const double     LN_SQRT_2PI	= 0.918938533204672741780329736406;	/* log(sqrt(2*pi)) == log(2*pi)/2 */
     const double     LN_SQRT_PId2	= 0.225791352644727432363097614947;	/* log(sqrt(pi/2)) */
+    
+    /* factorials from 0!, 1!, ..., 20! */
+    const double N_FACTORIAL[] = {
+        1,
+        1,
+        2,
+        6,
+        24,
+        120,
+        720,
+        5040,
+        40320,
+        362880,
+        3628800,
+        39916800,
+        479001600,
+        6227020800,
+        87178291200,
+        1307674368000,
+        20922789888000,
+        355687428096000,
+        6402373705728000,
+        121645100408832000,
+        2432902008176640000 };
     
 }
 

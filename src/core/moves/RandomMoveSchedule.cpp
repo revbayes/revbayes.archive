@@ -14,7 +14,6 @@ RandomMoveSchedule::RandomMoveSchedule(RbVector<Move> *s) : MoveSchedule( s )
     for (RbIterator<Move> it = moves->begin(); it != moves->end(); ++it)
     {
         movesPerIteration += it->getUpdateWeight();
-        weights.push_back( it->getUpdateWeight() );
     }
 }
 
@@ -41,11 +40,11 @@ Move& RandomMoveSchedule::nextMove( unsigned long gen )
 {
     
     movesPerIteration = 0.0;
-    for (size_t i = 0; i < weights.size(); ++i)
+    for (RbIterator<Move> it = moves->begin(); it != moves->end(); ++it)
     {
-        if ( (*moves)[i].isActive( gen ) )
+        if ( it->isActive( gen ) )
         {
-            movesPerIteration += weights[i];
+            movesPerIteration += it->getUpdateWeight();
         }
     }
     
@@ -55,13 +54,13 @@ Move& RandomMoveSchedule::nextMove( unsigned long gen )
     
     size_t index = 0;
     // only if the move is inactive or the weight of the move is smaller than u
-    while ( !(*moves)[index].isActive(gen) || weights[index] <= u )
+    while ( !(*moves)[index].isActive(gen) || (*moves)[index].getUpdateWeight() <= u )
     {
         // check if this move is active
         // if not, then we just subtract the weight of this move
         if ( (*moves)[index].isActive( gen ) )
         {
-            u -= weights[index];
+            u -= (*moves)[index].getUpdateWeight();
         }
         ++index;
     }

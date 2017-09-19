@@ -16,7 +16,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-DirichletSimplexProposal::DirichletSimplexProposal( StochasticNode<RbVector<double> > *n, double a, size_t nc, double o, double k /*=0.0*/, double p) : Proposal(p),
+DirichletSimplexProposal::DirichletSimplexProposal( StochasticNode<Simplex> *n, double a, size_t nc, double o, double k /*=0.0*/, double p) : Proposal(p),
     variable( n ),
     storedValue( 0.0 ),
     alpha( a ),
@@ -89,7 +89,7 @@ double DirichletSimplexProposal::doProposal( void )
     
     const RbVector<double>& curVal = variable->getValue();
     RbVector<double> newVal = curVal;
-    size_t              n      = curVal.size();
+    size_t           n      = curVal.size();
     
     /* We update the simplex values by proposing new values from a Dirichlet centered
      on the current values. The i-th parameter of the Dirichlet is the i-th value
@@ -194,7 +194,7 @@ double DirichletSimplexProposal::doProposal( void )
         {
             // Hastings ratio
             lnProposalRatio  = RbStatistics::Dirichlet::lnPdf(alphaReverse, x) - RbStatistics::Dirichlet::lnPdf(alphaForward, z); // Hastings Ratio
-            lnProposalRatio += (n - nCategories) * log(factor); // Jacobian
+            lnProposalRatio += (n - nCategories - 1) * log(factor); // Jacobian
         }
         catch (RbException e)
         {
@@ -247,7 +247,7 @@ double DirichletSimplexProposal::doProposal( void )
         }
     }
     
-    variable->setValue( new RbVector<double>(newVal), false );
+    variable->setValue( new Simplex(newVal), false );
     
     return lnProposalRatio;
 }
@@ -302,7 +302,7 @@ void DirichletSimplexProposal::undoProposal( void )
 void DirichletSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<RbVector<double> >* >(newN) ;
+    variable = static_cast<StochasticNode<Simplex>* >(newN) ;
     
 }
 

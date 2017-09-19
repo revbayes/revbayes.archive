@@ -44,8 +44,13 @@ RevPtr<RevVariable> Func_summarizeCharacterMaps::execute( void )
 {
     
     // get the input summary tree
-    const RevBayesCore::TypedDagNode<RevBayesCore::Tree> *input_tree = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    
+    RevBayesCore::Tree input_tree = RevBayesCore::Tree();
+    if (this->args[0].getVariable()->getRevObject() != RevNullObject::getInstance())
+    {
+        const RevBayesCore::TypedDagNode<RevBayesCore::Tree> *input_tree_dag = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+        input_tree = input_tree_dag->getValue();
+    }
+
     // get the vector of stochastic character map traces
     const WorkspaceVector<AncestralStateTrace>& ast_vector = static_cast<const WorkspaceVector<AncestralStateTrace> &>( args[1].getVariable()->getRevObject() );
     std::vector<RevBayesCore::AncestralStateTrace> ancestralstate_traces;
@@ -88,8 +93,8 @@ RevPtr<RevVariable> Func_summarizeCharacterMaps::execute( void )
 
     bool verbose = static_cast<const RlBoolean &>( args[6].getVariable()->getRevObject() ).getValue();
     
-    // summarize stochastic character maps over the summary input tree
-    summary.summarizeCharacterMaps(input_tree->getValue(), ancestralstate_traces, filename, burnin, verbose, sep);
+    // summarize stochastic character maps
+    summary.summarizeCharacterMaps(input_tree, ancestralstate_traces, filename, burnin, verbose, sep);
 
     return NULL;
 }
@@ -106,7 +111,7 @@ const ArgumentRules& Func_summarizeCharacterMaps::getArgumentRules( void ) const
     if (!rules_set)
     {
         
-        argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The input tree to summarize ancestral states over.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The input tree to summarize ancestral states over.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "character_map_trace_vector", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), "A vector of stochastic character map traces.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "tree_trace", TraceTree::getClassTypeSpec(), "A trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file to store the summarized character histories.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );

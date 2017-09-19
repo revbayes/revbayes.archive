@@ -13,12 +13,14 @@
 #include "MatrixReal.h"
 #include "RateGenerator.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
 namespace RevBayesCore {
     
-    class SampledCladogenesisRootFrequenciesFunction : public TypedFunction< RbVector<double> > {
+class SampledCladogenesisRootFrequenciesFunction : public TypedFunction< Simplex > {
+
         
     public:
         SampledCladogenesisRootFrequenciesFunction(const TypedDagNode< RateGenerator > *rm, const TypedDagNode< MatrixReal > *cp, const TypedDagNode< Tree > *t, const TypedDagNode<double>* r);

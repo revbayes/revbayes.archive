@@ -36,20 +36,20 @@ namespace RevBayesCore {
         RateMatrix_Chromosomes*         clone(void) const;
         std::vector<double>             getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in this model I don't know them
         void                            update(void);
-        void                            setLambda(double l);
+        void                            setGamma(double g);
         void                            setDelta(double d);
         void                            setRho(double r);
-        void                            setMu(double m);
-        void                            setLambda_l(double l);
+        void                            setEta(double e);
+        void                            setGamma_l(double l);
         void                            setDelta_l(double d);
         
         
     private:
-        double                          lambda;
+        double                          gamma;
         double                          delta;
         double                          rho;
-        double                          mu;
-        double                          lambda_l;
+        double                          eta;
+        double                          gamma_l;
         double                          delta_l;
         size_t                          matrixSize;                         //!< Number of elements in a row or column of the rate matrix
         std::vector<double>             stationary_freqs;                    //!< Holds the stationary frequencies

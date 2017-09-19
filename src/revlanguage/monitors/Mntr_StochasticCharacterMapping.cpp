@@ -53,6 +53,7 @@ void Mntr_StochasticCharacterMapping::constructInternalObject( void )
     
     const std::string& file_name      = static_cast<const RlString  &>( filename->getRevObject()       ).getValue();
     bool               is             = static_cast<const RlBoolean &>( include_simmap->getRevObject() ).getValue();
+    bool               sd             = static_cast<const RlBoolean &>( use_simmap_default->getRevObject() ).getValue();
     const std::string& sep            = static_cast<const RlString  &>( separator->getRevObject()      ).getValue();
     int                print_gen      = static_cast<const Natural   &>( printgen->getRevObject()       ).getValue();
     bool               app            = static_cast<const RlBoolean &>( append->getRevObject()         ).getValue();
@@ -87,11 +88,11 @@ void Mntr_StochasticCharacterMapping::constructInternalObject( void )
     RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState> *m;
     if ( static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).isModelObject() )
     {
-        m = new RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>( ctmc_sn, (unsigned long)print_gen, file_name, is, sep );
+        m = new RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>( ctmc_sn, (unsigned long)print_gen, file_name, is, sd, sep );
     }
     else
     {
-        m = new RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>( cdbdp_sn, (unsigned long)print_gen, file_name, is, sep );
+        m = new RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>( cdbdp_sn, (unsigned long)print_gen, file_name, is, sd, sep );
     }
     m->setAppend( app );
     
@@ -152,6 +153,7 @@ const MemberRules& Mntr_StochasticCharacterMapping::getParameterRules(void) cons
         monitor_rules.push_back( new ArgumentRule("cdbdp"          , TimeTree::getClassTypeSpec(),  "The character dependent birth-death process to monitor.",                      ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
         monitor_rules.push_back( new ArgumentRule("filename"       , RlString::getClassTypeSpec() , "The file to save sampled character histories.",                                ArgumentRule::BY_VALUE,     ArgumentRule::ANY ) );
         monitor_rules.push_back( new ArgumentRule("include_simmap" , RlBoolean::getClassTypeSpec(), "Should we log SIMMAP/phytools compatible newick strings? True by default.",    ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new RlBoolean(true) ) );
+        monitor_rules.push_back( new ArgumentRule("use_simmap_default" , RlBoolean::getClassTypeSpec(), "Should we use the default SIMMAP/phytools event ordering? True by default.",    ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new RlBoolean(true) ) );
         monitor_rules.push_back( new ArgumentRule("printgen"       , Natural::getClassTypeSpec()  , "How frequently (in number of iterations) should we save sampled character histories? 1 by default.",                              ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new Natural(1) ) );
         monitor_rules.push_back( new ArgumentRule("separator"      , RlString::getClassTypeSpec() , "The delimiter between variables. \t by default.",                              ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new RlString("\t") ) );
         monitor_rules.push_back( new ArgumentRule("append"         , RlBoolean::getClassTypeSpec(), "Should we append to an existing file? False by default.",                  ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new RlBoolean(false) ) );
@@ -217,6 +219,10 @@ void Mntr_StochasticCharacterMapping::setConstParameter(const std::string& name,
     else if ( name == "include_simmap" )
     {
         include_simmap = var;
+    }
+    else if ( name == "use_simmap_default" )
+    {
+        use_simmap_default = var;
     }
     else
     {

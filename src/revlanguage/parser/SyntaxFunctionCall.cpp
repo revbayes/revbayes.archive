@@ -138,11 +138,11 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         bool found = false;
         if ( env.existsVariable( functionName ) && &env == &Workspace::userWorkspace() )
         {
-            RevObject &theObject = env.getRevObject( functionName );
+            RevObject &the_object = env.getRevObject( functionName );
             
-            if ( theObject.isType( Function::getClassTypeSpec() ) )
+            if ( the_object.isType( Function::getClassTypeSpec() ) )
             {
-                func = static_cast<Function*>( theObject.clone() );
+                func = static_cast<Function*>( the_object.clone() );
                 found = func->checkArguments(args, NULL, !dynamic);
             }
         }
@@ -165,32 +165,32 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         // We are trying to find a member function
         
         // First we get the base variable
-        RevPtr<RevVariable> theVar = baseVariable->evaluateContent( env, dynamic );
+        RevPtr<RevVariable> the_var = baseVariable->evaluateContent( env, dynamic );
         
         // Now we get a reference to the member object inside
-        RevObject &theMemberObject = theVar->getRevObject();
+        RevObject &the_member_object = the_var->getRevObject();
         
-        const MethodTable& mt = theMemberObject.getMethods();
+        const MethodTable& mt = the_member_object.getMethods();
         
-        Function* theFunction = mt.getFunction( functionName, args, !dynamic ).clone();
-        theFunction->processArguments(args, !dynamic);
+        Function* the_function = mt.getFunction( functionName, args, !dynamic ).clone();
+        the_function->processArguments(args, !dynamic);
         
-        MemberMethod* theMemberMethod = dynamic_cast<MemberMethod*>( theFunction );
+        MemberMethod* theMemberMethod = dynamic_cast<MemberMethod*>( the_function );
         if ( theMemberMethod != NULL )
         {
-            theMemberMethod->setMemberObject( theVar );
-            func = theFunction;
+            theMemberMethod->setMemberObject( the_var );
+            func = the_function;
         }
         else
         {
-            delete theFunction;
+            delete the_function;
             throw RbException("Error while trying to access member function/procedure.");
         }
         
     }
     
     // Evaluate the function
-    RevPtr<RevVariable> funcReturnValue = func->execute();
+    RevPtr<RevVariable> func_return_value = func->execute();
     
     // free the memory of our copy
     delete func;
@@ -201,13 +201,13 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         // inside it, although many functions return constant values or NULL (void).
         // To make sure the value is a constant and not a deterministic variable in this
         // context, we convert the return value here to a constant value before returning it.
-        if ( funcReturnValue != NULL )
+        if ( func_return_value != NULL )
         {
-            funcReturnValue->getRevObject().makeConstantValue();
+            func_return_value->getRevObject().makeConstantValue();
         }
     }
     
-    return funcReturnValue;
+    return func_return_value;
 }
 
 

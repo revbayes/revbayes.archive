@@ -21,7 +21,7 @@ namespace RevLanguage {
         const TypeSpec&                                                         getTypeSpec(void) const;                                    //!< Get Rev type spec (from instance)
         
         // Regular functions
-        RevBayesCore::TypedFunction< RevBayesCore::RbVector< double> >*         createFunction(void) const;                                                     //!< Create internal function object
+        RevBayesCore::TypedFunction< RevBayesCore::Simplex >*                   createFunction(void) const;                                                     //!< Create internal function object
         const ArgumentRules&                                                    getArgumentRules(void) const;                               //!< Get argument rules
         
     };

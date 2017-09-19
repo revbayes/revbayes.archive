@@ -34,7 +34,7 @@ namespace RevLanguage {
         NonHomologousDiscreteCharacterData(RevBayesCore::NonHomologousDiscreteCharacterData<typename rlCharType::valueType> *v);                                          //!< Constructor with core object
         NonHomologousDiscreteCharacterData(RevBayesCore::TypedDagNode< RevBayesCore::AbstractNonHomologousDiscreteCharacterData >*d);                                     //!< Constructor with DAG node
         
-        typedef RevBayesCore::NonHomologousDiscreteCharacterData<typename rlCharType::valueType> valueType;
+//        typedef RevBayesCore::NonHomologousDiscreteCharacterData<typename rlCharType::valueType> valueType;
         
         // Basic utility functions
         NonHomologousDiscreteCharacterData*     clone(void) const;                                                                                  //!< Clone object
@@ -44,6 +44,10 @@ namespace RevLanguage {
         
         // Member method inits
         virtual RevPtr<RevVariable>             executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);                 //!< Override to map member methods to internal functions
+        
+    private:
+        
+        void                                    initMethods(void);
         
     };
     
@@ -62,10 +66,7 @@ template <class rlType>
 RevLanguage::NonHomologousDiscreteCharacterData<rlType>::NonHomologousDiscreteCharacterData(void) : AbstractNonHomologousDiscreteCharacterData()
 {
     
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "[]", DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
+    initMethods();
     
 }
 
@@ -75,10 +76,7 @@ RevLanguage::NonHomologousDiscreteCharacterData<rlType>::NonHomologousDiscreteCh
     AbstractNonHomologousDiscreteCharacterData( v )
 {
     
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "[]", DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
+    initMethods();
     
 }
 
@@ -88,10 +86,7 @@ RevLanguage::NonHomologousDiscreteCharacterData<rlType>::NonHomologousDiscreteCh
 AbstractNonHomologousDiscreteCharacterData( d )
 {
     
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "[]", DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
+    initMethods();
     
 }
 
@@ -116,12 +111,12 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::NonHomologousDiscrete
         // get the member with give index
         const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
         
-        if (this->dagNode->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) )
+        if (this->dag_node->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) )
         {
             throw RbException("Index out of bounds in []");
         }
         
-        const RevBayesCore::DiscreteTaxonData<typename rlType::valueType>& element = static_cast< RevBayesCore::NonHomologousDiscreteCharacterData<typename rlType::valueType>& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
+        const RevBayesCore::DiscreteTaxonData<typename rlType::valueType>& element = static_cast< RevBayesCore::NonHomologousDiscreteCharacterData<typename rlType::valueType>& >( this->dag_node->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
         
         return new RevVariable( new DiscreteTaxonData<rlType>( new RevBayesCore::DiscreteTaxonData<typename rlType::valueType>( element ) ) );
     }
@@ -159,6 +154,20 @@ const RevLanguage::TypeSpec& RevLanguage::NonHomologousDiscreteCharacterData<rlT
     return type_spec;
 }
 
+
+/* Get class name of object */
+template <typename rlType>
+void RevLanguage::NonHomologousDiscreteCharacterData<rlType>::initMethods( void )
+{
+    
+    MethodTable methods = AbstractNonHomologousDiscreteCharacterData::getCharacterDataMethods();
+
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "[]", DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
+
+}
 
 
 #endif

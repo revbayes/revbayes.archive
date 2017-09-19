@@ -111,7 +111,7 @@ double NarrowExchangeProposal::doProposal( void )
         failed = false;
         
         // now we store all necessary values
-        storedChoosenNode   = node;
+        storedChosenNode    = node;
         storedUncle         = uncle;
         
         // now exchange the two nodes
@@ -170,17 +170,18 @@ void NarrowExchangeProposal::undoProposal( void )
     // we undo the proposal only if it didn't fail
     if ( failed == false )
     {
+        
         // undo the proposal
         TopologyNode& parent = storedUncle->getParent();
-        TopologyNode& grandparent = storedChoosenNode->getParent();
+        TopologyNode& grandparent = storedChosenNode->getParent();
         
         // now exchange the two nodes
-        grandparent.removeChild( storedChoosenNode );
+        grandparent.removeChild( storedChosenNode );
         parent.removeChild( storedUncle );
         grandparent.addChild( storedUncle );
-        parent.addChild( storedChoosenNode );
+        parent.addChild( storedChosenNode );
         storedUncle->setParent( &grandparent );
-        storedChoosenNode->setParent( &parent );
+        storedChosenNode->setParent( &parent );
         
     }
     

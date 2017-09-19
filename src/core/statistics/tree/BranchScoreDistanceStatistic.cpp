@@ -59,16 +59,20 @@ void BranchScoreDistanceStatistic::update( void )
             *value += ages1[i]*ages1[i];
         }
     }
-    for (size_t i = 0; i< bipartitions2.size(); ++i) {
+    for (size_t i = 0; i< bipartitions2.size(); ++i)
+    {
         found = false;
-        for (size_t j = 0; j < bipartitions1.size(); ++j) {
-            if (bipartitions2[i] == bipartitions1[j]) {
+        for (size_t j = 0; j < bipartitions1.size(); ++j)
+        {
+            if (bipartitions2[i] == bipartitions1[j])
+            {
                 found = true;
                 *value += (ages1[i]-ages2[j])*(ages1[i]-ages2[j]);
                 break;
             }
         }
-        if (!found) {
+        if (!found)
+        {
             *value += ages2[i]*ages2[i];
         }
     }

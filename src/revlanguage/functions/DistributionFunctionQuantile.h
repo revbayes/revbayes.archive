@@ -32,6 +32,8 @@ namespace RevLanguage {
         DistributionFunctionQuantile(TypedDistribution<valueType> *d);                                                                 //!< Object constructor
         DistributionFunctionQuantile(const DistributionFunctionQuantile& obj);                                                         //!< Copy constructor
         
+        virtual                                         ~DistributionFunctionQuantile(void);
+        
         // overloaded operators
         DistributionFunctionQuantile&                   operator=(const DistributionFunctionQuantile& c);
         
@@ -95,12 +97,23 @@ argRules( obj.argRules )
 }
 
 
+/** Destructor */
+template <class valueType>
+RevLanguage::DistributionFunctionQuantile<valueType>::~DistributionFunctionQuantile( void )
+{
+    
+    delete templateObject;
+    
+}
+
+
 template <class valueType>
 RevLanguage::DistributionFunctionQuantile<valueType>& RevLanguage::DistributionFunctionQuantile<valueType>::operator=(const DistributionFunctionQuantile &c) {
     
     if (this != &c) {
         Function::operator=(c);
         
+        delete templateObject;
         templateObject = c.templateObject->clone();
         
         argRules = c.argRules;

@@ -3,6 +3,7 @@
 
 #include "MemberObject.h"
 #include "RbVector.h"
+#include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -23,16 +24,16 @@ namespace RevBayesCore {
      * @since 2014-11-18, version 1.0
      */
     template <class mixtureType>
-    class MixtureDistribution : public TypedDistribution<mixtureType>, public MemberObject<int> {
+    class MixtureDistribution : public TypedDistribution<mixtureType>, public MemberObject<long> {
         
     public:
         // constructor(s)
-        MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< RbVector<double> > *p);
+        MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< Simplex > *p);
         
         // public member functions
         MixtureDistribution*                                clone(void) const;                                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
-        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;     //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;     //!< Map the member methods to internal function calls
         const std::vector<mixtureType>&                     getParameterValues(void) const;
         size_t                                              getCurrentIndex(void) const;
         size_t                                              getNumberOfCategories(void) const;
@@ -57,7 +58,7 @@ namespace RevBayesCore {
         
         // private members
         const TypedDagNode< RbVector<mixtureType> >*        parameterValues;
-        const TypedDagNode< RbVector<double> >*             probabilities;
+        const TypedDagNode< Simplex >*                      probabilities;
         
         size_t                                              index;
     };
@@ -72,7 +73,7 @@ namespace RevBayesCore {
 #include <cmath>
 
 template <class mixtureType>
-RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< RbVector<double> > *p) : TypedDistribution<mixtureType>( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( v->getValue()[0] ) ),
+RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< Simplex > *p) : TypedDistribution<mixtureType>( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( v->getValue()[0] ) ),
     parameterValues( v ),
     probabilities( p ),
     index( 0 )
@@ -106,12 +107,12 @@ double RevBayesCore::MixtureDistribution<mixtureType>::computeLnProbability( voi
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+void RevBayesCore::MixtureDistribution<mixtureType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, long &rv) const
 {
     
     if ( n == "getAllocationIndex" )
     {
-        rv = int(index);
+        rv = long(index);
     }
     else
     {
@@ -216,7 +217,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::swapParameterInternal( cons
     }
     else if (oldP == probabilities)
     {
-        probabilities = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        probabilities = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
 }
 

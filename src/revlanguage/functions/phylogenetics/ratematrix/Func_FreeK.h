@@ -38,6 +38,8 @@ namespace RevLanguage {
         RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >*     createFunction(void) const;                                 //!< Execute function
         const ArgumentRules&                                            getArgumentRules(void) const;                               //!< Get argument rules
         
+        
+        
     };
     
 }

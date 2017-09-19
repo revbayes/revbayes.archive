@@ -6,7 +6,7 @@ using namespace RevBayesCore;
 
 /** Standard constructor from appropriately typed DAG node */
 SimplexFromVectorFunction::SimplexFromVectorFunction( const TypedDagNode< RbVector<double> >* vec ) :
-    TypedFunction< RbVector<double> >( new RbVector<double>() ),
+    TypedFunction< Simplex >( new Simplex() ),
     realPosVector( vec )
 {
     // add the vector parameter as a parent

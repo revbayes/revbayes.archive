@@ -29,20 +29,24 @@ PhyloWhiteNoiseProcess::PhyloWhiteNoiseProcess(const TypedDagNode< Tree > *t, co
 }
 
 
-PhyloWhiteNoiseProcess* PhyloWhiteNoiseProcess::clone(void) const {
+PhyloWhiteNoiseProcess* PhyloWhiteNoiseProcess::clone(void) const
+{
     return new PhyloWhiteNoiseProcess( *this );
 }
 
 
-double PhyloWhiteNoiseProcess::computeLnProbability(void) {
+double PhyloWhiteNoiseProcess::computeLnProbability(void)
+{
   
     return recursiveLnProb(tau->getValue().getRoot());
 }
 
-double PhyloWhiteNoiseProcess::recursiveLnProb(const TopologyNode &from)   {
+double PhyloWhiteNoiseProcess::recursiveLnProb(const TopologyNode &from)
+{
 
     double lnProb = 0.0;
-    if (! from.isRoot())   {
+    if ( from.isRoot() == false )
+    {
         // compute the variance
         double mean = 1.0;
         double stdev = sigma->getValue() / sqrt(from.getBranchLength());
@@ -53,7 +57,8 @@ double PhyloWhiteNoiseProcess::recursiveLnProb(const TopologyNode &from)   {
     }
     
     size_t numChildren = from.getNumberOfChildren();
-    for (size_t i = 0; i < numChildren; ++i) {
+    for (size_t i = 0; i < numChildren; ++i)
+    {
         const TopologyNode& child = from.getChild(i);
         lnProb += recursiveLnProb(child);
             
@@ -132,14 +137,14 @@ void PhyloWhiteNoiseProcess::recursiveSimulate(const TopologyNode& from)
  void PhyloWhiteNoiseProcess::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter) {
  // only delegate when the toucher was the root val
  //    if ( affecter == rootVal )
- //        this->dagNode->getAffectedNodes( affected );
+ //        this->dag_node->getAffectedNodes( affected );
  }
  
  
  void PhyloWhiteNoiseProcess::keepSpecialization( DagNode* affecter ) {
  // only do this when the toucher was the root val
  //    if ( affecter == rootVal )
- //        this->dagNode->keepAffected();
+ //        this->dag_node->keepAffected();
  }
  */
 
@@ -152,7 +157,7 @@ void PhyloWhiteNoiseProcess::restoreSpecialization( DagNode *restorer ) {
 //        (*value)[rootIndex] = rootVal->getValue();
         
         // delegate a restore to our children
-//        this->dagNode->restoreAffected();
+//        this->dag_node->restoreAffected();
 //    }
 }
 
@@ -172,7 +177,7 @@ void PhyloWhiteNoiseProcess::restoreSpecialization( DagNode *restorer ) {
         dagNode->addTouchedElementIndex( rootIndex );
         
         // delegate a touch to our children
-        this->dagNode->touchAffected();
+        this->dag_node->touchAffected();
     }
 */
 //}
