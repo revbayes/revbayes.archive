@@ -22,8 +22,6 @@ Parallelizable::Parallelizable() :
     
     
 #ifdef RB_MPI
-//    num_processes = MPI::COMM_WORLD.Get_size();
-//    pid = MPI::COMM_WORLD.Get_rank();
     MPI_Comm_rank(MPI_COMM_WORLD, &pid);
     MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
 #endif

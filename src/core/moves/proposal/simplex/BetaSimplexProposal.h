@@ -50,6 +50,7 @@ namespace RevBayesCore {
         Simplex                                 storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
         double                                  alpha;                                                                             //!< The scaling parameter of the Proposal
 //        double                              proposedValue;                                                                      //!< The value we propose.
+        
     };
     
 }

@@ -73,7 +73,7 @@ double ConstantPopulationHeterochronousCoalescent::computeLnProbabilityTimes( vo
     size_t numTaxaAtPresent = 0;
     for (size_t i = 0; i < value->getNumberOfTips(); ++i)
     {
-        double a = taxa[i].getAge();
+        double a = value->getNode(i).getAge();
         if ( a > 0.0 ) {
             serialTimes.push_back(a);
         } else {
@@ -123,7 +123,6 @@ double ConstantPopulationHeterochronousCoalescent::computeLnProbabilityTimes( vo
     }
     
     
-    size_t currentInterval = 0;
     size_t j = numTaxaAtPresent;
     double windowStart = 0.0;
     

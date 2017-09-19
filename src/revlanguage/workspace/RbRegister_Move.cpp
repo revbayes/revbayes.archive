@@ -11,7 +11,7 @@
  * This is the central registry of Rev objects. It is a large file and needs
  * to be properly organized to facilitate maintenance. Follow these simple
  * guidelines to ensure that your additions follow the existing structure.
- * 
+ *
  * 1. All headers are added in groups corresponding to directories in the
  *    revlanguage code base.
  * 2. All objects (types, distributions, and functions) are registered in
@@ -58,12 +58,12 @@
 #include "Move_Slide.h"
 #include "Move_SlideBactrian.h"
 
+
 /* Moves on probability values */
 #include "Move_BetaProbability.h"
 
 /* Compound Moves on Real Values */
 #include "Move_UpDownSlide.h"
-#include "Move_UpDownSlideBactrian.h"
 #include "Move_UpDownTreeScale.h"
 #include "Move_LevyJumpSum.h"
 #include "Move_LevyJump.h"
@@ -91,11 +91,22 @@
 #include "Move_VectorFixedSingleElementSlide.h"
 #include "Move_VectorScale.h"
 #include "Move_VectorSlide.h"
+#include "Move_VectorSlideRecenter.h"
 
 /* Moves on real valued matrices */
+#include "Move_MatrixSingleElementScale.h"
 #include "Move_MatrixSingleElementSlide.h"
-#include "Move_ConjugateInverseWishartBrownian.h"
+
+/* Moves on correlation matrices */
+#include "Move_ConjugateInverseWishart.h"
 #include "Move_CorrelationMatrixUpdate.h"
+#include "Move_CorrelationMatrixElementSwap.h"
+#include "Move_CorrelationMatrixRandomWalk.h"
+#include "Move_CorrelationMatrixSingleElementBeta.h"
+#include "Move_CorrelationMatrixSpecificElementBeta.h"
+//#include "Move_CorrelationMatrixPartialSingleElementBeta.h"
+//#include "Move_CorrelationMatrixReparameterization.h"
+//#include "Move_CorrelationMatrixExpansion.h"
 
 /* Moves on continuous character data (real valued matrices) */
 #include "Move_ContinuousCharacterDataSlide.h"
@@ -112,6 +123,7 @@
 #include "Move_MixtureAllocation.h"
 #include "Move_GibbsMixtureAllocation.h"
 #include "Move_ReversibleJumpSwitchMove.h"
+#include "Move_UPPAllocation.h"
 
 // moves for the DPP table values
 #include "ScaleProposal.h"
@@ -119,8 +131,8 @@
 
 
 /* Moves on character histories/data augmentation */
-#include "Move_NodeCharacterHistoryRejectionSample.h"
-#include "Move_PathCharacterHistoryRejectionSample.h"
+// #include "Move_NodeCharacterHistoryRejectionSample.h"
+// #include "Move_PathCharacterHistoryRejectionSample.h"
 #include "Move_CharacterHistory.h"
 
 
@@ -133,12 +145,13 @@
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-#include "Move_AddRemoveFossil.h"
+#include "Move_AddRemoveTip.h"
 #include "Move_CollapseExpandFossilBranch.h"
 #include "Move_EmpiricalTree.h"
 #include "Move_FNPR.h"
-#include "Move_FossilTimeSlideUniform.h"
+#include "Move_TipTimeSlideUniform.h"
 #include "Move_GibbsPruneAndRegraft.h"
+#include "Move_LayeredScaleProposal.h"
 #include "Move_NarrowExchange.h"
 #include "Move_NNIClock.h"
 #include "Move_NNINonclock.h"
@@ -152,7 +165,6 @@
 #include "Move_SpeciesNodeTimeSlideUniform.h"
 #include "Move_SpeciesSubtreeScale.h"
 #include "Move_SpeciesSubtreeScaleBeta.h"
-#include "Move_TreeNodeAgeUpdate.h"
 #include "Move_SpeciesTreeScale.h"
 #include "Move_SubtreeScale.h"
 #include "Move_SPRNonclock.h"
@@ -165,15 +177,15 @@
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 {
-    
+
     try
-    {  
+    {
         ///////////////////////////////////////////////////////////////////////////////////
         /* Add moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
         ///////////////////////////////////////////////////////////////////////////////////
-        
+
         /* Regular moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
-        
+
         /* Moves on real values */
         addTypeWithConstructor( new Move_Scale() );
         addTypeWithConstructor( new Move_ScaleBactrian() );
@@ -183,17 +195,16 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         
         /* Moves on probability */
         addTypeWithConstructor( new Move_BetaProbability() );
-		
+
         /* compound moves */
 //        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
         addTypeWithConstructor( new Move_UpDownTreeScale() );
         addTypeWithConstructor( new Move_UpDownSlide() );
-        addTypeWithConstructor( new Move_UpDownSlideBactrian() );
-        
+
 		// compound moves on real values
         addTypeWithConstructor( new Move_LevyJumpSum() );
         addTypeWithConstructor( new Move_LevyJump() );
-        
+
         /* Moves on integer values */
         addTypeWithConstructor( new Move_RandomIntegerWalk() );
         addTypeWithConstructor( new Move_RandomGeometricWalk() );
@@ -203,30 +214,42 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_DirichletSimplex() );
         addTypeWithConstructor( new Move_BetaSimplex() );
         addTypeWithConstructor( new Move_ElementSwapSimplex() );
-        
+
         /* Moves on vectors of real values */
         addTypeWithConstructor( new Move_SingleElementSlide() );
         addTypeWithConstructor( new Move_SingleElementScale() );
         addTypeWithConstructor( new Move_ShrinkExpand() );
         addTypeWithConstructor( new Move_VectorScale() );
         addTypeWithConstructor( new Move_VectorSlide() );
+        addTypeWithConstructor( new Move_VectorSlideRecenter() );
         addTypeWithConstructor( new Move_ElementScale() );
         addTypeWithConstructor( new Move_ElementSlide() );
         addTypeWithConstructor( new Move_VectorSingleElementScale() );
         addTypeWithConstructor( new Move_VectorSingleElementSlide() );
         addTypeWithConstructor( new Move_VectorFixedSingleElementSlide() );
         addTypeWithConstructor( new Move_SynchronizedVectorFixedSingleElementSlide() );
-        
+
         /* Moves on matrices of real values */
+        addTypeWithConstructor( new Move_MatrixSingleElementScale() );
         addTypeWithConstructor( new Move_MatrixSingleElementSlide() );
-        addTypeWithConstructor( new Move_CorrelationMatrixUpdate() );
+
+        /* Moves on matrices of correlations */
+        addTypeWithConstructor( new Move_CorrelationMatrixUpdate()                   );
+        addTypeWithConstructor( new Move_CorrelationMatrixRandomWalk()               );
+        addTypeWithConstructor( new Move_CorrelationMatrixSingleElementBeta()        );
+        addTypeWithConstructor( new Move_CorrelationMatrixSpecificElementBeta()      );
+        addTypeWithConstructor( new Move_CorrelationMatrixElementSwap()              );
+
+//        addTypeWithConstructor( new Move_CorrelationMatrixPartialSingleElementBeta() );
+//        addTypeWithConstructor( new Move_CorrelationMatrixReparameterization()       );
+//        addTypeWithConstructor( new Move_CorrelationMatrixExpansion()                );
 
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_MatrixRealSymmetricSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor( new Move_ConjugateInverseWishartBrownian() );
-        
+        addTypeWithConstructor( new Move_ConjugateInverseWishart() );
+
         /* Moves on continuous character data (matrices of real values) */
         addTypeWithConstructor( new Move_ContinuousCharacterDataSlide() );
 
@@ -258,7 +281,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Probability>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Simplex>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RateGenerator>( ) );
-        
+        addTypeWithConstructor( new Move_UPPAllocation<RealPos>() );
+
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Real>( )                  );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<RealPos>( )               );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Natural>( )               );
@@ -267,8 +291,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Simplex>( )               );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Tree>( )                  );
-        
-        
+
+
         addTypeWithConstructor( new Move_BirthDeathEvent()                      );
         addTypeWithConstructor( new Move_DiscreteEventCategoryRandomWalk()      );
         addTypeWithConstructor( new Move_EventTimeBeta()                        );
@@ -276,12 +300,12 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-        //addTypeWithConstructor( new Move_AddRemoveFossil()     );
+        addTypeWithConstructor( new Move_AddRemoveTip()     );
         addTypeWithConstructor( new Move_CollapseExpandFossilBranch()     );
 		addTypeWithConstructor( new Move_EmpiricalTree()                  );
         addTypeWithConstructor( new Move_FNPR()                           );
-        addTypeWithConstructor( new Move_FossilTimeSlideUniform()           );
         addTypeWithConstructor( new Move_GibbsPruneAndRegraft()           );
+        addTypeWithConstructor( new Move_LayeredScaleProposal()                 );
         addTypeWithConstructor( new Move_NarrowExchange()                 );
         addTypeWithConstructor( new Move_NNIClock()                       );
         addTypeWithConstructor( new Move_NNINonclock()                    );
@@ -297,37 +321,31 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_SpeciesNodeTimeSlideUniform()    );
         addTypeWithConstructor( new Move_SpeciesSubtreeScale()            );
         addTypeWithConstructor( new Move_SpeciesSubtreeScaleBeta()        );
-        addTypeWithConstructor( new Move_TreeNodeAgeUpdate()              );
+        addTypeWithConstructor( new Move_TipTimeSlideUniform()            );
         addTypeWithConstructor( new Move_SpeciesTreeScale()               );
         addTypeWithConstructor( new Move_TreeScale()                      );
-//        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
-//        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
-        
-        addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()         );
+        addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()       );
 
-        
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor( new Move_CharacterHistory() );
-        addTypeWithConstructor( new Move_NodeCharacterHistoryRejectionSample() );
-        addTypeWithConstructor( new Move_PathCharacterHistoryRejectionSample() );
+        // addTypeWithConstructor( new Move_NodeCharacterHistoryRejectionSample() );
+        // addTypeWithConstructor( new Move_PathCharacterHistoryRejectionSample() );
 
     }
     catch(RbException& rbException)
     {
-        
+
         RBOUT("Caught an exception while initializing moves in the workspace\n");
         std::ostringstream msg;
         rbException.print(msg);
         msg << std::endl;
         RBOUT(msg.str());
-        
+
         RBOUT("Please report this bug to the RevBayes Development Core Team");
-        
+
         RBOUT("Press any character to exit the program.");
         getchar();
         exit(1);
     }
-    
+
 }
-
-

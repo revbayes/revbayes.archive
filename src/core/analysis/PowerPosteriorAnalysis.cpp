@@ -10,10 +10,9 @@
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RbOptions.h"
-#include "SequenctialMoveSchedule.h"
-
 #include <cmath>
 #include <typeinfo>
+#include "SequentialMoveSchedule.h"
 
 
 #ifdef RB_MPI
@@ -289,7 +288,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
         if ( k > burnin && k % sampleFreq == 0 )
         {
             // compute the joint likelihood
-            double likelihood = sampler->getModelLnProbability();
+            double likelihood = sampler->getModelLnProbability(true);
             outStream << k << "\t" << p << "\t" << likelihood << std::endl;
         }
             

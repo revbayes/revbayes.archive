@@ -15,13 +15,6 @@ const std::vector<RbHelpArgument>& RbHelpFunction::getArguments( void ) const
 }
 
 
-const std::string& RbHelpFunction::getExample( void ) const
-{
-    // return a const reference to the internal value
-    return example;
-}
-
-
 const std::string& RbHelpFunction::getReturnType( void ) const
 {
     // return a const reference to the internal value
@@ -40,13 +33,6 @@ void RbHelpFunction::setArguments(const std::vector<RbHelpArgument> &a)
 {
     // overwrite the internal value with the new value
     arguments = a;
-}
-
-
-void RbHelpFunction::setExample(const std::string &e)
-{
-    // overwrite the internal value with the new value
-    example = e;
 }
 
 

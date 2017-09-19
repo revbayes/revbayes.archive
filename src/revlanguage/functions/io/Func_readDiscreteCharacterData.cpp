@@ -75,7 +75,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
     
     // the vector of matrices;
-    WorkspaceVector<AbstractCharacterData> *m = new WorkspaceVector<AbstractCharacterData>();
+    ModelVector<AbstractHomologousDiscreteCharacterData> *m = new ModelVector<AbstractHomologousDiscreteCharacterData>();
     
     // the return value
     RevObject* retVal = NULL;
@@ -276,7 +276,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
             // set the return value
             if ( return_as_vector == false )
             {
-                retVal = (*m)[0].clone();
+                retVal = new AbstractHomologousDiscreteCharacterData( (*m)[0] );
                 delete m;
             }
             else

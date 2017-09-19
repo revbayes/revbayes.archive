@@ -31,19 +31,21 @@ namespace RevLanguage {
     class PomoState : public ModelObject<RevBayesCore::PomoState> {
         
     public:
-        PomoState(void);                                                                                   //!< Default constructor
-        PomoState(const RevBayesCore::PomoState &d);                                                  //!< Construct from PomoState
+                                        PomoState(void);                                //!< Default constructor
+                                        PomoState(const RevBayesCore::PomoState &d);    //!< Construct from PomoState
         
         // Operators
         
         // Basic utility functions
-        PomoState*                      clone(void) const;                                                      //!< Clone object
-        static const std::string&       getClassType(void);                                                     //!< Get Rev type
-        static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
-        const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
+        PomoState*                      clone(void) const;                              //!< Clone object
+        static const std::string&       getClassType(void);                             //!< Get Rev type
+        static const TypeSpec&          getClassTypeSpec(void);                         //!< Get class type spec
+        const TypeSpec&                 getTypeSpec(void) const;                        //!< Get language type of the object
         
+        std::string                     getGuiName(void) { return ""; }
+        std::string                     getGuiUnicodeSymbol(void) { return ""; }
+        std::string                     getGuiInfo(void) { return ""; }
     };
-    
 }
 
 #endif

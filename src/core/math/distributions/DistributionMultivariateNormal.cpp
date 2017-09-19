@@ -10,6 +10,7 @@
 #include "DistributionMultivariateNormal.h"
 #include "DistributionNormal.h"
 #include "EigenSystem.h"
+#include "CholeskyDecomposition.h"
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathFunctions.h"
@@ -72,46 +73,69 @@ double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<doubl
 
 std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::vector<double>& mu, const MatrixReal& sigma, RandomNumberGenerator& rng, double scale)
 {
+    
+    sigma.setCholesky(true);
     double sqrtScale = sqrt(scale);
     size_t dim = sigma.getDim();
-    std::vector<double> v = std::vector<double>(dim, 0.0);
-    std::vector<double> w = std::vector<double>(dim, 0.0);
     
-    // the eigen system of the covariance matrix
-    const EigenSystem& eigensystem = sigma.getEigenSystem();
-    
-    // get the eigenvalues of the *covariance* matrix
-    const std::vector<double>& eigen = eigensystem.getRealEigenvalues();
-    
-    // draw the normal variate in eigen basis
-    for (size_t i=0; i<dim; i++)
+    MatrixReal W(dim, 1, 0.0);
+    for(size_t i = 0; i < dim; ++i)
     {
-//        w[i] = RbStatistics::Normal::rv(0, sqrtScale, rng);
-        
-        if ( eigen[i] < 0.0 )
-        {
-            throw RbException("Cannot draw random value of multivariate normal distribution because eigenvalues of the covariance matrix are negative.");
-        }
-        
-        w[i] = RbStatistics::Normal::rv(0, sqrtScale * sqrt(eigen[i]), rng);
+        W[i][0] = RbStatistics::Normal::rv(0, sqrtScale, rng);
     }
+    const CholeskyDecomposition& cd = sigma.getCholeskyDecomposition();
+    const MatrixReal L = cd.getLowerCholeskyFactor();
     
-    // get the eigenvector
-    const MatrixReal& eigenvect = eigensystem.getEigenvectors();
-    
-    // change basis
-    for (size_t i = 0; i < dim; ++i)
+    MatrixReal V = L * W;
+    std::vector<double> v = std::vector<double>(dim, 0.0);
+    for(size_t i = 0; i < dim; ++i)
     {
-        double tmp = 0;
-        for (size_t j = 0; j < dim; ++j)
-        {
-            tmp += eigenvect[i][j] * w[j];
-        }
-        v[i] = tmp + mu[i];
-        
+        v[i] = mu[i] + V[i][0];
     }
     
     return v;
+
+//    double sqrtScale = sqrt(scale);
+//    size_t dim = sigma.getDim();
+//    std::vector<double> v = std::vector<double>(dim, 0.0);
+//    std::vector<double> w = std::vector<double>(dim, 0.0);
+//
+//    // the eigen system of the covariance matrix
+//    const EigenSystem& eigensystem = sigma.getEigenSystem();
+//    
+//    // get the eigenvalues of the *covariance* matrix
+//    const std::vector<double>& eigen = eigensystem.getRealEigenvalues();
+//    
+//    // draw the normal variate in eigen basis
+//    for (size_t i=0; i<dim; i++)
+//    {
+////        w[i] = RbStatistics::Normal::rv(0, sqrtScale, rng);
+//        
+//        if ( eigen[i] < 0.0 )
+//        {
+//            throw RbException("Cannot draw random value of multivariate normal distribution because eigenvalues of the covariance matrix are negative.");
+//        }
+//        
+//        w[i] = RbStatistics::Normal::rv(0, sqrtScale * sqrt(eigen[i]), rng);
+//    }
+//    
+//    // get the eigenvector
+//    const MatrixReal& eigenvect = eigensystem.getEigenvectors();
+//    
+//    // change basis
+//    for (size_t i = 0; i < dim; ++i)
+//    {
+//        double tmp = 0;
+//        for (size_t j = 0; j < dim; ++j)
+//        {
+//            tmp += eigenvect[i][j] * w[j];
+//        }
+//        v[i] = tmp + mu[i];
+//        
+//    }
+//    
+//    return v;
+    
 }
 
 /*!
@@ -154,6 +178,11 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
         return logDet;
     }
     
+    if ( omega.getCholeskyDecomposition().checkPositiveSemidefinite() == false )
+    {
+        return RbConstants::Double::neginf;
+    }
+
     size_t dim = x.size();
     std::vector<double> tmp = std::vector<double>(dim,0.0);
     
@@ -171,6 +200,7 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
     double lnProb = dim * logNormalize + 0.5 * (logDet - dim * log(scale) - s2 / scale);
 
     return lnProb;
+    
 }
 
 
@@ -186,43 +216,46 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
  */
 std::vector<double> RbStatistics::MultivariateNormal::rvPrecision(const std::vector<double>& mu, const MatrixReal& omega, RandomNumberGenerator& rng, double scale)
 {
+ 
+    omega.setCholesky(true);
+    return rvCovariance(mu, omega.computeInverse(), rng, scale);
     
-    double sqrtScale = sqrt(scale);
-    size_t dim = omega.getDim();
-    std::vector<double> v = std::vector<double>(dim, 0.0);
-    std::vector<double> w = std::vector<double>(dim, 0.0);
-
-    const EigenSystem &eigensystem = omega.getEigenSystem();
-    
-    // get the eigenvalues of the *precision* matrix
-    const std::vector<double>& eigen = eigensystem.getRealEigenvalues();
-    
-    // draw the normal variate in eigen basis
-    for (size_t i=0; i<dim; i++)
-    {
-//        w[i] = RbStatistics::Normal::rv(0, sqrtScale, rng);
-        if ( eigen[i] < 0.0 )
-        {
-            throw RbException("Cannot draw random value of multivariate normal distribution because eigenvalues of the covariance matrix are negative.");
-        }
-
-        w[i] = RbStatistics::Normal::rv(0, sqrtScale / sqrt(eigen[i]), rng);
-    }
-    
-    // get the eigenvector
-    const MatrixReal& eigenvect = eigensystem.getEigenvectors();
-    
-    // change basis
-    for (size_t i=0; i<dim; i++)
-    {
-        double tmp = 0;
-        for (size_t j=0; j<dim; j++)
-        {
-            tmp += eigenvect[i][j] * w[j];
-        }
-        v[i] = tmp + mu[i];
-    }
-
-    
-    return v;
+//    double sqrtScale = sqrt(scale);
+//    size_t dim = omega.getDim();
+//    std::vector<double> v = std::vector<double>(dim, 0.0);
+//    std::vector<double> w = std::vector<double>(dim, 0.0);
+//
+//    const EigenSystem &eigensystem = omega.getEigenSystem();
+//    
+//    // get the eigenvalues of the *precision* matrix
+//    const std::vector<double>& eigen = eigensystem.getRealEigenvalues();
+//    
+//    // draw the normal variate in eigen basis
+//    for (size_t i=0; i<dim; i++)
+//    {
+////        w[i] = RbStatistics::Normal::rv(0, sqrtScale, rng);
+//        if ( eigen[i] < 0.0 )
+//        {
+//            throw RbException("Cannot draw random value of multivariate normal distribution because eigenvalues of the covariance matrix are negative.");
+//        }
+//
+//        w[i] = RbStatistics::Normal::rv(0, sqrtScale / sqrt(eigen[i]), rng);
+//    }
+//    
+//    // get the eigenvector
+//    const MatrixReal& eigenvect = eigensystem.getEigenvectors();
+//    
+//    // change basis
+//    for (size_t i=0; i<dim; i++)
+//    {
+//        double tmp = 0;
+//        for (size_t j=0; j<dim; j++)
+//        {
+//            tmp += eigenvect[i][j] * w[j];
+//        }
+//        v[i] = tmp + mu[i];
+//    }
+//
+//    
+//    return v;
 }

@@ -8,7 +8,8 @@
 
 using namespace RevBayesCore;
 
-TreeDiscreteCharacterData::TreeDiscreteCharacterData()
+TreeDiscreteCharacterData::TreeDiscreteCharacterData() :
+        character_data(NULL)
 {
     
 }
@@ -33,6 +34,13 @@ const AbstractHomologousDiscreteCharacterData& TreeDiscreteCharacterData::getCha
 {
     
     return *character_data;
+}
+
+
+bool TreeDiscreteCharacterData::hasCharacterData( void ) const
+{
+
+    return character_data != NULL;
 }
 
 

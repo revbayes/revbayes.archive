@@ -21,17 +21,17 @@ SpeciesTreeScaleProposal::SpeciesTreeScaleProposal( StochasticNode<Tree> *sp, St
     rootAge( r ),
     delta( d )
 {
-    
+
     // tell the base class to add the node
     addNode( speciesTree );
     addNode( rootAge );
-    
+
 }
 
 
 SpeciesTreeScaleProposal::~SpeciesTreeScaleProposal( void )
 {
-    
+
 }
 
 
@@ -51,14 +51,14 @@ void SpeciesTreeScaleProposal::addGeneTree(StochasticNode<Tree> *gt)
             break;
         }
     }
-    
+
     // only add this variable if it doesn't exist in our list already
     if ( exists == false )
     {
         geneTrees.push_back( gt );
         addNode( gt );
     }
-    
+
 }
 
 
@@ -80,7 +80,7 @@ void SpeciesTreeScaleProposal::cleanProposal( void )
  */
 SpeciesTreeScaleProposal* SpeciesTreeScaleProposal::clone( void ) const
 {
-    
+
     return new SpeciesTreeScaleProposal( *this );
 }
 
@@ -93,7 +93,7 @@ SpeciesTreeScaleProposal* SpeciesTreeScaleProposal::clone( void ) const
 const std::string& SpeciesTreeScaleProposal::getProposalName( void ) const
 {
     static std::string name = "SpeciesTreeScale";
-    
+
     return name;
 }
 
@@ -105,52 +105,53 @@ const std::string& SpeciesTreeScaleProposal::getProposalName( void ) const
  */
 double SpeciesTreeScaleProposal::doProposal( void )
 {
-    
+
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
-    
+
     Tree& tau = speciesTree->getValue();
-    
+
     // get the root of the species tree
     TopologyNode& root = tau.getRoot();
-    
+
     // we need to work with the times
     double my_age      = root.getAge();
-    
+
     // now we store all necessary values
     storedAge = my_age;
-    
+
     // draw new ages and compute the hastings ratio at the same time
     double u = rng->uniform01();
     double scaling_factor = std::exp( delta * ( u - 0.5 ) );
-    
+
     // Sebastian: This is for debugging to test if the proposal's acceptance rate is 1.0 as it should be!
 //    scaling_factor = 1.0;
-    
+
     double my_new_age = my_age * scaling_factor;
-    
+
     if ( rootAge != NULL )
     {
         rootAge->setValue( new double(my_new_age) );
     }
-    
+
     size_t num_nodes = tau.getNumberOfInteriorNodes();
-    
+
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
         Tree& gene_tree = geneTrees[i]->getValue();
-        
+
         // rescale the subtree of this gene tree
-        TreeUtilities::rescaleTree(&gene_tree, &gene_tree.getRoot(), scaling_factor );
-        
+//        TreeUtilities::rescaleTree(&gene_tree, &gene_tree.getRoot(), scaling_factor );
+        TreeUtilities::rescaleSubtree(&gene_tree, &gene_tree.getRoot(), scaling_factor );
+
         num_nodes += gene_tree.getNumberOfInteriorNodes();
-        
+
         // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
 //        geneTrees[i]->touch( true );
-        
+
     }
-    
+
     // Sebastian: We need to work on a mechanism to make these proposal safe for non-ultrametric trees!
     //    if (min_age != 0.0)
     //    {
@@ -162,14 +163,15 @@ double SpeciesTreeScaleProposal::doProposal( void )
     //            }
     //        }
     //    }
-    
-    
+
+
     // rescale the subtree of the species tree
     TreeUtilities::rescaleSubtree(&tau, &root, scaling_factor );
-    
+
     // compute the Hastings ratio
     double lnHastingsratio = log( scaling_factor ) * num_nodes;
-    
+
+
     return lnHastingsratio;
 }
 
@@ -179,7 +181,7 @@ double SpeciesTreeScaleProposal::doProposal( void )
  */
 void SpeciesTreeScaleProposal::prepareProposal( void )
 {
-    
+
 }
 
 
@@ -193,9 +195,9 @@ void SpeciesTreeScaleProposal::prepareProposal( void )
  */
 void SpeciesTreeScaleProposal::printParameterSummary(std::ostream &o) const
 {
-    
+
     o << "delta = " << delta;
-    
+
 }
 
 
@@ -214,7 +216,7 @@ void SpeciesTreeScaleProposal::removeGeneTree(StochasticNode<Tree> *gt)
             --i;
         }
     }
-    
+
 }
 
 
@@ -228,31 +230,32 @@ void SpeciesTreeScaleProposal::removeGeneTree(StochasticNode<Tree> *gt)
 void SpeciesTreeScaleProposal::undoProposal( void )
 {
     // undo the proposal
-    
+
     Tree& tau = speciesTree->getValue();
-    
+
     TopologyNode& node = tau.getRoot();
-    
+
     double sf = storedAge / node.getAge();
-    
+
     // re-scale
     TreeUtilities::rescaleSubtree(&tau, &node, sf );
-    
+
     if ( rootAge != NULL )
     {
         rootAge->setValue( new double(storedAge) );
     }
-    
+
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
         Tree& gene_tree = geneTrees[i]->getValue();
-        
+
         // rescale the subtree of this gene tree
-        TreeUtilities::rescaleTree(&gene_tree, &gene_tree.getRoot(), sf );
-        
+        //TreeUtilities::rescaleTree(&gene_tree, &gene_tree.getRoot(), sf );
+        TreeUtilities::rescaleSubtree(&gene_tree, &gene_tree.getRoot(), sf );
+
     }
-    
+
 }
 
 
@@ -264,7 +267,7 @@ void SpeciesTreeScaleProposal::undoProposal( void )
  */
 void SpeciesTreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    
+
     if ( oldN == rootAge )
     {
         rootAge = static_cast<StochasticNode<double>* >(newN) ;
@@ -284,14 +287,14 @@ void SpeciesTreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
                 ++num_found_trees;
             }
         }
-        
+
         if ( num_found_trees != 1 )
         {
             std::cerr << "Found " << num_found_trees << " DAG nodes matching to node \"" << oldN->getName() << "\".";
         }
-        
+
     }
-    
+
 }
 
 
@@ -304,7 +307,7 @@ void SpeciesTreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
  */
 void SpeciesTreeScaleProposal::tune( double rate )
 {
-    
+
     if ( rate > 0.234 )
     {
         delta *= (1.0 + ((rate-0.234)/0.766) );
@@ -313,6 +316,5 @@ void SpeciesTreeScaleProposal::tune( double rate )
     {
         delta /= (2.0 - rate/0.234 );
     }
-    
-}
 
+}

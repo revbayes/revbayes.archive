@@ -31,19 +31,21 @@ namespace RevLanguage {
     class RnaState : public ModelObject<RevBayesCore::RnaState> {
         
     public:
-        RnaState(void);                                                                                         //!< Default constructor
-        RnaState(const RevBayesCore::RnaState &d);                                                              //!< Construct from Rna
+                                        RnaState(void);                                 //!< Default constructor
+                                        RnaState(const RevBayesCore::RnaState &d);      //!< Construct from Rna
         
         // Operators
         
         // Basic utility functions
-        RnaState*                       clone(void) const;                                                      //!< Clone object
-        static const std::string&       getClassType(void);                                                     //!< Get Rev type
-        static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
-        const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
+        RnaState*                       clone(void) const;                              //!< Clone object
+        static const std::string&       getClassType(void);                             //!< Get Rev type
+        static const TypeSpec&          getClassTypeSpec(void);                         //!< Get class type spec
+        const TypeSpec&                 getTypeSpec(void) const;                        //!< Get language type of the object
         
+        std::string                     getGuiName(void) { return "RNA State"; }
+        std::string                     getGuiUnicodeSymbol(void) { return "S(RNA)"; }
+        std::string                     getGuiInfo(void) { return ""; }
     };
-    
 }
 
 #endif

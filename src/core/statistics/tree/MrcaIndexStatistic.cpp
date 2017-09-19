@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-MrcaIndexStatistic::MrcaIndexStatistic(const TypedDagNode<Tree> *t, const Clade &c) : TypedFunction<int>( new int(-1) ),
+MrcaIndexStatistic::MrcaIndexStatistic(const TypedDagNode<Tree> *t, const Clade &c) : TypedFunction<long>( new long(-1) ),
     tree( t ),
     clade( c ),
     index( RbConstants::Size_t::nan )

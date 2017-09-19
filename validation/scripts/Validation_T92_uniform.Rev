@@ -80,7 +80,7 @@ moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
 ###################
 
 # We use an empirical estimate of the clock rate which is 0.01 (=1%) per million years per site
-clockRate <- 0.01
+clockRate <- 0.005
 
 # the sequence evolution model
 seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=clockRate, type="DNA")

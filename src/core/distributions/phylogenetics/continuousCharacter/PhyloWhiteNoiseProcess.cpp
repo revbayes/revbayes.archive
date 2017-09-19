@@ -29,20 +29,24 @@ PhyloWhiteNoiseProcess::PhyloWhiteNoiseProcess(const TypedDagNode< Tree > *t, co
 }
 
 
-PhyloWhiteNoiseProcess* PhyloWhiteNoiseProcess::clone(void) const {
+PhyloWhiteNoiseProcess* PhyloWhiteNoiseProcess::clone(void) const
+{
     return new PhyloWhiteNoiseProcess( *this );
 }
 
 
-double PhyloWhiteNoiseProcess::computeLnProbability(void) {
+double PhyloWhiteNoiseProcess::computeLnProbability(void)
+{
   
     return recursiveLnProb(tau->getValue().getRoot());
 }
 
-double PhyloWhiteNoiseProcess::recursiveLnProb(const TopologyNode &from)   {
+double PhyloWhiteNoiseProcess::recursiveLnProb(const TopologyNode &from)
+{
 
     double lnProb = 0.0;
-    if (! from.isRoot())   {
+    if ( from.isRoot() == false )
+    {
         // compute the variance
         double mean = 1.0;
         double stdev = sigma->getValue() / sqrt(from.getBranchLength());
@@ -53,7 +57,8 @@ double PhyloWhiteNoiseProcess::recursiveLnProb(const TopologyNode &from)   {
     }
     
     size_t numChildren = from.getNumberOfChildren();
-    for (size_t i = 0; i < numChildren; ++i) {
+    for (size_t i = 0; i < numChildren; ++i)
+    {
         const TopologyNode& child = from.getChild(i);
         lnProb += recursiveLnProb(child);
             

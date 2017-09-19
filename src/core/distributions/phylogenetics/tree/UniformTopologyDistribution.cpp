@@ -1,4 +1,5 @@
 #include "UniformTopologyDistribution.h"
+#include "Clade.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -16,7 +17,7 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
 	constraints( c ),
     logTreeTopologyProb( RbConstants::Double::nan ),
     outgroup( og ),
-	rooted(rt)
+	rooted( rt )
 {
     
 	double branchLnFact = 0.0;
@@ -28,7 +29,6 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
         {
 			nodeLnFact += std::log(i);
         }
-        
 	}
     
     logTreeTopologyProb = (num_taxa - 2 - !rooted) * RbConstants::LN2 + nodeLnFact - branchLnFact;
@@ -42,6 +42,14 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
 
     // order taxon names
     std::sort(ordered_taxa.begin(), ordered_taxa.end());
+    
+    // pick an outgroup if this topology is unrooted and no outgroup was specified
+    if ( outgroup.size() == 0 && rooted == false )
+    {
+        
+        outgroup.addTaxon( ordered_taxa[0] );
+        
+    }
 
     std::map<Taxon, size_t> taxon_bitset_map;
     // add taxa to bitset map
@@ -60,10 +68,10 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
 
     outgroup.setBitRepresentation( b );
 
-    for(size_t i = 0; i < constraints.size(); i++)
+    for (size_t i = 0; i < constraints.size(); ++i)
     {
         RbBitSet b( num_taxa );
-        for(size_t j = 0; j < constraints[i].size(); j++)
+        for (size_t j = 0; j < constraints[i].size(); ++j)
         {
             size_t k = taxon_bitset_map[ constraints[i].getTaxonName(j) ];
 
@@ -101,7 +109,7 @@ double UniformTopologyDistribution::computeLnProbability( void )
         return RbConstants::Double::neginf;
     }
     
-    if(outgroup.size() > 0)
+    if( outgroup.size() > 0 )
     {
 		// now we check that the outgroup is correct
 		const TopologyNode &root = value->getRoot();
@@ -117,6 +125,34 @@ double UniformTopologyDistribution::computeLnProbability( void )
 				break;
 			}
 		}
+        
+        // Check that this isn't an artifact of arbitrary outgroup choice + clamping
+        if ( contains_outgroup == false && outgroup.size() == 1 )
+        {
+            // Grab tree before re-rooting in case we're wrong
+            Tree *psi = value;
+            value->reroot(outgroup,true);
+            
+            const TopologyNode &root = value->getRoot();
+            const std::vector<TopologyNode*> &children = root.getChildren();
+            for (size_t i=0; i<children.size(); ++i)
+            {
+                const TopologyNode &child = *(children[i]);
+                Clade c = child.getClade();
+                if ( c == outgroup )
+                {
+                    contains_outgroup = true;
+                    break;
+                }
+            }
+            
+            // reset value if not an artifact
+            if ( contains_outgroup == false )
+            {
+                value = psi;
+            }
+            
+        }
 
 		if ( contains_outgroup == false )
 		{
@@ -386,7 +422,7 @@ void UniformTopologyDistribution::simulateTree( void )
 			TopologyNode *right_child  = &(ingroup_root->getChild(1));
 
 			TopologyNode *new_child;
-			if(left_child->isTip())
+			if ( left_child->isTip() == true )
 			{
 				root = right_child;
 				new_child = left_child;
@@ -419,8 +455,10 @@ void UniformTopologyDistribution::simulateTree( void )
     // re-couple tip node names with tip indices
     // this is necessary because otherwise tip names get scrambled across replicates
     for (size_t i=0; i<num_taxa; i++)
+    {
     	psi->getTipNodeWithName(taxa[i].getName()).setIndex(i);
-
+    }
+    
     psi->orderNodesByIndex();
 
 }

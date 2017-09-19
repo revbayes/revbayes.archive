@@ -3,6 +3,7 @@
 
 using namespace RevBayesCore;
 
+
 HkyRateMatrixFunction::HkyRateMatrixFunction(const TypedDagNode<double> *k, const TypedDagNode< Simplex > *bf) : TypedFunction<RateGenerator>( new RateMatrix_HKY() ),
     base_frequencies( bf ),
     kappa( k )

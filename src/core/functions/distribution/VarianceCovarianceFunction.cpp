@@ -36,17 +36,17 @@ void VarianceCovarianceFunction::update(void)
     const std::vector<double>& s = standardDeviations->getValue();
     const std::vector<double>& p = correlationCoefficients->getValue();
     
-    int k = 0;
-    for (int i=0; i<s.size(); i++)
-        {
+    size_t k = 0;
+    for (size_t i = 0; i < s.size(); i++)
+    {
         (*value)[i][i] = s[i] * s[i];
-        for (int j=i+1; j<s.size(); j++)
-            {
+        for (size_t j = i + 1; j < s.size(); j++)
+        {
             (*value)[i][j] = s[i] * s[j] * p[k];
             (*value)[j][i] = s[i] * s[j] * p[k];
             k++;
-            }
         }
+    }
 }
 
 
@@ -55,13 +55,13 @@ void VarianceCovarianceFunction::swapParameterInternal(const DagNode *oldP, cons
 
     // check dimensions here
     if (oldP == standardDeviations)
-        {
+    {
         standardDeviations = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
-        }
+    }
     else if (oldP == correlationCoefficients)
-        {
+    {
         correlationCoefficients = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
-        }
+    }
     
 }
 

@@ -3,6 +3,7 @@
 
 #include "DelimitedDataReader.h"
 #include "MatrixReal.h"
+#include "Taxon.h"
 #include <string>
 #include <vector>
 
@@ -27,14 +28,14 @@ namespace RevBayesCore {
 		
 		DistanceMatrixReader(const std::string &fn, char d='\t', size_t ns=0);
 		
-		const std::vector<std::string>&                 getNames(void);
+		const std::vector<Taxon>&                       getTaxa(void);
 		const MatrixReal&   							getMatrix(void);
 		
 		
 		
 	protected:
 		
-		std::vector<std::string>                        names;
+		std::vector<Taxon>                              taxa;
 		MatrixReal          							matrix;
 		
 	};

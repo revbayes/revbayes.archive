@@ -29,7 +29,7 @@ namespace RevBayesCore {
         
     public:
         
-        OdeHeterogeneousRateBirthDeath( const RbVector<double> &l, const RbVector<double> &m, double r);
+        OdeHeterogeneousRateBirthDeath( const RbVector<double> &l, const RbVector<double> &m, double r, bool a);
         
         void operator() ( const state_type &x , state_type &dxdt , const double t );
 

@@ -6,7 +6,10 @@ compiler:
 script:
   - cd projects/cmake
   - ./build.sh
-  - echo "\"Hello World\"" | ./rb
+  - cd ../..
+  - echo "\"Hello World\"" | projects/cmake/rb
+  - cd tests
+  - ./run_integration_tests.sh
 
 # safelist
 branches:

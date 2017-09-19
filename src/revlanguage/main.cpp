@@ -20,7 +20,6 @@ int main(int argc, char* argv[]) {
     int num_processes = 0;
     try
     {
-//        MPI::Init(argc, argv);
         MPI_Init(&argc, &argv);
 //        process_id = MPI::COMM_WORLD.Get_rank();
         MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
@@ -36,7 +35,6 @@ int main(int argc, char* argv[]) {
             
         }
         
-//        MPI::COMM_WORLD.Bcast(&seed, 1, MPI_INT, 0);
         MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
         
         RevBayesCore::GLOBAL_RNG->setSeed( seed );
@@ -46,7 +44,7 @@ int main(int argc, char* argv[]) {
     {
         return -1;
     }
-#   endif
+#endif
     
     /* seek out files from command line */
     std::vector<std::string> sourceFiles;
@@ -64,6 +62,7 @@ int main(int argc, char* argv[]) {
 
 #   ifndef RB_MPI
     int process_id = 0;
+
 #   endif
     /* Declare things we need */
     int result = 0;
@@ -106,7 +105,6 @@ int main(int argc, char* argv[]) {
         
         size_t bsz = commandLine.size();
 #       ifdef RB_MPI
-//        MPI::COMM_WORLD.Bcast(&bsz, 1, MPI_INT, 0);
         MPI_Bcast(&bsz, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #       endif
         
@@ -117,7 +115,6 @@ int main(int argc, char* argv[]) {
             buffer[i] = commandLine[i];
         }
 #       ifdef RB_MPI
-//        MPI::COMM_WORLD.Bcast(buffer, (int)bsz, MPI_CHAR, 0);
         MPI_Bcast(buffer, (int)bsz, MPI_CHAR, 0, MPI_COMM_WORLD);
 #       endif
         
@@ -134,7 +131,6 @@ int main(int argc, char* argv[]) {
 #   endif
 
 #   ifdef RB_MPI
-//    MPI::Finalize();
     MPI_Finalize();
 #   endif
     

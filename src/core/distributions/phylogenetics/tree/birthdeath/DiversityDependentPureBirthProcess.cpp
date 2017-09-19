@@ -20,7 +20,7 @@ using namespace RevBayesCore;
  * \param[in]    tn     Taxa.
  * \param[in]    c      Clades conditioned to be present.
  */
-DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<int> *k,
+DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<long> *k,
                                                                        const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
         initialSpeciation( s ), 
         capacity( k ) 
@@ -79,7 +79,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     int k = capacity->getValue();
     double lastTime = 0.0;
     double speciationRate, timeInterval;
-    for (size_t i = 1; i < num_taxa-1; ++i)
+    for (size_t i = 1; i < value->getNumberOfTips()-1; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 
@@ -143,33 +143,42 @@ double DiversityDependentPureBirthProcess::simulateDivergenceTime(double origin,
     // this is not until actually an event happened but a uniform time before the next species would have been sampled.
     
     double rate = fmax( 1.0 - ((n+3)/k), 1E-8 ) * lambda;
-    double t = RbStatistics::Exponential::rv(rate, *rng);
-    double lastEvent = t * rng->uniform01();
+    double t = present;
     
-    std::vector<double> *times = new std::vector<double>(n,0.0);
-    (*times)[n-1] = lastEvent;
-    for (size_t i = 1; i < n; i++ )
-    {
-        rate = ( 1.0 - ((n-i+2)/k) ) * lambda;
-        t = lastEvent + RbStatistics::Exponential::rv(rate, *rng);
-        lastEvent = t;
-        (*times)[n-i-1] = t;
-    }
+    do {
+        t = RbStatistics::Exponential::rv(rate, *rng);
+    } while ( t + origin > present );
     
-    rate = ( 1.0 - (2/k) ) * lambda;
-    lastEvent += RbStatistics::Exponential::rv(rate, *rng);
-
     
-    // rescale the times
-    for (size_t i = 0; i < n; i++ )
-    {
-        (*times)[i] = (*times)[i] *  origin / lastEvent;
-    }
     
-    // finally sort the times
-    std::sort(times->begin(), times->end());
-	
-    return (*times)[0];
+    return origin + t;
+    
+//    double lastEvent = t * rng->uniform01();
+//    
+//    std::vector<double> *times = new std::vector<double>(n,0.0);
+//    (*times)[n-1] = lastEvent;
+//    for (size_t i = 1; i < n; i++ )
+//    {
+//        rate = ( 1.0 - ((n-i+2)/k) ) * lambda;
+//        t = lastEvent + RbStatistics::Exponential::rv(rate, *rng);
+//        lastEvent = t;
+//        (*times)[n-i-1] = t;
+//    }
+//    
+//    rate = ( 1.0 - (2/k) ) * lambda;
+//    lastEvent += RbStatistics::Exponential::rv(rate, *rng);
+//
+//    
+//    // rescale the times
+//    for (size_t i = 0; i < n; i++ )
+//    {
+//        (*times)[i] = (*times)[i] *  origin / lastEvent;
+//    }
+//    
+//    // finally sort the times
+//    std::sort(times->begin(), times->end());
+//	
+//    return (*times)[0];
 }
 
 
@@ -189,7 +198,7 @@ void DiversityDependentPureBirthProcess::swapParameterInternal(const DagNode *ol
     }
     else if (oldP == capacity) 
     {
-        capacity = static_cast<const TypedDagNode<int>* >( newP );
+        capacity = static_cast<const TypedDagNode<long>* >( newP );
     }
     else 
     {

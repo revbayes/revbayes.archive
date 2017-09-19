@@ -57,7 +57,6 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     setTaxonNameArgRules->push_back(        new ArgumentRule("new"        , RlString::getClassTypeSpec(), "The new name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     taxonIndexArgRules->push_back(          new ArgumentRule("name"       , RlString::getClassTypeSpec(), "he name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
-
     methods.addFunction( new MemberProcedure( "addMissingTaxa",  RlUtils::Void, addTaxonArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa",  RlUtils::Void, excludeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa", RlUtils::Void, excludeTaxaArgRules2 ) );
@@ -83,10 +82,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
 }
 
 /* Map calls to member methods */
-RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found,  RevBayesCore::AbstractCharacterData *charDataObject)
 {
-    
-    RevBayesCore::AbstractCharacterData *charDataObject = &getValue();
     
     if (name == "addMissingTaxa")
     {
@@ -128,7 +125,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         
         return new RevVariable( new RlString( charDataObject->getDataType() ) );
     }
-    else if (name == "excludeTaxa" || name == "removeTaxa" )
+    else if ( name == "removeTaxa" )
     {
         found = true;
         
@@ -136,8 +133,27 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         if ( argument.isType( RlString::getClassTypeSpec() ) )
         {
             const std::string &n = static_cast<const RlString&>( argument ).getValue();
-            // remember that we internally store the character indeces from 0 to n-1
-            // but externally represent it as 1 to n
+            charDataObject->deleteTaxon( n );
+        }
+        else if ( argument.isType( ModelVector<RlString>::getClassTypeSpec() ) )
+        {
+            const ModelVector<RlString>& x = static_cast<const ModelVector<RlString>&>( argument );
+            RevBayesCore::AbstractCharacterData &v = *charDataObject;
+            for ( size_t i=0; i<x.size(); i++ )
+            {
+                v.deleteTaxon( x[i] );
+            }
+        }
+        return NULL;
+    }
+    else if (name == "excludeTaxa" )
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        if ( argument.isType( RlString::getClassTypeSpec() ) )
+        {
+            const std::string &n = static_cast<const RlString&>( argument ).getValue();
             charDataObject->excludeTaxon( n );
         }
         else if ( argument.isType( ModelVector<RlString>::getClassTypeSpec() ) )
@@ -274,34 +290,5 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
     found = false;
     return NULL;
 }
-
-
-
-
-/* Get Rev type of object */
-const std::string& AbstractCharacterData::getClassType(void)
-{
-    
-    static std::string rev_type = "AbstractCharacterData";
-    
-    return rev_type;
-}
-
-/* Get class type spec describing type of object */
-const TypeSpec& AbstractCharacterData::getClassTypeSpec(void)
-{
-    
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
-    
-    return rev_type_spec;
-}
-
-
-
-//void AbstractCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
-//{
-//    
-//    charDataObject = o;
-//}
 
 

@@ -17,6 +17,7 @@
 #include <cmath>
 #include <iostream>
 
+#include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "DistributionPoisson.h"
 #include "RbStatisticsHelper.h"
@@ -28,7 +29,11 @@ using namespace RevBayesCore;
 
 double RbStatistics::Poisson::pdf(double lambda, int x) {
     
-	return exp(x * std::log(lambda) - lambda - RbMath::lnFactorial(x));
+    if (x <= 20) {
+        return exp(x * std::log(lambda) - lambda) / RbConstants::N_FACTORIAL[x];
+    } else {
+        return exp(x * std::log(lambda) - lambda - RbMath::lnFactorial(x));
+    }
 }
 
 /*!

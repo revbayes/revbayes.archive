@@ -23,10 +23,9 @@ namespace RevLanguage {
 
         public:
         Natural(void);                                                                                      //!< Default constructor (value is 0)
-        Natural(RevBayesCore::TypedDagNode<int> *v);                                                        //!< Constructor with DAG node
-        Natural(int x);                                                                                     //!< Constructor from int
-        Natural(unsigned int x);                                                                            //!< Constructor from int
-        Natural(unsigned long x);                                                                           //!< Constructor from size_t
+        Natural(RevBayesCore::TypedDagNode<long> *v);                                                       //!< Constructor with DAG node
+        Natural(long x);                                                                                    //!< Constructor from int
+//        Natural(unsigned long x);                                                                           //!< Constructor from size_t
 
         // Basic operator functions
         RevObject*                  add(const RevObject &rhs) const;                                        //!< Addition operator used for example in '+=' statements
@@ -47,6 +46,9 @@ namespace RevLanguage {
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
         double                      isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         
+        std::string                 getGuiName(void) { return "Natural"; }
+        std::string                 getGuiUnicodeSymbol(void) { return "N"; }
+        std::string                 getGuiInfo(void) { return ""; }
     };
     
 }

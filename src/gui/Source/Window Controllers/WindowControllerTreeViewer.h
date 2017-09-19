@@ -6,7 +6,7 @@
 
 
 
-@interface WindowControllerTreeViewer : NSWindowController  <iCarouselDataSource, iCarouselDelegate> {
+@interface WindowControllerTreeViewer : NSWindowController  <iCarouselDataSource, iCarouselDelegate, NSMenuDelegate> {
 
     IBOutlet iCarousel*         carousel;
     ToolTreeSet*                myTool;
@@ -22,7 +22,7 @@
     NSMutableArray*             outgroupMenuItems;
     WindowControllerTreePeek*   treePeeker;
     NSMenuItem*                 treeMenu;
-
+    
     int                         selectedTree;
 }
 
@@ -40,7 +40,6 @@
 - (IBAction)showWindow:(id)sender;
 - (IBAction)selectTree:(id)sender;
 - (void)showTreePeeker;
-
 - (IBAction)changedDrawMonophyleticTree:(id)sender;
 - (IBAction)changeOutgroup:(id)sender;
 - (IBAction)helpButtonAction:(id)sender;

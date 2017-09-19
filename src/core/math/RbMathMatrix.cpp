@@ -212,7 +212,7 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 		for (j=0; j<int(dim); j++)
             {
 			if (F[i][j] < 0.0)
-				F[i][j] = fabs(F[i][j]);
+				F[i][j] = 0.0;
             }
         }
 	return (0);

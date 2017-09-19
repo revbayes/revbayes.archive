@@ -15,9 +15,9 @@ namespace RevLanguage {
         
     public:
         
-        RlAtlas(void);                                                                                                              //!< Default constructor
-        RlAtlas(RevBayesCore::TimeAtlas *m);                                                                                        //!< Default constructor
-        RlAtlas(RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *d);                                                            //!< Default constructor
+                                            RlAtlas(void);                                                                          //!< Default constructor
+                                            RlAtlas(RevBayesCore::TimeAtlas *m);                                                    //!< Default constructor
+                                            RlAtlas(RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *d);                        //!< Default constructor
         
         // Basic utility functions
         RlAtlas*                            clone(void) const;                                                                      //!< Clone object
@@ -27,9 +27,13 @@ namespace RevLanguage {
         
         // Member method inits
         RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
+
+        std::string                         getGuiName(void) { return ""; }
+        std::string                         getGuiUnicodeSymbol(void) { return ""; }
+        std::string                         getGuiInfo(void) { return ""; }
         
     private:
-        RevBayesCore::TimeAtlas* atlas;
+        RevBayesCore::TimeAtlas*            atlas;
     };
     
 }

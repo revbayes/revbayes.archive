@@ -36,6 +36,7 @@ namespace RevBayesCore {
         
         AbstractHomologousDiscreteCharacterData&                getCharacterData(void);
         const AbstractHomologousDiscreteCharacterData&          getCharacterData(void) const;
+        bool                                                    hasCharacterData(void) const;
         void                                                    setCharacterData(AbstractHomologousDiscreteCharacterData *d);
         
         void                                                    setTree(const Tree &t);

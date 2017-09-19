@@ -76,18 +76,6 @@ RevPtr<RevVariable> RlRelativeNodeAgeWeightedConstraints::executeMethod(std::str
 }
 
 
-
-
-/*
-const Real* RlRelativeNodeAgeWeightedConstraints::getElement(size_t idx ) const
-{
-    double element = static_cast< RevBayesCore::RelativeNodeAgeWeightedConstraints& >( this->dag_node->getValue() ).getElement(idx - 1);
-    
-    return new Real( element ) ;
-    
-}
-*/
-
 /**
  * Size of the matrix.
  */

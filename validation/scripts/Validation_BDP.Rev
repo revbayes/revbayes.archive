@@ -34,8 +34,8 @@ mi = 0
 ##############
 
 # Specify a prior on the diversification and turnover rate
-diversification ~ dnGamma(2,2)
-turnover ~ dnGamma(2,2)
+diversification ~ dnExp(1)
+turnover ~ dnExp(1)
 
 # now transform the diversification and turnover rates into speciation and extinction rates
 speciation := diversification + turnover
@@ -44,13 +44,14 @@ extinction := turnover
 # specify a prior on the root age (our informed guess is about 75-80 mya)
 root <- tree.rootAge()
 
-sampling_fraction <- 23 / 450 # 23 out of the ~ 450 primate species
-#sampling_fraction <- 450 / 450 # 23 out of the ~ 450 primate species
+sampling_fraction <- 1.0
 
 # create some moves that change the stochastic variables
 # all moves are sliding proposals but you could use scaling proposals for the rates too
 moves[++mi] = mvSlide(diversification,delta=1,tune=true,weight=1)
 moves[++mi] = mvSlide(turnover,delta=1,tune=true,weight=1)
+moves[++mi] = mvScale(diversification,lambda=1,tune=true,weight=1)
+moves[++mi] = mvScale(turnover,lambda=1,tune=true,weight=1)
 
 # construct a variable for the tree drawn from a birth death process
 psi ~ dnBDP(lambda=speciation, mu=extinction, rootAge=abs(root), rho=sampling_fraction, taxa=taxa, condition="nTaxa" )

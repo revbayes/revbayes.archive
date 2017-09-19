@@ -196,7 +196,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
 
     RevPtr<RevVariable> result = NULL;
     
-    if (statementType == For)
+    if ( statementType == For )
     {
         // Convert expression to for condition
         SyntaxForLoop* forLoop = dynamic_cast<SyntaxForLoop*>( expression );
@@ -318,9 +318,15 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
     }
     else if ( statementType == Return )
     {
+        // We need to get the return variable first (by evaluating the expression)
+        // only afterwards we can set the signal because
+        // the signal could have been cleared during the evaluation of the return value
+        result = expression->evaluateContent(env);
+        
         // Set RETURN signal and return expression value
         Signals::getSignals().set(Signals::RETURN);
-        return expression->evaluateContent(env);
+        
+        return result;
     }
     else if ( statementType == If )
     {
@@ -360,7 +366,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
                 result = (*it)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
+                if ( Signals::getSignals().isSet( Signals::RETURN ) == false && !(*it)->isAssignment() && result != NULL )
                 {
                     std::ostringstream msg;
                     result->getRevObject().printValue(msg, true);
@@ -368,7 +374,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
                 }
                 
                 // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                if ( Signals::getSignals().isSet( Signals::RETURN ) == false && result != NULL )
                 {
                     result = NULL;  // discard result
                 }
@@ -382,7 +388,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
                 result = (*it)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
+                if ( Signals::getSignals().isSet( Signals::RETURN ) == false && !(*it)->isAssignment() && result != NULL )
                 {
                     std::ostringstream msg;
                     result->getRevObject().printValue(msg, true);
@@ -390,7 +396,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
                 }
                     
                 // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                if ( Signals::getSignals().isSet( Signals::RETURN ) == false && result != NULL )
                 {
                     result = NULL;  // discard result
                 }

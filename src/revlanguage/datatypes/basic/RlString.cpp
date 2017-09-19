@@ -10,9 +10,6 @@ using namespace RevLanguage;
 /** Constructor from empty RlString */
 RlString::RlString( void ) : ModelObject<std::string>()
 {
-
-    setGuiVariableName("String");
-    setGuiLatexSymbol("");
     
     initMethods();
 }
@@ -21,9 +18,6 @@ RlString::RlString( void ) : ModelObject<std::string>()
 /** Constructor from RlString */
 RlString::RlString(const std::string& v, bool parse) : ModelObject<std::string>( new std::string(v) )
 {
-
-    setGuiVariableName("String");
-    setGuiLatexSymbol("");
     
     if ( parse == true )
     {
@@ -36,9 +30,6 @@ RlString::RlString(const std::string& v, bool parse) : ModelObject<std::string>(
 /* Construct from DAG node */
 RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v, bool parse ) : ModelObject<std::string>( v )
 {
-
-    setGuiVariableName("String");
-    setGuiLatexSymbol("");
     
     if ( parse == true )
     {

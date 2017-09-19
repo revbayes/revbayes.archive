@@ -9,6 +9,7 @@
 #import "ToolMatrixFilter.h"
 #import "ToolModel.h"
 #import "ToolReadData.h"
+#import "Variable.h"
 #import "WindowControllerModelBrowser.h"
 #import "WindowControllerModel.h"
 #import "WindowControllerModelSubmission.h"
@@ -33,6 +34,35 @@
 @synthesize dataMatrices;
 @synthesize distributionList;
 @synthesize parms;
+
+- (BOOL)addVariableNamed:(std::string)vName withAddress:(RevLanguage::AbstractModelObject*)varPtr andType:(RevLanguage::AbstractModelObject*)baseObj{
+
+    RevLanguage::AbstractModelObject* bo = varPtr;
+    if (baseObj != NULL)
+        bo = baseObj;
+    
+    std::string vType     = varPtr->getType();
+    size_t n              = std::count(vType.begin(), vType.end(), '[');
+    std::string guiName   = bo->getGuiName();
+    std::string guiSymbol = bo->getGuiUnicodeSymbol();
+    
+    // add the variable
+    Variable* newV = [[Variable alloc] initWithFrame:NSMakeRect(0.0, 0.0, 81.6, 81.6)];
+    [newV setDimensions:n];
+    [newV setName:[NSString stringWithCString:vName.c_str() encoding:NSASCIIStringEncoding]];
+    [newV setInterfaceName:[NSString stringWithCString:guiName.c_str() encoding:NSASCIIStringEncoding]];
+    [newV setInterfaceSymbol:[NSString stringWithCString:guiSymbol.c_str() encoding:NSASCIIStringEncoding]];
+    
+    [variableList addObject:newV];
+
+    RevLanguage::Container* containerPtr = dynamic_cast<RevLanguage::Container*>(varPtr);
+    if (containerPtr != NULL)
+        {
+        //std::cout << "   It's a container! " << containerPtr->getClassType() << std::endl;
+        }
+
+    return YES;
+}
 
 - (NSMutableArray*)allocateParms {
 
@@ -100,6 +130,7 @@
     [aCoder encodeBool:possibleInlets[1] forKey:@"possibleInlets1"];
     [aCoder encodeBool:possibleInlets[2] forKey:@"possibleInlets2"];
     [aCoder encodeBool:possibleInlets[3] forKey:@"possibleInlets3"];
+    [aCoder encodeObject:variableList    forKey:@"variableList"];
 }
 
 - (BOOL)execute {
@@ -242,6 +273,7 @@
         [self setInletLocations];
         [self setOutletLocations];
         
+        variableList = [[NSMutableArray alloc] init];
         [self initializePallet];
 
 		// allcoate the mutable array holding the parameters
@@ -275,8 +307,9 @@
         possibleInlets[1] = [aDecoder decodeBoolForKey:@"possibleInlets1"];
         possibleInlets[2] = [aDecoder decodeBoolForKey:@"possibleInlets2"];
         possibleInlets[3] = [aDecoder decodeBoolForKey:@"possibleInlets3"];
-
-        [self initializePallet];
+    
+        variableList = [aDecoder decodeObjectForKey:@"variableList"];
+        //[self initializePallet];
 
 		// initialize the control window
 		controlWindow = [[WindowControllerModel alloc] initWithTool:self andParms:parms];
@@ -307,6 +340,31 @@
 
 - (void)initializePallet {
 
+    /*
+    Bool                            B
+    BranchLengthTree               \psi
+    Clade
+    CladogeneticProbabilityMatrix   C
+    Integer                         I
+    MatrixReal
+    MatrixRealSymmetric
+    Natural                         N
+    Probability                     P
+    RateGenerator
+    RateMap
+    Real                            R
+    RealPos                         R^+
+    Simplex                        \delta
+    String                          S
+    Taxon
+    TimeTree
+    Tree                           \tau
+
+    */
+
+
+
+
     // get a pointer to the global workspace in the core and then
     // extract the list of variables and moves stored there
     RevLanguage::Workspace& myWorkspace = RevLanguage::Workspace::globalWorkspace();
@@ -318,6 +376,31 @@
         RevLanguage::AbstractModelObject* varPtr = dynamic_cast<RevLanguage::AbstractModelObject*>(it->second);
         if (varPtr != NULL)
             {
+            // is it a vector of a scalar?
+            bool isVector = false;
+            RevLanguage::Container* containerPtr = dynamic_cast<RevLanguage::Container*>(it->second);
+            if (containerPtr != NULL)
+                isVector = true;
+
+            // if it's a vector, find the base class
+            std::string baseName = "";
+            for (size_t i=0; i<it->first.size(); i++)
+                {
+                if (it->first[i] != '[' && it->first[i] != ']')
+                    baseName += it->first[i];
+                }
+            RevLanguage::AbstractModelObject* baseObj = NULL;
+            std::map<std::string, RevLanguage::RevObject*>::iterator itf = list.find(baseName);
+            if (itf != list.end())
+                baseObj = dynamic_cast<RevLanguage::AbstractModelObject*>(itf->second);
+            
+            std::string vType     = varPtr->getType();
+            size_t n              = std::count(vType.begin(), vType.end(), '[');
+            std::cout << vType << " (" << n << ")" << std::endl;
+
+            // TEMP: [self addVariableNamed:(it->first) withAddress:varPtr andType:baseObj];
+
+#           if 0
             // it's a variable!
             std::cout << "Variable: " << (it)->first << std::endl;
             std::cout << "Ptr:      " << varPtr << std::endl;
@@ -325,19 +408,25 @@
 
             if ((it)->first[(it)->first.size()-1] == ']')
                 {
-                std::cout << "   xxxx:   \"" << &varPtr[0] << "\"" << std::endl;
+                std::cout << "    Add:   \"" << &varPtr[0] << "\"" << std::endl;
                 }
             std::cout << "   Name:   \"" << varPtr->getGuiVariableName() << "\"" << std::endl;
             std::cout << "   Symbol: \"" << varPtr->getGuiLatexSymbol()  << "\"" << std::endl;
+
+            // determine the dimensions of the variable
+            std::string s = varPtr->getType();
+            size_t n = std::count(s.begin(), s.end(), '[');
+            std::cout << "      Dim: \"" << n  << "\"" << std::endl;
 
             RevLanguage::Container* containerPtr = dynamic_cast<RevLanguage::Container*>(it->second);
             if (containerPtr != NULL)
                 {
                 std::cout << "   It's a container!" << std::endl;
                 }
+#           endif
             }
         }
-
+    
     // construct the list of moves
     for (std::map<std::string, RevLanguage::RevObject*>::iterator it = list.begin(); it != list.end(); it++)
         {
@@ -367,7 +456,9 @@
                 }
             }
        }
-
+    
+    
+    [self printPallet];
 }
 
 - (BOOL)isInletActiveWithIndex:(int)idx {
@@ -466,6 +557,13 @@
 }
 
 - (void)prepareForExecution {
+
+}
+
+- (void)printPallet {
+
+    for (Variable* v in variableList)
+        [v print];
 
 }
 
@@ -581,6 +679,11 @@
     else if (possibleInlets[3] == NO && numNumberInlets == 1)
         [self removeInletOfColor:[NSColor orangeColor]];
 
+}
+
+- (NSMutableArray*)variables {
+
+    return variableList;
 }
 
 @end

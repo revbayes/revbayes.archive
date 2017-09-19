@@ -76,14 +76,14 @@ void RevLanguage::Workspace::initializeBasicTypeGlobalWorkspace(void)
         addType( new RevAbstractType( RevObject::getClassTypeSpec(), &RevNullObject::getInstance() ) );
         
         /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
-        AddWorkspaceVectorType<Integer,4>::addTypeToWorkspace( *this, new Integer() );
-        AddWorkspaceVectorType<Natural,4>::addTypeToWorkspace( *this, new Natural() );
+        AddWorkspaceVectorType<Integer,4>::addTypeToWorkspace(     *this, new Integer()     );
+        AddWorkspaceVectorType<Natural,4>::addTypeToWorkspace(     *this, new Natural()     );
         AddWorkspaceVectorType<Probability,4>::addTypeToWorkspace( *this, new Probability() );
-        AddWorkspaceVectorType<Real,4>::addTypeToWorkspace( *this, new Real() );
-        AddWorkspaceVectorType<RealPos,4>::addTypeToWorkspace( *this, new RealPos() );
-        AddWorkspaceVectorType<RlBoolean,4>::addTypeToWorkspace( *this, new RlBoolean() );
-        AddWorkspaceVectorType<RlString,4>::addTypeToWorkspace( *this, new RlString() );
-        AddWorkspaceVectorType<Simplex,4>::addTypeToWorkspace( *this, new Simplex() );
+        AddWorkspaceVectorType<Real,4>::addTypeToWorkspace(        *this, new Real()        );
+        AddWorkspaceVectorType<RealPos,4>::addTypeToWorkspace(     *this, new RealPos()     );
+        AddWorkspaceVectorType<RlBoolean,4>::addTypeToWorkspace(   *this, new RlBoolean()   );
+        AddWorkspaceVectorType<RlString,4>::addTypeToWorkspace(    *this, new RlString()    );
+        AddWorkspaceVectorType<Simplex,4>::addTypeToWorkspace(     *this, new Simplex()     );
 
     }
     catch(RbException& rbException)

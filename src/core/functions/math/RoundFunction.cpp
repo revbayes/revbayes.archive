@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-RoundFunction::RoundFunction(const TypedDagNode<double> *x) : TypedFunction<int>( new int(0) ),
+RoundFunction::RoundFunction(const TypedDagNode<double> *x) : TypedFunction<long>( new long(0) ),
     a( x )
 {
     

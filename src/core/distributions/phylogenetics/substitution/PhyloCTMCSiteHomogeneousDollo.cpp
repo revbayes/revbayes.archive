@@ -558,10 +558,12 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeTipLikelihood(const Top
 
     double* p_node = partialLikelihoods + activeLikelihood[node_index]*activeLikelihoodOffset + node_index*nodeOffset;
 
-    const std::vector<bool> &gap_node = gap_matrix[node_index];
-    const std::vector<unsigned long> &char_node = char_matrix[node_index];
-    const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[node_index];
-
+    
+    size_t data_tip_index = this->taxon_name_2_tip_index_map[ node.getName() ];
+    const std::vector<bool> &gap_node = this->gap_matrix[data_tip_index];
+    const std::vector<unsigned long> &char_node = this->char_matrix[data_tip_index];
+    const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[data_tip_index];
+    
     // compute the transition probabilities
     updateTransitionProbabilities( node_index, node.getBranchLength() );
 
@@ -1214,7 +1216,6 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
         if ( process_active == false )
         {
             // send from the workers the log-likelihood to the master
-//            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
             MPI_Send(&sumPartialProbs, 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD);
         }
 
@@ -1224,7 +1225,6 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
                 double tmp = 0;
-//                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
                 MPI_Status status;
                 MPI_Recv(&tmp, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD, &status);
                 
@@ -1237,13 +1237,11 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
         {
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
-//                MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, int(i), 0);
                 MPI_Send(&sumPartialProbs, 1, MPI_DOUBLE, int(i), 0, MPI_COMM_WORLD);
             }
         }
         else
         {
-//            MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
             MPI_Status status;
             MPI_Recv(&sumPartialProbs, 1, MPI_DOUBLE, int(active_PID), 0, MPI_COMM_WORLD, &status);
         }

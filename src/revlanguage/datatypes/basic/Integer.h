@@ -11,13 +11,13 @@ namespace RevLanguage {
     
     class Real;
 
-    class Integer : public ModelObject<int> {
+    class Integer : public ModelObject<long> {
 
     public:
         Integer(void);                                                                                          //!< Default constructor
-        Integer(RevBayesCore::TypedDagNode<int> *v);                                                            //!< Constructor from DAG node
-        Integer(int v);                                                                                         //!< Constructor from int
-        Integer(unsigned int v);                                                                                //!< Constructor from unsigned int
+        Integer(RevBayesCore::TypedDagNode<long> *v);                                                           //!< Constructor from DAG node
+        Integer(long v);                                                                                        //!< Constructor from long
+//        Integer(unsigned long v);                                                                               //!< Constructor from unsigned long
 
         // Basic operator functions
         virtual RevObject*              add(const RevObject &rhs) const;                                        //!< Addition operator used for example in '+=' statements
@@ -43,6 +43,9 @@ namespace RevLanguage {
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual double                  isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         
+        std::string                     getGuiName(void) { return "Integer"; }
+        std::string                     getGuiUnicodeSymbol(void) { return "Z"; }
+        std::string                     getGuiInfo(void) { return ""; }
     };
     
 }

@@ -19,6 +19,7 @@ Tree::Tree(void) :
     root( NULL ),
     binary( true ),
     rooted( false ),
+    is_negative_constraint( false ),
     num_tips( 0 ),
     num_nodes( 0 )
 {
@@ -32,6 +33,7 @@ Tree::Tree(const Tree& t) :
     root( NULL ),
     binary( t.binary ),
     rooted( t.rooted ),
+    is_negative_constraint( t.is_negative_constraint ),
     num_tips( t.num_tips ),
     num_nodes( t.num_nodes ),
     taxon_bitset_map( t.taxon_bitset_map )
@@ -55,6 +57,11 @@ Tree::~Tree(void)
 {
     
     nodes.clear();
+    std::set<TreeChangeEventListener*> l = changeEventHandler.getListeners();
+    for ( std::set<TreeChangeEventListener*>::iterator it = l.begin(); it != l.end(); ++it )
+    {
+        changeEventHandler.removeListener( *it );
+    }
     
     delete root;
     
@@ -78,11 +85,11 @@ Tree& Tree::operator=(const Tree &t)
         nodes.clear();
         delete root;
         root = NULL;
-        
-        binary      = t.binary;
-        num_tips    = t.num_tips;
-        num_nodes   = t.num_nodes;
-        rooted      = t.rooted;
+        binary                 = t.binary;
+        num_tips               = t.num_tips;
+        num_nodes              = t.num_nodes;
+        rooted                 = t.rooted;
+        is_negative_constraint = t.is_negative_constraint;
         
         TopologyNode* newRoot = t.root->clone();
         
@@ -272,12 +279,12 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     }
     else if ( n == "branchLength" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         rv = getNode( index ).getBranchLength();
     }
     else if ( n == "nodeAge" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         rv = getNode( index ).getAge();
     }
     else if ( n == "treeLength" )
@@ -292,30 +299,33 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
 }
 
 
-void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, long &rv) const
 {
     
     if ( n == "parent" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
-        rv = int( getNode( index ).getParent().getIndex() )+1;
+        long index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
+        rv = long( getNode( index ).getParent().getIndex() )+1;
     }
-    else if ( n == "leftChild" )
+    else if ( n == "child" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
-        if (index < num_tips) {
+        int parent_index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        if (parent_index < num_tips)
+        {
             throw RbException("Tips have no children");
         }
-        rv = int( getNode( index ).getChild(0).getIndex() )+1;
-    }
-    else if ( n == "rightChild" )
-    {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
-        if (index < num_tips) {
-            throw RbException("Tips have no children");
+        int child_index = static_cast<const TypedDagNode<int> *>( args[1] )->getValue()-1;
+        if (child_index < 0)
+        {
+            throw RbException("Child indices begin at 1.");
         }
-        rv = int( getNode( index ).getChild(1).getIndex() )+1;
+        if (child_index > getNode( parent_index ).getNumberOfChildren() - 1)
+        {
+            throw RbException("Node does not have child with this index.");
+        }
+        rv = int( getNode( parent_index ).getChild(child_index).getIndex() )+1;
     }
+
     else if ( n == "numSampledAncestors")
     {
         rv = 0;
@@ -323,6 +333,14 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         {
             rv += nodes[i]->isSampledAncestor();
         }
+    }
+    else if (n == "nnodes")
+    {
+        rv = nodes.size();
+    }
+    else if (n == "ntips")
+    {
+        rv = num_tips;
     }
     else
     {
@@ -337,7 +355,7 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     
     if ( n == "isContainedInClade" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         Clade clade = static_cast<const TypedDagNode<Clade> *>( args[1] )->getValue();
         clade.resetTaxonBitset( getTaxonBitSetMap() );
         
@@ -412,6 +430,28 @@ void Tree::fillNodesByPhylogeneticTraversal(TopologyNode* node)
         // this is phylogenetic ordering so the internal nodes come last
         nodes.push_back(node);
     }
+}
+
+const std::vector<std::vector<double> > Tree::getAdjacencyMatrix(void) const
+{
+    std::vector<std::vector<double> > adjacency(num_nodes, std::vector<double>(num_nodes, 0.0));
+    
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        const TopologyNode* nd = nodes[i];
+        std::vector<TopologyNode*> children = nd->getChildren();
+        for (std::vector<TopologyNode*>::iterator ch = children.begin(); ch != children.end(); ch++)
+        {
+            adjacency[nd->getIndex()][(*ch)->getIndex()] = (*ch)->getBranchLength();
+        }
+        if (!nd->isRoot())
+        {
+            const TopologyNode* pa = &nd->getParent();
+            adjacency[nd->getIndex()][pa->getIndex()] = pa->getBranchLength();
+        }
+    }
+    
+    return adjacency;
 }
 
 std::vector<Taxon> Tree::getFossilTaxa() const
@@ -541,6 +581,45 @@ size_t Tree::getNumberOfTips( void ) const
 }
 
 
+/**
+ * return the number of tips.
+ */
+size_t Tree::getNumberOfExtinctTips( void ) const
+{
+    size_t num_extinct = 0;
+    for(size_t i = 0; i < num_tips; i++)
+    {
+        num_extinct += nodes[i]->isFossil();
+    }
+
+    return num_extinct;
+}
+
+
+/**
+ * return the number of tips.
+ */
+size_t Tree::getNumberOfExtantTips( void ) const
+{
+    return num_tips - getNumberOfExtinctTips();
+}
+
+
+/**
+ * return the number of tips.
+ */
+size_t Tree::getNumberOfSampledAncestors( void ) const
+{
+    size_t num_sa = 0;
+    for(size_t i = 0; i < num_tips; i++)
+    {
+        num_sa += nodes[i]->isSampledAncestor();
+    }
+
+    return num_sa;
+}
+
+
 std::string Tree::getPlainNewickRepresentation() const
 {
     
@@ -625,7 +704,6 @@ const std::map<std::string, size_t>& Tree::getTaxonBitSetMap( void ) const
             taxon_bitset_map[ordered_taxa[i]] = i;
         }
     }
-    
     return taxon_bitset_map;
 }
 
@@ -814,6 +892,34 @@ bool Tree::hasSameTopology(const Tree &t) const
 }
 
 
+// Serialize (resurrect) the object from a file
+void Tree::initFromFile( const std::string &dir, const std::string &fn )
+{
+    RbFileManager fm = RbFileManager(dir, fn + ".newick");
+    fm.createDirectoryForFile();
+    
+    // open the stream to the file
+    std::fstream inStream;
+    inStream.open( fm.getFullFileName().c_str(), std::fstream::in);
+    
+    
+    std::string s = "";
+    while ( inStream.good() )
+    {
+        
+        // Read a line
+        std::string line;
+        getline( inStream, line );
+        
+        // append
+        s += line;
+        
+    }
+    
+    return initFromString( s );
+}
+
+
 void Tree::initFromString(const std::string &s)
 {
     NewickConverter converter;
@@ -880,6 +986,11 @@ bool Tree::isBroken( void ) const
     return false;
 }
 
+bool Tree::isNegativeConstraint(void) const
+{
+    
+    return is_negative_constraint;
+}
 
 bool Tree::isRooted(void) const 
 {
@@ -921,14 +1032,19 @@ void Tree::makeInternalNodesBifurcating(bool reindex)
 // used when reading in tree with existing node indexes we need to keep
 void Tree::orderNodesByIndex( void )
 {
-
+    
+    
     std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(nodes.size());
     std::vector<bool> used = std::vector<bool>(nodes.size(),false);
     for (int i = 0; i < nodes.size(); i++)
     {
-        if ( nodes[i]->getIndex() > nodes.size() || used[nodes[i]->getIndex()] == true )
+        if ( nodes[i]->getIndex() > nodes.size() )
         {
-            throw RbException("Problem while working with tree: Node had bad index.");
+            throw RbException("Problem while working with tree: Node had bad index. Index was '" + StringUtilities::to_string( nodes[i]->getIndex() ) + "' while there are only '" + StringUtilities::to_string( nodes.size() ) + "' nodes in the tree.");
+        }
+        else if ( used[nodes[i]->getIndex()] == true )
+        {
+            throw RbException("Problem while working with tree: Node had bad index. Two nodes had same index of '" + StringUtilities::to_string( nodes[i]->getIndex() ) + "'.");
         }
         else
         {
@@ -981,7 +1097,6 @@ void Tree::reroot(const Clade &o, bool reindex)
     }
     
 }
-
 
 void Tree::reroot(const std::string &outgroup, bool reindex)
 {
@@ -1045,6 +1160,10 @@ TopologyNode& Tree::reverseParentChild(TopologyNode &n)
     return *ret;
 }
 
+void Tree::setNegativeConstraint(bool tf)
+{
+    is_negative_constraint = tf;
+}
 
 void Tree::setRooted(bool tf)
 {
@@ -1107,6 +1226,7 @@ void Tree::setRoot( TopologyNode* r, bool reindex )
         delete old_root;
     }
 
+
 }
 
 
@@ -1124,6 +1244,25 @@ void Tree::setTaxonIndices(const TaxonMap &tm)
     
 }
 
+// Write this object into a file in its default format.
+void Tree::writeToFile( const std::string &dir, const std::string &fn ) const
+{
+    
+    RbFileManager fm = RbFileManager(dir, fn + ".newick");
+    fm.createDirectoryForFile();
+    
+    // open the stream to the file
+    std::fstream outStream;
+    outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
+    
+    // write the value of the node
+    outStream << getNewickRepresentation();
+    outStream << std::endl;
+    
+    // close the stream
+    outStream.close();
+    
+}
 
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Tree& x)

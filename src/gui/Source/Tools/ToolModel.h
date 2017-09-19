@@ -17,6 +17,7 @@
     BOOL                                          possibleInlets[4];
     NSModalSession                                mySession;
     DistributionListGui*                          distributionList;
+    NSMutableArray*                               variableList;
 }
 
 @property (nonatomic,strong) NSMutableArray*      dataMatrices;
@@ -47,5 +48,6 @@
 - (void)showControlPanel;
 - (void)touchAllParameters;
 - (void)updateInlets;
+- (NSMutableArray*)variables;
 
 @end

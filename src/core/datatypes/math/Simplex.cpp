@@ -39,11 +39,79 @@ Simplex::~Simplex( void )
 }
 
 
+RbVector<double> Simplex::operator+(double a) const
+{
+    size_t n = size();
+    RbVector<double> result(n, 0.0);
+    
+    for (size_t i = 0; i < n; ++i)
+    {
+        result[i] = this->operator[](i) + a;
+    }
+    
+    return result;
+}
+
+RbVector<double> Simplex::operator-(double a) const
+{
+    size_t n = size();
+    RbVector<double> result(n, 0.0);
+    
+    for (size_t i = 0; i < n; ++i)
+    {
+        result[i] = this->operator[](i) - a;
+    }
+    
+    return result;
+}
+
+RbVector<double> Simplex::operator*(double a) const
+{
+    size_t n = size();
+    RbVector<double> result(n, 0.0);
+    
+    for (size_t i = 0; i < n; ++i)
+    {
+        result[i] = this->operator[](i) * a;
+    }
+    
+    return result;
+}
+
+RbVector<double> RevBayesCore::operator*(const double &a, const Simplex& b)
+{
+    size_t n = b.size();
+    RbVector<double> result(n, 0.0);
+    
+    for (size_t i = 0; i < n; ++i)
+    {
+        result[i] = b[i] * a;
+    }
+    
+    return result;
+}
+
+
 Simplex* Simplex::clone( void ) const
 {
     return new Simplex(*this);
 }
 
+void Simplex::initFromString( const std::string &s )
+{
+    this->clear();
+    std::string sub = s.substr( 1, s.size()-2);
+    std::vector<std::string> elements;
+    StringUtilities::stringSplit(sub,",", elements);
+    for (size_t i=0; i<elements.size(); ++i)
+    {
+        double value;
+        RevBayesCore::Serializer<double, IsDerivedFrom<double, Serializable>::Is >::ressurectFromString( &value, elements[i] );
+        this->push_back( value );
+    }
+    normalize();
+    
+}
 
 
 void Simplex::normalize( void )

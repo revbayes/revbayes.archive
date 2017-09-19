@@ -33,13 +33,11 @@ namespace RevBayesCore {
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Swap a parameter
         
-    private:
-        
         // helper functions
         double                                              lnSpeciationRate(double t) const;
         double                                              rateIntegral(double t_low, double t_high) const;
         double                                              computeProbabilitySurvival(double start, double end) const;
-        double                                              simulateDivergenceTime(double origin, double present, double rho) const;                //!< Simulate a speciation event.
+        virtual double                                      simulateDivergenceTime(double origin, double present) const;                //!< Simulate a speciation event.
 
         // members
         const TypedDagNode<double>*                         speciation;

@@ -11,9 +11,10 @@
 
 namespace RevBayesCore {
     namespace TreeChangeEventMessage {
-        const unsigned DEFAULT       = 0;
-        const unsigned TOPOLOGY      = 1; // e.g. resulting from NNI move
-        const unsigned BRANCH_LENGTH = 2; // e.g. resulting from branch scale update
+        const unsigned DEFAULT           = 0;
+        const unsigned TOPOLOGY          = 1; // e.g. resulting from NNI move
+        const unsigned BRANCH_LENGTH     = 2; // e.g. resulting from branch scale update
+        const unsigned CHARACTER_HISTORY = 3; // e.g. resulting from mvCharacterHistory
     };
 };
 

@@ -62,7 +62,6 @@ namespace RevBayesCore {
         std::vector<StochasticNode<Tree> *>                 down_tree_variables;
         
         double                                              lambda;                                                                     //!< The scale parameter of the Proposal (larger lambda -> larger proposals).
-        
         std::vector<double>                                 stored_up_scalar_values;
         std::vector<std::vector<double> >                   stored_up_vector_values;
         std::vector<std::vector<double> >                   stored_up_tree_values;

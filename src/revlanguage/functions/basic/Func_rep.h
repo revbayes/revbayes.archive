@@ -260,8 +260,7 @@ template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_rep<valType>::getTypeSpec( void ) const
 {
     
-    static TypeSpec type_spec = getClassTypeSpec();
-    
+    static TypeSpec type_spec = getClassTypeSpec();    
     return type_spec;
 }
 

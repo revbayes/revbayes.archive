@@ -46,6 +46,7 @@ Func_SampledCladogenesisRootFrequencies* Func_SampledCladogenesisRootFrequencies
 }
 
 
+
 RevBayesCore::TypedFunction< RevBayesCore::Simplex >* Func_SampledCladogenesisRootFrequencies::createFunction( void ) const
 {
     

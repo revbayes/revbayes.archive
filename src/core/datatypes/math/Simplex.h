@@ -40,24 +40,16 @@ namespace RevBayesCore {
         Simplex(const Simplex& m);
         virtual                                ~Simplex(void);
         
+        // global operators
+        RbVector<double>                        operator+(double b) const;                                          //!< operator + for matrix + scalar
+        RbVector<double>                        operator-(double b) const;                                          //!< operator - for scalar
+        RbVector<double>                        operator*(double b) const;                                          //!< operator * for scalar
+//        std::vector<double>                     operator*(const std::vector<double> &b) const;
+        
         Simplex*                                clone(void) const;
         
         // utility funcions
-        virtual void                            initFromString( const std::string &s )
-        {
-            this->clear();
-            std::string sub = s.substr( 2, s.size()-4);
-            std::vector<std::string> elements;
-            StringUtilities::stringSplit(sub,", ", elements);
-            for (size_t i=0; i<elements.size(); ++i)
-            {
-                double value;
-                RevBayesCore::Serializer<double, IsDerivedFrom<double, Serializable>::Is >::ressurectFromString( &value, elements[i] );
-                this->push_back( value );
-            }
-            normalize();
-            
-        }
+        virtual void                            initFromString(const std::string &s);
         
     protected:
         
@@ -69,6 +61,8 @@ namespace RevBayesCore {
     // Global functions using the class
     std::ostream&                       operator<<(std::ostream& o, const Simplex& x);                                           //!< Overloaded output operator
     
+    RbVector<double>                        operator*(const double &a, const Simplex& B);                            //!< operator * for scalar * simplex
+
     
 }
 

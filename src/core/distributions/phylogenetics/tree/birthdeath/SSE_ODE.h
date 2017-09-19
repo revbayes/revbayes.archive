@@ -30,11 +30,13 @@ namespace RevBayesCore {
         
         void            setEventMap( const std::map<std::vector<unsigned>, double> &e );
         void            setSpeciationRate( const std::vector<double> &s );
+        void            setSerialSamplingRate( const std::vector<double> &s );
         
     private:
         
         std::vector<double>                         mu;                                 //!< vector of extinction rates, one rate for each character state
         std::vector<double>                         lambda;                             //!< vector of speciation rates, one rate for each character state
+        std::vector<double>                         psi;                                //!< vector of fossilization rates, one rate for each character state
         size_t                                      num_states;                         //!< the number of character states = q->getNumberOfStates()
         const RateGenerator*                        Q;                                  //!< anagenetic rate matrix
         std::map<std::vector<unsigned>, double>     event_map;                          //!< cladogenetic event map, with the structure pair< [ancestor_state, daughter_1_state, daughter_2_state], speciation_rate >

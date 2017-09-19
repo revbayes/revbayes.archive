@@ -8,12 +8,12 @@
 #include <string>
 
 namespace RevLanguage {
-    
-    
+
+
     /**
-     * The RevLanguage wrapper of the species-subtree-scale move.
+     * The RevLanguage wrapper of the species-tree-scale move.
      *
-     * The RevLanguage wrapper of the narrow-exchange move simply
+     * The RevLanguage wrapper of the species-tree-scale move simply
      * manages the interactions through the Rev with our core.
      * That is, the internal move object can be constructed and hooked up
      * in a DAG-nove (variable) that it works on.
@@ -26,11 +26,11 @@ namespace RevLanguage {
      *
      */
     class Move_SpeciesTreeScale : public Move {
-        
+
     public:
-        
+
         Move_SpeciesTreeScale(void);                                                                                                        //!< Default constructor
-        
+
         // Basic utility functions
         virtual Move_SpeciesTreeScale*              clone(void) const;                                                                      //!< Clone object
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal SlidingMove.
@@ -40,23 +40,31 @@ namespace RevLanguage {
         const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
-        
+
         // Member method functions
         virtual RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
-        
+
 
     protected:
-        
+
+      std::vector<std::string>                            getHelpAuthor(void) const;                                                              //!< Get the author(s) of this function
+      std::vector<std::string>                            getHelpDescription(void) const;                                                         //!< Get the description for this function
+      std::vector<std::string>                            getHelpDetails(void) const;                                                             //!< Get the more detailed description of the function
+      std::string                                         getHelpExample(void) const;                                                             //!< Get an executable and instructive example
+      std::vector<RevBayesCore::RbHelpReference>          getHelpReferences(void) const;                                                          //!< Get some references/citations for this function
+      std::vector<std::string>                            getHelpSeeAlso(void) const;                                                             //!< Get suggested other functions
+      std::string                                         getHelpTitle(void) const;                                                               //!< Get the title of this help entry
+
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
-        
+
         RevPtr<const RevVariable>                   speciesTree;
         RevPtr<const RevVariable>                   geneTrees;
         RevPtr<const RevVariable>                   rootAge;
         RevPtr<const RevVariable>                   delta;
         RevPtr<const RevVariable>                   tuning;
-        
+
     };
-    
+
 }
 
 #endif

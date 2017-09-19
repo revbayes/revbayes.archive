@@ -41,7 +41,7 @@ RevPtr<RevVariable> Func_readPomoCountFile::execute( void )
 
 	// get the information from the arguments for reading the file
 	const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
-	RevBayesCore::TypedDagNode<int>* virtualPopulationSize = static_cast<const Integer &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+	RevBayesCore::TypedDagNode<long>* virtualPopulationSize = static_cast<const Integer &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
 	RevBayesCore::PomoCountFileReader* pcfr = new RevBayesCore::PomoCountFileReader( fn.getValue(), virtualPopulationSize->getValue(), ' ' );
 

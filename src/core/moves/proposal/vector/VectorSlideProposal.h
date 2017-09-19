@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class VectorSlideProposal : public Proposal {
         
     public:
-        VectorSlideProposal(StochasticNode<RbVector<double> >* n, const std::vector<int> &i,double l);                                 //!< Constructor
+        VectorSlideProposal(StochasticNode<RbVector<double> >* n, const std::vector<long> &i,double l);                                 //!< Constructor
         
         void                                        cleanProposal(void);                                                                //!< Clean up proposal
         VectorSlideProposal*                        clone(void) const;                                                                  //!< Clone object
@@ -49,7 +49,7 @@ namespace RevBayesCore {
         // parameters
         
         StochasticNode<RbVector<double> >*          variable;
-        std::vector<int>                            indices;
+        std::vector<long>                           indices;
         double                                      lambda;                                                                             //!< The Slide parameter of the Proposal (larger lambda -> larger proposals).
         size_t                                      length;
         double                                      storedSlidingFactor;                                                                        //!< The stored value of the last modified element.

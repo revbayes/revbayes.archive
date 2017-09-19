@@ -35,8 +35,8 @@ RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistributio
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* sg = NULL;
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* dv = NULL;
     RevBayesCore::TypedDagNode<double>* ka = NULL;
-    RevBayesCore::TypedDagNode<int>* deg = NULL;
-    RevBayesCore::TypedDagNode<int>* dm = NULL;
+    RevBayesCore::TypedDagNode<long>* deg = NULL;
+    RevBayesCore::TypedDagNode<long>* dm = NULL;
     
     if ( sigma->getRevObject() != RevNullObject::getInstance() )
     {

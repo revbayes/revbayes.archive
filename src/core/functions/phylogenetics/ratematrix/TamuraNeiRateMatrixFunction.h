@@ -26,6 +26,7 @@ namespace RevBayesCore {
     class TamuraNeiRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
+
         TamuraNeiRateMatrixFunction(const TypedDagNode<double> *k1, const TypedDagNode<double> *k2, const TypedDagNode< Simplex > *bf);
         virtual                                            ~TamuraNeiRateMatrixFunction(void);                                                    //!< Virtual destructor
         

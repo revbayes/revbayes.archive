@@ -78,23 +78,13 @@ HomologousDiscreteCharacterData<NaturalNumbersState>* BitsetCharacterDataConvert
             throw RbException("Converted state value for " + taxon.getTaxonName() + " exceeds number of states: " + ss.str());
         }
         
-//        for (size_t j = 0; j < taxonChars.size(); j++)
-//        {
-//            std::cout << taxonChars[j];
-//        }
-//        std::cout << " = " << numberState << "\n";
-        
         // create NaturalNumberState character
         DiscreteTaxonData<NaturalNumbersState> taxonNN(taxon.getTaxonName());
         std::stringstream ss;
         ss << numberState;
         NaturalNumbersState n(ss.str(), (int)numStates);
         n.addStateDescriptions(stateDescriptionsByNumOn);
-//        taxonNN.addCharacter(NaturalNumbersState(ss.str(), (int)numStates));
         taxonNN.addCharacter(n);
-//        std::cout << n.getStringValue() << " -> " << n.getStateDescription() << "\n";
-//        taxonNN.addStateDescriptions(state_descriptions[numberState]);
-//        std::cout << numberState << " " << ss.str() << "\n";
         
         // add converted taxon to character data
         dataConverted->addTaxonData(taxonNN);
@@ -146,6 +136,7 @@ void BitsetCharacterDataConverter::initializeBits(size_t n)
 //        for (size_t j = 0; j < statesToBitsByNumOn[i].size(); j++)
 //            std::cout << statesToBitsByNumOn[i][j];
 //        std::cout << "\n";
+
         std::stringstream ss;
         for (size_t j = 0; j < statesToBitsByNumOn[i].size(); j++)
         {

@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class DiscretizeBetaFunction : public TypedFunction< RbVector<double> >{
         
     public:
-        DiscretizeBetaFunction(const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<int> *nc, bool med);
+        DiscretizeBetaFunction(const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<long> *nc, bool med);
         
         DiscretizeBetaFunction*            clone(void) const;                                                  //!< Create a clon.
         void                                update(void);                                                       //!< Recompute the value
@@ -40,7 +40,7 @@ namespace RevBayesCore {
     private:
         const TypedDagNode<double>*         alpha;
         const TypedDagNode<double>*         beta;
-        const TypedDagNode<int>*            numCats;
+        const TypedDagNode<long>*            numCats;
         bool                                median;
     };
 }
