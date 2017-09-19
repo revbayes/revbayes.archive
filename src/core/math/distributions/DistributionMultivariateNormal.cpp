@@ -55,6 +55,7 @@ double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<doubl
     // we compute the precision matrix, which is the inverse of the covariance matrix
     // and then simply call the lnPDF for the precision matrix.
     // This simplifies the coding.
+    sigma.setCholesky(true);
     MatrixReal omega = sigma.computeInverse();
 
     return lnPdfPrecision(mu, omega, x, scale);
@@ -172,6 +173,7 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
     
     double logNormalize = -0.5 * log( RbConstants::TwoPI );
     
+    omega.setCholesky(true);
     double logDet = omega.getLogDet();
     if ( RbMath::isAComputableNumber(logDet) == false )
     {
@@ -258,44 +260,4 @@ std::vector<double> RbStatistics::MultivariateNormal::rvPrecision(const std::vec
 //
 //    
 //    return v;
-}
-
-
-/*!
- * This function generates a MultivariateNormal-distributed random variable.
- *
- * \brief MultivariateNormal random variable.
- * \param mu is a reference to a vector of doubles containing the mean
- * \param sigma is a reference to a variance-covariance matrix
- * \param rng is a pointer to a random number object.
- * \return Returns a vector containing the MultivariateNormal random variable.
- * \throws Does not throw an error.
- */
-std::vector<double> RbStatistics::MultivariateNormal::rvCovarianceCholesky(const std::vector<double>& mu, const MatrixReal& sigma, RandomNumberGenerator& rng, double scale)
-{
-    
-    double sqrtScale = sqrt(scale);
-    size_t dim = sigma.getDim();
-    const MatrixReal L = sigma.getCholeskyDecomposition().getMatrix();
-    
-//    std::vector<double> w(dim, 0.0);
-    MatrixReal w(dim, 1);
-    // draw the normal variable
-    for(size_t i = 0; i < dim; ++i)
-    {
-        w[i][0] = RbStatistics::Normal::rv(rng);
-    }
-
-    // change the normal variables to correlated normals
-//    std::vector<double> v = L * w;
-    MatrixReal x = L * w;
-    
-    std::vector<double> v(dim, 0.0);
-    // de-standardize the normals
-    for(size_t i = 0; i < dim; ++i)
-    {
-        v[i] = mu[i] + x[i][0] * sqrtScale;
-    }
-    
-    return v;
 }
