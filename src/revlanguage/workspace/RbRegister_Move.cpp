@@ -201,6 +201,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 //        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
         addTypeWithConstructor( new Move_UpDownTreeScale() );
         addTypeWithConstructor( new Move_UpDownSlide() );
+        addTypeWithConstructor( new Move_UpDownSlideBactrian() );
 
 		// compound moves on real values
         addTypeWithConstructor( new Move_LevyJumpSum() );
