@@ -377,7 +377,7 @@ void RevClient::startInterpretor( void )
                     }
                     else //if (result == 1)
                     {
-                        commandLine += "; " + cmd;
+                        commandLine += "\n " + cmd;
                     }
                 }
             }
