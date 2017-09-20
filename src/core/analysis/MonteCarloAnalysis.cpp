@@ -588,12 +588,12 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
                 runs[i]->monitor(gen);
                 
                 // check for autotuning
-                if ( tuning_interval != 0 && (gen % tuning_interval) == 0 )
+                /*if ( tuning_interval != 0 && (gen % tuning_interval) == 0 )
                 {
                     
                     runs[i]->tune();
                     
-                }
+                }*/
             }
             
         }

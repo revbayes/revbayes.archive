@@ -307,6 +307,25 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         long index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         rv = long( getNode( index ).getParent().getIndex() )+1;
     }
+    else if ( n == "child" )
+    {
+        int parent_index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        if (parent_index < num_tips)
+        {
+            throw RbException("Tips have no children");
+        }
+        int child_index = static_cast<const TypedDagNode<int> *>( args[1] )->getValue()-1;
+        if (child_index < 0)
+        {
+            throw RbException("Child indices begin at 1.");
+        }
+        if (child_index > getNode( parent_index ).getNumberOfChildren() - 1)
+        {
+            throw RbException("Node does not have child with this index.");
+        }
+        rv = int( getNode( parent_index ).getChild(child_index).getIndex() )+1;
+    }
+
     else if ( n == "numSampledAncestors")
     {
         rv = 0;

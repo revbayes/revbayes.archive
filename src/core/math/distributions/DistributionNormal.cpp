@@ -135,7 +135,7 @@ double RbStatistics::Normal::lnPdf(double mu, double sigma, double x, double min
         beta = 1;
     else
         beta = Normal::cdf((max - mu) / sigma);
-    
+
     if ( x < min || x > max)
         return RbConstants::Double::neginf;
     else
@@ -337,7 +337,7 @@ double RbStatistics::Normal::quantile(double p) {
  	double b3 = 0.103537752850; 
  	double b4 = 0.0038560700634;
 	double p1 = ( p < 0.5 ? p : 1.0 - p);
-	if (p1 < 1e-20) 
+	if (p1 < 1e-20)
         return (-9999.0);
 	double y = sqrt( log(1.0/(p1*p1)) );   
 	double z = y + ((((y*a4+a3)*y+a2)*y+a1)*y+a0) / ((((y*b4+b3)*y+b2)*y+b1)*y+b0);
@@ -376,11 +376,11 @@ double RbStatistics::Normal::quantile(double mu, double sigma, double p) {
  */
 double RbStatistics::Normal::quantile(double mu, double sigma, double p, double min, double max) {
     double a, b;
-    if(a == RbConstants::Double::neginf)
+    if(min == RbConstants::Double::neginf)
         a = 0;
     else
         a = Normal::cdf((min - mu) / sigma);
-    if(b == RbConstants::Double::inf)
+    if(max == RbConstants::Double::inf)
         b = 1;
     else
         b = Normal::cdf((max - mu) / sigma);

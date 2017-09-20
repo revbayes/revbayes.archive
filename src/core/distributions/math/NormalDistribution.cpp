@@ -19,20 +19,13 @@ NormalDistribution::NormalDistribution(const TypedDagNode<double> *m, const Type
     addParameter( stDev );
     addParameter( min );
     addParameter( max );
-    if(min->getValue() != RbConstants::Double::neginf && max->getValue() != RbConstants::Double::inf){
-        if ( min->getValue() >= max->getValue() )
-        {
-            throw RbException("The minimum value must be smaller then the maximum value for the truncated normal distribution.");
-        }
-        
-        do {
-            *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), min->getValue(), max->getValue(), *GLOBAL_RNG);
-        } while ( *value < min->getValue() && *value > max->getValue() );
-        
 
+    if ( getMin() >= getMax() )
+    {
+        throw RbException("The minimum value must be smaller then the maximum value for the truncated normal distribution.");
     }
-    else
-        *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);
+
+    redrawValue();
 }
 
 
@@ -42,10 +35,7 @@ NormalDistribution::~NormalDistribution( void ) {
 
 
 double NormalDistribution::cdf( void ) const {
-    if(min->getValue() != RbConstants::Double::neginf && max->getValue() != RbConstants::Double::inf)
-        return RbStatistics::Normal::cdf( mean->getValue(), stDev->getValue(), *value, min->getValue(), max->getValue());
-    else
-        return RbStatistics::Normal::cdf( mean->getValue(), stDev->getValue(), *value);
+    return RbStatistics::Normal::cdf( mean->getValue(), stDev->getValue(), *value, getMin(), getMax());
 
 }
 
@@ -56,66 +46,49 @@ NormalDistribution* NormalDistribution::clone( void ) const {
 
 
 double NormalDistribution::computeLnProbability( void ) {
-    if(min->getValue() != RbConstants::Double::neginf && max->getValue() != RbConstants::Double::inf){
-        if ( min->getValue() > *value )
-        {
-            return RbConstants::Double::neginf;
-        }
-    
-        if ( max->getValue() < *value )
-        {
-            return RbConstants::Double::neginf;
-        }
-
-        return RbStatistics::Normal::lnPdf(mean->getValue(), stDev->getValue(), *value, min->getValue(), max->getValue());
-    }
-    else
-        return RbStatistics::Normal::lnPdf(mean->getValue(), stDev->getValue(), *value);
+    return RbStatistics::Normal::lnPdf(mean->getValue(), stDev->getValue(), *value, getMin(), getMax());
 
 }
 
 
 double NormalDistribution::getMax( void ) const {
-    if(max->getValue() != RbConstants::Double::inf){
+    if( max != NULL )
+    {
         return max->getValue();
     }
-    else{
+    else
+    {
         return RbConstants::Double::inf;
     }
 }
 
 
 double NormalDistribution::getMin( void ) const {
-    if(min->getValue() != RbConstants::Double::neginf){
+    if( min != NULL )
+    {
         return min->getValue();
     }
-    else{
+    else
+    {
         return RbConstants::Double::neginf;
     }
 }
 
 
 double NormalDistribution::quantile(double p) const {
-    if(min->getValue() != RbConstants::Double::neginf && max->getValue() != RbConstants::Double::inf)
-        return RbStatistics::Normal::quantile(mean->getValue(), stDev->getValue(), p, min->getValue(), max->getValue());
-    else
-        return RbStatistics::Normal::quantile(mean->getValue(), stDev->getValue(), p);
+    return RbStatistics::Normal::quantile(mean->getValue(), stDev->getValue(), p, getMin(), getMax());
 }
 
 
 void NormalDistribution::redrawValue( void ) {
-    if(min->getValue() != RbConstants::Double::neginf && max->getValue() != RbConstants::Double::inf){
-        if ( min->getValue() >= max->getValue() )
-        {
-            throw RbException("The minimum value must be smaller then the maximum value for the truncated normal distribution.");
-        }
-        
-        do {
-            *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), min->getValue(), max->getValue(), *GLOBAL_RNG);
-        } while ( *value < min->getValue() && *value > max->getValue() );
+    if( getMin() == RbConstants::Double::neginf && getMax() == RbConstants::Double::inf )
+    {
+        *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);
     }
     else
-        *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);
+    {
+        *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), getMin(), getMax(), *GLOBAL_RNG);
+    }
 }
 
 
@@ -126,15 +99,15 @@ void NormalDistribution::swapParameterInternal(const DagNode *oldP, const DagNod
     {
         mean = static_cast<const TypedDagNode<double>* >( newP );
     }
-    if (oldP == stDev)
+    else if (oldP == stDev)
     {
         stDev = static_cast<const TypedDagNode<double>* >( newP );
     }
-    if (oldP == min)
+    else if (oldP == min)
     {
         min = static_cast<const TypedDagNode<double>* >( newP );
     }
-    if (oldP == max)
+    else if (oldP == max)
     {
         max = static_cast<const TypedDagNode<double>* >( newP );
     }
