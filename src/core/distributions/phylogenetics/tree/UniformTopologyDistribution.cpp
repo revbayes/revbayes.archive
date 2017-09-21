@@ -126,34 +126,6 @@ double UniformTopologyDistribution::computeLnProbability( void )
 			}
 		}
         
-        // Check that this isn't an artifact of arbitrary outgroup choice + clamping
-        if ( contains_outgroup == false && outgroup.size() == 1 )
-        {
-            // Grab tree before re-rooting in case we're wrong
-            Tree *psi = value;
-            value->reroot(outgroup,true);
-            
-            const TopologyNode &root = value->getRoot();
-            const std::vector<TopologyNode*> &children = root.getChildren();
-            for (size_t i=0; i<children.size(); ++i)
-            {
-                const TopologyNode &child = *(children[i]);
-                Clade c = child.getClade();
-                if ( c == outgroup )
-                {
-                    contains_outgroup = true;
-                    break;
-                }
-            }
-            
-            // reset value if not an artifact
-            if ( contains_outgroup == false )
-            {
-                value = psi;
-            }
-            
-        }
-
 		if ( contains_outgroup == false )
 		{
 			return RbConstants::Double::neginf;
