@@ -50,6 +50,7 @@ namespace RevBayesCore {
         
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
+        std::vector<double>                 getStationaryFrequencies(void) const;                                               //!< Return the stationary frequencies
         void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case
         void                                tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
         void                                tiProbsUniformization(double t, TransitionProbabilityMatrix& P) const;              //!< Calculate transition probabilities with uniformization
@@ -58,6 +59,7 @@ namespace RevBayesCore {
         void                                updateUniformization(void);                                                         //!< Update the system for uniformization
         void                                expandUniformization(int truncation, double tolerance) const;
         void                                expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tolerance) const;
+        void                                checkMatrixTolerance(MatrixReal x, double tolerance, bool& diff) const;
         
         bool                                rescale;
         bool                                useScalingAndSquaring;
@@ -65,8 +67,7 @@ namespace RevBayesCore {
         bool                                useScalingAndSquaringTaylor;
         bool                                useUniformization;
         bool                                useEigen;
-        void                                checkMatrixTolerance(MatrixReal x, double tolerance, bool& diff) const;
-        
+
         // members for uniformization
         MatrixReal                          singleStepMatrix;
         std::vector<MatrixReal>*            matrixProducts;
@@ -78,6 +79,7 @@ namespace RevBayesCore {
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >  cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
+        std::vector<double>                 stationary_freqs;                                                                   //!< Holds the stationary frequencies
         
     };
     
