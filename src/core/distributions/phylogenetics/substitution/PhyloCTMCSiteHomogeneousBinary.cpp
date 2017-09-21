@@ -156,43 +156,42 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousBinary::sumRootLikelihood( void )
             }
             
             perMaskCorrections[mask] += prob * mixtureProbs[mixture];
+            perMaskMixtureCorrections[mask*this->num_site_mixtures + mixture] = (1.0 - prob) * mixtureProbs[mixture];
             
             // add corrections for invariant sites
             double prob_invariant = getPInv();
             if(prob_invariant > 0.0)
             {
-                prob *= (1.0 - prob_invariant);
+                perMaskCorrections[mask] *= (1.0 - prob_invariant);
+                perMaskMixtureCorrections[mask*this->num_site_mixtures + mixture] *= (1.0 - prob_invariant);
                 
                 if(coding & BinaryAscertainmentBias::NOABSENCESITES)
-                    prob += f[0]*prob_invariant;
+                    perMaskCorrections[mask] += prob_invariant * f[0] * mixtureProbs[mixture];
                 
                 if(coding & BinaryAscertainmentBias::NOPRESENCESITES)
-                    prob += f[1]*prob_invariant;
+                    perMaskCorrections[mask] += prob_invariant * f[1] * mixtureProbs[mixture];
             }
             
-            perMaskMixtureCorrections[mask*this->num_site_mixtures + mixture] = (1.0 - prob) * mixtureProbs[mixture];
         }
         
         // add corrections for invariant sites
-        double prob_invariant = getPInv();
-        if(prob_invariant > 0.0)
-        {
-            perMaskCorrections[mask] *= (1.0 - prob_invariant);
-            
-            double mean = 0.0;
-            for(size_t i = 0; i < ff.size(); i++)
-            {
-                if(coding & BinaryAscertainmentBias::NOABSENCESITES)
-                    mean += ff[i][0];
-                
-                if(coding & BinaryAscertainmentBias::NOPRESENCESITES)
-                    mean += ff[i][1];
-            }
-            
-            mean /= ff.size();
-            
-            perMaskCorrections[mask] += mean * prob_invariant;
-        }
+//        double prob_invariant = getPInv();
+//        if(prob_invariant > 0.0)
+//        {
+//            double mean = 0.0;
+//            for(size_t i = 0; i < ff.size(); i++)
+//            {
+//                if(coding & BinaryAscertainmentBias::NOABSENCESITES)
+//                    mean += ff[i][0];
+//                
+//                if(coding & BinaryAscertainmentBias::NOPRESENCESITES)
+//                    mean += ff[i][1];
+//            }
+//            
+//            mean /= ff.size();
+//            
+//            perMaskCorrections[mask] += mean * prob_invariant;
+//        }
         
         // normalize the log-probability
 //        perMaskCorrections[mask] /= this->num_site_mixtures;
