@@ -7,6 +7,7 @@
 #include "NewickConverter.h"
 #include "OptionRule.h"
 #include "Probability.h"
+#include "ProgressBar.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RlBranchLengthTree.h"
@@ -114,7 +115,7 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     TraceTree *rv;
     if ( treetype == "clock" )
     {
-        rv = readTimeTrees(vectorOfFileNames, sep);
+        rv = readTrees(vectorOfFileNames, sep, true);
     }
     else if ( treetype == "non-clock" )
     {
@@ -124,7 +125,7 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
             og = static_cast<const Clade &>( args[arg_index_outgroup].getVariable()->getRevObject() ).getValue();
         }
         
-        rv = readBranchLengthTrees(vectorOfFileNames, sep, og);
+        rv = readTrees(vectorOfFileNames, sep, false);
     }
     else
     {
@@ -235,127 +236,10 @@ const TypeSpec& Func_readTreeTrace::getReturnType( void ) const
 }
 
 
-TraceTree* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::string> &vector_of_file_names, const std::string &delimitter, const RevBayesCore::Clade &outgroup)
+TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter, bool clock)
 {
-    
-    
-    std::vector<RevBayesCore::TraceTree > data;
-    
-    
-    // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
-    // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
-    // that can be read.
-    std::map<std::string,std::string> file_map;
-    for (std::vector<std::string>::const_iterator p = vector_of_file_names.begin(); p != vector_of_file_names.end(); p++)
-    {
-        bool hasHeaderBeenRead = false;
-        const std::string &fn = *p;
-        
-        /* Open file */
-        std::ifstream inFile( fn.c_str() );
-        
-        if ( !inFile )
-            throw RbException( "Could not open file \"" + fn + "\"" );
-        
-        /* Initialize */
-        std::string command_line;
-        RBOUT( "Processing file \"" + fn + "\"");
-        
-        size_t index = 0;
-        
-//        std::string outgroup = "";
-        
-        /* Command-processing loop */
-        while ( inFile.good() )
-        {
-            
-            // Read a line
-            std::string line;
-            getline( inFile, line );
-            
-            // skip empty lines
-            //line = StringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-            if (line.length() == 0)
-            {
-                continue;
-            }
-            
-            
-            // removing comments
-            if (line[0] == '#') {
-                continue;
-            }
-            
-            // splitting every line into its columns
-            std::vector<std::string> columns;
-            
-            // we should provide other delimiters too
-            StringUtilities::stringSplit(line, delimitter, columns);
-            
-            // we assume a header at the first line of the file
-            if (!hasHeaderBeenRead) {
-                
-                for (size_t j=1; j<columns.size(); j++)
-                {
-                    
-                    std::string parmName = columns[j];
-                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior")
-                    {
-                        continue;
-                    }
-                    index = j;
-                    
-                    RevBayesCore::TraceTree t = RevBayesCore::TraceTree( false );
-                    
-                    t.setParameterName(parmName);
-                    t.setFileName(fn);
-                    
-                    data.push_back( t );
-                }
-                
-                hasHeaderBeenRead = true;
-                
-                continue;
-            }
-            
-            // adding values to the Traces
-            RevBayesCore::TraceTree& t = data[0];
-            
-            RevBayesCore::NewickConverter c;
-            RevBayesCore::Tree *tau = c.convertFromNewick( columns[index] );
-            
-            // moved the reroot functionality below into
-            // RevBayesCore::TreeSummary<BranchLengthTree>::summarizeTrees()
-            // so that tree traces retain their original topology
-            // will freyman 12/12/14
-            
-            //            if ( outgroup == "" )
-            //            {
-            //                RevBayesCore::BranchLengthTree& referenceTree = *tau;
-            //                outgroup = referenceTree.getTipNode(0).getName();
-            //            }
-            //            // re-root the tree so that we can compare the the trees
-            //            tau->reroot( outgroup );
-            
-            if ( outgroup.size() > 0 )
-            {
-//                tau->reroot( outgroup, false );
-            }
-            
-            t.addObject( tau );
-        }
-    }
-    
-    return new TraceTree( data[0] );
-}
-
-
-TraceTree* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter)
-{
-    
     
     std::vector<RevBayesCore::TraceTree> data;
-    
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
@@ -363,28 +247,56 @@ TraceTree* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vec
     std::map<std::string,std::string> fileMap;
     for (std::vector<std::string>::const_iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
     {
-        bool hasHeaderBeenRead = false;
+        bool has_header_been_read = false;
         const std::string &fn = *p;
         
-        /* Open file */
-        std::ifstream inFile( fn.c_str() );
+        // let us quickly count the number of lines
+        size_t lines = 0;
+        std::ifstream tmp_in_file( fn.c_str() );
         
-        if ( !inFile )
+        if ( !tmp_in_file )
+        {
             throw RbException( "Could not open file \"" + fn + "\"" );
+        }
+        while ( tmp_in_file.good() )
+        {
+            // Read a line
+            std::string line;
+            getline( tmp_in_file, line );
+            if (line.length() == 0 || line[0] == '#')
+            {
+                continue;
+            }
+            ++lines;
+        }
+        tmp_in_file.close();
+        
+        RevBayesCore::ProgressBar progress = RevBayesCore::ProgressBar( lines, 0 );
+
+        // now we actually process the input
+        
+        /* Open file */
+        std::ifstream in_file( fn.c_str() );
+        
+        if ( !in_file )
+        {
+            throw RbException( "Could not open file \"" + fn + "\"" );
+        }
         
         /* Initialize */
         std::string commandLine;
         RBOUT( "Processing file \"" + fn + "\"");
         
         size_t index = 0;
+        progress.start();
         
         /* Command-processing loop */
-        while ( inFile.good() )
+        while ( in_file.good() )
         {
             
             // Read a line
             std::string line;
-            getline( inFile, line );
+            getline( in_file, line );
             
             // skip empty lines
             //line = StringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -407,7 +319,7 @@ TraceTree* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vec
             StringUtilities::stringSplit(line, delimitter, columns);
             
             // we assume a header at the first line of the file
-            if (!hasHeaderBeenRead)
+            if ( has_header_been_read == false )
             {
                 
                 for (size_t j=1; j<columns.size(); j++)
@@ -420,7 +332,7 @@ TraceTree* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vec
                     }
                     index = j;
                     
-                    RevBayesCore::TraceTree t = RevBayesCore::TraceTree( true );
+                    RevBayesCore::TraceTree t = RevBayesCore::TraceTree( clock );
                     
                     t.setParameterName(parmName);
                     t.setFileName(fn);
@@ -428,21 +340,52 @@ TraceTree* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vec
                     data.push_back( t );
                 }
                 
-                hasHeaderBeenRead = true;
+                has_header_been_read = true;
                 
                 continue;
             }
             
             // adding values to the Traces
-            //            for (size_t j=1; j<columns.size(); j++) {
             RevBayesCore::TraceTree& t = data[0];
             
-            RevBayesCore::NewickConverter c;
-            RevBayesCore::Tree *blTree = c.convertFromNewick( columns[index] );
-            RevBayesCore::Tree *tau = RevBayesCore::TreeUtilities::convertTree( *blTree );
+            RevBayesCore::Tree *tau = NULL;
+            if ( clock == true )
+            {
+                RevBayesCore::NewickConverter c;
+                RevBayesCore::Tree *blTree = c.convertFromNewick( columns[index] );
+                tau = RevBayesCore::TreeUtilities::convertTree( *blTree );
+            }
+            else
+            {
+                RevBayesCore::NewickConverter c;
+                tau = c.convertFromNewick( columns[index] );
+                
+                // moved the reroot functionality below into
+                // RevBayesCore::TreeSummary<BranchLengthTree>::summarizeTrees()
+                // so that tree traces retain their original topology
+                // will freyman 12/12/14
+                
+                //            if ( outgroup == "" )
+                //            {
+                //                RevBayesCore::BranchLengthTree& referenceTree = *tau;
+                //                outgroup = referenceTree.getTipNode(0).getName();
+                //            }
+                //            // re-root the tree so that we can compare the the trees
+                //            tau->reroot( outgroup );
+                
+//                if ( outgroup.size() > 0 )
+//                {
+//                    //                tau->reroot( outgroup, false );
+//                }
+            }
             
             t.addObject( tau );
+            progress.update( t.size() );
+            
         }
+        in_file.close();
+        
+        progress.finish();
     }
     
     return new TraceTree( data[0] );

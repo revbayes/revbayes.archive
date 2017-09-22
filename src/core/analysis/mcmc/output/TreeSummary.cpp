@@ -24,23 +24,23 @@
 using namespace RevBayesCore;
 
 TreeSummary::TreeSummary( void ) :
-clock( true ),
-rooted( true ),
-summarized( false ),
-trace( false ),
-use_tree_trace( false )
+    clock( true ),
+    rooted( true ),
+    summarized( false ),
+    trace( false ),
+    use_tree_trace( false )
 {
     setBurnin( 0 );
 }
 
 TreeSummary::TreeSummary( const TraceTree &t ) :
-clock( t.isClock() ),
-rooted( t.objectAt(0).isRooted() ),
-summarized( false ),
-trace( t ),
-use_tree_trace( true ),
-cladeAges( CladeComparator(rooted) ),
-conditionalCladeAges( CladeComparator(rooted) )
+    clock( t.isClock() ),
+    rooted( t.objectAt(0).isRooted() ),
+    summarized( false ),
+    trace( t ),
+    use_tree_trace( true ),
+    cladeAges( CladeComparator(rooted) ),
+    conditionalCladeAges( CladeComparator(rooted) )
 {
     setBurnin( t.getBurnin() );
 }
