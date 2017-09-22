@@ -894,7 +894,10 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
         double prob_invariant = this->getPInv();
         if(prob_invariant > 0.0)
         {
-            perMaskCorrections[mask] += prob_invariant;
+            if( coding & AscertainmentBias::VARIABLE)
+            {
+                perMaskCorrections[mask] += prob_invariant;
+            }
         }
 
         // normalize the log-probability
