@@ -816,6 +816,15 @@ MethodTable Dist_phyloCTMC::getDistributionMethods( void ) const
     ArgumentRules* siteRateLikelihoodsArgRules = new ArgumentRules();
     methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, MatrixReal >( "siteRateLikelihoods", variable, siteRateLikelihoodsArgRules, true ) );
     
+    ArgumentRules* siteRatesArgRules = new ArgumentRules();
+    
+    std::vector<std::string> optionsMethod;
+    optionsMethod.push_back( "sampling" );
+    optionsMethod.push_back( "weightedAverage" );
+    siteRatesArgRules->push_back( new OptionRule( "estimateMethod", new RlString("sampling"), optionsMethod, "The method used to estimate the site specific rate." ) );
+    
+    methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, ModelVector<RealPos> >( "siteRates", variable, siteRatesArgRules, true ) );
+    
     return methods;
 }
 

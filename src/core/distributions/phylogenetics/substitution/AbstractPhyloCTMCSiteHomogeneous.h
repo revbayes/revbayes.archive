@@ -1436,6 +1436,98 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(con
         }
         
     }
+    else if ( n == "siteRates" )
+    {
+        
+        // make sure the likelihoods are updated
+        const_cast<AbstractPhyloCTMCSiteHomogeneous<charType> *>( this )->computeLnProbability();
+        
+        // get the site rates
+        std::vector<double> r;
+        if( this->rate_variation_across_sites == true )
+        {
+            r = this->site_rates->getValue();
+        }
+        else
+        {
+            r.push_back(1.0);
+        }
+        
+        size_t num_site_rates_withInv = num_site_rates;
+        double prob_invariant = getPInv();
+        if (prob_invariant > 0.0)
+        {
+            num_site_rates_withInv++;
+            r.insert(r.begin(), 0.0);
+        }
+        
+        // get the per site rate likelihood
+        MatrixReal tmp = MatrixReal(num_patterns, num_site_rates_withInv, 0.0);
+        computeRootLikelihoodsPerSiteRate( tmp );
+        
+        // now match it back to the actual sites
+        MatrixReal siteRateConditionalProb = MatrixReal(num_sites, num_site_rates_withInv, 0.0);
+        for (size_t i=0; i<num_sites; ++i)
+        {
+            size_t pattern_index = site_pattern[i];
+            double siteLikelihoods = 0.0;
+            
+            for (size_t j=0; j<num_site_rates_withInv; ++j)
+            {
+                siteRateConditionalProb[i][j] = exp(tmp[pattern_index][j] / pattern_counts[pattern_index]);
+                siteLikelihoods += siteRateConditionalProb[i][j];
+            }
+            for (size_t j=0; j<num_site_rates_withInv; ++j)
+            {
+                siteRateConditionalProb[i][j] = siteRateConditionalProb[i][j] / siteLikelihoods;
+            }
+        }
+
+        rv = RbVector<double>(num_sites, 0.0);
+        
+        // now either sample the site rates according to the conditional posterior probability of each rate category
+        // or compute them as the posterior mean
+        std::string method = static_cast<const TypedDagNode<std::string>* >( args[0] )->getValue();
+        
+        if (method == "sampling")
+        {
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            for (size_t i=0; i<num_sites; ++i)
+            {
+                size_t rateIndex = 0;
+                double u = rng->uniform01();
+                
+                while ( true )
+                {
+                    u -= siteRateConditionalProb[i][rateIndex];
+                    
+                    if ( u > 0.0 )
+                    {
+                        ++rateIndex;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                
+                rv[i] = r[rateIndex];
+                
+            }
+            
+        }
+        else if (method == "weightedAverage")
+        {
+            for (size_t i=0; i<num_sites; ++i)
+            {
+                for (size_t rateIndex=0; rateIndex < num_site_rates_withInv; ++rateIndex)
+                {
+                    rv[i] += r[rateIndex] * siteRateConditionalProb[i][rateIndex];
+                }
+            }
+        }
+        
+    }
     else
     {
         throw RbException("The PhyloCTMC process does not have a member method called '" + n + "'.");
