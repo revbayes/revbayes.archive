@@ -17,6 +17,7 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
 	constraints( c ),
     logTreeTopologyProb( RbConstants::Double::nan ),
     outgroup( og ),
+    outgroup_provided( og.size() > 0 ),
 	rooted( rt )
 {
     
@@ -48,7 +49,8 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
     {
         
         outgroup.addTaxon( ordered_taxa[0] );
-        
+        outgroup_provided = false;
+
     }
 
     std::map<Taxon, size_t> taxon_bitset_map;
@@ -139,6 +141,24 @@ double UniformTopologyDistribution::computeLnProbability( void )
 void UniformTopologyDistribution::redrawValue( void )
 {
     simulateTree();
+}
+
+
+void UniformTopologyDistribution::setValue(RevBayesCore::Tree *v, bool force)
+{
+    
+    // delegate to super class
+    TypedDistribution<Tree>::setValue( v, force );
+    
+    // Check that this isn't an artifact of arbitrary outgroup choice + clamping
+    if ( rooted == false && outgroup_provided == false )
+    {
+        std::vector<Taxon> taxa;
+        v->getRoot().getChild( 0 ).getTaxa( taxa );
+        outgroup = Clade( taxa );
+        
+    }
+    
 }
 
 
