@@ -266,7 +266,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::normalizeVector(std::vect
     double sum = 0.0;
     for (size_t i = 0; i < n; i++)
     {
-        if ( v[i] < -300.0 || isnan(v[i]) )
+        if ( v[i] < -300.0 || RbMath::isNan(v[i]) )
         {
             v[i] = 0.0;
         }

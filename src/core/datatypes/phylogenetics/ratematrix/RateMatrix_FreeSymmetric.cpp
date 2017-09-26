@@ -29,7 +29,6 @@ RateMatrix_FreeSymmetric::RateMatrix_FreeSymmetric(size_t n) : GeneralRateMatrix
     cc_ijk.resize(num_states * num_states * num_states);
     
     matrixProducts = new std::vector<MatrixReal>();
-    stationary_freqs = std::vector<double>(num_states, 1.0/n);
     
     update();
 }
@@ -49,7 +48,6 @@ RateMatrix_FreeSymmetric::RateMatrix_FreeSymmetric(size_t n, bool r) : GeneralRa
     cc_ijk.resize(num_states * num_states * num_states);
     
     matrixProducts = new std::vector<MatrixReal>();
-    stationary_freqs = std::vector<double>(num_states, 1.0/n);
     
     update();
 }
@@ -92,7 +90,6 @@ RateMatrix_FreeSymmetric::RateMatrix_FreeSymmetric(size_t n, bool r, std::string
     cc_ijk.resize(num_states * num_states * num_states);
     
     matrixProducts = new std::vector<MatrixReal>();
-    stationary_freqs = std::vector<double>(num_states, 1.0/n);
     
     update();
 }
@@ -111,7 +108,6 @@ RateMatrix_FreeSymmetric::RateMatrix_FreeSymmetric(const RateMatrix_FreeSymmetri
     useEigen              = m.useEigen;
     
     matrixProducts        = new std::vector<MatrixReal>();
-    stationary_freqs      = m.stationary_freqs;
     
     theEigenSystem        = new EigenSystem( *m.theEigenSystem );
     c_ijk                 = m.c_ijk;
@@ -414,13 +410,6 @@ void RateMatrix_FreeSymmetric::exponentiateMatrixByScalingAndSquaring(double t, 
         multiplyMatrices(p, p, r);
         p = r;
     }
-}
-
-
-std::vector<double> RateMatrix_FreeSymmetric::getStationaryFrequencies( void ) const
-{
-    
-    return stationary_freqs;
 }
 
 
