@@ -84,7 +84,7 @@ namespace RevBayesCore {
         Tree*                                                                   mrTree(AnnotationReport report, double cutoff, bool verbose);
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95, bool verbose=true);
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05, bool verbose=true);
-        void                                                                    setBurnin(int b);
+        void                                                                    setBurnin(long b);
         int                                                                     size(bool post = false) const;
 
         void                                                                    summarizeCharacterMaps(Tree inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, std::string filename, int burnin, bool verbose, std::string separator);

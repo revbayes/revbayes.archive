@@ -50,10 +50,12 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     size_t arg_index_outgroup  = 2;
     size_t arg_index_separator = 3;
     size_t arg_index_burnin    = 4;
+    size_t arg_index_thinning  = 5;
 
     // get the information from the arguments for reading the file
     const std::string&  treetype = static_cast<const RlString&>( args[arg_index_tree_type].getVariable()->getRevObject() ).getValue();
     const std::string&  sep      = static_cast<const RlString&>( args[arg_index_separator].getVariable()->getRevObject() ).getValue();
+    long                thin     = static_cast<const Natural&>( args[arg_index_thinning].getVariable()->getRevObject() ).getValue();
     
     std::vector<std::string> vectorOfFileNames;
     
@@ -115,7 +117,7 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     TraceTree *rv;
     if ( treetype == "clock" )
     {
-        rv = readTrees(vectorOfFileNames, sep, true);
+        rv = readTrees(vectorOfFileNames, sep, true, thin);
     }
     else if ( treetype == "non-clock" )
     {
@@ -125,14 +127,14 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
             og = static_cast<const Clade &>( args[arg_index_outgroup].getVariable()->getRevObject() ).getValue();
         }
         
-        rv = readTrees(vectorOfFileNames, sep, false);
+        rv = readTrees(vectorOfFileNames, sep, false, thin);
     }
     else
     {
         throw RbException("Unknown tree type to read.");
     }
     
-    int burnin = 0;
+    long burnin = 0;
 
     RevObject& b = args[arg_index_burnin].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
@@ -142,7 +144,7 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     else
     {
         double burninFrac = static_cast<const Probability &>(b).getValue();
-        burnin = int( floor( rv->getValue().size()*burninFrac ) );
+        burnin = long( floor( rv->getValue().size()*burninFrac ) );
     }
 
     rv->getValue().setBurnin(burnin);
@@ -158,7 +160,7 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rules_set = false;
     
-    if (!rules_set)
+    if ( rules_set == false )
     {
         //        std::vector<TypeSpec> branchRateTypeentRule( "branchRates", branchRateTypes, "The global or branch-specific rate multipliers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
@@ -178,6 +180,9 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const
         burninTypes.push_back( Probability::getClassTypeSpec() );
         burninTypes.push_back( Integer::getClassTypeSpec() );
         argumentRules.push_back( new ArgumentRule( "burnin"   , burninTypes     , "The fraction/number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
+
+        argumentRules.push_back( new ArgumentRule( "thinning", Natural::getClassTypeSpec(), "The frequency of samples to read, i.e., we will only used every n-th sample where n is defined by this argument.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural( 1l ) ) );
+
         rules_set = true;
     }
     
@@ -236,7 +241,7 @@ const TypeSpec& Func_readTreeTrace::getReturnType( void ) const
 }
 
 
-TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter, bool clock)
+TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vector_of_file_names, const std::string &delimitter, bool clock, long thinning)
 {
     
     std::vector<RevBayesCore::TraceTree> data;
@@ -244,8 +249,8 @@ TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vectorO
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
-    std::map<std::string,std::string> fileMap;
-    for (std::vector<std::string>::const_iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
+    std::map<std::string,std::string> file_ap;
+    for (std::vector<std::string>::const_iterator p = vector_of_file_names.begin(); p != vector_of_file_names.end(); ++p)
     {
         bool has_header_been_read = false;
         const std::string &fn = *p;
@@ -287,6 +292,7 @@ TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vectorO
         std::string commandLine;
         RBOUT( "Processing file \"" + fn + "\"");
         
+        size_t n_samples = 0;
         size_t index = 0;
         progress.start();
         
@@ -345,6 +351,15 @@ TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vectorO
                 continue;
             }
             
+            // increase our sample counter
+            ++n_samples;
+            
+            // we need to check if we skip this sample in case of thinning.
+            if ( (n_samples-1) % thinning > 0 )
+            {
+                continue;
+            }
+            
             // adding values to the Traces
             RevBayesCore::TraceTree& t = data[0];
             
@@ -380,7 +395,7 @@ TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vectorO
             }
             
             t.addObject( tau );
-            progress.update( t.size() );
+            progress.update( n_samples );
             
         }
         in_file.close();

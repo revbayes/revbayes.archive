@@ -88,16 +88,16 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
 {
     
     size_t parent_node_index = 0;
-    if (root == false)
+    if ( root == false )
     {
         parent_node_index = summary_nodes[node_index]->getParent().getIndex();
     }
     
-    if (root == true)
-    {
-        
-        true;
-    }
+//    if (root == true)
+//    {
+//
+//        true;
+//    }
     
     size_t sample_clade_index;
     size_t parent_sample_clade_index;
@@ -2988,7 +2988,7 @@ void TreeSummary::printTreeSummary(std::ostream &o, double credibleIntervalSize,
 }
 
 
-void TreeSummary::setBurnin(int b)
+void TreeSummary::setBurnin(long b)
 {
     size_t old = burnin;
     
