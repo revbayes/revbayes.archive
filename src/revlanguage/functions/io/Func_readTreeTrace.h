@@ -48,8 +48,7 @@ namespace RevLanguage {
         
     private:
         
-        TraceTree*                          readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d, const RevBayesCore::Clade &og);
-        TraceTree*                          readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
+        TraceTree*                          readTrees(const std::vector<std::string> &fns, const std::string &d, bool clock, long thin);
     };
     
 }

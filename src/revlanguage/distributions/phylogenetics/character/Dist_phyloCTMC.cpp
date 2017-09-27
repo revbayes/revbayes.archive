@@ -10,6 +10,7 @@
 #include "RlAminoAcidState.h"
 #include "RlBoolean.h"
 #include "RlDnaState.h"
+#include "RlMatrixReal.h"
 #include "RlRateGenerator.h"
 #include "RlRnaState.h"
 #include "RlString.h"
@@ -811,6 +812,18 @@ MethodTable Dist_phyloCTMC::getDistributionMethods( void ) const
     // member functions
     ArgumentRules* siteLikelihoodsArgRules = new ArgumentRules();
     methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, ModelVector<Real> >( "siteLikelihoods", variable, siteLikelihoodsArgRules, true ) );
+    
+    ArgumentRules* siteRateLikelihoodsArgRules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, MatrixReal >( "siteRateLikelihoods", variable, siteRateLikelihoodsArgRules, true ) );
+    
+    ArgumentRules* siteRatesArgRules = new ArgumentRules();
+    
+    std::vector<std::string> optionsMethod;
+    optionsMethod.push_back( "sampling" );
+    optionsMethod.push_back( "weightedAverage" );
+    siteRatesArgRules->push_back( new OptionRule( "estimateMethod", new RlString("sampling"), optionsMethod, "The method used to estimate the site specific rate." ) );
+    
+    methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, ModelVector<RealPos> >( "siteRates", variable, siteRatesArgRules, true ) );
     
     return methods;
 }

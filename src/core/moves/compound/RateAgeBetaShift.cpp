@@ -144,14 +144,15 @@ void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
     
     // set the rates
     double pa = node->getParent().getAge();
-    double my_new_rate =(pa - my_age) * storedRates[nodeIdx] / (pa - my_new_age);
+    double my_new_rate = (pa - my_age) * storedRates[nodeIdx] / (pa - my_new_age);
     
     // now we set the new value
-    // this will automcatically call a touch
+    // this will automatically call a touch
     rates[nodeIdx]->setValue( new double( my_new_rate ) );
     
     // get the probability ratio of the new rate
     double ratesProbRatio = rates[nodeIdx]->getLnProbabilityRatio();
+    double jacobian = log((pa - my_age) / (pa - my_new_age));
     
     for (size_t i = 0; i < node->getNumberOfChildren(); i++)
     {
@@ -160,12 +161,12 @@ void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
         double child_new_rate = (my_age - a) * storedRates[childIdx] / (my_new_age - a);
         
         // now we set the new value
-        // this will automcatically call a touch
+        // this will automatically call a touch
         rates[childIdx]->setValue( new double( child_new_rate ) );
 
         // get the probability ratio of the new rate
         ratesProbRatio += rates[childIdx]->getLnProbabilityRatio();
-        
+        jacobian += log((my_age - a) / (my_new_age - a));
         
     }
     
@@ -198,7 +199,7 @@ void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
         
     }
     
-    double hastingsRatio = backward - forward;
+    double hastingsRatio = backward - forward + jacobian;
     double ln_acceptance_ratio = lHeat * pHeat * (treeProbRatio + ratesProbRatio) + hastingsRatio;
     
     if (ln_acceptance_ratio >= 0.0)

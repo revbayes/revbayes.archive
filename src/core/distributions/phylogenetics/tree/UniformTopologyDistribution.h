@@ -18,7 +18,8 @@ namespace RevBayesCore {
         UniformTopologyDistribution*                        clone(void) const;                                                                                  //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
-        
+        virtual void                                        setValue(Tree *v, bool f=false);                                    //!< Set the current value, e.g. attach an observation (clamp)
+
     protected:
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
@@ -36,6 +37,7 @@ namespace RevBayesCore {
         std::vector<Clade>                                  constraints;
         double                                              logTreeTopologyProb;                                                 //!< Topological constrains.
         Clade                                               outgroup;
+        bool                                                outgroup_provided;
         bool												rooted;
     };
     

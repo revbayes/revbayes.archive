@@ -163,8 +163,10 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         
         // get the index which is the only argument for this method
         int i    = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() - 1;
-        i += this->value->getBurnin();
         
+        bool post = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
+        i += post * this->value->getBurnin();
+
         const RevBayesCore::Tree &current_tree = this->value->getTreeTrace().objectAt( i );
         
         Tree *rl_tree = NULL;
@@ -301,6 +303,7 @@ void TraceTree::initMethods( void )
     
     ArgumentRules* getTreeArgRules = new ArgumentRules();
     getTreeArgRules->push_back( new ArgumentRule("index", Natural::getClassTypeSpec(), "The index of the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    getTreeArgRules->push_back( new ArgumentRule("post", RlBoolean::getClassTypeSpec(), "Use post-burnin indices?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false)) );
     this->methods.addFunction( new MemberProcedure( "getTree", Tree::getClassTypeSpec(), getTreeArgRules) );
     
     ArgumentRules* getUniqueTreesArgRules = new ArgumentRules();
