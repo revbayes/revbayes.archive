@@ -122,6 +122,13 @@ void RateGenerator::executeMethod(const std::string &n, const std::vector<const 
     double start_age = static_cast<const TypedDagNode<double> *>( args[1] )->getValue();
     double end_age = static_cast<const TypedDagNode<double> *>( args[2] )->getValue();
 
+    if (start_age < end_age)
+    {
+        double temp = start_age;
+        start_age = end_age;
+        end_age = temp;
+    }
+
     calculateTransitionProbabilities( start_age, end_age, rate, P);
 
     for (size_t i = 0; i < num_states; i++)

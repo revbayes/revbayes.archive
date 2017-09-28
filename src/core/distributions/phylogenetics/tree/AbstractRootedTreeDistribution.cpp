@@ -125,6 +125,10 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
             }
             
         }
+        else if ( the_node.getAge() > getOriginAge() )
+        {
+            return RbConstants::Double::neginf;
+        }
         
     }
     
@@ -359,9 +363,9 @@ size_t AbstractRootedTreeDistribution::getNumberOfTaxa( void ) const
 double AbstractRootedTreeDistribution::getRootAge( void ) const
 {
     
-    if(use_origin)
+    if ( use_origin == true )
     {
-        if(value->getNumberOfNodes() > 0)
+        if ( value->getNumberOfNodes() > 0 )
         {
             return value->getRoot().getAge();
         }
@@ -371,7 +375,10 @@ double AbstractRootedTreeDistribution::getRootAge( void ) const
         }
     }
     else
+    {
         return getOriginAge();
+    }
+    
 }
 
 double AbstractRootedTreeDistribution::getOriginAge( void ) const
@@ -683,8 +690,9 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
         {
             //            double factor = process_age->getValue() / value->getRoot().getAge();
             //            TreeUtilities::rescaleTree( value, &value->getRoot(), factor);
-            if (process_age->getValue() != value->getRoot().getAge()) {
-                RbException("Tree height and root age values must match when root age is not a stochastic node.");
+            if (process_age->getValue() != value->getRoot().getAge())
+            {
+                throw RbException("Tree height and root age values must match when root age is not a stochastic node.");
             }
             value->getRoot().setAge( process_age->getValue() );
         }
