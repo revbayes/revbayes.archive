@@ -10,6 +10,7 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "ScaleProposal.h"
+#include "ScaleProposalContinuous.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -55,15 +56,26 @@ void Move_Scale::constructInternalObject( void )
     // we free the memory first
     delete value;
     
+    RevBayesCore::Proposal *p = NULL;
+    
     // now allocate a new sliding move
     double d = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double r = static_cast<const Probability &>( tuneTarget->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getRevObject() ).getDagNode();
-    RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
+    RevBayesCore::ContinuousStochasticNode *n = dynamic_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
+    if ( n != NULL )
+    {
+        p = new RevBayesCore::ScaleProposalContinuous(n, d, r);
+    }
+    else
+    {
+        RevBayesCore::StochasticNode<double> *n2 = dynamic_cast<RevBayesCore::StochasticNode<double> *>( tmp );
+        p = new RevBayesCore::ScaleProposal(n2, d, r);
+        
+    }
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::ScaleProposal(n, d, r);
     value = new RevBayesCore::MetropolisHastingsMove(p, w, t);
     
 }
