@@ -282,6 +282,38 @@ void RevBayesCore::TreeUtilities::offsetTree(Tree *t, TopologyNode *n, double fa
 }
 
 
+
+void RevBayesCore::TreeUtilities::makeUltrametric(Tree *t)
+{
+
+      double max = 0.0;
+      std::vector<double > ages ;
+      for (size_t i = 0; i < t->getNumberOfTips(); ++i)
+      {
+        TopologyNode* node = &(t->getTipNode( i ) );
+        double age = node->getBranchLength();
+        node = &(node->getParent());
+        while (!node->isRoot() ) {
+          age += node->getBranchLength();
+          node = &(node->getParent());
+        }
+        if (age > max) {
+          max = age;
+        }
+        ages.push_back(age);
+
+      }
+
+      //We extend terminal branches
+      for (size_t i = 0; i < t->getNumberOfTips(); ++i)
+      {
+        t->getTipNode( i ).setBranchLength(t->getTipNode( i ).getBranchLength() + max - ages[i]);
+        t->getTipNode( i ).setAge(0.0);
+      }
+
+}
+
+
 void RevBayesCore::TreeUtilities::rescaleTree(Tree *t, TopologyNode *n, double factor)
 {
     // rescale the time of the node

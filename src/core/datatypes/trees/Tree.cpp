@@ -1017,39 +1017,6 @@ bool Tree::isUltrametric( void ) const
 }
 
 
-
-bool Tree::makeUltrametric( void )
-{
-
-    double max = 0.0;
-    std::vector<double > ages ;
-    for (size_t i = 0; i < getNumberOfTips(); ++i)
-    {
-      TopologyNode* node = &getTipNode( i );
-      double age = node->getBranchLength();
-      node = &(node->getParent());
-      while (!node->isRoot() ) {
-        age += node->getBranchLength();
-        node = &(node->getParent());
-      }
-      if (age > max) {
-        max = age;
-      }
-      ages.push_back(age);
-
-    }
-
-    //We extend terminal branches
-    for (size_t i = 0; i < getNumberOfTips(); ++i)
-    {
-      getTipNode( i ).setBranchLength(getTipNode( i ).getBranchLength() + max - ages[i]);
-
-    }
-
-    return true;
-}
-
-
 void Tree::makeInternalNodesBifurcating(bool reindex)
 {
 

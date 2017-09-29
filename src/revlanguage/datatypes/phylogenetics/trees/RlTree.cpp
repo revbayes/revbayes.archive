@@ -146,7 +146,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         found = true;
 
         RevBayesCore::Tree &tree = dag_node->getValue();
-        tree.makeUltrametric();
+        RevBayesCore::TreeUtilities::makeUltrametric(&tree);
+
+//        tree.makeUltrametric();
 
         return NULL;
     }
