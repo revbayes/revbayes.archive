@@ -70,14 +70,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                if ( backward_time == true )
-                {
-                    no_event_rate += Q->getRate(i, j, age, rate);
-                }
-                else
-                {
-                    no_event_rate += Q->getRate(j, i, age, rate);
-                }
+                no_event_rate += Q->getRate(i, j, age, rate);
             }
         }
         
@@ -112,14 +105,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                if ( backward_time == true )
-                {
-                    dxdt[i] += Q->getRate(i, j, age, rate) * safe_x[j];
-                }
-                else
-                {
-                    dxdt[i] += Q->getRate(j, i, age, rate) * safe_x[j];
-                }
+                dxdt[i] += Q->getRate(i, j, age, rate) * safe_x[j];
             }
         }
 
