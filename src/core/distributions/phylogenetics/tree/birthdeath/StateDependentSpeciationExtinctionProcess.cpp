@@ -1,4 +1,3 @@
-#include "AbstractCladogenicStateFunction.h"
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "SSE_ODE.h"
 #include "Clade.h"
@@ -222,7 +221,6 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
     
     // check for recomputation
     if ( dirty_nodes[node_index] == true )
-//    if ( true )
     {
         // mark as computed
         dirty_nodes[node_index] = false;
@@ -289,10 +287,6 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             if ( use_cladogenetic_events == true )
             {
                 // get cladogenesis event map (sparse speciation rate matrix)
-                //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-                //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-                //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-                //eventMap = csf->getEventMap();
                 eventMap = cladogenesis_matrix->getValue().getEventMap();
             }
             else
@@ -439,10 +433,6 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     if ( use_cladogenetic_events == true )
     {
         // get cladogenesis event map (sparse speciation rate matrix)
-        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        //eventMap = csf->getEventMap();
         eventMap = cladogenesis_matrix->getValue().getEventMap();
     }
     else
@@ -572,10 +562,6 @@ void StateDependentSpeciationExtinctionProcess::drawJointConditionalAncestralSta
     if ( use_cladogenetic_events == true )
     {
         // get cladogenesis event map (sparse speciation rate matrix)
-        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        //eventMap = csf->getEventMap();
         eventMap = cladogenesis_matrix->getValue().getEventMap();
     }
     else
@@ -753,7 +739,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         state_type branch_conditional_probs = std::vector<double>(2 * num_states, 0);
         size_t start_state = startStates[node_index];
         branch_conditional_probs[ num_states + start_state ] = 1.0;
-        
+
         // first calculate extinction likelihoods via a backward time pass
         double end_age = node.getParent().getAge();
         numericallyIntegrateProcess(branch_conditional_probs, 0, end_age, true, true);
@@ -767,10 +753,6 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         if ( use_cladogenetic_events == true )
         {
             // get cladogenesis event map (sparse speciation rate matrix)
-            //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-            //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-            //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-            //event_map = csf->getEventMap();
             event_map = cladogenesis_matrix->getValue().getEventMap();
         }
         else
@@ -915,10 +897,6 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
     if ( use_cladogenetic_events == true )
     {
         // get cladogenesis event map (sparse speciation rate matrix)
-        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        //eventMap = csf->getEventMap();
         eventMap = cladogenesis_matrix->getValue().getEventMap();
     }
     else
@@ -1196,10 +1174,6 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         if ( use_cladogenetic_events == true )
         {
             // get cladogenesis event map (sparse speciation rate matrix)
-            //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-            //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-            //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-            //event_map = csf->getEventMap();
             event_map = cladogenesis_matrix->getValue().getEventMap();
         }
         else
@@ -1814,10 +1788,6 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
         cladogenesis_matrix->getValue(); // we must call getValue() to update the speciation and extinction rates in the event map
         
         // get cladogenesis event map (sparse speciation rate matrix)
-        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        //std::map<std::vector<unsigned>, double> event_map = csf->getEventMap();
         std::map<std::vector<unsigned>, double> event_map = cladogenesis_matrix->getValue().getEventMap();
         
         ode.setEventMap( event_map );
@@ -1839,8 +1809,9 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
 
     // catch negative extinction probabilities that can result from
     // rounding errors in the ODE stepper
-    for (size_t i = 0; i < num_states; ++i)
+    for (size_t i = 0; i < 2 * num_states; ++i)
     {
         likelihoods[i] = ( likelihoods[i] < 0.0 ? 0.0 : likelihoods[i] );
+        likelihoods[i] = ( likelihoods[i] > 1.0 ? 1.0 : likelihoods[i] );
     }
 }
