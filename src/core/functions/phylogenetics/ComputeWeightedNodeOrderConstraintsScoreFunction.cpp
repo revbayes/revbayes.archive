@@ -25,7 +25,7 @@ constrainedNodes()
     addParameter( constraints );
     addParameter( beta );
     updateSetOfConstrainedNodes();
-    
+
     update();
 }
 catch (RbException e)
@@ -53,7 +53,7 @@ void computeWeightedNodeOrderConstraintsScoreFunction::keep(DagNode *affecter)
 {
     //delegate to base class
     TypedFunction< double >::keep( affecter );
-    
+
 }
 
 
@@ -72,21 +72,21 @@ void computeWeightedNodeOrderConstraintsScoreFunction::restore(DagNode *restorer
 
 void computeWeightedNodeOrderConstraintsScoreFunction::touch(DagNode *toucher)
 {
-    
+
     //delegate to base class
     TypedFunction< double >::touch( toucher );
-    
+
 }
 
 
 double computeWeightedNodeOrderConstraintsScoreFunction::computeWeightedNodeAgeConstraintsScore ( void )
 {
     std::vector < std::pair < std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> >, double > > constra = constraints->getValue().getConstraints();
-    
+
     double score = 0.0;
     for (size_t i = 0; i < constra.size() ; ++i) {
         if ( nodeAges.at(constra[i].first.first) <  nodeAges.at(constra[i].first.second) ) {
-            score -= beta->getValue() * constra[i].second;
+            score += beta->getValue() * constra[i].second * ( nodeAges.at(constra[i].first.first) - nodeAges.at(constra[i].first.second) ) ;
         }
     }
     return score;
@@ -108,7 +108,7 @@ void computeWeightedNodeOrderConstraintsScoreFunction::update( void )
     (*value) = computeWeightedNodeAgeConstraintsScore() ;
 
     return;
-    
+
 }
 
 
@@ -128,22 +128,22 @@ void computeWeightedNodeOrderConstraintsScoreFunction::updateSetOfConstrainedNod
 //Here we compute node ages from the current tree.
 void computeWeightedNodeOrderConstraintsScoreFunction::updateMapOfNodeAges()
 {
-  
-    
+
+
     nodeAges.clear();
     for (std::set< std::pair < std::string, std::string > >::iterator elem=constrainedNodes.begin(); elem != constrainedNodes.end(); ++elem)
     {
         nodeAges[(*elem)] = TreeUtilities::getAgeOfMRCA(tau->getValue(), elem->first, elem->second);
     }
-    
+
     return;
-    
+
 }
 
 
 void computeWeightedNodeOrderConstraintsScoreFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
-    
+
     if (oldP == tau)
     {
         tau = static_cast<const TypedDagNode<Tree>* >( newP );
@@ -154,4 +154,3 @@ void computeWeightedNodeOrderConstraintsScoreFunction::swapParameterInternal(con
         updateSetOfConstrainedNodes();
     }
 }
-
