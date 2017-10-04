@@ -26,7 +26,8 @@ class RbSettings {
         double                      getTolerance(void) const;                           //!< Retrieve the tolerance for comparing doubles
         bool                        getUseScaling(void) const;                          //!< Retrieve the flag whether we should scale the likelihood in CTMC models
         const std::string&          getWorkingDirectory(void) const;                    //!< Retrieve the current working directory
-    
+        void                        listOptions(void) const;                            //!< Retrieve a list of all user options and their current values
+
         // setters
         void                        setCollapseSampledAncestors(bool);                  //!< Set whether to should display sampled ancestors as 2-degree nodes when printing
         void                        setLineWidth(size_t w);                             //!< Set the line width that will be used for the screen width when printing
