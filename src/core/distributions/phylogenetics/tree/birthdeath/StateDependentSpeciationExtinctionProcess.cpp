@@ -157,7 +157,7 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
         
     }
     
-    size_t num_initial_lineages = 2;
+    double num_initial_lineages = 2; // this needs to be a double!
     const TopologyNode& root = value->getRoot();
 
     if (use_origin) {
