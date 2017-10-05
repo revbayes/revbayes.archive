@@ -87,7 +87,7 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
     }
     
     Tree* t;
-    if( tt.getValue().getTreeTrace().isClock() )
+    if ( tt.getValue().getTreeTrace().isClock() )
     {
         t = new TimeTree( tree );
     }
@@ -175,7 +175,7 @@ const TypeSpec& Func_annotateTree::getTypeSpec( void ) const
 const TypeSpec& Func_annotateTree::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = Tree::getClassTypeSpec();
+    return return_typeSpec;
 }
 

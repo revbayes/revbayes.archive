@@ -397,7 +397,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddContinuousDistribution< Real             >( new Dist_SoftBoundUniformNormal() );
 
         // uniform distribution
-        AddContinuousDistribution< Real             >( new Dist_unif() );
+        AddContinuousDistribution< Real             >( new Dist_unif () );
         AddContinuousDistribution< RealPos          >( new Dist_unifPositive() );
 //        AddContinuousDistribution< Probability      >( new Dist_unifProbability() );
         AddDistribution< Probability                >( new Dist_unifProbability() );

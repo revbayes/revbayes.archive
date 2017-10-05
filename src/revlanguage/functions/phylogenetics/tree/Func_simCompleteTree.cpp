@@ -235,7 +235,7 @@ const TypeSpec& Func_simCompleteTree::getTypeSpec( void ) const
 const TypeSpec& Func_simCompleteTree::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = TimeTree::getClassTypeSpec();
+    static TypeSpec return_typeSpec = TimeTree::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }

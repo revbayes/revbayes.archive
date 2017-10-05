@@ -85,9 +85,9 @@ std::string Func_dayhoff::getFunctionName( void ) const
 const TypeSpec& Func_dayhoff::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
+    static TypeSpec return_typeSpec = RateGenerator::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 
 

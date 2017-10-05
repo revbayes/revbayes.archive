@@ -265,16 +265,16 @@ double PhyloOrnsteinUhlenbeckProcessEVE::computeLnProbability( void )
     computeCovariance( *phylogenetic_covariance_matrix );
     
 //    //check for zero cov
-//    if(matrixSum(gCov, totnindiv, totnindiv) <= 0.0) {
-//        if(matrixSum(gCov, totnindiv, totnindiv) < 0.0) {
-//            if(verbose > 90) { printf("got less than zero covariance matrix with gparmin %le and regime ", gparmin); printDouArr(regimes[0], 4); }
-//            if(vectorEquals(expr[findmaxgenei], gEs, totnindiv) == 1)
+//    if (matrixSum(gCov, totnindiv, totnindiv) <= 0.0) {
+//        if (matrixSum(gCov, totnindiv, totnindiv) < 0.0) {
+//            if (verbose > 90) { printf("got less than zero covariance matrix with gparmin %le and regime ", gparmin); printDouArr(regimes[0], 4); }
+//            if (vectorEquals(expr[findmaxgenei], gEs, totnindiv) == 1)
 //                return(0.0);
 //            else
 //                return(-1000000.0);//-10000000000000000.0);
 //        }
-//        if(verbose > 90) { printf("got zero covariance matrix with gparmin %le and regime ", gparmin); printDouArr(regimes[0], 4); }
-//        if(vectorEquals(expr[findmaxgenei], gEs, totnindiv) == 1)
+//        if (verbose > 90) { printf("got zero covariance matrix with gparmin %le and regime ", gparmin); printDouArr(regimes[0], 4); }
+//        if (vectorEquals(expr[findmaxgenei], gEs, totnindiv) == 1)
 //            return(0.0);
 //        else
 //            return(-1000000.0);//-10000000000000000.0);
@@ -369,7 +369,7 @@ void PhyloOrnsteinUhlenbeckProcessEVE::expandExpectation( std::vector<double> &e
 //    for (size_t i=0; i<num_tips; ++i)
 //    {
 //        
-//        for(size_t j=0; j<(tree[i].nindiv); j++)
+//        for (size_t j=0; j<(tree[i].nindiv); j++)
 //        {
 //            iE[iEi] = lE[i];
 //            iEi++;
@@ -392,9 +392,9 @@ void PhyloOrnsteinUhlenbeckProcessEVE::expandCovariance( MatrixReal &covariance 
 //        
 //        for (j=i; j<nspecies; j++)
 //        {
-//            for(ii=0; ii<(tree[i].nindiv); ii++)
+//            for (ii=0; ii<(tree[i].nindiv); ii++)
 //            {
-//                for(ij=0; ij<(tree[j].nindiv); ij++)
+//                for (ij=0; ij<(tree[j].nindiv); ij++)
 //                {
 //                    covariance[(iCovi+ii)][(iCovj+ij)] = lCov[i][j];
 //                }
@@ -406,10 +406,10 @@ void PhyloOrnsteinUhlenbeckProcessEVE::expandCovariance( MatrixReal &covariance 
 //    
 //    //add in variance within pops
 //    iCovi=0;
-//    for(size_t i=0; i<num_tips; ++i)
+//    for (size_t i=0; i<num_tips; ++i)
 //    {
 //        double inpopvar = 1.0 * computeBranchSigma(i)/(2.0*computeBranchSigma(i)) * regimes[tree[i].regime][3];
-//        for(ii=0; ii<tree[i].nindiv; ii++)
+//        for (ii=0; ii<tree[i].nindiv; ii++)
 //        {
 //            covariance[iCovi][iCovi] += inpopvar;
 //            iCovi++;

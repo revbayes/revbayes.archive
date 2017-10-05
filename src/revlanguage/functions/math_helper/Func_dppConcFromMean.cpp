@@ -92,9 +92,9 @@ std::string Func_dppConcFromMean::getFunctionName( void ) const
 const TypeSpec& Func_dppConcFromMean::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
+    static TypeSpec return_typeSpec = RealPos::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 
 

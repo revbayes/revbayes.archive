@@ -2381,7 +2381,7 @@ void NxsAssumptionsBlock::Read(
 	n << NCL_BLOCKTYPE_ATTR_NAME;
 	DemandEndSemicolon(token, n.c_str());
 
-	for(;;)
+	for (;;)
 		{
 		token.GetNextToken();
 		
@@ -2431,7 +2431,7 @@ void NxsAssumptionsBlock::Read(
 				SkipCommand(token);
 
 			}
-		}	// for(;;)
+		}	// for (;;)
 	}
 void NxsAssumptionsBlock::HandleOptions(NxsToken &token)
 	{
@@ -2518,7 +2518,7 @@ void NxsAssumptionsBlock::Reset()
 	if (!passedRefOfOwnedBlock)
 		{
 		VecAssumpBlockPtr::iterator bIt = createdSubBlocks.begin();
-		for(; bIt != createdSubBlocks.end(); ++bIt)
+		for (; bIt != createdSubBlocks.end(); ++bIt)
 			{
 			if (*bIt)
 				delete *bIt;
@@ -2791,7 +2791,7 @@ VecBlockPtr NxsAssumptionsBlock::GetCreatedTaxaBlocks()
 	passedRefOfOwnedBlock = true;
 	VecBlockPtr r;
 	VecAssumpBlockPtr::iterator bIt = createdSubBlocks.begin();
-	for(; bIt != createdSubBlocks.end(); ++bIt)
+	for (; bIt != createdSubBlocks.end(); ++bIt)
 		r.push_back(*bIt);
 	return r;
 	}

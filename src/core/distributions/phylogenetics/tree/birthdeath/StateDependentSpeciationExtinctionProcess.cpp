@@ -191,7 +191,7 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
         }
     }
 
-    if( value->getNumberOfNodes() != dirty_nodes.size() )
+    if ( value->getNumberOfNodes() != dirty_nodes.size() )
     {
         dirty_nodes = std::vector<bool>(value->getNumberOfNodes(), true);
         changed_nodes = std::vector<bool>(value->getNumberOfNodes(), false);
@@ -235,7 +235,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             std::vector<double> sampling(num_states, rho->getValue());
             std::vector<double> extinction(num_states, 1.0 - rho->getValue());
 
-            if(psi != NULL && node.isFossil())
+            if (psi != NULL && node.isFossil())
             {
                 sampling = psi->getValue();
                 extinction = pExtinction(0.0, node.getAge());
@@ -244,7 +244,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             RbBitSet obs_state(num_states, true);
             bool gap = true;
 
-            if(tree->hasCharacterData())
+            if (tree->hasCharacterData())
             {
                 const DiscreteCharacterState &state = tree->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
                 obs_state = state.getState();
@@ -295,7 +295,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             }
             
             bool speciation_node = true;
-            if( left.isSampledAncestor() || right.isSampledAncestor() )
+            if ( left.isSampledAncestor() || right.isSampledAncestor() )
             {
                 speciation_node = (psi == NULL);
             }
@@ -396,7 +396,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
 
             scaling_factors[node_index][active_likelihood[node_index]] = log(max);
 
-            if( node.isTip() == false )
+            if ( node.isTip() == false )
             {
                 const TopologyNode          &left           = node.getChild(0);
                 size_t                      left_index      = left.getIndex();
@@ -441,7 +441,7 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     }
 
     bool speciation_node = true;
-    if( left.isSampledAncestor() || right.isSampledAncestor() )
+    if ( left.isSampledAncestor() || right.isSampledAncestor() )
     {
         speciation_node = (psi == NULL);
     }
@@ -477,7 +477,7 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     }
     
     // calculate likelihoods for the root branch
-    if( use_origin )
+    if ( use_origin )
     {
         double begin_age = getRootAge();
         double end_age = getOriginAge();
@@ -1349,7 +1349,7 @@ void StateDependentSpeciationExtinctionProcess::getAffected(RbOrderedSet<DagNode
 double StateDependentSpeciationExtinctionProcess::getEventRate(void) const
 {
 
-    if( rate != NULL )
+    if ( rate != NULL )
     {
         return rate->getValue();
     }
@@ -1367,7 +1367,7 @@ double StateDependentSpeciationExtinctionProcess::getEventRate(void) const
 const RateGenerator& StateDependentSpeciationExtinctionProcess::getEventRateMatrix(void) const
 {
 
-    if( Q != NULL )
+    if ( Q != NULL )
     {
         return Q->getValue();
     }
@@ -1393,9 +1393,9 @@ double StateDependentSpeciationExtinctionProcess::getOriginAge( void ) const
 double StateDependentSpeciationExtinctionProcess::getRootAge( void ) const
 {
 
-    if(use_origin)
+    if (use_origin)
     {
-        if(value->getNumberOfNodes() > 0)
+        if (value->getNumberOfNodes() > 0)
         {
             return value->getRoot().getAge();
         }
@@ -1415,7 +1415,7 @@ double StateDependentSpeciationExtinctionProcess::getRootAge( void ) const
 std::vector<double> StateDependentSpeciationExtinctionProcess::getRootFrequencies(void) const
 {
 
-    if( pi != NULL )
+    if ( pi != NULL )
     {
         return pi->getValue();
     }
@@ -1524,7 +1524,7 @@ void StateDependentSpeciationExtinctionProcess::restoreSpecialization(DagNode *a
     
     if ( affecter == process_age )
     {
-        if( use_origin == false )
+        if ( use_origin == false )
         {
             value->getRoot().setAge( process_age->getValue() );
         }
@@ -1742,7 +1742,7 @@ void StateDependentSpeciationExtinctionProcess::touchSpecialization(DagNode *aff
     
     if ( affecter == process_age )
     {
-        if( use_origin == false)
+        if ( use_origin == false)
         {
             value->getRoot().setAge( process_age->getValue() );
         }
@@ -1797,7 +1797,7 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
         ode.setSpeciationRate( speciation_rates );
     }
 
-    if( psi != NULL )
+    if ( psi != NULL )
     {
         const std::vector<double> &serial_sampling_rates = psi->getValue();
         ode.setSerialSamplingRate( serial_sampling_rates );

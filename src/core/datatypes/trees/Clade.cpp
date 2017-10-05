@@ -516,7 +516,7 @@ std::string Clade::toString( void ) const
             s += ",";
         }
         s += taxa[i].getName();
-        if( std::find(mrca.begin(), mrca.end(), taxa[i]) != mrca.end() )
+        if ( std::find(mrca.begin(), mrca.end(), taxa[i]) != mrca.end() )
         {
             s += "*";
         }

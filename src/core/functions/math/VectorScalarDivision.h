@@ -20,8 +20,8 @@ namespace RevBayesCore {
      * \since Version 1.0, 2012-08-13
      *
      */
-    template <class firstValueType, class secondValueType, class returnType>
-    class VectorScalarDivision : public TypedFunction< RbVector<returnType> > {
+    template <class firstValueType, class secondValueType, class return_type>
+    class VectorScalarDivision : public TypedFunction< RbVector<return_type> > {
         
     public:
         VectorScalarDivision(const TypedDagNode< RbVector<firstValueType> > *a, const TypedDagNode<secondValueType> *b);
@@ -41,8 +41,8 @@ namespace RevBayesCore {
 
 
 
-template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, returnType>::VectorScalarDivision(const TypedDagNode< RbVector<firstValueType> > *l, const TypedDagNode< secondValueType > *r) : TypedFunction< RbVector<returnType> >( new RbVector<returnType>() ),
+template<class firstValueType, class secondValueType, class return_type>
+RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, return_type>::VectorScalarDivision(const TypedDagNode< RbVector<firstValueType> > *l, const TypedDagNode< secondValueType > *r) : TypedFunction< RbVector<return_type> >( new RbVector<return_type>() ),
     a( l ),
     b( r )
 {
@@ -52,16 +52,16 @@ RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, returnType>:
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, returnType>* RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, returnType>::clone( void ) const
+template<class firstValueType, class secondValueType, class return_type>
+RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, return_type>* RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, return_type>::clone( void ) const
 {
     
     return new VectorScalarDivision(*this);
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, returnType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+template<class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, return_type>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == a)
@@ -76,8 +76,8 @@ void RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, returnT
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, returnType>::update( void )
+template<class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::VectorScalarDivision<firstValueType, secondValueType, return_type>::update( void )
 {
     // remove the old values
     

@@ -82,7 +82,7 @@ namespace RevLanguage {
 
     protected:
 
-        FunctionTable                       functionTable;                                                                              //!< Table holding functions
+        FunctionTable                       function_table;                                                                              //!< Table holding functions
         int                                 numUnnamedVariables;                                                                        //!< Current number of unnamed variables
         Environment*                        parentEnvironment;                                                                          //!< Pointer to enclosing Environment
         VariableTable                       variableTable;                                                                              //!< Variable table

@@ -209,8 +209,8 @@ const TypeSpec& Func_getOption::getTypeSpec( void ) const
 const TypeSpec& Func_getOption::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlUtils::Void;
+    static TypeSpec return_typeSpec = RlUtils::Void;
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

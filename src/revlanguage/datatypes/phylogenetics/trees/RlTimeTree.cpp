@@ -94,7 +94,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         size_t n = this->dag_node->getValue().getNumberOfTips();
 
         size_t num = 0;
-        for(size_t i=0; i<n; i++){
+        for (size_t i=0; i<n; i++){
             RevBayesCore::TopologyNode &node = this->dag_node->getValue().getNode(i);
             num += node.isSampledAncestor();
         }

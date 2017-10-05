@@ -17,7 +17,7 @@ namespace RevBayesCore {
      *
      * This node-age proposal works on rooted subtrees without changing the topology.
      * That is, we pick a random node which is not the root.
-     * Then a scaling proposal draws a random uniform number u ~ unif(-0.5,0.5)
+     * Then a scaling proposal draws a random uniform number u ~ unif (-0.5,0.5)
      * and scales the current node age by a scaling factor
      * sf = exp( lambda * u )
      * where lambda is the tuning parameter of the Proposal to influence the size of the proposals.

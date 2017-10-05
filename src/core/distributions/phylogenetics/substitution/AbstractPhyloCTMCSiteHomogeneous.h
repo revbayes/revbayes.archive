@@ -658,7 +658,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
         num_patterns = num_sites;
         pattern_counts     = std::vector<size_t>(num_sites,1);
         indexOfSitePattern = std::vector<size_t>(num_sites,1);
-        for(size_t i = 0; i < this->num_sites; i++)
+        for (size_t i = 0; i < this->num_sites; i++)
         {
             indexOfSitePattern[i] = i;
         }
@@ -1444,7 +1444,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(con
         
         // get the site rates
         std::vector<double> r;
-        if( this->rate_variation_across_sites == true )
+        if ( this->rate_variation_across_sites == true )
         {
             r = this->site_rates->getValue();
         }
@@ -1776,11 +1776,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getRootFrequencie
         std::vector<double> f = root_frequencies->getValue();
         rf.push_back( f );
     }
-    else if(heterogeneous_rate_matrices !=  NULL)
+    else if (heterogeneous_rate_matrices !=  NULL)
     {
-        if( this->branch_heterogeneous_substitution_matrices == true)
+        if ( this->branch_heterogeneous_substitution_matrices == true)
         {
-            if(root_frequencies == NULL)
+            if (root_frequencies == NULL)
             {
                 throw RbException("Using branch-heterogeneous rate matrices, but no root frequencies have been specified");
             }
@@ -1790,7 +1790,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getRootFrequencie
         }
         else
         {
-            for(size_t matrix = 0; matrix < this->num_matrices; matrix++)
+            for (size_t matrix = 0; matrix < this->num_matrices; matrix++)
             {
                 const RateMatrix *rm = dynamic_cast<const RateMatrix *>(&heterogeneous_rate_matrices->getValue()[matrix]);
                 if ( rm != NULL )
@@ -1804,7 +1804,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getRootFrequencie
             }
         }
     }
-    else if(homogeneous_rate_matrix != NULL)
+    else if (homogeneous_rate_matrix != NULL)
     {
         const RateMatrix *rm = dynamic_cast<const RateMatrix *>(&homogeneous_rate_matrix->getValue());
         if ( rm != NULL )
@@ -2729,7 +2729,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(con
     
     this->resizeLikelihoodVectors();
     
-    if(rm != NULL && rm->getValue().size() != this->num_chars)
+    if (rm != NULL && rm->getValue().size() != this->num_chars)
     {
         std::stringstream ss;
         ss << "Rate generator dimensions (" << rm->getValue().size() << " do not match the number of character states (" << this->num_chars << ")";
@@ -2769,7 +2769,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(con
     
     this->resizeLikelihoodVectors();
     
-    if(rm != NULL && rm->getValue()[0].size() != this->num_chars)
+    if (rm != NULL && rm->getValue()[0].size() != this->num_chars)
     {
         std::stringstream ss;
         ss << "Rate generator dimensions (" << rm->getValue()[0].size() << " do not match the number of character states (" << this->num_chars << ")";
@@ -2897,7 +2897,7 @@ template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s)
 {
     
-    if( sm == false && s != NULL)
+    if ( sm == false && s != NULL)
     {
         throw(RbException("Provided site matrix probs but not using site matrix mixture."));
     }
@@ -3252,7 +3252,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
             }
             
             // the remaining variant rate categories
-            for(size_t site_rate_index = 1; site_rate_index < num_site_rates_withInv; ++site_rate_index)
+            for (size_t site_rate_index = 1; site_rate_index < num_site_rates_withInv; ++site_rate_index)
             {
                 rv[site][site_rate_index] = log( oneMinusPInv * per_site_rate_Likelihoods[site][site_rate_index - 1] ) * *patterns;
                 
@@ -3271,7 +3271,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
 
         for (size_t site = 0; site < pattern_block_size; ++site, ++patterns)
         {
-            for(size_t site_rate_index = 0; site_rate_index < num_site_rates; ++site_rate_index)
+            for (size_t site_rate_index = 0; site_rate_index < num_site_rates; ++site_rate_index)
             {
                 rv[site][site_rate_index] = log( per_site_rate_Likelihoods[site][site_rate_index] ) * *patterns;
                 
@@ -3525,7 +3525,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
     {
         rate = this->heterogeneous_clock_rates->getValue()[node_idx];
     }
-    else if(homogeneous_clock_rate != NULL)
+    else if (homogeneous_clock_rate != NULL)
     {
         rate = this->homogeneous_clock_rate->getValue();
     }
@@ -3555,7 +3555,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
             {
                 rm = &this->heterogeneous_rate_matrices->getValue()[matrix];
             }
-            else if( this->homogeneous_rate_matrix != NULL )
+            else if ( this->homogeneous_rate_matrix != NULL )
             {
                 rm = &this->homogeneous_rate_matrix->getValue();
             }
@@ -3563,7 +3563,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
             for (size_t j = 0; j < this->num_site_rates; ++j)
             {
                 double r = 1.0;
-                if( this->rate_variation_across_sites == true )
+                if ( this->rate_variation_across_sites == true )
                 {
                     r = this->site_rates->getValue()[j];
                 }
@@ -3578,7 +3578,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
         {
             rm = &this->heterogeneous_rate_matrices->getValue()[node_idx];
         }
-        else if( this->homogeneous_rate_matrix != NULL )
+        else if ( this->homogeneous_rate_matrix != NULL )
         {
             rm = &this->homogeneous_rate_matrix->getValue();
         }
@@ -3586,7 +3586,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
         for (size_t j = 0; j < this->num_site_rates; ++j)
         {
             double r = 1.0;
-            if( this->rate_variation_across_sites == true )
+            if ( this->rate_variation_across_sites == true )
             {
                 r = this->site_rates->getValue()[j];
             }

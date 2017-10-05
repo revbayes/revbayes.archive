@@ -122,7 +122,7 @@ void PhyloBrownianCharacterHistoryProcess::computeNodeLnProbability( const Topol
         
         // get the branch rate
         
-        for(int i=0; i < this->num_sites; ++i)
+        for (int i=0; i < this->num_sites; ++i)
         {
             // get the site rate
             

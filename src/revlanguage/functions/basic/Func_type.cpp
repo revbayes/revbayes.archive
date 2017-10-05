@@ -199,8 +199,8 @@ const TypeSpec& Func_type::getTypeSpec( void ) const
 const TypeSpec& Func_type::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlString::getClassTypeSpec();
+    static TypeSpec return_typeSpec = RlString::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

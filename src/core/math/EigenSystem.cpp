@@ -1025,12 +1025,12 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, std::vector<double>& wr,
 void EigenSystem::initializeComplexEigenvectors(void) {
     
 	// initialize the complex eigenvectors
-	for(int i=0; i<n; i++) 
+	for (int i=0; i<n; i++) 
     {
 		// real eigenvector
 		if (imaginaryEigenvalues[i] == 0.0) 
         { 
-			for(int j=0; j<n; j++)
+			for (int j=0; j<n; j++)
 				complexEigenvectors[j][i] = std::complex<double>(eigenvectors[j][i], 0.0);
         }
 		// complex eigenvector with positive imaginary part

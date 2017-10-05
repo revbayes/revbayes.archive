@@ -142,9 +142,9 @@ const TypeSpec& Func_simTree::getTypeSpec( void ) const
 const TypeSpec& Func_simTree::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = TimeTree::getClassTypeSpec();
+    static TypeSpec return_typeSpec = TimeTree::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 
 

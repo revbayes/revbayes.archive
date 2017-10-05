@@ -101,7 +101,7 @@ double ConstantRateOutgroupBirthDeathProcess::computeLnProbabilityTimes( void ) 
     
     // ingroup
     lnProbTimes += log(pOne(process_time, birth_rate, death_rate, rho_ingroup));
-    for(size_t i=0; i<internal_node_ages.size(); i++)
+    for (size_t i=0; i<internal_node_ages.size(); i++)
     {
         double t = internal_node_ages[i];
         lnProbTimes += log(birth_rate * pOne(t, birth_rate, death_rate, rho_ingroup));

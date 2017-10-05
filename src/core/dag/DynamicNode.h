@@ -133,7 +133,7 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( DagNodeMa
     
     // Make sure the children clone themselves
     std::vector<DagNode*> children_to_clone = this->getChildren();
-    for( std::vector<DagNode* >::const_iterator i = children_to_clone.begin(); i != children_to_clone.end(); i++ )
+    for ( std::vector<DagNode* >::const_iterator i = children_to_clone.begin(); i != children_to_clone.end(); i++ )
     {
         DagNode *the_node = *i;
         std::string n = the_node->getName();

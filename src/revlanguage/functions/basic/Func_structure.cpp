@@ -276,8 +276,8 @@ const TypeSpec& Func_structure::getTypeSpec( void ) const
 const TypeSpec& Func_structure::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlUtils::Void;
+    static TypeSpec return_typeSpec = RlUtils::Void;
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

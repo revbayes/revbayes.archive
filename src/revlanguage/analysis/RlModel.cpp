@@ -234,7 +234,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
 	o << "digraph REVDAG {\n";
     std::string nrank = "   {rank=same";
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it ){
-        if( !(*it)->isHidden() || vb){
+        if ( !(*it)->isHidden() || vb){
             std::stringstream nname;
             if ( (*it)->getName() != "" )
                 nname << (*it)->getName();
@@ -247,28 +247,28 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
             stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
                   
             std::stringstream rl;
-			if((*it)->getName() == "" && !vb){
+			if ((*it)->getName() == "" && !vb){
 				rl << "function" ;
 			}
 			else
 				rl << nname.str() ;
            
             // only print values of constant nodes (only simple numeric values)
-            if((*it)->getDagNodeType() == RevBayesCore::DagNode::CONSTANT){
+            if ((*it)->getDagNodeType() == RevBayesCore::DagNode::CONSTANT){
                 std::stringstream trl;
-                if((*it)->isSimpleNumeric())  
+                if ((*it)->isSimpleNumeric())  
                     (*it)->printValue(trl," ", true);
                 else 
                     trl << " ... ";
-                if(trl.str() != "" || vb){
+                if (trl.str() != "" || vb){
                     std::string val = trl.str();
-                    if(val == "")
+                    if (val == "")
                         val = "constant\\ndefault member";
-                    if(!(*it)->isSimpleNumeric())
+                    if (!(*it)->isSimpleNumeric())
                         val = "...";
                     o << "   n_" << stname;
                     o << " [shape=";
-                    if( (*it)->getName() == "" ){
+                    if ( (*it)->getName() == "" ){
                         o << "box, style=filled, fillcolor=white, ";
                         o << "label=\"" << val << "\"]\n";
                     }
@@ -279,16 +279,16 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                     }
                 }
             }
-            else if((*it)->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC){
+            else if ((*it)->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC){
                 o << "   n_" << stname;
                 o << " [shape=";
                 std::stringstream strss;
                 (*it)->printStructureInfo(strss);
-                if(strss.str().find("function",0) < strss.str().npos){
+                if (strss.str().find("function",0) < strss.str().npos){
                     std::string w;
                     
                     while(strss >> w){
-                        if(w == "_function"){
+                        if (w == "_function"){
                             strss >> w;
                             strss >> w;
 //                            std::cout << w << std::endl;
@@ -300,12 +300,12 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                 else{
                     std::string w;
                     while(strss >> w){
-                        if(w == "_dagType"){
+                        if (w == "_dagType"){
                             strss >> w;
                             strss >> w;
                             rl << "\\n[ " << w;
                             strss >> w;
-                            if(w != "DAG")
+                            if (w != "DAG")
                                 rl << " " << w;
                             rl << " ]";
                         }
@@ -313,11 +313,11 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                 }
                 o << "oval, style=\"dashed,filled\", fillcolor=white, label=\"" << rl.str() << "\"]\n";
             }
-            else if((*it)->getDagNodeType() == RevBayesCore::DagNode::STOCHASTIC){
+            else if ((*it)->getDagNodeType() == RevBayesCore::DagNode::STOCHASTIC){
                 o << "   n_" << stname;
                 o << " [shape=";
                 o << "oval, ";
-                if((*it)->isClamped()){
+                if ((*it)->isClamped()){
                     o << "style=filled, fillcolor=gray, ";
                     nrank += "; n_" + stname;
                 }
@@ -329,11 +329,11 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
     }
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
-        if( !(*it)->isHidden() || vb)
+        if ( !(*it)->isHidden() || vb)
         {
             std::stringstream trl;
             (*it)->printValue(trl,",", true);
-            if(trl.str() != "" || vb)
+            if (trl.str() != "" || vb)
             {
                 std::stringstream nname;
                 if ( (*it)->getName() != "" )
@@ -349,13 +349,13 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
 				std::replace( stname.begin(), stname.end(), '.', '_');
                 stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
 
-                if((*it)->getNumberOfChildren() > 0)
+                if ((*it)->getNumberOfChildren() > 0)
                 {
                     const std::vector<RevBayesCore::DagNode*>& childeren = (*it)->getChildren();
                     std::vector<RevBayesCore::DagNode*>::const_iterator ci;
                     for ( ci=childeren.begin(); ci!=childeren.end(); ++ci )
                     {
-                        if( (*ci)->isHidden() && vb==false )
+                        if ( (*ci)->isHidden() && vb==false )
                         {
                             RevBayesCore::DagNode *ch = (*ci)->getFirstChild();
                             while (ch->isHidden())
@@ -373,7 +373,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                             
                             o << "   n_" << stname << " -> n_";
                             o << stcn;
-                            if(ch->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC)
+                            if (ch->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC)
                                 o << "[style=dashed]";
                             o << "\n";
                         }
@@ -394,7 +394,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
 
                             o << "   n_" << stname << " -> n_";
                             o << stcn;
-                            if((*ci)->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC)
+                            if ((*ci)->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC)
                                 o << "[style=dashed]";
                             o << "\n";
                         }

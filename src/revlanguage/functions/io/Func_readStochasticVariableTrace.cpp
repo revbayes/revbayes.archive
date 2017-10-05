@@ -119,8 +119,8 @@ const TypeSpec& Func_readStochasticVariableTrace::getTypeSpec( void ) const
 /** Get return type */
 const TypeSpec& Func_readStochasticVariableTrace::getReturnType( void ) const
 {
-    static TypeSpec returnTypeSpec = WorkspaceVector<ModelTrace>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = WorkspaceVector<ModelTrace>::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 
