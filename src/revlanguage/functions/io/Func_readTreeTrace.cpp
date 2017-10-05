@@ -236,8 +236,8 @@ const TypeSpec& Func_readTreeTrace::getTypeSpec( void ) const
 const TypeSpec& Func_readTreeTrace::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = TraceTree::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = TraceTree::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

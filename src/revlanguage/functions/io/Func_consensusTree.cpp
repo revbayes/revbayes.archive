@@ -173,8 +173,8 @@ const TypeSpec& Func_consensusTree::getTypeSpec( void ) const
 const TypeSpec& Func_consensusTree::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();
+    static TypeSpec return_typeSpec = Tree::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

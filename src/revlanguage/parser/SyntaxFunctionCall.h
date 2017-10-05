@@ -29,8 +29,8 @@ namespace RevLanguage {
      * variable elements and not function calls. In such cases, however, the variable
      * syntax element will contain a function call syntax element holding the call 'f(x)'.
      * If the function is a member function, as in 'a.foo( x )', then 'a' is referred to
-     * as the base variable, stored in baseVariable. If there is no base variable, 
-     * baseVariable is set to NULL.
+     * as the base variable, stored in base_variable. If there is no base variable, 
+     * base_variable is set to NULL.
      *
      * The function call will (potentially) behave differently depending on whether
      * or not it occurs in a dynamic expression. Recall that dynamic expressions are
@@ -81,7 +81,7 @@ namespace RevLanguage {
         // Regular functions
         const std::string&                  getFunctionName(void) const { return function_name; }                        //!< Get function name
         RevPtr<RevVariable>                 evaluateContent(Environment& env, bool dynamic=false);                      //!< Get semantic value
-        void                                setBaseVariable(SyntaxElement* var) { baseVariable = var; }                 //!< Set base variable
+        void                                setBaseVariable(SyntaxElement* var) { base_variable = var; }                 //!< Set base variable
         bool                                isConstExpression(void) const;                                              //!< Is this a constant expression?
         bool                                isFunctionSafe(const Environment&       env,
                                                            std::set<std::string>&   localVars) const;                   //!< Is this element safe in a function?
@@ -90,7 +90,7 @@ namespace RevLanguage {
         
         std::list<SyntaxLabeledExpr*>*      arguments;                                                                  //!< The arguments passed to the function
         std::string                         function_name;                                                               //!< The name of the function
-        SyntaxElement*                      baseVariable;                                                               //!< Variable holding member function
+        SyntaxElement*                      base_variable;                                                               //!< Variable holding member function
 
     };
     

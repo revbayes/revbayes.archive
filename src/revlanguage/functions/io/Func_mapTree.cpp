@@ -164,7 +164,7 @@ const TypeSpec& Func_mapTree::getTypeSpec( void ) const
 const TypeSpec& Func_mapTree::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = Tree::getClassTypeSpec();
+    return return_typeSpec;
 }
 

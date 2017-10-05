@@ -15,7 +15,7 @@ MemberProcedure::MemberProcedure(const std::string &n, const TypeSpec retType, A
     argument_rules( argRules ),
     proc_name( n ),
     object( NULL ),
-    returnType( retType )
+    return_type( retType )
 {
     
 }
@@ -26,7 +26,7 @@ MemberProcedure::MemberProcedure(const MemberProcedure &mp) : Procedure(mp),
     argument_rules( new ArgumentRules(*mp.argument_rules) ),
     proc_name( mp.proc_name ),
     object( mp.object ),
-    returnType( mp.returnType )
+    return_type( mp.return_type )
 {
     
 }
@@ -52,7 +52,7 @@ MemberProcedure& MemberProcedure::operator=(const MemberProcedure &mp)
         argument_rules  = new ArgumentRules(*mp.argument_rules);
         proc_name       = mp.proc_name;
         object          = mp.object;
-        returnType      = mp.returnType;
+        return_type      = mp.return_type;
 
     }
     
@@ -151,7 +151,7 @@ std::string MemberProcedure::getFunctionName( void ) const
 const TypeSpec& MemberProcedure::getReturnType(void) const
 {
     
-    return returnType;
+    return return_type;
 }
 
 

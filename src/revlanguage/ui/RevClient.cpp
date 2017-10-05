@@ -179,7 +179,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
         if (debug) { std::cout << "linenoise-debug: cmd.size()=" << cmd.size() << "\n"; }
         if (debug) { std::cout << "linenoise-debug: commandPos=" << commandPos << "\n"; }
 
-        // special hack: for some reason, baseVariable is only set by the parser when there is no trailing characters after the dot
+        // special hack: for some reason, base_variable is only set by the parser when there is no trailing characters after the dot
         // find position of right most dot
         // Sebastian: Currently unused
 //        size_t dotPosition = cmd.rfind(".");
@@ -188,9 +188,9 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
         {
             if (debug) { std::cout << "linenoise-debug: pi.function_name!=\"\"\n"; }
             // ---------- function defined ------------
-            if (pi.argumentLabel != "") // assigning an argument label
+            if (pi.argument_label != "") // assigning an argument label
             {
-                if (debug) { std::cout << "linenoise-debug: pi.argumentLabel!=\"\"\n"; }
+                if (debug) { std::cout << "linenoise-debug: pi.argument_label!=\"\"\n"; }
                 commandPos = cmd.rfind("=") + 1;
                 // not sure exactly what should be here... setting completions to everything
                 completions = getDefaultCompletions();
@@ -198,7 +198,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
             }
             else // break on either '(' or ','
             {
-                if (debug) { std::cout << "linenoise-debug: pi.argumentLabel==\"\"\n"; }
+                if (debug) { std::cout << "linenoise-debug: pi.argument_label==\"\"\n"; }
                 commandPos = std::max(cmd.rfind("("), cmd.rfind(",")) + 1;
                 
                 std::vector<Function *> v = Workspace::globalWorkspace().getFunctionTable().findFunctions(pi.function_name);

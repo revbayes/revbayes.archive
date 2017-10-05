@@ -163,7 +163,7 @@ const TypeSpec& Func_mccTree::getTypeSpec( void ) const
 const TypeSpec& Func_mccTree::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = Tree::getClassTypeSpec();
+    return return_typeSpec;
 }
 

@@ -138,6 +138,6 @@ const TypeSpec& Func_writeCharacterDataDelimited::getTypeSpec( void ) const
 const TypeSpec& Func_writeCharacterDataDelimited::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = RevNullObject::getClassTypeSpec();
+    return return_typeSpec;
 }

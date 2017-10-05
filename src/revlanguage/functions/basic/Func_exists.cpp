@@ -204,8 +204,8 @@ const TypeSpec& Func_exists::getTypeSpec( void ) const
 /** Get return type */
 const TypeSpec& Func_exists::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RlBoolean::getClassTypeSpec();
+    static TypeSpec return_typeSpec = RlBoolean::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

@@ -240,8 +240,8 @@ const TypeSpec& Func_readTrace::getTypeSpec( void ) const
 /** Get return type */
 const TypeSpec& Func_readTrace::getReturnType( void ) const
 {
-    static TypeSpec returnTypeSpec = WorkspaceVector<Trace>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = WorkspaceVector<Trace>::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

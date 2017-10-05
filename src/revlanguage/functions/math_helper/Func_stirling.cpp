@@ -115,9 +115,9 @@ std::string Func_stirling::getFunctionName( void ) const
 const TypeSpec& Func_stirling::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = Real::getClassTypeSpec();
+    static TypeSpec return_typeSpec = Real::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 
 

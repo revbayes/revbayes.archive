@@ -138,6 +138,6 @@ const TypeSpec& Func_convertToPhylowood::getTypeSpec( void ) const
 /** Get return type */
 const TypeSpec& Func_convertToPhylowood::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = Tree::getClassTypeSpec();
+    return return_typeSpec;
 }

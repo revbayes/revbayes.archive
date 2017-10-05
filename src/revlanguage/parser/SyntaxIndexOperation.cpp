@@ -12,7 +12,7 @@ using namespace RevLanguage;
 /** Construct from base variable (member object), identifier and index */
 SyntaxIndexOperation::SyntaxIndexOperation(SyntaxElement* var, SyntaxElement* indx) : SyntaxElement(),
     index(indx),
-    baseVariable(var)
+    base_variable(var)
 {
 
 }
@@ -22,13 +22,13 @@ SyntaxIndexOperation::SyntaxIndexOperation(SyntaxElement* var, SyntaxElement* in
 SyntaxIndexOperation::SyntaxIndexOperation(const SyntaxIndexOperation& x) : SyntaxElement(x)
 {
 
-    if ( x.baseVariable != NULL )
+    if ( x.base_variable != NULL )
     {
-        baseVariable = x.baseVariable->clone();
+        base_variable = x.base_variable->clone();
     }
     else
     {
-        baseVariable = NULL;
+        base_variable = NULL;
     }
 
     if ( x.index != NULL )
@@ -47,7 +47,7 @@ SyntaxIndexOperation::SyntaxIndexOperation(const SyntaxIndexOperation& x) : Synt
 SyntaxIndexOperation::~SyntaxIndexOperation()
 {
 
-    delete baseVariable;
+    delete base_variable;
     delete index;
 }
 
@@ -58,20 +58,20 @@ SyntaxIndexOperation& SyntaxIndexOperation::operator=(const SyntaxIndexOperation
 
     if (&x != this)
     {
-        delete baseVariable;
+        delete base_variable;
         delete index;
 
 
         SyntaxElement::operator=(x);
 
 
-        if ( x.baseVariable != NULL )
+        if ( x.base_variable != NULL )
         {
-            baseVariable = x.baseVariable->clone();
+            base_variable = x.base_variable->clone();
         }
         else
         {
-            baseVariable = NULL;
+            base_variable = NULL;
         }
 
         if ( x.index != NULL )
@@ -111,7 +111,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
 {
 
     RevPtr<RevVariable> indexVar     = index->evaluateContent(env);
-    RevPtr<RevVariable> theParentVar = baseVariable->evaluateLHSContent(env, varType);
+    RevPtr<RevVariable> theParentVar = base_variable->evaluateLHSContent(env, varType);
     
     // first we need to check if the parent variable is a deterministic vector
     if ( theParentVar->isVectorVariable() )
@@ -204,7 +204,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
  * @brief Get semantic value (r-value)
  *
  * The variable can either be a member or a base variable. In the latter
- * case, its "baseVariable" member is NULL. If the element is a base variable,
+ * case, its "base_variable" member is NULL. If the element is a base variable,
  * we get the semantic value of the element by looking it up in the frame.
  * If it is a member variable, we try to find it in the member variable
  * frame of a composite variable found by another SyntaxIndexOperation element.
@@ -218,7 +218,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
 {
 
     RevPtr<RevVariable> indexVar     = index->evaluateContent(env,dynamic);
-    RevPtr<RevVariable> theParentVar = baseVariable->evaluateContent( env );
+    RevPtr<RevVariable> theParentVar = base_variable->evaluateContent( env );
     std::string identifier = theParentVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
 
     RevPtr<RevVariable> the_var = NULL;
@@ -296,7 +296,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
 SyntaxElement* SyntaxIndexOperation::getBaseVariable( void )
 {
     // return the internal pointer
-    return baseVariable;
+    return base_variable;
 }
 
 
@@ -346,7 +346,7 @@ void SyntaxIndexOperation::updateVariable( Environment& env, const std::string &
             
             parentVariable->replaceRevObject( funcReturnValue->getRevObject().clone() );
             
-            SyntaxIndexOperation *parentExpression = dynamic_cast< SyntaxIndexOperation *>( baseVariable );
+            SyntaxIndexOperation *parentExpression = dynamic_cast< SyntaxIndexOperation *>( base_variable );
             if ( parentExpression != NULL )
             {
                 parentExpression->updateVariable(env, parentName);

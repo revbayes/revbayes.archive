@@ -20,8 +20,8 @@ namespace RevBayesCore {
      * \since Version 1.0, 2012-08-13
      *
      */
-    template <class firstValueType, class secondValueType, class returnType>
-    class VectorScalarSubtraction : public TypedFunction< RbVector<returnType> > {
+    template <class firstValueType, class secondValueType, class return_type>
+    class VectorScalarSubtraction : public TypedFunction< RbVector<return_type> > {
         
     public:
         VectorScalarSubtraction(const TypedDagNode< RbVector<firstValueType> > *a, const TypedDagNode<secondValueType> *b);
@@ -41,8 +41,8 @@ namespace RevBayesCore {
 
 
 
-template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, returnType>::VectorScalarSubtraction(const TypedDagNode< RbVector<firstValueType> > *l, const TypedDagNode< secondValueType > *r) : TypedFunction< RbVector<returnType> >( new RbVector<returnType>() ),
+template<class firstValueType, class secondValueType, class return_type>
+RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, return_type>::VectorScalarSubtraction(const TypedDagNode< RbVector<firstValueType> > *l, const TypedDagNode< secondValueType > *r) : TypedFunction< RbVector<return_type> >( new RbVector<return_type>() ),
     a( l ),
     b( r )
 {
@@ -52,16 +52,16 @@ RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, returnTyp
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, returnType>* RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, returnType>::clone( void ) const
+template<class firstValueType, class secondValueType, class return_type>
+RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, return_type>* RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, return_type>::clone( void ) const
 {
     
     return new VectorScalarSubtraction(*this);
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, returnType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+template<class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, return_type>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == a)
@@ -76,8 +76,8 @@ void RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, retu
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, returnType>::update( void )
+template<class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, return_type>::update( void )
 {
     // remove the old values
     
