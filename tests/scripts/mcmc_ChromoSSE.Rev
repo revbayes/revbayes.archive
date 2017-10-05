@@ -11,7 +11,7 @@
 #
 
 seed(12345)
-
+setOption("useScaling","false")
 
 # get data
 psi <- readTrees("data/aristolochia.tree")[1]
