@@ -389,39 +389,41 @@ bool ArgumentRule::hasDefault(void) const
 double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
 {
     
-    RevPtr<RevVariable> theVar = arg.getVariable();
-    if ( theVar == NULL )
+    RevPtr<RevVariable> the_var = arg.getVariable();
+    if ( the_var == NULL )
     {
         return -1;
     }
     
-    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || ( theVar->getRevObject().isModelObject() && theVar->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::CONSTANT) )
+    if ( evalType == BY_VALUE || the_var->isWorkspaceVariable() || ( the_var->getRevObject().isModelObject() && the_var->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::CONSTANT) )
     {
         once = true;
     }
     
-    if ( nodeType == STOCHASTIC && theVar->getRevObject().getDagNode()->getDagNodeType() != RevBayesCore::DagNode::STOCHASTIC )
+    if ( nodeType == STOCHASTIC && the_var->getRevObject().getDagNode()->getDagNodeType() != RevBayesCore::DagNode::STOCHASTIC )
     {
         return -1;
     }
-    else if ( nodeType == DETERMINISTIC && theVar->getRevObject().getDagNode()->getDagNodeType() != RevBayesCore::DagNode::DETERMINISTIC )
+    else if ( nodeType == DETERMINISTIC && the_var->getRevObject().getDagNode()->getDagNodeType() != RevBayesCore::DagNode::DETERMINISTIC )
     {
         return -1;
     }
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
-        if ( theVar->getRevObject().isType( *it ) )
+        if ( the_var->getRevObject().isType( *it ) )
         {
             return 0.0;
         }
-        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 && (*it).isDerivedOf( theVar->getRequiredTypeSpec() ) )
+        
+        double penalty = the_var->getRevObject().isConvertibleTo( *it, once );
+        if ( penalty != -1 && (*it).isDerivedOf( the_var->getRequiredTypeSpec() ) )
         {
-            return theVar->getRevObject().isConvertibleTo( *it, once );
+            return penalty;
         }
-        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 && evalType == BY_VALUE )
+        else if ( penalty != -1 && evalType == BY_VALUE )
         {
-            return theVar->getRevObject().isConvertibleTo( *it, once );
+            return penalty;
         }
 
 //        else if ( once == true &&
@@ -435,7 +437,7 @@ double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
         else if ( nodeType != STOCHASTIC )
         {
             
-            const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();
+            const TypeSpec& typeFrom = the_var->getRevObject().getTypeSpec();
             const TypeSpec& typeTo   = *it;
             
             // create the function name
@@ -443,8 +445,8 @@ double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
             
             // Package arguments
             std::vector<Argument> args;
-            Argument theArg = Argument( theVar, "arg" );
-            args.push_back( theVar );
+            Argument theArg = Argument( the_var, "arg" );
+            args.push_back( the_var );
             
             Environment& env = Workspace::globalWorkspace();
             try
