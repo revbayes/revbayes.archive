@@ -28,6 +28,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
     for (size_t i = 0; i < num_states * 2; ++i)
     {
         safe_x[i] = ( x[i] < 0.0 ? 0.0 : x[i] );
+        safe_x[i] = ( x[i] > 1.0 ? 1.0 : x[i] );
     }
     
     double age = 0.0;
@@ -69,18 +70,11 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                if ( backward_time == true )
-                {
-                    no_event_rate += Q->getRate(i, j, age, rate);
-                }
-                else
-                {
-                    no_event_rate += Q->getRate(j, i, age, rate);
-                }
+                no_event_rate += Q->getRate(i, j, age, rate);
             }
         }
         
-        if(psi.empty() == false)
+        if (psi.empty() == false)
         {
             no_event_rate += psi[i];
         }
@@ -111,14 +105,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                if ( backward_time == true )
-                {
-                    dxdt[i] += Q->getRate(i, j, age, rate) * safe_x[j];
-                }
-                else
-                {
-                    dxdt[i] += Q->getRate(j, i, age, rate) * safe_x[j];
-                }
+                dxdt[i] += Q->getRate(i, j, age, rate) * safe_x[j];
             }
         }
 

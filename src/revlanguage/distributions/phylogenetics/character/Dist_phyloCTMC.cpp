@@ -119,7 +119,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         siteMatrices = static_cast<const RlBoolean &>( site_matrices->getRevObject() ).getDagNode()->getValue();
     }
 
-    if( !(dt == "Binary" || dt == "Restriction" || dt == "Standard") && code != "all")
+    if ( !(dt == "Binary" || dt == "Restriction" || dt == "Standard") && code != "all")
     {
         throw RbException( "Ascertainment bias correction only supported with Standard and Binary/Restriction datatypes" );
     }
@@ -440,15 +440,15 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
         int cd = RevBayesCore::AscertainmentBias::ALL;
         // split the coding option on "|"
-        if(code == "informative")
+        if (code == "informative")
         {
             cd = RevBayesCore::AscertainmentBias::INFORMATIVE;
         }
-        else if(code == "variable")
+        else if (code == "variable")
         {
             cd = RevBayesCore::AscertainmentBias::VARIABLE;
         }
-        else if(code != "all")
+        else if (code != "all")
         {
             std::stringstream ss;
             ss << "Invalid coding option \"" << code << "\"\n";
@@ -458,7 +458,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
 
         RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist;
-        if(cd == RevBayesCore::AscertainmentBias::ALL)
+        if (cd == RevBayesCore::AscertainmentBias::ALL)
         {
             dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, internal);
         }
@@ -654,37 +654,37 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
         // set the flags for each token
         int cd = RevBayesCore::AscertainmentBias::ALL;
-        for(size_t i = 0; i < tokens.size(); i++)
+        for (size_t i = 0; i < tokens.size(); i++)
         {
-            if(tokens[i] == "noabsencesites")
+            if (tokens[i] == "noabsencesites")
             {
                 cd |= RevBayesCore::BinaryAscertainmentBias::NOABSENCESITES;
             }
-            else if(tokens[i] == "nopresencesites")
+            else if (tokens[i] == "nopresencesites")
             {
                 cd |= RevBayesCore::BinaryAscertainmentBias::NOPRESENCESITES;
             }
-            else if(tokens[i] == "informative")
+            else if (tokens[i] == "informative")
             {
                 cd |= RevBayesCore::AscertainmentBias::INFORMATIVE;
             }
-            else if(tokens[i] == "variable")
+            else if (tokens[i] == "variable")
             {
                 cd |= RevBayesCore::AscertainmentBias::VARIABLE;
             }
-            else if(tokens[i] == "nosingletonpresence")
+            else if (tokens[i] == "nosingletonpresence")
             {
                 cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONPRESENCE;
             }
-            else if(tokens[i] == "nosingletonabsence")
+            else if (tokens[i] == "nosingletonabsence")
             {
                 cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONABSENCE;
             }
-            else if(tokens[i] == "nosingletons")
+            else if (tokens[i] == "nosingletons")
             {
                 cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONS;
             }
-            else if(tokens[i] != "all")
+            else if (tokens[i] != "all")
             {
                 std::stringstream ss;
                 ss << "Invalid coding option \"" << tokens[i] << "\"\n";

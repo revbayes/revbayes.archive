@@ -21,8 +21,8 @@ namespace RevBayesCore {
      * \since Version 1.0, 2012-08-13
      *
      */
-    template <class firstValueType, class secondValueType, class returnType>
-    class ScalarVectorMultiplication : public TypedFunction< RbVector<returnType> > {
+    template <class firstValueType, class secondValueType, class return_type>
+    class ScalarVectorMultiplication : public TypedFunction< RbVector<return_type> > {
         
     public:
         ScalarVectorMultiplication(const TypedDagNode<firstValueType> *a, const TypedDagNode< RbVector<secondValueType> > *b);
@@ -42,8 +42,8 @@ namespace RevBayesCore {
 
 
 
-template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, returnType>::ScalarVectorMultiplication(const TypedDagNode<firstValueType> *l, const TypedDagNode< RbVector<secondValueType> > *r) : TypedFunction< RbVector<returnType> >( new RbVector<returnType>(r->getValue().size(),returnType()) ),
+template<class firstValueType, class secondValueType, class return_type>
+RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, return_type>::ScalarVectorMultiplication(const TypedDagNode<firstValueType> *l, const TypedDagNode< RbVector<secondValueType> > *r) : TypedFunction< RbVector<return_type> >( new RbVector<return_type>(r->getValue().size(),return_type()) ),
     a( l ),
     b( r )
 {
@@ -53,16 +53,16 @@ RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, return
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, returnType>* RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, returnType>::clone( void ) const
+template<class firstValueType, class secondValueType, class return_type>
+RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, return_type>* RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, return_type>::clone( void ) const
 {
     
     return new ScalarVectorMultiplication(*this);
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, returnType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+template<class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, return_type>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == a)
@@ -77,8 +77,8 @@ void RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, r
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, returnType>::update( void )
+template<class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, return_type>::update( void )
 {
     // remove the old values
     

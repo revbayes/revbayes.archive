@@ -314,8 +314,8 @@ const TypeSpec& Func_readCharacterDataDelimited::getTypeSpec( void ) const
 const TypeSpec& Func_readCharacterDataDelimited::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = NaturalNumbersState::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = NaturalNumbersState::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

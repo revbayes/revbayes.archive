@@ -54,9 +54,9 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     heterogeneous_psi    = NULL;
     heterogeneous_rho    = NULL;
 
-    if( homogeneous_timeline != NULL )
+    if ( homogeneous_timeline != NULL )
     {
-        if( lambda_timeline != NULL || mu_timeline != NULL || psi_timeline != NULL || rho_timeline != NULL )
+        if ( lambda_timeline != NULL || mu_timeline != NULL || psi_timeline != NULL || rho_timeline != NULL )
         {
             throw(RbException("Both heterogeneous and homogeneous rate change times provided"));
         }
@@ -65,7 +65,7 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
         std::vector<double> rt = t;
         std::sort(rt.rbegin(), rt.rend());
 
-        if(rt != t)
+        if (rt != t)
         {
             throw(RbException("Rate change times must be provided in descending order"));
         }
@@ -76,11 +76,11 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     const TypedDagNode<RbVector<double> > *tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(l);
     const TypedDagNode<double> *tmp_c = dynamic_cast<const TypedDagNode<double >*>(l);
 
-    if(tmp_v == NULL && tmp_c == NULL)
+    if (tmp_v == NULL && tmp_c == NULL)
     {
         throw(RbException("Speciation rate must be of type RealPos or RealPos[]"));
     }
-    else if(tmp_v == NULL)
+    else if (tmp_v == NULL)
     {
         homogeneous_lambda = tmp_c;
         addParameter( homogeneous_lambda );
@@ -88,26 +88,26 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     else
     {
         heterogeneous_lambda = tmp_v;
-        if( lambda_timeline != NULL && heterogeneous_lambda->getValue().size() != lambda_timeline->getValue().size() + 1 )
+        if ( lambda_timeline != NULL && heterogeneous_lambda->getValue().size() != lambda_timeline->getValue().size() + 1 )
         {
             std::stringstream ss;
             ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of time intervals (" << lambda_timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
-        else if(homogeneous_timeline != NULL && heterogeneous_lambda->getValue().size() != homogeneous_timeline->getValue().size() + 1)
+        else if (homogeneous_timeline != NULL && heterogeneous_lambda->getValue().size() != homogeneous_timeline->getValue().size() + 1)
         {
             std::stringstream ss;
             ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of time intervals (" << homogeneous_timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
 
-        if(lambda_timeline != NULL)
+        if (lambda_timeline != NULL)
         {
             std::vector<double> t = lambda_timeline->getValue();
             std::vector<double> rt = t;
             std::sort(rt.rbegin(), rt.rend());
 
-            if(rt != t)
+            if (rt != t)
             {
                 throw(RbException("Speciation rate change times must be provided in descending order"));
             }
@@ -120,11 +120,11 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(m);
     tmp_c = dynamic_cast<const TypedDagNode<double >*>(m);
 
-    if(tmp_v == NULL && tmp_c == NULL)
+    if (tmp_v == NULL && tmp_c == NULL)
     {
         throw(RbException("Extinction rate must be of type RealPos or RealPos[]"));
     }
-    else if(tmp_v == NULL)
+    else if (tmp_v == NULL)
     {
         homogeneous_mu = tmp_c;
         addParameter( homogeneous_mu );
@@ -132,26 +132,26 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     else
     {
         heterogeneous_mu = tmp_v;
-        if( mu_timeline != NULL && heterogeneous_mu->getValue().size() != mu_timeline->getValue().size() + 1 )
+        if ( mu_timeline != NULL && heterogeneous_mu->getValue().size() != mu_timeline->getValue().size() + 1 )
         {
             std::stringstream ss;
             ss << "Number of extinction rates (" << heterogeneous_mu->getValue().size() << ") does not match number of time intervals (" << mu_timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
-        else if(homogeneous_timeline != NULL && heterogeneous_mu->getValue().size() != homogeneous_timeline->getValue().size() + 1)
+        else if (homogeneous_timeline != NULL && heterogeneous_mu->getValue().size() != homogeneous_timeline->getValue().size() + 1)
         {
             std::stringstream ss;
             ss << "Number of extinction rates (" << heterogeneous_mu->getValue().size() << ") does not match number of time intervals (" << homogeneous_timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
 
-        if(mu_timeline != NULL)
+        if (mu_timeline != NULL)
         {
             std::vector<double> t = mu_timeline->getValue();
             std::vector<double> rt = t;
             std::sort(rt.rbegin(), rt.rend());
 
-            if(rt != t)
+            if (rt != t)
             {
                 throw(RbException("Extinction rate change times must be provided in descending order"));
             }
@@ -164,11 +164,11 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(p);
     tmp_c = dynamic_cast<const TypedDagNode<double >*>(p);
 
-    if(tmp_v == NULL && tmp_c == NULL)
+    if (tmp_v == NULL && tmp_c == NULL)
     {
         throw(RbException("Serial sampling rate must be of type RealPos or RealPos[]"));
     }
-    else if(tmp_v == NULL)
+    else if (tmp_v == NULL)
     {
         homogeneous_psi = tmp_c;
         addParameter( homogeneous_psi );
@@ -176,26 +176,26 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     else
     {
         heterogeneous_psi = tmp_v;
-        if( psi_timeline != NULL && heterogeneous_psi->getValue().size() != psi_timeline->getValue().size() + 1 )
+        if ( psi_timeline != NULL && heterogeneous_psi->getValue().size() != psi_timeline->getValue().size() + 1 )
         {
             std::stringstream ss;
             ss << "Number of serial sampling rates (" << heterogeneous_psi->getValue().size() << ") does not match number of time intervals (" << psi_timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
-        else if(homogeneous_timeline != NULL && heterogeneous_psi->getValue().size() != homogeneous_timeline->getValue().size() + 1)
+        else if (homogeneous_timeline != NULL && heterogeneous_psi->getValue().size() != homogeneous_timeline->getValue().size() + 1)
         {
             std::stringstream ss;
             ss << "Number of serial sampling rates (" << heterogeneous_psi->getValue().size() << ") does not match number of time intervals (" << homogeneous_timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
 
-        if(psi_timeline != NULL)
+        if (psi_timeline != NULL)
         {
             std::vector<double> t = psi_timeline->getValue();
             std::vector<double> rt = t;
             std::sort(rt.rbegin(), rt.rend());
 
-            if(rt != t)
+            if (rt != t)
             {
                 throw(RbException("Serial sampling rate change times must be provided in descending order"));
             }
@@ -208,11 +208,11 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(r);
     tmp_c = dynamic_cast<const TypedDagNode<double >*>(r);
 
-    if(tmp_v == NULL && tmp_c == NULL)
+    if (tmp_v == NULL && tmp_c == NULL)
     {
         throw(RbException("Taxon sampling probabilities must be of type RealPos or RealPos[]"));
     }
-    else if(tmp_v == NULL)
+    else if (tmp_v == NULL)
     {
         homogeneous_rho = tmp_c;
         addParameter( homogeneous_rho );
@@ -220,26 +220,26 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     else
     {
         heterogeneous_rho = tmp_v;
-        if( rho_timeline != NULL && heterogeneous_rho->getValue().size() != rho_timeline->getValue().size() + 1 )
+        if ( rho_timeline != NULL && heterogeneous_rho->getValue().size() != rho_timeline->getValue().size() + 1 )
         {
             std::stringstream ss;
             ss << "Number of taxon sampling probabilities (" << heterogeneous_rho->getValue().size() << ") does not match number of time intervals (" << rho_timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
-        else if(homogeneous_timeline != NULL && heterogeneous_rho->getValue().size() != homogeneous_timeline->getValue().size() + 1)
+        else if (homogeneous_timeline != NULL && heterogeneous_rho->getValue().size() != homogeneous_timeline->getValue().size() + 1)
         {
             std::stringstream ss;
             ss << "Number of taxon sampling probabilities (" << heterogeneous_rho->getValue().size() << ") does not match number of time intervals (" << homogeneous_timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
 
-        if(rho_timeline != NULL)
+        if (rho_timeline != NULL)
         {
             std::vector<double> t = rho_timeline->getValue();
             std::vector<double> rt = t;
             std::sort(rt.rbegin(), rt.rend());
 
-            if(rt != t)
+            if (rt != t)
             {
                 throw(RbException("taxon sampling probability change times must be provided in descending order"));
             }
@@ -340,7 +340,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         }
         else if ( n.isInternal() && !n.getChild(0).isSampledAncestor() && !n.getChild(1).isSampledAncestor() )
         {
-            if(!n.isRoot() || use_origin)
+            if (!n.isRoot() || use_origin)
             {
                 // node is bifurcation event (a "true" node)
                 internal_node_ages.push_back( n.getAge() );
@@ -373,7 +373,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         }
     }
 
-    if( heterogeneous_rho != NULL )
+    if ( heterogeneous_rho != NULL )
     {
         std::vector<double> rho_times = rho_timeline->getValue();
         rho_times.push_back(0.0);
@@ -384,7 +384,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
 
             std::vector<double>::iterator it = std::find(rho_times.begin(), rho_times.end(), n.getAge() );
 
-            if( it != rho_times.end() )
+            if ( it != rho_times.end() )
             {
                 // add the rho-sampled tip age term
                 lnProbTimes += log( heterogeneous_rho->getValue()[size_t( it - rho_times.begin() )] );
@@ -553,7 +553,7 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
     psi.clear();
     rho.clear();
     
-    if(homogeneous_timeline != NULL)
+    if (homogeneous_timeline != NULL)
     {
         timeline = homogeneous_timeline->getValue();
 
@@ -576,7 +576,7 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
 
         std::set<double> eventTimes;
 
-        if( lambda_timeline != NULL )
+        if ( lambda_timeline != NULL )
         {
             const std::vector<double>& birthTimes = lambda_timeline->getValue();
             for (std::vector<double>::const_iterator it = birthTimes.begin(); it != birthTimes.end(); ++it)
@@ -585,7 +585,7 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
             }
         }
 
-        if( mu_timeline != NULL )
+        if ( mu_timeline != NULL )
         {
             const std::vector<double>& deathTimes = mu_timeline->getValue();
             for (std::vector<double>::const_iterator it = deathTimes.begin(); it != deathTimes.end(); ++it)
@@ -594,7 +594,7 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
             }
         }
 
-        if( psi_timeline != NULL )
+        if ( psi_timeline != NULL )
         {
             const std::vector<double>& serialTimes = psi_timeline->getValue();
             for (std::vector<double>::const_iterator it = serialTimes.begin(); it != serialTimes.end(); ++it)
@@ -603,7 +603,7 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
             }
         }
 
-        if( rho_timeline != NULL )
+        if ( rho_timeline != NULL )
         {
             const std::vector<double>& samplingTimes = rho_timeline->getValue();
             for (std::vector<double>::const_iterator it = samplingTimes.begin(); it != samplingTimes.end(); ++it)
@@ -612,7 +612,7 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
             }
         }
 
-        for(std::set<double>::reverse_iterator it = eventTimes.rbegin(); it != eventTimes.rend(); it++)
+        for (std::set<double>::reverse_iterator it = eventTimes.rbegin(); it != eventTimes.rend(); it++)
         {
             timeline.push_back(*it);
         }
@@ -626,11 +626,11 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
 
         for (size_t i = 0; i < timeline.size(); i++)
         {
-            if( lambda_timeline != NULL )
+            if ( lambda_timeline != NULL )
             {
                 lambda.push_back( heterogeneous_lambda->getValue()[birth_index] );
 
-                if( birth_index < lambda_timeline->getValue().size() && lambda_timeline->getValue()[birth_index] == timeline[i] )
+                if ( birth_index < lambda_timeline->getValue().size() && lambda_timeline->getValue()[birth_index] == timeline[i] )
                 {
                     birth_index++;
                 }
@@ -640,11 +640,11 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
                 lambda.push_back( homogeneous_lambda->getValue() );
             }
 
-            if( mu_timeline != NULL )
+            if ( mu_timeline != NULL )
             {
                 mu.push_back( heterogeneous_mu->getValue()[death_index] );
 
-                if( death_index < mu_timeline->getValue().size() && mu_timeline->getValue()[death_index] == timeline[i] )
+                if ( death_index < mu_timeline->getValue().size() && mu_timeline->getValue()[death_index] == timeline[i] )
                 {
                     death_index++;
                 }
@@ -654,11 +654,11 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
                 mu.push_back( homogeneous_mu->getValue() );
             }
 
-            if( psi_timeline != NULL )
+            if ( psi_timeline != NULL )
             {
                 psi.push_back( heterogeneous_psi->getValue()[serial_index] );
 
-                if( serial_index < psi_timeline->getValue().size() && psi_timeline->getValue()[serial_index] == timeline[i] )
+                if ( serial_index < psi_timeline->getValue().size() && psi_timeline->getValue()[serial_index] == timeline[i] )
                 {
                     serial_index++;
                 }
@@ -668,18 +668,18 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
                 psi.push_back( homogeneous_psi->getValue() );
             }
 
-            if( rho_timeline != NULL )
+            if ( rho_timeline != NULL )
             {
                 rho.push_back( heterogeneous_rho->getValue()[fraction_index] );
 
-                if( fraction_index < rho_timeline->getValue().size() && rho_timeline->getValue()[fraction_index] == timeline[i] )
+                if ( fraction_index < rho_timeline->getValue().size() && rho_timeline->getValue()[fraction_index] == timeline[i] )
                 {
                     fraction_index++;
                 }
             }
             else
             {
-                if( i == timeline.size() - 1 )
+                if ( i == timeline.size() - 1 )
                 {
                     rho.push_back( homogeneous_rho->getValue() );
                 }
@@ -735,7 +735,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::getExtinctionRate( size_
     }
     else
     {
-        if(index > heterogeneous_mu->getValue().size())
+        if (index > heterogeneous_mu->getValue().size())
         {
             throw(RbException("Extinction rate index out of bounds"));
         }
@@ -754,7 +754,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::getSerialSamplingRate( s
     }
     else
     {
-        if(index > heterogeneous_psi->getValue().size())
+        if (index > heterogeneous_psi->getValue().size())
         {
             throw(RbException("Serial sampling rate index out of bounds"));
         }
@@ -773,7 +773,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::getSpeciationRate( size_
     }
     else
     {
-        if(index > heterogeneous_lambda->getValue().size())
+        if (index > heterogeneous_lambda->getValue().size())
         {
             throw(RbException("Speciation rate index out of bounds"));
         }
@@ -788,7 +788,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::getTaxonSamplingProbabil
     // remove the old parameter first
     if ( homogeneous_rho != NULL )
     {
-        if( index == num_intervals - 1 )
+        if ( index == num_intervals - 1 )
         {
             return homogeneous_rho->getValue();
         }
@@ -799,7 +799,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::getTaxonSamplingProbabil
     }
     else
     {
-        if(index > heterogeneous_rho->getValue().size())
+        if (index > heterogeneous_rho->getValue().size())
         {
             throw(RbException("Taxon sampling fraction index out of bounds"));
         }

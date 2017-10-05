@@ -444,7 +444,7 @@ void PhyloMultivariateBrownianProcessREML::simulateRecursively( const TopologyNo
     const ContinuousTaxonData &parent = taxa[ node_index ];
     
     std::vector<double> parent_state(num_sites, 0.0);
-    for(size_t i = 0; i < num_sites; ++i)
+    for (size_t i = 0; i < num_sites; ++i)
     {
         parent_state[i] = parent.getCharacter(i);
     }

@@ -316,8 +316,8 @@ const TypeSpec& Func_readDataDelimitedFile::getTypeSpec( void ) const
 const TypeSpec& Func_readDataDelimitedFile::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = WorkspaceVector<WorkspaceVector<AbstractModelObject> >::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = WorkspaceVector<WorkspaceVector<AbstractModelObject> >::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

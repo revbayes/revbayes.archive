@@ -375,7 +375,7 @@ const TypeSpec& Func_readDiscreteCharacterData::getTypeSpec( void ) const
 const TypeSpec& Func_readDiscreteCharacterData::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = ModelVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = ModelVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec();
+    return return_typeSpec;
 }
 

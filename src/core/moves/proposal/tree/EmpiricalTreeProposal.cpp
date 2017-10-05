@@ -56,7 +56,7 @@ double EmpiricalTreeProposal::doProposal( void )
     size_t burnin = dist.getBurnin();
     
     // just in case there is only one tree in the empirical tree sample
-    if(total_tree_samples - burnin > 1)
+    if (total_tree_samples - burnin > 1)
     {
         // get the current tree index
         old_tree_index = dist.getCurrentTreeIndex();
@@ -83,7 +83,7 @@ double EmpiricalTreeProposal::doProposal( void )
     
     variable->touch( true );
     
-    if(metropolisHastings == false)
+    if (metropolisHastings == false)
     {
         return RbConstants::Double::inf;
     }

@@ -42,7 +42,7 @@ namespace RevLanguage {
         
     protected:
         SyntaxElement*                      index;                                                                                  //!< Vector of int indices to variable element
-        SyntaxElement*                      baseVariable;                                                                           //!< Base variable (pointing to a composite node)
+        SyntaxElement*                      base_variable;                                                                           //!< Base variable (pointing to a composite node)
     };
 
 }

@@ -113,7 +113,7 @@ void Distribution::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
 {
     // create the help function entry that we will fill with some values
     RevBayesCore::RbHelpDistribution *help = static_cast<RevBayesCore::RbHelpDistribution*>( e );
-    RevBayesCore::RbHelpDistribution &helpEntry = *help;
+    RevBayesCore::RbHelpDistribution &help_entry = *help;
     
     // create the constructor
     RevBayesCore::RbHelpFunction help_constructor = RevBayesCore::RbHelpFunction();
@@ -200,9 +200,9 @@ void Distribution::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
     //
     std::vector<RevBayesCore::RbHelpFunction> constructors;
     constructors.push_back( help_constructor );
-    helpEntry.setConstructors( constructors );
+    help_entry.setConstructors( constructors );
     
-    helpEntry.setMethods( getHelpMethods() );
+    help_entry.setMethods( getHelpMethods() );
     
 }
 

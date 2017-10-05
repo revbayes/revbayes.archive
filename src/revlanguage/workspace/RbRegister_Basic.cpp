@@ -109,6 +109,7 @@
 #include "Func_getwd.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
+#include "Func_listOptions.h"
 #include "Func_ls.h"
 #include "Func_modelVector.h"
 #include "Func_printSeed.h"
@@ -276,6 +277,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_ifelse<RealPos>()             );
         addFunction( new Func_ifelse<RlString>()            );
         addFunction( new Func_license()                     );
+        addFunction( new Func_listOptions()                 );
         addFunction( new Func_ls()                          );
         addFunction( new Func_printSeed()                   );
         addFunction( new Func_quit()                        );

@@ -152,8 +152,8 @@ const TypeSpec& Func_readAncestralStateTrace::getTypeSpec( void ) const
 const TypeSpec& Func_readAncestralStateTrace::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = WorkspaceVector<AncestralStateTrace>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = WorkspaceVector<AncestralStateTrace>::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

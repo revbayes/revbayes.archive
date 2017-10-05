@@ -111,7 +111,7 @@ double UniformTopologyDistribution::computeLnProbability( void )
         return RbConstants::Double::neginf;
     }
     
-    if( outgroup.size() > 0 )
+    if ( outgroup.size() > 0 )
     {
 		// now we check that the outgroup is correct
 		const TopologyNode &root = value->getRoot();
@@ -376,7 +376,7 @@ void UniformTopologyDistribution::simulateTree( void )
     TopologyNode *root;
     
     // check if using an outgroup
-    if( outgroup.size() > 0 )
+    if ( outgroup.size() > 0 )
     {
 		// we need to simulate the outgroup
 		simulateClade( outgroup_nodes );
@@ -406,7 +406,7 @@ void UniformTopologyDistribution::simulateTree( void )
     // not using an outgroup
     else
     {
-    	if( rooted == false )
+    	if ( rooted == false )
 		{
 			// root the tree at the first non-tip child descending from the root
 			TopologyNode *ingroup_root = ingroup_nodes[0];

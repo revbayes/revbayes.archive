@@ -33,8 +33,8 @@ namespace RevBayesCore {
      * \since Version 1.0, 2012-08-13
      *
      */
-    template <class firstValueType, class secondValueType, class returnType>
-    class BinaryAddition : public TypedFunction<returnType> {
+    template <class firstValueType, class secondValueType, class return_type>
+    class BinaryAddition : public TypedFunction<return_type> {
         
     public:
         BinaryAddition(const TypedDagNode<firstValueType> *a, const TypedDagNode<secondValueType> *b);
@@ -54,8 +54,8 @@ namespace RevBayesCore {
 
 
 
-template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::BinaryAddition(const TypedDagNode<firstValueType> *l, const TypedDagNode<secondValueType> *r) : TypedFunction<returnType>( new returnType() ), 
+template<class firstValueType, class secondValueType, class return_type>
+RevBayesCore::BinaryAddition<firstValueType, secondValueType, return_type>::BinaryAddition(const TypedDagNode<firstValueType> *l, const TypedDagNode<secondValueType> *r) : TypedFunction<return_type>( new return_type() ), 
     a( l ), 
     b( r ) 
 {
@@ -65,16 +65,16 @@ RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::Binar
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>* RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::clone( void ) const 
+template<class firstValueType, class secondValueType, class return_type>
+RevBayesCore::BinaryAddition<firstValueType, secondValueType, return_type>* RevBayesCore::BinaryAddition<firstValueType, secondValueType, return_type>::clone( void ) const 
 {
 
     return new BinaryAddition(*this);
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) 
+template<class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::BinaryAddition<firstValueType, secondValueType, return_type>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) 
 {
 
     if (oldP == a) 
@@ -89,8 +89,8 @@ void RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::update( void ) 
+template<class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::BinaryAddition<firstValueType, secondValueType, return_type>::update( void ) 
 {
 
     *this->value = a->getValue() + b->getValue();

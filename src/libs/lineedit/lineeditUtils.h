@@ -52,8 +52,8 @@ public:
 //                    specialMatchType = 2;
 //                    std::cout << ", trivial extra found ";
 //                }
-//                if(s == " "){
-//                    if(lastMatch != " "){
+//                if (s == " "){
+//                    if (lastMatch != " "){
 //                        lastNonBlankMatch = lastMatch;
 //                        lastMatch = " ";
 //                    }

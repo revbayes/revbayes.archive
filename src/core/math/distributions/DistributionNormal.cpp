@@ -60,12 +60,12 @@ double RbStatistics::Normal::pdf(double mu, double sigma, double x, double min, 
     double alpha, beta;
     double y = ( x - mu ) / sigma;
     double eta = exp( -0.5 * y * y )  / (sqrt ( 2.0 * RbConstants::PI ) );
-    if(max == RbConstants::Double::inf)
+    if (max == RbConstants::Double::inf)
         beta = 1;
     else
         beta = Normal::cdf((max - mu) / sigma);
     
-    if(min == RbConstants::Double::neginf)
+    if (min == RbConstants::Double::neginf)
         alpha = 0;
     else
         alpha = Normal::cdf((min - mu) / sigma);
@@ -126,12 +126,12 @@ double RbStatistics::Normal::lnPdf(double mu, double sigma, double x) {
 double RbStatistics::Normal::lnPdf(double mu, double sigma, double x, double min, double max) {
     double alpha, beta;
     
-    if(min == RbConstants::Double::neginf)
+    if (min == RbConstants::Double::neginf)
         alpha = 0;
     else
         alpha = Normal::cdf((min - mu) / sigma);
     
-    if(max == RbConstants::Double::inf)
+    if (max == RbConstants::Double::inf)
         beta = 1;
     else
         beta = Normal::cdf((max - mu) / sigma);
@@ -292,12 +292,12 @@ double RbStatistics::Normal::cdf(double mu, double sigma, double x, double min, 
     double alpha, beta;
     xi = Normal::cdf((x - mu) / sigma);
     
-    if(min == RbConstants::Double::neginf)
+    if (min == RbConstants::Double::neginf)
         alpha = 0;
     else
         alpha = Normal::cdf((min - mu) / sigma);
     
-    if(max == RbConstants::Double::inf)
+    if (max == RbConstants::Double::inf)
         beta = 1;
     else
         beta = Normal::cdf((max - mu) / sigma);
@@ -376,11 +376,11 @@ double RbStatistics::Normal::quantile(double mu, double sigma, double p) {
  */
 double RbStatistics::Normal::quantile(double mu, double sigma, double p, double min, double max) {
     double a, b;
-    if(min == RbConstants::Double::neginf)
+    if (min == RbConstants::Double::neginf)
         a = 0;
     else
         a = Normal::cdf((min - mu) / sigma);
-    if(max == RbConstants::Double::inf)
+    if (max == RbConstants::Double::inf)
         b = 1;
     else
         b = Normal::cdf((max - mu) / sigma);
@@ -440,12 +440,12 @@ double RbStatistics::Normal::rv(double mu, double sigma, RandomNumberGenerator& 
  */
 double RbStatistics::Normal::rv(double mu, double sigma, double min, double max, RandomNumberGenerator& rng){
     double alpha, beta;
-    if(min == RbConstants::Double::neginf)
+    if (min == RbConstants::Double::neginf)
         alpha = 0;
     else
         alpha = Normal::cdf((min - mu) / sigma);
     
-    if(max == RbConstants::Double::inf)
+    if (max == RbConstants::Double::inf)
         beta = 1;
     else
         beta = Normal::cdf((max - mu) / sigma);

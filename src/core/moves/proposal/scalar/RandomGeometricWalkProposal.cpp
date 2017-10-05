@@ -65,7 +65,7 @@ const std::string& RandomGeometricWalkProposal::getProposalName( void ) const
 /**
  * Perform the proposal.
  *
- * A scaling Proposal draws a random uniform number u ~ unif(0.0,1.0)
+ * A scaling Proposal draws a random uniform number u ~ unif (0.0,1.0)
  * and moves one step up if u > 0.5 and one step down otherwise.
  *
  * \return The hastings ratio.

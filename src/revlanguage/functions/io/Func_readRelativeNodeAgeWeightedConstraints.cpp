@@ -112,7 +112,7 @@ const TypeSpec& Func_readRelativeNodeAgeWeightedConstraints::getTypeSpec( void )
 const TypeSpec& Func_readRelativeNodeAgeWeightedConstraints::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlRelativeNodeAgeWeightedConstraints::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = RlRelativeNodeAgeWeightedConstraints::getClassTypeSpec();
+    return return_typeSpec;
 }
 

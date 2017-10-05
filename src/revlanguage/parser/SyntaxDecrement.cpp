@@ -86,16 +86,16 @@ RevPtr<RevVariable> SyntaxDecrement::evaluateContent( Environment& env, bool dyn
     
     // Get variable. We use standard evaluation because the variable is
     // implicitly on both sides (lhs and rhs) of this type of statement
-    RevPtr<RevVariable> theVariable = variable->evaluateContent( env );
-    if ( theVariable == NULL )
+    RevPtr<RevVariable> the_variable = variable->evaluateContent( env );
+    if ( the_variable == NULL )
         throw RbException( "Invalid NULL variable returned by variable expression in decrement assignment" );
     
     // Make sure that the variable is constant
-    if ( !theVariable->getRevObject().isConstant() )
+    if ( !the_variable->getRevObject().isConstant() )
         throw RbException( "Invalid decrement assignment to dynamic variable" );
     
     // Get a non-const reference to the lhs value object
-    RevObject& lhs_value = theVariable->getRevObject();
+    RevObject& lhs_value = the_variable->getRevObject();
     
     if ( postDecrement )
     {

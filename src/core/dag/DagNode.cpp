@@ -194,7 +194,7 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
     newNodes[ this ] = copy;
     
     /* Make sure the children clone themselves */
-    for( std::vector<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); ++i )
+    for ( std::vector<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); ++i )
     {
         DagNode *child = (*i)->cloneDownstreamDag( newNodes );
         child->swapParent(this, copy);
@@ -793,8 +793,8 @@ void DagNode::replace( DagNode *n )
     // replace myself for all my moves
     while ( moves.empty() == false )
     {
-        Move *theMove = *moves.begin();
-        theMove->swapNode( this, n);
+        Move *the_move = *moves.begin();
+        the_move->swapNode( this, n);
     }
     
     // replace myself at all my children

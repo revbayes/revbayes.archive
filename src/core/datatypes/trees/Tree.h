@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the declaration of our tree interface, a light-weight class 
+ * This file contains the declaration of our tree interface, a light-weight class
  * that holds the pointer to the root node of a tree and provides some convinience functions.
  *
  * The derived classes differ mainly in which type of topology nodes they store.
@@ -33,11 +33,11 @@
 #include <string>
 
 namespace RevBayesCore {
-    
+
     class TopologyNode;
 
     class Tree : public Cloneable, public MemberObject<double>, public MemberObject<long>, public MemberObject<Boolean>, public Serializable {
-    
+
     public:
         Tree(void);                                                                                                                                             //!< Default constructor
         Tree(const Tree& t);                                                                                                                                    //!< Copy constructor
@@ -45,13 +45,13 @@ namespace RevBayesCore {
         virtual                                            ~Tree(void);                                                                                         //!< Destructor
 
         Tree&                                               operator=(const Tree& t);
-        
+
         // overloaded operators
         bool                                                operator==(const Tree &t) const;
         bool                                                operator!=(const Tree &t) const;
         bool                                                operator<(const Tree &t) const;
         bool                                                operator<=(const Tree &t) const;
-        
+
         // virtual basic utility functions
         virtual Tree*                                       clone(void) const;                                                                                  //!< Clone object
         void                                                initFromFile( const std::string &dir, const std::string &fn );          //!< Read and resurrect this object from a file in its default format.
@@ -125,16 +125,16 @@ namespace RevBayesCore {
         TopologyNode&                                       reverseParentChild(TopologyNode &n);                                                                //!< Reverse the parent child relationship.
 
     protected:
-        
+
 
         // protected members
         mutable TreeChangeEventHandler                      changeEventHandler;
 
 //    private:
-        
+
         void                                                fillNodesByPhylogeneticTraversal(TopologyNode* node);               //!< fill the nodes vector by a preorder traversal recursively starting with this node.
-        
-        
+
+
 
         // private members
         TopologyNode*                                       root;
@@ -154,4 +154,3 @@ namespace RevBayesCore {
 }
 
 #endif
-

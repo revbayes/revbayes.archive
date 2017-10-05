@@ -192,6 +192,6 @@ const TypeSpec& Func_diagonalMatrix::getTypeSpec( void ) const
 const TypeSpec& Func_diagonalMatrix::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = MatrixRealSymmetric::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = MatrixRealSymmetric::getClassTypeSpec();
+    return return_typeSpec;
 }

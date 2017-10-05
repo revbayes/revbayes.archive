@@ -120,9 +120,9 @@ void WangLandauMcmc::nextCycle(bool advanceCycle) {
     for (size_t i=0; i<proposals; i++)
     {
         // Get the move
-        Move& theMove = schedule->nextMove( generation );
+        Move& the_move = schedule->nextMove( generation );
         
-        theMove.performMcmcStep( chain_likelihood_heat, 1.0 );
+        the_move.performMcmcStep( chain_likelihood_heat, 1.0 );
     }
     
     

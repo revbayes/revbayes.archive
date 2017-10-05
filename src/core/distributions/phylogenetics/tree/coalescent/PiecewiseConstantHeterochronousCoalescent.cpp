@@ -74,7 +74,7 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
     
     // retrieve the times of any serially sampled tips
     std::vector<double> serialTimes;
-    size_t numTaxaAtPresent = 0;
+    size_t num_taxaAtPresent = 0;
     for (size_t i = 0; i < value->getNumberOfTips(); ++i)
     {
         const TopologyNode& n = value->getTipNode( i );
@@ -82,13 +82,13 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
         if ( a > 0.0 ) {
             serialTimes.push_back(a);
         } else {
-            ++numTaxaAtPresent;
+            ++num_taxaAtPresent;
         }
     }
     
     std::vector<double> combinedEventTimes;
     std::vector<double> combinedEventTypes;
-    if (numTaxaAtPresent < num_taxa) {
+    if (num_taxaAtPresent < num_taxa) {
         
         // sort the vector of serial sampling times in ascending order
         std::sort(serialTimes.begin(), serialTimes.end());
@@ -165,7 +165,7 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
     
 
     size_t currentInterval = 0;
-    size_t j = numTaxaAtPresent;
+    size_t j = num_taxaAtPresent;
     double windowStart = 0.0;
     
     for (size_t i = 0; i < combinedEventTimes.size(); ++i)
@@ -214,21 +214,21 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
     
     // retrieve the times of any serially sampled tips
     std::vector<double> serialTimes;
-    size_t numTaxaAtPresent = 0;
+    size_t num_taxaAtPresent = 0;
     for (size_t i = 0; i < num_taxa; ++i)
     {
         double a = taxa[i].getAge();
         if ( a > 0.0 ) {
             serialTimes.push_back(a);
         } else {
-            ++numTaxaAtPresent;
+            ++num_taxaAtPresent;
         }
     }
     
     // Put sampling times and pop-size changes into a single vector of event times
     std::vector<double> combinedEventTimes;
     std::vector<double> combinedEventTypes;
-    if (numTaxaAtPresent < num_taxa) {
+    if (num_taxaAtPresent < num_taxa) {
         
         // sort the vector of serial sampling times in ascending order
         std::sort(serialTimes.begin(), serialTimes.end());
@@ -279,7 +279,7 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
     
     size_t currentInterval = 0;
     size_t thetaInterval = 0;
-    size_t j = numTaxaAtPresent;
+    size_t j = num_taxaAtPresent;
     
     // the current age of the process
     double simAge = 0.0;

@@ -81,7 +81,7 @@ double NodeTimeSlideUniformProposal::doProposal( void )
     
     Tree& tau = variable->getValue();
     
-    if(tau.getNumberOfTips() <= 2)
+    if (tau.getNumberOfTips() <= 2)
     {
         return 0.0;
     }
