@@ -169,7 +169,7 @@ void RateMatrix_TVM::tiProbsEigens(double t, TransitionProbabilityMatrix& P) con
         for (size_t j=0; j<num_states; j++, ++p)
         {
             double sum = 0.0;
-            for(size_t s=0; s<num_states; s++)
+            for (size_t s=0; s<num_states; s++)
             {
                 sum += (*ptr++) * eigValExp[s];
             }
@@ -206,7 +206,7 @@ void RateMatrix_TVM::tiProbsComplexEigens(double t, TransitionProbabilityMatrix&
         for (size_t j=0; j<num_states; j++)
         {
             std::complex<double> sum = std::complex<double>(0.0, 0.0);
-            for(size_t s=0; s<num_states; s++)
+            for (size_t s=0; s<num_states; s++)
                 sum += (*ptr++) * ceigValExp[s];
             P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
         }

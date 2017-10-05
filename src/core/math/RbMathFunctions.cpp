@@ -63,7 +63,7 @@ double RbMath::binomialDeviance(double x, double np)
     double ej, s, s1, v;
     int j;
     
-    if(!isFinite(x) || !isFinite(np) || np == 0.0)
+    if (!isFinite(x) || !isFinite(np) || np == 0.0)
     {
         std::ostringstream ss;
         ss << "Cannot compute the binomial deviance function for x = " << x << " and np = " << np;
@@ -245,7 +245,7 @@ double RbMath::gamma(double x)
 # define xsml 2.2474362225598545e-308
 # define dxrel 1.490116119384765696e-8
     
-    if(isNan(x)) return x;
+    if (isNan(x)) return x;
     
     /* If the argument is exactly zero or a negative integer
      * then return NaN. */
@@ -265,7 +265,7 @@ double RbMath::gamma(double x)
          * first of all. */
         
         n = int(x);
-        if(x < 0) --n;
+        if (x < 0) --n;
         y = x - n;/* n = floor(x)  ==>	y in [ 0, 1 ) */
         --n;
         value = chebyshev_eval(y * 2 - 1, gamcs, ngam) + .9375;
@@ -323,7 +323,7 @@ double RbMath::gamma(double x)
             throw RbException(s.str());
         }
         
-        if(y <= 50 && y == (int)y) { /* compute (n - 1)! */
+        if (y <= 50 && y == (int)y) { /* compute (n - 1)! */
             value = 1.;
             for (i = 2; i < y; i++) value *= i;
         }
@@ -795,8 +795,8 @@ double RbMath::lnBeta(double a, double b)
     double corr, p, q;
        
     p = q = a;
-    if(b < p) p = b;/* := min(a,b) */
-    if(b > q) q = b;/* := max(a,b) */
+    if (b < p) p = b;/* := min(a,b) */
+    if (b > q) q = b;/* := max(a,b) */
     
     /* both arguments must be >= 0 */
     if (p < 0)
@@ -908,9 +908,9 @@ double RbMath::lnGamma_sign(double x, int *sgn)
     
     if (x > 0) { /* i.e. y = x > 10 */
 #ifdef IEEE_754
-        if(x > 1e17)
+        if (x > 1e17)
             return(x*(log(x) - 1.));
-        else if(x > 4934720.)
+        else if (x > 4934720.)
             return(M_LN_SQRT_2PI + (x - 0.5) * log(x) - x);
         else
 #endif
@@ -921,7 +921,7 @@ double RbMath::lnGamma_sign(double x, int *sgn)
     
     ans = RbConstants::LN_SQRT_PId2 + (x - 0.5) * log(y) - x - log(sinpiy) - lnGammacor(y);
     
-    if(fabs((x - RbMath::trunc(x - 0.5)) * ans / x) < dxrel) {
+    if (fabs((x - RbMath::trunc(x - 0.5)) * ans / x) < dxrel) {
         
         /* The answer is less than half precision because
          * the argument is too near a negative integer. */
@@ -1313,7 +1313,7 @@ double RbMath::trunc(double x)
 double RbMath::log_sum_exp(const std::vector<double>& x, double max)
 {
     double lse = 0.0;
-    for(std::vector<double>::const_iterator it = x.begin(); it != x.end(); it++)
+    for (std::vector<double>::const_iterator it = x.begin(); it != x.end(); it++)
         lse += exp(*it - max);
 
     return max + log(lse);
@@ -1326,7 +1326,7 @@ double RbMath::log_sum_exp(const std::vector<double>& x, double max)
 double RbMath::log_sum_exp(const std::vector<double>& x)
 {
     double max = x.front();
-    for(std::vector<double>::const_iterator it = x.begin(); it != x.end(); it++)
+    for (std::vector<double>::const_iterator it = x.begin(); it != x.end(); it++)
         max = std::max(max,*it);
 
     return log_sum_exp(x,max);

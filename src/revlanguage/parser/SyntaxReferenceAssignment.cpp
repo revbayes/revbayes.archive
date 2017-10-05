@@ -74,20 +74,20 @@ RevPtr<RevVariable> SyntaxReferenceAssignment::evaluateContent( Environment& env
 {
     
     // Declare variable storing the return value of the assignment expression
-    RevPtr<RevVariable> theVariable;
+    RevPtr<RevVariable> the_variable;
     
     // Get the rhs expression wrapped and executed into a variable.
-    theVariable = rhsExpression->evaluateContent( env );
+    the_variable = rhsExpression->evaluateContent( env );
     
     // Get variable slot from lhs
     RevPtr<RevVariable> theSlot;
-    theSlot = lhsExpression->evaluateLHSContent( env, theVariable->getRevObject().getType() );
+    theSlot = lhsExpression->evaluateLHSContent( env, the_variable->getRevObject().getType() );
     
     // Make the slot a reference to the rhs expression variable.
-    theSlot->makeReference( theVariable );
+    theSlot->makeReference( the_variable );
     
     // Return variable
-    return theVariable;
+    return the_variable;
 }
 
 

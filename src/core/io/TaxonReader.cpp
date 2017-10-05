@@ -31,17 +31,17 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
     {
         std::string tmp = line[i];
         StringUtilities::toLower( tmp );
-        if(std::find(fields.begin(), fields.end(), tmp) != fields.end())
+        if (std::find(fields.begin(), fields.end(), tmp) != fields.end())
         {
             column_map[tmp] = int(i);
         }
         else
         {
             std::stringstream field_stream;
-            for(size_t j = 0; j < fields.size(); j++)
+            for (size_t j = 0; j < fields.size(); j++)
             {
                 field_stream << "\"" << fields[j] << "\"";
-                if(j < fields.size() - 1)
+                if (j < fields.size() - 1)
                 {
                     field_stream << ", ";
                 }
@@ -70,7 +70,7 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
     for (size_t i = 1; i < chars.size(); ++i) //going through all the lines
     {
         const std::vector<std::string>& line = chars[i];
-        if(line.size() != column_map.size())
+        if (line.size() != column_map.size())
         {
             std::stringstream err;
             err << "Line " << i+1 << " in taxon definition file does not contain "<<column_map.size()<<" elements";
@@ -119,9 +119,9 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
 
     
     std::set<std::string> found;
-    for(size_t i = 0; i < taxa.size(); i++)
+    for (size_t i = 0; i < taxa.size(); i++)
     {
-        if(found.find(taxa[i].getName()) == found.end())
+        if (found.find(taxa[i].getName()) == found.end())
         {
             found.insert(taxa[i].getName());
         }

@@ -165,10 +165,10 @@ void FunctionTable::eraseFunction(const std::string& name)
 ///** Execute function and get its variable value (evaluate once) */
 //RevPtr<RevVariable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 //
-//    const Function&   theFunction = findFunction(name, args, true);
-//    RevPtr<RevVariable>  theValue    = theFunction.execute();
+//    const Function&   the_function = findFunction(name, args, true);
+//    RevPtr<RevVariable>  theValue    = the_function.execute();
 //
-//    theFunction.clear();
+//    the_function.clear();
 //
 //    return theValue;
 //}
@@ -238,7 +238,7 @@ bool FunctionTable::existsFunctionInFrame( std::string const &name, const Argume
 std::vector<Function *> FunctionTable::findFunctions(const std::string& name) const
 {
 
-    std::vector<Function *>  theFunctions;
+    std::vector<Function *>  the_functions;
 
     size_t hits = count(name);
     if (hits == 0)
@@ -249,7 +249,7 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
         }
         else
         {
-            return theFunctions;
+            return the_functions;
         }
         
     }
@@ -261,10 +261,10 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
     std::multimap<std::string, Function *>::const_iterator it;
     for ( it=ret_val.first; it!=ret_val.second; it++ )
     {
-        theFunctions.push_back( (*it).second->clone() );
+        the_functions.push_back( (*it).second->clone() );
     }
     
-    return theFunctions;
+    return the_functions;
 }
 
 
@@ -386,7 +386,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                     for (j=0; j<match_score->size() && j<best_score.size(); ++j)
                     {
                         
-                        if ((*match_score)[j] < best_score[j])
+                        if ( (*match_score)[j] < best_score[j] )
                         {
                             best_score = *match_score;
                             best_match = it->second;
@@ -440,8 +440,8 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 {
                     msg << ",";
                 }
-                const RevPtr<const RevVariable>& theVar = j->getVariable();
-                msg << " " << theVar->getRevObject().getTypeSpec().getType();
+                const RevPtr<const RevVariable>& the_var = j->getVariable();
+                msg << " " << the_var->getRevObject().getTypeSpec().getType();
                 
             }
             msg << " )" << std::endl;
@@ -472,24 +472,24 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
 Function* FunctionTable::getFirstFunction( const std::string& name ) const
 {
     // find the template function
-    std::vector<Function *> theFunctions = findFunctions(name);
+    std::vector<Function *> the_functions = findFunctions(name);
     
-    if ( theFunctions.size() == 0 )
+    if ( the_functions.size() == 0 )
     {
         throw RbException("Could not find function with name '" + name + "'");
     }
     
     // free memory
-    for (size_t i=1; i<theFunctions.size(); ++i)
+    for (size_t i=1; i<the_functions.size(); ++i)
     {
-        Function *the_function = theFunctions[i];
+        Function *the_function = the_functions[i];
         delete the_function;
         
         // just for savety
-        theFunctions[i] = NULL;
+        the_functions[i] = NULL;
     }
     
-    return theFunctions[0];
+    return the_functions[0];
 }
 
 
@@ -498,29 +498,29 @@ Function* FunctionTable::getFunction( const std::string& name ) const
 {
     
     // find the template function
-    std::vector<Function *> theFunctions = findFunctions(name);
+    std::vector<Function *> the_functions = findFunctions(name);
     
     // free memory
-    for (size_t i=1; i<theFunctions.size(); ++i)
+    for (size_t i=1; i<the_functions.size(); ++i)
     {
-        Function *the_function = theFunctions[i];
+        Function *the_function = the_functions[i];
         delete the_function;
         
         // just for savety
-        theFunctions[i] = NULL;
+        the_functions[i] = NULL;
     }
     
-    if ( theFunctions.size() > 1 ) 
+    if ( the_functions.size() > 1 )
     {
-        Function *the_function = theFunctions[0];
+        Function *the_function = the_functions[0];
         delete the_function;
         
         std::ostringstream o;
-        o << "Found " << theFunctions.size() << " functions with name \"" << name + "\". Identification not possible if arguments are not specified.";
+        o << "Found " << the_functions.size() << " functions with name \"" << name + "\". Identification not possible if arguments are not specified.";
         throw RbException( o.str() );
     }
     
-    return theFunctions[0];
+    return the_functions[0];
 }
 
 
@@ -529,9 +529,9 @@ const Function& FunctionTable::getFunction(const std::string& name, const std::v
 {
     
     // find the template function
-    const Function& theFunction = findFunction(name, args, once);
+    const Function& the_function = findFunction(name, args, once);
 
-    return theFunction;
+    return the_function;
 }
 
 void FunctionTable::getFunctionNames(std::vector<std::string>& names) const

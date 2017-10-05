@@ -41,7 +41,7 @@ using namespace RevBayesCore;
  */
 double RbStatistics::Geometric::cdf(int n, double p) {
     
-    if(p <= 0 || p > 1) 
+    if (p <= 0 || p > 1) 
         {
         std::ostringstream s;
         s << "Cannot compute cdf of the Geometric distribution because n = " << n << " is not an integer";
@@ -53,7 +53,7 @@ double RbStatistics::Geometric::cdf(int n, double p) {
     if (!RbMath::isFinite(double(n)))
         return 1.0;
     
-    if(p == 1.0) 
+    if (p == 1.0) 
         { 
         /* we cannot assume IEEE */
         return n;

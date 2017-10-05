@@ -17,7 +17,7 @@ namespace RevBayesCore {
      *
      * This move randomly picks an element of a vector of positive real numbers,
      * proposes a sliding offset and then slides the value.
-     * A sliding proposal draws a random uniform number u ~ unif(-0.5,0.5)
+     * A sliding proposal draws a random uniform number u ~ unif (-0.5,0.5)
      * and slides the current vale by a sliding offset
      * delta  = ( lambda * u )
      * where lambda is the tuning parameter of the proposal to influence the size of the proposals.

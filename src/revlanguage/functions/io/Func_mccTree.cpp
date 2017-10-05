@@ -77,7 +77,7 @@ RevPtr<RevVariable> Func_mccTree::execute( void )
     }
     
     Tree* t;
-    if( tt.getValue().getTreeTrace().isClock() )
+    if ( tt.getValue().getTreeTrace().isClock() )
     {
         t = new TimeTree( tree );
     }

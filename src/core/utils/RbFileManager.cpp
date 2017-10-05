@@ -312,7 +312,7 @@ std::string RbFileManager::getFullFilePath( void ) const
     
     // check if filePath is relative or absolute
     // add current working path only if relative
-    if( filePath.size() > 0 && pathSeparator[0] != filePath[0] )
+    if ( filePath.size() > 0 && pathSeparator[0] != filePath[0] )
     {
         
         fullFilePath = RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
@@ -417,11 +417,11 @@ bool RbFileManager::isDirectoryPresent(const std::string &mp) const
     
     struct stat info;
     
-    if( stat( mp.c_str(), &info ) != 0)
+    if ( stat( mp.c_str(), &info ) != 0)
     {
         return false;
     }
-    else if(info.st_mode & S_IFDIR)
+    else if (info.st_mode & S_IFDIR)
     {
         return true;
     }

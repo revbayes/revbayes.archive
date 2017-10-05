@@ -50,7 +50,7 @@ void VectorDoubleProductStatistic::update( void ) {
 	const double mult = multiplier->getValue();
     value->clear();
 	size_t numElem = evs.size();
-	for(size_t i=0; i<numElem; i++){
+	for (size_t i=0; i<numElem; i++){
 		value->push_back(evs[i] * mult);
 	}
 }

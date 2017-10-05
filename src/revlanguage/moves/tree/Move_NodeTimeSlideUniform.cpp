@@ -144,7 +144,7 @@ void Move_NodeTimeSlideUniform::setConstParameter(const std::string& name, const
     {
         tree = var;
     }
-    else if(name == "dynamic")
+    else if (name == "dynamic")
     {
         dynamic = var;
     }

@@ -354,7 +354,7 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
         size_t j = 0;
         for (size_t i=0; i< children.size(); i++)
         {
-            if( RbSettings::userSettings().getCollapseSampledAncestors()
+            if ( RbSettings::userSettings().getCollapseSampledAncestors()
                     && children[i]->isSampledAncestor()
                     && (children[i]->getName() < fossil_name || fossil_name == "" ) )
             {
@@ -363,7 +363,7 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
             }
             else
             {
-                if(j > 0)
+                if (j > 0)
                 {
                     o << ",";
                 }
@@ -539,7 +539,7 @@ std::string TopologyNode::computePlainNewick( void ) const
         for (size_t i = 0; i < getNumberOfChildren(); ++i)
         {
             const TopologyNode& child = getChild( i );
-            if( RbSettings::userSettings().getCollapseSampledAncestors()
+            if ( RbSettings::userSettings().getCollapseSampledAncestors()
                     && child.isSampledAncestor()
                     && (child.getName() < fossil || fossil == "") )
             {
@@ -862,7 +862,7 @@ Clade TopologyNode::getClade( void ) const
     // get the clade taxa
     std::vector<Taxon> taxa;
 
-    if( tree != NULL )
+    if ( tree != NULL )
     {
         // initialize the clade bitset
         RbBitSet bitset( tree->getNumberOfTips() );
@@ -881,15 +881,15 @@ Clade TopologyNode::getClade( void ) const
     std::vector<Taxon> mrca;
 
     // if a child is a sampled ancestor, its taxon is a mrca
-    for(size_t i = 0; i < children.size(); i++)
+    for (size_t i = 0; i < children.size(); i++)
     {
-        if( children[i]->isSampledAncestor() )
+        if ( children[i]->isSampledAncestor() )
         {
             mrca.push_back( children[i]->getTaxon() );
         }
     }
 
-    if( !mrca.empty() )
+    if ( !mrca.empty() )
     {
         c.setMrca( mrca );
     }
@@ -1500,7 +1500,7 @@ void TopologyNode::renameNodeParameter(const std::string &old_name, const std::s
 
 void TopologyNode::setAge(double a, bool propagate)
 {
-    if( sampled_ancestor && propagate )
+    if ( sampled_ancestor && propagate )
     {
         parent->setAge(a);
         return;
@@ -1515,7 +1515,7 @@ void TopologyNode::setAge(double a, bool propagate)
     for (std::vector<TopologyNode *>::iterator it = children.begin(); it != children.end(); ++it)
     {
         TopologyNode *child = *it;
-        if( child->isSampledAncestor() )
+        if ( child->isSampledAncestor() )
         {
             child->setAge(a, false);
         }

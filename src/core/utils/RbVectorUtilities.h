@@ -46,10 +46,10 @@ namespace VectorUtilities {
         int  p = first;
         const T& pivotElement = v[first];
         
-        for(int i = first+1 ; i <= last ; i++)
+        for (int i = first+1 ; i <= last ; i++)
         {
             /* If you want to sort the list in the other order, change "<=" to ">" */
-            if( v[i] <= pivotElement)
+            if ( v[i] <= pivotElement)
             {
                 p++;
                 
@@ -71,7 +71,7 @@ namespace VectorUtilities {
     template <class T>
     void quicksort(std::vector<T> &v, int first, int last)
     {
-        if(first < last)
+        if (first < last)
         {
             int pivotElement = pivot<T>(v, first, last);
             quicksort<T>(v, first, pivotElement-1);

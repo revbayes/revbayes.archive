@@ -408,12 +408,12 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
                 const RevBayesCore::AbstractDiscreteTaxonData& td = v.getTaxonData(j);
                 if ( td.getCharacter(i).isMissingState() == false && td.getCharacter(i).isGapState() == false)
                 {
-                    if(td.getCharacter(i).getNumberObservedStates() > 1)
+                    if (td.getCharacter(i).getNumberObservedStates() > 1)
                     {
                         const RevBayesCore::RbBitSet& state = td.getCharacter(i).getState();
-                        for(size_t k = 0; k < state.size(); k++)
+                        for (size_t k = 0; k < state.size(); k++)
                         {
-                            if(state.isSet(k) && k +1 > max)
+                            if (state.isSet(k) && k +1 > max)
                             {
                                 max = k+1;
                             }

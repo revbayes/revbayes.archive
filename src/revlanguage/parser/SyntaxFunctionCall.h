@@ -79,7 +79,7 @@ namespace RevLanguage {
         SyntaxFunctionCall*                 clone() const;                                                              //!< Clone object
         
         // Regular functions
-        const std::string&                  getFunctionName(void) const { return functionName; }                        //!< Get function name
+        const std::string&                  getFunctionName(void) const { return function_name; }                        //!< Get function name
         RevPtr<RevVariable>                 evaluateContent(Environment& env, bool dynamic=false);                      //!< Get semantic value
         void                                setBaseVariable(SyntaxElement* var) { baseVariable = var; }                 //!< Set base variable
         bool                                isConstExpression(void) const;                                              //!< Is this a constant expression?
@@ -89,7 +89,7 @@ namespace RevLanguage {
     protected:
         
         std::list<SyntaxLabeledExpr*>*      arguments;                                                                  //!< The arguments passed to the function
-        std::string                         functionName;                                                               //!< The name of the function
+        std::string                         function_name;                                                               //!< The name of the function
         SyntaxElement*                      baseVariable;                                                               //!< Variable holding member function
 
     };

@@ -186,21 +186,21 @@ bool NxsReader::BlockIsASingeltonReader(NxsBlock *b) const
 /*! \returns a NxsBlock from `chosenBlockList` with a Title that matches `title`.
 	In the event of ties, the most recently read block is returned.
 	If `title` is NULL, then any block is considered a match.
-	On output *nMatches will be the number of matches (if `nMatches` is not NULL).
+	On output *num_matches will be the number of matches (if `num_matches` is not NULL).
 	NULL will be returned if there are no matches.
 */
-NxsBlock *NxsReader::FindBlockByTitle(const BlockReaderList & chosenBlockList, const char *title, unsigned *nMatches)
+NxsBlock *NxsReader::FindBlockByTitle(const BlockReaderList & chosenBlockList, const char *title, unsigned *num_matches)
 	{
 	BlockReaderList  found = FindAllBlocksByTitle(chosenBlockList, title);
 
 	if (found.empty())
 		{
-		if (nMatches)
-			*nMatches = 0;
+		if (num_matches)
+			*num_matches = 0;
 		return NULL;
 		}
-	if (nMatches)
-		*nMatches = (unsigned)found.size();
+	if (num_matches)
+		*num_matches = (unsigned)found.size();
 	return (NxsBlock *) found.back();
 	}
 
@@ -277,20 +277,20 @@ void NxsReader::RegisterAltTitle(const NxsBlock * b, std::string t)
 
 /*! \returns the pointer to the block with type ID (TAXA, CHARACTERS, ...) matching `btype`
 	 and title matching `title` or 0L if there is no such block.
-	 on output `nMatches` (if it is not 0L) will list the number of blocks that match this
+	 on output `num_matches` (if it is not 0L) will list the number of blocks that match this
 	 criteria.
 */
-NxsBlock *NxsReader::FindBlockOfTypeByTitle(const std::string &btype, const char *title, unsigned *nMatches)
+NxsBlock *NxsReader::FindBlockOfTypeByTitle(const std::string &btype, const char *title, unsigned *num_matches)
 	{
 	BlockTypeToBlockList::const_iterator btblIt = blockTypeToBlockList.find(btype);
 	if (btblIt == blockTypeToBlockList.end())
 		{
-		if (nMatches)
-			*nMatches = 0;
+		if (num_matches)
+			*num_matches = 0;
 		return NULL;
 		}
 	const BlockReaderList & chosenBlockList = btblIt->second;
-	return FindBlockByTitle(chosenBlockList, title, nMatches);
+	return FindBlockByTitle(chosenBlockList, title, num_matches);
 	}
 
 /*!
@@ -299,10 +299,10 @@ NxsBlock *NxsReader::FindBlockOfTypeByTitle(const std::string &btype, const char
 	NxsTaxaBlockAPI, or the behavior will be undefined.
 	This requirement also applies to "implied" taxa blocks that are returned from CHARACTERS (or other) blocks.
 */
-NxsTaxaBlockAPI *NxsReader::GetTaxaBlockByTitle(const char *title, unsigned *nMatches)
+NxsTaxaBlockAPI *NxsReader::GetTaxaBlockByTitle(const char *title, unsigned *num_matches)
 	{
 	const std::string btype("TAXA");
-	return static_cast<NxsTaxaBlockAPI *>(FindBlockOfTypeByTitle(btype, title, nMatches));
+	return static_cast<NxsTaxaBlockAPI *>(FindBlockOfTypeByTitle(btype, title, num_matches));
 	}
 
 /*!
@@ -310,20 +310,20 @@ NxsTaxaBlockAPI *NxsReader::GetTaxaBlockByTitle(const char *title, unsigned *nMa
 	When using these APIs, block readers that read "CHARACTERS" or "DATA" blocks in a NEXUS file must inherit from
 	NxsCharactersBlockAPI, or the behavior will be undefined.
 */
-NxsCharactersBlockAPI	*NxsReader::GetCharBlockByTitle(const char *title, unsigned *nMatches)
+NxsCharactersBlockAPI	*NxsReader::GetCharBlockByTitle(const char *title, unsigned *num_matches)
 	{
 	const std::string btype("CHARACTERS");
-	return static_cast<NxsCharactersBlockAPI *>(FindBlockOfTypeByTitle(btype, title, nMatches));
+	return static_cast<NxsCharactersBlockAPI *>(FindBlockOfTypeByTitle(btype, title, num_matches));
 	}
 /*!
 	NOTE: cast to NxsTreesBlockAPI *.  This should only called by NCL when factories and the Link API are in effect.  In
 	this case block readers that read "TREES" blocks in a NEXUS file must inherit from NxsTaxaBlockAPI, or the
 	behavior will be undefined.
 */
-NxsTreesBlockAPI *NxsReader::GetTreesBlockByTitle(const char *title, unsigned *nMatches)
+NxsTreesBlockAPI *NxsReader::GetTreesBlockByTitle(const char *title, unsigned *num_matches)
 	{
 	const std::string btype("TREES");
-	return static_cast<NxsTreesBlockAPI *>(FindBlockOfTypeByTitle(btype, title, nMatches));
+	return static_cast<NxsTreesBlockAPI *>(FindBlockOfTypeByTitle(btype, title, num_matches));
 	}
 
 /*! Initializes both `blockList' and `currBlock' to NULL.

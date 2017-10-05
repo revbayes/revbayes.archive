@@ -87,7 +87,7 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
     }
     
     Tree* t;
-    if( tt.getValue().getTreeTrace().isClock() )
+    if ( tt.getValue().getTreeTrace().isClock() )
     {
         t = new TimeTree( tree );
     }

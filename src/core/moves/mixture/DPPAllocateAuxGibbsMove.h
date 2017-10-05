@@ -151,7 +151,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void )
         }
         
         // try element i at other auxillary (new) tables
-        for(size_t j = 0; j < num_aux_cat; ++j)
+        for (size_t j = 0; j < num_aux_cat; ++j)
         {
             base_distribution->redrawValue();
             valueType new_value = base_distribution->getValue();
@@ -233,7 +233,7 @@ int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findTableIDForVal(std::vec
     
     for (size_t j=0; j<tvs.size(); j++)
     {
-        if(tvs[j] == val)
+        if (tvs[j] == val)
         {
             // this is an existing table
             return int(j);

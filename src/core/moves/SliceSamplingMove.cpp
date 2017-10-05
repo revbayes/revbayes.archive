@@ -218,7 +218,7 @@ double search_interval(double x0,double& L, double& R, slice_function& g,double 
 
   //double L0 = L, R0 = R;
 
-  for(int i=0;i<200;i++)
+  for (int i=0;i<200;i++)
   {
     double x1 = L + uniform()*(R-L);
     double gx1 = g(x1);

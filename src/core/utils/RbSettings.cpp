@@ -312,7 +312,7 @@ void RbSettings::setOption(const std::string &key, const std::string &v, bool wr
     else if ( key == "scalingDensity" )
     {
         size_t w = atoi(value.c_str());
-        if(w < 1)
+        if (w < 1)
             throw(RbException("scalingDensity must be an integer greater than 0"));
         
         scalingDensity = atoi(value.c_str());

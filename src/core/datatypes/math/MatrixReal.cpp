@@ -213,13 +213,13 @@ RbVector<double> MatrixReal::getColumn( size_t columnIndex ) const
 RbVector<double> MatrixReal::getDiagonal( void ) const
 {
     
-    if( isDiagonal() == false ) {
+    if ( isDiagonal() == false ) {
         throw RbException("MatrixReal: Can only get the diagonal elements of a diagonal matrix.");
     }
     
     RbVector<double> diagonal_elements(n_rows, 0.0);
     
-    for(size_t i = 0; i < n_rows; ++i)
+    for (size_t i = 0; i < n_rows; ++i)
     {
         diagonal_elements[i] = elements[i][i];
     }
@@ -286,7 +286,7 @@ double MatrixReal::getDet() const
         // update the decomposition if necessary
         update();
         
-        if( use_cholesky_decomp == true)
+        if ( use_cholesky_decomp == true)
         {
             logDet = cholesky_decomp->computeLogDet();
         }
@@ -329,7 +329,7 @@ double MatrixReal::getLogDet() const
         update();
         
         double tot = 0.0;
-        if( use_cholesky_decomp == true)
+        if ( use_cholesky_decomp == true)
         {
             tot = cholesky_decomp->computeLogDet();
         }
@@ -417,9 +417,9 @@ MatrixReal MatrixReal::getTranspose( void )
 {
     
     MatrixReal T(n_cols, n_rows, 0);
-    for(size_t i = 0; i < n_rows; ++i)
+    for (size_t i = 0; i < n_rows; ++i)
     {
-        for(size_t j = 0; j < n_cols; ++j)
+        for (size_t j = 0; j < n_cols; ++j)
         {
             T[j][i] = elements[i][j];
         }
@@ -432,16 +432,16 @@ MatrixReal MatrixReal::getTranspose( void )
 RbVector<double> MatrixReal::getUpperTriangle( void ) const
 {
     
-    if( isDiagonal() == false ) {
+    if ( isDiagonal() == false ) {
         throw RbException("MatrixReal: Can only get the diagonal elements of a diagonal matrix.");
     }
     
     RbVector<double> upper_triangle_elements(n_rows * (n_rows - 1) / 2, 0.0);
     
     size_t k = 0;
-    for(size_t i = 0; i < n_rows; ++i)
+    for (size_t i = 0; i < n_rows; ++i)
     {
-        for(size_t j = i + 1; j < n_cols; ++j)
+        for (size_t j = i + 1; j < n_cols; ++j)
         {
             upper_triangle_elements[k++] = elements[i][j];
         }

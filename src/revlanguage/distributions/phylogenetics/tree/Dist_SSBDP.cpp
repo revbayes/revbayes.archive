@@ -72,22 +72,22 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
     bool piecewisePsi = false;
     bool piecewiseRho = false;
 
-    if( lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
         piecewiseLambda = true;
     }
 
-    if( mu->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( mu->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
         piecewiseMu = true;
     }
 
-    if( psi->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( psi->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
         piecewisePsi = true;
     }
 
-    if( rho->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( rho->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
         piecewiseRho = true;
     }
@@ -103,7 +103,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
         throw(RbException("No time intervals provided for piecewise constant birth death process"));
     }
 
-    if( timeline->getRevObject() == RevNullObject::getInstance() )
+    if ( timeline->getRevObject() == RevNullObject::getInstance() )
     {
         if ( piecewiseLambda && lambda_timeline->getRevObject() == RevNullObject::getInstance() )
         {
@@ -147,10 +147,10 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* pt = NULL;
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt = NULL;
 
-        if(piecewiseLambda)
+        if (piecewiseLambda)
         {
             l = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
-            if( lambda_timeline->getRevObject() != RevNullObject::getInstance() )
+            if ( lambda_timeline->getRevObject() != RevNullObject::getInstance() )
             {
                 lt = static_cast<const ModelVector<RealPos> &>( lambda_timeline->getRevObject() ).getDagNode();
             }
@@ -160,10 +160,10 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
             l = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
         }
         // extinction rate
-        if(piecewiseMu)
+        if (piecewiseMu)
         {
             m = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
-            if( mu_timeline->getRevObject() != RevNullObject::getInstance() )
+            if ( mu_timeline->getRevObject() != RevNullObject::getInstance() )
             {
                 mt = static_cast<const ModelVector<RealPos> &>( mu_timeline->getRevObject() ).getDagNode();
             }
@@ -173,10 +173,10 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
             m = static_cast<const RealPos &>( mu->getRevObject() ).getDagNode();
         }
         // serial sampling rate
-        if(piecewisePsi)
+        if (piecewisePsi)
         {
             p = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
-            if( psi_timeline->getRevObject() != RevNullObject::getInstance() )
+            if ( psi_timeline->getRevObject() != RevNullObject::getInstance() )
             {
                 pt = static_cast<const ModelVector<RealPos> &>( psi_timeline->getRevObject() ).getDagNode();
             }
@@ -186,10 +186,10 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
             p = static_cast<const RealPos &>( psi->getRevObject() ).getDagNode();
         }
         // taxon sampling fraction
-        if(piecewiseRho)
+        if (piecewiseRho)
         {
             r = static_cast<const ModelVector<Probability> &>( rho->getRevObject() ).getDagNode();
-            if( rho_timeline->getRevObject() != RevNullObject::getInstance() )
+            if ( rho_timeline->getRevObject() != RevNullObject::getInstance() )
             {
                 rt = static_cast<const ModelVector<RealPos> &>( rho_timeline->getRevObject() ).getDagNode();
             }
@@ -199,7 +199,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
             r = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
         }
 
-        if( timeline->getRevObject() != RevNullObject::getInstance() )
+        if ( timeline->getRevObject() != RevNullObject::getInstance() )
         {
             ht = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
         }
@@ -379,7 +379,7 @@ void Dist_SSBDP::setConstParameter(const std::string& name, const RevPtr<const R
     {
         rho = var;
     }
-    else if( name == "rootAge" || name == "originAge" )
+    else if ( name == "rootAge" || name == "originAge" )
     {
         start_age = var;
         start_condition = name;

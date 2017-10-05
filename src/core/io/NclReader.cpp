@@ -331,7 +331,7 @@ HomologousDiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatri
             {
                 size_t nStates = charblock->GetNumStates(origTaxIndex, *cit);
                 aaState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
-                for(unsigned s=1; s<nStates; s++)
+                for (unsigned s=1; s<nStates; s++)
                 {
                     aaState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
                 }
@@ -850,7 +850,7 @@ HomologousDiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(
             }
             else
             {
-                for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+                for (unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                 {
                     stdState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
                     for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)

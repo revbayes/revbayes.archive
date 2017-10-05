@@ -149,21 +149,21 @@ bool SyntaxAssignment::isFunctionSafe( const Environment& env, std::set<std::str
 // * First, we need to check if this is a vector variable, 
 // * and then we perform the remove element recursively.
 // */
-//void SyntaxAssignment::removeElementVariables(Environment &env, RevPtr<RevVariable> &theVar)
+//void SyntaxAssignment::removeElementVariables(Environment &env, RevPtr<RevVariable> &the_var)
 //{
 //    // check if the variable is a vector variable
-//    if ( theVar->isVectorVariable() == true )
+//    if ( the_var->isVectorVariable() == true )
 //    {
-//        const std::set<int>& indices = theVar->getElementIndices();
+//        const std::set<int>& indices = the_var->getElementIndices();
 //        if ( indices.empty() )
 //        {
-//            throw RbException("Cannot remove a vector variable with name '" + theVar->getName() + "' because it doesn't have elements.");
+//            throw RbException("Cannot remove a vector variable with name '" + the_var->getName() + "' because it doesn't have elements.");
 //        }
 //        // iterate over all elements
 //        for (std::set<int>::const_iterator it = indices.begin(); it != indices.end(); ++it)
 //        {
 //            std::ostringstream s;
-//            s << theVar->getName() << "[" << *it << "]";
+//            s << the_var->getName() << "[" << *it << "]";
 //            std::string elementIdentifier = s.str();
 //            RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
 //            
@@ -174,7 +174,7 @@ bool SyntaxAssignment::isFunctionSafe( const Environment& env, std::set<std::str
 //            env.eraseVariable( elementIdentifier );
 //        }
 //        
-//        theVar->setVectorVariableState( false );
+//        the_var->setVectorVariableState( false );
 //    }
 //    
 //}

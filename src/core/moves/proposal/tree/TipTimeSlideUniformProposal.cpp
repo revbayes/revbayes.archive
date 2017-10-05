@@ -102,14 +102,14 @@ double TipTimeSlideUniformProposal::doProposal( void )
     for (size_t i = 0; i < tau.getNumberOfTips(); ++i)
     {
         TopologyNode* node = &tau.getNode(i);
-        if( node->isFossil() )
+        if ( node->isFossil() )
         {
             tips.push_back(i);
         }
 
     }
 
-    if( tips.empty() )
+    if ( tips.empty() )
     {
         failed = true;
         return 0;
@@ -127,7 +127,7 @@ double TipTimeSlideUniformProposal::doProposal( void )
     double my_age      = node->getAge();
     double sibling_Age = 0;
 
-    if(node->isSampledAncestor())
+    if (node->isSampledAncestor())
     {
         TopologyNode *sibling = &parent.getChild( 0 );
         if ( sibling == node )
@@ -137,9 +137,9 @@ double TipTimeSlideUniformProposal::doProposal( void )
 
         sibling_Age = sibling->getAge();
 
-        if(parent.isRoot())
+        if (parent.isRoot())
         {
-            if(origin == NULL)
+            if (origin == NULL)
                 throw(RbException("Attempting to move root sampled ancestor, but no origin time provided."));
 
             parent_age = origin->getValue();
@@ -201,7 +201,7 @@ void TipTimeSlideUniformProposal::undoProposal( void )
 {
     
     // undo the proposal
-    if( failed == false )
+    if ( failed == false )
     {
         storedNode->setAge( storedAge );
     }
@@ -217,11 +217,11 @@ void TipTimeSlideUniformProposal::undoProposal( void )
 void TipTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    if(oldN == tree)
+    if (oldN == tree)
     {
         tree = static_cast<StochasticNode<Tree>* >(newN) ;
     }
-    else if(oldN == origin)
+    else if (oldN == origin)
     {
         origin = static_cast<TypedDagNode<double>* >(newN) ;
     }

@@ -184,19 +184,19 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
     if ( env.existsVariable( identifier ) == false )
     {
         // create a new slot
-        RevPtr<RevVariable> theVar = RevPtr<RevVariable>( new RevVariable( NULL ) );
-        env.addVariable(identifier,theVar);
-        theVar->setName( identifier );
+        RevPtr<RevVariable> the_var = RevPtr<RevVariable>( new RevVariable( NULL ) );
+        env.addVariable(identifier,the_var);
+        the_var->setName( identifier );
     }
 
     // get the slot and variable
-    RevPtr<RevVariable> theVar  = env.getVariable( identifier );
+    RevPtr<RevVariable> the_var  = env.getVariable( identifier );
     
     
     // set this variable as an element variable; which is by default a hidden variable so that it doesn't show in ls()
-    theVar->setElementVariableState( true );
+    the_var->setElementVariableState( true );
 
-    return theVar;
+    return the_var;
 }
 
 
@@ -221,14 +221,14 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
     RevPtr<RevVariable> theParentVar = baseVariable->evaluateContent( env );
     std::string identifier = theParentVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
 
-    RevPtr<RevVariable> theVar = NULL;
+    RevPtr<RevVariable> the_var = NULL;
 
     // test whether we want to directly assess the variable or if we want to assess subelement of this container
     // if this variable already exists in the workspace
     if ( env.existsVariable( identifier ) )
     {
         // get the from the workspace
-        theVar = env.getVariable( identifier );
+        the_var = env.getVariable( identifier );
 
     }
     else
@@ -244,9 +244,9 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
             
             Function* f = Workspace::userWorkspace().getFunction("[]", args, false).clone();
             f->processArguments( args, false );
-            theVar = f->execute();
-            theVar->setName( identifier );
-            theVar->setElementVariableState(true);
+            the_var = f->execute();
+            the_var->setName( identifier );
+            the_var->setElementVariableState(true);
             
             delete f;
         }
@@ -263,21 +263,21 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
             std::vector<Argument> args;
             args.push_back( Argument( indexVar, "index" ) );
             
-            Function* theFunction = mt.getFunction( "[]", args, !dynamic ).clone();
-            theFunction->processArguments(args, !dynamic);
+            Function* the_function = mt.getFunction( "[]", args, !dynamic ).clone();
+            the_function->processArguments(args, !dynamic);
             
-            MemberMethod* theMemberMethod = dynamic_cast<MemberMethod*>( theFunction );
+            MemberMethod* theMemberMethod = dynamic_cast<MemberMethod*>( the_function );
             if ( theMemberMethod != NULL )
             {
                 theMemberMethod->setMemberObject( theParentVar );
 
-                theVar = theFunction->execute();
-                theVar->setName( identifier );
-                theVar->setElementVariableState(true);
+                the_var = the_function->execute();
+                the_var->setName( identifier );
+                the_var->setElementVariableState(true);
             }
             else
             {
-                delete theFunction;
+                delete the_function;
                 throw e;
             }
             
@@ -285,7 +285,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
 
     }
 
-    return theVar;
+    return the_var;
 
 }
 

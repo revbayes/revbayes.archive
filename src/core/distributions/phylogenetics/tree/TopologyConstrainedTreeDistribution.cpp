@@ -37,7 +37,7 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
 
 {
     AbstractRootedTreeDistribution* tree_base_distribution = dynamic_cast<AbstractRootedTreeDistribution*>(base_distribution);
-    if(tree_base_distribution == NULL)
+    if (tree_base_distribution == NULL)
     {
         throw(RbException("Can only constrain tree distributions of type AbstractRootedTreeDistribution"));
     }
@@ -293,7 +293,7 @@ bool TopologyConstrainedTreeDistribution::matchesBackbone( void )
  */
 bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
 {
-    for(size_t i = 0; i < monophyly_constraints.size(); i++)
+    for (size_t i = 0; i < monophyly_constraints.size(); i++)
     {
         
         std::vector<Clade> constraints;
@@ -341,7 +341,7 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
 
 //    bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
 //    {
-//        for(size_t i = 0; i < monophyly_constraints.size(); i++)
+//        for (size_t i = 0; i < monophyly_constraints.size(); i++)
 //        {
 //            std::vector<RbBitSet>::iterator it = std::find(active_clades.begin(), active_clades.end(), monophyly_constraints[i].getBitRepresentation() );
 //
@@ -642,7 +642,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
     
     std::vector<Clade> virtual_taxa;
     int i = -1;
-    for(std::set<Clade>::iterator it = sorted_clades.begin(); it != sorted_clades.end(); it++)
+    for (std::set<Clade>::iterator it = sorted_clades.begin(); it != sorted_clades.end(); it++)
     {
         // ignore negative clade constraints during simulation
         if (it->isNegativeConstraint())
@@ -655,7 +655,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
         
         int j = i;
         std::set<Clade>::reverse_iterator jt(it);
-        for(; jt != sorted_clades.rend(); jt++)
+        for (; jt != sorted_clades.rend(); jt++)
         {
             // ignore negative clade constraints during simulation
             if (jt->isNegativeConstraint())

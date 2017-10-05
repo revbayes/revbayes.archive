@@ -8,12 +8,12 @@
 
 using namespace RevLanguage;
 
-Dist_unif::Dist_unif() : ContinuousDistribution() {
+Dist_unif::Dist_unif () : ContinuousDistribution() {
     
 }
 
 
-Dist_unif::~Dist_unif() {
+Dist_unif::~Dist_unif () {
     
 }
 
@@ -21,7 +21,7 @@ Dist_unif::~Dist_unif() {
 
 Dist_unif* Dist_unif::clone( void ) const
 {
-    return new Dist_unif(*this);
+    return new Dist_unif (*this);
 }
 
 

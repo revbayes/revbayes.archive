@@ -260,7 +260,7 @@ RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( RevBayesCore::DagNode
     }
     
     /* Make sure the children clone themselves */
-    for( std::vector<RevBayesCore::DagNode*>::const_iterator it = this->children.begin(); it != this->children.end(); ++it )
+    for ( std::vector<RevBayesCore::DagNode*>::const_iterator it = this->children.begin(); it != this->children.end(); ++it )
         (*it)->cloneDAG( newNodes, names );
     
     return copy;
@@ -470,7 +470,7 @@ void UserFunctionNode<rlType>::swapParent(const RevBayesCore::DagNode* oldParent
         {
             // Detach old parent
             oldParent->removeChild( this );
-            if( oldParent->decrementReferenceCount() == 0 )
+            if ( oldParent->decrementReferenceCount() == 0 )
                 delete oldParent;
             
             // Adopt new parent

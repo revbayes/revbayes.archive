@@ -38,7 +38,7 @@ AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNod
     addParameter( process_age );
 
     std::set<std::string> found;
-    for(size_t i = 0; i < taxa.size(); i++)
+    for (size_t i = 0; i < taxa.size(); i++)
     {
         if (found.find(taxa[i].getName()) == found.end())
         {
@@ -656,7 +656,7 @@ void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
 {
     if ( affecter == process_age )
     {
-        if( use_origin == false )
+        if ( use_origin == false )
         {
             value->getRoot().setAge( process_age->getValue() );
         }
@@ -730,7 +730,7 @@ void AbstractRootedTreeDistribution::touchSpecialization(DagNode *affecter, bool
     
     if ( affecter == process_age )
     {
-        if( use_origin == false)
+        if ( use_origin == false)
         {
             value->getRoot().setAge( process_age->getValue() );
         }

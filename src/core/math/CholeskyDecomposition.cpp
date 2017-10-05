@@ -62,7 +62,7 @@ double CholeskyDecomposition::computeLogDet(void)
     
     double logdet = 0.0;
     
-    for(int r = 0; r < n; ++r) {
+    for (int r = 0; r < n; ++r) {
         logdet += std::log(L[r][r]);
     }
     
@@ -100,7 +100,7 @@ void CholeskyDecomposition::decomposeMatrix( void )
                     sum += L[c][j] * L[c][j];
                 }
                 L[c][c] = std::sqrt((*qPtr)[c][c] - sum);
-                if( ((*qPtr)[c][c] - sum) < 0.0) {
+                if ( ((*qPtr)[c][c] - sum) < 0.0) {
                     is_positive_semidefinite = false;
                 }
             }

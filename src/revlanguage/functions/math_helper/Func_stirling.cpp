@@ -32,19 +32,19 @@ RevPtr<RevVariable> Func_stirling::execute()
     int n = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
     int k = static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
 	
-	if(kind == "lnFirst")
+	if (kind == "lnFirst")
     {
 		double sN = RevBayesCore::RbMath::lnStirlingFirst(n, k);
 		Real* value = new Real( sN );
 		return new RevVariable( value );
 	}
-	else if(kind == "first")
+	else if (kind == "first")
     {
 		unsigned long sN = RevBayesCore::RbMath::stirlingFirst(n, k);
 		Natural* value = new Natural( sN );
 		return new RevVariable( value );
 	}
-	else if(kind == "second")
+	else if (kind == "second")
     {
 		int sN = RevBayesCore::RbMath::stirlingSecond(n, k);
 		Integer* value = new Integer( sN );

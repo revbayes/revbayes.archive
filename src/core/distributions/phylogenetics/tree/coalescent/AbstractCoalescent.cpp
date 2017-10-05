@@ -339,7 +339,7 @@ void AbstractCoalescent::simulateTree( void )
         const std::string& name = taxa[i].getName();
         node->setName(name);
         node->setSpeciesName(taxa[i].getSpeciesName());
-        if( taxa[i].getAge() > 0.0 )
+        if ( taxa[i].getAge() > 0.0 )
         {
             throw(RbException("Can't use non-heterochronous coalescent with heterochronous taxa"));
         }

@@ -74,7 +74,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
             }
         }
         
-        if(psi.empty() == false)
+        if (psi.empty() == false)
         {
             no_event_rate += psi[i];
         }
