@@ -2210,7 +2210,7 @@ double TreeSummary::cladeProbability(const RevBayesCore::Clade &c, bool verbose 
 }
 
 
-double TreeSummary::computeEntropy( double credible_interval_size, int numTaxa, bool verbose )
+double TreeSummary::computeEntropy( double credible_interval_size, int num_taxa, bool verbose )
 {
     summarize( verbose );
     NewickConverter converter;
@@ -2233,7 +2233,7 @@ double TreeSummary::computeEntropy( double credible_interval_size, int numTaxa, 
     }
 
     /*This calculation is directly from AMP / Jeremy's paper.*/
-    double ntopologies = (boost::math::factorial<double>(((2*numTaxa)-5))) / (boost::math::factorial<double>((numTaxa-3)) * (pow(2, numTaxa-3)));
+    double ntopologies = (boost::math::factorial<double>(((2*num_taxa)-5))) / (boost::math::factorial<double>((num_taxa-3)) * (pow(2, num_taxa-3)));
     entropy += log( ntopologies );
     /*std::cout << ntopologies << '\n';*/
     

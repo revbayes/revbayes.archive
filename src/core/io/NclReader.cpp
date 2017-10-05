@@ -101,8 +101,8 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
     
 	std::vector<AbstractCharacterData* > cmv;
     
-	size_t numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-	for (unsigned tBlck=0; tBlck<numTaxaBlocks; ++tBlck)
+	size_t num_taxaBlocks = nexusReader.GetNumTaxaBlocks();
+	for (unsigned tBlck=0; tBlck<num_taxaBlocks; ++tBlck)
     {
 		NxsTaxaBlock* taxaBlock = nexusReader.GetTaxaBlock(tBlck);
 		std::string taxaBlockTitle          = taxaBlock->GetTitle();

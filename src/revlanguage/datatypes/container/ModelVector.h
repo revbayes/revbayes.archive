@@ -453,6 +453,14 @@ double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) c
     if ( once == true && type.getParentType() == getClassTypeSpec().getParentType() )
     {
         // We want to convert to another model vector
+        if ( getClassType() == "RealPos[]" && type.getType() == "Real[]" )
+        {
+            return this->getValue().size() * 0.2;
+        }
+        if ( getClassType() == "Natural[]" && type.getType() == "Integer[]" )
+        {
+            return this->getValue().size() * 0.2;
+        }
 
         // Simply check whether our elements can be converted to the desired element type
         typename RevBayesCore::RbConstIterator<elementType> i;
