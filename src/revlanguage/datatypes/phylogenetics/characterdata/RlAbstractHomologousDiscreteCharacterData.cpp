@@ -156,7 +156,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         found = true;
         
         const RevObject& argument = args[0].getVariable()->getRevObject();
-        int n = static_cast<const Natural&>( argument ).getValue();
+        long n = static_cast<const Natural&>( argument ).getValue();
         
         RevBayesCore::AbstractHomologousDiscreteCharacterData *trans_data = this->dag_node->getValue().expandCharacters( n );
         
@@ -602,7 +602,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     methods.addFunction( new MemberProcedure( "meanGcContent",                          Probability::getClassTypeSpec(),    meanGcContentArgRules                ) );
     methods.addFunction( new MemberProcedure( "meanGcContentByCodonPosition",           Probability::getClassTypeSpec(),    meanGcContentByCodonPositionArgRules                ) );
     methods.addFunction( new MemberProcedure( "numInvariableBlocks",                    Natural::getClassTypeSpec(),        numInvariableBlocksArgRules         ) );
-    methods.addFunction( new MemberProcedure( "num_taxaMissingSequence",                 Natural::getClassTypeSpec(),        num_taxaMissingSequenceArgRules         ) );
+    methods.addFunction( new MemberProcedure( "numTaxaMissingSequence",                 Natural::getClassTypeSpec(),        num_taxaMissingSequenceArgRules         ) );
     methods.addFunction( new MemberProcedure( "getStateDescriptions",                   ModelVector<RlString>::getClassTypeSpec(), getStateDescriptionsArgRules ) );
     methods.addFunction( new MemberProcedure( "translateCharacters",                    AbstractHomologousDiscreteCharacterData::getClassTypeSpec(),        translateCharactersArgRules         ) );
     methods.addFunction( new MemberProcedure( "varGcContent",                           Probability::getClassTypeSpec(),    varGcContentArgRules                ) );
