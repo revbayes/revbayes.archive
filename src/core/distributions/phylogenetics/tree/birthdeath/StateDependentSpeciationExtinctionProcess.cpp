@@ -160,12 +160,12 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
     double num_initial_lineages = 2; // this needs to be a double!
     const TopologyNode& root = value->getRoot();
 
-    if (use_origin) {
+    if ( use_origin == true )
+    {
         // If we are conditioning on survival from the origin,
         // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
         num_initial_lineages = 1;
     }
-
     // if conditioning on root, root node must be a "true" bifurcation event
     else if (root.getChild(0).isSampledAncestor() || root.getChild(1).isSampledAncestor())
     {
@@ -244,7 +244,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             RbBitSet obs_state(num_states, true);
             bool gap = true;
 
-            if (tree->hasCharacterData())
+            if ( tree->hasCharacterData() == true )
             {
                 const DiscreteCharacterState &state = tree->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
                 obs_state = state.getState();
@@ -256,7 +256,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                 
                 node_likelihood[j] = extinction[j];
                 
-                if ( obs_state.isSet( j ) == true || gap )
+                if ( obs_state.isSet( j ) == true || gap == true )
                 {
                     node_likelihood[num_states+j] = sampling[j];
                 }
@@ -329,6 +329,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                     node_likelihood[num_states + i] *= speciation_node ? speciation_rates[i] : 1.0;
                 }
             }
+            
         }
         
         double begin_age = node.getAge();
@@ -378,7 +379,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             }
         }
         
-        if ( RbSettings::userSettings().getUseScaling() == true && node_index % RbSettings::userSettings().getScalingDensity() == 0 )
+        if ( RbSettings::userSettings().getUseScaling() == true ) //&& node_index % RbSettings::userSettings().getScalingDensity() == 0 )
         {
             // rescale the conditional likelihoods at the "end" of the branch
             double max = 0.0;
