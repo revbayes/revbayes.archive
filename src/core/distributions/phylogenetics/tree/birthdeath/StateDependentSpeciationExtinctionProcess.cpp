@@ -220,7 +220,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
 {
     
     // check for recomputation
-    if ( dirty_nodes[node_index] == true )
+    if ( dirty_nodes[node_index] == true || sample_character_history == true )
     {
         // mark as computed
         dirty_nodes[node_index] = false;
@@ -1049,7 +1049,6 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         {
             probs_sum += branch_conditional_probs[i + num_states] * branch_partial_likelihoods[node_index][downpass_dt][i];
         }
-        
         if ( probs_sum == 0.0 )
         {
             RandomNumberGenerator* rng = GLOBAL_RNG;

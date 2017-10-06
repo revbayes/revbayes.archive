@@ -43,7 +43,6 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                   tree;
         RevPtr<const RevVariable>                   origin;
-        RevPtr<const RevVariable>                   dynamic;
     };
     
 }

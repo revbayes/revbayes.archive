@@ -16,9 +16,8 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-NodeTimeSlideUniformProposal::NodeTimeSlideUniformProposal( StochasticNode<Tree> *n, bool dyn ) : Proposal(),
-    variable( n ),
-    dynamic( dyn )
+NodeTimeSlideUniformProposal::NodeTimeSlideUniformProposal( StochasticNode<Tree> *n ) : Proposal(),
+    variable( n )
 {
     // tell the base class to add the node
     addNode( variable );
@@ -59,17 +58,6 @@ const std::string& NodeTimeSlideUniformProposal::getProposalName( void ) const
     static std::string name = "NodeTimeSlideUniform";
     
     return name;
-}
-
-
-/**
- * Get the update weight of how often the move should be used.
- *
- * \return    The update weight.
- */
-double NodeTimeSlideUniformProposal::getUpdateWeight( void ) const
-{
-    return dynamic ? variable->getValue().getNumberOfInteriorNodes() - 1 : 1.0;
 }
 
 
