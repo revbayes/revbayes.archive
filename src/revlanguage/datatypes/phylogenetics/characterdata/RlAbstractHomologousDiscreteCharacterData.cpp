@@ -310,7 +310,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         
         return new RevVariable( new Natural(num_blocks) );
     }
-    else if ( name == "num_taxaMissingSequence" )
+    else if ( name == "numTaxaMissingSequence" )
     {
         found = true;
         
