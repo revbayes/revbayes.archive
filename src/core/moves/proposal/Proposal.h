@@ -39,7 +39,6 @@ namespace RevBayesCore {
         virtual double                                          doProposal(void) = 0;                                                                   //!< Actually do the proposal.
         virtual const std::string&                              getProposalName(void) const = 0;                                                        //!< Get the name of this proposal used for printing out info.
         virtual double                                          getProposalTuningParameter(void) const = 0;
-        virtual double                                          getUpdateWeight(void) const { return 1; }                                               //!< Get the weight of the proposal.
         virtual void                                            prepareProposal(void) = 0;                                                              //!< Propose a new state
         virtual void                                            printParameterSummary(std::ostream &o) const = 0;                                       //!< Print the parameter summary
         virtual void                                            setProposalTuningParameter(double tp) = 0;
