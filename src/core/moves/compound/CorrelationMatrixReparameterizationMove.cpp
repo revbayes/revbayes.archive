@@ -3,6 +3,7 @@
 #include "InverseWishartDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 
 #include <cmath>
 #include <iomanip>
@@ -58,6 +59,13 @@ const std::string& CorrelationMatrixReparameterizationMove::getMoveName( void ) 
     static std::string name = "CorrelationMatrixReparameterizationMove";
     
     return name;
+}
+
+
+double CorrelationMatrixReparameterizationMove::getMoveTuningParameter( void ) const
+{
+    // this move has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -311,6 +319,18 @@ void CorrelationMatrixReparameterizationMove::swapNodeInternal(DagNode *oldN, Da
         mvbm = static_cast<StochasticNode<ContinuousCharacterData>* >(newN) ;
     }
     
+}
+
+
+void CorrelationMatrixReparameterizationMove::setMoveTuningParameter(double tp)
+{
+    // this move has no tuning parameter: nothing to do
+}
+
+
+void CorrelationMatrixReparameterizationMove::setNumberAccepted( size_t na )
+{
+    numAccepted = na;
 }
 
 

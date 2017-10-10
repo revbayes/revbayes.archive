@@ -66,6 +66,13 @@ const std::string& SliceSamplingMove::getMoveName( void ) const
     return name;
 }
 
+
+double SliceSamplingMove::getMoveTuningParameter( void ) const
+{
+    return window;
+}
+
+
 double uniform()
 {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -379,6 +386,12 @@ void SliceSamplingMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast<StochasticNode<double>* >(newN) ;
+}
+
+
+void SliceSamplingMove::setMoveTuningParameter(double tp)
+{
+    window = tp;
 }
 
 

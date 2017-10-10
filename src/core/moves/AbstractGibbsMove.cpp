@@ -1,5 +1,6 @@
 #include "AbstractGibbsMove.h"
 #include "DagNode.h"
+#include "RbConstants.h"
 #include "RbException.h"
 
 #include <cmath>
@@ -30,6 +31,13 @@ AbstractGibbsMove::AbstractGibbsMove( double w  ) : AbstractMove( w, false )
 AbstractGibbsMove::~AbstractGibbsMove( void )
 {
     
+}
+
+
+double AbstractGibbsMove::getMoveTuningParameter( void ) const
+{
+    // Gibbs move has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -143,7 +151,10 @@ void AbstractGibbsMove::printSummary(std::ostream &o) const
 }
 
 
-
+void AbstractGibbsMove::setMoveTuningParameter(double tp)
+{
+    // Gibbs move has no tuning parameter: nothing to do
+}
 
 
 /**

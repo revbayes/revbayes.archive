@@ -64,6 +64,12 @@ const std::string& RateAgeBetaShift::getMoveName( void ) const
 }
 
 
+double RateAgeBetaShift::getMoveTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /** Perform the move */
 void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
 {
@@ -392,6 +398,18 @@ void RateAgeBetaShift::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
+}
+
+
+void RateAgeBetaShift::setMoveTuningParameter(double tp)
+{
+    delta = tp;
+}
+
+
+void RateAgeBetaShift::setNumberAccepted( size_t na )
+{
+    numAccepted = na;
 }
 
 

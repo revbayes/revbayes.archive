@@ -110,6 +110,12 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 }
 
 
+double MetropolisHastingsMove::getMoveTuningParameter( void ) const
+{
+    return proposal->getProposalTuningParameter();
+}
+
+
 /**
  * How often was the move accepted
  */
@@ -518,6 +524,18 @@ void MetropolisHastingsMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     proposal->swapNode(oldN, newN);
     
+}
+
+
+void MetropolisHastingsMove::setMoveTuningParameter(double tp)
+{
+    proposal->setProposalTuningParameter(tp);
+}
+
+
+void MetropolisHastingsMove::setNumberAccepted( size_t na )
+{
+    num_accepted = na;
 }
 
 

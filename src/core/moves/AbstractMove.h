@@ -37,7 +37,9 @@ namespace RevBayesCore {
         // pure virtual public methods
         virtual AbstractMove*                                   clone(void) const = 0;
         virtual const std::string&                              getMoveName(void) const = 0;                                        //!< Get the name of the move for summary printing
+        virtual double                                          getMoveTuningParameter(void) const = 0;
         virtual void                                            printSummary(std::ostream &o) const = 0;                            //!< Print the move summary
+        virtual void                                            setMoveTuningParameter(double tp) = 0;
         
         // functions you should not override
         void                                                    addNode(DagNode* p);                                                //!< add a node to the proposal
@@ -51,6 +53,8 @@ namespace RevBayesCore {
         void                                                    performHillClimbingStep(double lHeat, double pHeat);                //!< Perform the move.
         void                                                    removeNode(DagNode* p);                                             //!< remove a node from the proposal
         void                                                    resetCounters(void);                                                //!< Reset the counters such as numTried.
+        virtual void                                            setNumberAccepted(size_t na);
+        void                                                    setNumberTried(size_t nt);
         
     protected:
         AbstractMove(double w, bool autoTune = false);                                              //!< Constructor
@@ -74,7 +78,7 @@ namespace RevBayesCore {
         RbOrderedSet<DagNode*>                                  affected_nodes;                                                      //!< The affected nodes by this move.
         double                                                  weight;
         bool                                                    auto_tuning;
-        unsigned int                                            num_tried;                                                           //!< Number of times tried
+        size_t                                                  num_tried;                                                           //!< Number of times tried
                 
     };
     

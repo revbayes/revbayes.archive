@@ -22,7 +22,10 @@ namespace RevBayesCore {
         // Basic utility functions
         CorrelationMatrixReparameterizationMove*   clone(void) const;                                                                  //!< Clone object
         const std::string&                         getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+        double                                     getMoveTuningParameter(void) const;
         void                                       printSummary(std::ostream &o) const;                                                //!< Print the move summary
+        void                                       setMoveTuningParameter(double tp);
+        void                                       setNumberAccepted(size_t na);
         
     protected:
         void                                       performMcmcMove(double lHeat, double pHeat);                                        //!< Perform move

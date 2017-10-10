@@ -35,10 +35,13 @@ namespace RevBayesCore {
         // pure virtual public methods
         virtual MetropolisHastingsMove*                         clone(void) const;
         const std::string&                                      getMoveName(void) const;                                //!< Get the name of the move for summary printing
+        double                                                  getMoveTuningParameter(void) const;
         size_t                                                  getNumberAccepted(void) const;                        //!< Get update weight of InferenceMove
         Proposal&                                               getProposal(void);                                      //!< Get the proposal of the move
         double                                                  getUpdateWeight(void) const;                            //!< Get update weight of move
         void                                                    printSummary(std::ostream &o) const;                    //!< Print the move summary
+        void                                                    setMoveTuningParameter(double tp);
+        void                                                    setNumberAccepted(size_t na);
         void                                                    tune(void);                                             //!< Specific tuning of the move
         
     protected:
@@ -52,7 +55,7 @@ namespace RevBayesCore {
     private:
         
         // parameters
-        unsigned int                                            num_accepted;                                            //!< Number of times accepted
+        size_t                                                  num_accepted;                                            //!< Number of times accepted
         Proposal*                                               proposal;                                               //!< The proposal distribution
     };
     

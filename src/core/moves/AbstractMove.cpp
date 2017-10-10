@@ -17,7 +17,8 @@ AbstractMove::AbstractMove( double w, bool t ) :
     nodes(  ),
     affected_nodes(  ),
     weight( w ),
-    auto_tuning( t )
+    auto_tuning( t ),
+    num_tried( 0 )
 {
     
 }
@@ -35,7 +36,8 @@ AbstractMove::AbstractMove( const std::vector<DagNode*> &n, double w, bool t ) :
     nodes( n ),
     affected_nodes( ),
     weight( w ),
-    auto_tuning( t )
+    auto_tuning( t ),
+    num_tried( 0 )
 {
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
@@ -78,7 +80,8 @@ AbstractMove::AbstractMove( const AbstractMove &m ) : Move( m ),
     nodes( m.nodes ),
     affected_nodes( m.affected_nodes ),
     weight( m.weight ),
-    auto_tuning( m.auto_tuning  )
+    auto_tuning( m.auto_tuning  ),
+    num_tried( m.num_tried )
 {
     
     
@@ -154,6 +157,7 @@ AbstractMove& AbstractMove::operator=(const RevBayesCore::AbstractMove &m)
         
         affected_nodes  = m.affected_nodes;
         nodes           = m.nodes;
+        num_tried       = m.num_tried;
         
         
         for (size_t i = 0; i < nodes.size(); ++i)
@@ -467,6 +471,18 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
     
     swapNodeInternal(oldN, newN);
     
+}
+
+
+void AbstractMove::setNumberAccepted( size_t na )
+{
+    num_tried = na;
+}
+
+
+void AbstractMove::setNumberTried( size_t nt )
+{
+    num_tried = nt;
 }
 
 
