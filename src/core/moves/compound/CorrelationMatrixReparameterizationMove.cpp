@@ -229,7 +229,8 @@ void CorrelationMatrixReparameterizationMove::printSummary(std::ostream &o) cons
     o << " ";
     
     // print the weight
-    int w_length = 4 - (int)log10(weight);
+    int w_length = 4;
+    if (weight > 0) w_length -= (int)log10(weight);
     for (int i = 0; i < w_length; ++i)
     {
         o << " ";
@@ -238,7 +239,8 @@ void CorrelationMatrixReparameterizationMove::printSummary(std::ostream &o) cons
     o << " ";
     
     // print the number of tries
-    int t_length = 9 - (int)log10(num_tried);
+    int t_length = 9;
+    if (num_tried > 0) t_length -= (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
