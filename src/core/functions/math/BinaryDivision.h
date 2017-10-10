@@ -16,8 +16,8 @@ namespace RevBayesCore {
      * \since Version 1.0, 2012-08-13
      *
      */
-    template <class firstValueType, class secondValueType, class returnType>
-    class BinaryDivision : public TypedFunction<returnType> {
+    template <class firstValueType, class secondValueType, class return_type>
+    class BinaryDivision : public TypedFunction<return_type> {
         
     public:
         BinaryDivision(const TypedDagNode<firstValueType> *a, const TypedDagNode<secondValueType> *b);
@@ -38,21 +38,21 @@ namespace RevBayesCore {
 
 
 
-template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::BinaryDivision<firstValueType, secondValueType, returnType>::BinaryDivision(const TypedDagNode<firstValueType> *l, const TypedDagNode<secondValueType> *r) : TypedFunction<returnType>( new returnType() ), a( l ), b( r ) {
+template<class firstValueType, class secondValueType, class return_type>
+RevBayesCore::BinaryDivision<firstValueType, secondValueType, return_type>::BinaryDivision(const TypedDagNode<firstValueType> *l, const TypedDagNode<secondValueType> *r) : TypedFunction<return_type>( new return_type() ), a( l ), b( r ) {
     this->addParameter( l );
     this->addParameter( r );
    
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::BinaryDivision<firstValueType, secondValueType, returnType>* RevBayesCore::BinaryDivision<firstValueType, secondValueType, returnType>::clone( void ) const {
+template<class firstValueType, class secondValueType, class return_type>
+RevBayesCore::BinaryDivision<firstValueType, secondValueType, return_type>* RevBayesCore::BinaryDivision<firstValueType, secondValueType, return_type>::clone( void ) const {
     return new BinaryDivision(*this);
 }
 
-template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::BinaryDivision<firstValueType, secondValueType, returnType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+template<class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::BinaryDivision<firstValueType, secondValueType, return_type>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == a)
@@ -67,8 +67,8 @@ void RevBayesCore::BinaryDivision<firstValueType, secondValueType, returnType>::
 }
 
 
-template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::BinaryDivision<firstValueType, secondValueType, returnType>::update( void )
+template<class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::BinaryDivision<firstValueType, secondValueType, return_type>::update( void )
 {
     firstValueType a_v = a->getValue();
     secondValueType b_v = b->getValue();

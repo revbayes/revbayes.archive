@@ -64,27 +64,27 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
     bool piecewisePsi = false;
     bool piecewiseCounts = false;
 
-    if( lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
         piecewiseLambda = true;
     }
 
-    if( mu->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( mu->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
         piecewiseMu = true;
     }
 
-    if( psi->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( psi->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
         piecewisePsi = true;
 
-        if( !fossil_counts->getRevObject().isType( ModelVector<Integer>::getClassTypeSpec() ) )
+        if ( !fossil_counts->getRevObject().isType( ModelVector<Integer>::getClassTypeSpec() ) )
         {
             throw(RbException("Heterogeneous fossil sampling rates provided, but not fossil counts"));
         }
     }
 
-    if( fossil_counts->getRevObject().isType( ModelVector<Integer>::getClassTypeSpec() ) )
+    if ( fossil_counts->getRevObject().isType( ModelVector<Integer>::getClassTypeSpec() ) )
     {
         piecewiseCounts = true;
     }
@@ -105,7 +105,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
     // fossil counts
     RevBayesCore::DagNode* c;
 
-    if(piecewiseLambda)
+    if (piecewiseLambda)
     {
         l = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     }
@@ -114,7 +114,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
         l = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     }
     // extinction rate
-    if(piecewiseMu)
+    if (piecewiseMu)
     {
         m = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
     }
@@ -123,7 +123,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
         m = static_cast<const RealPos &>( mu->getRevObject() ).getDagNode();
     }
     // fossilization rate
-    if(piecewisePsi)
+    if (piecewisePsi)
     {
         p = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
         c = static_cast<const ModelVector<Integer> &>( fossil_counts->getRevObject() ).getDagNode();
@@ -131,7 +131,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
     else
     {
         p = static_cast<const RealPos &>( psi->getRevObject() ).getDagNode();
-        if( piecewiseCounts == true )
+        if ( piecewiseCounts == true )
         {
             c = static_cast<const ModelVector<Integer> &>( fossil_counts->getRevObject() ).getDagNode();
         }
@@ -146,7 +146,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
 
     // rate change times
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt = NULL;
-    if( piecewise == true )
+    if ( piecewise == true )
     {
         rt = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
     }

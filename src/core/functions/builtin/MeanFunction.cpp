@@ -18,7 +18,8 @@ MeanFunction::MeanFunction(const TypedDagNode< RbVector<double> > *v) : TypedFun
 /**
  * Empty destructor.
  */
-MeanFunction::~MeanFunction( void ) {
+MeanFunction::~MeanFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
@@ -27,7 +28,8 @@ MeanFunction::~MeanFunction( void ) {
 /**
  * Clone function for deep copies.
  */
-MeanFunction* MeanFunction::clone( void ) const {
+MeanFunction* MeanFunction::clone( void ) const
+{
     return new MeanFunction( *this );
 }
 
@@ -35,11 +37,13 @@ MeanFunction* MeanFunction::clone( void ) const {
 /**
  * Update the current value based on the current parameter values.
  */
-void MeanFunction::update( void ) {
+void MeanFunction::update( void )
+{
     
     double m = 0;
     const std::vector<double> &v = vals->getValue();
-    for ( std::vector<double>::const_iterator it = v.begin(); it != v.end(); ++it) {
+    for ( std::vector<double>::const_iterator it = v.begin(); it != v.end(); ++it)
+    {
         m += *it;
     }
     

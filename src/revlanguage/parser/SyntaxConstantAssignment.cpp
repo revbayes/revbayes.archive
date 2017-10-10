@@ -46,7 +46,7 @@ void SyntaxConstantAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariab
 {
     
     // check first if the right-hand-side is a model variable
-    if ( !rhs->getRevObject().isModelObject() )
+    if ( rhs->getRevObject().isModelObject() == false )
     {
         throw RbException("You used a non-model object ( type=" + rhs->getRevObject().getType() + " ) to create a constant node. Only model objects can be used for constant nodes.");
     }
@@ -56,13 +56,13 @@ void SyntaxConstantAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariab
     
     // TODO: This needs to be cleaned up because it is not used properly anymore! (Sebastian)
     // Perform type conversion if needed, otherwise just clone the value object
-    RevObject* newValue;
-    if ( !value.getTypeSpec().isDerivedOf( lhs->getRequiredTypeSpec() ) )
+    RevObject* new_value;
+    if ( value.getTypeSpec().isDerivedOf( lhs->getRequiredTypeSpec() ) == false )
     {
         // We are not of a derived type (or the same type) so we need to cast
         if (value.isConvertibleTo( lhs->getRequiredTypeSpec(), true ) )
         {
-            newValue = value.convertTo( lhs->getRequiredTypeSpec() );
+            new_value = value.convertTo( lhs->getRequiredTypeSpec() );
         }
         else
         {
@@ -74,12 +74,12 @@ void SyntaxConstantAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariab
     }
     else
     {
-        newValue = value.clone();
-        newValue->makeConstantValue();  // We cannot trust evaluateContent to return a constant variable
+        new_value = value.clone();
+        new_value->makeConstantValue();  // We cannot trust evaluateContent to return a constant variable
     }
     
     // Fill the slot with newValue
-    lhs->replaceRevObject( newValue );
+    lhs->replaceRevObject( new_value );
         
 }
 

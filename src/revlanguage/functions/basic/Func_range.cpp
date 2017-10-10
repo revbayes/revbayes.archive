@@ -238,8 +238,8 @@ const TypeSpec& Func_range::getTypeSpec( void ) const
 const TypeSpec& Func_range::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = ModelVector<Integer>::getClassTypeSpec();
+    static TypeSpec return_typeSpec = ModelVector<Integer>::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

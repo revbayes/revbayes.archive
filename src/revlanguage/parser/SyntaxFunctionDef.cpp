@@ -20,27 +20,27 @@ SyntaxFunctionDef::SyntaxFunctionDef( const std::string&            type,
                                       bool                          isProcDef) :
     SyntaxElement(),
     code( stmts ),
-    functionName( name ),
-    formalArgs( formals ),
-    returnType( RlUtils::Void ),
-    isProcedureDef( isProcDef )
+    function_name( name ),
+    formal_args( formals ),
+    return_type( RlUtils::Void ),
+    is_procedure_def( isProcDef )
 {
     if ( type == "" )
-        returnType = RevObject::getClassTypeSpec();
+        return_type = RevObject::getClassTypeSpec();
     else
-        returnType  = TypeSpec( Workspace::userWorkspace().getClassTypeSpecOfType( type ) );
+        return_type  = TypeSpec( Workspace::userWorkspace().getClassTypeSpecOfType( type ) );
 }
 
 
 /** Deep copy constructor */
 SyntaxFunctionDef::SyntaxFunctionDef( const SyntaxFunctionDef& x ) :
     SyntaxElement( x ),
-    functionName( x.functionName ),
-    returnType( x.returnType ),
-    isProcedureDef( x.isProcedureDef )
+    function_name( x.function_name ),
+    return_type( x.return_type ),
+    is_procedure_def( x.is_procedure_def )
 {
-    for ( std::list<SyntaxFormal*>::const_iterator it = x.formalArgs->begin(); it != x.formalArgs->end(); ++it )
-        formalArgs->push_back( (*it)->clone() );
+    for ( std::list<SyntaxFormal*>::const_iterator it = x.formal_args->begin(); it != x.formal_args->end(); ++it )
+        formal_args->push_back( (*it)->clone() );
     
     for ( std::list<SyntaxElement*>::const_iterator it = x.code->begin(); it != x.code->end(); ++it )
         code->push_back( (*it)->clone() );
@@ -50,9 +50,9 @@ SyntaxFunctionDef::SyntaxFunctionDef( const SyntaxFunctionDef& x ) :
 /** Destructor deletes members */
 SyntaxFunctionDef::~SyntaxFunctionDef( void )
 {
-    for ( std::list<SyntaxFormal*>::iterator it = formalArgs->begin(); it != formalArgs->end(); ++it )
+    for ( std::list<SyntaxFormal*>::iterator it = formal_args->begin(); it != formal_args->end(); ++it )
         delete *it;
-    delete formalArgs;
+    delete formal_args;
     
     for ( std::list<SyntaxElement*>::iterator it = code->begin(); it != code->end(); ++it )
         delete *it;
@@ -67,13 +67,13 @@ SyntaxFunctionDef& SyntaxFunctionDef::operator=( const SyntaxFunctionDef& x )
     {
         SyntaxElement::operator=( x );
 
-        functionName    = x.functionName;
-        isProcedureDef  = x.isProcedureDef;
-        returnType      = x.returnType;
+        function_name    = x.function_name;
+        is_procedure_def  = x.is_procedure_def;
+        return_type      = x.return_type;
         
-        formalArgs->clear();
-        for ( std::list<SyntaxFormal*>::const_iterator it = x.formalArgs->begin(); it != x.formalArgs->end(); ++it )
-            formalArgs->push_back( (*it)->clone() );
+        formal_args->clear();
+        for ( std::list<SyntaxFormal*>::const_iterator it = x.formal_args->begin(); it != x.formal_args->end(); ++it )
+            formal_args->push_back( (*it)->clone() );
         
         code->clear();
         for ( std::list<SyntaxElement*>::const_iterator it = x.code->begin(); it != x.code->end(); ++it )
@@ -103,11 +103,11 @@ RevPtr<RevVariable> SyntaxFunctionDef::evaluateContent( Environment& env, bool d
 {
     // Get argument rules from the formals
     ArgumentRules* argRules = new ArgumentRules();
-    for ( std::list<SyntaxFormal*>::iterator it = formalArgs->begin(); it !=formalArgs->end(); ++it )
+    for ( std::list<SyntaxFormal*>::iterator it = formal_args->begin(); it !=formal_args->end(); ++it )
         argRules->push_back( (*it)->getArgumentRule()->clone() );
 
     // Check whether statements are function-safe if we are a function
-    if ( !isProcedureDef )
+    if ( !is_procedure_def )
     {
         // Load labeled formals as local variables
         std::set<std::string> localVars;
@@ -144,31 +144,31 @@ RevPtr<RevVariable> SyntaxFunctionDef::evaluateContent( Environment& env, bool d
     }
     
     // Create the function definition
-    UserFunctionDef* functionDef = new UserFunctionDef( argRules, returnType, stmts, functionName );
+    UserFunctionDef* functionDef = new UserFunctionDef( argRules, return_type, stmts, function_name );
     
     // Create the function or the procedure
-    Function* theFunction;
-    if ( isProcedureDef )
-        theFunction = new UserProcedure( functionDef );
+    Function* the_function;
+    if ( is_procedure_def )
+        the_function = new UserProcedure( functionDef );
     else
-        theFunction = new UserFunction( functionDef );
+        the_function = new UserFunction( functionDef );
     
     // Insert the function/procedure in the (user) workspace
-    if ( env.getFunctionTable().existsFunctionInFrame( functionName, *argRules ) )
+    if ( env.getFunctionTable().existsFunctionInFrame( function_name, *argRules ) )
     {
         bool ok;
-        if ( isProcedureDef )
+        if ( is_procedure_def )
             ok = UserInterface::userInterface().ask( "Replace existing procedure with same signature" );
         else
             ok = UserInterface::userInterface().ask( "Replace existing function with same signature" );
 
         if ( ok )
         {
-            env.getFunctionTable().replaceFunction( functionName, theFunction );
+            env.getFunctionTable().replaceFunction( function_name, the_function );
         }
         else
         {
-            if ( isProcedureDef )
+            if ( is_procedure_def )
                 RBOUT( "Registering of procedure canceled" );
             else
                 RBOUT( "Registering of function canceled" );
@@ -176,7 +176,7 @@ RevPtr<RevVariable> SyntaxFunctionDef::evaluateContent( Environment& env, bool d
     }
     else
     {
-        env.addFunction( theFunction );
+        env.addFunction( the_function );
     }
 
     // No return value 

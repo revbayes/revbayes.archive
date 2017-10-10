@@ -86,7 +86,7 @@ void Clade::constructInternalObject( void )
     {
         const ModelVector<RlString> &tmp = static_cast<const ModelVector<RlString> &>( (*it)->getRevObject() );
 
-        for(size_t i=0; i<tmp.size(); ++i)
+        for (size_t i=0; i<tmp.size(); ++i)
         {
             RevBayesCore::Taxon t = RevBayesCore::Taxon( tmp.getElement(i)->getValue() );
             n.push_back( t );
@@ -107,7 +107,7 @@ void Clade::constructInternalObject( void )
         }
 
         const std::vector<RevBayesCore::Taxon> &taxa = c.getTaxa();
-        for(size_t i=0; i<taxa.size(); ++i)
+        for (size_t i=0; i<taxa.size(); ++i)
         {
             const RevBayesCore::Taxon &t = taxa[i];
             n.push_back( t );

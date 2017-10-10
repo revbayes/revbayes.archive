@@ -34,9 +34,9 @@ void UpperTriangle::update(void) {
     value->resize( nrows * (nrows - 1) / 2 );
     
     size_t k = 0;
-    for(size_t i = 0; i < nrows; ++i)
+    for (size_t i = 0; i < nrows; ++i)
     {
-        for(size_t j = i + 1; j < nrows; ++j)
+        for (size_t j = i + 1; j < nrows; ++j)
         {
             (*value)[k++] = R[i][j];
         }

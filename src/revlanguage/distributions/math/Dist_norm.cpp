@@ -327,7 +327,7 @@ void Dist_norm::setConstParameter(const std::string& name, const RevPtr<const Re
     {
         min = var;
     }
-    else if( name == "max")
+    else if ( name == "max")
     {
         max = var;
     }

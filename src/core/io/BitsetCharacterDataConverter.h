@@ -44,7 +44,7 @@ namespace RevBayesCore {
         
         HomologousDiscreteCharacterData<StandardState>  data;
         std::string                                     format;
-        size_t                                          numTaxa;
+        size_t                                          num_taxa;
         size_t                                          numChars;
         size_t                                          numStates;
         size_t                                          numAllStates;

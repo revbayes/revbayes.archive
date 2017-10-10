@@ -146,7 +146,7 @@ void PomoState::setState(const std::string &symbol)
         int id1 = -1;
         int id2 = -1;
         // Sum over elements and count non-zero elements.
-        for(std::vector<int>::iterator i = vect.begin(); i != vect.end(); ++i) {
+        for (std::vector<int>::iterator i = vect.begin(); i != vect.end(); ++i) {
             // `i` is an iterator object that points to some
             // element of `vect`.
             if (*i != 0) {
@@ -173,7 +173,7 @@ void PomoState::setState(const std::string &symbol)
                 // Get the rng
                 RandomNumberGenerator* rng = GLOBAL_RNG;
                 std::vector<double> sampled_values (4, 0.0);
-                for(int k = 0; k < virtualPopulationSize_; k++) {
+                for (int k = 0; k < virtualPopulationSize_; k++) {
                     int r_int = size_t( floor(rng->uniform01() * sum) );
                     if (r_int < vect[id1]) sampled_values[id1]++;
                     else sampled_values[id2]++;
@@ -359,7 +359,7 @@ std::string PomoState::getStateLabels( void ) const
     {
         frequencies.push_back(i*stepSize);
     }
-    for( size_t k = 0; k < acgt.size(); ++k )
+    for ( size_t k = 0; k < acgt.size(); ++k )
     {
         char ch = acgt[k];
         

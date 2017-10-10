@@ -177,7 +177,7 @@ void RevBayesCore::TreeUtilities::getAges(Tree *t, TopologyNode *n, std::vector<
 
         // get both children ages
         std::vector<TopologyNode*> children = n->getChildren();
-        for(size_t i = 0; i < children.size(); i++)
+        for (size_t i = 0; i < children.size(); i++)
             getAges( t, children[i], ages);
     }
     else if (!internalsOnly) {
@@ -197,7 +197,7 @@ RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(con
 
     std::map< std::string, int > namesToId;
 
-    for(size_t i = 0; i < names.size(); ++i)
+    for (size_t i = 0; i < names.size(); ++i)
     {
         namesToId[ names[i].getName() ] = int(i);
     }
@@ -274,7 +274,7 @@ void RevBayesCore::TreeUtilities::offsetTree(Tree *t, TopologyNode *n, double fa
 
     // offset all children
     std::vector<TopologyNode*> children = n->getChildren();
-    for(size_t i = 0; i < children.size(); i++)
+    for (size_t i = 0; i < children.size(); i++)
     {
         offsetTree( t, children[i], factor);
     }
@@ -375,7 +375,7 @@ void RevBayesCore::TreeUtilities::setAges(Tree *t, TopologyNode *n, std::vector<
 
         // rescale both children
         std::vector<TopologyNode*> children = n->getChildren();
-        for(size_t i = 0; i < children.size(); i++)
+        for (size_t i = 0; i < children.size(); i++)
             setAges( t, children[i], ages);
     }
 
@@ -403,7 +403,7 @@ std::string RevBayesCore::TreeUtilities::uniqueNewickTopologyRecursive(const Top
         for (size_t i = 0; i < n.getNumberOfChildren(); ++i)
         {
             const TopologyNode& child = n.getChild( i );
-            if( child.isSampledAncestor() && (child.getName() < fossil || fossil == "") )
+            if ( child.isSampledAncestor() && (child.getName() < fossil || fossil == "") )
             {
                 fossil = child.getName();
             }

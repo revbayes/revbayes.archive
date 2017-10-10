@@ -1,7 +1,8 @@
 #include "Argument.h"
 #include "ArgumentRule.h"
-#include "Func_type.h"
+#include "Func_listOptions.h"
 #include "RbException.h"
+#include "RbSettings.h"
 #include "RlString.h"
 #include "RlUtils.h"
 #include "TypeSpec.h"
@@ -11,7 +12,8 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_type::Func_type( void ) : Procedure() {
+Func_listOptions::Func_listOptions( void ) : Procedure()
+{
     
 }
 
@@ -22,67 +24,62 @@ Func_type::Func_type( void ) : Procedure() {
  *
  * \return A new copy of the process.
  */
-Func_type* Func_type::clone( void ) const {
+Func_listOptions* Func_listOptions::clone( void ) const
+{
     
-    return new Func_type( *this );
+    return new Func_listOptions( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_type::execute( void ) {
+RevPtr<RevVariable> Func_listOptions::execute( void )
+{
     
-    RlString* type = new RlString( args[0].getVariable()->getRevObject().getType() );
+    RbSettings& s = RbSettings::userSettings();
+    s.listOptions();
     
-    return new RevVariable( type );
+    return NULL;
+
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_type::getArgumentRules( void ) const
+const ArgumentRules& Func_listOptions::getArgumentRules( void ) const
 {
     
-    static ArgumentRules argumentRules = ArgumentRules();
-    static bool rules_set = false;
+    static ArgumentRules argument_rules = ArgumentRules();
     
-    if ( !rules_set )
-    {
-        
-        argumentRules.push_back( new ArgumentRule( "x", RevObject::getClassTypeSpec(), "A variable.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        rules_set = true;
-        
-    }
-    
-    return argumentRules;
+    return argument_rules;
 }
 
 
 /** Get Rev type of object */
-const std::string& Func_type::getClassType(void)
+const std::string& Func_listOptions::getClassType(void)
 {
     
-    static std::string rev_type = "Func_type";
+    static std::string rev_type = "Func_listOptions";
     
-	return rev_type; 
+    return rev_type;
 }
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_type::getClassTypeSpec(void)
+const TypeSpec& Func_listOptions::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rev_type_spec; 
+    return rev_type_spec;
 }
 
 
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_type::getFunctionName( void ) const
+std::string Func_listOptions::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "type";
+    std::string f_name = "listOptions";
     
     return f_name;
 }
@@ -91,11 +88,11 @@ std::string Func_type::getFunctionName( void ) const
 /**
  * Get the author(s) of this function so they can receive credit (and blame) for it.
  */
-std::vector<std::string> Func_type::getHelpAuthor(void) const
+std::vector<std::string> Func_listOptions::getHelpAuthor(void) const
 {
     // create a vector of authors for this function
     std::vector<std::string> authors;
-    authors.push_back( "Sebastian Hoehna" );
+    authors.push_back( "Will Freyman" );
     
     return authors;
 }
@@ -104,11 +101,11 @@ std::vector<std::string> Func_type::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_type::getHelpDescription(void) const
+std::vector<std::string> Func_listOptions::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "The value type of a variable." );
+    descriptions.push_back( "List all global options for RevBayes." );
     
     return descriptions;
 }
@@ -117,10 +114,11 @@ std::vector<std::string> Func_type::getHelpDescription(void) const
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_type::getHelpDetails(void) const
+std::vector<std::string> Func_listOptions::getHelpDetails(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> details;
+    details.push_back( "Options are used to personalize RevBayes and are stored on the local machine. Currently this is rather experimental." );
     
     return details;
 }
@@ -131,17 +129,9 @@ std::vector<std::string> Func_type::getHelpDetails(void) const
  * These example should help the users to show how this function works but
  * are also used to test if this function still works.
  */
-std::string Func_type::getHelpExample(void) const
+std::string Func_listOptions::getHelpExample(void) const
 {
-    // create an example as a single string variable.
-    std::string example = "";
-    example += "a <- 2\n";
-    example += "type(a)\n";
-    example += "\n";
-    example += "b <- 2.0\n";
-    example += "type(b)\n";
-    
-    return example;
+    return "";
 }
 
 
@@ -149,7 +139,7 @@ std::string Func_type::getHelpExample(void) const
  * Get some references/citations for this function
  *
  */
-std::vector<RevBayesCore::RbHelpReference> Func_type::getHelpReferences(void) const
+std::vector<RevBayesCore::RbHelpReference> Func_listOptions::getHelpReferences(void) const
 {
     // create an entry for each reference
     std::vector<RevBayesCore::RbHelpReference> references;
@@ -162,11 +152,12 @@ std::vector<RevBayesCore::RbHelpReference> Func_type::getHelpReferences(void) co
 /**
  * Get the names of similar and suggested other functions
  */
-std::vector<std::string> Func_type::getHelpSeeAlso(void) const
+std::vector<std::string> Func_listOptions::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
-    see_also.push_back( "structure" );
+    see_also.push_back( "setOption" );
+    see_also.push_back( "getOption" );
     
     
     return see_also;
@@ -176,17 +167,17 @@ std::vector<std::string> Func_type::getHelpSeeAlso(void) const
 /**
  * Get the title of this help entry
  */
-std::string Func_type::getHelpTitle(void) const
+std::string Func_listOptions::getHelpTitle(void) const
 {
     // create a title variable
-    std::string title = "The value type of a variable";
+    std::string title = "List global RevBayes options";
     
     return title;
 }
 
 
 /** Get type spec */
-const TypeSpec& Func_type::getTypeSpec( void ) const
+const TypeSpec& Func_listOptions::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -196,10 +187,10 @@ const TypeSpec& Func_type::getTypeSpec( void ) const
 
 
 /** Get return type */
-const TypeSpec& Func_type::getReturnType( void ) const
+const TypeSpec& Func_listOptions::getReturnType( void ) const
 {
     
-    static TypeSpec return_typeSpec = RlString::getClassTypeSpec();
+    static TypeSpec return_typeSpec = RlUtils::Void;
     
     return return_typeSpec;
 }

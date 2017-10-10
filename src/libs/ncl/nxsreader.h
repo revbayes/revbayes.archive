@@ -240,9 +240,9 @@ class NxsReader
 		NxsTreesBlockAPI 		*GetLastStoredTreesBlock();
 
 
-		NxsTaxaBlockAPI 		*GetTaxaBlockByTitle(const char *title, unsigned *nMatches);
-		NxsCharactersBlockAPI 	*GetCharBlockByTitle(const char *title, unsigned *nMatches);
-		NxsTreesBlockAPI 		*GetTreesBlockByTitle(const char *title, unsigned *nMatches);
+		NxsTaxaBlockAPI 		*GetTaxaBlockByTitle(const char *title, unsigned *num_matches);
+		NxsCharactersBlockAPI 	*GetCharBlockByTitle(const char *title, unsigned *num_matches);
+		NxsTreesBlockAPI 		*GetTreesBlockByTitle(const char *title, unsigned *num_matches);
 
 		NxsTaxaBlockFactory 	*GetTaxaBlockFactory();
 		//NxsCharactersBlockFactory 	*GetCharBlockFactory();
@@ -379,8 +379,8 @@ class NxsReader
 		bool 			BlockIsASingeltonReader(NxsBlock *) const ;
 		void 			BlockReadHook(const NxsString &currBlockName, NxsBlock *currBlock, NxsToken *token = NULL );
 		bool 			ExecuteBlock(NxsToken &token, const NxsString &currBlockName, NxsBlock *currBlock, NxsBlockFactory * sourceOfBlock);
-		NxsBlock	   *FindBlockOfTypeByTitle(const std::string &btype, const char *title, unsigned *nMatches);
-		NxsBlock	   *FindBlockByTitle(const BlockReaderList & chosenBlockList, const char *title, unsigned *nMatches);
+		NxsBlock	   *FindBlockOfTypeByTitle(const std::string &btype, const char *title, unsigned *num_matches);
+		NxsBlock	   *FindBlockByTitle(const BlockReaderList & chosenBlockList, const char *title, unsigned *num_matches);
 		BlockReaderList FindAllBlocksByTitle(const BlockReaderList & chosenBlockList, const char *title);
 		NxsBlock	   *GetLastStoredBlockByID(const std::string &key);
 		NxsTaxaBlockAPI *GetOriginalTaxaBlock(const NxsTaxaBlockAPI *) const;

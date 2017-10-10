@@ -51,7 +51,7 @@ void Move_AddRemoveTip::constructInternalObject( void )
 
     bool sa = static_cast<const RlBoolean &>( sampled_ancestors->getRevObject() ).getValue();
 
-    if(exa == false && exi == false)
+    if (exa == false && exi == false)
     {
         throw(RbException("In mvAddRemoveTip, 'extant' and 'extinct' cannot both be false"));
     }

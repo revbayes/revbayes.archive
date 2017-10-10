@@ -214,7 +214,7 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
     //std::map< double, std::pair< std::string, std::string >  > depthToPairs ;
     std::map< double, boost::dynamic_bitset< > > depthToPairs ;
 
-    for(size_t i = 0; i< depthMatrix.size(); ++i) {
+    for (size_t i = 0; i< depthMatrix.size(); ++i) {
         boost::dynamic_bitset< > currentPair = speciesAbsent;
         currentPair[ speciesToIndex[speciesPairSets[i].first] ] = 1;
         currentPair[ speciesToIndex[speciesPairSets[i].second] ] = 1;
@@ -362,8 +362,8 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
 //
 //	// Convert depthMatrix to an array of Depth structs
 //    index = 0;
-//    for(i=0; i<numSpecies; i++) {
-//        for(j=i+1; j<numSpecies; j++) {
+//    for (i=0; i<numSpecies; i++) {
+//        for (j=i+1; j<numSpecies; j++) {
 //            minDepth[index].depth   = depthMatrix[index];
 //            minDepth[index].pairSet = speciesPairSets[index];
 //            index++;
@@ -409,7 +409,7 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
 //
 //    // Resolve bush using sorted depth structs
 //    nextNodeIndex = numSpecies;
-//    for(i=0; i<numUpperTriang; i++) {
+//    for (i=0; i<numUpperTriang; i++) {
 //
 //        // Find tip corresponding to first taxon in pair
 //        p = &polyTree->nodes[FirstTaxonInPartition(minDepth[i].pairSet, nLongsNeeded)];

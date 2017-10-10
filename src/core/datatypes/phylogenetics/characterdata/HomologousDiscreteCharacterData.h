@@ -803,12 +803,12 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
 
     RbBitSet observed( getNumberOfStates() );
 
-    for(size_t j = 0; j < getNumberOfCharacters(); j++)
+    for (size_t j = 0; j < getNumberOfCharacters(); j++)
     {
-        if( isCharacterExcluded(j) )
+        if ( isCharacterExcluded(j) )
             continue;
 
-        for(size_t i = 0; i < getNumberOfTaxa(); i++)
+        for (size_t i = 0; i < getNumberOfTaxa(); i++)
         {
             const DiscreteTaxonData<charType>& sequence = getTaxonData( i );
             observed |= sequence[j].getState();
@@ -818,7 +818,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
     int max;
     for (max = long(observed.size()) - 1; max >= 0; max--)
     {
-        if(observed.isSet(max))
+        if (observed.isSet(max))
         {
             break;
         }

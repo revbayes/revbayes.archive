@@ -167,8 +167,8 @@ const TypeSpec& Func_writeNexus::getTypeSpec( void ) const
 const TypeSpec& Func_writeNexus::getReturnType( void ) const 
 {
     
-    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = RevNullObject::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

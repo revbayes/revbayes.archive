@@ -47,7 +47,7 @@ void MeanVecContinuousValStatistic::update( void ) {
 	double sum = 0.0;
 	const std::vector<double>& evs = elementVals->getValue();
 	size_t numElem = evs.size();
-	for(size_t i=0; i<numElem; i++){
+	for (size_t i=0; i<numElem; i++){
 		sum += evs[i];
 	}
 	double mv = sum / ((double)numElem);

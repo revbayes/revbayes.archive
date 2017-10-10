@@ -317,7 +317,7 @@ const TypeSpec& Func_readContinuousCharacterData::getTypeSpec( void ) const
 const TypeSpec& Func_readContinuousCharacterData::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = ModelVector<ContinuousCharacterData>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = ModelVector<ContinuousCharacterData>::getClassTypeSpec();
+    return return_typeSpec;
 }
 

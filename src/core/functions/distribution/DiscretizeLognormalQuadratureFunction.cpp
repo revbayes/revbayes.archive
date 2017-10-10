@@ -94,7 +94,7 @@ void RevBayesCore::DiscretizeLognormalQuadratureFunction::update( void )
     }
     
     size_t j = 0;
-    for( std::map<double, double>::const_iterator it = weights_map.begin(); it != weights_map.end(); ++it)
+    for ( std::map<double, double>::const_iterator it = weights_map.begin(); it != weights_map.end(); ++it)
     {
         (*value)[0][j] = it->first;
         (*value)[1][j] = it->second;

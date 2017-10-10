@@ -318,7 +318,7 @@ class ProcessedNxsToken
 
 		void WriteAsNexus(std::ostream &out) const
 			{
-			for(std::vector<NxsComment>::const_iterator cIt = embeddedComments.begin(); cIt != embeddedComments.end(); ++cIt)
+			for (std::vector<NxsComment>::const_iterator cIt = embeddedComments.begin(); cIt != embeddedComments.end(); ++cIt)
 				cIt->WriteAsNexus(out);
 			out << NxsString::GetEscaped(token);
 			}

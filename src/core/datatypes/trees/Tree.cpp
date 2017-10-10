@@ -587,7 +587,7 @@ size_t Tree::getNumberOfTips( void ) const
 size_t Tree::getNumberOfExtinctTips( void ) const
 {
     size_t num_extinct = 0;
-    for(size_t i = 0; i < num_tips; i++)
+    for (size_t i = 0; i < num_tips; i++)
     {
         num_extinct += nodes[i]->isFossil();
     }
@@ -611,7 +611,7 @@ size_t Tree::getNumberOfExtantTips( void ) const
 size_t Tree::getNumberOfSampledAncestors( void ) const
 {
     size_t num_sa = 0;
-    for(size_t i = 0; i < num_tips; i++)
+    for (size_t i = 0; i < num_tips; i++)
     {
         num_sa += nodes[i]->isSampledAncestor();
     }
@@ -1211,7 +1211,7 @@ void Tree::setRoot( TopologyNode* r, bool reindex )
             std::cerr << i << " - " << nodes[i] << std::endl;
             throw RbException("Problem while reading in tree.");
         }
-        if( nodes[i] == old_root)
+        if ( nodes[i] == old_root)
         {
             found = true;
         }
@@ -1221,7 +1221,7 @@ void Tree::setRoot( TopologyNode* r, bool reindex )
 
     root->setTree( this );
 
-    if( found == false )
+    if ( found == false )
     {
         delete old_root;
     }

@@ -20,8 +20,8 @@ std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", 
 /** Construct from operator type and operands */
 SyntaxBinaryExpr::SyntaxBinaryExpr( operatorT op, SyntaxElement* lhs, SyntaxElement* rhs ) :
     SyntaxElement(),
-    leftOperand( lhs ),
-    rightOperand( rhs ),
+    left_operand( lhs ),
+    right_operand( rhs ),
     operation( op )
 {
 }
@@ -31,8 +31,8 @@ SyntaxBinaryExpr::SyntaxBinaryExpr( operatorT op, SyntaxElement* lhs, SyntaxElem
 SyntaxBinaryExpr::SyntaxBinaryExpr( const SyntaxBinaryExpr& x ) :
     SyntaxElement(x)
 {
-    leftOperand  = x.leftOperand->clone();
-    rightOperand = x.rightOperand->clone();
+    left_operand  = x.left_operand->clone();
+    right_operand = x.right_operand->clone();
     operation    = x.operation;
 }
 
@@ -40,8 +40,8 @@ SyntaxBinaryExpr::SyntaxBinaryExpr( const SyntaxBinaryExpr& x ) :
 /** Destructor deletes operands */
 SyntaxBinaryExpr::~SyntaxBinaryExpr()
 {
-    delete leftOperand;
-    delete rightOperand;
+    delete left_operand;
+    delete right_operand;
 }
 
 
@@ -53,11 +53,11 @@ SyntaxBinaryExpr& SyntaxBinaryExpr::operator=( const SyntaxBinaryExpr& x )
     {
         SyntaxElement::operator=( x );
         
-        delete leftOperand;
-        delete rightOperand;
+        delete left_operand;
+        delete right_operand;
 
-        leftOperand  = x.leftOperand->clone();
-        rightOperand = x.rightOperand->clone();
+        left_operand  = x.left_operand->clone();
+        right_operand = x.right_operand->clone();
         operation    = x.operation;
     }
 
@@ -109,10 +109,10 @@ RevPtr<RevVariable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dy
     // Package the arguments
     std::vector<Argument> args;
     
-    RevPtr<RevVariable> left = leftOperand->evaluateContent( env, dynamic );
+    RevPtr<RevVariable> left = left_operand->evaluateContent( env, dynamic );
     args.push_back( Argument( left, "" ) );
     
-    RevPtr<RevVariable> right = rightOperand->evaluateContent( env, dynamic );
+    RevPtr<RevVariable> right = right_operand->evaluateContent( env, dynamic );
     args.push_back( Argument( right, "" ) );
     
     // Get function and create deterministic DAG node
@@ -124,24 +124,24 @@ RevPtr<RevVariable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dy
     }
     
     funcName += opCode[ operation ];
-    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args, false ).clone();
-    theFunction->processArguments( args, !dynamic );
+    Function* the_function = Workspace::globalWorkspace().getFunction( funcName, args, false ).clone();
+    the_function->processArguments( args, !dynamic );
     
-    RevPtr<RevVariable> theReturnValue = theFunction->execute();
+    RevPtr<RevVariable> the_return_value = the_function->execute();
     
     // Free the memory of our copy
-    delete theFunction;
+    delete the_function;
     
     if ( dynamic == false )
     {
         // Return the return value of the function after making it constant
-        if ( theReturnValue != NULL )
+        if ( the_return_value != NULL )
         {
-            theReturnValue->getRevObject().makeConstantValue();
+            the_return_value->getRevObject().makeConstantValue();
         }
         
     }
-    return theReturnValue;
+    return the_return_value;
 }
 
 
@@ -150,7 +150,7 @@ RevPtr<RevVariable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dy
  */
 bool SyntaxBinaryExpr::isConstExpression( void ) const
 {
-    return leftOperand->isConstExpression() && rightOperand->isConstExpression();
+    return left_operand->isConstExpression() && right_operand->isConstExpression();
 }
 
 
@@ -162,7 +162,7 @@ bool SyntaxBinaryExpr::isConstExpression( void ) const
 bool SyntaxBinaryExpr::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
     // Check operands
-    if ( leftOperand->isFunctionSafe( env, localVars ) && rightOperand->isFunctionSafe( env, localVars ) )
+    if ( left_operand->isFunctionSafe( env, localVars ) && right_operand->isFunctionSafe( env, localVars ) )
         return true;
 
     // At least one operand not safe

@@ -83,20 +83,20 @@ RevBayesCore::RbHelpMove* Move::getHelpEntry( void ) const
 {
     // create the help function entry that we will fill with some values
     RevBayesCore::RbHelpMove *help = new RevBayesCore::RbHelpMove();
-    RevBayesCore::RbHelpMove &helpEntry = *help;
+    RevBayesCore::RbHelpMove &help_entry = *help;
     
     // name
-    helpEntry.setName( getConstructorFunctionName() );
+    help_entry.setName( getConstructorFunctionName() );
     
     // aliases
     std::vector<std::string> aliases = getConstructorFunctionAliases();
-    helpEntry.setAliases( aliases );
+    help_entry.setAliases( aliases );
     
     // title
-    helpEntry.setTitle( getHelpTitle() );
+    help_entry.setTitle( getHelpTitle() );
     
     // description
-    helpEntry.setDescription( getHelpDescription() );
+    help_entry.setDescription( getHelpDescription() );
     
     
     
@@ -185,19 +185,19 @@ RevBayesCore::RbHelpMove* Move::getHelpEntry( void ) const
     //
     std::vector<RevBayesCore::RbHelpFunction> constructors;
     constructors.push_back( help_constructor );
-    helpEntry.setConstructors( constructors );
+    help_entry.setConstructors( constructors );
     
-    helpEntry.setMethods( getHelpMethods() );
+    help_entry.setMethods( getHelpMethods() );
     
-    helpEntry.setReferences( getHelpReferences() );
+    help_entry.setReferences( getHelpReferences() );
     
-    helpEntry.setExample( getHelpExample() );
+    help_entry.setExample( getHelpExample() );
     
     // author
-    helpEntry.setAuthor( getHelpAuthor() );
+    help_entry.setAuthor( getHelpAuthor() );
     
     // see also
-    helpEntry.setSeeAlso( getHelpSeeAlso() );
+    help_entry.setSeeAlso( getHelpSeeAlso() );
     
     return help;
     
