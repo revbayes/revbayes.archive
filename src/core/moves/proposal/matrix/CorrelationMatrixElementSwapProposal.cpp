@@ -1,6 +1,7 @@
 #include "CorrelationMatrixElementSwapProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -58,6 +59,13 @@ const std::string& CorrelationMatrixElementSwapProposal::getProposalName( void )
     static std::string name = "CorrelationMatrixElementSwapMove";
     
     return name;
+}
+
+
+double CorrelationMatrixElementSwapProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -184,6 +192,12 @@ void CorrelationMatrixElementSwapProposal::swapNodeInternal(DagNode *oldN, DagNo
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
     
+}
+
+
+void CorrelationMatrixElementSwapProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

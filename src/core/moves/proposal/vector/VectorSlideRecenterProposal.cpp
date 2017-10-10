@@ -67,6 +67,12 @@ const std::string& VectorSlideRecenterProposal::getProposalName( void ) const
 }
 
 
+double VectorSlideRecenterProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -173,6 +179,12 @@ void VectorSlideRecenterProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         mean = static_cast<StochasticNode<double> *>(newN);
     }
     
+}
+
+
+void VectorSlideRecenterProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

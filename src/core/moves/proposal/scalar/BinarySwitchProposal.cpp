@@ -1,6 +1,7 @@
 #include "BinarySwitchProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -57,6 +58,13 @@ const std::string& BinarySwitchProposal::getProposalName( void ) const
     static std::string name = "BinarySwitch";
     
     return name;
+}
+
+
+double BinarySwitchProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -140,6 +148,12 @@ void BinarySwitchProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<long>* >(newN) ;
     
+}
+
+
+void BinarySwitchProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

@@ -70,6 +70,12 @@ const std::string& SynchronizedVectorFixedSingleElementSlideProposal::getProposa
 }
 
 
+double SynchronizedVectorFixedSingleElementSlideProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -175,6 +181,12 @@ void SynchronizedVectorFixedSingleElementSlideProposal::swapNodeInternal(DagNode
         }
     }
     
+}
+
+
+void SynchronizedVectorFixedSingleElementSlideProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

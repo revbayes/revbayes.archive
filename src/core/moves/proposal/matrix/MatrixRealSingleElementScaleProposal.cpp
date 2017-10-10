@@ -85,6 +85,12 @@ const std::string& MatrixRealSingleElementScaleProposal::getProposalName( void )
 }
 
 
+double MatrixRealSingleElementScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -228,6 +234,12 @@ void MatrixRealSingleElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNo
         matrix = static_cast< StochasticNode<MatrixReal>* >(newN) ;
     }
     
+}
+
+
+void MatrixRealSingleElementScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

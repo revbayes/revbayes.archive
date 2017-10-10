@@ -133,6 +133,12 @@ const std::string& UpDownScaleProposal::getProposalName( void ) const
 }
 
 
+double UpDownScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -467,6 +473,12 @@ void UpDownScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
+}
+
+
+void UpDownScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

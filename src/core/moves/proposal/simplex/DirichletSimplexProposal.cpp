@@ -66,6 +66,12 @@ const std::string& DirichletSimplexProposal::getProposalName( void ) const
 }
 
 
+double DirichletSimplexProposal::getProposalTuningParameter( void ) const
+{
+    return alpha;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -304,6 +310,12 @@ void DirichletSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<Simplex>* >(newN) ;
     
+}
+
+
+void DirichletSimplexProposal::setProposalTuningParameter(double tp)
+{
+    alpha = tp;
 }
 
 

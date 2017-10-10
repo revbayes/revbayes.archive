@@ -1,6 +1,7 @@
 #include "NarrowExchangeProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -56,6 +57,13 @@ const std::string& NarrowExchangeProposal::getProposalName( void ) const
     static std::string name = "NarrowExchange";
     
     return name;
+}
+
+
+double NarrowExchangeProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -199,6 +207,12 @@ void NarrowExchangeProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void NarrowExchangeProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

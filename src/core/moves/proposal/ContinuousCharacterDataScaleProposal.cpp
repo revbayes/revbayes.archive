@@ -61,6 +61,12 @@ const std::string& ContinuousCharacterDataScaleProposal::getProposalName( void )
 }
 
 
+double ContinuousCharacterDataScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -150,6 +156,12 @@ void ContinuousCharacterDataScaleProposal::swapNodeInternal(DagNode *oldN, DagNo
     
     variable = static_cast< StochasticNode<ContinuousCharacterData>* >(newN) ;
     
+}
+
+
+void ContinuousCharacterDataScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

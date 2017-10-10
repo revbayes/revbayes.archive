@@ -1,6 +1,7 @@
 #include "SubtreeScaleProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
@@ -57,6 +58,13 @@ const std::string& SubtreeScaleProposal::getProposalName( void ) const
     static std::string name = "SubtreeScale";
     
     return name;
+}
+
+
+double SubtreeScaleProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -182,6 +190,12 @@ void SubtreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void SubtreeScaleProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

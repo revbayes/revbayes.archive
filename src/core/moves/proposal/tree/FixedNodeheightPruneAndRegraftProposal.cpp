@@ -1,6 +1,7 @@
 #include "FixedNodeheightPruneAndRegraftProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -78,6 +79,13 @@ const std::string& FixedNodeheightPruneAndRegraftProposal::getProposalName( void
     static std::string name = "FNPR";
     
     return name;
+}
+
+
+double FixedNodeheightPruneAndRegraftProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -236,6 +244,12 @@ void FixedNodeheightPruneAndRegraftProposal::swapNodeInternal(DagNode *oldN, Dag
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void FixedNodeheightPruneAndRegraftProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

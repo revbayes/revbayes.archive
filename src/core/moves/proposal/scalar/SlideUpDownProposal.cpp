@@ -65,6 +65,12 @@ const std::string& SlideUpDownProposal::getProposalName( void ) const
 }
 
 
+double SlideUpDownProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -186,6 +192,12 @@ void SlideUpDownProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         variable2 = static_cast<ContinuousStochasticNode* >( newN );
     }
     
+}
+
+
+void SlideUpDownProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

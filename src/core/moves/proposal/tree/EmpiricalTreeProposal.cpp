@@ -1,8 +1,8 @@
 #include "EmpiricalTreeProposal.h"
 #include "EmpiricalTreeDistribution.h"
+#include "Move.h"
 #include "RandomNumberGenerator.h"
 #include "RandomNumberFactory.h"
-#include "Move.h"
 #include "RbConstants.h"
 
 using namespace RevBayesCore;
@@ -42,6 +42,13 @@ const std::string& EmpiricalTreeProposal::getProposalName( void ) const
     static std::string name = "EmpiricalTreeMove";
     
     return name;
+}
+
+
+double EmpiricalTreeProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -85,7 +92,7 @@ double EmpiricalTreeProposal::doProposal( void )
     
     if(metropolisHastings == false)
     {
-        return RbConstants::Double::inf;
+        return RbConstants::Double::max;
     }
     
     return 0.0;
@@ -119,18 +126,24 @@ void EmpiricalTreeProposal::undoProposal( void )
 }
 
 
-/** Tune the proposal */
-void EmpiricalTreeProposal::tune(double r)
-{
-    
-    // nothing to do
-}
-
-
 void EmpiricalTreeProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast<StochasticNode<Tree>* >( newN );
     
+}
+
+
+void EmpiricalTreeProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
+}
+
+
+/** Tune the proposal */
+void EmpiricalTreeProposal::tune(double r)
+{
+    
+    // nothing to do
 }
 

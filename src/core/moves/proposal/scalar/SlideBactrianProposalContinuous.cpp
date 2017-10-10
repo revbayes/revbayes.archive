@@ -63,6 +63,12 @@ const std::string& SlideBactrianProposalContinuous::getProposalName( void ) cons
 }
 
 
+double SlideBactrianProposalContinuous::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -173,6 +179,12 @@ void SlideBactrianProposalContinuous::swapNodeInternal(DagNode *oldN, DagNode *n
     
     variable = static_cast< ContinuousStochasticNode* >(newN) ;
     
+}
+
+
+void SlideBactrianProposalContinuous::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

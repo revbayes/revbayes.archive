@@ -62,6 +62,12 @@ const std::string& VectorScaleProposal::getProposalName( void ) const
 }
 
 
+double VectorScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -155,6 +161,12 @@ void VectorScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode< RbVector<double> >* >(newN) ;
     
+}
+
+
+void VectorScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

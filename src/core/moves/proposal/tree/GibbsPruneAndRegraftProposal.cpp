@@ -1,6 +1,7 @@
 #include "GibbsPruneAndRegraftProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -89,6 +90,13 @@ const std::string& GibbsPruneAndRegraftProposal::getProposalName( void ) const
     static std::string name = "GPR";
     
     return name;
+}
+
+
+double GibbsPruneAndRegraftProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -322,6 +330,12 @@ void GibbsPruneAndRegraftProposal::swapNodeInternal(DagNode *oldN, DagNode *newN
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void GibbsPruneAndRegraftProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

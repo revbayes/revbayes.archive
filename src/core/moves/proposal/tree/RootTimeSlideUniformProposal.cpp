@@ -2,6 +2,7 @@
 #include "RootTimeSlideUniformProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
@@ -60,6 +61,13 @@ const std::string& RootTimeSlideUniformProposal::getProposalName( void ) const
     static std::string name = "RootTimeSlideUniform";
     
     return name;
+}
+
+
+double RootTimeSlideUniformProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -164,6 +172,12 @@ void RootTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN
         origin = static_cast<StochasticNode<double>* >(newN) ;
     }
     
+}
+
+
+void RootTimeSlideUniformProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

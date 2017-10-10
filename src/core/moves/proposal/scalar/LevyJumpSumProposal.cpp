@@ -65,6 +65,12 @@ const std::string& LevyJumpSumProposal::getProposalName( void ) const
 }
 
 
+double LevyJumpSumProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -199,6 +205,12 @@ void LevyJumpSumProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         variable2 = static_cast<ContinuousStochasticNode* >( newN );
     }
     
+}
+
+
+void LevyJumpSumProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

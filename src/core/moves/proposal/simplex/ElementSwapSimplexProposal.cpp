@@ -2,6 +2,7 @@
 #include "DistributionBeta.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "RbStatisticsHelper.h"
 #include "TypedDagNode.h"
@@ -57,6 +58,13 @@ const std::string& ElementSwapSimplexProposal::getProposalName( void ) const
     static std::string name = "ElementSwapSimplex";
     
     return name;
+}
+
+
+double ElementSwapSimplexProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -149,6 +157,12 @@ void ElementSwapSimplexProposal::undoProposal( void )
 void ElementSwapSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     variable = static_cast<StochasticNode<Simplex >* >(newN) ;
+}
+
+
+void ElementSwapSimplexProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

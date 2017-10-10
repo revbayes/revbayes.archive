@@ -10,6 +10,7 @@
 #include "RandomNumberGenerator.h"
 #include "RateGenerator.h"
 #include "RateGeneratorSequence.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "StochasticNode.h"
 #include "Tree.h"
@@ -47,11 +48,13 @@ namespace RevBayesCore {
         FixedNodeheightPruneAndRegraftCharacterHistoryProposal*     clone(void) const;                                          //!< Clone object
         double                                                      doProposal(void);                                           //!< Perform proposal
         const std::string&                                          getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
+        double                                                      getProposalTuningParameter(void) const;
         void                                                        prepareProposal(void);                                      //!< Prepare the proposal
         void                                                        printParameterSummary(std::ostream &o) const;               //!< Print the parameter summary
         void                                                        sampleNodeCharacters(TopologyNode* node);                       //!< Sample the characters at the node
         void                                                        setRateGenerator(const TypedDagNode<RateGenerator> *d);
         void                                                        setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d);
+        void                                                        setProposalTuningParameter(double tp);
         void                                                        tune(double r);                                             //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                                        undoProposal(void);                                         //!< Reject the proposal
         
@@ -217,6 +220,14 @@ const std::string& RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryP
     static std::string name = "FNPRCharacterHistory";
     
     return name;
+}
+
+
+template<class charType>
+double RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charType>::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -853,6 +864,13 @@ void RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charTy
     right_proposal_three->swapNodeInternal(oldN, newN);
     
 }
+
+template<class charType>
+void RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charType>::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
+}
+
 
 /**
  * Tune the Proposal to accept the desired acceptance ratio.

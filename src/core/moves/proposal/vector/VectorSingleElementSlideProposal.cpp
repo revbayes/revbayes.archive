@@ -62,6 +62,12 @@ const std::string& VectorSingleElementSlideProposal::getProposalName( void ) con
 }
 
 
+double VectorSingleElementSlideProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -151,6 +157,12 @@ void VectorSingleElementSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *
     
     variable = static_cast<StochasticNode< RbVector<double> >* >(newN) ;
     
+}
+
+
+void VectorSingleElementSlideProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

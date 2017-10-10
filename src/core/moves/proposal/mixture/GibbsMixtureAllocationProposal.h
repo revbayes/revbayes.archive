@@ -28,8 +28,10 @@ namespace RevBayesCore {
         GibbsMixtureAllocationProposal*         clone(void) const;                                                                  //!< Clone object
         double                                  doProposal(void);                                                                   //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
+        double                                  getProposalTuningParameter(void) const;
         void                                    prepareProposal(void);                                                              //!< Prepare the proposal
         void                                    printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
+        void                                    setProposalTuningParameter(double tp);
         void                                    tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                    undoProposal(void);                                                                 //!< Reject the proposal
         
@@ -115,6 +117,14 @@ const std::string& RevBayesCore::GibbsMixtureAllocationProposal<mixtureType>::ge
     static std::string name = "Gibbs-Mixture-Allocation";
     
     return name;
+}
+
+
+template <class mixtureType>
+double RevBayesCore::GibbsMixtureAllocationProposal<mixtureType>::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -254,6 +264,12 @@ void RevBayesCore::GibbsMixtureAllocationProposal<mixtureType>::swapNodeInternal
     
     variable = static_cast<StochasticNode<mixtureType>* >(newN) ;
     
+}
+
+template <class mixtureType>
+void RevBayesCore::GibbsMixtureAllocationProposal<mixtureType>::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

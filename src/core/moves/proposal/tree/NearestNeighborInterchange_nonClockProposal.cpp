@@ -1,6 +1,7 @@
 #include "NearestNeighborInterchange_nonClockProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -56,6 +57,13 @@ const std::string& NearestNeighborInterchange_nonClockProposal::getProposalName(
     static std::string name = "NNI";
     
     return name;
+}
+
+
+double NearestNeighborInterchange_nonClockProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -166,6 +174,12 @@ void NearestNeighborInterchange_nonClockProposal::swapNodeInternal(DagNode *oldN
     
     tree = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void NearestNeighborInterchange_nonClockProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

@@ -67,6 +67,12 @@ const std::string& ShrinkExpandProposal::getProposalName( void ) const
 }
 
 
+double ShrinkExpandProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -198,6 +204,12 @@ void ShrinkExpandProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         sd = static_cast<StochasticNode<double> *>(newN);
     }
     
+}
+
+
+void ShrinkExpandProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

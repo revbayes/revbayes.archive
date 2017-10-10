@@ -1,6 +1,7 @@
 #include "RandomIntegerWalkProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -57,6 +58,13 @@ const std::string& RandomIntegerWalkProposal::getProposalName( void ) const
     static std::string name = "RandomIntegerWalk";
     
     return name;
+}
+
+
+double RandomIntegerWalkProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -146,6 +154,12 @@ void RandomIntegerWalkProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<long>* >(newN) ;
     
+}
+
+
+void RandomIntegerWalkProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

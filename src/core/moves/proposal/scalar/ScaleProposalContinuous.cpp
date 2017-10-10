@@ -60,6 +60,12 @@ const std::string& ScaleProposalContinuous::getProposalName( void ) const
 }
 
 
+double ScaleProposalContinuous::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /** 
  * Perform the proposal.
  *
@@ -160,6 +166,12 @@ void ScaleProposalContinuous::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast< ContinuousStochasticNode* >(newN) ;
     
+}
+
+
+void ScaleProposalContinuous::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

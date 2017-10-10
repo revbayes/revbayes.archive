@@ -62,6 +62,12 @@ const std::string& VectorSingleElementScaleProposal::getProposalName( void ) con
 }
 
 
+double VectorSingleElementScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -153,6 +159,12 @@ void VectorSingleElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *
     
     variable = static_cast<StochasticNode< RbVector<double> >* >(newN) ;
     
+}
+
+
+void VectorSingleElementScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

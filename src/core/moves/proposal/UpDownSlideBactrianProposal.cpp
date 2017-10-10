@@ -110,6 +110,12 @@ const std::string& UpDownSlideBactrianProposal::getProposalName( void ) const
 }
 
 
+double UpDownSlideBactrianProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -341,6 +347,12 @@ void UpDownSlideBactrianProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
+}
+
+
+void UpDownSlideBactrianProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

@@ -60,6 +60,12 @@ const std::string& ScaleBactrianProposal::getProposalName( void ) const
 }
 
 
+double ScaleBactrianProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /** 
  * Perform the proposal.
  *
@@ -151,6 +157,12 @@ void ScaleBactrianProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<double>* >(newN) ;
     
+}
+
+
+void ScaleBactrianProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

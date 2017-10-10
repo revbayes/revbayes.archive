@@ -2,6 +2,7 @@
 #include "NodeTimeSlideWeightedProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
@@ -66,6 +67,13 @@ const std::string& NodeTimeSlideWeightedProposal::getProposalName( void ) const
     static std::string name = "NodeTimeSlideWeighted";
     
     return name;
+}
+
+
+double NodeTimeSlideWeightedProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -253,6 +261,12 @@ void NodeTimeSlideWeightedProposal::swapNodeInternal(DagNode *oldN, DagNode *new
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void NodeTimeSlideWeightedProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

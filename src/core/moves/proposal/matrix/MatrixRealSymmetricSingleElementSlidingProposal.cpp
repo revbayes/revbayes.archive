@@ -61,6 +61,12 @@ const std::string& MatrixRealSymmetricSingleElementSlidingProposal::getProposalN
 }
 
 
+double MatrixRealSymmetricSingleElementSlidingProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -156,6 +162,12 @@ void MatrixRealSymmetricSingleElementSlidingProposal::swapNodeInternal(DagNode *
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
     
+}
+
+
+void MatrixRealSymmetricSingleElementSlidingProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

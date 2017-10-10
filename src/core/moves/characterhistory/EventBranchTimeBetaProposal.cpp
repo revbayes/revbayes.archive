@@ -69,6 +69,12 @@ const std::string& EventBranchTimeBetaProposal::getProposalName( void ) const
 }
 
 
+double EventBranchTimeBetaProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -223,6 +229,12 @@ void EventBranchTimeBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     {
         throw RbException("Wrong type of variable for BirthDeathEvent move.");
     }
+}
+
+
+void EventBranchTimeBetaProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

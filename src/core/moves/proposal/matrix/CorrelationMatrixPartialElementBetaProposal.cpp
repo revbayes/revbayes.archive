@@ -65,6 +65,12 @@ const std::string& CorrelationMatrixPartialElementBetaProposal::getProposalName(
 }
 
 
+double CorrelationMatrixPartialElementBetaProposal::getProposalTuningParameter( void ) const
+{
+    return alpha;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -252,6 +258,12 @@ void CorrelationMatrixPartialElementBetaProposal::swapNodeInternal(DagNode *oldN
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
     
+}
+
+
+void CorrelationMatrixPartialElementBetaProposal::setProposalTuningParameter(double tp)
+{
+    alpha = tp;
 }
 
 

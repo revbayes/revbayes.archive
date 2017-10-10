@@ -60,6 +60,12 @@ const std::string& CorrelationMatrixProposal::getProposalName( void ) const {
 }
 
 
+double CorrelationMatrixProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -228,6 +234,12 @@ void CorrelationMatrixProposal::undoProposal( void ) {
 void CorrelationMatrixProposal::swapNodeInternal(DagNode *oldN, DagNode *newN) {
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
+}
+
+
+void CorrelationMatrixProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

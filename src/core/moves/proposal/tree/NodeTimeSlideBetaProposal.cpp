@@ -63,6 +63,12 @@ const std::string& NodeTimeSlideBetaProposal::getProposalName( void ) const
 }
 
 
+double NodeTimeSlideBetaProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -179,6 +185,12 @@ void NodeTimeSlideBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void NodeTimeSlideBetaProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

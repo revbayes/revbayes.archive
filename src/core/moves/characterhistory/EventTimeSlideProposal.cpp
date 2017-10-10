@@ -68,6 +68,12 @@ const std::string& EventTimeSlideProposal::getProposalName( void ) const
 }
 
 
+double EventTimeSlideProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -291,6 +297,12 @@ void EventTimeSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         throw RbException("Wrong type of variable for BirthDeathEvent move.");
     }
     
+}
+
+
+void EventTimeSlideProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

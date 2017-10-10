@@ -63,6 +63,12 @@ const std::string& TreeScaleProposal::getProposalName( void ) const
 }
 
 
+double TreeScaleProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -175,6 +181,12 @@ void TreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         rootAge = static_cast<StochasticNode<double>* >(newN);
     }
     
+}
+
+
+void TreeScaleProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

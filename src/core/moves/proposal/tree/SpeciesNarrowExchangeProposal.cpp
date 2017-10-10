@@ -1,6 +1,7 @@
 #include "SpeciesNarrowExchangeProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
@@ -85,6 +86,13 @@ const std::string& SpeciesNarrowExchangeProposal::getProposalName( void ) const
     static std::string name = "SpeciesNarrowExchange";
 
     return name;
+}
+
+
+double SpeciesNarrowExchangeProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -582,6 +590,12 @@ void SpeciesNarrowExchangeProposal::swapNodeInternal(DagNode *oldN, DagNode *new
         }
     }
 
+}
+
+
+void SpeciesNarrowExchangeProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

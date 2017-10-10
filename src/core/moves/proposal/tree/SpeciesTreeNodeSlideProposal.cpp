@@ -106,6 +106,12 @@ const std::string& SpeciesTreeNodeSlideProposal::getProposalName( void ) const
 }
 
 
+double SpeciesTreeNodeSlideProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -404,6 +410,12 @@ void SpeciesTreeNodeSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN
         
     }
     
+}
+
+
+void SpeciesTreeNodeSlideProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

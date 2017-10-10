@@ -90,6 +90,12 @@ const std::string& SpeciesSubtreeScaleBetaProposal::getProposalName( void ) cons
 }
 
 
+double SpeciesSubtreeScaleBetaProposal::getProposalTuningParameter( void ) const
+{
+    return alpha;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -354,6 +360,12 @@ void SpeciesSubtreeScaleBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *n
         }
     }
 
+}
+
+
+void SpeciesSubtreeScaleBetaProposal::setProposalTuningParameter(double tp)
+{
+    alpha = tp;
 }
 
 

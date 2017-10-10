@@ -53,6 +53,7 @@ namespace RevBayesCore {
         virtual double                                              computeLnProposal();
         double                                                      doProposal(void);                                               //!< Perform proposal
         const std::string&                                          getProposalName(void) const;                                    //!< Get the name of the proposal for summary printing
+        double                                                      getProposalTuningParameter(void) const;
         void                                                        printParameterSummary(std::ostream &o) const;                   //!< Print the parameter summary
         void                                                        prepareProposal(void);                                          //!< Prepare the proposal
         std::set<size_t>                                            sampleCharacters(double p);
@@ -61,6 +62,7 @@ namespace RevBayesCore {
         double                                                      sampleRootCharacters(void);                                     //!< Sample the characters at the root
         void                                                        setRateGenerator(const TypedDagNode<RateGenerator> *d);         //!< Set the rate generator.
         void                                                        setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d); //!< Set the rate generator.
+        void                                                        setProposalTuningParameter(double tp);
         void                                                        tune(double r);                                                 //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                                        undoProposal(void);                                             //!< Reject the proposal
 
@@ -363,6 +365,13 @@ const std::string& RevBayesCore::NodeRejectionSampleProposal<charType>::getPropo
     static std::string name = "NodeRejectionSampleProposal";
 
     return name;
+}
+
+
+template<class charType>
+double RevBayesCore::NodeRejectionSampleProposal<charType>::getProposalTuningParameter( void ) const
+{
+    return lambda;
 }
 
 
@@ -705,6 +714,13 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::swapNodeInternal(DagNo
     nodeProposal->swapNode(oldN, newN);
     leftProposal->swapNode(oldN, newN);
     rightProposal->swapNode(oldN, newN);
+}
+
+
+template<class charType>
+void RevBayesCore::NodeRejectionSampleProposal<charType>::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

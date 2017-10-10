@@ -60,12 +60,14 @@ namespace RevBayesCore {
         PathRejectionSampleProposal*                                clone(void) const;                                                              //!< Clone object
         double                                                      doProposal(void);                                                               //!< Perform proposal
         virtual const std::string&                                  getProposalName(void) const;                                                    //!< Get the name of the proposal for summary printing
+        double                                                      getProposalTuningParameter(void) const;
         void                                                        printParameterSummary(std::ostream &o) const;                                   //!< Print the parameter summary
         void                                                        prepareProposal(void);                                                          //!< Prepare the proposal
         std::set<size_t>                                            sampleCharacters(double p);
         void                                                        setSampledCharacters(const std::set<size_t>& s);
         void                                                        setRateGenerator(const TypedDagNode<RateGenerator> *d);                         //!< Set the rate generator.
         void                                                        setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d);                 //!< Set the rate generator.
+        void                                                        setProposalTuningParameter(double tp);
         void                                                        tune(double r);                                                                 //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                                        undoProposal(void);                                                             //!< Reject the proposal
 
@@ -324,6 +326,13 @@ const std::string& RevBayesCore::PathRejectionSampleProposal<charType>::getPropo
     static std::string name = "PathRejectionSampleProposal";
 
     return name;
+}
+
+
+template<class charType>
+double RevBayesCore::PathRejectionSampleProposal<charType>::getProposalTuningParameter( void ) const
+{
+    return lambda;
 }
 
 
@@ -696,6 +705,13 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::swapNodeInternal(DagNo
         q_map_sequence = static_cast<TypedDagNode<RateGeneratorSequence>* >(newN);
     }
 
+}
+
+
+template<class charType>
+void RevBayesCore::PathRejectionSampleProposal<charType>::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

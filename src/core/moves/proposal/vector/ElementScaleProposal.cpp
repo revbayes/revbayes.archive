@@ -65,6 +65,12 @@ const std::string& ElementScaleProposal::getProposalName( void ) const
 }
 
 
+double ElementScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -161,6 +167,12 @@ void ElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
+}
+
+
+void ElementScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

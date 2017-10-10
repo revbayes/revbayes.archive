@@ -2,6 +2,7 @@
 #include "CollapseExpandFossilBranchProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
@@ -60,6 +61,13 @@ const std::string& CollapseExpandFossilBranchProposal::getProposalName( void ) c
     static std::string name = "CollapseExpandFossilBranch";
     
     return name;
+}
+
+
+double CollapseExpandFossilBranchProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -318,6 +326,12 @@ void CollapseExpandFossilBranchProposal::swapNodeInternal(DagNode *oldN, DagNode
         origin = static_cast<TypedDagNode<double>* >(newN);
     }
     
+}
+
+
+void CollapseExpandFossilBranchProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

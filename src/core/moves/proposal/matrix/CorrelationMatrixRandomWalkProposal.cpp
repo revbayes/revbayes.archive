@@ -62,6 +62,12 @@ const std::string& CorrelationMatrixRandomWalkProposal::getProposalName( void ) 
 }
 
 
+double CorrelationMatrixRandomWalkProposal::getProposalTuningParameter( void ) const
+{
+    return sigma;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -156,6 +162,12 @@ void CorrelationMatrixRandomWalkProposal::swapNodeInternal(DagNode *oldN, DagNod
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
     
+}
+
+
+void CorrelationMatrixRandomWalkProposal::setProposalTuningParameter(double tp)
+{
+    sigma = tp;
 }
 
 

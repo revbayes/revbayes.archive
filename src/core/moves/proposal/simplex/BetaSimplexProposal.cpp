@@ -62,6 +62,12 @@ const std::string& BetaSimplexProposal::getProposalName( void ) const
 }
 
 
+double BetaSimplexProposal::getProposalTuningParameter( void ) const
+{
+    return alpha;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -200,6 +206,12 @@ void BetaSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<Simplex>* >(newN) ;
     
+}
+
+
+void BetaSimplexProposal::setProposalTuningParameter(double tp)
+{
+    alpha = tp;
 }
 
 

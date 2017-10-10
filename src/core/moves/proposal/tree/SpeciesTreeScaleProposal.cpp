@@ -98,6 +98,12 @@ const std::string& SpeciesTreeScaleProposal::getProposalName( void ) const
 }
 
 
+double SpeciesTreeScaleProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -295,6 +301,12 @@ void SpeciesTreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 
     }
 
+}
+
+
+void SpeciesTreeScaleProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

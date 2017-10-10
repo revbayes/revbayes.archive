@@ -62,6 +62,12 @@ const std::string& LevyJumpProposal::getProposalName( void ) const
 }
 
 
+double LevyJumpProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -147,6 +153,12 @@ void LevyJumpProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast< ContinuousStochasticNode* >(newN) ;
     
+}
+
+
+void LevyJumpProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

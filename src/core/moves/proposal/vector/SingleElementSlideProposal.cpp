@@ -65,6 +65,12 @@ const std::string& SingleElementSlideProposal::getProposalName( void ) const
 }
 
 
+double SingleElementSlideProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -156,6 +162,12 @@ void SingleElementSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
+}
+
+
+void SingleElementSlideProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

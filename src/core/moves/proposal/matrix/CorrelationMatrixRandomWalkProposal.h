@@ -35,8 +35,10 @@ namespace RevBayesCore {
         CorrelationMatrixRandomWalkProposal*     clone(void) const;                                                                  //!< Clone object
         double                                   doProposal(void);                                                                   //!< Perform proposal
         const std::string&                       getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
+        double                                   getProposalTuningParameter(void) const;
         void                                     printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                                     prepareProposal(void);                                                              //!< Prepare the proposal
+        void                                     setProposalTuningParameter(double tp);
         void                                     tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                     undoProposal(void);                                                                 //!< Reject the proposal
         

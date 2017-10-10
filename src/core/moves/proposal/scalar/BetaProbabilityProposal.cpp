@@ -63,6 +63,12 @@ const std::string& BetaProbabilityProposal::getProposalName( void ) const
 }
 
 
+double BetaProbabilityProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -169,6 +175,12 @@ void BetaProbabilityProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 }
 
 
+void BetaProbabilityProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
+}
+
+
 /**
  * Tune the Proposal to accept the desired acceptance ratio.
  *
@@ -179,13 +191,13 @@ void BetaProbabilityProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void BetaProbabilityProposal::tune( double rate )
 {
     
-    if ( rate > 0.234 )
+    if ( rate > 0.44 )
     {
-        delta /= (1.0 + ((rate-0.234)/0.766) );
+        delta /= (1.0 + ((rate-0.44)/0.56) );
     }
     else
     {
-        delta *= (2.0 - rate/0.234 );
+        delta *= (2.0 - rate/0.44 );
     }
     
 }

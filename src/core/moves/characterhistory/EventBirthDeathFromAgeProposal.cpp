@@ -2,6 +2,7 @@
 #include "EventBirthDeathFromAgeProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -70,6 +71,13 @@ const std::string& EventBirthDeathFromAgeProposal::getProposalName( void ) const
     static std::string name = "EventBirthDeathFromAge";
     
     return name;
+}
+
+
+double EventBirthDeathFromAgeProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -249,6 +257,12 @@ void EventBirthDeathFromAgeProposal::swapNodeInternal(DagNode *oldN, DagNode *ne
     {
         throw RbException("Wrong type of variable for BirthDeathEvent move.");
     }
+}
+
+
+void EventBirthDeathFromAgeProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

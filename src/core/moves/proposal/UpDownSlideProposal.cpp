@@ -109,6 +109,12 @@ const std::string& UpDownSlideProposal::getProposalName( void ) const
 }
 
 
+double UpDownSlideProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -332,6 +338,12 @@ void UpDownSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
+}
+
+
+void UpDownSlideProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

@@ -61,6 +61,12 @@ const std::string& SlideProposalContinuous::getProposalName( void ) const
 }
 
 
+double SlideProposalContinuous::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -168,6 +174,12 @@ void SlideProposalContinuous::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast< ContinuousStochasticNode* >(newN) ;
     
+}
+
+
+void SlideProposalContinuous::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 
