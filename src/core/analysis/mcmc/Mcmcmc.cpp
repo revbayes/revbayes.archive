@@ -5,6 +5,7 @@
 #include "RbConstants.h"
 #include "RbException.h"
 
+#include <iomanip>
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -15,16 +16,19 @@
 
 using namespace RevBayesCore;
 
-Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt) : MonteCarloSampler( ),
+Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt, bool th, std::string sm) : MonteCarloSampler( ),
 num_chains(nc),
 schedule_type(sT),
 current_generation(0),
+burnin_generation(0),
+generation(0),
 swap_interval(si),
+swap_interval2(0),
 active_chain_index( 0 ),
 delta( dt ),
-generation( 0 ),
-numAttemptedSwaps( 0 ),
-numAcceptedSwaps( 0 )
+tune_heat(th),
+useNeighborSwapping(true),
+useRandomSwapping(false)
 {
     
     // initialize container sizes
@@ -33,6 +37,27 @@ numAcceptedSwaps( 0 )
     chain_heats.resize(num_chains, 0.0);
     pid_per_chain.resize(num_chains, 0);
     heat_ranks.resize(num_chains, 0);
+    heat_temps.resize(num_chains, 0.0);
+    
+    numAttemptedSwaps = std::vector< std::vector<unsigned long> > (num_chains, std::vector<unsigned long> (num_chains, 0));
+    numAcceptedSwaps = std::vector< std::vector<unsigned long> > (num_chains, std::vector<unsigned long> (num_chains, 0));
+    
+    if (sm == "neighbor")
+    {
+        useNeighborSwapping = true;
+        useRandomSwapping = false;
+    }
+    else if (sm == "random")
+    {
+        useNeighborSwapping = false;
+        useRandomSwapping = true;
+    }
+    else if (sm == "both")
+    {
+        useNeighborSwapping = true;
+        useRandomSwapping = true;
+    }
+
     
     // assign chains to processors, instantiate Mcmc objects
     base_chain = new Mcmc(m, mv, mn);
@@ -42,13 +67,20 @@ numAcceptedSwaps( 0 )
     initializeChains();
 }
 
+
 Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
 {
     
     delta               = m.delta;
     num_chains          = m.num_chains;
     heat_ranks          = m.heat_ranks;
+    heat_temps          = m.heat_temps;
     swap_interval       = m.swap_interval;
+    swap_interval2      = m.swap_interval2;
+    tune_heat           = m.tune_heat;
+    useNeighborSwapping = m.useNeighborSwapping;
+    useRandomSwapping   = m.useRandomSwapping;
+    
     active_chain_index  = m.active_chain_index;
     schedule_type       = m.schedule_type;
     pid_per_chain       = m.pid_per_chain;
@@ -72,6 +104,7 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
     chain_values         = m.chain_values;
     chain_heats          = m.chain_heats;
     
+    burnin_generation   = m.burnin_generation;
     current_generation   = m.current_generation;
     base_chain           = m.base_chain->clone();
     
@@ -260,20 +293,25 @@ void Mcmcmc::initializeChains(void)
         pid_per_chain[i] = active_pid_for_chain;
         
         // get chain heat
-        double b = computeBeta(delta,i);
-        chain_heats[i] = b;
-        
-        
+        if (heat_temps[0] != 0.0)
+        {
+            chain_heats[i] = heat_temps[i];
+        }
+        else
+        {
+            double b = computeBeta(delta,i);
+            chain_heats[i] = b;
+        }
+
         // add chain to pid's chain vector (smaller memory footprint)
         if ( pid >= active_pid_for_chain && pid < (active_pid_for_chain + num_processer_for_chain) )
         {
-            
-            
+
             // create chains
             Mcmc* oneChain = new Mcmc( *base_chain );
             oneChain->setScheduleType( schedule_type );
             oneChain->setChainActive( i == 0 );
-            oneChain->setChainPosteriorHeat( b );
+            oneChain->setChainPosteriorHeat( chain_heats[i] );
             oneChain->setChainIndex( i );
             oneChain->setActivePID( active_pid_for_chain, num_processer_for_chain );
             chains[i] = oneChain;
@@ -338,19 +376,74 @@ void Mcmcmc::nextCycle(bool advanceCycle)
         // advance gen counter
         ++current_generation;
     }
-    
-    if ( current_generation % swap_interval == 0 )
+    else
     {
-        
-#ifdef RB_MPI
-        // wait until all chains complete
-        //        MPI::COMM_WORLD.Barrier();
-#endif
-        
-        // perform chain swap
-        for (size_t i = 0; i < num_chains; ++i)
+        ++burnin_generation;
+    }
+    
+    if (useNeighborSwapping == true && useRandomSwapping == true)
+    {
+        if ((current_generation == 0 && burnin_generation % swap_interval == 0) || (current_generation > 0 && current_generation % swap_interval == 0))
         {
-            swapChains();
+            
+#ifdef RB_MPI
+            // wait until all chains complete
+            //        MPI::COMM_WORLD.Barrier();
+#endif
+            
+            // perform chain swap
+            for (size_t i = 0; i < num_chains; ++i)
+            {
+                swapChains("neighbor");
+            }
+        }
+        if ((current_generation == 0 && burnin_generation % swap_interval2 == 0) || (current_generation > 0 && current_generation % swap_interval2 == 0))
+        {
+            
+#ifdef RB_MPI
+            // wait until all chains complete
+            //        MPI::COMM_WORLD.Barrier();
+#endif
+            
+            // perform chain swap
+            for (size_t i = 0; i < num_chains; ++i)
+            {
+                swapChains("random");
+            }
+        }
+    }
+    else if (useNeighborSwapping == true)
+    {
+        if ((current_generation == 0 && burnin_generation % swap_interval == 0) || (current_generation > 0 && current_generation % swap_interval == 0))
+        {
+            
+#ifdef RB_MPI
+            // wait until all chains complete
+            //        MPI::COMM_WORLD.Barrier();
+#endif
+            
+            // perform chain swap
+            for (size_t i = 0; i < num_chains; ++i)
+            {
+                swapChains("neighbor");
+            }
+        }
+    }
+    else if (useRandomSwapping == true)
+    {
+        if ((current_generation == 0 && burnin_generation % swap_interval == 0) || (current_generation > 0 && current_generation % swap_interval == 0))
+        {
+            
+#ifdef RB_MPI
+            // wait until all chains complete
+            //        MPI::COMM_WORLD.Barrier();
+#endif
+            
+            // perform chain swap
+            for (size_t i = 0; i < num_chains; ++i)
+            {
+                swapChains("random");
+            }
         }
     }
     
@@ -360,14 +453,196 @@ void Mcmcmc::printOperatorSummary(void) const
 {
     for (size_t i = 0; i < num_chains; ++i)
     {
-        if (chains[i] != NULL)
+        size_t chainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), i) - heat_ranks.begin();
+        
+        if (chains[chainIdx] != NULL)
         {
-            chains[i]->printOperatorSummary();
+            chains[chainIdx]->printOperatorSummary();
         }
         
     }
+    if (num_chains > 1)
+    {
+        printSummary(std::cout);
+        std::cout << std::endl;
+    }
     
 }
+
+
+/**
+ * Print the summary of the move.
+ *
+ * The summary just contains the current value of the tuning parameter.
+ * It is printed to the stream that it passed in.
+ *
+ * \param[in]     o     The stream to which we print the summary.
+ */
+void Mcmcmc::printSummary(std::ostream &o) const
+{
+    
+    std::streamsize previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    o << std::fixed;
+    o << std::setprecision(4);
+    
+    std::cout << std::endl;
+    
+    if (useNeighborSwapping == true && useRandomSwapping == true)
+    {
+        std::cout << "MCMCMC chains swapping between|swapIntervalNeighbor|swapIntervalRandom| Tried | Accepted | Acc. Ratio |  HeatFrom  |  HeatTo   " << std::endl;
+        std::cout << "===============================================================================================================================" << std::endl;
+        
+        for (size_t i = 0; i < num_chains - 1; ++i)
+        {
+            for (size_t j = i + 1; j < num_chains; ++j)
+            {
+                printSummaryPair(o, i, j);
+                printSummaryPair(o, j, i);
+            }
+        }
+
+    }
+    else
+    {
+        std::cout << "MCMCMC chains swapping between|              swapInterval             | Tried | Accepted | Acc. Ratio |  HeatFrom  |  HeatTo   " << std::endl;
+        std::cout << "===============================================================================================================================" << std::endl;
+        
+        if (useRandomSwapping == true)
+        {
+            for (size_t i = 0; i < num_chains - 1; ++i)
+            {
+                for (size_t j = i + 1; j < num_chains; ++j)
+                {
+                    printSummaryPair(o, i, j);
+                    printSummaryPair(o, j, i);
+                }
+            }
+        }
+        else if (useNeighborSwapping == true)
+        {
+            for (size_t i = 0; i < num_chains - 1; ++i)
+            {
+                printSummaryPair(o, i, i + 1);
+            }
+            
+            for (size_t i = 1; i < num_chains; ++i)
+            {
+                printSummaryPair(o, i, i - 1);
+            }
+        }
+
+    }
+    
+    o.setf(previousFlags);
+    o.precision(previousPrecision);
+
+}
+
+
+void Mcmcmc::printSummaryPair(std::ostream &o, const size_t &row, const size_t &col) const
+{
+    // print the name
+    o << row + 1;
+    const std::string n1 = " to ";
+    o << n1;
+    o << col + 1;
+    
+    size_t n_length = n1.length() + (size_t)log10(row + 1) + (size_t)log10(col + 1);
+    size_t spaces = 30 - (n_length > 30 ? 30 : n_length);
+    for (size_t i = 0; i < spaces; ++i)
+    {
+        o << " ";
+    }
+    o << " ";
+    
+    // print the swap interval
+    if (swap_interval2 > 0)
+    {
+        int si_length = 18;
+        if (swap_interval > 0) si_length -= (int)log10(swap_interval);
+        for (int i = 0; i < si_length; ++i)
+        {
+            o << " ";
+        }
+        o << swap_interval;
+        o << " ";
+        
+        int si2_length = 16 - (int)log10(swap_interval2);
+        for (int i = 0; i < si2_length; ++i)
+        {
+            o << " ";
+        }
+        o << swap_interval2;
+        o << " ";
+    }
+    else if (swap_interval2 == 0)
+    {
+        int si_length = 36;
+        if (swap_interval > 0) si_length -= (int)log10(swap_interval);
+        for (int i = 0; i < si_length; ++i)
+        {
+            o << " ";
+        }
+        o << swap_interval;
+        o << " ";
+    }
+    
+    // print the number of tries
+    int t_length = 6;
+    if (numAttemptedSwaps[row][col] > 0) t_length -= (int)log10(numAttemptedSwaps[row][col]);
+    for (int i = 0; i < t_length; ++i)
+    {
+        o << " ";
+    }
+    o << numAttemptedSwaps[row][col];
+    o << " ";
+    
+    // print the number of accepted
+    int a_length = 9;
+    if (numAcceptedSwaps[row][col] > 0) a_length -= (int)log10(numAcceptedSwaps[row][col]);
+    for (int i = 0; i < a_length; ++i)
+    {
+        o << " ";
+    }
+    o << numAcceptedSwaps[row][col];
+    o << " ";
+    
+    // print the acceptance ratio
+    double ratio = numAcceptedSwaps[row][col] / (double)numAttemptedSwaps[row][col];
+    if (numAttemptedSwaps[row][col] == 0) ratio = 0;
+    
+    int r_length = 6;
+    for (int i = 0; i < r_length; ++i)
+    {
+        o << " ";
+    }
+    o << ratio;
+    o << " ";
+    
+    // print the heat of the colder chain
+    int h_length = 6;
+    for (int i = 0; i < h_length; ++i)
+    {
+        o << " ";
+    }
+    o << chain_heats[heat_ranks[row]];
+    o << " ";
+    
+    // print the heat of the hotter chain
+    h_length = 5;
+    for (int i = 0; i < h_length; ++i)
+    {
+        o << " ";
+    }
+    o << chain_heats[heat_ranks[col]];
+    o << " ";
+    
+    o << std::endl;
+    
+}
+
 
 
 void Mcmcmc::redrawStartingValues( void )
@@ -377,7 +652,8 @@ void Mcmcmc::redrawStartingValues( void )
     for (size_t i = 0; i < num_chains; ++i)
     {
         RandomNumberGenerator *rng = GLOBAL_RNG;
-        rng->uniform01();
+        for (size_t j=0; j<10; ++j) rng->uniform01();
+        
         if ( chains[i] != NULL )
         {
             chains[i]->redrawStartingValues();
@@ -407,8 +683,7 @@ void Mcmcmc::reset( void )
 {
     
     // reset counters
-    numAcceptedSwaps = 0;
-    numAttemptedSwaps = 0;
+    resetCounters();
     
     //    /* Reset the monitors */
     //    for (size_t i = 0; i < chainsPerProcess[pid].size(); ++i)
@@ -431,6 +706,31 @@ void Mcmcmc::reset( void )
     }
     
     
+}
+
+
+void Mcmcmc::resetCounters( void )
+{
+    for (size_t i = 0; i < num_chains; ++i)
+    {
+        for (size_t j = 0; j < num_chains; ++j)
+        {
+            numAttemptedSwaps[i][j] = 0;
+            numAcceptedSwaps[i][j] = 0;
+        }
+    }
+}
+
+
+void Mcmcmc::setHeatsInitial(const std::vector<double> &ht)
+{
+    heat_temps = ht;
+}
+
+
+void Mcmcmc::setSwapInterval2(const size_t &si2)
+{
+    swap_interval2 = si2;
 }
 
 
@@ -482,7 +782,7 @@ void Mcmcmc::setModel( Model *m, bool redraw )
     
 }
 
-void Mcmcmc::setActivePIDSpecialized(size_t i, size_t n)
+void Mcmcmc::setActivePIDSpecialized(size_t a, size_t n)
 {
     
     // initialize container sizes
@@ -692,7 +992,7 @@ void Mcmcmc::synchronizeHeats(void)
 
 
 // MJL: allow swapChains to take a swap function -- e.g. pairwise swap for 1..n-1
-void Mcmcmc::swapChains(void)
+void Mcmcmc::swapChains(const std::string swap_method)
 {
     
     // exit if there is only one chain
@@ -708,12 +1008,59 @@ void Mcmcmc::swapChains(void)
     synchronizeHeats();
     
     // swap chains
-    swapNeighborChains();
-    //    swapRandomChains();
-    
-    
+    if (swap_method == "neighbor")
+    {
+        swapNeighborChains();
+    }
+    else if (swap_method == "random")
+    {
+        swapRandomChains();
+    }
+
 }
 
+
+void Mcmcmc::swapMovesTuningInfo(RbVector<Move> &mvsj, RbVector<Move> &mvsk)
+{
+    
+    RbIterator<Move> itk = mvsk.begin();
+    for (RbIterator<Move> itj = mvsj.begin(); itj != mvsj.end(); ++itj, ++itk)
+    {
+        if (itj->getMoveName() != itk->getMoveName())
+        {
+            throw RbException( "The two moves whose tuning information is attempted to be swapped are not the same move as their names do not match." );
+        }
+        
+        size_t tmp_numTriedj = itj->getNumberTried();
+        size_t tmp_numTriedk = itk->getNumberTried();
+        itj->setNumberTried(tmp_numTriedk);
+        itk->setNumberTried(tmp_numTriedj);
+        
+        size_t tmp_numAcceptedj = itj->getNumberAccepted();
+        size_t tmp_numAcceptedk = itk->getNumberAccepted();
+        itj->setNumberAccepted(tmp_numAcceptedk);
+        itk->setNumberAccepted(tmp_numAcceptedj);
+        
+        double tmp_tuningParameterj = itj->getMoveTuningParameter();
+        double tmp_tuningParameterk = itk->getMoveTuningParameter();
+        
+        if ((std::isnan(tmp_tuningParameterj) == true && std::isnan(tmp_tuningParameterk) == false) || (std::isnan(tmp_tuningParameterj) == false && std::isnan(tmp_tuningParameterk) == true))
+        {
+            throw RbException( "The two moves whose tuning information is attempted to be swapped are not the same move as only one of them has tuning parameter." );
+        }
+        else if (std::isnan(tmp_tuningParameterj) == false)
+        {
+            itj->setMoveTuningParameter(tmp_tuningParameterk);
+            itk->setMoveTuningParameter(tmp_tuningParameterj);
+        }
+    }
+    
+    if (itk != mvsk.end())
+    {
+        throw RbException( "The two moves objetcs whose tuning information is attempted to be swapped have different number of moves." );
+    }
+    
+}
 
 
 void Mcmcmc::swapNeighborChains(void)
@@ -731,7 +1078,7 @@ void Mcmcmc::swapNeighborChains(void)
     j = int(GLOBAL_RNG->uniform01() * (num_chains-1));
     k = j + 1;
     
-    ++numAttemptedSwaps;
+    ++numAttemptedSwaps[heat_ranks[j]][heat_ranks[k]];
     
     // compute exchange ratio
     double bj = chain_heats[j];
@@ -782,6 +1129,7 @@ void Mcmcmc::swapNeighborChains(void)
     // on accept, swap beta values and active chains
     if (accept == true )
     {
+        ++numAcceptedSwaps[heat_ranks[j]][heat_ranks[k]];
         
         // swap active chain
         if (active_chain_index == j)
@@ -801,6 +1149,13 @@ void Mcmcmc::swapNeighborChains(void)
         heat_ranks[j] = heat_ranks[k];
         heat_ranks[k] = tmp;
         
+        // also swap the moves
+        RbVector<Move>& tmp_movesj = chains[j]->getMoves();
+        RbVector<Move>& tmp_movesk = chains[k]->getMoves();
+        swapMovesTuningInfo(tmp_movesj, tmp_movesk);
+        chains[j]->setMoves(tmp_movesj);
+        chains[k]->setMoves(tmp_movesk);
+
         
         for (size_t i=0; i<num_chains; ++i)
         {
@@ -812,7 +1167,6 @@ void Mcmcmc::swapNeighborChains(void)
             }
         }
         
-        ++numAcceptedSwaps;
     }
     
     
@@ -849,7 +1203,7 @@ void Mcmcmc::swapRandomChains(void)
             while(j == k);
         }
         
-        ++numAttemptedSwaps;
+        ++numAttemptedSwaps[heat_ranks[j]][heat_ranks[k]];
         
         // compute exchange ratio
         double bj = chain_heats[j];
@@ -881,6 +1235,7 @@ void Mcmcmc::swapRandomChains(void)
         // on accept, swap beta values and active chains
         if (accept == true )
         {
+            ++numAcceptedSwaps[heat_ranks[j]][heat_ranks[k]];
             
             // swap active chain
             if (active_chain_index == j)
@@ -898,7 +1253,24 @@ void Mcmcmc::swapRandomChains(void)
             heat_ranks[j] = heat_ranks[k];
             heat_ranks[k] = tmp;
             
-            ++numAcceptedSwaps;
+            // also swap the moves
+            RbVector<Move>& tmp_movesj = chains[j]->getMoves();
+            RbVector<Move>& tmp_movesk = chains[k]->getMoves();
+            swapMovesTuningInfo(tmp_movesj, tmp_movesk);
+            chains[j]->setMoves(tmp_movesj);
+            chains[k]->setMoves(tmp_movesk);
+            
+            
+            for (size_t i=0; i<num_chains; ++i)
+            {
+                
+                if ( chains[i] != NULL )
+                {
+                    chains[i]->setChainPosteriorHeat( chain_heats[i] );
+                    chains[i]->setChainActive( chain_heats[i] == 1.0 );
+                }
+            }
+            
         }
         
         
@@ -933,18 +1305,91 @@ void Mcmcmc::swapRandomChains(void)
 
 void Mcmcmc::tune( void )
 {
-    
-    double rate = numAcceptedSwaps / double(numAttemptedSwaps);
-    
-    if ( rate > 0.44 )
+    if (tune_heat == true && num_chains > 1)
     {
-        delta *= (1.0 + ((rate-0.44)/0.56) );
+        double tuneHeatTarget = 0.23;
+        
+        std::vector<double> heats_diff(num_chains - 1, 0.0);
+        
+        for (size_t i = 1; i < num_chains; ++i)
+        {
+            size_t colderChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), i - 1) - heat_ranks.begin();
+            size_t hotterChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), i) - heat_ranks.begin();
+            
+            heats_diff[i - 1] = chain_heats[colderChainIdx] - chain_heats[hotterChainIdx];
+        }
+        
+        for (size_t i = 1; i < num_chains; ++i)
+        {
+            std::cout << ", numAcceptedSwaps[" << i - 1 << "][" << i << "]=" << numAcceptedSwaps[i - 1][i] << ", numAcceptedSwaps[" << i << "][" << i - 1 << "]=" << numAcceptedSwaps[i][i - 1] << std::endl;
+            std::cout << ", numAttemptedSwaps[" << i - 1 << "][" << i << "]=" << numAttemptedSwaps[i - 1][i] << ", numAttemptedSwaps[" << i << "][" << i - 1 << "]=" << numAttemptedSwaps[i][i - 1] << std::endl;
+            
+            size_t numAttemptedSwapsPairwise = numAttemptedSwaps[i - 1][i] + numAttemptedSwaps[i][i - 1];
+            if ( numAttemptedSwapsPairwise > 2 ) {
+                
+                size_t numAcceptedSwapsPairwise = numAcceptedSwaps[i - 1][i] + numAcceptedSwaps[i][i - 1];
+                double rate = numAcceptedSwapsPairwise / (double)numAttemptedSwapsPairwise;
+                
+                if ( rate > tuneHeatTarget )
+                {
+                    heats_diff[i - 1] *= (1.0 + (rate - tuneHeatTarget) / (1.0 - tuneHeatTarget));
+                }
+                else
+                {
+                    heats_diff[i - 1] /= (2.0 - rate / tuneHeatTarget);
+                }
+                
+            }
+        }
+        
+        double heatMinBound = 0.1;
+        size_t j = 1;
+        for (; j < num_chains; ++j)
+        {
+            size_t colderChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), j - 1) - heat_ranks.begin();
+            size_t hotterChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), j) - heat_ranks.begin();
+            
+            chain_heats[hotterChainIdx] = chain_heats[colderChainIdx] - heats_diff[j - 1];
+            
+            if (chain_heats[hotterChainIdx] < heatMinBound)
+            {
+                break;
+            }
+            
+        }
+        
+        // if the heat of a given hot chain is smaller than the minimum bound
+        // interpolate this heat and the heats of all the hotter chains
+        // to fall between the lowest heat that is greater than the minimum bound and the minimum bound
+        if (j < num_chains)
+        {
+            size_t colderChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), j - 1) - heat_ranks.begin();
+            double rho = pow(chain_heats[colderChainIdx] / heatMinBound, 1.0 / (num_chains - j));
+            size_t k = j;
+            
+            for (; k < num_chains; ++k)
+            {
+                size_t hotterChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), k) - heat_ranks.begin();
+                chain_heats[hotterChainIdx] = chain_heats[colderChainIdx] / pow(rho, k + 1 - j);
+                
+            }
+        }
+
     }
-    else
+
+    
+    for (size_t i=0; i<num_chains; ++i)
     {
-        delta /= (2.0 - rate/0.44 );
+        if ( chains[i] != NULL )
+        {
+            chains[i]->setChainPosteriorHeat( chain_heats[i] );
+            chains[i]->setChainActive( chain_heats[i] == 1.0 );
+            
+            chains[i]->tune();
+        }
     }
     
+    resetCounters();
 }
 
 

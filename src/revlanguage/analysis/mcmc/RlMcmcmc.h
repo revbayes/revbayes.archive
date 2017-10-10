@@ -51,7 +51,11 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                       num_chains;
         RevPtr<const RevVariable>                       swap_interval;
+        RevPtr<const RevVariable>                       swap_interval2;
         RevPtr<const RevVariable>                       delta_heat;
+        RevPtr<const RevVariable>                       heat_temps;
+        RevPtr<const RevVariable>                       tune_heat;
+        RevPtr<const RevVariable>                       swap_method;
 
     };
     

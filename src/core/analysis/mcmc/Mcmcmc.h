@@ -27,7 +27,7 @@ namespace RevBayesCore {
     class Mcmcmc : public MonteCarloSampler {
         
     public:
-        Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT="random", size_t nc=4, size_t si=100, double dt=0.1);
+        Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT="random", size_t nc=4, size_t si=100, double dt=0.1, bool th=true, std::string sm="neighbor");
         Mcmcmc(const Mcmcmc &m);
         virtual                                ~Mcmcmc(void);                                       //!< Virtual destructor
         
@@ -45,9 +45,14 @@ namespace RevBayesCore {
         void                                    monitor(unsigned long g);
         void                                    nextCycle(bool advanceCycle);
         void                                    printOperatorSummary(void) const;
+        void                                    printSummary(std::ostream &o) const;
+        void                                    printSummaryPair(std::ostream &o, const size_t &row, const size_t &col) const;
         void                                    redrawStartingValues(void);                         //!< Redraw the starting values.
         void                                    removeMonitors(void);
         void                                    reset(void);                                        //!< Reset the sampler for a new run.
+        void                                    resetCounters(void);                                //!< Reset the counters.
+        void                                    setHeatsInitial(const std::vector<double> &ht);
+        void                                    setSwapInterval2(const size_t &si2);
         void                                    setLikelihoodHeat(double h);                        //!< Set the heat of the likelihood function.
         void                                    setModel(Model *m, bool redraw);
         void                                    setNumberOfProcesses(size_t i);                     //!< Set the number of processes for this replication.
@@ -62,7 +67,8 @@ namespace RevBayesCore {
         
     private:
         void                                    initializeChains(void);
-        void                                    swapChains(void);
+        void                                    swapChains(const std::string swap_method);
+        void                                    swapMovesTuningInfo(RbVector<Move> &mvsj, RbVector<Move> &mvsk);
         void                                    swapNeighborChains(void);
         void                                    swapRandomChains(void);
         void                                    synchronizeValues(bool likelihood_only);
@@ -78,17 +84,23 @@ namespace RevBayesCore {
         std::vector<double>                     chain_heats;
         std::string                             schedule_type;
         size_t                                  current_generation;
+        size_t                                  burnin_generation;
         size_t                                  swap_interval;
+        size_t                                  swap_interval2;
         
         size_t                                  active_chain_index;                                 // index of coldest chain, i.e. which one samples the posterior
         double                                  delta;                                              // delta-T, temperature increment for computeBeta
+        std::vector<double>                     heat_temps;
+        bool                                    tune_heat;
+        bool                                    useNeighborSwapping;
+        bool                                    useRandomSwapping;
         
         
         Mcmc*                                   base_chain;
         
         unsigned long                           generation;
-        unsigned long                           numAttemptedSwaps;
-        unsigned long                           numAcceptedSwaps;
+        std::vector< std::vector<unsigned long> > numAttemptedSwaps;
+        std::vector< std::vector<unsigned long> > numAcceptedSwaps;
     };
     
 }
