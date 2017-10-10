@@ -225,7 +225,7 @@ double RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::computeNo
         const std::vector<CharacterEvent*>& greatGrandparentState = histories[grandparent.getIndex()]->getParentCharacters();
         
         // for each site...
-        for(size_t site_index = 0; site_index < num_sites; ++site_index)
+        for (size_t site_index = 0; site_index < num_sites; ++site_index)
         {
             
             size_t node_state              = nodeChildState[site_index]->getState();
@@ -238,11 +238,11 @@ double RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::computeNo
             std::vector<double> state_probs(num_states * num_states);
             
             // for each grandparent state...
-            for(size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
+            for (size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
             {
                 
                 // for each parent state...
-                for(size_t parent_state = 0; parent_state < num_states; ++parent_state)
+                for (size_t parent_state = 0; parent_state < num_states; ++parent_state)
                 {
                     double p = parent_tp_matrix[grandparent_state][parent_state] * node_tp_matrix[parent_state][node_state] * brother_tp_matrix[parent_state][brother_state] * uncle_tp_matrix[grandparent_state][uncle_state] * grandparent_tp_matrix[great_grandparent_state][grandparent_state];
                     sum += p;
@@ -265,7 +265,7 @@ double RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::computeNo
         std::vector<double> rf = c->getRootFrequencies();
         
         // for each site...
-        for(size_t site_index = 0; site_index < num_sites; ++site_index)
+        for (size_t site_index = 0; site_index < num_sites; ++site_index)
         {
             
             size_t node_state              = nodeChildState[site_index]->getState();
@@ -277,11 +277,11 @@ double RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::computeNo
             std::vector<double> state_probs(num_states * num_states);
             
             // for each grandparent state...
-            for(size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
+            for (size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
             {
                 
                 // for each parent state...
-                for(size_t parent_state = 0; parent_state < num_states; ++parent_state)
+                for (size_t parent_state = 0; parent_state < num_states; ++parent_state)
                 {
                     double p = parent_tp_matrix[grandparent_state][parent_state] * node_tp_matrix[parent_state][node_state] * brother_tp_matrix[parent_state][brother_state] * uncle_tp_matrix[grandparent_state][uncle_state] * rf[grandparent_state];
                     sum += p;
@@ -471,7 +471,7 @@ double RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::doProposa
     double parent_age = parent.getAge();
     double uncle_age  = uncle->getAge();
     
-    if( uncle_age < parent_age )
+    if ( uncle_age < parent_age )
     {
         failed = false;
         
@@ -716,7 +716,7 @@ void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::sampleNodeC
         const std::vector<CharacterEvent*>& greatGrandparentState = histories[grandparent.getIndex()]->getParentCharacters();
 
         // for each site...
-        for(size_t site_index = 0; site_index < num_sites; ++site_index)
+        for (size_t site_index = 0; site_index < num_sites; ++site_index)
         {
          
             size_t node_state              = nodeChildState[site_index]->getState();
@@ -729,11 +729,11 @@ void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::sampleNodeC
             std::vector<double> state_probs(num_states * num_states);
             
             // for each grandparent state...
-            for(size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
+            for (size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
             {
                 
                 // for each parent state...
-                for(size_t parent_state = 0; parent_state < num_states; ++parent_state)
+                for (size_t parent_state = 0; parent_state < num_states; ++parent_state)
                 {
                     double p = parent_tp_matrix[grandparent_state][parent_state] * node_tp_matrix[parent_state][node_state] * brother_tp_matrix[parent_state][brother_state] * uncle_tp_matrix[grandparent_state][uncle_state] * grandparent_tp_matrix[great_grandparent_state][grandparent_state];
                     sum += p;
@@ -749,9 +749,9 @@ void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::sampleNodeC
             size_t new_parent_state      = 0;
             
             // sample a new state
-            for(size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
+            for (size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
             {
-                for(size_t parent_state = 0; parent_state < num_states; ++parent_state)
+                for (size_t parent_state = 0; parent_state < num_states; ++parent_state)
                 {
                     u -= (state_probs[grandparent_state * num_states + parent_state] / sum);
                     if ( u < 0.0 )
@@ -784,7 +784,7 @@ void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::sampleNodeC
         std::vector<double> rf = c->getRootFrequencies();
         
         // for each site...
-        for(size_t site_index = 0; site_index < num_sites; ++site_index)
+        for (size_t site_index = 0; site_index < num_sites; ++site_index)
         {
             
             size_t node_state              = nodeChildState[site_index]->getState();
@@ -796,11 +796,11 @@ void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::sampleNodeC
             std::vector<double> state_probs(num_states * num_states);
             
             // for each grandparent state...
-            for(size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
+            for (size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
             {
                 
                 // for each parent state...
-                for(size_t parent_state = 0; parent_state < num_states; ++parent_state)
+                for (size_t parent_state = 0; parent_state < num_states; ++parent_state)
                 {
                     double p = parent_tp_matrix[grandparent_state][parent_state] * node_tp_matrix[parent_state][node_state] * brother_tp_matrix[parent_state][brother_state] * uncle_tp_matrix[grandparent_state][uncle_state] * rf[grandparent_state];
                     sum += p;
@@ -816,9 +816,9 @@ void RevBayesCore::NarrowExchangeCharacterHistoryProposal<charType>::sampleNodeC
             size_t new_parent_state      = 0;
             
             // sample a new state
-            for(size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
+            for (size_t grandparent_state = 0; grandparent_state < num_states; ++grandparent_state)
             {
-                for(size_t parent_state = 0; parent_state < num_states; ++parent_state)
+                for (size_t parent_state = 0; parent_state < num_states; ++parent_state)
                 {
                     u -= (state_probs[grandparent_state * num_states + parent_state] / sum);
                     if ( u < 0.0 )

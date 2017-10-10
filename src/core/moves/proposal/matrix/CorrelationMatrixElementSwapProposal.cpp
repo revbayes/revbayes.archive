@@ -72,7 +72,7 @@ double CorrelationMatrixElementSwapProposal::getProposalTuningParameter( void ) 
 /**
  * Perform the proposal.
  *
- * A Swap proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * A Swap proposal draws a random uniform number u ~ unif (-0.5,0.5)
  * and MatrixRealSingleElementSwaps the current vale by
  * delta = lambda * u
  * where lambda is the tuning parameter of the proposal to influence the size of the proposals.

@@ -126,7 +126,7 @@ double SubtreePruneRegraftProposal::doProposal( void )
     TopologyNode &newGrandparent = newBrother->getParent();
     
     // if the regrafting subtree contains the root
-    if(!isDescendant(*newBrother,*node))
+    if (!isDescendant(*newBrother,*node))
     {
         prunedroot = false;
         // now prune
@@ -150,7 +150,7 @@ double SubtreePruneRegraftProposal::doProposal( void )
         std::vector<TopologyNode*> storedchildren = storedChoosenNode->getChildren();
         std::vector<size_t> storedindices;
         std::vector<double> storedbrlens;
-        for(size_t i = 0 ; i < storedchildren.size(); i++)
+        for (size_t i = 0 ; i < storedchildren.size(); i++)
         {
             storedindices.push_back(storedchildren[i]->getIndex());
             storedbrlens.push_back(storedchildren[i]->getBranchLength());
@@ -161,9 +161,9 @@ double SubtreePruneRegraftProposal::doProposal( void )
         TopologyNode* newParent = &(newBrother->getParent());
         TopologyNode& regraft = tau.reverseParentChild(*newParent);
 
-        for(size_t i = 0 ; i < storedchildren.size(); i++)
+        for (size_t i = 0 ; i < storedchildren.size(); i++)
         {
-            if(&regraft != storedchildren[i])
+            if (&regraft != storedchildren[i])
             {
                 regraft.addChild(storedchildren[i]);
                 storedchildren[i]->setParent(&regraft);
@@ -229,7 +229,7 @@ void SubtreePruneRegraftProposal::undoProposal( void )
 {
     
     // undo the proposal
-    if(!prunedroot)
+    if (!prunedroot)
     {
         TopologyNode &parent = storedChoosenNode->getParent();
         TopologyNode &grandparent = parent.getParent();
@@ -262,7 +262,7 @@ void SubtreePruneRegraftProposal::undoProposal( void )
         std::vector<TopologyNode*> storedchildren = storedChoosenNode->getChildren();
         std::vector<size_t> storedindices;
         std::vector<double> storedbrlens;
-        for(size_t i = 0 ; i < storedchildren.size(); i++)
+        for (size_t i = 0 ; i < storedchildren.size(); i++)
         {
             storedindices.push_back(storedchildren[i]->getIndex());
             storedbrlens.push_back(storedchildren[i]->getBranchLength());
@@ -274,9 +274,9 @@ void SubtreePruneRegraftProposal::undoProposal( void )
         TopologyNode* newParent = &(storedBrother->getParent());
         TopologyNode& oldBrother = tau.reverseParentChild(*newParent);
 
-        for(size_t i = 0 ; i < storedchildren.size(); i++)
+        for (size_t i = 0 ; i < storedchildren.size(); i++)
         {
-            if(&oldBrother != storedchildren[i])
+            if (&oldBrother != storedchildren[i])
             {
                 oldBrother.addChild(storedchildren[i]);
                 storedchildren[i]->setParent(&oldBrother);

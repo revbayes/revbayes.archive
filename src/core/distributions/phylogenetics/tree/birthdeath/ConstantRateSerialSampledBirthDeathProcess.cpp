@@ -143,7 +143,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         }
         else if ( n.isInternal() && !n.getChild(0).isSampledAncestor() && !n.getChild(1).isSampledAncestor() )
         {
-            if(!n.isRoot() || use_origin)
+            if (!n.isRoot() || use_origin)
             {
                 // node is bifurcation event (a "true" node)
                 internal_node_ages.push_back( n.getAge() );
@@ -154,7 +154,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     // add the log probability for the serial sampling events
     if (serial_rate == 0.0)
     {
-        if( serial_tip_ages.size() + num_sampled_ancestors > 0 )
+        if ( serial_tip_ages.size() + num_sampled_ancestors > 0 )
         {
             return RbConstants::Double::neginf;
             //throw RbException("The serial sampling rate is zero, but the tree has serial sampled tips.");
@@ -173,20 +173,20 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
 
     // add the log probability for the internal node ages
     lnProbTimes += internal_node_ages.size() * log( birth_rate );
-    for(size_t i=0; i<internal_node_ages.size(); i++)
+    for (size_t i=0; i<internal_node_ages.size(); i++)
     {
         lnProbTimes -= lnQ(internal_node_ages[i], c1, c2);
     }
 
     // add the log probability for the serial tip ages
-    for(size_t i=0; i < serial_tip_ages.size(); i++)
+    for (size_t i=0; i < serial_tip_ages.size(); i++)
     {
         double t = serial_tip_ages[i];
         lnProbTimes += log(pZero(t, c1, c2)) + lnQ(t, c1, c2);
     }
 
     // condition on survival
-    if( condition == "survival")
+    if ( condition == "survival")
     {
         lnProbTimes -= num_initial_lineages * log(1.0 - pHatZero(process_time));
     }

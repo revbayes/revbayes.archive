@@ -60,6 +60,7 @@ namespace RevBayesCore {
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
         void                                                setModel(Model *m, bool redraw);
+        void                                                setMoves(const RbVector<Move> &mvs);
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
         void                                                startMonitors(size_t numCycles, bool reopen);                                           //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
@@ -69,7 +70,7 @@ namespace RevBayesCore {
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
-        void                                                setActivePIDSpecialized(size_t i, size_t n);                                                      //!< Set the number of processes for this class.
+        void                                                setActivePIDSpecialized(size_t a, size_t n);                                                      //!< Set the number of processes for this class.
 
         
         bool                                                chain_active;

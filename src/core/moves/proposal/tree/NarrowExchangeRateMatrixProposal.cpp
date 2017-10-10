@@ -122,7 +122,7 @@ double NarrowExchangeRateMatrixProposal::doProposal( void )
     double parent_age   = parent.getAge();
     double uncles_age   = uncle->getAge();
     
-    if( uncles_age < parent_age )
+    if ( uncles_age < parent_age )
     {
         failed = false;
         

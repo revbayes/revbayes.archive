@@ -121,8 +121,8 @@ const TypeSpec& Func_concatenateFromVector::getTypeSpec( void ) const
 const TypeSpec& Func_concatenateFromVector::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlBoolean::getClassTypeSpec();
+    static TypeSpec return_typeSpec = RlBoolean::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

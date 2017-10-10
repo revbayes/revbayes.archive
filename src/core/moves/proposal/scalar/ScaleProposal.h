@@ -12,7 +12,7 @@ namespace RevBayesCore {
     /**
      * The scaling operator. 
      *
-     * A scaling proposal draws a random uniform number u ~ unif(-0.5,0.5)
+     * A scaling proposal draws a random uniform number u ~ unif (-0.5,0.5)
      * and scales the current vale by a scaling factor
      * sf = exp( lambda * u )
      * where lambda is the tuning parameter of the Proposal to influence the size of the proposals.

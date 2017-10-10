@@ -77,7 +77,7 @@ RevPtr<RevVariable> Func_mccTree::execute( void )
     }
     
     Tree* t;
-    if( tt.getValue().getTreeTrace().isClock() )
+    if ( tt.getValue().getTreeTrace().isClock() )
     {
         t = new TimeTree( tree );
     }
@@ -163,7 +163,7 @@ const TypeSpec& Func_mccTree::getTypeSpec( void ) const
 const TypeSpec& Func_mccTree::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = Tree::getClassTypeSpec();
+    return return_typeSpec;
 }
 

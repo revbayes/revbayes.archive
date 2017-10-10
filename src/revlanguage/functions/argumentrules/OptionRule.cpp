@@ -90,18 +90,18 @@ const std::vector<std::string>& OptionRule::getOptions( void ) const
 double OptionRule::isArgumentValid( Argument &arg, bool once) const
 {
     
-    RevPtr<RevVariable> theVar = arg.getVariable();
-    if ( theVar == NULL )
+    RevPtr<RevVariable> the_var = arg.getVariable();
+    if ( the_var == NULL )
     {
         return -1;
     }
     
-    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || ( theVar->getRevObject().isModelObject() && theVar->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::CONSTANT) )
+    if ( evalType == BY_VALUE || the_var->isWorkspaceVariable() || ( the_var->getRevObject().isModelObject() && the_var->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::CONSTANT) )
     {
         once = true;
     }
     
-    RlString *revObj = dynamic_cast<RlString *>( &theVar->getRevObject() );
+    RlString *revObj = dynamic_cast<RlString *>( &the_var->getRevObject() );
     if ( revObj != NULL )
     {
         

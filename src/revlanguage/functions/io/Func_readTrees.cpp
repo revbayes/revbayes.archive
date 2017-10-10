@@ -141,8 +141,8 @@ const TypeSpec& Func_readTrees::getTypeSpec( void ) const
 const TypeSpec& Func_readTrees::getReturnType( void ) const
 {
 
-    static TypeSpec returnTypeSpec = ModelVector<TimeTree>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = ModelVector<TimeTree>::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

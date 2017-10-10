@@ -26,7 +26,7 @@ using namespace RevBayesCore;
 BitsetCharacterDataConverter::BitsetCharacterDataConverter(const HomologousDiscreteCharacterData<StandardState>& d, std::string f, size_t ns) : data(d), format(f), numStates(ns), numAllStates(0)
 {
     // get dimensions
-    numTaxa = data.getNumberOfTaxa();
+    num_taxa = data.getNumberOfTaxa();
     numChars = data.getNumberOfCharacters();
     numAllStates = (size_t)(std::pow(double(2),int(numChars)));
     if (numStates == 0) {
@@ -50,7 +50,7 @@ HomologousDiscreteCharacterData<NaturalNumbersState>* BitsetCharacterDataConvert
     // create empty character data to be returned
     HomologousDiscreteCharacterData<NaturalNumbersState>* dataConverted = new HomologousDiscreteCharacterData<NaturalNumbersState> ();
     
-    for (size_t i = 0; i < numTaxa; i++)
+    for (size_t i = 0; i < num_taxa; i++)
     {
         DiscreteTaxonData<StandardState> taxon = data.getTaxonData(i);
         

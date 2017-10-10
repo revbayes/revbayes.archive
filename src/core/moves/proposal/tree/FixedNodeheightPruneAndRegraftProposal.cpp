@@ -54,7 +54,7 @@ void FixedNodeheightPruneAndRegraftProposal::findNewBrothers(std::vector<Topolog
     {
         // check the first child
         std::vector<TopologyNode*> children = n->getChildren();
-        for(size_t i = 0; i < children.size(); i++)
+        for (size_t i = 0; i < children.size(); i++)
         {
             if ( children[i]->getAge() < p.getAge() )
             {

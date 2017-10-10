@@ -74,7 +74,7 @@ double ScaleUpDownProposal::getProposalTuningParameter( void ) const
 /**
  * Perform the proposal.
  *
- * A sliding proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * A sliding proposal draws a random uniform number u ~ unif (-0.5,0.5)
  * and ScaleUpDowns the current vale by
  * delta = lambda * u
  * where lambda is the tuning parameter of the proposal to influence the size of the proposals.
@@ -158,12 +158,12 @@ void ScaleUpDownProposal::undoProposal( void )
 void ScaleUpDownProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    if(oldN == variable1)
+    if (oldN == variable1)
     {
         variable1 = static_cast<ContinuousStochasticNode* >( newN );
     }
     
-    if(oldN == variable2)
+    if (oldN == variable2)
     {
         variable2 = static_cast<ContinuousStochasticNode* >( newN );
     }

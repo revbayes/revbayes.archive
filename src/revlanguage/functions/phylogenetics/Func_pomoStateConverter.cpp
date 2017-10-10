@@ -115,9 +115,9 @@ std::string Func_pomoStateConverter::getFunctionName( void ) const
 const TypeSpec& Func_pomoStateConverter::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
+    static TypeSpec return_typeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 
 

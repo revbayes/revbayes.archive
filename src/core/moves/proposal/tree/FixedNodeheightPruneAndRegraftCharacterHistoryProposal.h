@@ -188,7 +188,7 @@ void RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charTy
         TopologyNode* child = &n->getChild( 0 );
         if ( child->getAge() < p.getAge() )
         {
-            if( child->isSampledAncestor() == false ) b.push_back( child );
+            if ( child->isSampledAncestor() == false ) b.push_back( child );
         }
         else
         {
@@ -199,7 +199,7 @@ void RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charTy
         child = &n->getChild( 1 );
         if ( child->getAge() < p.getAge() )
         {
-            if( child->isSampledAncestor() == false ) b.push_back( child );
+            if ( child->isSampledAncestor() == false ) b.push_back( child );
         }
         else
         {

@@ -215,11 +215,11 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::createRestauran
     valuePerTable.clear();
     numCustomerPerTable.clear();
     numTables = 0;
-    for(int i=0; i<numElements; i++)
+    for (int i=0; i<numElements; i++)
     {
         valueType v = pv[i];
         size_t tID = findValueinValuePerTable(v);
-        if(tID < valuePerTable.size())
+        if (tID < valuePerTable.size())
         {
             numCustomerPerTable[tID] += 1;
             //            std::cout << valuePerTable[tID] << " -- " << v << std::endl;
@@ -233,7 +233,7 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::createRestauran
         }
         allocationVector[i] = (int)tID;
     }
-    //    for(int i=0; i<numElements; i++){
+    //    for (int i=0; i<numElements; i++){
     //        std::cout << allocationVector[i] << ".";
     //    }
     //    std::cout << std::endl;
@@ -304,11 +304,11 @@ RevBayesCore::RbVector<valueType>* RevBayesCore::DirichletProcessPriorDistributi
     allocationVector.clear();
     numCustomerPerTable.clear();
     valuePerTable.clear();
-    for( int i=0; i<numElements; i++)
+    for ( int i=0; i<numElements; i++)
     {
         double probNewCat = cp / (i + cp);
         double u = rng->uniform01();
-        if( u < probNewCat)
+        if ( u < probNewCat)
         {
             numCustomerPerTable.push_back(1);
             numTables++;
@@ -322,10 +322,10 @@ RevBayesCore::RbVector<valueType>* RevBayesCore::DirichletProcessPriorDistributi
         {
             double sum = 0.0;
             double m = rng->uniform01();
-            for(unsigned j=0; j<numCustomerPerTable.size(); j++)
+            for (unsigned j=0; j<numCustomerPerTable.size(); j++)
             {
                 sum += (double)numCustomerPerTable[j] / i;
-                if(m < sum)
+                if (m < sum)
                 {
                     numCustomerPerTable[j] += 1;
                     temp.push_back(valuePerTable[j]);
@@ -385,15 +385,15 @@ size_t RevBayesCore::DirichletProcessPriorDistribution<valueType>::findValueinVa
 {
     
     size_t tID = valuePerTable.size(); //= std::find(valuePerTable.begin(), valuePerTable.end(), v) - valuePerTable.begin(); 
-    if(tID == 0)
+    if (tID == 0)
     {
         return tID;
     }
     else
     {
-        for(size_t i=0; i<valuePerTable.size(); i++)
+        for (size_t i=0; i<valuePerTable.size(); i++)
         {
-            if(valuePerTable[i] == v)
+            if (valuePerTable[i] == v)
             {
                 return i;
             }

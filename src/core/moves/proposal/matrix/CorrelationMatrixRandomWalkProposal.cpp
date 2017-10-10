@@ -71,7 +71,7 @@ double CorrelationMatrixRandomWalkProposal::getProposalTuningParameter( void ) c
 /**
  * Perform the proposal.
  *
- * A Beta proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * A Beta proposal draws a random uniform number u ~ unif (-0.5,0.5)
  * and MatrixRealSingleElementBetas the current vale by
  * delta = lambda * u
  * where lambda is the tuning parameter of the proposal to influence the size of the proposals.
@@ -85,9 +85,9 @@ double CorrelationMatrixRandomWalkProposal::doProposal( void )
     size_t dim = stored_matrix.size();
     
     MatrixReal& current_matrix = variable->getValue();
-    for(size_t i = 0; i < (dim - 1); ++i)
+    for (size_t i = 0; i < (dim - 1); ++i)
     {
-        for(size_t j = i+1; j < dim; ++j)
+        for (size_t j = i+1; j < dim; ++j)
         {
             current_matrix[i][j] = RbStatistics::Normal::rv(stored_matrix[i][j], sigma, *GLOBAL_RNG);
             current_matrix[j][i] = current_matrix[i][j];
@@ -139,9 +139,9 @@ void CorrelationMatrixRandomWalkProposal::undoProposal( void )
     
     MatrixReal& current_matrix = variable->getValue();
     size_t size = current_matrix.getNumberOfRows();
-    for(size_t i = 0; i < size; ++i)
+    for (size_t i = 0; i < size; ++i)
     {
-        for(size_t j = i; j < size; ++j){
+        for (size_t j = i; j < size; ++j){
             current_matrix[i][j] = stored_matrix[i][j];
             current_matrix[j][i] = stored_matrix[i][j];
         }

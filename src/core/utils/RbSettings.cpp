@@ -207,6 +207,19 @@ void RbSettings::initializeUserSettings(void)
 }
 
 
+void RbSettings::listOptions() const
+{
+    std::cout << "moduledir = " << moduleDir << std::endl;
+    std::cout << "outputPrecision = " << outputPrecision << std::endl;
+    std::cout << "printNodeIndex = " << (printNodeIndex ? "true" : "false") << std::endl;
+    std::cout << "tolerance = " << tolerance << std::endl;
+    std::cout << "linewidth = " << lineWidth << std::endl;
+    std::cout << "useScaling = " << (useScaling ? "true" : "false") << std::endl;
+    std::cout << "scalingDensity = " << scalingDensity << std::endl;
+    std::cout << "collapseSampledAncestors = " << (collapseSampledAncestors ? "true" : "false") << std::endl;
+}
+
+
 void RbSettings::setModuleDir(const std::string &md)
 {
     
@@ -299,7 +312,7 @@ void RbSettings::setOption(const std::string &key, const std::string &v, bool wr
     else if ( key == "scalingDensity" )
     {
         size_t w = atoi(value.c_str());
-        if(w < 1)
+        if (w < 1)
             throw(RbException("scalingDensity must be an integer greater than 0"));
         
         scalingDensity = atoi(value.c_str());

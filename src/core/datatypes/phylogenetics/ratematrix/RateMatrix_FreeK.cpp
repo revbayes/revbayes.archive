@@ -73,7 +73,7 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r, std::string method) : Gener
 {
     
     // determine the type of matrix exponentiation
-    if(method == "scalingAndSquaring")
+    if (method == "scalingAndSquaring")
     {
         useScalingAndSquaring = true;
     }
@@ -242,7 +242,42 @@ void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double 
 }
 
 
-void RateMatrix_FreeK::checkMatrixTolerance(MatrixReal x, double tolerance, bool& diff) const
+void RateMatrix_FreeK::checkMatrixIrreducible(double tolerance, TransitionProbabilityMatrix &P)const
+{
+    // check if the Q matrix is irreducible by checking if there is any element in the P matrix
+    // that is smaller than some prior specified tolerance
+    // and if that's the case, fill in the P matrix with all zeros
+    // so that the current proposal will certainly get rejected
+    // here we assume that all the states in the Q matrix exist in the observed data
+    bool irreducible = true;
+    
+    for (size_t i=0; i<num_states-1; ++i)
+    {
+        for (size_t j=i+1; j<num_states; ++j)
+        {
+            if (P[i][j] < tolerance && P[j][i] < tolerance)
+            {
+                irreducible = false;
+            }
+        }
+    }
+    
+    if (irreducible == false)
+    {
+        for (size_t i=0; i<num_states; ++i)
+        {
+            P[i][i] = 1.0;
+            for (size_t j=i+1; j<num_states; ++j)
+            {
+                P[i][j] = 0.0;
+                P[j][i] = 0.0;
+            }
+        }
+    }
+}
+
+
+void RateMatrix_FreeK::checkMatrixDiff(MatrixReal x, double tolerance, bool& diff) const
 {
     for (size_t i = 0; i < num_states; ++i)
     {
@@ -271,13 +306,13 @@ void RateMatrix_FreeK::expandUniformization(int truncation, double tolerance) co
     int d = truncation - n;
     int i = 0;
     
-    for(; i < d; ++i)
+    for (; i < d; ++i)
     {
         // add terms of the power series to matrix products until the difference between the last two terms is smaller than the tolerance
         MatrixReal diffMatrix = matrixProducts->at(n - 1 + i) - matrixProducts->at(n - 2 + i);
         
         bool diff = true;
-        checkMatrixTolerance(diffMatrix, tolerance, diff);
+        checkMatrixDiff(diffMatrix, tolerance, diff);
         if (diff == true)
         {
             break;
@@ -289,7 +324,7 @@ void RateMatrix_FreeK::expandUniformization(int truncation, double tolerance) co
     
     // if the current size of the matrix products is still smaller than the truncation, fill all the remaining terms with the same converged matrix
     MatrixReal m = matrixProducts->at(n - 1 + i);
-    for(int j = i; j < d; ++j)
+    for (int j = i; j < d; ++j)
     {
         matrixProducts->push_back(m);
     }
@@ -353,7 +388,7 @@ void RateMatrix_FreeK::expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tole
         F += m;
         
         bool diff = true;
-        checkMatrixTolerance(m, tolerance, diff);
+        checkMatrixDiff(m, tolerance, diff);
         if (diff == true)
         {
             break;
@@ -496,14 +531,6 @@ void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
 		eigValExp[s] = exp(eigenValue[s] * t);
     }
     
-    // check if the Q matrix is irreducible by checking if there is any element in the P matrix
-    // that is smaller than some prior specified tolerance
-    // and if that's the case, fill in the P matrix with all zeros
-    // so that the current proposal will certainly get rejected
-    // here we assume that all the states in the Q matrix exist in the observed data
-    double tol = RbSettings::userSettings().getTolerance();
-    bool irreducible = true;
-    
     // calculate the transition probabilities
 	const double* ptr = &c_ijk[0];
     double*         p = P.theMatrix;
@@ -512,34 +539,20 @@ void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
 		for (size_t j=0; j<num_states; j++, ++p)
         {
 			double sum = 0.0;
-			for(size_t s=0; s<num_states; s++)
+			for (size_t s=0; s<num_states; s++)
             {
 				sum += (*ptr++) * eigValExp[s];
             }
             
             //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
-            //          (*p) = (sum < 0.0) ? 0.0 : sum;
-            (*p) = sum;
-            
-            if (sum < tol)
-            {
-                irreducible = false;
-            }
+            (*p) = (sum < 0.0) ? 0.0 : sum;
         }
         
     }
     
-    if (irreducible == false)
-    {
-        for (size_t i=0; i<num_states; i++)
-        {
-            for (size_t j=0; j<num_states; j++)
-            {
-                P[i][j] = 0.0;
-            }
-        }
-    }
-    
+    double tol = RbSettings::userSettings().getTolerance();
+    checkMatrixIrreducible(tol, P);
+
 }
 
 
@@ -559,14 +572,6 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
 		ceigValExp[s] = exp(ev * t);
     }
     
-    // check if the Q matrix is irreducible by checking if there is any element in the P matrix
-    // that is smaller than some prior specified tolerance
-    // and if that's the case, fill in the P matrix with all zeros
-    // so that the current proposal will certainly get rejected
-    // here we assume that all the states in the Q matrix exist in the observed data
-    double tol = RbSettings::userSettings().getTolerance();
-    bool irreducible = true;
-    
     // calculate the transition probabilities
 	const std::complex<double>* ptr = &cc_ijk[0];
 	for (size_t i=0; i<num_states; i++)
@@ -574,32 +579,17 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
 		for (size_t j=0; j<num_states; j++)
         {
 			std::complex<double> sum = std::complex<double>(0.0, 0.0);
-			for(size_t s=0; s<num_states; s++)
+			for (size_t s=0; s<num_states; s++)
             {
 				sum += (*ptr++) * ceigValExp[s];
             }
-            
-//            P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
-            P[i][j] = sum.real();
-            
-            if (sum.real() < tol)
-            {
-                irreducible = false;
-            }
+
+            P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
         }
     }
     
-    if (irreducible == false)
-    {
-        for (size_t i=0; i<num_states; i++)
-        {
-            for (size_t j=0; j<num_states; j++)
-            {
-                P[i][j] = 0.0;
-            }
-        }
-        
-    }
+    double tol = RbSettings::userSettings().getTolerance();
+    checkMatrixIrreducible(tol, P);
     
 }
 
@@ -617,7 +607,7 @@ void RateMatrix_FreeK::tiProbsScalingAndSquaring(double t, TransitionProbability
     MatrixReal result(num_states);
     double tol = RbSettings::userSettings().getTolerance();
     
-    if(useScalingAndSquaringPade == true)
+    if (useScalingAndSquaringPade == true)
     {
         // the value of truncation computed by findPadeQValue is 5 under RevBayes default tolerance (1e-9)
         // which seems a bit too generous comparing with the value given in Table 1 of Moler and Van Loan, 2003
@@ -626,48 +616,27 @@ void RateMatrix_FreeK::tiProbsScalingAndSquaring(double t, TransitionProbability
         // if that turns out to be insufficient or if a higher accuracy is desired, a larger number should be considered
         // Jiansi Gao 09/07/2017
         int truncation = RbMath::findPadeQValue(tol);
-        if(truncation > 4)
+        if (truncation > 4)
         {
             truncation = 4;
         }
         RbMath::expMatrixPade(m, result, truncation);
     }
-    else if(useScalingAndSquaringTaylor == true)
+    else if (useScalingAndSquaringTaylor == true)
     {
         expMatrixTaylor(m, result, tol);
     }
     
-    // check if the Q matrix is irreducible by checking if there is any element in the P matrix
-    // that is smaller than some prior specified tolerance
-    // and if that's the case, fill in the P matrix with all zeros
-    // so that the current proposal will certainly get rejected
-    // here we assume that all the states in the Q matrix exist in the observed data
-    bool irreducible = true;
-    
     // fill in P from result
-    for(size_t i = 0; i < num_states; ++i)
+    for (size_t i = 0; i < num_states; ++i)
     {
-        for(size_t j = 0; j < num_states; ++j)
+        for (size_t j = 0; j < num_states; ++j)
         {
-            P[i][j] = result[i][j];
-            
-            if (result[i][j] < tol)
-            {
-                irreducible = false;
-            }
+            P[i][j] = (result[i][j] < 0.0) ? 0.0 : result[i][j];
         }
     }
     
-    if (irreducible == false)
-    {
-        for (size_t i=0; i<num_states; i++)
-        {
-            for (size_t j=0; j<num_states; j++)
-            {
-                P[i][j] = 0.0;
-            }
-        }
-    }
+    checkMatrixIrreducible(tol, P);
 
 }
 
@@ -697,7 +666,7 @@ void RateMatrix_FreeK::tiProbsUniformization(double t, TransitionProbabilityMatr
         expandUniformization(truncation, tol);
         
         // compute the transition probability by weighted average
-        for(size_t i = 0; i < truncation; ++i)
+        for (size_t i = 0; i < truncation; ++i)
         {
             
             // compute the poisson probability
@@ -708,38 +677,17 @@ void RateMatrix_FreeK::tiProbsUniformization(double t, TransitionProbabilityMatr
             
         }
     }
-
-    // check if the Q matrix is irreducible by checking if there is any element in the P matrix
-    // that is smaller than some prior specified tolerance
-    // and if that's the case, fill in the P matrix with all zeros
-    // so that the current proposal will certainly get rejected
-    // here we assume that all the states in the Q matrix exist in the observed data
-    bool irreducible = true;
     
     // fill in P from result
-    for(size_t i = 0; i < num_states; ++i)
+    for (size_t i = 0; i < num_states; ++i)
     {
-        for(size_t j = 0; j < num_states; ++j)
+        for (size_t j = 0; j < num_states; ++j)
         {
-            P[i][j] = result[i][j];
-            
-            if (result[i][j] < tol)
-            {
-                irreducible = false;
-            }
+            P[i][j] = (result[i][j] < 0.0) ? 0.0 : result[i][j];
         }
     }
     
-    if (irreducible == false)
-    {
-        for (size_t i=0; i<num_states; i++)
-        {
-            for (size_t j=0; j<num_states; j++)
-            {
-                P[i][j] = 0.0;
-            }
-        }
-    }
+    checkMatrixIrreducible(tol, P);
     
 }
 
@@ -762,9 +710,9 @@ void RateMatrix_FreeK::updateUniformization(void)
     // find the diagonial element of the matrix with the maximal value
     MatrixReal m = *the_rate_matrix;
     maxRate = m[0][0];
-    for(size_t i = 1; i < num_states; ++i)
+    for (size_t i = 1; i < num_states; ++i)
     {
-        if(m[i][i] < maxRate )
+        if (m[i][i] < maxRate )
         {
             maxRate = m[i][i];
         }
@@ -772,10 +720,10 @@ void RateMatrix_FreeK::updateUniformization(void)
     
     // for the given max rate, fill in the single-step transition probability matrix
     singleStepMatrix = MatrixReal(num_states);
-    for(size_t i = 0; i < num_states; ++i)
+    for (size_t i = 0; i < num_states; ++i)
     {
         singleStepMatrix[i][i] = 1 - m[i][i] / maxRate;
-        for(size_t j = i + 1; j < num_states; ++j)
+        for (size_t j = i + 1; j < num_states; ++j)
         {
             singleStepMatrix[i][j] = -m[i][j] / maxRate;
             singleStepMatrix[j][i] = -m[j][i] / maxRate;
@@ -787,7 +735,7 @@ void RateMatrix_FreeK::updateUniformization(void)
     
     // add the identity matrix (the first one) and the singleStepMatrix (the second one)
     MatrixReal identity_matrix(num_states);
-    for(size_t i = 0; i < num_states; ++i)
+    for (size_t i = 0; i < num_states; ++i)
     {
         identity_matrix[i][i] = 1.0;
     }
@@ -812,12 +760,12 @@ void RateMatrix_FreeK::update( void )
         }
 
         // update the uniformization system if necessary
-        if(useUniformization == true)
+        if (useUniformization == true)
         {
             updateUniformization();
         }
         // update the eigensystem if necessary
-        if(useEigen == true)
+        if (useEigen == true)
         {
             updateEigenSystem();
         }

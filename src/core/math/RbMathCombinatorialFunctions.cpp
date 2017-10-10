@@ -56,12 +56,12 @@ double RbMath::choose(double n, double k)
     if (k < k_small_max)
         {
         int j;
-        if(n-k < k && n >= 0 && RbMath::isInt(n)) k = n-k; /* <- Symmetry */
+        if (n-k < k && n >= 0 && RbMath::isInt(n)) k = n-k; /* <- Symmetry */
         if (k <	 0) return 0.0;
         if (k == 0) return 1.0;
         /* else: k >= 1 */
         r = n;
-        for(j = 2; j <= k; j++)
+        for (j = 2; j <= k; j++)
             r *= (n-j+1)/j;
         return RbMath::isInt(n) ? floor(r + 0.5) : r;
         /* might have got rounding errors */
@@ -75,8 +75,8 @@ double RbMath::choose(double n, double k)
         }
     else if (RbMath::isInt(n))
         {
-        if(n < k) return 0.;
-        if(n - k < k_small_max) return choose(n, n-k); /* <- Symmetry */
+        if (n < k) return 0.;
+        if (n - k < k_small_max) return choose(n, n-k); /* <- Symmetry */
         return floor(exp(RbMath::lfastchoose(n, k)) + 0.5);
         }
     /* else non-integer n >= 0 : */
@@ -99,7 +99,7 @@ double RbMath::choose(double n, double k)
  */
 int RbMath::kchoose2(int k){
 
-//    if(k==0 | k==1 ){
+//    if (k==0 | k==1 ){
 //        return 0;
 //    }
 //    else if (k==2){
@@ -177,10 +177,10 @@ double RbMath::lnChoose(double n, double k) {
     }
     else if (R_IS_INT(n))
     {
-        if(n < k)
+        if (n < k)
             return RbConstants::Double::neginf;
         /* k <= n :*/
-        if(n - k < 2) return lnChoose(n, n-k); /* <- Symmetry */
+        if (n - k < 2) return lnChoose(n, n-k); /* <- Symmetry */
         /* else: n >= k+2 */
         return RbMath::lfastchoose(n, k);
         }
@@ -236,15 +236,15 @@ double RbMath::lnFactorial(int n) {
 unsigned long RbMath::stirlingFirst(int n, int k) {
 	
 	unsigned long r = 0;
-	if(n == k)
+	if (n == k)
 		return 1;
-	if(k == 1)
+	if (k == 1)
 		return factorial(n-1);
-	if(n == 1 && k > 1)
+	if (n == 1 && k > 1)
 		return 0;
-	if(n > 0 && k == 0)
+	if (n > 0 && k == 0)
 		return 0;
-	if(k == n-1)
+	if (k == n-1)
 		return kchoose2(n);
 	r = stirlingFirst(n-1, k-1) + ((n-1)*stirlingFirst(n-1, k));
 	return r;
@@ -253,7 +253,7 @@ unsigned long RbMath::stirlingFirst(int n, int k) {
 int RbMath::stirlingSecond(int n, int k) {
 	
 	int r = 0;
-	if(k > n || k < 0){
+	if (k > n || k < 0){
 		throw RbException("Error: k must be in 0,...,n");
 	}
 	else{
@@ -263,9 +263,9 @@ int RbMath::stirlingSecond(int n, int k) {
 		else{
 			int v1 = factorial(k);
 			int sumv = 0;
-			for(int j=0; j<k+1; j++){
+			for (int j=0; j<k+1; j++){
 				int v2 = 1;
-				if((k-j) % 2 == 1)
+				if ((k-j) % 2 == 1)
 					v2 = -1;
 				int v3 = v2 * choose(k,j) * pow(j,n);
 				sumv += v3;
@@ -296,7 +296,7 @@ double RbMath::lnStirlingFirst(int n, int k) {
 
 int RbMath::signedStirlingFirst(int n, int k) {
 	int sign = 1;
-	if((n-k) % 2 == 1)
+	if ((n-k) % 2 == 1)
 		sign = -1;
 	unsigned long v = stirlingFirst(n,k);
 	std::cout << v << std::endl;

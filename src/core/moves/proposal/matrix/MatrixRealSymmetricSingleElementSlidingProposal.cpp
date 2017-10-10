@@ -70,7 +70,7 @@ double MatrixRealSymmetricSingleElementSlidingProposal::getProposalTuningParamet
 /**
  * Perform the proposal.
  *
- * A sliding proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * A sliding proposal draws a random uniform number u ~ unif (-0.5,0.5)
  * and MatrixRealSingleElementSlidings the current vale by
  * delta = delta * u
  * where delta is the tuning parameter of the proposal to influence the size of the proposals.
@@ -96,7 +96,7 @@ double MatrixRealSymmetricSingleElementSlidingProposal::doProposal( void )
     double slidingFactor = delta * ( u - 0.5 );
     v[indexa][indexb] += slidingFactor;
     
-    if(indexa != indexb)
+    if (indexa != indexb)
     {
         v[indexb][indexa] += slidingFactor;
     }

@@ -87,7 +87,7 @@ double RbStatistics::F::pdf(double m, double n, double x, bool give_log) {
     
     if (!RbMath::isFinite(m) && !RbMath::isFinite(n)) 
     {
-        if(x == 1.0) 
+        if (x == 1.0) 
             return RbConstants::Double::inf;
         return 0.0;
     }
@@ -148,11 +148,11 @@ double RbStatistics::F::cdf(double df1, double df2, double x) {
     {
         if (df1 == RbConstants::Double::inf) 
         {
-            if(x <  1.0) 
+            if (x <  1.0) 
                 return 0.0;
-            if(x == 1.0) 
+            if (x == 1.0) 
                 return (0.5);
-            if(x >  1.0) 
+            if (x >  1.0) 
                 return 1.0;
         }
         
@@ -196,7 +196,7 @@ double RbStatistics::F::quantile(double df1, double df2, double p)
     
     if (df1 <= df2 && df2 > 4e5) 
     {
-        if(!RbMath::isFinite(df1)) /* df1 == df2 == Inf : */
+        if (!RbMath::isFinite(df1)) /* df1 == df2 == Inf : */
             return 1.0;
         return RbStatistics::ChiSquare::quantile(p, df1) / df1;
     }

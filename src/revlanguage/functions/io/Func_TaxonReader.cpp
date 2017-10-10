@@ -105,8 +105,8 @@ const TypeSpec& Func_TaxonReader::getTypeSpec( void ) const
 const TypeSpec& Func_TaxonReader::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = ModelVector<Taxon>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = ModelVector<Taxon>::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

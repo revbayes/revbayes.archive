@@ -113,7 +113,7 @@ bool Workspace::addDistribution( Distribution *dist )
         throw RbException("There is already a type named '" + dist->getType() + "' in the workspace");
     }
     
-    functionTable.addFunction( new ConstructorFunction( dist ) );
+    function_table.addFunction( new ConstructorFunction( dist ) );
     
     // add the help entry for this distribution to the global help system instance
     RevBayesCore::RbHelpDistribution* entry = static_cast<RevBayesCore::RbHelpDistribution*>( dist->getHelpEntry() );
@@ -168,7 +168,7 @@ bool Workspace::addTypeWithConstructor( RevObject *templ )
     }
     
     
-    functionTable.addFunction( new ConstructorFunction(templ) );
+    function_table.addFunction( new ConstructorFunction(templ) );
     
     // add the help entry for this type to the global help system instance
     RevBayesCore::RbHelpSystem::getHelpSystem().addHelpType( static_cast<RevBayesCore::RbHelpType*>(templ->getHelpEntry()) );
@@ -330,7 +330,7 @@ void Workspace::printValue(std::ostream& o) const
     }
 
     std::stringstream s;
-    functionTable.printValue(s, false);
+    function_table.printValue(s, false);
 
     if (s.str().size() > 0 )
     {

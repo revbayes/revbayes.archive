@@ -94,7 +94,7 @@ double MatrixRealSingleElementSlideProposal::getProposalTuningParameter( void ) 
 /**
  * Perform the proposal.
  *
- * A sliding proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * A sliding proposal draws a random uniform number u ~ unif (-0.5,0.5)
  * and MatrixRealSingleElementSlidings the current vale by
  * delta = lambda * u
  * where lambda is the tuning parameter of the proposal to influence the size of the proposals.
@@ -111,7 +111,7 @@ double MatrixRealSingleElementSlideProposal::doProposal( void )
     double u = rng->uniform01();
     double scalingFactor = delta * ( u - 0.5 );
     
-    if(array != NULL)
+    if (array != NULL)
     {
         RbVector<RbVector<double> >& v = array->getValue();
         // choose an index
@@ -123,7 +123,7 @@ double MatrixRealSingleElementSlideProposal::doProposal( void )
 
         v[indexa][indexb] += scalingFactor;
 
-        if( symmetric == true && indexa != indexb)
+        if ( symmetric == true && indexa != indexb)
         {
             v[indexb][indexa] += scalingFactor;
         }
@@ -142,7 +142,7 @@ double MatrixRealSingleElementSlideProposal::doProposal( void )
 
         v[indexa][indexb] += scalingFactor;
 
-        if( symmetric == true && indexa != indexb)
+        if ( symmetric == true && indexa != indexb)
         {
             v[indexb][indexa] += scalingFactor;
         }
@@ -189,11 +189,11 @@ void MatrixRealSingleElementSlideProposal::printParameterSummary(std::ostream &o
  */
 void MatrixRealSingleElementSlideProposal::undoProposal( void )
 {
-    if(array != NULL)
+    if (array != NULL)
     {
         RbVector<RbVector<double> >& v = array->getValue();
         v[indexa][indexb] = storedValue;
-        if( symmetric == true )
+        if ( symmetric == true )
         {
             v[indexb][indexa] = storedValue;
         }
@@ -203,7 +203,7 @@ void MatrixRealSingleElementSlideProposal::undoProposal( void )
     {
         MatrixReal& v = matrix->getValue();
         v[indexa][indexb] = storedValue;
-        if( symmetric == true )
+        if ( symmetric == true )
         {
             v[indexb][indexa] = storedValue;
         }
@@ -221,7 +221,7 @@ void MatrixRealSingleElementSlideProposal::undoProposal( void )
  */
 void MatrixRealSingleElementSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    if(oldN == array)
+    if (oldN == array)
     {
         array = static_cast< StochasticNode<RbVector<RbVector<double> > >* >(newN) ;
     }

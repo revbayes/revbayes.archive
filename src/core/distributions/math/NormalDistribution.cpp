@@ -52,7 +52,7 @@ double NormalDistribution::computeLnProbability( void ) {
 
 
 double NormalDistribution::getMax( void ) const {
-    if( max != NULL )
+    if ( max != NULL )
     {
         return max->getValue();
     }
@@ -64,7 +64,7 @@ double NormalDistribution::getMax( void ) const {
 
 
 double NormalDistribution::getMin( void ) const {
-    if( min != NULL )
+    if ( min != NULL )
     {
         return min->getValue();
     }
@@ -81,7 +81,7 @@ double NormalDistribution::quantile(double p) const {
 
 
 void NormalDistribution::redrawValue( void ) {
-    if( getMin() == RbConstants::Double::neginf && getMax() == RbConstants::Double::inf )
+    if ( getMin() == RbConstants::Double::neginf && getMax() == RbConstants::Double::inf )
     {
         *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);
     }

@@ -581,7 +581,7 @@ template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::swapParent( const RevBayesCore::DagNode *oldParent, const RevBayesCore::DagNode *newParent )
 {
     // We are sure to get into trouble if either one of these is NULL
-    if( oldParent == NULL || newParent == NULL )
+    if ( oldParent == NULL || newParent == NULL )
     {
         throw RbException( "Attempt to swap NULL distribution parameter of RevBayesCore::StochasticNode" );
     }

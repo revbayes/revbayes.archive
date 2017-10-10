@@ -73,7 +73,7 @@ double CorrelationMatrixSpecificElementBetaProposal::getProposalTuningParameter(
 /**
  * Perform the proposal.
  *
- * A Beta proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * A Beta proposal draws a random uniform number u ~ unif (-0.5,0.5)
  * and MatrixRealSingleSpecificElementBetas the current vale by
  * delta = lambda * u
  * where lambda is the tuning parameter of the proposal to influence the size of the proposals.

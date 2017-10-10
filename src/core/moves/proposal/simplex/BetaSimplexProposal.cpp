@@ -108,7 +108,7 @@ double BetaSimplexProposal::propose( Simplex &value )
     
     double sum = 0.0;
     double ln_Hastings_ratio = 0.0;
-    for(size_t i = 0; i < cats; i++)
+    for (size_t i = 0; i < cats; i++)
     {
         if ( i != chosen_index )
         {
@@ -128,7 +128,7 @@ double BetaSimplexProposal::propose( Simplex &value )
     // simplex can gradually drift until it the sum
     // is substantially different from one.
     // normalize the vector to enforce sum = 1
-    for(size_t i = 0; i < cats; ++i)
+    for (size_t i = 0; i < cats; ++i)
     {
         value[i] /= sum;
     }

@@ -216,7 +216,7 @@ RevObject& RevVariable::getRevObject(void) const
     {
         needs_building = false;
         
-        //        const std::set<int>& indices = theVar->getElementIndices();
+        //        const std::set<int>& indices = the_var->getElementIndices();
         //        if ( indices.empty() )
         //        {
         //            throw RbException("Cannot create a vector variable with name '" + identifier + "' because it doesn't have elements.");
