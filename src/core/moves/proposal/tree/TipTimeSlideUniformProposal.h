@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class TipTimeSlideUniformProposal : public Proposal {
         
     public:
-        TipTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double>* o);  //!<  constructor
+        TipTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double>* o);                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal

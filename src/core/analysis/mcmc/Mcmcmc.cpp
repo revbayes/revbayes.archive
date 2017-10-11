@@ -621,28 +621,30 @@ void Mcmcmc::printSummaryPair(std::ostream &o, const size_t &row, const size_t &
     o << ratio;
     o << " ";
     
-    // print the heat of the colder chain
+    size_t rowChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), row) - heat_ranks.begin();
+    size_t colChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), col) - heat_ranks.begin();
+    
+    // print the heat of the chain that swaps are proposed from
     int h_length = 6;
     for (int i = 0; i < h_length; ++i)
     {
         o << " ";
     }
-    o << chain_heats[heat_ranks[row]];
+    o << chain_heats[rowChainIdx];
     o << " ";
     
-    // print the heat of the hotter chain
+    // print the heat of the chain that swaps are proposed to
     h_length = 5;
     for (int i = 0; i < h_length; ++i)
     {
         o << " ";
     }
-    o << chain_heats[heat_ranks[col]];
+    o << chain_heats[colChainIdx];
     o << " ";
     
     o << std::endl;
     
 }
-
 
 
 void Mcmcmc::redrawStartingValues( void )
