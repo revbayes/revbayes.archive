@@ -278,7 +278,11 @@ double Mcmc::getModelLnProbability(bool likelihood_only)
     {
         
         DagNode *the_node = *it;
-        if ( likelihood_only == true && the_node->isClamped() == true )
+        if (likelihood_only == false)
+        {
+            pp += the_node->getLnProbability();
+        }
+        else if (the_node->isClamped() == true )
         {
             pp += the_node->getLnProbability();
         }
@@ -409,7 +413,7 @@ void Mcmc::initializeSampler( bool prior_only )
     
     
     int num_tries     = 0;
-    int max_num_tries = 1000000;
+    int max_num_tries = 100000;
     double ln_probability = 0.0;
     for ( ; num_tries < max_num_tries; ++num_tries )
     {
@@ -808,7 +812,7 @@ void Mcmc::setChainPosteriorHeat(double h)
 
 
 /**
- * Get the index of the current chain.
+ * Set the index of the current chain.
  */
 void Mcmc::setChainIndex(size_t x)
 {
@@ -841,6 +845,15 @@ void Mcmc::setModel( Model *m, bool redraw )
     
     // free the old model
     delete old_model;
+}
+
+
+/**
+ * Set the vector of moves of the current chain.
+ */
+void Mcmc::setMoves(const RbVector<Move> &mvs)
+{
+    moves = mvs;
 }
 
 

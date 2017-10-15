@@ -610,7 +610,7 @@ double RbMath::incompleteBeta(double a, double b, double x) {
     }
     
 	/* finish calculation */
-	value = value * exp(pp * log(xx) + (qq - 1.0) * log(cx)) / (beta(a, b) * pp);
+	value = value * exp(pp * log(xx) + (qq - 1.0) * log(cx) - lnBeta(a, b) - log(pp));
 	if ( indx )
 		value = 1.0 - value;
 	return value;

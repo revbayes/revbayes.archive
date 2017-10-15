@@ -26,7 +26,7 @@ namespace RevLanguage {
     
     public:
         Dist_unif ( void );
-        virtual ~Dist_unif ();
+        virtual ~Dist_unif();
     
         // Basic utility functions
         Dist_unif*                                      clone(void) const;                                                                      //!< Clone the object

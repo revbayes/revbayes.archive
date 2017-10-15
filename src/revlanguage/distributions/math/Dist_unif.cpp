@@ -8,12 +8,12 @@
 
 using namespace RevLanguage;
 
-Dist_unif::Dist_unif () : ContinuousDistribution() {
+Dist_unif::Dist_unif() : ContinuousDistribution() {
     
 }
 
 
-Dist_unif::~Dist_unif () {
+Dist_unif::~Dist_unif() {
     
 }
 
