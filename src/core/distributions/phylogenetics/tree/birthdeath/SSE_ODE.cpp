@@ -130,11 +130,25 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
                 {
                     const std::vector<unsigned>& states = it->first;
                     double lambda = it->second;
-                    if (i == states[0])
+                    if ( backward_time == true )
                     {
-                        double term1 = safe_x[states[1] + num_states] * safe_x[states[2]];
-                        double term2 = safe_x[states[2] + num_states] * safe_x[states[1]];
-                        dxdt[i + num_states] += lambda * (term1 + term2 );
+                        if (i == states[0])
+                        {
+                            double term1 = safe_x[states[1] + num_states] * safe_x[states[2]];
+                            double term2 = safe_x[states[2] + num_states] * safe_x[states[1]];
+                            dxdt[i + num_states] += lambda * (term1 + term2 );
+                        }
+                    }
+                    else
+                    {
+                        if (i == states[1])
+                        {
+                            dxdt[i + num_states] += lambda * safe_x[states[0] + num_states] * safe_x[states[2]];
+                        }
+                        if (i == states[2])
+                        {
+                            dxdt[i + num_states] += lambda * safe_x[states[0] + num_states] * safe_x[states[1]];
+                        }
                     }
                 }
             }
