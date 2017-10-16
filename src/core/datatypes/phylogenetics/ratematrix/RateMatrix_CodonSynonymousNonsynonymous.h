@@ -16,8 +16,7 @@ namespace RevBayesCore {
     /**
      * @brief Codon rate matrix class with different rates for synonymous and non-synonymous substitutions.
      *
-     * This class implements the special Jukes-Cantor rate matrix with the known analytical solution
-     * for the transition probabilities.
+     * This class implements the codon rate matrix with different dN/ dS rates.
      * The JC has no parameter but can be applied to any number of states.
      * The resulting rate matrix is computed by:
      *
@@ -35,32 +34,34 @@ namespace RevBayesCore {
     class RateMatrix_CodonSynonymousNonsynonymous : public TimeReversibleRateMatrix {
         
     public:
-        RateMatrix_CodonSynonymousNonsynonymous(size_t n);                                                                                               //!< Construct rate matrix with n states
+        RateMatrix_CodonSynonymousNonsynonymous(void);                                                                                               //!< Construct rate matrix with n states
         RateMatrix_CodonSynonymousNonsynonymous(const RateMatrix_CodonSynonymousNonsynonymous& m);                                                                                //!< Copy constructor
         virtual                             ~RateMatrix_CodonSynonymousNonsynonymous(void);                                                              //!< Destructor
         
         // overloaded operators
-        RateMatrix_CodonSynonymousNonsynonymous&                     operator=(const RateMatrix_CodonSynonymousNonsynonymous& r);
+        RateMatrix_CodonSynonymousNonsynonymous&                operator=(const RateMatrix_CodonSynonymousNonsynonymous& r);
         
         // RateMatrix functions
-        virtual RateMatrix_CodonSynonymousNonsynonymous&             assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
-        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
-        RateMatrix_CodonSynonymousNonsynonymous*                     clone(void) const;
-        void                                update(void);
+        virtual RateMatrix_CodonSynonymousNonsynonymous&        assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
+        void                                                    calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
+        RateMatrix_CodonSynonymousNonsynonymous*                clone(void) const;
+        void                                                    setKappa(double k);
+        void                                                    setOmega(double o);
+        void                                                    update(void);
         
     private:
-        void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
-        void                                computeOffDiagonal( void );
-        void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case
-        void                                tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
-        void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
+        void                                                    calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
+        void                                                    computeOffDiagonal( void );
+        void                                                    tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case
+        void                                                    tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
+        void                                                    updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
         
-        EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
-        std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
-        std::vector<std::complex<double> >  cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
+        EigenSystem*                                            theEigenSystem;                                                                     //!< Holds the eigen system
+        std::vector<double>                                     c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
+        std::vector<std::complex<double> >                      cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
         
-        double                              kappa;
-        double                              omega;
+        double                                                  kappa;
+        double                                                  omega;
 
     };
     
