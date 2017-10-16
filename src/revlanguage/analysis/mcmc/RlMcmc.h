@@ -49,6 +49,9 @@ namespace RevLanguage {
         std::vector<std::string>                        getHelpSeeAlso(void) const;                                 //!< Get suggested other functions
         std::string                                     getHelpTitle(void) const;                                   //!< Get the title of this help entry
         
+        RevPtr<const RevVariable>                       likelihood_heat;
+        RevPtr<const RevVariable>                       posterior_heat;
+        
     };
     
 }
