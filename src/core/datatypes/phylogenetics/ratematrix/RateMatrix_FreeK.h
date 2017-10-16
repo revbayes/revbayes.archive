@@ -59,7 +59,8 @@ namespace RevBayesCore {
         void                                updateUniformization(void);                                                         //!< Update the system for uniformization
         void                                expandUniformization(int truncation, double tolerance) const;
         void                                expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tolerance) const;
-        void                                checkMatrixTolerance(MatrixReal x, double tolerance, bool& diff) const;
+        void                                checkMatrixIrreducible(double tolerance, TransitionProbabilityMatrix& P) const;
+        void                                checkMatrixDiff(MatrixReal x, double tolerance, bool& diff) const;
         
         bool                                rescale;
         bool                                useScalingAndSquaring;
