@@ -57,13 +57,26 @@ std::string AminoAcidState::getStateLabels( void ) const
 
 void AminoAcidState::addState(const std::string &symbol)
 {
-    ++num_observed_states;
+    if ( symbol[0] == '-' )
+    {
+        setGapState( true );
+    }
+    else if ( symbol[0] == '?' )
+    {
+        setMissingState( true );
+    }
+    else
+    {
+
+        ++num_observed_states;
     
-    std::string labels = getStateLabels();
-    size_t pos = labels.find(symbol);
+        std::string labels = getStateLabels();
+        size_t pos = labels.find(symbol);
+        
+        state.set( pos );
+        index_single_state = pos;
+    }
     
-    state.set( pos );
-    index_single_state = pos;
 }
 
 
