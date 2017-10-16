@@ -1,7 +1,9 @@
 #include "AminoAcidState.h"
+#include "RbException.h"
 
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 
 using namespace RevBayesCore;
 
@@ -118,8 +120,31 @@ void AminoAcidState::setState(const std::string &s)
         ++num_observed_states;
         
         size_t pos = labels.find(s[i]);
-        state.set(pos);
-        index_single_state = pos;
+        if ( pos >= 20  )
+        {
+            
+            if ( s[i] == '-' )
+            {
+                setGapState( true );
+            }
+            else if ( s[i] == '?' )
+            {
+                setMissingState( true );
+            }
+            else
+            {
+                std::stringstream ss;
+                ss << "Unknown state '" << s[i] << "' cannot be used for amino acid characters.";
+                throw RbException( ss.str() );
+            }
+            
+        }
+        else
+        {
+            state.set(pos);
+            index_single_state = pos;
+        }
+        
     }
     
 }
