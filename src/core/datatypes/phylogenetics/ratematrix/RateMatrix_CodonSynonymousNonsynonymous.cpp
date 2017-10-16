@@ -14,7 +14,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous(size_t n) : TimeReversibleRateMatrix( n )
+RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous( void ) : TimeReversibleRateMatrix( 64 )
 {
     
     theEigenSystem       = new EigenSystem(the_rate_matrix);
@@ -329,6 +329,28 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsComplexEigens(double t, Tra
             P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
         }
     }
+}
+
+
+void RateMatrix_CodonSynonymousNonsynonymous::setKappa(double k)
+{
+    
+    kappa = k;
+    
+    // set flags
+    needs_update = true;
+    
+}
+
+
+void RateMatrix_CodonSynonymousNonsynonymous::setOmega(double o)
+{
+    
+    omega = o;
+    
+    // set flags
+    needs_update = true;
+    
 }
 
 
