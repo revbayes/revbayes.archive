@@ -163,6 +163,7 @@
 #include "Dist_halfNormalPositive.h"
 #include "Dist_inverseGamma.h"
 #include "Dist_inverseWishart.h"
+#include "Dist_Laplace.h"
 #include "Dist_LKJ.h"
 #include "Dist_LKJPartial.h"
 #include "Dist_lnorm.h"
@@ -376,10 +377,20 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddContinuousDistribution< Real             >( new Dist_exponentialOffset() );
         AddContinuousDistribution< RealPos          >( new Dist_exponentialOffsetPositive() );
 
+        // Laplace distribution
+        AddContinuousDistribution< Real             >( new Dist_Laplace() );
+        
+        // LKJ distribution
+        AddDistribution< MatrixRealSymmetric        >( new Dist_LKJ() );
+        AddDistribution< MatrixRealSymmetric        >( new Dist_LKJPartial() );
+        
         // lognormal distribution
         AddContinuousDistribution< RealPos          >( new Dist_lnorm() );
         AddContinuousDistribution< Real             >( new Dist_lnormOffset() );
         AddContinuousDistribution< RealPos          >( new Dist_lnormOffsetPositive() );
+        
+        // LogUniform distribution
+        AddContinuousDistribution< RealPos          >( new Dist_logUniform() );
 
         // multinomial distribution
         AddDistribution< ModelVector<Natural>       >( new Dist_multinomial() );
@@ -389,9 +400,6 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // normal distribution
         AddContinuousDistribution< Real             >( new Dist_norm() );
-
-        // LogUniform distribution
-        AddContinuousDistribution< RealPos          >( new Dist_logUniform() );
 
         // Uniform distribution with normal distributed bounds
         AddContinuousDistribution< Real             >( new Dist_SoftBoundUniformNormal() );
@@ -407,10 +415,6 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // White-Noise process
         AddContinuousDistribution< RealPos          >( new Dist_whiteNoise() );
-
-        // LKJ distribution
-        AddDistribution< MatrixRealSymmetric        >( new Dist_LKJ() );
-        AddDistribution< MatrixRealSymmetric        >( new Dist_LKJPartial() );
         
         // Wishart distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_wishart() );
