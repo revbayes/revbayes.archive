@@ -148,6 +148,7 @@
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_AddRemoveTip.h"
 #include "Move_CollapseExpandFossilBranch.h"
+#include "Move_IndependentTopology.h"
 #include "Move_EmpiricalTree.h"
 #include "Move_FNPR.h"
 #include "Move_TipTimeSlideUniform.h"
@@ -304,6 +305,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor( new Move_AddRemoveTip()     );
         addTypeWithConstructor( new Move_CollapseExpandFossilBranch()     );
+        addTypeWithConstructor( new Move_IndependentTopology()                  );
 		addTypeWithConstructor( new Move_EmpiricalTree()                  );
         addTypeWithConstructor( new Move_FNPR()                           );
         addTypeWithConstructor( new Move_GibbsPruneAndRegraft()           );

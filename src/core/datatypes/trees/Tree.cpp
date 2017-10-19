@@ -1074,7 +1074,22 @@ void Tree::reroot(const Clade &o, bool reindex)
 
     if ( root->containsClade(outgroup, strict ) == false )
     {
-        throw RbException("Cannot reroot the tree because we could not find an outgroup with name '" + outgroup.toString() + "'.");
+        bool found = false;
+
+        // check for the inverted clade
+        RbBitSet b = outgroup.getBitRepresentation();
+        b.flip();
+        outgroup.setBitRepresentation(b);
+
+        if ( root->containsClade(outgroup, strict ) == false )
+        {
+            found = true;
+        }
+
+        if( found == false )
+        {
+            throw RbException("Cannot reroot the tree because we could not find an outgroup with name '" + outgroup.toString() + "'.");
+        }
     }
 
     // reset parent/child relationships
