@@ -107,9 +107,21 @@ double IndependentTopologyProposal::doProposal( void )
         proposal_tree.orderNodesByIndex();
     }
 
+    // set the tip ages and sampled ancestor flags
+    const std::vector<TopologyNode*>& proposal_nodes = proposal_tree.getNodes();
+    for(size_t i = 0; i < proposal_tree.getNumberOfTips(); i++)
+    {
+        proposal_nodes[i]->setAge( variable->getValue().getTipNode(i).getAge() );
+
+        if( variable->getValue().getTipNode(i).isSampledAncestor() )
+        {
+            proposal_nodes[i]->getParent().setAge( proposal_nodes[i]->getAge() );
+            proposal_nodes[i]->setSampledAncestor( true );
+        }
+    }
+
     // get the sorted node ages
     const std::vector<TopologyNode*>& stored_nodes = variable->getValue().getNodes();
-
     std::vector<double> ages;
     for(size_t i = 0; i < stored_nodes.size(); i++)
     {
@@ -126,22 +138,9 @@ double IndependentTopologyProposal::doProposal( void )
     std::vector<size_t> ranking = recursivelyRank( proposal_tree.getRoot(), proposal_ln_num_rankings );
 
     // update the ranked node ages
-    const std::vector<TopologyNode*>& proposal_nodes = proposal_tree.getNodes();
     for(size_t i = 0; i < ranking.size(); i++)
     {
         proposal_nodes[ranking[i]]->setAge( ages[i] );
-    }
-
-    // set the tip ages
-    for(size_t i = 0; i < proposal_tree.getNumberOfTips(); i++)
-    {
-        proposal_nodes[i]->setAge( variable->getValue().getTipNode(i).getAge() );
-
-        if( variable->getValue().getTipNode(i).isSampledAncestor() )
-        {
-            proposal_nodes[i]->getParent().setAge( proposal_nodes[i]->getAge() );
-            proposal_nodes[i]->setSampledAncestor( true );
-        }
     }
 
     variable->setValue( proposal_tree.clone() );
@@ -183,6 +182,11 @@ std::vector<size_t> IndependentTopologyProposal::recursivelyRank( const Topology
 
         // get the child ranking
         std::vector<size_t> child_ranking = recursivelyRank( n.getChild(i), ln_num_rankings );
+
+        if( child_ranking.empty() == true )
+        {
+            continue;
+        }
 
         // choose new ranks for the child nodes
         std::vector<size_t> pos;
