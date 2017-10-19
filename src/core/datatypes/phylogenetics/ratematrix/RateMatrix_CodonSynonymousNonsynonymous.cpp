@@ -14,7 +14,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous(size_t n) : TimeReversibleRateMatrix( n )
+RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous( void ) : TimeReversibleRateMatrix( 64 )
 {
     
     theEigenSystem       = new EigenSystem(the_rate_matrix);
@@ -165,10 +165,29 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
 
     size_t rateClass = 0;
     
+    std::string codons [] = {
+        "AAA", "AAC", "AAG", "AAT",
+        "ACA", "ACC", "ACG", "ACT",
+        "AGA", "AGC", "AGG", "AGT",
+        "ATA", "ATC", "ATG", "ATT",
+        "CAA", "CAC", "CAG", "CAT",
+        "CCA", "CCC", "CCG", "CCT",
+        "CGA", "CGC", "CGG", "CGT",
+        "CTA", "CTC", "CTG", "CTT",
+        "GAA", "GAC", "GAG", "GAT",
+        "GCA", "GCC", "GCG", "GCT",
+        "GGA", "GGC", "GGG", "GGT",
+        "GTA", "GTC", "GTG", "GTT",
+        "TAA", "TAC", "TAG", "TAT",
+        "TCA", "TCC", "TCG", "TCT",
+        "TGA", "TGC", "TGG", "TGT",
+        "TTA", "TTC", "TTG", "TTT",
+    };
+    
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0; i<num_states; ++i)
     {
-        CodonState c1 = CodonState(i);
+        CodonState c1 = CodonState( codons[i] );
         std::vector<unsigned int> codon_from = c1.getTripletStates();
         unsigned int codon_from_pos_1 = codon_from[0];
         unsigned int codon_from_pos_2 = codon_from[1];
@@ -178,7 +197,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
         
         for (size_t j=i+1; j<num_states; ++j)
         {
-            CodonState c2 = CodonState(j);
+            CodonState c2 = CodonState( codons[j] );
             
             std::vector<unsigned int> codon_to = c2.getTripletStates();
             unsigned int codon_to_pos_1 = codon_to[0];
@@ -329,6 +348,28 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsComplexEigens(double t, Tra
             P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
         }
     }
+}
+
+
+void RateMatrix_CodonSynonymousNonsynonymous::setKappa(double k)
+{
+    
+    kappa = k;
+    
+    // set flags
+    needs_update = true;
+    
+}
+
+
+void RateMatrix_CodonSynonymousNonsynonymous::setOmega(double o)
+{
+    
+    omega = o;
+    
+    // set flags
+    needs_update = true;
+    
 }
 
 

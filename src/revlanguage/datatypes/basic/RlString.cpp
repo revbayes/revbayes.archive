@@ -101,7 +101,7 @@ RevPtr<RevVariable> RlString::executeMethod( std::string const &name, const std:
     {
         found = true;
         
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        long index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         const std::string &str = getValue();
         std::string letter(1,str[index]);
         return RevPtr<RevVariable>( new RevVariable( new RlString( letter ) ) );
@@ -111,8 +111,8 @@ RevPtr<RevVariable> RlString::executeMethod( std::string const &name, const std:
         found = true;
         
         size_t arg_idx = 0;
-        int begin = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
-        int end = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
+        long begin = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
+        long end = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
         const std::string &str = getValue();
         std::string substr = str.substr(begin,end-begin+1);
         return RevPtr<RevVariable>( new RevVariable( new RlString( substr ) ) );
@@ -121,7 +121,7 @@ RevPtr<RevVariable> RlString::executeMethod( std::string const &name, const std:
     {
         found = true;
         
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        long index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         const std::string &str = getValue();
         std::string letter(1,str[index]);
         return RevPtr<RevVariable>( new RevVariable( new RlString( letter ) ) );
@@ -205,6 +205,7 @@ void RlString::parseValue(void)
                 case '\\': c = '\\'; break;
                 case 'n': c = '\n'; break;
                 case 't': c = '\t'; break;
+                case '"': c = '"'; break;
                     // all other escapes
                 default:
                     // invalid escape sequence - skip it. alternatively you can copy it as is, throw an exception...

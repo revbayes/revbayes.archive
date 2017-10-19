@@ -59,7 +59,7 @@ size_t yycolumn;
 DIGIT    [0-9] 
 EXP      [Ee][+-]?[0-9]+
 ID       [_]*[a-zA-Z][a-zA-Z0-9_]*
-STRING   \x22[^"]*\x22
+STRING   \x22(\\.|[^\"])*\x22
 COMMENT  \x23.*
 
 %%
