@@ -1323,7 +1323,13 @@ bool TopologyNode::isRoot( void ) const
 bool TopologyNode::isSampledAncestor( void ) const
 {
     
-    return sampled_ancestor;
+    bool sa = sampled_ancestor;
+    for(size_t i = 0; i < children.size(); i++)
+    {
+        sa = sa || children[i]->isSampledAncestor();
+    }
+
+    return sa;
 }
 
 
