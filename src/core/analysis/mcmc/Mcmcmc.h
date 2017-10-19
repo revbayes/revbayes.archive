@@ -73,6 +73,7 @@ namespace RevBayesCore {
         void                                    swapRandomChains(void);
         void                                    synchronizeValues(bool likelihood_only);
         void                                    synchronizeHeats(void);
+        void                                    synchronizeTuningInfo(void);
         void                                    updateChainState(size_t j);
         double                                  computeBeta(double d, size_t i);                    // incremental temperature schedule
         
@@ -101,6 +102,8 @@ namespace RevBayesCore {
         unsigned long                           generation;
         std::vector< std::vector<unsigned long> > numAttemptedSwaps;
         std::vector< std::vector<unsigned long> > numAcceptedSwaps;
+        
+        std::vector< std::vector<Mcmc::tuningInfo> >  chain_moves_tuningInfo;
     };
     
 }

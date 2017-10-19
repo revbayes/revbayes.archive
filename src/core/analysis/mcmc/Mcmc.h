@@ -29,6 +29,12 @@ namespace RevBayesCore {
         
         Mcmc&                                               operator=(const Mcmc &m);                                                               //!< Overloaded assignment operator
         
+        struct tuningInfo {
+            size_t                                          num_tried;
+            size_t                                          num_accepted;
+            double                                          tuning_parameter;
+        };
+        
         // public methods
         void                                                addFileMonitorExtension(const std::string &s, bool dir);
         void                                                addMonitor(const Monitor &m);
@@ -42,6 +48,7 @@ namespace RevBayesCore {
         double                                              getModelLnProbability(bool like_only);
         RbVector<Monitor>&                                  getMonitors(void);
         RbVector<Move>&                                     getMoves(void);
+        std::vector<tuningInfo>                             getMovesTuningInfo(void);
         MoveSchedule&                                       getSchedule(void);
         const MoveSchedule&                                 getSchedule(void) const;
         const std::string&                                  getScheduleType(void) const;
@@ -61,6 +68,7 @@ namespace RevBayesCore {
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
         void                                                setModel(Model *m, bool redraw);
         void                                                setMoves(const RbVector<Move> &mvs);
+        void                                                setMovesTuningInfo(const std::vector<tuningInfo> &mvs_ti);
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
         void                                                startMonitors(size_t numCycles, bool reopen);                                           //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
@@ -80,6 +88,7 @@ namespace RevBayesCore {
         Model*                                              model;
         RbVector<Monitor>                                   monitors;
         RbVector<Move>                                      moves;
+        std::vector<tuningInfo>                             moves_tuningInfo;
         MoveSchedule*                                       schedule;
         std::string                                         schedule_type;                                                                           //!< Type of move schedule to be used
 

@@ -53,6 +53,19 @@ Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &m
     // create an independent copy of the model, monitors and moves
     replaceDag(mvs,mons);
     
+    tuningInfo ti;
+    ti.num_tried = 0;
+    ti.num_accepted = 0;
+    ti.tuning_parameter = RbConstants::Double::neginf;
+    
+    moves_tuningInfo = std::vector<tuningInfo> (moves.size(), ti);
+    for (size_t i = 0; i < moves.size(); ++i)
+    {
+        moves_tuningInfo[i].num_tried = moves[i].getNumberTried();
+        moves_tuningInfo[i].num_accepted = moves[i].getNumberAccepted();
+        moves_tuningInfo[i].tuning_parameter = moves[i].getMoveTuningParameter();
+    }
+    
     initializeSampler();
     initializeMonitors();
 
@@ -83,6 +96,8 @@ Mcmc::Mcmc(const Mcmc &m) : MonteCarloSampler(m),
     
     // create an independent copy of the model, monitors and moves
     replaceDag(mvs,mons);
+    
+    moves_tuningInfo = m.moves_tuningInfo;
     
     initializeSampler();
     initializeMonitors();
@@ -308,6 +323,36 @@ RbVector<Monitor>& Mcmc::getMonitors(void)
 RbVector<Move>& Mcmc::getMoves(void)
 {
     return moves;
+}
+
+
+std::vector<Mcmc::tuningInfo> Mcmc::getMovesTuningInfo(void)
+{
+    
+    if (moves_tuningInfo.size() != moves.size())
+    {
+        throw RbException( "The number of moves does not match the length of tuning information structures." );
+    }
+    
+    // iterate over the moves
+    for (size_t i = 0; i < moves.size(); ++i)
+    {
+        moves_tuningInfo[i].num_tried = moves[i].getNumberTried();
+        moves_tuningInfo[i].num_accepted = moves[i].getNumberAccepted();
+        
+        double tmp_tuningParameter = moves[i].getMoveTuningParameter();
+        
+        if ((std::isnan(moves_tuningInfo[i].tuning_parameter) == true && std::isnan(tmp_tuningParameter) == false) || (std::isnan(moves_tuningInfo[i].tuning_parameter) == false && std::isnan(tmp_tuningParameter) == true))
+        {
+            throw RbException( "The tunability of some moves changed." );
+        }
+        else if (std::isnan(tmp_tuningParameter) == false)
+        {
+            moves_tuningInfo[i].tuning_parameter = moves[i].getMoveTuningParameter();
+        }
+    }
+    
+    return moves_tuningInfo;
 }
 
 
@@ -854,6 +899,35 @@ void Mcmc::setModel( Model *m, bool redraw )
 void Mcmc::setMoves(const RbVector<Move> &mvs)
 {
     moves = mvs;
+}
+
+
+void Mcmc::setMovesTuningInfo(const std::vector<tuningInfo> &mvs_ti)
+{
+    moves_tuningInfo = mvs_ti;
+    
+    if (moves_tuningInfo.size() != moves.size())
+    {
+        throw RbException( "The number of moves does not match the length of tuning information structures." );
+    }
+    
+    for (size_t i = 0; i < moves.size(); ++i)
+    {
+        moves[i].setNumberTried(moves_tuningInfo[i].num_tried);
+        moves[i].setNumberAccepted(moves_tuningInfo[i].num_accepted);
+        
+        double tmp_tuningParameter = moves[i].getMoveTuningParameter();
+        
+        if ((std::isnan(moves_tuningInfo[i].tuning_parameter) == true && std::isnan(tmp_tuningParameter) == false) || (std::isnan(moves_tuningInfo[i].tuning_parameter) == false && std::isnan(tmp_tuningParameter) == true))
+        {
+            throw RbException( "The tunability of some moves changed." );
+        }
+        else if (std::isnan(tmp_tuningParameter) == false)
+        {
+            moves[i].setMoveTuningParameter(moves_tuningInfo[i].tuning_parameter);
+        }
+    }
+    
 }
 
 
