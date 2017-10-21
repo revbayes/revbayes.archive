@@ -43,6 +43,7 @@ void IndependentTopologyProposal::cleanProposal( void )
     // nothing to do
 }
 
+
 const std::string& IndependentTopologyProposal::getProposalName( void ) const
 {
     static std::string name = "IndependentTopologyMove";
@@ -50,6 +51,12 @@ const std::string& IndependentTopologyProposal::getProposalName( void ) const
     return name;
 }
 
+
+double IndependentTopologyProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
+}
 
 
 /** Perform the move */
@@ -223,7 +230,6 @@ std::vector<size_t> IndependentTopologyProposal::recursivelyRank( const Topology
 }
 
 
-
 void IndependentTopologyProposal::undoProposal( void )
 {
     
@@ -233,18 +239,24 @@ void IndependentTopologyProposal::undoProposal( void )
 }
 
 
-/** Tune the proposal */
-void IndependentTopologyProposal::tune(double r)
-{
-    
-    // nothing to do
-}
-
-
 void IndependentTopologyProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast<StochasticNode<Tree>* >( newN );
     
+}
+
+
+void IndependentTopologyProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
+}
+
+
+/** Tune the proposal */
+void IndependentTopologyProposal::tune(double r)
+{
+    
+    // nothing to do
 }
 
