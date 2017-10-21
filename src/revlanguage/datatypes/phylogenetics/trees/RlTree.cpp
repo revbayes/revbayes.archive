@@ -89,7 +89,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
     {
         found = true;
 
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        long index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
 
         bool tf = this->dag_node->getValue().getNode((size_t)index).isInternal();
         return new RevVariable( new RlBoolean( tf ) );
@@ -105,7 +105,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
     {
         found = true;
 
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        long index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         const std::string& n = this->dag_node->getValue().getNode((size_t)index).getName();
         return new RevVariable( new RlString( n ) );
     }
@@ -139,6 +139,22 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
 //        RevBayesCore::TreeUtilities::rescaleTree(&tree, &tree.getRoot(), f);
 
         return NULL;
+    }
+    else if (name == "tipIndex")
+    {
+        found = true;
+        
+        std::string tip_name = "";
+        if ( args[0].getVariable()->getRevObject().getType() == RlString::getClassType() )
+        {
+            tip_name = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
+        }
+        else if ( args[0].getVariable()->getRevObject().getType() == Taxon::getClassType() )
+        {
+            tip_name = static_cast<const Taxon&>( args[0].getVariable()->getRevObject() ).getValue().getSpeciesName();
+        }
+        long index = this->dag_node->getValue().getTipNodeWithName( tip_name ).getIndex() + 1;
+        return new RevVariable( new Natural( index ) );
     }
     else if (name == "makeUltrametric")
     {
@@ -211,6 +227,13 @@ void Tree::initMethods( void )
     ArgumentRules* nodeNameArgRules = new ArgumentRules();
     nodeNameArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "nodeName", RlString::getClassTypeSpec(),  nodeNameArgRules ) );
+    
+    ArgumentRules* tip_index_arg_rules = new ArgumentRules();
+    std::vector<TypeSpec> tip_index_arg_types;
+    tip_index_arg_types.push_back( RlString::getClassTypeSpec() );
+    tip_index_arg_types.push_back( Taxon::getClassTypeSpec() );
+    tip_index_arg_rules->push_back( new ArgumentRule( "name", tip_index_arg_types, "The name of the tip/taxon.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "tipIndex", Natural::getClassTypeSpec(),  tip_index_arg_rules ) );
 
     ArgumentRules* drop_tip_arg_rules = new ArgumentRules();
     std::vector<TypeSpec> tip_types;

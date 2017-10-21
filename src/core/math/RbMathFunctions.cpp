@@ -823,7 +823,7 @@ double RbMath::lnBeta(double a, double b)
     else if (q >= 10) {
         /* p is small, but q is big. */
         corr = lnGammacor(q) - lnGammacor(p + q);
-        return lnGammacor(p) + corr + p - p * log(p + q)
+        return lnGamma(p) + corr + p - p * log(p + q)
             + (q - 0.5) * RbMath::log1p(-p / (p + q));
     }
     else

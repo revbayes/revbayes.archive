@@ -1320,10 +1320,19 @@ bool TopologyNode::isRoot( void ) const
 }
 
 
-bool TopologyNode::isSampledAncestor( void ) const
+bool TopologyNode::isSampledAncestor(  bool propagate ) const
 {
     
-    return sampled_ancestor;
+    bool sa = sampled_ancestor;
+    if( propagate == true )
+    {
+        for(size_t i = 0; i < children.size(); i++)
+        {
+            sa = sa || children[i]->isSampledAncestor(false);
+        }
+    }
+
+    return sa;
 }
 
 
