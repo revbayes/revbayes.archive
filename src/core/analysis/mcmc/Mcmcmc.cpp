@@ -16,7 +16,7 @@
 
 using namespace RevBayesCore;
 
-Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt, bool th, std::string sm) : MonteCarloSampler( ),
+Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt, bool th, double tht, std::string sm, std::string smo) : MonteCarloSampler( ),
 num_chains(nc),
 schedule_type(sT),
 current_generation(0),
@@ -27,8 +27,10 @@ swap_interval2(0),
 active_chain_index( 0 ),
 delta( dt ),
 tune_heat(th),
+tune_heat_target(tht),
 useNeighborSwapping(true),
-useRandomSwapping(false)
+useRandomSwapping(false),
+swap_mode(smo)
 {
     
     // initialize container sizes
@@ -79,7 +81,9 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
     heat_temps          = m.heat_temps;
     swap_interval       = m.swap_interval;
     swap_interval2      = m.swap_interval2;
+    swap_mode           = m.swap_mode;
     tune_heat           = m.tune_heat;
+    tune_heat_target     = m.tune_heat_target;
     useNeighborSwapping = m.useNeighborSwapping;
     useRandomSwapping   = m.useRandomSwapping;
     
@@ -397,10 +401,18 @@ void Mcmcmc::nextCycle(bool advanceCycle)
 #endif
             
             // perform chain swap
-            for (size_t i = 0; i < num_chains; ++i)
+            if (swap_mode == "single")
             {
                 swapChains("neighbor");
             }
+            else if (swap_mode == "multiple")
+            {
+                for (size_t i = 0; i < num_chains; ++i)
+                {
+                    swapChains("neighbor");
+                }
+            }
+            
         }
         if ((current_generation == 0 && burnin_generation % swap_interval2 == 0) || (current_generation > 0 && current_generation % swap_interval2 == 0))
         {
@@ -411,13 +423,21 @@ void Mcmcmc::nextCycle(bool advanceCycle)
 #endif
             
             // perform chain swap
-            for (size_t i = 0; i < num_chains; ++i)
+            if (swap_mode == "single")
             {
-                for (size_t j = 0; j < num_chains; ++j)
+                swapChains("random");
+            }
+            else if (swap_mode == "multiple")
+            {
+                for (size_t i = 0; i < num_chains; ++i)
                 {
-                    swapChains("random");
+                    for (size_t j = 0; j < num_chains; ++j)
+                    {
+                        swapChains("random");
+                    }
                 }
             }
+            
         }
     }
     else if (useNeighborSwapping == true)
@@ -431,10 +451,18 @@ void Mcmcmc::nextCycle(bool advanceCycle)
 #endif
             
             // perform chain swap
-            for (size_t i = 0; i < num_chains; ++i)
+            if (swap_mode == "single")
             {
                 swapChains("neighbor");
             }
+            else if (swap_mode == "multiple")
+            {
+                for (size_t i = 0; i < num_chains; ++i)
+                {
+                    swapChains("neighbor");
+                }
+            }
+            
         }
     }
     else if (useRandomSwapping == true)
@@ -448,13 +476,21 @@ void Mcmcmc::nextCycle(bool advanceCycle)
 #endif
             
             // perform chain swap
-            for (size_t i = 0; i < num_chains; ++i)
+            if (swap_mode == "single")
             {
-                for (size_t j = 0; j < num_chains; ++j)
+                swapChains("random");
+            }
+            else if (swap_mode == "multiple")
+            {
+                for (size_t i = 0; i < num_chains; ++i)
                 {
-                    swapChains("random");
+                    for (size_t j = 0; j < num_chains; ++j)
+                    {
+                        swapChains("random");
+                    }
                 }
             }
+            
         }
     }
     
@@ -491,6 +527,9 @@ void Mcmcmc::printOperatorSummary(void) const
     
     if (num_chains > 1 && active_PID == pid)
     {
+#ifdef RB_MPI
+        MPI_Barrier(MPI_COMM_WORLD);
+#endif
         printSummary(std::cout);
         std::cout << std::endl;
     }
@@ -1463,7 +1502,6 @@ void Mcmcmc::tune( void )
 {
     if (tune_heat == true && num_chains > 1)
     {
-        double tuneHeatTarget = 0.23;
         
         std::vector<double> heats_diff(num_chains - 1, 0.0);
         
@@ -1486,13 +1524,13 @@ void Mcmcmc::tune( void )
                 size_t numAcceptedSwapsPairwise = numAcceptedSwaps[i - 1][i] + numAcceptedSwaps[i][i - 1];
                 double rate = numAcceptedSwapsPairwise / (double)numAttemptedSwapsPairwise;
                 
-                if ( rate > tuneHeatTarget )
+                if ( rate > tune_heat_target )
                 {
-                    heats_diff[i - 1] *= (1.0 + (rate - tuneHeatTarget) / (1.0 - tuneHeatTarget));
+                    heats_diff[i - 1] *= (1.0 + (rate - tune_heat_target) / (1.0 - tune_heat_target));
                 }
                 else
                 {
-                    heats_diff[i - 1] /= (2.0 - rate / tuneHeatTarget);
+                    heats_diff[i - 1] /= (2.0 - rate / tune_heat_target);
                 }
                 
 //                std::cout << "rate=" << rate << ", heats_diff[" << i - 1 << "]=" << heats_diff[i - 1] << std::endl;

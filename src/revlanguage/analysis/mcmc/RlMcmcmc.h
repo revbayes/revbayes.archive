@@ -55,7 +55,9 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       delta_heat;
         RevPtr<const RevVariable>                       heat_temps;
         RevPtr<const RevVariable>                       tune_heat;
+        RevPtr<const RevVariable>                       tune_heat_target;
         RevPtr<const RevVariable>                       swap_method;
+        RevPtr<const RevVariable>                       swap_mode;
 
     };
     

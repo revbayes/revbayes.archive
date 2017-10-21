@@ -27,7 +27,7 @@ namespace RevBayesCore {
     class Mcmcmc : public MonteCarloSampler {
         
     public:
-        Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT="random", size_t nc=4, size_t si=100, double dt=0.1, bool th=true, std::string sm="neighbor");
+        Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT="random", size_t nc=4, size_t si=100, double dt=0.1, bool th=true, double tht=0.23, std::string sm="neighbor", std::string smo="multiple");
         Mcmcmc(const Mcmcmc &m);
         virtual                                ~Mcmcmc(void);                                       //!< Virtual destructor
         
@@ -93,9 +93,10 @@ namespace RevBayesCore {
         double                                  delta;                                              // delta-T, temperature increment for computeBeta
         std::vector<double>                     heat_temps;
         bool                                    tune_heat;
+        double                                  tune_heat_target;
         bool                                    useNeighborSwapping;
         bool                                    useRandomSwapping;
-        
+        std::string                             swap_mode;
         
         Mcmc*                                   base_chain;
         
