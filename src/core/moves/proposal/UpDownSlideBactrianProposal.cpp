@@ -2,6 +2,7 @@
 #include "UpDownSlideBactrianProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
@@ -127,7 +128,7 @@ double UpDownSlideBactrianProposal::doProposal( void )
     RandomNumberGenerator* rng     = GLOBAL_RNG;
         
     double u = rng->uniform01();
-    double delta = RbStatistics::Normal::rv(0.0, 1.0, *GLOBAL_RNG) * sqrt(1 - 0.95*0.95);
+    double delta = RbStatistics::Normal::rv(*GLOBAL_RNG) * RbConstants::BACT_SD;
     
     // See Yang and Rodriguez (2013) SI eqns 19 and 20
     // Currently hard-coding m = 0.95

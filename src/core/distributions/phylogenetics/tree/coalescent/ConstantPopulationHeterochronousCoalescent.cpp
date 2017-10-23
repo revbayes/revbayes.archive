@@ -70,19 +70,18 @@ double ConstantPopulationHeterochronousCoalescent::computeLnProbabilityTimes( vo
     
     // retrieve the times of any serially sampled tips
     std::vector<double> serialTimes;
-    size_t num_taxaAtPresent = 0;
+    size_t num_taxaAtPresent = value->getNumberOfTips();
     for (size_t i = 0; i < value->getNumberOfTips(); ++i)
     {
         double a = value->getNode(i).getAge();
         if ( a > 0.0 ) {
             serialTimes.push_back(a);
-        } else {
-            ++num_taxaAtPresent;
+            --num_taxaAtPresent;
         }
     }
     
     std::vector<double> combinedEventTimes;
-    std::vector<double> combinedEventTypes;
+    std::vector<int> combinedEventTypes;
 
     if (num_taxaAtPresent < num_taxa) {
 
@@ -102,7 +101,7 @@ double ConstantPopulationHeterochronousCoalescent::computeLnProbabilityTimes( vo
             if (nextSerialTime <= nextAge) {
                 // serial sample
                 combinedEventTimes.push_back(nextSerialTime);
-                combinedEventTypes.push_back(1.0);
+                combinedEventTypes.push_back(1);
                 ++atSerialTime;
                 if (atSerialTime < serialTimes.size()) {
                     nextSerialTime = serialTimes[atSerialTime];
@@ -112,14 +111,14 @@ double ConstantPopulationHeterochronousCoalescent::computeLnProbabilityTimes( vo
             } else {
                 // coalescence
                 combinedEventTimes.push_back(nextAge);
-                combinedEventTypes.push_back(-1.0);
+                combinedEventTypes.push_back(-1);
                 ++atAge;
             }
         } while (atAge < ages.size());
         
     } else {
         combinedEventTimes = ages;
-        combinedEventTypes = std::vector<double>(ages.size(),-1.0);
+        combinedEventTypes = std::vector<int>(ages.size(),-1);
     }
     
     
@@ -132,7 +131,7 @@ double ConstantPopulationHeterochronousCoalescent::computeLnProbabilityTimes( vo
         
         double deltaAge = combinedEventTimes[i] - windowStart;
         
-        if (combinedEventTypes[i] == 1.0) {
+        if (combinedEventTypes[i] == 1) {
             // sampled ancestor
             lnProbTimes -= nPairs * deltaAge / theta ;
             ++j;

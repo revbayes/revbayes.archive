@@ -112,6 +112,10 @@ namespace RbConstants {
         121645100408832000,
         2432902008176640000 };
     
+    /* constant for scaling N(0,1) RV in Bactrian move kernel with m=0.95, sqrt(1 - m^2) */
+    /* computed to 30 decimal places with Mathematica*/
+    /* see Yang and Rodriguez (2013) SI eqn 19 for more details*/
+    const double BACT_SD           = 0.312249899919919910292344656047;
 }
 
 #endif
