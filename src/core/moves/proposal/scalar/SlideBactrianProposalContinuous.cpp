@@ -145,10 +145,14 @@ void SlideBactrianProposalContinuous::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SlideBactrianProposalContinuous::printParameterSummary(std::ostream &o) const
+void SlideBactrianProposalContinuous::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "sigma = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 

@@ -119,10 +119,14 @@ void CorrelationMatrixRandomWalkProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void CorrelationMatrixRandomWalkProposal::printParameterSummary(std::ostream &o) const
+void CorrelationMatrixRandomWalkProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "sigma = " << sigma;
+    o << "sigma = ";
+    if (name_only == false)
+    {
+        o << sigma;
+    }
     
 }
 

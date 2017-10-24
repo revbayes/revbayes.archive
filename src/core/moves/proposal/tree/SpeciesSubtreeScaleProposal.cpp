@@ -284,7 +284,7 @@ void SpeciesSubtreeScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SpeciesSubtreeScaleProposal::printParameterSummary(std::ostream &o) const
+void SpeciesSubtreeScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
 
     // no parameters

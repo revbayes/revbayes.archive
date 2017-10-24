@@ -259,7 +259,7 @@ void NarrowExchangeRateMatrixProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NarrowExchangeRateMatrixProposal::printParameterSummary(std::ostream &o) const
+void NarrowExchangeRateMatrixProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // no parameters

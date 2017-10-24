@@ -155,7 +155,7 @@ void SubtreeScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SubtreeScaleProposal::printParameterSummary(std::ostream &o) const
+void SubtreeScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // no parameters

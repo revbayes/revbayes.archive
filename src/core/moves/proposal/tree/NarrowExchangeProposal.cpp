@@ -158,7 +158,7 @@ void NarrowExchangeProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NarrowExchangeProposal::printParameterSummary(std::ostream &o) const
+void NarrowExchangeProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // no parameters

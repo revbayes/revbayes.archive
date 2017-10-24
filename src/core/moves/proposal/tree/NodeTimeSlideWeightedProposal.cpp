@@ -228,7 +228,7 @@ void NodeTimeSlideWeightedProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NodeTimeSlideWeightedProposal::printParameterSummary(std::ostream &o) const
+void NodeTimeSlideWeightedProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }

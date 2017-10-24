@@ -50,7 +50,7 @@ namespace RevBayesCore {
         const std::string&                                          getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         double                                                      getProposalTuningParameter(void) const;
         void                                                        prepareProposal(void);                                      //!< Prepare the proposal
-        void                                                        printParameterSummary(std::ostream &o) const;               //!< Print the parameter summary
+        void                                                        printParameterSummary(std::ostream &o, bool name_only) const;               //!< Print the parameter summary
         void                                                        sampleNodeCharacters(TopologyNode* node);                       //!< Sample the characters at the node
         void                                                        setRateGenerator(const TypedDagNode<RateGenerator> *d);
         void                                                        setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d);
@@ -286,7 +286,7 @@ void RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::prepa
  * \param[in]     o     The stream to which we print the summary.
  */
 template<class charType>
-void RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::printParameterSummary(std::ostream &o) const
+void RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }

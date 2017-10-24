@@ -274,7 +274,7 @@ void CollapseExpandFossilBranchProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void CollapseExpandFossilBranchProposal::printParameterSummary(std::ostream &o) const
+void CollapseExpandFossilBranchProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }

@@ -200,7 +200,7 @@ void NearestNeighborInterchangeProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NearestNeighborInterchangeProposal::printParameterSummary(std::ostream &o) const
+void NearestNeighborInterchangeProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // no parameters

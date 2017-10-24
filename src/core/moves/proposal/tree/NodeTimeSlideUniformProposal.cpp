@@ -145,7 +145,7 @@ void NodeTimeSlideUniformProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NodeTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
+void NodeTimeSlideUniformProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }

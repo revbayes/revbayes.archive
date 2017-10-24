@@ -276,10 +276,14 @@ void DirichletSimplexProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void DirichletSimplexProposal::printParameterSummary(std::ostream &o) const
+void DirichletSimplexProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "alpha = " << alpha;
+    o << "alpha = ";
+    if (name_only == false)
+    {
+        o << alpha;
+    }
     
 }
 

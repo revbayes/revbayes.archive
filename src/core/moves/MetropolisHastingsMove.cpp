@@ -484,7 +484,7 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     o << ratio;
     o << " ";
     
-    proposal->printParameterSummary( o );
+    proposal->printParameterSummary( o, false );
     
     o << std::endl;
     

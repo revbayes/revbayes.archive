@@ -344,7 +344,7 @@ void TreeNodeAgeUpdateProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void TreeNodeAgeUpdateProposal::printParameterSummary(std::ostream &o) const
+void TreeNodeAgeUpdateProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
 
     // no parameters

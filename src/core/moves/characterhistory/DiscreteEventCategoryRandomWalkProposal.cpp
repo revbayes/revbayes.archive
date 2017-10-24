@@ -147,7 +147,7 @@ void DiscreteEventCategoryRandomWalkProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void DiscreteEventCategoryRandomWalkProposal::printParameterSummary(std::ostream &o) const
+void DiscreteEventCategoryRandomWalkProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     //    o << "delta = " << delta;

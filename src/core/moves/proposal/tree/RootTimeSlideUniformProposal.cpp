@@ -133,7 +133,7 @@ void RootTimeSlideUniformProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void RootTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
+void RootTimeSlideUniformProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }

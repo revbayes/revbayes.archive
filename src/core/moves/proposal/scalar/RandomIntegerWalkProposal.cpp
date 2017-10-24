@@ -120,7 +120,7 @@ void RandomIntegerWalkProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void RandomIntegerWalkProposal::printParameterSummary(std::ostream &o) const
+void RandomIntegerWalkProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // no tuning parameter

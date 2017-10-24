@@ -224,7 +224,7 @@ void EventBirthDeathProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void EventBirthDeathProposal::printParameterSummary(std::ostream &o) const
+void EventBirthDeathProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     o << "delta = " << (trie_birth - accepted_birth) << "/" << trie_birth << " <|> " << (trie_death - accepted_death) << "/" << trie_death;

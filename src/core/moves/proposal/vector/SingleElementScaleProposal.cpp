@@ -125,10 +125,14 @@ void SingleElementScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SingleElementScaleProposal::printParameterSummary(std::ostream &o) const
+void SingleElementScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 

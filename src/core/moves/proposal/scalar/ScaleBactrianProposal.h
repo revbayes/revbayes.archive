@@ -33,7 +33,7 @@ namespace RevBayesCore {
         const std::string&                  getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         double                              getProposalTuningParameter(void) const;
         void                                prepareProposal(void);                                                              //!< Prepare the proposal
-        void                                printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
+        void                                printParameterSummary(std::ostream &o, bool name_only) const;                                       //!< Print the parameter summary
         double                              propose(double &v);                                                                  //!< Perform proposal
         void                                setProposalTuningParameter(double tp);
         void                                tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio

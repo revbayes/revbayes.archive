@@ -54,7 +54,7 @@ namespace RevBayesCore {
         double                                                      doProposal(void);                                               //!< Perform proposal
         const std::string&                                          getProposalName(void) const;                                    //!< Get the name of the proposal for summary printing
         double                                                      getProposalTuningParameter(void) const;
-        void                                                        printParameterSummary(std::ostream &o) const;                   //!< Print the parameter summary
+        void                                                        printParameterSummary(std::ostream &o, bool name_only) const;                   //!< Print the parameter summary
         void                                                        prepareProposal(void);                                          //!< Prepare the proposal
         std::set<size_t>                                            sampleCharacters(double p);
         void                                                        setSampledCharacters(const std::set<size_t>& s);
@@ -443,9 +443,13 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::prepareProposal( void 
  * \param[in]     o     The stream to which we print the summary.
  */
 template<class charType>
-void RevBayesCore::NodeRejectionSampleProposal<charType>::printParameterSummary(std::ostream &o) const
+void RevBayesCore::NodeRejectionSampleProposal<charType>::printParameterSummary(std::ostream &o, bool name_only) const
 {
-//    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
 }
 
 template<class charType>

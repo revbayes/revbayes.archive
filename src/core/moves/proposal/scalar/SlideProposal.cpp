@@ -117,10 +117,14 @@ void SlideProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SlideProposal::printParameterSummary(std::ostream &o) const
+void SlideProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "delta = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 

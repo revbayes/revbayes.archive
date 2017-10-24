@@ -155,7 +155,7 @@ void NodeTimeScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NodeTimeScaleProposal::printParameterSummary(std::ostream &o) const
+void NodeTimeScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }

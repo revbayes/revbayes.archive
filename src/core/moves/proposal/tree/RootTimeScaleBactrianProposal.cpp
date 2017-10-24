@@ -145,7 +145,7 @@ void RootTimeScaleBactrianProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void RootTimeScaleBactrianProposal::printParameterSummary(std::ostream &o) const
+void RootTimeScaleBactrianProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }

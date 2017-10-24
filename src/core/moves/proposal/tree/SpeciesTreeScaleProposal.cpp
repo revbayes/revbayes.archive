@@ -199,10 +199,14 @@ void SpeciesTreeScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SpeciesTreeScaleProposal::printParameterSummary(std::ostream &o) const
+void SpeciesTreeScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
 
-    o << "delta = " << delta;
+    o << "delta = ";
+    if (name_only == false)
+    {
+        o << delta;
+    }
 
 }
 

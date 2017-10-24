@@ -109,7 +109,7 @@ void EmpiricalTreeProposal::prepareProposal( void )
 
 
 /** Print the parameter summary */
-void EmpiricalTreeProposal::printParameterSummary(std::ostream &o) const
+void EmpiricalTreeProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // nothing to do

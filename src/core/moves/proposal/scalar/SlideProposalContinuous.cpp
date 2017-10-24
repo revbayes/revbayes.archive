@@ -140,10 +140,14 @@ void SlideProposalContinuous::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SlideProposalContinuous::printParameterSummary(std::ostream &o) const
+void SlideProposalContinuous::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "delta = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 

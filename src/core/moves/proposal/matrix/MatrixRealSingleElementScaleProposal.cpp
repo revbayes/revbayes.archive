@@ -172,10 +172,14 @@ void MatrixRealSingleElementScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void MatrixRealSingleElementScaleProposal::printParameterSummary(std::ostream &o) const
+void MatrixRealSingleElementScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 

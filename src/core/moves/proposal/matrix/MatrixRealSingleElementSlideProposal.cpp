@@ -172,10 +172,14 @@ void MatrixRealSingleElementSlideProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void MatrixRealSingleElementSlideProposal::printParameterSummary(std::ostream &o) const
+void MatrixRealSingleElementSlideProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "delta = " << delta;
+    o << "delta = ";
+    if (name_only == false)
+    {
+        o << delta;
+    }
     
 }
 

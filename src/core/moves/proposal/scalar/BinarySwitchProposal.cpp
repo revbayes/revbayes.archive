@@ -114,7 +114,7 @@ void BinarySwitchProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void BinarySwitchProposal::printParameterSummary(std::ostream &o) const
+void BinarySwitchProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // no tuning parameter

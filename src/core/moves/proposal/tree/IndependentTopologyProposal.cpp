@@ -166,7 +166,7 @@ void IndependentTopologyProposal::prepareProposal( void )
 
 
 /** Print the parameter summary */
-void IndependentTopologyProposal::printParameterSummary(std::ostream &o) const
+void IndependentTopologyProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // nothing to do

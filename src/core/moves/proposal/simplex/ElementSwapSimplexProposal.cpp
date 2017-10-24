@@ -126,7 +126,7 @@ void ElementSwapSimplexProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ElementSwapSimplexProposal::printParameterSummary(std::ostream &o) const
+void ElementSwapSimplexProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     

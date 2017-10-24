@@ -123,10 +123,14 @@ void ScaleBactrianProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ScaleBactrianProposal::printParameterSummary(std::ostream &o) const 
+void ScaleBactrianProposal::printParameterSummary(std::ostream &o, bool name_only) const 
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
