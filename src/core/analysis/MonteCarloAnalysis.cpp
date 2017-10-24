@@ -671,20 +671,35 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
 void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingRule> rules )
 {
     
+    // get the current generation
+    size_t gen = 0;
+    for (size_t i=0; i<replicates; ++i)
+    {
+        
+        if ( runs[i] != NULL )
+        {
+            gen = runs[i]->getCurrentGeneration();
+        }
+        
+    }
+    
     // Let user know what we are doing
-    std::stringstream ss;
-    if ( runs[0]->getCurrentGeneration() == 0 )
+    if ( process_active == true && runs[0] != NULL )
     {
-        ss << "\n";
-        ss << "Running prior MCMC simulation\n";
+        std::stringstream ss;
+        if ( runs[0]->getCurrentGeneration() == 0 )
+        {
+            ss << "\n";
+            ss << "Running prior MCMC simulation\n";
+        }
+        else
+        {
+            ss << "Appending to previous MCMC simulation of " << runs[0]->getCurrentGeneration() << " iterations\n";
+        }
+        ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
+        ss << runs[0]->getStrategyDescription();
+        RBOUT( ss.str() );
     }
-    else
-    {
-        ss << "Appending to previous MCMC simulation of " << runs[0]->getCurrentGeneration() << " iterations\n";
-    }
-    ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
-    ss << runs[0]->getStrategyDescription();
-    RBOUT( ss.str() );
     
     // Initialize objects needed by chain
     for (size_t i=0; i<replicates; ++i)
@@ -744,12 +759,16 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
     // reset the counters for the move schedules
     for (size_t i=0; i<replicates; ++i)
     {
-        runs[i]->reset();
+        if ( runs[i] != NULL )
+        {
+            runs[i]->reset();
+        }
     }
     
     // reset the stopping rules
     for (size_t i=0; i<rules.size(); ++i)
     {
+        rules[i].setNumberOfRuns( replicates );
         rules[i].runStarted();
     }
     
@@ -757,16 +776,18 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
     // Run the chain
     bool finished = false;
     bool converged = false;
-    size_t gen = runs[0]->getCurrentGeneration();
     do {
         ++gen;
         for (size_t i=0; i<replicates; ++i)
         {
-            runs[i]->nextCycle(true);
-            
-            // Monitor
-            runs[i]->monitor(gen);
-            
+            if ( runs[i] != NULL )
+            {
+                runs[i]->nextCycle(true);
+                
+                // Monitor
+                runs[i]->monitor(gen);
+            }
+
         }
         
         converged = true;
