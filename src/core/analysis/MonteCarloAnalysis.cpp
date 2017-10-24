@@ -217,10 +217,19 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
         
     }
     
+#ifdef RB_MPI
+    MPI_Barrier(MPI_COMM_WORLD);
+#endif
+    
     if ( verbose == true && process_active == true )
     {
         std::cout << std::endl;
+        std::cout.flush();
     }
+    
+#ifdef RB_MPI
+    MPI_Barrier(MPI_COMM_WORLD);
+#endif
     
 }
 
@@ -338,10 +347,18 @@ void MonteCarloAnalysis::initializeFromTrace( RbVector<ModelTrace> traces )
 void MonteCarloAnalysis::printPerformanceSummary( void ) const
 {
     
+#ifdef RB_MPI
+    MPI_Barrier(MPI_COMM_WORLD);
+#endif
+    
     if ( runs[0] != NULL )
     {
         runs[0]->printOperatorSummary();
     }
+    
+#ifdef RB_MPI
+    MPI_Barrier(MPI_COMM_WORLD);
+#endif
     
 }
 
@@ -776,6 +793,28 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
         converged &= numConvergenceRules > 0;
         
     } while ( finished == false && converged == false);
+    
+#ifdef RB_MPI
+    // wait until all replicates complete
+    MPI_Barrier( MPI_COMM_WORLD );
+#endif
+    
+    // Monitor
+    for (size_t i=0; i<replicates; ++i)
+    {
+        
+        if ( runs[i] != NULL )
+        {
+            runs[i]->finishMonitors( replicates );
+        }
+        
+    }
+    
+    
+#ifdef RB_MPI
+    // wait until all replicates complete
+    MPI_Barrier( MPI_COMM_WORLD );
+#endif
     
 }
 

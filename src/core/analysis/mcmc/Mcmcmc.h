@@ -44,9 +44,10 @@ namespace RevBayesCore {
         void                                    initializeSampler(bool priorOnly=false);            //!< Initialize objects for mcmc sampling
         void                                    monitor(unsigned long g);
         void                                    nextCycle(bool advanceCycle);
+        void                                    printMoveSummary(std::ostream &o, size_t chainId, size_t moveId, Move &mv) const;
         void                                    printOperatorSummary(void) const;
-        void                                    printSummary(std::ostream &o) const;
-        void                                    printSummaryPair(std::ostream &o, const size_t &row, const size_t &col) const;
+        void                                    printSwapSummary(std::ostream &o) const;
+        void                                    printSwapSummaryPair(std::ostream &o, const size_t &row, const size_t &col) const;
         void                                    redrawStartingValues(void);                         //!< Redraw the starting values.
         void                                    removeMonitors(void);
         void                                    reset(void);                                        //!< Reset the sampler for a new run.

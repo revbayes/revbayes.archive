@@ -1,9 +1,13 @@
+#include "DagNode.h"
+#include "MetropolisHastingsMove.h"
 #include "Mcmcmc.h"
+#include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RlUserInterface.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbMathLogic.h"
 
 #include <iomanip>
 #include <iostream>
@@ -496,44 +500,154 @@ void Mcmcmc::nextCycle(bool advanceCycle)
     
 }
 
-void Mcmcmc::printOperatorSummary(void) const
-{
 
-#ifdef RB_MPI
-    MPI_Barrier(MPI_COMM_WORLD);
-#endif
+/**
+ * Print the summary of the move.
+ *
+ * The summary just contains the current value of the tuning parameter.
+ * It is printed to the stream that it passed in.
+ *
+ * \param[in]     o     The stream to which we print the summary.
+ */
+void Mcmcmc::printMoveSummary(std::ostream &o, size_t chainId, size_t moveId, Move &mv) const
+{
     
-    for (size_t i = 0; i < num_chains; ++i)
+    std::streamsize previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    o << std::fixed;
+    o << std::setprecision(4);
+    
+    // print the name
+    const std::string &mv_name = mv.getMoveName();
+    size_t spaces = 40 - (mv_name.length() > 40 ? 40 : mv_name.length());
+    o << mv_name;
+    for (size_t i = 0; i < spaces; ++i)
     {
+        o << " ";
+    }
+    o << " ";
+    
+    // print the DagNode name
+    const std::string &dn_name = (*mv.getDagNodes().begin())->getName();
+    spaces = 20 - (dn_name.length() > 20 ? 20 : dn_name.length());
+    o << dn_name;
+    for (size_t i = 0; i < spaces; ++i)
+    {
+        o << " ";
+    }
+    o << " ";
+    
+    // print the weight
+    int w_length = 4;
+    const double weight = mv.getUpdateWeight();
+    if (weight > 0) w_length -= (int)log10(weight);
+    for (int i = 0; i < w_length; ++i)
+    {
+        o << " ";
+    }
+    o << weight;
+    o << " ";
+    
+    // print the number of tries
+    int t_length = 9;
+    const double num_tried = chain_moves_tuningInfo[chainId][moveId].num_tried;
+    if (num_tried > 0) t_length -= (int)log10(num_tried);
+    for (int i = 0; i < t_length; ++i)
+    {
+        o << " ";
+    }
+    o << num_tried;
+    o << " ";
+    
+    // print the number of accepted
+    int a_length = 9;
+    const double num_accepted = chain_moves_tuningInfo[chainId][moveId].num_accepted;
+    if (num_accepted > 0) a_length -= (int)log10(num_accepted);
+    
+    for (int i = 0; i < a_length; ++i)
+    {
+        o << " ";
+    }
+    o << num_accepted;
+    o << " ";
+    
+    // print the acceptance ratio
+    double ratio = num_accepted / (double)num_tried;
+    if (num_tried == 0) ratio = 0;
+    int r_length = 5;
+    
+    for (int i = 0; i < r_length; ++i)
+    {
+        o << " ";
+    }
+    o << ratio;
+    o << " ";
+    
+    
+    if (RbMath::isNan(chain_moves_tuningInfo[chainId][moveId].tuning_parameter) == false)
+    {
+        MetropolisHastingsMove *move = dynamic_cast<MetropolisHastingsMove*>(&mv);
         
-#ifdef RB_MPI
-        MPI_Barrier(MPI_COMM_WORLD);
-#endif
-        size_t chainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), i) - heat_ranks.begin();
-        
-        if (pid == pid_per_chain[chainIdx])
+        if (move != NULL)
         {
-            if (chains[chainIdx] != NULL)
-            {
-                chains[chainIdx]->printOperatorSummary();
-            }
+            move->getProposal().printParameterSummary( o, true );
         }
         
-#ifdef RB_MPI
-        MPI_Barrier(MPI_COMM_WORLD);
-#endif
+        o << chain_moves_tuningInfo[chainId][moveId].tuning_parameter;
+    }
+    
+    o << std::endl;
+    o.flush();
+    
+    o.setf(previousFlags);
+    o.precision(previousPrecision);
+    
+}
+
+
+void Mcmcmc::printOperatorSummary(void) const
+{
+    
+    std::vector<std::string> mv_names = std::vector<std::string>(chain_moves_tuningInfo[0].size());
+    std::vector<std::string> dn_names = std::vector<std::string>(chain_moves_tuningInfo[0].size());
+    RbVector<Move> base_moves;
+    
+    if (chains[active_chain_index] != NULL)
+    {
+        base_moves = chains[active_chain_index]->getMoves();
+    }
+    
+    if (process_active == true)
+    {
+        for (size_t i = 0; i < num_chains; ++i)
+        {
+            std::cout << std::endl;
+            size_t chainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), i) - heat_ranks.begin();
+            std::cout << "heat_ranks[" << i << "] = " << heat_ranks[chainIdx] << ", chain_heats[" << i << "] = " << chain_heats[chainIdx] <<std::endl;
+            
+            // printing the moves summary
+            std::cout << std::endl;
+            std::cout << "                  Name                  | Param              |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
+            std::cout << "===============================================================================================================================" << std::endl;
+            
+            for (size_t j = 0; j < chain_moves_tuningInfo[0].size(); ++j)
+            {
+                printMoveSummary(std::cout, chainIdx, j, base_moves[j]);
+            }
+            
+            std::cout << std::endl;
+            std::cout.flush();
+        }
+        
+        if (num_chains > 1 && process_active == true)
+        {
+            printSwapSummary(std::cout);
+            std::cout << std::endl;
+            std::cout.flush();
+        }
     }
 
-    
-    if (num_chains > 1 && active_PID == pid)
-    {
-#ifdef RB_MPI
-        MPI_Barrier(MPI_COMM_WORLD);
-#endif
-        printSummary(std::cout);
-        std::cout << std::endl;
-    }
-    
 }
 
 
@@ -545,7 +659,7 @@ void Mcmcmc::printOperatorSummary(void) const
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void Mcmcmc::printSummary(std::ostream &o) const
+void Mcmcmc::printSwapSummary(std::ostream &o) const
 {
     
     std::streamsize previousPrecision = o.precision();
@@ -565,8 +679,8 @@ void Mcmcmc::printSummary(std::ostream &o) const
         {
             for (size_t j = i + 1; j < num_chains; ++j)
             {
-                printSummaryPair(o, i, j);
-                printSummaryPair(o, j, i);
+                printSwapSummaryPair(o, i, j);
+                printSwapSummaryPair(o, j, i);
             }
         }
 
@@ -582,8 +696,8 @@ void Mcmcmc::printSummary(std::ostream &o) const
             {
                 for (size_t j = i + 1; j < num_chains; ++j)
                 {
-                    printSummaryPair(o, i, j);
-                    printSummaryPair(o, j, i);
+                    printSwapSummaryPair(o, i, j);
+                    printSwapSummaryPair(o, j, i);
                 }
             }
         }
@@ -591,12 +705,12 @@ void Mcmcmc::printSummary(std::ostream &o) const
         {
             for (size_t i = 0; i < num_chains - 1; ++i)
             {
-                printSummaryPair(o, i, i + 1);
+                printSwapSummaryPair(o, i, i + 1);
             }
             
             for (size_t i = 1; i < num_chains; ++i)
             {
-                printSummaryPair(o, i, i - 1);
+                printSwapSummaryPair(o, i, i - 1);
             }
         }
 
@@ -608,7 +722,7 @@ void Mcmcmc::printSummary(std::ostream &o) const
 }
 
 
-void Mcmcmc::printSummaryPair(std::ostream &o, const size_t &row, const size_t &col) const
+void Mcmcmc::printSwapSummaryPair(std::ostream &o, const size_t &row, const size_t &col) const
 {
     // print the name
     o << row + 1;

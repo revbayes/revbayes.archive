@@ -618,17 +618,21 @@ void Mcmc::nextCycle(bool advance_cycle)
 void Mcmc::printOperatorSummary(void) const
 {
     
-    
-    // printing the moves summary
-    std::cout << std::endl;
-    std::cout << "                  Name                  | Param              |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
-    std::cout << "===============================================================================================================================" << std::endl;
-    for (RbConstIterator<Move> it = moves.begin(); it != moves.end(); ++it)
+    if ( process_active == true )
     {
-        it->printSummary(std::cout);
+        // printing the moves summary
+        std::cout << std::endl;
+        std::cout << "                  Name                  | Param              |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
+        std::cout << "===============================================================================================================================" << std::endl;
+        for (RbConstIterator<Move> it = moves.begin(); it != moves.end(); ++it)
+        {
+            it->printSummary(std::cout);
+        }
+        
+        std::cout << std::endl;
+        std::cout.flush();
     }
     
-    std::cout << std::endl;
 }
 
 
