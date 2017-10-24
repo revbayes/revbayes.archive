@@ -3,9 +3,10 @@
 
 using namespace RevBayesCore;
 
-TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Tree> *t, const TypedDagNode< RbVector<double> > *b) : TypedFunction<Tree>( NULL ),
+TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Tree> *t, const TypedDagNode< RbVector<double> > *b, bool m) : TypedFunction<Tree>( NULL ),
     tau( t ),
-    brlen( b )
+    brlen( b ),
+    multiply( m )
 {
 
     if (tau->getValue().getNumberOfNodes() - 1 != brlen->getValue().size())
@@ -13,11 +14,8 @@ TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Tree> *t, const Ty
         throw(RbException("Number of branches does not match the number of branch lengths"));
     }
 
-    // add the lambda parameter as a parent
     addParameter( tau );
     addParameter( brlen );
-    
-    value = const_cast<Tree*>( &tau->getValue() );
     
     update();
 }
@@ -25,14 +23,9 @@ TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Tree> *t, const Ty
 
 TreeAssemblyFunction::TreeAssemblyFunction(const TreeAssemblyFunction &f) : TypedFunction<Tree>( f ),
     tau( f.tau ),
-    brlen( f.brlen )
+    brlen( f.brlen ),
+    multiply( f.multiply)
 {
-    
-    // the base class has created a new value instance
-    // we need to delete it here to avoid memory leaks
-    delete value;
-    
-    value = const_cast<Tree*>( &tau->getValue() );
     
     update();
 }
@@ -40,10 +33,7 @@ TreeAssemblyFunction::TreeAssemblyFunction(const TreeAssemblyFunction &f) : Type
 
 TreeAssemblyFunction::~TreeAssemblyFunction( void )
 {
-    // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
-    
-    // rescue deletion
-    value = NULL;
+    //delete value;
 }
 
 
@@ -101,16 +91,25 @@ void TreeAssemblyFunction::update( void )
         const std::vector<double> &v = brlen->getValue();
         for (std::set<size_t>::iterator it = touchedNodeIndices.begin(); it != touchedNodeIndices.end(); ++it)
         {
-            value->getNode(*it).setBranchLength(v[*it]);
+            double br = tau->getValue().getNode(*it).getBranchLength();
+            br = (multiply == true && br != -1 ) ? br : 1.0;
+
+            value->getNode(*it).setBranchLength(v[*it] * br );
         }
         touchedNodeIndices.clear();
     }
     else
     {
+        delete value;
+        value = tau->getValue().clone();
+
         const std::vector<double> &v = brlen->getValue();
         for (size_t i = 0; i < v.size(); ++i)
         {
-            value->getNode(i).setBranchLength( v[i] );
+            double br = tau->getValue().getNode(i).getBranchLength();
+            br = (multiply == true && br != -1 ) ? br : 1.0;
+
+            value->getNode(i).setBranchLength(v[i] * br );
         }
         
     }
@@ -126,10 +125,8 @@ void TreeAssemblyFunction::swapParameterInternal(const DagNode *oldP, const DagN
     {
         tau = static_cast<const TypedDagNode<Tree>* >( newP );
         
-        Tree *psi = const_cast<Tree*>( &tau->getValue() );
-        
-        // finally store the new value
-        value = psi;
+        delete value;
+        value = tau->getValue().clone();
         
     }
     else if (oldP == brlen)

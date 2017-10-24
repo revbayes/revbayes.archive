@@ -35,30 +35,12 @@ RevBayesCore::TypedFunction<RevBayesCore::Tree>* Func_treeAssembly::createFuncti
     
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
-    // TreeAssemblyFunction acts directly on the value of the topology node
-    // Current topology variable cannot already be parent of another TreeAssemblyFunction
-    bool topologyInUse = false;
-    const std::vector<RevBayesCore::DagNode*>& tauChildren = tau->getChildren();
-    for (size_t i = 0; i < tauChildren.size(); i++)
-    {
-        RevBayesCore::DeterministicNode<RevBayesCore::Tree>* tauChild = dynamic_cast<RevBayesCore::DeterministicNode<RevBayesCore::Tree>*>(tauChildren[i]);
-        if (tauChild != NULL)
-        {
-            RevBayesCore::TreeAssemblyFunction* tf = dynamic_cast<RevBayesCore::TreeAssemblyFunction*>(&tauChild->getFunction());
-            if (tf != NULL)
-            {
-                topologyInUse = true;
-            }
-        }
-    }
-    if (topologyInUse)
-    {
-        throw RbException("Variable \"" + tau->getName() + "\" cannot be used with more than one treeAssembly function.");
-    }
-    
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* brlens = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::RbVector<double> tmp = brlens->getValue();
-    RevBayesCore::TreeAssemblyFunction* f = new RevBayesCore::TreeAssemblyFunction( tau, brlens );
+
+    bool m = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getValue();
+
+    RevBayesCore::TreeAssemblyFunction* f = new RevBayesCore::TreeAssemblyFunction( tau, brlens, m );
     
     return f;
 }
@@ -76,7 +58,8 @@ const ArgumentRules& Func_treeAssembly::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "topology", Tree::getClassTypeSpec(), "The tree topology variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "brlens",   ModelVector<RealPos>::getClassTypeSpec(), "The vector of branch lengths.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        
+        argumentRules.push_back( new ArgumentRule( "multiply" , RlBoolean::getClassTypeSpec() , "Multiply topology branch lengths and input branch lengths?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
+
         rules_set = true;
     }
     
