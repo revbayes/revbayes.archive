@@ -86,7 +86,7 @@ double ScaleBactrianProposal::propose( double &val )
     storedValue = val;
     
     double u = rng->uniform01();
-    double delta = RbStatistics::Normal::rv(0.0, 1.0, *GLOBAL_RNG) * sqrt(1 - 0.95*0.95);
+    double delta = RbStatistics::Normal::rv(*GLOBAL_RNG) * RbConstants::BACT_SD;
     
     // See Yang and Rodriguez (2013) SI eqns 19 and 20
     // Currently hard-coding m = 0.95
