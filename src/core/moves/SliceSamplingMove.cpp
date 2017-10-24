@@ -105,6 +105,7 @@ class slice_function: public interval
   StochasticNode<double>* variable;
   double lHeat;
   double pHeat;
+  double prHeat;
   RbOrderedSet<DagNode*> affectedNodes;
   int num_evals;
 
@@ -130,7 +131,7 @@ public:
     }
 
     // 3. exponentiate with the chain heat
-    double lnPosterior = pHeat * (lHeat * lnLikelihood + lnPrior);
+    double lnPosterior = pHeat * (lHeat * lnLikelihood + prHeat * lnPrior);
 
     return lnPosterior;
   }
@@ -160,10 +161,11 @@ public:
     return variable->getValue();
   }
 
-  slice_function(StochasticNode<double> *n, double l, double p, bool pos_only=false)
+  slice_function(StochasticNode<double> *n, double pr, double l, double p, bool pos_only=false)
     :variable(n),
      lHeat(l),
      pHeat(p),
+     prHeat(pr),
      num_evals(0)
   {
     variable->getAffectedNodes( affectedNodes );
@@ -269,9 +271,9 @@ double slice_sample(double x0, slice_function& g,double w, int m)
 }
 
 
-void SliceSamplingMove::performMcmcMove( double lHeat, double pHeat )
+void SliceSamplingMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
-  slice_function g(variable, lHeat, pHeat);
+  slice_function g(variable, prHeat, lHeat, pHeat);
 
   double x1 = g.current_value();
 

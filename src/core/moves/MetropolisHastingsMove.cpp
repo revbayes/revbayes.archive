@@ -240,7 +240,7 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
 
 
 
-void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
+void MetropolisHastingsMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
     
     const RbOrderedSet<DagNode*> &affected_nodes = getAffectedNodes();
@@ -308,7 +308,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     
     // exponentiate with the chain heat
     double ln_posterior_ratio;
-    ln_posterior_ratio = pHeat * (lHeat * ln_likelihood_ratio + ln_prior_ratio);
+    ln_posterior_ratio = pHeat * (lHeat * ln_likelihood_ratio + prHeat * ln_prior_ratio);
 	
     bool rejected = false;
     

@@ -51,6 +51,7 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                       likelihood_heat;
         RevPtr<const RevVariable>                       posterior_heat;
+        RevPtr<const RevVariable>                       prior_heat;
         
     };
     

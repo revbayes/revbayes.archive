@@ -46,10 +46,10 @@ double AbstractGibbsMove::getMoveTuningParameter( void ) const
  * Perform the move.
  * Here we store some info and delegate to performMove.
  */
-void AbstractGibbsMove::performMcmcMove( double lHeat, double pHeat )
+void AbstractGibbsMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
     // check heating values
-    if ( lHeat != 1.0 || pHeat != 1.0 )
+    if ( prHeat != 1.0 || lHeat != 1.0 || pHeat != 1.0 )
     {
         throw RbException("Cannot apply Gibbs sampler when the probability is heated.");
     }

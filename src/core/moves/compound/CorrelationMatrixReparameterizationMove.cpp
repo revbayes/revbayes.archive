@@ -70,7 +70,7 @@ double CorrelationMatrixReparameterizationMove::getMoveTuningParameter( void ) c
 
 
 /** Perform the move */
-void CorrelationMatrixReparameterizationMove::performMcmcMove( double lHeat, double pHeat )
+void CorrelationMatrixReparameterizationMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
     
     stored_matrix = correlation_matrix->getValue();

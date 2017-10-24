@@ -66,6 +66,7 @@ void Mcmc::constructInternalObject( void )
     
     double                                                  lHeat   = static_cast<const RealPos &>( likelihood_heat->getRevObject() ).getValue();
     double                                                  pHeat   = static_cast<const RealPos &>( posterior_heat->getRevObject() ).getValue();
+    double                                                  prHeat  = static_cast<const RealPos &>( prior_heat->getRevObject() ).getValue();
     
     if (lHeat != 1.0)
     {
@@ -74,6 +75,10 @@ void Mcmc::constructInternalObject( void )
     if (pHeat != 1.0)
     {
         m->setChainPosteriorHeat(pHeat);
+    }
+    if (prHeat != 1.0)
+    {
+        m->setChainPriorHeat(prHeat);
     }
     
     value = new RevBayesCore::MonteCarloAnalysis(m,nreps);
@@ -264,6 +269,7 @@ const MemberRules& Mcmc::getParameterRules(void) const
         const MemberRules &parentRules = MonteCarloAnalysis::getParameterRules();
         memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());
         
+        memberRules.push_back( new ArgumentRule("priorHeat", RealPos::getClassTypeSpec(), "The power that the prior will be raised to.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
         memberRules.push_back( new ArgumentRule("likelihoodHeat", RealPos::getClassTypeSpec(), "The power that the likelihood will be raised to.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
         memberRules.push_back( new ArgumentRule("posteriorHeat", RealPos::getClassTypeSpec(), "The power that the posterior will be raised to.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
@@ -302,6 +308,10 @@ void Mcmc::setConstParameter(const std::string& name, const RevPtr<const RevVari
     else if ( name == "posteriorHeat" )
     {
         posterior_heat = var;
+    }
+    else if ( name == "priorHeat" )
+    {
+        prior_heat = var;
     }
     else
     {

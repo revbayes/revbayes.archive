@@ -340,13 +340,13 @@ void AbstractMove::performHillClimbingStep( double lHeat, double pHeat )
  * Perform the move. 
  * Here we store some info and delegate to performMove.
  */
-void AbstractMove::performMcmcStep( double lHeat, double pHeat )
+void AbstractMove::performMcmcStep( double prHeat, double lHeat, double pHeat )
 {
     // increment the tries counter
     ++num_tried;
     
     // delegate to derived class
-    performMcmcMove(lHeat, pHeat);
+    performMcmcMove(prHeat, lHeat, pHeat);
     
 }
 

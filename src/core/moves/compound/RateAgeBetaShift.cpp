@@ -71,7 +71,7 @@ double RateAgeBetaShift::getMoveTuningParameter( void ) const
 
 
 /** Perform the move */
-void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
+void RateAgeBetaShift::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
     
     // Get random number generator

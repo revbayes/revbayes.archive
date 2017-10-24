@@ -43,6 +43,7 @@ Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &m
     chain_active( true ),
     chain_likelihood_heat( 1.0 ),
     chain_posterior_heat( 1.0 ),
+    chain_prior_heat( 1.0 ),
     chain_idx( 0 ),
     model( m.clone() ),
     monitors( mons ),
@@ -81,6 +82,7 @@ Mcmc::Mcmc(const Mcmc &m) : MonteCarloSampler(m),
     chain_active( m.chain_active ),
     chain_likelihood_heat( m.chain_likelihood_heat ),
     chain_posterior_heat( m.chain_posterior_heat ),
+    chain_prior_heat( m.chain_prior_heat ),
     chain_idx( m.chain_idx ),
     model( m.model->clone() ),
     monitors( m.monitors ),
@@ -249,6 +251,15 @@ double Mcmc::getChainLikelihoodHeat(void) const
 double Mcmc::getChainPosteriorHeat(void) const
 {
     return chain_posterior_heat;
+}
+
+
+/**
+ * Get the heat of the prior of this chain.
+ */
+double Mcmc::getChainPriorHeat(void) const
+{
+    return chain_prior_heat;
 }
 
 
@@ -600,7 +611,7 @@ void Mcmc::nextCycle(bool advance_cycle)
         Move& the_move = schedule->nextMove( generation );
 
         // Perform the move
-        the_move.performMcmcStep( chain_likelihood_heat, chain_posterior_heat );
+        the_move.performMcmcStep( chain_prior_heat, chain_likelihood_heat, chain_posterior_heat );
         
     }
     
@@ -839,7 +850,7 @@ void Mcmc::setChainLikelihoodHeat(double h)
 
 /**
  * Set the heat of the likelihood of the current chain.
- * This heat is used in posterior posterior MCMC algorithms to
+ * This heat is used in power posterior MCMC algorithms to
  * heat the likelihood
  * The heat is passed to the moves for the accept-reject mechanism.
  */
@@ -857,6 +868,12 @@ void Mcmc::setLikelihoodHeat(double h)
 void Mcmc::setChainPosteriorHeat(double h)
 {
     chain_posterior_heat = h;
+}
+
+
+void Mcmc::setChainPriorHeat(double h)
+{
+    chain_prior_heat = h;
 }
 
 

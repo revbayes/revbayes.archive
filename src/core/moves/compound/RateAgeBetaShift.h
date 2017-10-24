@@ -27,7 +27,7 @@ namespace RevBayesCore {
         void                                    setNumberAccepted(size_t na);
         
     protected:
-        void                                    performMcmcMove(double lHeat, double pHeat);                                        //!< Perform move
+        void                                    performMcmcMove(double prHeat, double lHeat, double pHeat);                                        //!< Perform move
         void                                    resetMoveCounters(void);                                                            //!< Reset the counters such as numAccepted.
         void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the pointers to the variable on which the move works on.
         void                                    tune(void);

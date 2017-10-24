@@ -43,6 +43,7 @@ namespace RevBayesCore {
         void                                                finishMonitors(size_t n);                                                               //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
+        double                                              getChainPriorHeat(void) const;
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain
         const Model&                                        getModel(void) const;
         double                                              getModelLnProbability(bool like_only);
@@ -64,6 +65,7 @@ namespace RevBayesCore {
         void                                                setChainActive(bool tf);
         void                                                setChainLikelihoodHeat(double v);                                                       //!< Set the heating temparature of the likelihood of the chain
         void                                                setChainPosteriorHeat(double v);                                                        //!< Set the heating temparature of the posterior of the chain
+        void                                                setChainPriorHeat(double v);
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
         void                                                setModel(Model *m, bool redraw);
@@ -84,6 +86,7 @@ namespace RevBayesCore {
         bool                                                chain_active;
         double                                              chain_likelihood_heat;
         double                                              chain_posterior_heat;
+        double                                              chain_prior_heat;
         size_t                                              chain_idx;
         Model*                                              model;
         RbVector<Monitor>                                   monitors;

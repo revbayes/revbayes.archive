@@ -39,7 +39,7 @@ namespace RevBayesCore {
     protected:
         AbstractGibbsMove(double w);                                                         //!< Constructor
         
-        void                                                    performMcmcMove(double lHeat, double pHeat);            //!< Perform the move.
+        void                                                    performMcmcMove(double prHeat, double lHeat, double pHeat);            //!< Perform the move.
         void                                                    tune(void);                                     //!< Specific tuning of the move
         
         // pure virtual protected methods
