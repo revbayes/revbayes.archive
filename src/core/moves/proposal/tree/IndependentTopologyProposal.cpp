@@ -7,14 +7,16 @@
 
 using namespace RevBayesCore;
 
-IndependentTopologyProposal::IndependentTopologyProposal( StochasticNode<Tree> *v, TypedDistribution<Tree>* dist, Clade og ) : Proposal(),
+IndependentTopologyProposal::IndependentTopologyProposal( StochasticNode<Tree> *v, TypedDistribution<Tree>* d,  StochasticNode< RbVector<double> > *r, Clade og ) : Proposal(),
     outgroup( og ),
-    proposal_distribution( dist ),
+    proposal_distribution( d ),
+    substitution_rates( r ),
     variable( v ),
     stored_ln_num_rankings( 0.0 )
 {
     
     addNode( variable );
+    addNode( substitution_rates);
 
     outgroup.resetTaxonBitset( variable->getValue().getTaxonBitSetMap() );
 
@@ -40,7 +42,6 @@ IndependentTopologyProposal* IndependentTopologyProposal::clone( void ) const
 void IndependentTopologyProposal::cleanProposal( void )
 {
     stored_ln_num_rankings = proposal_ln_num_rankings;
-    // nothing to do
 }
 
 const std::string& IndependentTopologyProposal::getProposalName( void ) const
@@ -57,6 +58,8 @@ double IndependentTopologyProposal::doProposal( void )
 {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
+    double hr = 0.0;
+
     stored_tree = variable->getValue();
 
     // draw a new tree
@@ -99,6 +102,13 @@ double IndependentTopologyProposal::doProposal( void )
         proposal_tree.reroot(*node, true);
         proposal_tree.setRooted(true);
 
+        // randomly split the branch length descending from the root
+        double brlen = node->getBranchLength();
+        double u = rng->uniform01();
+
+        node->setBranchLength( brlen * u );
+        root->setBranchLength( brlen * (1.0 - u) );
+
         // restore tip indices
         for (size_t i=0; i<proposal_tree.getNumberOfTips(); i++)
         {
@@ -107,8 +117,18 @@ double IndependentTopologyProposal::doProposal( void )
         proposal_tree.orderNodesByIndex();
     }
 
-    // set the tip ages and sampled ancestor flags
+    // first get the proposed branch lengths
+    std::vector<double> branch_lengths;
     const std::vector<TopologyNode*>& proposal_nodes = proposal_tree.getNodes();
+    for(size_t i = 0; i < proposal_nodes.size(); i++)
+    {
+        if( proposal_nodes[i]->isRoot() == false )
+        {
+            branch_lengths.push_back( proposal_nodes[i]->getBranchLength() );
+        }
+    }
+
+    // set the tip ages and sampled ancestor flags
     for(size_t i = 0; i < proposal_tree.getNumberOfTips(); i++)
     {
         proposal_nodes[i]->setAge( variable->getValue().getTipNode(i).getAge() );
@@ -137,6 +157,9 @@ double IndependentTopologyProposal::doProposal( void )
     proposal_ln_num_rankings = 0;
     std::vector<size_t> ranking = recursivelyRank( proposal_tree.getRoot(), proposal_ln_num_rankings );
 
+    hr += proposal_ln_num_rankings - stored_ln_num_rankings;
+
+
     // update the ranked node ages
     for(size_t i = 0; i < ranking.size(); i++)
     {
@@ -145,7 +168,22 @@ double IndependentTopologyProposal::doProposal( void )
 
     variable->setValue( proposal_tree.clone() );
 
-    return  proposal_ln_num_rankings - stored_ln_num_rankings;
+    // update the substitution rates
+    if( substitution_rates != NULL )
+    {
+        stored_rates = substitution_rates->getValue();
+
+        std::vector<double> rates( stored_rates.size(), 0.0);
+
+        for(size_t i = 0; i < stored_rates.size(); i++)
+        {
+            rates[i] = branch_lengths[i] / proposal_tree.getNode(i).getBranchLength();
+        }
+
+        substitution_rates->setValue(new RbVector<double>(rates) );
+    }
+
+    return  hr;
 }
 
 
@@ -230,6 +268,10 @@ void IndependentTopologyProposal::undoProposal( void )
     // reset to the old tree
     variable->setValue( stored_tree.clone() );
     
+    if( substitution_rates != NULL )
+    {
+        substitution_rates->setValue(new RbVector<double>(stored_rates) );
+    }
 }
 
 
@@ -243,8 +285,14 @@ void IndependentTopologyProposal::tune(double r)
 
 void IndependentTopologyProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    
-    variable = static_cast<StochasticNode<Tree>* >( newN );
+    if( oldN == variable )
+    {
+        variable = static_cast<StochasticNode<Tree>* >( newN );
+    }
+    else if( oldN == substitution_rates )
+    {
+        substitution_rates = static_cast<StochasticNode<RbVector<double> >* >( newN );
+    }
     
 }
 

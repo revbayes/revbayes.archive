@@ -39,6 +39,7 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                   outgroup;
         RevPtr<const RevVariable>                   proposal_distribution;
+        RevPtr<const RevVariable>                   substitution_rates;
         RevPtr<const RevVariable>                   tree;
     };
     

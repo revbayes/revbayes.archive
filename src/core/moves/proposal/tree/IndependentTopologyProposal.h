@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class IndependentTopologyProposal : public Proposal {
         
     public:
-        IndependentTopologyProposal( StochasticNode<Tree> *n, TypedDistribution<Tree>* dist, Clade og = Clade() );                                               //!<  constructor
+        IndependentTopologyProposal( StochasticNode<Tree> *n, TypedDistribution<Tree>* d, StochasticNode< RbVector<double> > *r = NULL, Clade og = Clade() );                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                             //!< Clean up proposal
@@ -43,10 +43,12 @@ namespace RevBayesCore {
         
         Clade                                   outgroup;
         TypedDistribution<Tree>*                proposal_distribution;
+        StochasticNode< RbVector<double> > *    substitution_rates;
         StochasticNode<Tree>*                   variable;
 
         double                                  proposal_ln_num_rankings;
         double                                  stored_ln_num_rankings;
+        std::vector<double>                     stored_rates;
         Tree                                    stored_tree;
         
     };
