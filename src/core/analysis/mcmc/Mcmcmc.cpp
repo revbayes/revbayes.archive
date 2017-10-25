@@ -551,7 +551,7 @@ void Mcmcmc::printMoveSummary(std::ostream &o, size_t chainId, size_t moveId, Mo
     
     // print the number of tries
     int t_length = 9;
-    const double num_tried = chain_moves_tuningInfo[chainId][moveId].num_tried;
+    const size_t num_tried = chain_moves_tuningInfo[chainId][moveId].num_tried;
     if (num_tried > 0) t_length -= (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i)
     {
@@ -562,7 +562,7 @@ void Mcmcmc::printMoveSummary(std::ostream &o, size_t chainId, size_t moveId, Mo
     
     // print the number of accepted
     int a_length = 9;
-    const double num_accepted = chain_moves_tuningInfo[chainId][moveId].num_accepted;
+    const size_t num_accepted = chain_moves_tuningInfo[chainId][moveId].num_accepted;
     if (num_accepted > 0) a_length -= (int)log10(num_accepted);
     
     for (int i = 0; i < a_length; ++i)
@@ -606,25 +606,32 @@ void Mcmcmc::printMoveSummary(std::ostream &o, size_t chainId, size_t moveId, Mo
 }
 
 
-void Mcmcmc::printOperatorSummary(void) const
+void Mcmcmc::printOperatorSummary(void)
 {
     
-    std::vector<std::string> mv_names = std::vector<std::string>(chain_moves_tuningInfo[0].size());
-    std::vector<std::string> dn_names = std::vector<std::string>(chain_moves_tuningInfo[0].size());
-    RbVector<Move> base_moves;
+    // send all chain heats to pid 0
+    synchronizeHeats();
     
-    if (chains[active_chain_index] != NULL)
-    {
-        base_moves = chains[active_chain_index]->getMoves();
-    }
+    // send all chain moves tuning information to pid 0
+    synchronizeTuningInfo();
     
     if (process_active == true)
     {
+        RbVector<Move> base_moves;
+        size_t active_chainIdx = std::find(pid_per_chain.begin(), pid_per_chain.end(), active_PID) - pid_per_chain.begin();
+        
+        if (chains[active_chainIdx] != NULL)
+        {
+            base_moves = chains[active_chainIdx]->getMoves();
+        }
+        
         for (size_t i = 0; i < num_chains; ++i)
         {
-            std::cout << std::endl;
             size_t chainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), i) - heat_ranks.begin();
-            std::cout << "heat_ranks[" << i << "] = " << heat_ranks[chainIdx] << ", chain_heats[" << i << "] = " << chain_heats[chainIdx] <<std::endl;
+            
+            std::cout << std::endl;
+            std::cout << "heat_ranks[" << i + 1 << "] = " << heat_ranks[chainIdx] + 1 << ", chain_heats[" << i + 1 << "] = " << chain_heats[chainIdx] << std::endl;
+            std::cout.flush();
             
             // printing the moves summary
             std::cout << std::endl;
@@ -640,7 +647,7 @@ void Mcmcmc::printOperatorSummary(void) const
             std::cout.flush();
         }
         
-        if (num_chains > 1 && process_active == true)
+        if (num_chains > 1)
         {
             printSwapSummary(std::cout);
             std::cout << std::endl;
@@ -1614,6 +1621,12 @@ void Mcmcmc::swapRandomChains(void)
 
 void Mcmcmc::tune( void )
 {
+    // send all chain heats to pid 0
+    synchronizeHeats();
+    
+    // send all chain moves tuning information to pid 0
+    synchronizeTuningInfo();
+    
     if (tune_heat == true && num_chains > 1)
     {
         

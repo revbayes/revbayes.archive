@@ -626,7 +626,7 @@ void Mcmc::nextCycle(bool advance_cycle)
 
 
 
-void Mcmc::printOperatorSummary(void) const
+void Mcmc::printOperatorSummary(void)
 {
     
     if ( process_active == true )
@@ -635,7 +635,7 @@ void Mcmc::printOperatorSummary(void) const
         std::cout << std::endl;
         std::cout << "                  Name                  | Param              |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
         std::cout << "===============================================================================================================================" << std::endl;
-        for (RbConstIterator<Move> it = moves.begin(); it != moves.end(); ++it)
+        for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
         {
             it->printSummary(std::cout);
         }
