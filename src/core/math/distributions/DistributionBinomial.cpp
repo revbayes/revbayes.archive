@@ -336,7 +336,7 @@ int RbStatistics::Binomial::rv(double nin, double pp, RevBayesCore::RandomNumber
     double p, q, np, g, r, al, alv, amaxp, ffm, ynorm;
     int i,ix,k, n;
     
-    if (!RbMath::isFinite(nin)) throw RbException("Infinite value in rBinom");
+    if (!RbMath::isFinite(nin)) throw RbException("NaN produced in rbinom");
     r = floor(nin + 0.5);
     if (r != nin) throw RbException("NaN produced in rbinom");
     if (!RbMath::isFinite(pp) ||

@@ -106,7 +106,7 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
 void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values, size_t b)
 {
     // if we have not yet calculated the mean, do this now
-    if ( mean == RbConstants::Double::max )
+    if ( RbMath::isNan(mean) == false )
     {
         analyseMean(values,b);
     }
@@ -169,7 +169,7 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
  */
 void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values, size_t begin, size_t end) {
     // if we have not yet calculated the mean, do this now
-    if (mean == RbConstants::Double::max) {
+    if (RbMath::isNan(mean) == false) {
         analyseMean(values,begin,end);
     }
     
@@ -223,10 +223,10 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
 void TraceAnalysisContinuous::invalidateTraceStatistics() {
     
     // initialize data to invalid values
-    act                 = RbConstants::Double::max;
-    ess                 = RbConstants::Double::max;
-    mean                = RbConstants::Double::max;
-    sem                 = RbConstants::Double::max;
+    act                 = RbConstants::Double::nan;
+    ess                 = RbConstants::Double::nan;
+    mean                = RbConstants::Double::nan;
+    sem                 = RbConstants::Double::nan;
 }
 
 
@@ -234,7 +234,7 @@ void TraceAnalysisContinuous::invalidateTraceStatistics() {
  * @return the mean
  */
 double TraceAnalysisContinuous::getMean() {
-    /*if (mean == RbConstants::Double::max) {
+    /*if (RbMath::isNan(mean) == false) {
         // throw an error that the ACT needs recalculation
         analyseMean(values);
     }*/
@@ -246,7 +246,7 @@ double TraceAnalysisContinuous::getMean() {
  * @return the standard error of the mean
  */
 double TraceAnalysisContinuous::getStdErrorOfMean() {
-    /*if (sem == RbConstants::Double::max) {
+    /*if (RbMath::isNan(sem) == false) {
         // throw an error that the ACT needs recalculation
         analyseCorrelation(values);
     }*/
@@ -258,7 +258,7 @@ double TraceAnalysisContinuous::getStdErrorOfMean() {
  * @return the autocorrelation time
  */
 double TraceAnalysisContinuous::getAct() {
-    /*if (act == RbConstants::Double::max) {
+    /*if (RbMath::isNan(act) == false) {
         // throw an error that the ACT needs recalculation
         analyseCorrelation(values);
     }*/
@@ -270,7 +270,7 @@ double TraceAnalysisContinuous::getAct() {
  * @return the eSS
  */
 double TraceAnalysisContinuous::getEss() {
-    /*if (ess == RbConstants::Double::max) {
+    /*if (RbMath::isNan(ess) == false) {
         // throw an error that the ACT needs recalculation
         analyseCorrelation(values);
     }*/

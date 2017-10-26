@@ -1407,12 +1407,7 @@ void TopologyNode::recomputeBranchLength( void )
     {
         branch_length = 0.0;
     }
-    else if ( RbMath::isFinite( age ) == false )
-    {
-        // don't reset the branch length if this isn't a time tree (WP)
-        //branch_length = -1;
-    }
-    else
+    else if ( RbMath::isFinite( age ) == true )
     {
         branch_length = parent->getAge() - age;
     }
