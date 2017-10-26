@@ -1,5 +1,5 @@
-#RevBayes version (1.0.6)
-#Build from development (941495) on Wed Sep 13 10:04:33 PDT 2017
+#RevBayes version (1.0.7)
+#Build from development (eb7397) on Thu Oct 26 16:11:17 CEST 2017
 Iteration	start_1	end_1	start_2	end_2	start_3	end_3	start_4	end_4	start_5	end_5	start_6	end_6	start_7	end_7	start_8	end_8	start_9	end_9	start_10	end_10	start_11	end_11	start_12	end_12	start_13	end_13	start_14	end_14	start_15	end_15
 0	0	0	0	3	0	2	0	0	3	3	3	1	1	1	2	2	1	3	1	1	0	0	0	0	1	0	2	1	2	2
 10	0	0	3	3	2	2	0	0	3	3	1	1	1	1	2	2	1	1	1	1	1	3	1	0	1	2	1	1	1	1
