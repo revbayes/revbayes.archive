@@ -37,7 +37,6 @@ namespace RevBayesCore {
     
         // variable holding the data
         double                  act;                                            //!< autocorrelation time
-        int                     burnin;                                         //!< number of samples before trace has reached stationarity
         double                  ess;                                            //!< effective sample size
         double                  mean;                                           //!< mean of trace
         double                  sem;                                            //!< standard error of mean
