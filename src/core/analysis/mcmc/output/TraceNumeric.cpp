@@ -44,7 +44,7 @@ void TraceNumeric::computeStatistics( void )
 {
     
     // check if we need to set the burnin
-    if ( burnin == RbConstants::Size_t::nan )
+    if ( burnin == -1 )
     {
         burnin = size();
         burnin *= stepSize;
@@ -80,7 +80,7 @@ TraceNumeric* TraceNumeric::clone() const {
 
 void TraceNumeric::invalidate() {
     // set values to defaults and mark for recalculation
-    burnin                          = RbConstants::Size_t::nan;
+    burnin                          = -1;
     ess                             = -1;
     mean                            = 0.0;
     median                          = 0.0;

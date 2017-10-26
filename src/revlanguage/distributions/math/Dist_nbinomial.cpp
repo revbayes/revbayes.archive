@@ -1,55 +1,55 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "BinomialDistribution.h"
+#include "NegativeBinomialDistribution.h"
 #include "ContinuousStochasticNode.h"
-#include "Dist_binomial.h"
+#include "Dist_nbinomial.h"
 #include "Probability.h"
 #include "RealPos.h"
 
 using namespace RevLanguage;
 
-Dist_binomial::Dist_binomial(void) : TypedDistribution<Natural>()
+Dist_nbinomial::Dist_nbinomial(void) : TypedDistribution<Natural>()
 {
     
 }
 
 
-Dist_binomial::~Dist_binomial(void)
+Dist_nbinomial::~Dist_nbinomial(void)
 {
     
 }
 
 
 
-Dist_binomial* Dist_binomial::clone( void ) const
+Dist_nbinomial* Dist_nbinomial::clone( void ) const
 {
     
-    return new Dist_binomial(*this);
+    return new Dist_nbinomial(*this);
 }
 
 
-RevBayesCore::BinomialDistribution* Dist_binomial::createDistribution( void ) const
+RevBayesCore::NegativeBinomialDistribution* Dist_nbinomial::createDistribution( void ) const
 {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<long>*    vn = static_cast<const Natural     &>( n->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<long>*   vr = static_cast<const Natural     &>( r->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* vp = static_cast<const Probability &>( p->getRevObject() ).getDagNode();
-    RevBayesCore::BinomialDistribution* d  = new RevBayesCore::BinomialDistribution( vn, vp );
+    RevBayesCore::NegativeBinomialDistribution* d  = new RevBayesCore::NegativeBinomialDistribution( vr, vp );
     return d;
 }
 
 
 
 /* Get Rev type of object */
-const std::string& Dist_binomial::getClassType(void)
+const std::string& Dist_nbinomial::getClassType(void)
 {
     
-    static std::string rev_type = "Dist_binomial";
+    static std::string rev_type = "Dist_nbinomial";
 	return rev_type;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_binomial::getClassTypeSpec(void)
+const TypeSpec& Dist_nbinomial::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
@@ -62,11 +62,11 @@ const TypeSpec& Dist_binomial::getClassTypeSpec(void)
  *
  * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Dist_binomial::getDistributionFunctionAliases( void ) const
+std::vector<std::string> Dist_nbinomial::getDistributionFunctionAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    a_names.push_back( "binom" );
+    a_names.push_back( "nbinom" );
 
     return a_names;
 }
@@ -79,10 +79,10 @@ std::vector<std::string> Dist_binomial::getDistributionFunctionAliases( void ) c
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_binomial::getDistributionFunctionName( void ) const
+std::string Dist_nbinomial::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "binomial";
+    std::string d_name = "nbinomial";
     
     return d_name;
 }
@@ -91,11 +91,11 @@ std::string Dist_binomial::getDistributionFunctionName( void ) const
 /**
  * Get the author(s) of this function so they can receive credit (and blame) for it.
  */
-std::vector<std::string> Dist_binomial::getHelpAuthor(void) const
+std::vector<std::string> Dist_nbinomial::getHelpAuthor(void) const
 {
     // create a vector of authors for this function
     std::vector<std::string> authors;
-    authors.push_back( "Sebastian Hoehna" );
+    authors.push_back( "Walker Pett" );
     
     return authors;
 }
@@ -104,11 +104,11 @@ std::vector<std::string> Dist_binomial::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_binomial::getHelpDescription(void) const
+std::vector<std::string> Dist_nbinomial::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "Binomial probability distribution of x successes in n trials." );
+    descriptions.push_back( "Negative binomial probability distribution of x successes before r failures." );
     
     return descriptions;
 }
@@ -117,15 +117,15 @@ std::vector<std::string> Dist_binomial::getHelpDescription(void) const
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_binomial::getHelpDetails(void) const
+std::vector<std::string> Dist_nbinomial::getHelpDetails(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> details;
     
     std::string details_1 = "";
-    details_1 += "The binomial probability distribution defines the number of success in n trials,";
-    details_1 += "where each trial has the same success probability p. The probability is given by";
-    details_1 += "(n choose x) p^(x) * (1-p)^(n-p)";
+    details_1 += "The negative binomial probability distribution describes the number of successes";
+    details_1 += "before r failures, where the success probability is p. The probability is given by";
+    details_1 += "(x + r - 1 choose x) p^(x) * (1-p)^r";
     
     details.push_back( details_1 );
     
@@ -138,13 +138,13 @@ std::vector<std::string> Dist_binomial::getHelpDetails(void) const
  * These example should help the users to show how this function works but
  * are also used to test if this function still works.
  */
-std::string Dist_binomial::getHelpExample(void) const
+std::string Dist_nbinomial::getHelpExample(void) const
 {
     // create an example as a single string variable.
     std::string example = "";
     
     example += "p ~ dnBeta(1.0,1.0)\n";
-    example += "x ~ dnBinomial(n=10,p)\n";
+    example += "x ~ dnNegativeBinomial(r=10,p)\n";
     example += "x.clamp(8)\n";
     example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
     example += "monitors[1] = screenmonitor(printgen=1000, separator = \"\t\", x)\n";
@@ -161,7 +161,7 @@ std::string Dist_binomial::getHelpExample(void) const
  * Get some references/citations for this function
  *
  */
-std::vector<RevBayesCore::RbHelpReference> Dist_binomial::getHelpReferences(void) const
+std::vector<RevBayesCore::RbHelpReference> Dist_nbinomial::getHelpReferences(void) const
 {
     // create an entry for each reference
     std::vector<RevBayesCore::RbHelpReference> references;
@@ -174,11 +174,11 @@ std::vector<RevBayesCore::RbHelpReference> Dist_binomial::getHelpReferences(void
 /**
  * Get the names of similar and suggested other functions
  */
-std::vector<std::string> Dist_binomial::getHelpSeeAlso(void) const
+std::vector<std::string> Dist_nbinomial::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
-    see_also.push_back( "dnBernoulli" );
+    see_also.push_back( "dnBinomial" );
     
     
     return see_also;
@@ -188,17 +188,17 @@ std::vector<std::string> Dist_binomial::getHelpSeeAlso(void) const
 /**
  * Get the title of this help entry
  */
-std::string Dist_binomial::getHelpTitle(void) const
+std::string Dist_nbinomial::getHelpTitle(void) const
 {
     // create a title variable
-    std::string title = "Binomial Distribution";
+    std::string title = "Negative Binomial Distribution";
     
     return title;
 }
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_binomial::getParameterRules(void) const
+const MemberRules& Dist_nbinomial::getParameterRules(void) const
 {
     
     static MemberRules dist_member_rules;
@@ -206,8 +206,8 @@ const MemberRules& Dist_binomial::getParameterRules(void) const
     
     if ( !rules_set ) 
     {
-        dist_member_rules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "Probability of success.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec()    , "Number of trials.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "r", Natural::getClassTypeSpec(), "Number of failures.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec()    , "Probability of success.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rules_set = true;
     }
     
@@ -215,7 +215,7 @@ const MemberRules& Dist_binomial::getParameterRules(void) const
 }
 
 
-const TypeSpec& Dist_binomial::getTypeSpec( void ) const
+const TypeSpec& Dist_nbinomial::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -224,21 +224,21 @@ const TypeSpec& Dist_binomial::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void Dist_binomial::printValue(std::ostream& o) const
+void Dist_nbinomial::printValue(std::ostream& o) const
 {
     
-    o << "Binomial(p=";
-    if ( p != NULL )
+    o << "NegativeBinomial(r=";
+    if ( r != NULL )
     {
-        o << p->getName();
+        o << r->getName();
     }
     else
     {
         o << "?";
     }
-    o << ", n=";
-    if ( n != NULL )
-        o << n->getName();
+    o << ", p=";
+    if ( p != NULL )
+        o << p->getName();
     else
         o << "?";
     o << ")";
@@ -246,16 +246,16 @@ void Dist_binomial::printValue(std::ostream& o) const
 
 
 /** Set a member variable */
-void Dist_binomial::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Dist_nbinomial::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
         
     if ( name == "p" ) 
     {
         p = var;
     }
-    else if ( name == "n" )
+    else if ( name == "r" )
     {
-        n = var;
+        r = var;
     }
     else
     {

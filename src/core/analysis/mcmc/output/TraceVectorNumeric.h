@@ -80,7 +80,7 @@ namespace RevBayesCore {
         
         std::vector< RbVector<double> >     values;                                     //!< the values of this TraceVectorNumeric
         
-        size_t                              burnin;
+        int                                 burnin;
         double                              ess;                                        //!< the effective sample saize for this TraceVectorNumeric
         double                              mean;                                       //!< the mean value for this TraceVectorNumeric
         double                              median;                                     //!< the median of the TraceVectorNumeric

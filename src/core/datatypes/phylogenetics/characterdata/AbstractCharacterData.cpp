@@ -309,7 +309,8 @@ size_t AbstractCharacterData::getIndexOfTaxon(const std::string &n) const {
             return i;
         }
     }
-    return RbConstants::Size_t::inf;
+
+    throw RbException("Cannot find taxon '" + n + "' in the CharacterData matrix.");
 }
 
 

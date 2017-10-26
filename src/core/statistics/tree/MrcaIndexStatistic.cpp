@@ -7,7 +7,7 @@ using namespace RevBayesCore;
 MrcaIndexStatistic::MrcaIndexStatistic(const TypedDagNode<Tree> *t, const Clade &c) : TypedFunction<long>( new long(-1) ),
     tree( t ),
     clade( c ),
-    index( RbConstants::Size_t::nan )
+    index( -1 )
 {
     // add the tree parameter as a parent
     addParameter( tree );
@@ -36,7 +36,7 @@ void MrcaIndexStatistic::initialize( void )
 {
     clade.resetTaxonBitset( tree->getValue().getTaxonBitSetMap() );
     taxa_count = clade.size();
-    index = RbConstants::Size_t::nan;
+    index = -1;
     
 }
 
@@ -48,7 +48,7 @@ void MrcaIndexStatistic::update( void )
     size_t min_clade_size = n.size() + 2;
     
     bool found = false;
-    if ( index != RbConstants::Size_t::nan )
+    if ( index != -1 )
     {
         
         TopologyNode *node = n[index];
@@ -94,13 +94,12 @@ void MrcaIndexStatistic::update( void )
         
     }
     
-    if ( index == RbConstants::Size_t::nan )
+    if ( index == -1 )
     {
         throw RbException("MrcaIndex-Statistics can only be applied if clade is present.");
     }
     
-    int mrcaIndexIdx = int(index);
-    *value = mrcaIndexIdx;
+    *value = index;
 }
 
 
@@ -111,7 +110,7 @@ void MrcaIndexStatistic::swapParameterInternal(const DagNode *oldP, const DagNod
     if (oldP == tree)
     {
         tree = static_cast<const TypedDagNode<Tree>* >( newP );
-        index = RbConstants::Size_t::nan;
+        index = -1;
     }
     
 }

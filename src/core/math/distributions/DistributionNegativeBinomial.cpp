@@ -150,8 +150,8 @@ double RbStatistics::NegativeBinomial::pdf(double r, double p, double q, double 
  */
 #include "DistributionNormal.h"
 
-double RbStatistics::NegativeBinomial::quantile(double p, double n, double pr) {
-    throw RbException("Quantiles not implemented for NegBinomial");
+double RbStatistics::NegativeBinomial::quantile(double r, double p, double x) {
+    throw RbException("Quantiles not implemented for nbinomial");
 }
 
 /*!
@@ -194,7 +194,7 @@ int RbStatistics::NegativeBinomial::rv(double r, double p, RevBayesCore::RandomN
 {
 	double y = RbStatistics::Gamma::rv(r,(1-p)/p,rng);
 	if (y > 2.0e9)
-		return RbConstants::Integer::inf;
+	    throw RbException("NaN produced in rnbinom");
 	return RbStatistics::Poisson::rv(y,rng);
 }
 
