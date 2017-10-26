@@ -108,7 +108,7 @@ bool RbMath::isAComputableNumber(double x)
 /** Tests whether a double is finite */
 bool RbMath::isFinite(double x) {
     
-    return x == x;
+    return x > RbConstants::Double::neginf && x < RbConstants::Double::inf;
 }
 
 
