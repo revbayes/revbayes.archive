@@ -40,7 +40,17 @@ RevBayesCore::TypedFunction<RevBayesCore::Tree>* Func_treeAssembly::createFuncti
 
     bool m = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getValue();
 
-    RevBayesCore::TreeAssemblyFunction* f = new RevBayesCore::TreeAssemblyFunction( tau, brlens, m );
+    std::string label = this->args[2].getLabel();
+
+    RevBayesCore::TreeAssemblyFunction* f;
+    if( label == "multiply" )
+    {
+        f = new RevBayesCore::TreeAssemblyFunction( tau, brlens, false, m );
+    }
+    else
+    {
+        f = new RevBayesCore::TreeAssemblyFunction( tau, brlens, m, false );
+    }
     
     return f;
 }
@@ -58,7 +68,11 @@ const ArgumentRules& Func_treeAssembly::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "topology", Tree::getClassTypeSpec(), "The tree topology variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "brlens",   ModelVector<RealPos>::getClassTypeSpec(), "The vector of branch lengths.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "multiply" , RlBoolean::getClassTypeSpec() , "Multiply topology branch lengths and input branch lengths?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
+
+        std::vector<std::string> labels;
+        labels.push_back("multiply");
+        labels.push_back("divide");
+        argumentRules.push_back( new ArgumentRule( labels , RlBoolean::getClassTypeSpec() , "Multiply/divide topology branch lengths by input branch lengths?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
 
         rules_set = true;
     }
