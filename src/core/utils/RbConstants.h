@@ -33,11 +33,14 @@ namespace RbConstants {
     }
     
     namespace Integer {
-        //const int       inf         = std::numeric_limits<int>::infinity();
         const int       max         = std::numeric_limits<int>::max();
         const int       min         = std::numeric_limits<int>::min();
-        //const int       nan         = std::numeric_limits<int>::quiet_NaN();
-        //const int       neginf      = -2147483647;
+
+        /* int is always a signed finite number
+         * std::numeric_limits<int>::infinity() = 0
+         * std::numeric_limits<int>::quiet_NaN() = 0
+         * std::numeric_limits<int>::max() + 1 = std::numeric_limits<int>::min()
+         */
     }
     
     namespace Object {
@@ -46,10 +49,15 @@ namespace RbConstants {
     }
     
     namespace Size_t {
-        //const size_t    inf         = -1;
         const size_t    max         = std::numeric_limits<std::size_t>::max();
         const size_t    min         = std::numeric_limits<std::size_t>::min();
-        //const size_t    nan         = std::numeric_limits<std::size_t>::quiet_NaN();
+
+        /* size_t is always an unsigned finite number
+         * std::numeric_limits<size_t>::infinity() = 0
+         * std::numeric_limits<size_t>::quiet_NaN() = 0
+         * size_t(-1) = std::numeric_limits<size_t>::max()
+         * std::numeric_limits<size_t>::max() + 1 = std::numeric_limits<size_t>::min()
+         */
     }
     
     
