@@ -62,8 +62,14 @@ double IndependentTopologyProposal::doProposal( void )
 
     stored_tree = variable->getValue();
 
+    // tree proposal ratio numerator
+    hr += proposal_distribution->computeLnProbability();
+
     // draw a new tree
     proposal_distribution->redrawValue();
+
+    // tree proposal ratio denominator
+    hr -= proposal_distribution->computeLnProbability();
 
     Tree proposal_tree = proposal_distribution->getValue();
 
@@ -108,6 +114,9 @@ double IndependentTopologyProposal::doProposal( void )
 
         node->setBranchLength( brlen * u );
         root->setBranchLength( brlen * (1.0 - u) );
+
+        // jacobian of root branch transformation
+        hr += brlen;
 
         // restore tip indices
         for (size_t i=0; i<proposal_tree.getNumberOfTips(); i++)
@@ -157,6 +166,7 @@ double IndependentTopologyProposal::doProposal( void )
     proposal_ln_num_rankings = 0;
     std::vector<size_t> ranking = recursivelyRank( proposal_tree.getRoot(), proposal_ln_num_rankings );
 
+    // ranking proposal ratio
     hr += proposal_ln_num_rankings - stored_ln_num_rankings;
 
 
@@ -168,7 +178,7 @@ double IndependentTopologyProposal::doProposal( void )
 
     variable->setValue( proposal_tree.clone() );
 
-    // update the substitution rates
+    // update the substitution rates, if applicable
     if( substitution_rates != NULL )
     {
         stored_rates = substitution_rates->getValue();
