@@ -143,7 +143,7 @@ void SlideProposalContinuous::prepareProposal( void )
 void SlideProposalContinuous::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = ";
+    o << "delta = ";
     if (name_only == false)
     {
         o << lambda;

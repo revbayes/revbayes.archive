@@ -165,7 +165,7 @@ void LevyJumpSumProposal::prepareProposal( void )
 void LevyJumpSumProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = ";
+    o << "delta = ";
     if (name_only == false)
     {
         o << lambda;

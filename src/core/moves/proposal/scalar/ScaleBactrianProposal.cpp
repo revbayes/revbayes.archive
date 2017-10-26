@@ -126,7 +126,7 @@ void ScaleBactrianProposal::prepareProposal( void )
 void ScaleBactrianProposal::printParameterSummary(std::ostream &o, bool name_only) const 
 {
     
-    o << "lambda = ";
+    o << "sigma = ";
     if (name_only == false)
     {
         o << lambda;
