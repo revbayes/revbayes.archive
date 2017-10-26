@@ -18,7 +18,7 @@ using namespace RevBayesCore;
 /** Default constructor (interior node, no name). Give the node an optional index ID */
 TopologyNode::TopologyNode(size_t indx) :
     age( RbConstants::Double::nan ),
-    branch_length( -1 ),
+    branch_length( RbConstants::Double::nan ),
     children(),
     parent( NULL ),
     tree( NULL ),
@@ -36,7 +36,7 @@ TopologyNode::TopologyNode(size_t indx) :
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
     age( RbConstants::Double::nan ),
-    branch_length( -1 ),
+    branch_length( RbConstants::Double::nan ),
     children(),
     parent( NULL ),
     tree( NULL ),
@@ -54,7 +54,7 @@ TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const std::string& n, size_t indx) :
     age( RbConstants::Double::nan ),
-    branch_length( -1 ),
+    branch_length( RbConstants::Double::nan ),
     children(),
     parent( NULL ),
     tree( NULL ),
@@ -421,7 +421,12 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
     
     if ( simmap == false )
     {
-        o << ":" << getBranchLength();
+        double br = getBranchLength();
+
+        if( RevBayesCore::RbMath::isNan(br) == false )
+        {
+            o << ":" << br;
+        }
     }
     else
     {
