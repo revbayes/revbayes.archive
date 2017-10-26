@@ -184,7 +184,7 @@ int RbStatistics::Geometric::quantile(double q, double p) {
  *    Page 480.
  */
 int RbStatistics::Geometric::rv(double p, RevBayesCore::RandomNumberGenerator &rng) {
-    if (!RbMath::isFinite(p) || p <= 0 || p > 1) throw RbException("NaN produced in rGeom");
+    if (!RbMath::isFinite(p) || p <= 0 || p > 1) throw RbException("NaN produced in rgeom");
     
     return RbStatistics::Poisson::rv(exp(rng.uniform01()) * ((1 - p) / p),rng);
 }
