@@ -46,8 +46,6 @@ void TraceNumeric::computeStatistics( void )
     // check if we need to set the burnin
     if ( burnin == -1 )
     {
-        burnin = size();
-        burnin *= stepSize;
         burnin = (size_t)(burnin * 0.1);
     }
     

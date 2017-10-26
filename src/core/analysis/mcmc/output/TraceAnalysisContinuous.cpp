@@ -25,7 +25,6 @@ TraceAnalysisContinuous::TraceAnalysisContinuous()
 {
     // initialize data to invalid values
     invalidateTraceStatistics();
-    burnin              = -1;
     
 
 }
@@ -64,7 +63,7 @@ void TraceAnalysisContinuous::analyseMean(const std::vector<std::vector<double> 
         size_t chainSize = chain.size() - b;
         // add this chain size to the total sample size
         sampleSize += chainSize;
-        for (size_t i=burnin; i<chainSize; i++)
+        for (size_t i=b; i<chainSize; i++)
         {
             m += chain.at(i);
         }
@@ -100,9 +99,9 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
 /**
  * Analyze trace
  *
- * @param burnin   the number of sampes to discard
+ * @param burnin   the number of samples to discard
  *
- * @attention This method assumes that the mean was either made invalid before execution or is calculated apropriately for this burnin.
+ * @attention This method assumes that the mean was either made invalid before execution or is calculated appropriately for this burnin.
  */
 void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values, size_t b)
 {
@@ -112,7 +111,7 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
         analyseMean(values,b);
     }
     
-    size_t samples = values.size() - burnin;
+    size_t samples = values.size() - b;
     size_t maxLag = (samples - 1 < MAX_LAG ? samples - 1 : MAX_LAG);
     
     double* gammaStat = new double[maxLag];
@@ -125,8 +124,8 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
     
     for (size_t lag = 0; lag < maxLag; lag++) {
         for (size_t j = 0; j < samples - lag; j++) {
-            double del1 = values.at(burnin + j) - mean;
-            double del2 = values.at(burnin + j + lag) - mean;
+            double del1 = values.at(b + j) - mean;
+            double del2 = values.at(b + j + lag) - mean;
             gammaStat[lag] += (del1 * del2);
         }
         
@@ -171,7 +170,7 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
 void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values, size_t begin, size_t end) {
     // if we have not yet calculated the mean, do this now
     if (mean == RbConstants::Double::max) {
-        analyseMean(values,burnin);
+        analyseMean(values,begin,end);
     }
     
     size_t samples = end - begin;
@@ -235,10 +234,10 @@ void TraceAnalysisContinuous::invalidateTraceStatistics() {
  * @return the mean
  */
 double TraceAnalysisContinuous::getMean() {
-    if (mean == RbConstants::Double::max) {
+    /*if (mean == RbConstants::Double::max) {
         // throw an error that the ACT needs recalculation
-        //analyseMean(values);
-    }
+        analyseMean(values);
+    }*/
     
     return mean;
 }
@@ -247,10 +246,10 @@ double TraceAnalysisContinuous::getMean() {
  * @return the standard error of the mean
  */
 double TraceAnalysisContinuous::getStdErrorOfMean() {
-    if (sem == RbConstants::Double::max) {
+    /*if (sem == RbConstants::Double::max) {
         // throw an error that the ACT needs recalculation
-        //analyseCorrelation(values);
-    }
+        analyseCorrelation(values);
+    }*/
     
     return sem;
 }
@@ -259,10 +258,10 @@ double TraceAnalysisContinuous::getStdErrorOfMean() {
  * @return the autocorrelation time
  */
 double TraceAnalysisContinuous::getAct() {
-    if (act == RbConstants::Double::max) {
+    /*if (act == RbConstants::Double::max) {
         // throw an error that the ACT needs recalculation
-        //analyseCorrelation(values);
-    }
+        analyseCorrelation(values);
+    }*/
     
     return act;
 }
@@ -271,10 +270,10 @@ double TraceAnalysisContinuous::getAct() {
  * @return the eSS
  */
 double TraceAnalysisContinuous::getEss() {
-    if (ess == RbConstants::Double::max) {
+    /*if (ess == RbConstants::Double::max) {
         // throw an error that the ACT needs recalculation
-//        analyseCorrelation(values);
-    }
+        analyseCorrelation(values);
+    }*/
     
     return ess;
 }
