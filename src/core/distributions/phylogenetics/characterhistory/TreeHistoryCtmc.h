@@ -17,6 +17,7 @@
 #include "TreeChangeEventListener.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
+#include "StochasticNode.h"
 
 #include <cmath>
 
