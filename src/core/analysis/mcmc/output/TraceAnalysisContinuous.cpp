@@ -25,7 +25,7 @@ TraceAnalysisContinuous::TraceAnalysisContinuous()
 {
     // initialize data to invalid values
     invalidateTraceStatistics();
-    burnin              = RbConstants::Integer::nan;
+    burnin              = -1;
     
 
 }

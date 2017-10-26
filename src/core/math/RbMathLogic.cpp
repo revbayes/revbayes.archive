@@ -95,11 +95,9 @@ bool RbMath::compDefinitelyLessThan(double a, double b, double epsilon) {
 
 bool RbMath::isAComputableNumber(double x)
 {
-    if ( x != x )
+    if ( RevBayesCore::RbMath::isNan(x) )
         return false;
     if ( x == RbConstants::Double::neginf )
-        return false;
-    if ( x == RbConstants::Double::nan )
         return false;
     if ( x == RbConstants::Double::inf )
         return false;
@@ -114,20 +112,7 @@ bool RbMath::isFinite(double x) {
 }
 
 
-/** Tests whether a size_t is finite */
-bool RbMath::isFinite(size_t x)
-{
-    if (x == 0)
-        return true;
-    if (x == RbConstants::Size_t::inf)
-        return false;
-    if (x == RbConstants::Size_t::nan)
-        return false;
-    return true;
-}
-
-
-/** Tests whether a double is actually an interger */
+/** Tests whether a double is actually an integer */
 bool RbMath::isInt(double x){
 
     double int_part;

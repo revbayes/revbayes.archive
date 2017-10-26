@@ -80,7 +80,7 @@ namespace RevBayesCore {
         
         std::vector< Simplex >              values;                                     //!< the values of this TraceSimplex
         
-        size_t                              burnin;
+        int                                 burnin;
         double                              ess;                                        //!< the effective sample saize for this TraceSimplex
         double                              mean;                                       //!< the mean value for this TraceSimplex
         double                              median;                                     //!< the median of the TraceSimplex

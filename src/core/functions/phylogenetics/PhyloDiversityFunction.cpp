@@ -54,7 +54,8 @@ void PhyloDiversityFunction::update( void )
     
     if (!includeRoot)
     {
-        stopIndex = RbConstants::Size_t::nan;
+        bool found = false;
+        stopIndex = 0;
         // get the tmrca of all the members of the sample
         const std::vector<TopologyNode*> &nodes = tau->getValue().getNodes();
         size_t minCladeSize = nodes.size() + 2;
@@ -67,6 +68,7 @@ void PhyloDiversityFunction::update( void )
             size_t cladeSize = taxa.size();
             if ( cladeSize < minCladeSize && cladeSize >= num_taxa && node->containsClade( sample, false ) )
             {
+                found = true;
                 stopIndex = node->getIndex();
                 minCladeSize = cladeSize;
                 if ( num_taxa == cladeSize )
@@ -75,7 +77,7 @@ void PhyloDiversityFunction::update( void )
                 }
             }
         }
-        if ( stopIndex == RbConstants::Size_t::nan )
+        if ( found == false )
         {
             *value = 0.0;
             return;

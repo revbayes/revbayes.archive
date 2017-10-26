@@ -773,7 +773,7 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
     if ( your_taxa.getNumberSetBits() > my_taxa.getNumberSetBits() )
     {
         // quick negative abort to safe computational time
-        return RbConstants::Size_t::inf;
+        throw RbException("Node does not have at least as many taxa as input clade.");
     }
     
     // check that every taxon of the clade is in this subtree
@@ -783,7 +783,7 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
         // if I don't have any of your taxa then I cannot contain you.
         if ( your_taxa.isSet(i) == true && my_taxa.isSet(i) == false )
         {
-            return RbConstants::Size_t::inf;
+            throw RbException("Node does not contain any taxa in clade.");
         }
         
     }
@@ -799,17 +799,19 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
         {
             
             // check if the clade is contained in this child
-            size_t child_index = (*it)->getCladeIndex( c );
-            if ( RbMath::isFinite( child_index ) == true )
+            try
             {
-                // yeah, so we can abort and return the child index
-                return child_index;
+                return (*it)->getCladeIndex( c );
+            }
+            catch(RbException&)
+            {
+                continue;
             }
             
         }
     
         // the clade is not one of my children, and we require strict identity
-        return RbConstants::Size_t::inf;
+        throw RbException("Input clade is not a child node.");
         
     }
     

@@ -367,7 +367,8 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         }
 
 
-        size_t clade_index = RbConstants::Size_t::nan;
+        size_t clade_index = 0;
+        bool found = false;
         size_t min_clade_size = nodes.size() + 2;
         size_t taxa_count = clade.size();
 
@@ -378,7 +379,7 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
             size_t clade_size = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
             if ( clade_size < min_clade_size && clade_size >= taxa_count && node->containsClade( clade, false ) )
             {
-
+                found = true;
                 clade_index = node->getIndex();
                 min_clade_size = clade_size;
                 if ( taxa_count == clade_size )
@@ -390,7 +391,7 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
 
         }
 
-        if ( clade_index != RbConstants::Size_t::nan )
+        if ( found == true )
         {
             while ( index != clade_index && nodes[index]->isRoot() == false )
             {

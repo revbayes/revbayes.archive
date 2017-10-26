@@ -138,29 +138,30 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
         
         //        std::cout << "\n" << node_index << " " << j << "\n" << sample_tree << "\n\n";
         
-        if ( use_tree_trace == true )
+        try
         {
-            // check if the clade in the summary tree is also in the sampled tree
-            //            sample_clade_index = sample_root.getCladeIndex( summary_nodes[node_index] );
-            //            parent_sample_clade_index = sample_root.getCladeIndex( summary_nodes[parent_node_index] );
-            sample_clade_index = sample_root.getCladeIndex( summary_nodes[node_index] );
-            parent_sample_clade_index = sample_root.getCladeIndex( summary_nodes[parent_node_index] );
-            
-            // then we must find the ancestral state traces for this sampled node
-            trace_found_end_state = false;
-            trace_found_start_1 = false;
-            trace_found_start_2 = false;
-            parent_trace_found = false;
-        }
-        else
-        {
-            sample_clade_index = summary_nodes[node_index]->getIndex();
-            parent_sample_clade_index = parent_node_index;
-        }
+            if ( use_tree_trace == true )
+            {
+                // check if the clade in the summary tree is also in the sampled tree
+                //            sample_clade_index = sample_root.getCladeIndex( summary_nodes[node_index] );
+                //            parent_sample_clade_index = sample_root.getCladeIndex( summary_nodes[parent_node_index] );
+                sample_clade_index = sample_root.getCladeIndex( summary_nodes[node_index] );
+                parent_sample_clade_index = sample_root.getCladeIndex( summary_nodes[parent_node_index] );
+
+                // then we must find the ancestral state traces for this sampled node
+                trace_found_end_state = false;
+                trace_found_start_1 = false;
+                trace_found_start_2 = false;
+                parent_trace_found = false;
+            }
+            else
+            {
+                sample_clade_index = summary_nodes[node_index]->getIndex();
+                parent_sample_clade_index = parent_node_index;
+            }
+
+            // record the states if the sample tree contains the summary node's clade
         
-        // record the states if the sample tree contains the summary node's clade
-        if ( RbMath::isFinite( sample_clade_index ) == true )
-        {
             num_samples_clade += 1;
             
             size_t sample_clade_index_child_1 = 0;
@@ -379,6 +380,10 @@ void TreeSummary::recursivelyCollectAncestralStateSamples(size_t node_index, std
                 }
                 num_samples_end += 1;
             }
+        }
+        catch(RbException&)
+        {
+            continue;
         }
     }
     
@@ -1063,21 +1068,20 @@ void TreeSummary::recursivelyCollectCharacterMapSamples(size_t node_index, size_
         const Tree &sample_tree = (use_tree_trace) ? trace.objectAt( j ) : final_summary_tree;
         const TopologyNode& sample_root = sample_tree.getRoot();
         
-        if ( use_tree_trace == true )
+        try
         {
-            // check if the clade in the summary tree is also in the sampled tree
-            sample_clade_index = sample_root.getCladeIndex( summary_nodes[node_index] );
-            
-            // and we must also find the trace for this node index
-            trace_found = false;
-        }
-        else
-        {
-            sample_clade_index = summary_nodes[node_index]->getIndex();
-        }
-        
-        if ( RbMath::isFinite( sample_clade_index ) == true )
-        {
+            if ( use_tree_trace == true )
+            {
+                // check if the clade in the summary tree is also in the sampled tree
+                sample_clade_index = sample_root.getCladeIndex( summary_nodes[node_index] );
+
+                // and we must also find the trace for this node index
+                trace_found = false;
+            }
+            else
+            {
+                sample_clade_index = summary_nodes[node_index]->getIndex();
+            }
             
             bool use_sample = true;
             
@@ -1157,6 +1161,10 @@ void TreeSummary::recursivelyCollectCharacterMapSamples(size_t node_index, size_
                 branch_maps_conditional.push_back(this_branch_map);
             }
             branch_maps_all.push_back(this_branch_map);
+        }
+        catch(RbException&)
+        {
+            continue;
         }
     }
     
@@ -2201,7 +2209,7 @@ double TreeSummary::cladeProbability(const RevBayesCore::Clade &c, bool verbose 
         const Sample<Clade> &s = findCladeSample( tmp );
         f = double(s.getFrequency()) / s.getSampleSize();
     }
-    catch (RbException e)
+    catch (RbException& e)
     {
         // do nothing
     }
