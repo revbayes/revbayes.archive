@@ -169,10 +169,10 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const
         fileTypes.push_back( ModelVector<RlString>::getClassTypeSpec() );
         argumentRules.push_back( new ArgumentRule( "file"     , fileTypes, "The name of the tree trace file(s).", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
-        std::vector<std::string> treeOptions;
-        treeOptions.push_back( "clock" );
-        treeOptions.push_back( "non-clock" );
-        argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), treeOptions, "The type of trees." ) );
+        std::vector<std::string> tree_options;
+        tree_options.push_back( "clock" );
+        tree_options.push_back( "non-clock" );
+        argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), tree_options, "The type of trees." ) );
         argumentRules.push_back( new ArgumentRule( "outgroup"   , Clade::getClassTypeSpec(), "The clade (consisting of one or more taxa) used as an outgroup.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), "The separator/delimiter between values in the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
 

@@ -1926,8 +1926,8 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
     
     tau->makeInternalNodesBifurcating(true);
 
-    // trees with 2-degree root nodes should not be rerooted
-    tau->setRooted( root->getNumberOfChildren() == 2 || rooted);
+    // only trees with 2-degree root nodes are rooted trees.
+    tau->setRooted( root->getNumberOfChildren() == 2 );
 
     return tau;
     
