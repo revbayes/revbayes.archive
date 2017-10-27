@@ -625,12 +625,15 @@ void Mcmcmc::printOperatorSummary(void)
             base_moves = chains[active_chainIdx]->getMoves();
         }
         
+        std::vector<double> tmp_chain_heats = chain_heats;
+        sort(tmp_chain_heats.begin(), tmp_chain_heats.end(), std::greater<double>());
+        
         for (size_t i = 0; i < num_chains; ++i)
         {
-            size_t chainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), i) - heat_ranks.begin();
+            size_t chainIdx = std::find(chain_heats.begin(), chain_heats.end(), tmp_chain_heats[i]) - chain_heats.begin();
             
             std::cout << std::endl;
-            std::cout << "heat_ranks[" << i + 1 << "] = " << heat_ranks[chainIdx] + 1 << ", chain_heats[" << i + 1 << "] = " << chain_heats[chainIdx] << std::endl;
+            std::cout << "chain_heats[" << i + 1 << "] = " << tmp_chain_heats[i] << std::endl;
             std::cout.flush();
             
             // printing the moves summary
@@ -809,8 +812,8 @@ void Mcmcmc::printSwapSummaryPair(std::ostream &o, const size_t &row, const size
     o << ratio;
     o << " ";
     
-    size_t rowChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), row) - heat_ranks.begin();
-    size_t colChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), col) - heat_ranks.begin();
+    std::vector<double> tmp_chain_heats = chain_heats;
+    sort(tmp_chain_heats.begin(), tmp_chain_heats.end(), std::greater<double>());
     
     // print the heat of the chain that swaps are proposed from
     int h_length = 6;
@@ -818,7 +821,7 @@ void Mcmcmc::printSwapSummaryPair(std::ostream &o, const size_t &row, const size
     {
         o << " ";
     }
-    o << chain_heats[rowChainIdx];
+    o << tmp_chain_heats[row];
     o << " ";
     
     // print the heat of the chain that swaps are proposed to
@@ -827,7 +830,7 @@ void Mcmcmc::printSwapSummaryPair(std::ostream &o, const size_t &row, const size
     {
         o << " ";
     }
-    o << chain_heats[colChainIdx];
+    o << tmp_chain_heats[col];
     o << " ";
     
     o << std::endl;
@@ -1382,7 +1385,13 @@ void Mcmcmc::swapNeighborChains(void)
     j = int(GLOBAL_RNG->uniform01() * (num_chains-1));
     k = j + 1;
     
-    ++numAttemptedSwaps[heat_ranks[j]][heat_ranks[k]];
+    std::vector<double> tmp_chain_heats = chain_heats;
+    sort(tmp_chain_heats.begin(), tmp_chain_heats.end(), std::greater<double>());
+    
+    size_t heat_rankj = std::find(tmp_chain_heats.begin(), tmp_chain_heats.end(), chain_heats[j]) - tmp_chain_heats.begin();
+    size_t heat_rankk = std::find(tmp_chain_heats.begin(), tmp_chain_heats.end(), chain_heats[k]) - tmp_chain_heats.begin();
+    
+    ++numAttemptedSwaps[heat_rankj][heat_rankk];
     
     // compute exchange ratio
     double bj = chain_heats[j];
@@ -1434,7 +1443,7 @@ void Mcmcmc::swapNeighborChains(void)
     // on accept, swap beta values and active chains
     if (accept == true )
     {
-        ++numAcceptedSwaps[heat_ranks[j]][heat_ranks[k]];
+        ++numAcceptedSwaps[heat_rankj][heat_rankk];
         
         // swap active chain
         if (active_chain_index == j)
@@ -1511,7 +1520,13 @@ void Mcmcmc::swapRandomChains(void)
         while(j == k);
     }
     
-    ++numAttemptedSwaps[heat_ranks[j]][heat_ranks[k]];
+    std::vector<double> tmp_chain_heats = chain_heats;
+    std::sort(tmp_chain_heats.begin(), tmp_chain_heats.end(), std::greater<double>());
+    
+    size_t heat_rankj = std::find(tmp_chain_heats.begin(), tmp_chain_heats.end(), chain_heats[j]) - tmp_chain_heats.begin();
+    size_t heat_rankk = std::find(tmp_chain_heats.begin(), tmp_chain_heats.end(), chain_heats[k]) - tmp_chain_heats.begin();
+    
+    ++numAttemptedSwaps[heat_rankj][heat_rankk];
     
     // compute exchange ratio
     double bj = chain_heats[j];
@@ -1564,7 +1579,7 @@ void Mcmcmc::swapRandomChains(void)
     // on accept, swap beta values and active chains
     if (accept == true )
     {
-        ++numAcceptedSwaps[heat_ranks[j]][heat_ranks[k]];
+        ++numAcceptedSwaps[heat_rankj][heat_rankk];
         
         // swap active chain
         if (active_chain_index == j)
@@ -1630,14 +1645,13 @@ void Mcmcmc::tune( void )
     if (tune_heat == true && num_chains > 1)
     {
         
+        std::vector<double> tmp_chain_heats = chain_heats;
+        std::sort(tmp_chain_heats.begin(), tmp_chain_heats.end(), std::greater<double>());
         std::vector<double> heats_diff(num_chains - 1, 0.0);
         
         for (size_t i = 1; i < num_chains; ++i)
         {
-            size_t colderChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), i - 1) - heat_ranks.begin();
-            size_t hotterChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), i) - heat_ranks.begin();
-            
-            heats_diff[i - 1] = chain_heats[colderChainIdx] - chain_heats[hotterChainIdx];
+            heats_diff[i - 1] = tmp_chain_heats[i - 1] - tmp_chain_heats[i];
         }
         
         for (size_t i = 1; i < num_chains; ++i)
@@ -1666,18 +1680,22 @@ void Mcmcmc::tune( void )
         
         double heatMinBound = 0.01;
         size_t j = 1;
+        size_t colderChainIdx = std::find(chain_heats.begin(), chain_heats.end(), tmp_chain_heats[j - 1]) - chain_heats.begin();
+        size_t hotterChainIdx = colderChainIdx;
+        
         for (; j < num_chains; ++j)
         {
-            size_t colderChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), j - 1) - heat_ranks.begin();
-            size_t hotterChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), j) - heat_ranks.begin();
-            
+            hotterChainIdx = std::find(chain_heats.begin(), chain_heats.end(), tmp_chain_heats[j]) - chain_heats.begin();
             chain_heats[hotterChainIdx] = chain_heats[colderChainIdx] - heats_diff[j - 1];
             
             if (chain_heats[hotterChainIdx] < heatMinBound)
             {
                 break;
             }
-            
+            else
+            {
+                colderChainIdx = hotterChainIdx;
+            }
 //            std::cout << "chain_heats[" << hotterChainIdx << "]=" << chain_heats[hotterChainIdx] << std::endl;
         }
         
@@ -1686,15 +1704,12 @@ void Mcmcmc::tune( void )
         // to fall between the lowest heat that is greater than the minimum bound and the minimum bound
         if (j < num_chains)
         {
-            size_t colderChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), j - 1) - heat_ranks.begin();
             double rho = pow(chain_heats[colderChainIdx] / heatMinBound, 1.0 / (num_chains - j));
             size_t k = j;
             
             for (; k < num_chains; ++k)
             {
-                size_t hotterChainIdx = std::find(heat_ranks.begin(), heat_ranks.end(), k) - heat_ranks.begin();
                 chain_heats[hotterChainIdx] = chain_heats[colderChainIdx] / pow(rho, k + 1 - j);
-                
 //                std::cout << "chain_heats[k" << hotterChainIdx << "]=" << chain_heats[hotterChainIdx] << std::endl;
             }
         }
