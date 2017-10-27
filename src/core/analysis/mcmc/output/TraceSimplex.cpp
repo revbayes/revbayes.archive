@@ -61,7 +61,7 @@ TraceSimplex* TraceSimplex::clone() const
 void TraceSimplex::invalidate()
 {
     // set values to defaults and mark for recalculation
-    burnin                          = RbConstants::Size_t::nan;
+    burnin                          = -1;
     ess                             = -1;
     mean                            = 0.0;
     median                          = 0.0;

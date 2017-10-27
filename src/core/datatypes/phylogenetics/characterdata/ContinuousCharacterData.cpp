@@ -108,28 +108,30 @@ void ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, s
         const std::string &n = taxa[i].getName();
         ContinuousTaxonData& taxon = getTaxonData( n );
         
-        size_t idx = obsd.getIndexOfTaxon( n );
-        if ( idx != RbConstants::Size_t::inf)
+        try
         {
-            used[idx] = true;
-            taxon.concatenate( obsd.getTaxonData( n ) );
+            obsd.getIndexOfTaxon( n );
+        }
+        catch(RbException &e)
+        {
+            if ( type == "intersection" )
+            {
+                toDelete.push_back(n);
+            }
+            else if ( type == "union" )
+            {
+                AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
+                taxon_data->setAllCharactersMissing();
+                taxon.concatenate( *taxon_data );
+                delete taxon_data;
+            }
+            else
+            {
+                throw RbException("Cannot add two character data objects because second character data object has no taxon with name '" + n + "n'!");
+            }
+        }
 
-        }
-        else if ( type == "intersection" )
-        {
-            toDelete.push_back(n);
-        }
-        else if ( type == "union" )
-        {
-            AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
-            taxon_data->setAllCharactersMissing();
-            taxon.concatenate( *taxon_data );
-            delete taxon_data;
-        }
-        else
-        {
-            throw RbException("Cannot add two character data objects because second character data object has no taxon with name '" + n + "n'!");
-        }
+        taxon.concatenate( obsd.getTaxonData( n ) );
     }
     for (size_t i=0; i<toDelete.size(); i++)
     {

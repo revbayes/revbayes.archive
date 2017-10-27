@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 
@@ -81,7 +82,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     double speciationRate, timeInterval;
     for (size_t i = 1; i < value->getNumberOfTips()-1; ++i)
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
+        if ( RbMath::isNan(lnProbTimes) ||
             lnProbTimes == RbConstants::Double::inf || 
             lnProbTimes == RbConstants::Double::neginf ) 
         {

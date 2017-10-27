@@ -172,6 +172,7 @@
 #include "Dist_logUniform.h"
 #include "Dist_multinomial.h"
 #include "Dist_multivariateNorm.h"
+#include "Dist_nbinomial.h"
 #include "Dist_norm.h"
 #include "Dist_poisson.h"
 #include "Dist_scaledDirichlet.h"
@@ -323,6 +324,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // binomial distribution
         AddDistribution< Natural                    >( new Dist_binomial() );
+
+        // negative binomial distribution
+        AddDistribution< Natural                    >( new Dist_nbinomial() );
 
         // beta distribution
 //        AddContinuousDistribution< Probability >( new Dist_beta() );

@@ -218,16 +218,16 @@ double RbStatistics::Binomial::quantile(double quantile_prob, double n, double p
     
     if ( RbMath::isFinite(n) == false || RbMath::isFinite(p) == false || RbMath::isFinite(quantile_prob) == false)
     {
-        throw RbException("Nan produced in qBinom");
+        throw RbException("NaN produced in qbinom");
     }
     
     if (n != floor(n + 0.5))
     {
-        throw RbException("Nan produced in qBinom");
+        throw RbException("NaN produced in qbinom");
     }
     if (p < 0 || p > 1 || n < 0)
     {
-        throw RbException("Nan produced in qBinom");
+        throw RbException("NaN produced in qbinom");
     }
 
 //    R_Q_P01_boundaries(p, 0, n);
@@ -336,12 +336,12 @@ int RbStatistics::Binomial::rv(double nin, double pp, RevBayesCore::RandomNumber
     double p, q, np, g, r, al, alv, amaxp, ffm, ynorm;
     int i,ix,k, n;
     
-    if (!RbMath::isFinite(nin)) throw RbException("Infinite value in rBinom");
+    if (!RbMath::isFinite(nin)) throw RbException("NaN produced in rbinom");
     r = floor(nin + 0.5);
-    if (r != nin) throw RbException("NaN produced in rBinom");
+    if (r != nin) throw RbException("NaN produced in rbinom");
     if (!RbMath::isFinite(pp) ||
         /* n=0, p=0, p=1 are not errors <TSL>*/
-        r < 0 || pp < 0. || pp > 1.)  throw RbException("NaN produced in rBinom");
+        r < 0 || pp < 0. || pp > 1.)  throw RbException("NaN produced in rbinom");
     
     if (r == 0 || pp == 0.) return 0;
     if (pp == 1.) return int(r);
