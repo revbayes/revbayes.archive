@@ -603,7 +603,7 @@ double RbStatistics::Helper::rndGamma3(double a, RandomNumberGenerator& rng) {
     double e, p, q, r, t, u, v, w, x, ret_val;
     
     if (!RbMath::isFinite(a) || a < 0.0 ) {
-        throw RbException("Infinite parameters for rgamma.");
+        throw RbException("NaN produced in rgamma.");
     }
     
     if (a < 1.) { /* GS algorithm for parameters a < 1 */
@@ -748,7 +748,7 @@ double RbStatistics::Helper::rndGamma4(double s, RandomNumberGenerator& rng) {
     // check that alpha is finite
     if ( !RbMath::isFinite(s) || s < 0.0 )
     {
-        throw RbException("Infinite parameters for rgamma.");
+        throw RbException("NaN produced in rgamma.");
     }
     
     // check if alpha is less than 1

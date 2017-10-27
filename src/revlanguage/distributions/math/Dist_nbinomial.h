@@ -1,7 +1,7 @@
-#ifndef Dist_binomial_H
-#define Dist_binomial_H
+#ifndef Dist_nbinomial_H
+#define Dist_nbinomial_H
 
-#include "BinomialDistribution.h"
+#include "NegativeBinomialDistribution.h"
 #include "Natural.h"
 #include "Probability.h"
 #include "RlTypedDistribution.h"
@@ -23,14 +23,14 @@ namespace RevLanguage {
      * @since 2014-08-25, version 1.0
      *
      */
-    class Dist_binomial :  public TypedDistribution<Natural> {
+    class Dist_nbinomial :  public TypedDistribution<Natural> {
         
     public:
-                                                        Dist_binomial(void);
-        virtual                                        ~Dist_binomial(void);
+                                                        Dist_nbinomial(void);
+        virtual                                        ~Dist_nbinomial(void);
         
         // Basic utility functions
-        Dist_binomial*                                  clone(void) const;                                                                      //!< Clone the object
+        Dist_nbinomial*                                 clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::vector<std::string>                        getDistributionFunctionAliases(void) const;                                                     //!< Get the alternative names used for the constructor function in Rev.
@@ -41,7 +41,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::BinomialDistribution*             createDistribution(void) const;
+        RevBayesCore::NegativeBinomialDistribution*     createDistribution(void) const;
         
     protected:
         
@@ -58,8 +58,8 @@ namespace RevLanguage {
         
     private:
         
+        RevPtr<const RevVariable>                       r;
         RevPtr<const RevVariable>                       p;
-        RevPtr<const RevVariable>                       n;
     };
     
 }

@@ -47,8 +47,8 @@ MarginalLikelihoodEstimator::MarginalLikelihoodEstimator(const std::string &fn, 
     
         //    RBOUT("Processing file \"" + fn + "\"");
     
-        size_t powerColumnIndex = RbConstants::Size_t::nan;
-        size_t likelihoodColumnIndex = RbConstants::Size_t::nan;
+        int powerColumnIndex = -1;
+        int likelihoodColumnIndex = -1;
         size_t index = 0;
     
         double previousPower = -1.0;
@@ -94,7 +94,7 @@ MarginalLikelihoodEstimator::MarginalLikelihoodEstimator(const std::string &fn, 
                 
                 }
             
-                hasHeaderBeenRead = (powerColumnIndex != RbConstants::Size_t::nan && likelihoodColumnIndex != RbConstants::Size_t::nan);
+                hasHeaderBeenRead = (powerColumnIndex != -1 && likelihoodColumnIndex != -1);
             
                 continue;
             }
