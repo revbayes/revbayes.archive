@@ -50,6 +50,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   moves;
         RevPtr<const RevVariable>                   monitors;
         RevPtr<const RevVariable>                   moveschedule;
+        RevPtr<const RevVariable>                   num_init_attempts;
         RevPtr<const RevVariable>                   num_runs;
 
         

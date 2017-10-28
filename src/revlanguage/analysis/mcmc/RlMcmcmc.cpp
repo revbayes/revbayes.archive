@@ -63,7 +63,9 @@ void Mcmcmc::constructInternalObject( void )
     int                                                     si      = static_cast<const Natural &>( swap_interval->getRevObject() ).getValue();
     double                                                  delta   = static_cast<const RealPos &>( delta_heat->getRevObject() ).getValue();
     int                                                     nreps   = static_cast<const Natural &>( num_runs->getRevObject() ).getValue();
-    RevBayesCore::Mcmcmc *m = new RevBayesCore::Mcmcmc(mdl, mvs, mntr, sched, nchains, si, delta);
+    int                                                     ntries  = static_cast<const Natural &>( num_init_attempts->getRevObject() ).getValue();
+
+    RevBayesCore::Mcmcmc *m = new RevBayesCore::Mcmcmc(mdl, mvs, mntr, sched, nchains, si, delta, ntries);
     
     value = new RevBayesCore::MonteCarloAnalysis(m,nreps);
     
