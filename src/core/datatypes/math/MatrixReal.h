@@ -114,10 +114,10 @@ namespace RevBayesCore {
         mutable EigenSystem*                    eigensystem;
         mutable bool                            eigen_needs_update;
         
-        mutable bool                            use_cholesky_decomp;
         mutable CholeskyDecomposition*          cholesky_decomp;
         mutable bool                            cholesky_needs_update;
-        
+        mutable bool                            use_cholesky_decomp;
+
     };
     
     // Global functions using the class
