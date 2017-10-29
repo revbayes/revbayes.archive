@@ -146,8 +146,8 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         
         // get root history information
         const AbstractCharacterHistoryBirthDeathProcess* dist = dynamic_cast<const AbstractCharacterHistoryBirthDeathProcess* >( &tree->getDistribution() );
-        CharacterHistory tree_history = dist->getCharacterHistory();
-        BranchHistory branch_history = tree_history[root.getIndex()];
+        CharacterHistoryDiscrete tree_history = dist->getCharacterHistory();
+        const BranchHistory& branch_history = tree_history[root.getIndex()];
         const std::multiset<CharacterEvent*,CharacterEventCompare>& events = branch_history.getHistory();
         
         // for each interval between events, go from present to past

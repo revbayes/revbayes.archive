@@ -1,11 +1,4 @@
-//
-//  RateGenerator.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 2/17/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
+#include "CharacterEventDiscrete.h"
 #include "RateGenerator.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
@@ -79,30 +72,32 @@ double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from, double ag
 
     for (size_t i = 0; i < from.size(); ++i)
     {
-        ++counts[ from[i]->getState() ];
+        ++counts[ static_cast<CharacterEventDiscrete*>(from[i])->getState() ];
     }
 
     return getSumOfRates(from, counts, age, rate);
 }
 
-double RateGenerator::getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEvent* to, double age, double rate) const
+double RateGenerator::getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, double age, double rate) const
 {
 
     double r = 0.0;
     
-    size_t old_state = from[ to->getSiteIndex() ]->getState();
+    size_t old_state = static_cast<CharacterEventDiscrete*>(from[ to->getSiteIndex() ])->getState();
     size_t new_state = to->getState();
 
     
     for (size_t possible_state = 0; possible_state < num_states; possible_state++)
     {
         // subtract the contribution of rates leaving the old state
-        if (possible_state != old_state) {
+        if (possible_state != old_state)
+        {
             r -= getRate(old_state, possible_state, age, rate);
         }
         
         // add the contribution of rates leaving the new state
-        if (possible_state != new_state) {
+        if (possible_state != new_state)
+        {
             r += getRate(new_state, possible_state, age, rate);
         }
     }

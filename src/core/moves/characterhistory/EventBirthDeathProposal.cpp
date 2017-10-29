@@ -119,7 +119,7 @@ double EventBirthDeathProposal::doBirthProposal( void )
     was_birth_proposal = true;
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
-    CharacterHistory &history = distribution->getCharacterHistory();
+    CharacterHistoryDiscrete &history = distribution->getCharacterHistory();
     
     size_t num_events_before    = history.getNumberEvents();
     size_t num_branches         = history.getNumberBranches();
@@ -145,7 +145,7 @@ double EventBirthDeathProposal::doBirthProposal( void )
     double age = node.getAge();
     double event_time = rng->uniform01() * branch_length + age;
     
-    CharacterEvent *new_event = new CharacterEvent(0, new_state, event_time);
+    CharacterEvent *new_event = new CharacterEventDiscrete(0, new_state, event_time);
     history.addEvent( new_event, branch_index );
     
     // store value for reversal of proposal
@@ -167,7 +167,7 @@ double EventBirthDeathProposal::doDeathProposal( void )
     // set the flag that this was a death proposal
     was_birth_proposal = false;
     
-    CharacterHistory &history = distribution->getCharacterHistory();
+    CharacterHistoryDiscrete &history = distribution->getCharacterHistory();
     
     size_t num_events_before    = history.getNumberEvents();
     size_t num_branches         = history.getNumberBranches();

@@ -2,7 +2,8 @@
 #define TreeHistoryCtmc_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
-#include "BranchHistory.h"
+#include "BranchHistoryDiscrete.h"
+#include "CharacterEventDiscrete.h"
 #include "ConstantNode.h"
 #include "DiscreteTaxonData.h"
 #include "HomologousDiscreteCharacterData.h"
@@ -55,7 +56,7 @@ namespace RevBayesCore {
         const std::vector<BranchHistory*>&                                  getHistories(void) const;
         size_t                                                              getNumberOfSites(void) const;
         const Tree&                                                         getTree(void) const;
-        void                                                                setHistory(const BranchHistory& bh, const TopologyNode& nd);
+        void                                                                setHistory(const BranchHistoryDiscrete& bh, const TopologyNode& nd);
         void                                                                setHistories(const std::vector<BranchHistory*>& bh);
         void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);           //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                setTipProbs(const HomologousCharacterData* tp);
@@ -136,6 +137,8 @@ namespace RevBayesCore {
         virtual void                                                        simulate(const TopologyNode& node, BranchHistory* bh, std::vector<DiscreteTaxonData< charType > >& taxa) = 0;
     };
 }
+
+
 
 
 template<class charType>
@@ -319,7 +322,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n
         rv.clear();
         rv.resize( num_states );
 
-        int index = static_cast<const TypedDagNode<long>* >( args[0] )->getValue() - 1;
+        long index = static_cast<const TypedDagNode<long>* >( args[0] )->getValue() - 1;
 
 //        const BranchHistory& bh = branch_histories[ index ];
         const std::vector<CharacterEvent*> &states = this->histories[index]->getChildCharacters();
@@ -332,7 +335,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n
         double delta = 1.0/num_sites;
         for (size_t i = 0; i < num_sites; ++i)
         {
-            size_t s = states[i]->getState();
+            size_t s = static_cast<CharacterEventDiscrete*>(states[i])->getState();
             rv[s] += delta;
         }
 
@@ -343,21 +346,21 @@ void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n
         rv.resize( num_states );
 
         
-        int node_index = static_cast<const TypedDagNode<long>* >( args[0] )->getValue() - 1;
-        int site_index = static_cast<const TypedDagNode<long>* >( args[1] )->getValue() - 1;
+        long node_index = static_cast<const TypedDagNode<long>* >( args[0] )->getValue() - 1;
+        long site_index = static_cast<const TypedDagNode<long>* >( args[1] )->getValue() - 1;
 
         //        const BranchHistory& bh = branch_histories[ index ];
         const std::vector<CharacterEvent*> &states = this->histories[node_index]->getParentCharacters();
 
         double branch_length = tau->getValue().getNode(node_index).getBranchLength();
 
-        size_t current_state = states[site_index]->getState();
+        size_t current_state = static_cast<CharacterEventDiscrete*>(states[site_index])->getState();
         double previous_age = tau->getValue().getNode(node_index).getParent().getAge();
         const std::multiset<CharacterEvent*,CharacterEventCompare> &events = this->histories[node_index]->getHistory();
         std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
         for (it = events.begin(); it != events.end(); ++it)
         {
-            CharacterEvent *event = (*it);
+            CharacterEventDiscrete *event = static_cast<CharacterEventDiscrete*>(*it);
             size_t s = event->getSiteIndex();
             if ( s == site_index )
             {
@@ -533,7 +536,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::initializeHistoriesVector( void )
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         TopologyNode* nd = nodes[i];
-        histories[nd->getIndex()] = new BranchHistory(num_sites,num_states,nd->getIndex());
+        histories[nd->getIndex()] = new BranchHistoryDiscrete(num_sites,num_states,nd->getIndex());
     }
 
     historyLikelihoods.resize(2);
@@ -658,13 +661,13 @@ void RevBayesCore::TreeHistoryCtmc<charType>::setClockRate(const TypedDagNode< R
 }
 
 template<class charType>
-void RevBayesCore::TreeHistoryCtmc<charType>::setHistory(const BranchHistory& bh, const TopologyNode& nd)
+void RevBayesCore::TreeHistoryCtmc<charType>::setHistory(const BranchHistoryDiscrete& bh, const TopologyNode& nd)
 {
     // free memory
     delete histories[ nd.getIndex() ];
 
     // create new branch history object
-    histories[ nd.getIndex() ] = new BranchHistory(bh);
+    histories[ nd.getIndex() ] = new BranchHistoryDiscrete(bh);
 
 }
 
@@ -799,7 +802,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::simulate(void)
 
     // recursively simulate, starting with the root heading tipwards
     const TopologyNode& nd = tau->getValue().getRoot();
-    histories[ nd.getIndex() ] = new BranchHistory(num_sites, num_states, nd.getIndex());
+    histories[ nd.getIndex() ] = new BranchHistoryDiscrete(num_sites, num_states, nd.getIndex());
     BranchHistory* bh = histories[ nd.getIndex() ];
 
     simulate(nd, bh, taxa);

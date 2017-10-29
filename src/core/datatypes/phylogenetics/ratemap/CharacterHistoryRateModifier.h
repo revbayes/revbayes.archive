@@ -9,6 +9,7 @@
 namespace RevBayesCore
 {
     class CharacterEvent;
+    class CharacterEventDiscrete;
     class CharacterHistoryRateModifier : public Cloneable, public Assignable
     {
     public:
@@ -21,9 +22,9 @@ namespace RevBayesCore
         virtual bool                        operator<=(const CharacterHistoryRateModifier &rm) const { return operator<(rm) || operator==(rm); }
         
         virtual CharacterHistoryRateModifier& assign(const Assignable &m);
-        virtual double                      computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age=0.0) = 0;
-        virtual double                      computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState,  std::vector<size_t> counts, double age=0.0);
-        virtual double                      computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, std::vector<std::set<size_t> > sites_with_states, double age=0.0);
+        virtual double                      computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0) = 0;
+        virtual double                      computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, std::vector<size_t> counts, double age=0.0);
+        virtual double                      computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, std::vector<std::set<size_t> > sites_with_states, double age=0.0);
 
         virtual void                        update(void) = 0;
         CharacterHistoryRateModifier*       clone( void ) const = 0;
