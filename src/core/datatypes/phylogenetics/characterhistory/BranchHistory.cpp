@@ -34,20 +34,34 @@ BranchHistory::BranchHistory(size_t nc, size_t idx, std::set<int> sc) :
 
 BranchHistory::BranchHistory(const BranchHistory& h) :
     n_characters( h.n_characters ),
-    parent_characters( h.parent_characters ),
-    child_characters( h.child_characters ),
+    parent_characters(  ),
+    child_characters(  ),
     history( h.history ),
     branch_index( h.branch_index)
 {
 
+    for (size_t i=0; i<h.parent_characters.size(); ++i)
+    {
+        CharacterEvent *ce = h.parent_characters[i];
+        parent_characters.push_back( ce->clone() );
+    }
+    
+    for (size_t i=0; i<h.child_characters.size(); ++i)
+    {
+        CharacterEvent *ce = h.child_characters[i];
+        child_characters.push_back( ce->clone() );
+    }
+    
 }
 
 BranchHistory::~BranchHistory(void)
 {
-//    for (size_t i = 0; i < parentCharacters.size(); i++)
-//        delete parentCharacters[i];
-//    for (size_t i = 0; i < childCharacters.size(); i++)
-//        delete childCharacters[i];
+
+    for (size_t i = 0; i < parent_characters.size(); i++)
+        delete parent_characters[i];
+    for (size_t i = 0; i < child_characters.size(); i++)
+        delete child_characters[i];
+    
 //    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
 
 }
@@ -58,9 +72,28 @@ BranchHistory& BranchHistory::operator=(const BranchHistory &bh)
     if (this != &bh)
     {
 
+        for (size_t i = 0; i < parent_characters.size(); i++)
+            delete parent_characters[i];
+        for (size_t i = 0; i < child_characters.size(); i++)
+            delete child_characters[i];
+        
+        parent_characters.clear();
+        child_characters.clear();
+        
+        
+        for (size_t i=0; i<bh.parent_characters.size(); ++i)
+        {
+            CharacterEvent *ce = bh.parent_characters[i];
+            parent_characters.push_back( ce->clone() );
+        }
+        
+        for (size_t i=0; i<bh.child_characters.size(); ++i)
+        {
+            CharacterEvent *ce = bh.child_characters[i];
+            child_characters.push_back( ce->clone() );
+        }
+        
         n_characters            = bh.n_characters;
-        parent_characters       = bh.parent_characters;
-        child_characters        = bh.child_characters;
         history                 = bh.history;
         branch_index            = bh.branch_index;
     }

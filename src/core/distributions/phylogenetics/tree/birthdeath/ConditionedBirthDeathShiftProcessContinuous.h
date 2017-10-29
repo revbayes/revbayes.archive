@@ -15,8 +15,10 @@ namespace RevBayesCore {
         
     public:
         ConditionedBirthDeathShiftProcessContinuous(const TypedDagNode<double> *a,
-                                    const TypedDistribution<double> *s,
-                                    const TypedDistribution<double> *e,
+                                    const TypedDagNode<double> *root_speciation,
+                                    const TypedDagNode<double> *root_extinction,
+                                    TypedDistribution<double> *s,
+                                    TypedDistribution<double> *e,
                                     const TypedDagNode<double> *ev,
                                     const TypedDagNode<double> *r,
                                     const std::string &cdt,
@@ -29,8 +31,8 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<long> &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
-        CharacterHistoryContinuous&                         getCharacterHistory(void);                                  //!< Get the character histories
-        const CharacterHistoryContinuous&                   getCharacterHistory(void) const;                                  //!< Get the character histories
+        std::vector<CharacterHistoryContinuous>&            getCharacterHistory(void);                                  //!< Get the character histories
+        const std::vector<CharacterHistoryContinuous>&      getCharacterHistory(void) const;                                  //!< Get the character histories
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
         void                                                setValue(Tree *v, bool force);
         
@@ -54,30 +56,25 @@ namespace RevBayesCore {
         void                                                buildRandomBinaryHistory(std::vector<TopologyNode *> &tips);
         double                                              computeStateValue(size_t i, size_t j, double time) const;
         double                                              computeStartValue(size_t i, size_t j) const;
+        void                                                initializeBranchHistories(const TopologyNode &n, size_t nIdx, size_t idx, double val);
         void                                                simulateTree(void);
         void                                                runMCMC(void);
-//        void                                                updateBranchProbabilitiesNumerically(std::vector<double> &state, double begin, double end, const RbVector<double> &s, const RbVector<double> &e, double r, size_t i);
+        double                                              computeBranchProbability(double begin, double end, double sp_rate, double ex_rate, double sh_rate);
         
         // members
         const TypedDagNode<double>*                         root_age;
-        const TypedDistribution<double>*                    speciation;
-        const TypedDistribution<double>*                    extinction;
-        const TypedDagNode<double>*                         event_rate;
+        const TypedDagNode<double>*                         root_speciation;
+        const TypedDagNode<double>*                         root_extinction;
+        TypedDistribution<double>*                          speciation;
+        TypedDistribution<double>*                          extinction;
+        const TypedDagNode<double>*                         shift_rate;
         const TypedDagNode<double>*                         rho;                                                                                                //!< Sampling probability of each species.
         
-        CharacterHistoryContinuous                          branch_histories;
+        std::vector<CharacterHistoryContinuous>             branch_histories;
         
         std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
         size_t                                              num_taxa;
         std::vector<Taxon>                                  taxa;
-        
-        
-//        std::vector<size_t>                                 active_likelihood;
-//        mutable std::vector<bool>                           changed_nodes;
-//        mutable std::vector<bool>                           dirty_nodes;
-//        mutable std::vector<std::vector<std::vector<double> > >       nodeStates;
-//        mutable std::vector<std::vector<double> >           scaling_factors;
-//        mutable double                                      total_scaling;
         
         double                                              log_tree_topology_prob;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
         

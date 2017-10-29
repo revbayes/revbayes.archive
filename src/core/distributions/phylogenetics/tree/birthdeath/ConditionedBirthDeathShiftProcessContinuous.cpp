@@ -13,32 +13,39 @@
 
 using namespace RevBayesCore;
 
-ConditionedBirthDeathShiftProcessContinuous::ConditionedBirthDeathShiftProcessContinuous( const TypedDagNode<double> *a, const TypedDistribution<double> *s, const TypedDistribution<double> *e, const TypedDagNode<double > *ev, const TypedDagNode< double > *r, const std::string &cdt, const std::vector<Taxon> &n) : TypedDistribution<Tree>( NULL ),
+ConditionedBirthDeathShiftProcessContinuous::ConditionedBirthDeathShiftProcessContinuous( const TypedDagNode<double> *a, const TypedDagNode<double> *root_sp, const TypedDagNode<double> *root_ex, TypedDistribution<double> *s, TypedDistribution<double> *e, const TypedDagNode<double > *ev, const TypedDagNode< double > *r, const std::string &cdt, const std::vector<Taxon> &n) : TypedDistribution<Tree>( NULL ),
     root_age( a ),
+    root_speciation( root_sp ),
+    root_extinction( root_ex ),
     speciation( s ),
     extinction( e ),
-    event_rate( ev ),
+    shift_rate( ev ),
     rho( r ),
-    branch_histories( NULL, 1 ),
+    branch_histories( std::vector<CharacterHistoryContinuous>(2,CharacterHistoryContinuous(NULL, 1) ) ),
     condition( cdt ),
     taxa( n )
-//activeLikelihood( std::vector<size_t>(2*n.size()-1, 0) ),
-//changed_nodes( std::vector<bool>(2*n.size()-1, false) ),
-//dirty_nodes( std::vector<bool>(2*n.size()-1, true) ),
-//nodeStates( std::vector<std::vector<state_type> >(2*n.size()-1, std::vector<state_type>(2,std::vector<double>(1+speciation->getValue().size(),0))) ),
-//scalingFactors( std::vector<std::vector<double> >(2*n.size()-1, std::vector<double>(2,0.0) ) ),
-//totalScaling( 0.0 ),
-//NUM_TIME_SLICES( 200.0 ),
-//allow_same_category( allow_same )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( root_age );
-//    addParameter( speciation );
-//    addParameter( extinction );
-    addParameter( event_rate );
+    addParameter( root_speciation );
+    addParameter( root_extinction );
+    addParameter( shift_rate );
     addParameter( rho );
+    
+    // add the parameters of the distribution
+    const std::vector<const DagNode*>& sp_pars = speciation->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = sp_pars.begin(); it != sp_pars.end(); ++it)
+    {
+        this->addParameter( *it );
+    }
+    const std::vector<const DagNode*>& ex_pars = extinction->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = ex_pars.begin(); it != ex_pars.end(); ++it)
+    {
+        this->addParameter( *it );
+    }
+
     
     num_taxa = taxa.size();
     
@@ -55,7 +62,7 @@ ConditionedBirthDeathShiftProcessContinuous::ConditionedBirthDeathShiftProcessCo
     log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
     
     simulateTree();
-    
+
 }
 
 
@@ -152,9 +159,51 @@ ConditionedBirthDeathShiftProcessContinuous* ConditionedBirthDeathShiftProcessCo
 }
 
 
+double ConditionedBirthDeathShiftProcessContinuous::computeBranchProbability(double begin, double end, double sp_rate, double ex_rate, double sh_rate)
+{
+    
+    double ln_prob = 0.0;
+    
+    double sampling = rho->getValue();
+    
+    // add the probability that there was no shiftevent
+    ln_prob -= sh_rate*(end-begin);
+//    ln_prob -= sh_rate*(begin-end);
+
+    // we need to compute P(N(T)=1|N(start)=1) / P(N(T)=1|N(end)=1)
+    // where                      (b-d)^2 * exp(-(b-d)(T-t))
+    //         P(N(T)=1|N(t)=1) = --------------------------
+    //                            (b-d*exp(-(b-d)(T-t))^2
+    //
+    // or with incomplete sampling:
+    // where                      r(b-d)^2 * exp(-(b-d)(T-t))
+    //         P(N(T)=1|N(t)=1) = --------------------------
+    //                            (rb+(b*(1-r)-d)*exp(-(b-d)(T-t)))^2
+
+//    ln_prob += 2*log(sp_rate-ex_rate) - ((sp_rate-ex_rate)*(present-begin));
+//    ln_prob -= 2*log(sp_rate - ex_rate*exp((sp_rate-ex_rate)*(present-begin)));
+//
+//    ln_prob -= 2*log(sp_rate-ex_rate) - ((sp_rate-ex_rate)*(present-end));
+//    ln_prob += 2*log(sp_rate - ex_rate*exp((sp_rate-ex_rate)*(present-end)));
+
+    ln_prob += log(sampling) + 2*log(sp_rate-ex_rate) - ((sp_rate-ex_rate)*(end));
+    ln_prob -= 2*log(sampling*sp_rate + (sp_rate*(1-sampling) - ex_rate)*exp((ex_rate-sp_rate)*(end)));
+    
+    ln_prob -= log(sampling) + 2*log(sp_rate-ex_rate) - ((sp_rate-ex_rate)*(begin));
+    ln_prob += 2*log(sampling*sp_rate + (sp_rate*(1-sampling) - ex_rate)*exp((ex_rate-sp_rate)*(begin)));
+
+    return ln_prob;
+    
+}
+
+
 /* Compute probability */
 double ConditionedBirthDeathShiftProcessContinuous::computeLnProbability( void )
 {
+    
+    initializeBranchHistories( value->getRoot(), value->getRoot().getIndex(), 0, root_speciation->getValue() );
+    initializeBranchHistories( value->getRoot(), value->getRoot().getIndex(), 1, root_extinction->getValue() );
+
     
     // Variable declarations and initialization
     double ln_prob = 0.0;
@@ -226,9 +275,6 @@ double ConditionedBirthDeathShiftProcessContinuous::computeNodeProbability(const
     if ( true )
     {
         
-        const BranchHistoryContinuous& bh = branch_histories[ node_index ];
-        const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
-        
         double value_tipwards_birth  = computeStartValue( node_index, 0 );
         double value_tipwards_death  = computeStartValue( node_index, 1 );
         double value_rootwards_birth = computeStartValue( node.getParent().getIndex(), 0 );
@@ -255,13 +301,13 @@ double ConditionedBirthDeathShiftProcessContinuous::computeNodeProbability(const
             
         }
         
-        double r = event_rate->getValue();
-        
         // remember that we go back in time (rootwards)
         double begin_time = node.getAge();
         double branch_length = node.getBranchLength();
         double end_time = begin_time + branch_length;
         
+        const BranchHistory& bh = branch_histories[0][ node_index ];
+        const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
         for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
         {
             CharacterEvent* event = *it;
@@ -269,17 +315,16 @@ double ConditionedBirthDeathShiftProcessContinuous::computeNodeProbability(const
             
             // we need to set the current rate category
             double current_value_birth = computeStateValue( node.getIndex(), 0, event_time );
-            
-//            updateBranchProbabilitiesNumerically(ext_obs_probs, begin_time, event_time, s, e, r, previous_state);
-            
-//            double rate_cat_prob = ( allow_same_category == true ? 1.0/num_rate_categories : 1.0 / (num_rate_categories-1.0) );
-            
+            double current_value_death = computeStateValue( node.getIndex(), 1, event_time );
+
+            ln_prob_node += computeBranchProbability(begin_time, event_time, current_value_birth, current_value_death, shift_rate->getValue() );
+            ln_prob_node += log( shift_rate->getValue() );
             
             begin_time = event_time;
 
         }
         
-//        updateBranchProbabilitiesNumerically(ext_obs_probs, begin_time, end_time, s, e, r, state_index_rootwards);
+        ln_prob_node += computeBranchProbability(begin_time, end_time, value_rootwards_birth, value_rootwards_death, shift_rate->getValue());
         
     }
     
@@ -299,17 +344,32 @@ double ConditionedBirthDeathShiftProcessContinuous::computeStartValue(size_t i, 
     
     if ( value->getNode(node_index).isRoot() == false )
     {
-        const BranchHistory &bh = branch_histories[ node_index ];
+        const BranchHistory &bh = branch_histories[j][ node_index ];
         const std::multiset<CharacterEvent*, CharacterEventCompare> &h = bh.getHistory();
-        CharacterEventContinuous *event = static_cast<CharacterEventContinuous*>(*h.begin());
-        return event->getState();
+        if ( h.size() > 0 )
+        {
+            CharacterEventContinuous *event = static_cast<CharacterEventContinuous*>(*h.begin());
+            return event->getState();
+        }
+        else
+        {
+            CharacterEventContinuous *event = static_cast<CharacterEventContinuous*>(bh.getParentCharacters()[0]);
+            return event->getState();
+        }
     }
     else
     {
-//        return root_state->getValue()[j];
+        if ( j == 0 )
+        {
+            return root_speciation->getValue();
+        }
+        else
+        {
+            return root_extinction->getValue();
+        }
+        
     }
     
-    return 0.0;
 }
 
 
@@ -325,13 +385,21 @@ double ConditionedBirthDeathShiftProcessContinuous::computeStateValue(size_t i, 
     {
         if ( value->getNode(node_index).isRoot() == true )
         {
-//            event_value = root_state->getValue()[j];
+
+            if ( j == 0 )
+            {
+                event_value = root_speciation->getValue();
+            }
+            else
+            {
+                event_value = root_extinction->getValue();
+            }
             found = true;
         }
         else if ( branch_histories[node_index].getNumberEvents() > 0 )
         {
             
-            const BranchHistory &bh = branch_histories[ node_index ];
+            const BranchHistory &bh = branch_histories[j][ node_index ];
             const std::multiset<CharacterEvent*, CharacterEventCompare> &h = bh.getHistory();
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=h.begin(); it!=h.end(); ++it)
             {
@@ -366,7 +434,6 @@ double ConditionedBirthDeathShiftProcessContinuous::computeRootLikelihood( void 
 {
     
     const TopologyNode &root = value->getRoot();
-    //    size_t root_index = root.getIndex();
     
     // fill the like
     const TopologyNode &left = root.getChild(0);
@@ -394,7 +461,7 @@ void ConditionedBirthDeathShiftProcessContinuous::executeMethod(const std::strin
     
     if ( n == "numberEvents" )
     {
-        size_t num_branches = branch_histories.getNumberBranches();
+        size_t num_branches = branch_histories[0].getNumberBranches();
         rv.clear();
         rv.resize( num_branches );
         
@@ -417,14 +484,14 @@ void ConditionedBirthDeathShiftProcessContinuous::executeMethod(const std::strin
     
     if ( n == "averageSpeciationRate" )
     {
-        size_t num_branches = branch_histories.getNumberBranches();
+        size_t num_branches = branch_histories[0].getNumberBranches();
         rv.clear();
         rv.resize( num_branches );
         
         for (size_t i = 0; i < num_branches; ++i)
         {
             const TopologyNode &node = this->value->getNode( i );
-            const BranchHistory& bh = branch_histories[ i ];
+            const BranchHistory& bh = branch_histories[0][ i ];
             const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
             double value_rootwards = computeStartValue( node.getParent().getIndex(), 0 );
             
@@ -453,14 +520,14 @@ void ConditionedBirthDeathShiftProcessContinuous::executeMethod(const std::strin
     }
     else if ( n == "averageExtinctionRate" )
     {
-        size_t num_branches = branch_histories.getNumberBranches();
+        size_t num_branches = branch_histories[1].getNumberBranches();
         rv.clear();
         rv.resize( num_branches );
         
         for (size_t i = 0; i < num_branches; ++i)
         {
             const TopologyNode &node = this->value->getNode( i );
-            const BranchHistory& bh = branch_histories[ i ];
+            const BranchHistory& bh = branch_histories[1][ i ];
             const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
             double value_rootwards = computeStartValue( node.getParent().getIndex(), 1 );
             
@@ -498,7 +565,7 @@ void ConditionedBirthDeathShiftProcessContinuous::executeMethod(const std::strin
 /**
  * Get the character history object.
  */
-CharacterHistoryContinuous& ConditionedBirthDeathShiftProcessContinuous::getCharacterHistory( void )
+std::vector<CharacterHistoryContinuous>& ConditionedBirthDeathShiftProcessContinuous::getCharacterHistory( void )
 {
     
     return branch_histories;
@@ -507,10 +574,52 @@ CharacterHistoryContinuous& ConditionedBirthDeathShiftProcessContinuous::getChar
 /**
  * Get the character history object.
  */
-const CharacterHistoryContinuous& ConditionedBirthDeathShiftProcessContinuous::getCharacterHistory( void ) const
+const std::vector<CharacterHistoryContinuous>& ConditionedBirthDeathShiftProcessContinuous::getCharacterHistory( void ) const
 {
     
     return branch_histories;
+}
+
+
+void ConditionedBirthDeathShiftProcessContinuous::initializeBranchHistories(const TopologyNode &node, size_t nIdx, size_t idx, double val)
+{
+    
+    if ( node.isRoot() == false )
+    {
+        CharacterHistoryContinuous& ch = branch_histories[idx];
+        const BranchHistoryContinuous& bh = ch[nIdx];
+        const std::vector<CharacterEvent*>& parents = bh.getParentCharacters();
+        const std::vector<CharacterEvent*>& children = bh.getParentCharacters();
+    
+        if ( parents.size() > 0 )
+        {
+            CharacterEvent *ce = parents[0];
+            static_cast<CharacterEventContinuous*>( ce )->setState( val );
+        }
+        if ( children.size() > 0 )
+        {
+            CharacterEvent *ce = children[0];
+            static_cast<CharacterEventContinuous*>( ce )->setState( val );
+        }
+    }
+    
+    if ( node.isTip() )
+    {
+        
+    }
+    else
+    {
+        // this is an internal node
+        const TopologyNode &left = node.getChild(0);
+        size_t left_index = left.getIndex();
+        initializeBranchHistories( left, left_index, idx, val );
+        const TopologyNode &right = node.getChild(1);
+        size_t right_index = right.getIndex();
+        initializeBranchHistories( right, right_index, idx, val );
+        
+        
+    }
+    
 }
 
 
@@ -526,8 +635,12 @@ void ConditionedBirthDeathShiftProcessContinuous::setValue(Tree *v, bool force)
     // delegate to the parent class
     TypedDistribution< Tree >::setValue(v, force);
     
-    branch_histories.setTree( value );
-    
+    branch_histories[0].setTree( value );
+    branch_histories[1].setTree( value );
+
+    initializeBranchHistories( value->getRoot(), value->getRoot().getIndex(), 0, root_speciation->getValue() );
+    initializeBranchHistories( value->getRoot(), value->getRoot().getIndex(), 1, root_extinction->getValue() );
+
 }
 
 
@@ -597,8 +710,12 @@ void ConditionedBirthDeathShiftProcessContinuous::simulateTree( void )
     // Finally store the new value
     value = psi;
     
-    branch_histories.setTree( psi );
+    branch_histories[0].setTree( psi );
+    branch_histories[1].setTree( psi );
     
+    initializeBranchHistories( value->getRoot(), value->getRoot().getIndex(), 0, root_speciation->getValue() );
+    initializeBranchHistories( value->getRoot(), value->getRoot().getIndex(), 1, root_extinction->getValue() );
+
 }
 
 void ConditionedBirthDeathShiftProcessContinuous::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
@@ -654,21 +771,26 @@ void ConditionedBirthDeathShiftProcessContinuous::swapParameterInternal( const D
     {
         root_age = static_cast<const TypedDagNode<double>* >( newP );
     }
-//    else if (oldP == speciation)
-//    {
-//        speciation = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
-//    }
-//    else if (oldP == extinction)
-//    {
-//        extinction = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
-//    }
-    else if (oldP == event_rate)
+    else if (oldP == root_speciation)
     {
-        event_rate = static_cast<const TypedDagNode<double>* >( newP );
+        root_speciation = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == root_extinction)
+    {
+        root_extinction = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == shift_rate)
+    {
+        shift_rate = static_cast<const TypedDagNode<double>* >( newP );
     }
     else if (oldP == rho)
     {
         rho = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else
+    {
+        speciation->swapParameter(oldP,newP);
+        extinction->swapParameter(oldP,newP);
     }
     
 }
