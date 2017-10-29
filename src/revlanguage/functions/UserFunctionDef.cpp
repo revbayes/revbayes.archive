@@ -23,7 +23,7 @@ UserFunctionDef::UserFunctionDef( const ArgumentRules*        argRules,
     code( stmts ),
     name( n ),
     referenceCount( 0 ),
-    returnType( retType )
+    return_type( retType )
 {
 }
 
@@ -34,7 +34,7 @@ UserFunctionDef::UserFunctionDef( const UserFunctionDef& x ) :
     code( NULL ),
     name( x.name ),
     referenceCount( 0 ),
-    returnType( x.returnType )
+    return_type( x.return_type )
 {
     // Create a new list for the code
     code = new std::list<SyntaxElement*>();
@@ -51,7 +51,7 @@ UserFunctionDef& UserFunctionDef::operator=( const UserFunctionDef &f )
 {
     if ( this != &f ) {
         
-        if ( returnType != f.returnType )
+        if ( return_type != f.return_type )
             throw RbException( "Illegal assignment of user-function definition involving different return types" );
         
         delete argumentRules;
@@ -129,7 +129,7 @@ int UserFunctionDef::getReferenceCount( void ) const
 /** Get return type */
 const TypeSpec& UserFunctionDef::getReturnType(void) const
 {
-    return returnType;
+    return return_type;
 }
 
 

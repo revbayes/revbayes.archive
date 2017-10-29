@@ -218,7 +218,7 @@ double search_interval(double x0,double& L, double& R, slice_function& g,double 
 
   //double L0 = L, R0 = R;
 
-  for(int i=0;i<200;i++)
+  for (int i=0;i<200;i++)
   {
     double x1 = L + uniform()*(R-L);
     double gx1 = g(x1);
@@ -318,7 +318,8 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
     o << " ";
     
     // print the weight
-    int w_length = 4 - (int)log10(weight);
+    int w_length = 4;
+    if (weight > 0) w_length -= (int)log10(weight);
     for (int i = 0; i < w_length; ++i) {
         o << " ";
     }
@@ -326,7 +327,8 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
     o << " ";
     
     // print the number of tries
-    int t_length = 9 - (int)log10(num_tried);
+    int t_length = 9;
+    if (num_tried > 0) t_length -= (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i) {
         o << " ";
     }

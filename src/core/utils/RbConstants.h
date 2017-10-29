@@ -27,17 +27,20 @@ namespace RbConstants {
     namespace Double {
         const double    inf         = std::numeric_limits<double>::infinity();
         const double    max         = std::numeric_limits<double>::max();
-        // (unused)        const double    min         = std::numeric_limits<double>::min();
+        const double    min         = std::numeric_limits<double>::min();
         const double    nan         = std::numeric_limits<double>::quiet_NaN();
         const double    neginf      = -std::numeric_limits<double>::infinity();
     }
     
     namespace Integer {
-        const int       inf         = std::numeric_limits<int>::infinity();
         const int       max         = std::numeric_limits<int>::max();
-        // (unused)        const int       min         = std::numeric_limits<int>::min();
-        const int       nan         = std::numeric_limits<int>::quiet_NaN();
-        const int       neginf      = -2147483647;
+        const int       min         = std::numeric_limits<int>::min();
+
+        /* int is always a signed finite number
+         * std::numeric_limits<int>::infinity() = 0
+         * std::numeric_limits<int>::quiet_NaN() = 0
+         * std::numeric_limits<int>::max() + 1 = std::numeric_limits<int>::min()
+         */
     }
     
     namespace Object {
@@ -46,10 +49,15 @@ namespace RbConstants {
     }
     
     namespace Size_t {
-        const size_t    inf         = -1;
         const size_t    max         = std::numeric_limits<std::size_t>::max();
-        //        const size_t    min         = std::numeric_limits<std::size_t>::min();
-        const size_t    nan         = std::numeric_limits<std::size_t>::quiet_NaN();
+        const size_t    min         = std::numeric_limits<std::size_t>::min();
+
+        /* size_t is always an unsigned finite number
+         * std::numeric_limits<size_t>::infinity() = 0
+         * std::numeric_limits<size_t>::quiet_NaN() = 0
+         * size_t(-1) = std::numeric_limits<size_t>::max()
+         * std::numeric_limits<size_t>::max() + 1 = std::numeric_limits<size_t>::min()
+         */
     }
     
     
@@ -112,6 +120,10 @@ namespace RbConstants {
         121645100408832000,
         2432902008176640000 };
     
+    /* constant for scaling N(0,1) RV in Bactrian move kernel with m=0.95, sqrt(1 - m^2) */
+    /* computed to 30 decimal places with Mathematica*/
+    /* see Yang and Rodriguez (2013) SI eqn 19 for more details*/
+    const double BACT_SD           = 0.312249899919919910292344656047;
 }
 
 #endif

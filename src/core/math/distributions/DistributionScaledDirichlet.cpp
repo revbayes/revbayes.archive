@@ -140,13 +140,13 @@ RbVector<double> RbStatistics::ScaledDirichlet::rv(const std::vector<double> &a,
 	size_t n = a.size();
     RbVector<double> z(n);
 	double sum = 0.0;
-	for(size_t i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
     {
 		z[i] = RbStatistics::Helper::rndGamma(a[i], rng) / b[i];
 		sum += z[i];
     }
 	
-    for(size_t i=0; i<n; i++)
+    for (size_t i=0; i<n; i++)
     {
         z[i] /= sum;
     }

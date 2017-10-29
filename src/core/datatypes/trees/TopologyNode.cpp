@@ -18,7 +18,7 @@ using namespace RevBayesCore;
 /** Default constructor (interior node, no name). Give the node an optional index ID */
 TopologyNode::TopologyNode(size_t indx) :
     age( RbConstants::Double::nan ),
-    branch_length( -1 ),
+    branch_length( RbConstants::Double::nan ),
     children(),
     parent( NULL ),
     tree( NULL ),
@@ -36,7 +36,7 @@ TopologyNode::TopologyNode(size_t indx) :
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
     age( RbConstants::Double::nan ),
-    branch_length( -1 ),
+    branch_length( RbConstants::Double::nan ),
     children(),
     parent( NULL ),
     tree( NULL ),
@@ -54,7 +54,7 @@ TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const std::string& n, size_t indx) :
     age( RbConstants::Double::nan ),
-    branch_length( -1 ),
+    branch_length( RbConstants::Double::nan ),
     children(),
     parent( NULL ),
     tree( NULL ),
@@ -354,7 +354,7 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
         size_t j = 0;
         for (size_t i=0; i< children.size(); i++)
         {
-            if( RbSettings::userSettings().getCollapseSampledAncestors()
+            if ( RbSettings::userSettings().getCollapseSampledAncestors()
                     && children[i]->isSampledAncestor()
                     && (children[i]->getName() < fossil_name || fossil_name == "" ) )
             {
@@ -363,7 +363,7 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
             }
             else
             {
-                if(j > 0)
+                if (j > 0)
                 {
                     o << ",";
                 }
@@ -421,7 +421,12 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
     
     if ( simmap == false )
     {
-        o << ":" << getBranchLength();
+        double br = getBranchLength();
+
+        if( RevBayesCore::RbMath::isNan(br) == false )
+        {
+            o << ":" << br;
+        }
     }
     else
     {
@@ -539,7 +544,7 @@ std::string TopologyNode::computePlainNewick( void ) const
         for (size_t i = 0; i < getNumberOfChildren(); ++i)
         {
             const TopologyNode& child = getChild( i );
-            if( RbSettings::userSettings().getCollapseSampledAncestors()
+            if ( RbSettings::userSettings().getCollapseSampledAncestors()
                     && child.isSampledAncestor()
                     && (child.getName() < fossil || fossil == "") )
             {
@@ -773,7 +778,7 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
     if ( your_taxa.getNumberSetBits() > my_taxa.getNumberSetBits() )
     {
         // quick negative abort to safe computational time
-        return RbConstants::Size_t::inf;
+        throw RbException("Node does not have at least as many taxa as input clade.");
     }
     
     // check that every taxon of the clade is in this subtree
@@ -783,7 +788,7 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
         // if I don't have any of your taxa then I cannot contain you.
         if ( your_taxa.isSet(i) == true && my_taxa.isSet(i) == false )
         {
-            return RbConstants::Size_t::inf;
+            throw RbException("Node does not contain any taxa in clade.");
         }
         
     }
@@ -799,17 +804,19 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
         {
             
             // check if the clade is contained in this child
-            size_t child_index = (*it)->getCladeIndex( c );
-            if ( RbMath::isFinite( child_index ) == true )
+            try
             {
-                // yeah, so we can abort and return the child index
-                return child_index;
+                return (*it)->getCladeIndex( c );
+            }
+            catch(RbException&)
+            {
+                continue;
             }
             
         }
     
         // the clade is not one of my children, and we require strict identity
-        return RbConstants::Size_t::inf;
+        throw RbException("Input clade is not a child node.");
         
     }
     
@@ -862,7 +869,7 @@ Clade TopologyNode::getClade( void ) const
     // get the clade taxa
     std::vector<Taxon> taxa;
 
-    if( tree != NULL )
+    if ( tree != NULL )
     {
         // initialize the clade bitset
         RbBitSet bitset( tree->getNumberOfTips() );
@@ -881,15 +888,15 @@ Clade TopologyNode::getClade( void ) const
     std::vector<Taxon> mrca;
 
     // if a child is a sampled ancestor, its taxon is a mrca
-    for(size_t i = 0; i < children.size(); i++)
+    for (size_t i = 0; i < children.size(); i++)
     {
-        if( children[i]->isSampledAncestor() )
+        if ( children[i]->isSampledAncestor() )
         {
             mrca.push_back( children[i]->getTaxon() );
         }
     }
 
-    if( !mrca.empty() )
+    if ( !mrca.empty() )
     {
         c.setMrca( mrca );
     }
@@ -1320,10 +1327,19 @@ bool TopologyNode::isRoot( void ) const
 }
 
 
-bool TopologyNode::isSampledAncestor( void ) const
+bool TopologyNode::isSampledAncestor(  bool propagate ) const
 {
     
-    return sampled_ancestor;
+    bool sa = sampled_ancestor;
+    if( propagate == true )
+    {
+        for(size_t i = 0; i < children.size(); i++)
+        {
+            sa = sa || children[i]->isSampledAncestor(false);
+        }
+    }
+
+    return sa;
 }
 
 
@@ -1391,12 +1407,7 @@ void TopologyNode::recomputeBranchLength( void )
     {
         branch_length = 0.0;
     }
-    else if ( RbMath::isFinite( age ) == false )
-    {
-        // don't reset the branch length if this isn't a time tree (WP)
-        //branch_length = -1;
-    }
-    else
+    else if ( RbMath::isFinite( age ) == true )
     {
         branch_length = parent->getAge() - age;
     }
@@ -1500,7 +1511,7 @@ void TopologyNode::renameNodeParameter(const std::string &old_name, const std::s
 
 void TopologyNode::setAge(double a, bool propagate)
 {
-    if( sampled_ancestor && propagate )
+    if ( sampled_ancestor && propagate )
     {
         parent->setAge(a);
         return;
@@ -1515,7 +1526,7 @@ void TopologyNode::setAge(double a, bool propagate)
     for (std::vector<TopologyNode *>::iterator it = children.begin(); it != children.end(); ++it)
     {
         TopologyNode *child = *it;
-        if( child->isSampledAncestor() )
+        if ( child->isSampledAncestor() )
         {
             child->setAge(a, false);
         }

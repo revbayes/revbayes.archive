@@ -102,7 +102,7 @@ void RevBayesCore::DPPGibbsConcentrationMove::performGibbsMove( void )
 	double u = rng->uniform01();
 	double x = ( sh + (double)k - 1.0 ) / ( (double)nV * (rt - log(eta)) );
 	double newAlpha;
-	if((u / (1.0 - u)) < x)
+	if ((u / (1.0 - u)) < x)
 		newAlpha = RbStatistics::Gamma::rv(sh + k, rt - log(eta), *GLOBAL_RNG);
 	else
 		newAlpha = RbStatistics::Gamma::rv(sh + k - 1.0, rt - log(eta), *GLOBAL_RNG);

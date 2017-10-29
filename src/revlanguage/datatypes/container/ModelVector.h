@@ -453,20 +453,28 @@ double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) c
     if ( once == true && type.getParentType() == getClassTypeSpec().getParentType() )
     {
         // We want to convert to another model vector
+        if ( getClassType() == "RealPos[]" && type.getType() == "Real[]" )
+        {
+            return this->getValue().size() * 0.2;
+        }
+        if ( getClassType() == "Natural[]" && type.getType() == "Integer[]" )
+        {
+            return this->getValue().size() * 0.2;
+        }
 
-        // Simply check whether our elements can convert to the desired element type
+        // Simply check whether our elements can be converted to the desired element type
         typename RevBayesCore::RbConstIterator<elementType> i;
         double penalty = 0.0;
         for ( i = this->getValue().begin(); i != this->getValue().end(); ++i )
         {
-            const elementType& orgInternalElement = *i;
-            rlType orgElement = rlType( orgInternalElement );
+            const elementType& org_internal_element = *i;
+            rlType org_element = rlType( org_internal_element );
 
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( type.getElementTypeSpec() != NULL && orgElement.getTypeSpec() != *type.getElementTypeSpec() )
+            if ( type.getElementTypeSpec() != NULL && org_element.getTypeSpec() != *type.getElementTypeSpec() )
             {
             
-                double element_penalty = orgElement.isConvertibleTo( *type.getElementTypeSpec(), once );
+                double element_penalty = org_element.isConvertibleTo( *type.getElementTypeSpec(), once );
                 if ( element_penalty == -1 )
                 {
                     // we cannot convert this element

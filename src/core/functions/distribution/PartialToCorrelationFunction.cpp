@@ -34,17 +34,17 @@ void PartialToCorrelation::update(void) {
     size_t dim = P.getNumberOfRows();
     
     // P must start as an identity matrix
-    for(size_t i = 0; i < dim; ++i)
+    for (size_t i = 0; i < dim; ++i)
     {
         (*value)[i][i] = 1.0;
     }
     
-    for(int k = 0; k < dim - 1; ++k)
+    for (int k = 0; k < dim - 1; ++k)
     {
-        for(int i = k + 1; i < dim; ++i)
+        for (int i = k + 1; i < dim; ++i)
         {
             double p = P[k][i];
-            for(int l = k - 1; l >= 0; --l)
+            for (int l = k - 1; l >= 0; --l)
             {
                 p = p * pow( ( 1.0 - pow(P[l][i], 2) ) * ( 1.0 - pow(P[l][k], 2) ), 0.5) + P[l][i] * P[l][k];
             }

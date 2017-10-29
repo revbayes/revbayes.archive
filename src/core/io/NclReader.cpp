@@ -101,8 +101,8 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
     
 	std::vector<AbstractCharacterData* > cmv;
     
-	size_t numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-	for (unsigned tBlck=0; tBlck<numTaxaBlocks; ++tBlck)
+	size_t num_taxaBlocks = nexusReader.GetNumTaxaBlocks();
+	for (unsigned tBlck=0; tBlck<num_taxaBlocks; ++tBlck)
     {
 		NxsTaxaBlock* taxaBlock = nexusReader.GetTaxaBlock(tBlck);
 		std::string taxaBlockTitle          = taxaBlock->GetTitle();
@@ -331,7 +331,7 @@ HomologousDiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatri
             {
                 size_t nStates = charblock->GetNumStates(origTaxIndex, *cit);
                 aaState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
-                for(unsigned s=1; s<nStates; s++)
+                for (unsigned s=1; s<nStates; s++)
                 {
                     aaState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
                 }
@@ -850,7 +850,7 @@ HomologousDiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(
             }
             else
             {
-                for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+                for (unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                 {
                     stdState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
                     for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
@@ -1926,8 +1926,8 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
     
     tau->makeInternalNodesBifurcating(true);
 
-    // trees with 2-degree root nodes should not be rerooted
-    tau->setRooted( root->getNumberOfChildren() == 2 || rooted);
+    // only trees with 2-degree root nodes are rooted trees.
+    tau->setRooted( root->getNumberOfChildren() == 2 );
 
     return tau;
     

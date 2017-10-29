@@ -17,8 +17,8 @@ using namespace RevLanguage;
 SyntaxFunctionCall::SyntaxFunctionCall( const std::string &n, std::list<SyntaxLabeledExpr*>* args) :
     SyntaxElement(),
     arguments( args ),
-    functionName( n ),
-    baseVariable( NULL )
+    function_name( n ),
+    base_variable( NULL )
 {
 }
 
@@ -27,8 +27,8 @@ SyntaxFunctionCall::SyntaxFunctionCall( const std::string &n, std::list<SyntaxLa
 SyntaxFunctionCall::SyntaxFunctionCall( SyntaxVariable* var, const std::string& n, std::list<SyntaxLabeledExpr*>* args ) :
     SyntaxElement(),
     arguments( args ),
-    functionName( n ),
-    baseVariable( var )
+    function_name( n ),
+    base_variable( var )
 {
 }
 
@@ -37,11 +37,11 @@ SyntaxFunctionCall::SyntaxFunctionCall( SyntaxVariable* var, const std::string& 
 SyntaxFunctionCall::SyntaxFunctionCall(const SyntaxFunctionCall& x) :
     SyntaxElement( x ),
     arguments( NULL ),
-    functionName( x.functionName ),
-    baseVariable( NULL )
+    function_name( x.function_name ),
+    base_variable( NULL )
 {
-    if (x.baseVariable != NULL)
-        baseVariable = x.baseVariable->clone();
+    if (x.base_variable != NULL)
+        base_variable = x.base_variable->clone();
     
     arguments = new std::list<SyntaxLabeledExpr*>();
     for ( std::list<SyntaxLabeledExpr*>::iterator it = x.arguments->begin(); it != x.arguments->end(); ++it )
@@ -52,7 +52,7 @@ SyntaxFunctionCall::SyntaxFunctionCall(const SyntaxFunctionCall& x) :
 /** Destructor deletes members */
 SyntaxFunctionCall::~SyntaxFunctionCall()
 {
-    delete baseVariable;
+    delete base_variable;
     
     for ( std::list<SyntaxLabeledExpr*>::iterator it = arguments->begin(); it != arguments->end(); ++it )
         delete *it;
@@ -67,15 +67,15 @@ SyntaxFunctionCall& SyntaxFunctionCall::operator=( const SyntaxFunctionCall& x )
     {
         SyntaxElement::operator=( x );
 
-        delete baseVariable;
+        delete base_variable;
         
         for ( std::list<SyntaxLabeledExpr*>::iterator it = arguments->begin(); it != arguments->end(); ++it )
             delete *it;
 
-        functionName = x.functionName;
+        function_name = x.function_name;
 
-        if (x.baseVariable != NULL)
-            baseVariable = x.baseVariable->clone();
+        if (x.base_variable != NULL)
+            base_variable = x.base_variable->clone();
         
         arguments->clear();
         for ( std::list<SyntaxLabeledExpr*>::iterator it = x.arguments->begin(); it != x.arguments->end(); ++it )
@@ -128,7 +128,7 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
     }
     
     Function* func = NULL;
-    if ( baseVariable == NULL )
+    if ( base_variable == NULL )
     {
         // We are trying to find a function in the current environment
         
@@ -136,9 +136,9 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         // We can do this first because user-defined variables are not allowed to mask function names
         // Skip if we're not in UserWorkspace, because functions can only be user-defined in UserWorkspace
         bool found = false;
-        if ( env.existsVariable( functionName ) && &env == &Workspace::userWorkspace() )
+        if ( env.existsVariable( function_name ) && &env == &Workspace::userWorkspace() )
         {
-            RevObject &the_object = env.getRevObject( functionName );
+            RevObject &the_object = env.getRevObject( function_name );
             
             if ( the_object.isType( Function::getClassTypeSpec() ) )
             {
@@ -151,7 +151,7 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         // This call will throw a relevant message if the function is not found
         if ( found == false )
         {
-            func = env.getFunction(functionName, args, !dynamic).clone();
+            func = env.getFunction(function_name, args, !dynamic).clone();
         }
         
         // Allow the function to process the arguments
@@ -165,14 +165,14 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         // We are trying to find a member function
         
         // First we get the base variable
-        RevPtr<RevVariable> the_var = baseVariable->evaluateContent( env, dynamic );
+        RevPtr<RevVariable> the_var = base_variable->evaluateContent( env, dynamic );
         
         // Now we get a reference to the member object inside
         RevObject &the_member_object = the_var->getRevObject();
         
         const MethodTable& mt = the_member_object.getMethods();
         
-        Function* the_function = mt.getFunction( functionName, args, !dynamic ).clone();
+        Function* the_function = mt.getFunction( function_name, args, !dynamic ).clone();
         the_function->processArguments(args, !dynamic);
         
         MemberMethod* theMemberMethod = dynamic_cast<MemberMethod*>( the_function );
@@ -247,13 +247,13 @@ bool SyntaxFunctionCall::isFunctionSafe( const Environment& env, std::set<std::s
 {
     // Protect from self-checking if recursive. If that case, the function
     // does not exist yet and we tentatively assume it is safe
-    if ( !env.existsFunction( functionName ) )
+    if ( !env.existsFunction( function_name ) )
         return true;
     
-    if ( env.isProcedure( functionName ) )
+    if ( env.isProcedure( function_name ) )
     {
         // Check base variable
-        if ( baseVariable != NULL && ( !baseVariable->isFunctionSafe( env, localVars ) || baseVariable->SyntaxElement::retrievesExternVar( env, localVars, false ) ) )
+        if ( base_variable != NULL && ( !base_variable->isFunctionSafe( env, localVars ) || base_variable->SyntaxElement::retrievesExternVar( env, localVars, false ) ) )
             return false;
         
         // Iterate over all arguments
@@ -269,7 +269,7 @@ bool SyntaxFunctionCall::isFunctionSafe( const Environment& env, std::set<std::s
     else
     {
         // Check base variable
-        if ( baseVariable != NULL && !baseVariable->isFunctionSafe( env, localVars ) )
+        if ( base_variable != NULL && !base_variable->isFunctionSafe( env, localVars ) )
             return false;
         
         // Iterate over all arguments

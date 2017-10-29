@@ -134,12 +134,12 @@ double SpeciesTreeNodeSlideProposal::doProposal( void )
     std::vector<bool> left = std::vector<bool>(num_taxa, false);
     std::vector<bool> right = std::vector<bool>(num_taxa, false);
     
-    for(int k = 0; k < 2*which+1; k += 2)
+    for (int k = 0; k < 2*which+1; k += 2)
     {
         left[(order[k])->getIndex()] = true;
     }
     
-    for(int k = 2*(which+1); k < num_nodes; k += 2)
+    for (int k = 2*(which+1); k < num_nodes; k += 2)
     {
         right[(order[k])->getIndex()] = true;
     }
@@ -157,7 +157,7 @@ double SpeciesTreeNodeSlideProposal::doProposal( void )
     // now we propose a new age
     double new_height = 0.0;
     
-//    if( factor > 0 )
+//    if ( factor > 0 )
 //    {
 //        newHeight = (order[2*which+1])->getAge() * factor;
 //    }
@@ -215,7 +215,7 @@ void SpeciesTreeNodeSlideProposal::mauCanonical(Tree &tree, std::vector<Topology
 
 size_t SpeciesTreeNodeSlideProposal::mauCanonicalSub(Tree &tree, TopologyNode *node, size_t loc, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwaped)
 {
-    if( node->isTip() )
+    if ( node->isTip() )
     {
         order[loc] = node;
         return loc + 1;
@@ -239,7 +239,7 @@ size_t SpeciesTreeNodeSlideProposal::mauCanonicalSub(Tree &tree, TopologyNode *n
 void SpeciesTreeNodeSlideProposal::mauReconstruct(Tree &tree, std::vector<TopologyNode*> &order, std::vector<bool>&swapped)
 {
     TopologyNode* root = mauReconstructSub(tree, 0, swapped.size(), order, swapped);
-    if( &tree.getRoot() != root )
+    if ( &tree.getRoot() != root )
     {
 //        tree.setRoot(*root);
 //        tree.getTopology().setRoot()
@@ -250,7 +250,7 @@ void SpeciesTreeNodeSlideProposal::mauReconstruct(Tree &tree, std::vector<Topolo
 
 TopologyNode* SpeciesTreeNodeSlideProposal::mauReconstructSub(Tree &tree, size_t from, size_t to, std::vector<TopologyNode*> &order, std::vector<bool>&wasSwaped)
 {
-    if( from == to )
+    if ( from == to )
     {
         return order[2*from];
     }
@@ -259,10 +259,10 @@ TopologyNode* SpeciesTreeNodeSlideProposal::mauReconstructSub(Tree &tree, size_t
     {
         double h = -1;
         
-        for(size_t i = from; i < to; ++i)
+        for (size_t i = from; i < to; ++i)
         {
             double v = order[2 * i + 1]->getAge();
-            if( h < v )
+            if ( h < v )
             {
                 h = v;
                 node_index = i;
@@ -278,21 +278,21 @@ TopologyNode* SpeciesTreeNodeSlideProposal::mauReconstructSub(Tree &tree, size_t
     TopologyNode* lTargetChild = mauReconstructSub(tree, from, node_index, order, wasSwaped);
     TopologyNode* rTargetChild = mauReconstructSub(tree, node_index+1, to, order, wasSwaped);
     
-    if( wasSwaped[node_index] )
+    if ( wasSwaped[node_index] )
     {
         TopologyNode* z = lTargetChild;
         lTargetChild = rTargetChild;
         rTargetChild = z;
     }
     
-    if( &lchild != lTargetChild )
+    if ( &lchild != lTargetChild )
     {
         // replace the left child
         node->removeChild( &lchild );
         node->addChild( lTargetChild );
     }
     
-    if( &rchild != rTargetChild )
+    if ( &rchild != rTargetChild )
     {
         // replace the right child
         node->removeChild( &rchild );

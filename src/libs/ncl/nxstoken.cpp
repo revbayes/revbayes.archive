@@ -185,7 +185,7 @@ bool WriteCommandAsNexus(std::ostream & out, const ProcessedNxsCommand &c)
 	if (c.empty())
 		return false;
 	out << "   "; /* command indentation  - 1 space*/
-	for(ProcessedNxsCommand::const_iterator cIt = c.begin(); cIt != c.end(); ++cIt)
+	for (ProcessedNxsCommand::const_iterator cIt = c.begin(); cIt != c.end(); ++cIt)
 		{
 		out << ' ';
 		cIt->WriteAsNexus(out);
@@ -225,7 +225,7 @@ inline void NxsToken::AdvanceToNextCharInStream()
 	posOffBy = -1;
 	if (nextCharInStream == 13 || nextCharInStream == 10)
 		{
-		if(nextCharInStream == 13)
+		if (nextCharInStream == 13)
 			{
 			if ((inputStream.rdbuf())->sgetc() == 10)	//peeks at the next char
 				{
@@ -255,14 +255,14 @@ inline char NxsToken::GetNextChar()
 
 	signed char ch = nextCharInStream;
 	AdvanceToNextCharInStream();
-	if(ch == EOF)
+	if (ch == EOF)
 		{
 		atEOF = true;
 		if (eofAllowed)
 			return '\0';
 		throw NxsX_UnexpectedEOF(*this);
 		}
-	if(ch == '\n')
+	if (ch == '\n')
 		{
 		fileLine++;
 		fileColumn = 1L;
@@ -574,7 +574,7 @@ bool NxsToken::GetComment()
 		if (ch != ']')
 			{
 			int level = 1;
-			for(;;)
+			for (;;)
 				{
 				ch = GetNextChar();
 				if (ch == ']')
@@ -657,7 +657,7 @@ void NxsToken::GetDoubleQuotedToken()
 	eofAllowed = false;
 	try
 		{
-		for(;;)
+		for (;;)
 			{
 			char ch = GetNextChar();
 			if (ch == '\"')
@@ -690,7 +690,7 @@ void NxsToken::GetQuoted()
 
 	try
 		{
-		for(;;)
+		for (;;)
 			{
 			char ch = GetNextChar();
 			if (ch == '\'')
@@ -731,7 +731,7 @@ void NxsToken::GetParentheticalToken()
 	embeddedComments.clear();
 	char ch;
 	ch = GetNextChar();
-	for(;;)
+	for (;;)
 		{
 		if (atEOF)
 			break;
@@ -918,7 +918,7 @@ void NxsToken::GetNextToken()
 		saved = ch;
 		}
 
-	for(;;)
+	for (;;)
 		{
 		// Break now if singleCharacterToken mode on and token length > 0.
 		//

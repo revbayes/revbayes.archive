@@ -231,7 +231,7 @@ double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator& rng)
 v = beta * log(u1 / (1.0 - u1));	                    \
 if (v <= expmax) {		                                \
 w = AA * exp(v);		                                \
-if(!RbMath::isFinite(w)) w = RbConstants::Double::max;	\
+if (!RbMath::isFinite(w)) w = RbConstants::Double::max;	\
 } else				                                    \
 w = RbConstants::Double::max
 
@@ -249,7 +249,7 @@ w = RbConstants::Double::max
             k2 = 0.25 + (0.5 + 0.25 / delta) * a;
         }
         /* FIXME: "do { } while()", but not trivially because of "continue"s:*/
-        for(;;)
+        for (;;)
         {
             u1 = rng.uniform01();
             u2 = rng.uniform01();

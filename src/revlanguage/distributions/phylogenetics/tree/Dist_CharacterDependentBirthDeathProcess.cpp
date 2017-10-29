@@ -53,19 +53,19 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
 
     // rate matrix
     RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* q      = NULL;
-    if( event_rate_matrix->getRevObject() != RevNullObject::getInstance() )
+    if ( event_rate_matrix->getRevObject() != RevNullObject::getInstance() )
     {
         q = static_cast<const RateGenerator &>( event_rate_matrix->getRevObject() ).getDagNode();
     }
 
     RevBayesCore::TypedDagNode<double>* r = NULL;
-    if( event_rate->getRevObject() != RevNullObject::getInstance() )
+    if ( event_rate->getRevObject() != RevNullObject::getInstance() )
     {
         r = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
     }
 
     RevBayesCore::TypedDagNode<RevBayesCore::Simplex >* bf = NULL;
-    if( root_frequencies->getRevObject() != RevNullObject::getInstance() )
+    if ( root_frequencies->getRevObject() != RevNullObject::getInstance() )
     {
         bf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     }
@@ -86,7 +86,7 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     d->setNumberOfTimeSlices( n );
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ps = NULL;
-    if( psi->getRevObject() != RevNullObject::getInstance() )
+    if ( psi->getRevObject() != RevNullObject::getInstance() )
     {
         ps  = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
 
@@ -224,7 +224,7 @@ const TypeSpec& Dist_CharacterDependentBirthDeathProcess::getTypeSpec( void ) co
 void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if( name == "rootAge" || name == "originAge" )
+    if ( name == "rootAge" || name == "originAge" )
     {
         start_age = var;
         start_condition = name;

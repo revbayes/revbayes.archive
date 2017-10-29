@@ -64,12 +64,12 @@ namespace RevLanguage {
         
         
         // Functions you may want to override
-        virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs,
+        virtual bool                                    checkArguments(const std::vector<Argument>& passed_args,
                                                                        std::vector<double>*         matchScore,
                                                                        bool                         once);                                  //!< Process args, return a match score if pointer is not null
         virtual bool                                    isInternal(void) const { return false; }                                           //!< Is the function a procedure?
         virtual bool                                    isProcedure(void) const { return false; }                                           //!< Is the function a procedure?
-        virtual void                                    processArguments(const std::vector<Argument>& passedArgs, bool once);               //!< Process args, return a match score if pointer is not null
+        virtual void                                    processArguments(const std::vector<Argument>& passed_args, bool once);               //!< Process args, return a match score if pointer is not null
 
 
         // Function functions you should not override

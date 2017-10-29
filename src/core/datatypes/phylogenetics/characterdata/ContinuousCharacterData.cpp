@@ -108,28 +108,30 @@ void ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, s
         const std::string &n = taxa[i].getName();
         ContinuousTaxonData& taxon = getTaxonData( n );
         
-        size_t idx = obsd.getIndexOfTaxon( n );
-        if ( idx != RbConstants::Size_t::inf)
+        try
         {
-            used[idx] = true;
-            taxon.concatenate( obsd.getTaxonData( n ) );
+            obsd.getIndexOfTaxon( n );
+        }
+        catch(RbException &e)
+        {
+            if ( type == "intersection" )
+            {
+                toDelete.push_back(n);
+            }
+            else if ( type == "union" )
+            {
+                AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
+                taxon_data->setAllCharactersMissing();
+                taxon.concatenate( *taxon_data );
+                delete taxon_data;
+            }
+            else
+            {
+                throw RbException("Cannot add two character data objects because second character data object has no taxon with name '" + n + "n'!");
+            }
+        }
 
-        }
-        else if ( type == "intersection" )
-        {
-            toDelete.push_back(n);
-        }
-        else if ( type == "union" )
-        {
-            AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
-            taxon_data->setAllCharactersMissing();
-            taxon.concatenate( *taxon_data );
-            delete taxon_data;
-        }
-        else
-        {
-            throw RbException("Cannot add two character data objects because second character data object has no taxon with name '" + n + "n'!");
-        }
+        taxon.concatenate( obsd.getTaxonData( n ) );
     }
     for (size_t i=0; i<toDelete.size(); i++)
     {
@@ -214,8 +216,8 @@ void ContinuousCharacterData::executeMethod(const std::string &n, const std::vec
     
     if ( n == "get" )
     {
-        int index_taxon = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
-        int index_site = static_cast<const TypedDagNode<long> *>( args[1] )->getValue()-1;
+        long index_taxon = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
+        long index_site = static_cast<const TypedDagNode<long> *>( args[1] )->getValue()-1;
         rv = getTaxonData(index_taxon)[index_site];
     }
     else
@@ -239,7 +241,9 @@ const double& ContinuousCharacterData::getCharacter( size_t tn, size_t cn ) cons
 {
     
     if ( cn >= getNumberOfCharacters() )
+    {
         throw RbException( "Character index out of range" );
+    }
     
     return getTaxonData( tn )[cn];
 }
@@ -256,6 +260,142 @@ std::string ContinuousCharacterData::getDataType(void) const
     std::string dt = "Continuous";
     
     return dt;
+}
+
+
+/**
+ * Get the maximum difference between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getMaxDifference( size_t index ) const
+{
+    
+    double max = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    if ( diff > max )
+                    {
+                        max = diff;
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+
+    return max;
+}
+
+
+/**
+ * Get the mean between all differences between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getMeanDifference( size_t index ) const
+{
+    
+    double mean = 0.0;
+    double n_samples = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+            
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    mean += diff;
+                    ++n_samples;
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    mean /= n_samples;
+    
+    return mean;
+}
+
+
+/**
+ * Get the minimum difference between two observed values.
+ *
+ * \return      The min difference.
+ */
+double ContinuousCharacterData::getMinDifference( size_t index ) const
+{
+    
+    double min = RbConstants::Double::inf;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+            
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    if ( diff < min )
+                    {
+                        min = diff;
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    return min;
 }
 
 
@@ -408,6 +548,53 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &t
         throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
     }
     
+}
+
+
+/**
+ * Get the variance between all differences between two observed values.
+ *
+ * \return      The var difference.
+ */
+double ContinuousCharacterData::getVarDifference( size_t index ) const
+{
+    
+    double mean = getMeanDifference( index );
+    double var = 0.0;
+    double n_samples = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+            
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    var += ((diff-mean)*(diff-mean));
+                    ++n_samples;
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    var /= (n_samples-1);
+    
+    return var;
 }
 
 

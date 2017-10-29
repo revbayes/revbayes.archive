@@ -78,8 +78,8 @@ public:
         bool released = false;
         
         // goal: release means put a new state-idle in queue
-//        for(size_t i = queuedStates->size() -1; i > 0; i--){
-//            if(queuedStates->at(i)->tryRelease(cmd, queuedStates->back()->getType())){                
+//        for (size_t i = queuedStates->size() -1; i > 0; i--){
+//            if (queuedStates->at(i)->tryRelease(cmd, queuedStates->back()->getType())){                
 //                releaseState(queuedStates->back());
 //                released = true;
 //            } else{
@@ -107,7 +107,7 @@ public:
         }
 
         // extract the unprocessed string
-        if(buf.size() > linePos.back()){
+        if (buf.size() > linePos.back()){
             cmd = buf.substr(linePos.back(), buf.size());
         }
         else{

@@ -174,7 +174,7 @@ const TypeSpec& Dist_CharacterDependentCladoBirthDeathProcess::getTypeSpec( void
 void Dist_CharacterDependentCladoBirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if( name == "rootAge" || name == "originAge" )
+    if ( name == "rootAge" || name == "originAge" )
     {
         start_age = var;
         start_condition = name;

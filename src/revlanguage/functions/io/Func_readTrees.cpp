@@ -5,10 +5,12 @@
 #include "ModelVector.h"
 #include "NclReader.h"
 #include "NewickConverter.h"
+#include "OptionRule.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RevNullObject.h"
 #include "RlBoolean.h"
+#include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "RlUtils.h"
@@ -43,35 +45,82 @@ RevPtr<RevVariable> Func_readTrees::execute( void )
     // get the information from the arguments for reading the file
     const std::string&  fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
     const std::string&  text = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
+    const std::string&  treetype = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
 
-    ModelVector<TimeTree> *trees = new ModelVector<TimeTree>();
 
-    if (fn != "") {
-      // get the global instance of the NCL reader and clear warnings from its warnings buffer
-      RevBayesCore::NclReader reader = RevBayesCore::NclReader();
+    if (fn != "")
+    {
+        // get the global instance of the NCL reader and clear warnings from its warnings buffer
+        RevBayesCore::NclReader reader = RevBayesCore::NclReader();
 
-      std::vector<RevBayesCore::Tree*> tmp = reader.readTimeTrees( fn );
-      for (std::vector<RevBayesCore::Tree*>::iterator t = tmp.begin(); t != tmp.end(); ++t)
-      {
-          trees->push_back( TimeTree(*t) );
-      }
+        if ( treetype == "clock" )
+        {
+            ModelVector<TimeTree> *trees = new ModelVector<TimeTree>();
+            
+            std::vector<RevBayesCore::Tree*> tmp = reader.readTimeTrees( fn );
+            for (std::vector<RevBayesCore::Tree*>::iterator t = tmp.begin(); t != tmp.end(); ++t)
+            {
+                trees->push_back( TimeTree(*t) );
+            }
+            return new RevVariable( trees );
+        }
+        else if ( treetype == "non-clock" )
+        {
+            ModelVector<BranchLengthTree> *trees = new ModelVector<BranchLengthTree>();
+            
+            std::vector<RevBayesCore::Tree*>* tmp = reader.readBranchLengthTrees( fn );
+            for (std::vector<RevBayesCore::Tree*>::iterator t = tmp->begin(); t != tmp->end(); ++t)
+            {
+                trees->push_back( BranchLengthTree(*t) );
+            }
+            delete tmp;
+            return new RevVariable( trees );
+        }
+        
     }
 
-    if (text != "") {
+    if (text != "")
+    {
 
-      string aux;
-      std::istringstream iss(text);
-      RevBayesCore::NewickConverter c;
+        string aux;
+        std::istringstream iss(text);
+        RevBayesCore::NewickConverter c;
+        
+        
+        if ( treetype == "clock" )
+        {
+            ModelVector<TimeTree> *trees = new ModelVector<TimeTree>();
+            while (std::getline(iss, aux))
+            {
+                RevBayesCore::Tree *blTree = c.convertFromNewick( aux );
+                trees->push_back( TimeTree(*blTree) );
+                
+                delete blTree;
+                
+            }
+            return new RevVariable( trees );
+        }
+        else if ( treetype == "non-clock" )
+        {
+            ModelVector<BranchLengthTree> *trees = new ModelVector<BranchLengthTree>();
+            while (std::getline(iss, aux))
+            {
+                RevBayesCore::Tree *blTree = c.convertFromNewick( aux );
+                trees->push_back( BranchLengthTree(*blTree) );
+                
+                delete blTree;
+                
+            }
+            return new RevVariable( trees );
+            
+        }
 
-      while (std::getline(iss, aux)) {
-        RevBayesCore::Tree *blTree = c.convertFromNewick( aux );
-        trees->push_back( TimeTree(*blTree) );
-
-      }
+        
+        
     }
 
 
-    return new RevVariable( trees );
+    return NULL;
 
 }
 
@@ -83,11 +132,17 @@ const ArgumentRules& Func_readTrees::getArgumentRules( void ) const
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rules_set = false;
 
-    if (!rules_set)
+    if ( rules_set == false )
     {
 
         argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "The name of the file containing the trees.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
         argumentRules.push_back( new ArgumentRule( "text", RlString::getClassTypeSpec(), "A string containing one or several newick trees, separated by end of lines.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
+        
+        std::vector<std::string> tree_options;
+        tree_options.push_back( "clock" );
+        tree_options.push_back( "non-clock" );
+        argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), tree_options, "The type of trees." ) );
+        
         rules_set = true;
     }
 
@@ -141,8 +196,8 @@ const TypeSpec& Func_readTrees::getTypeSpec( void ) const
 const TypeSpec& Func_readTrees::getReturnType( void ) const
 {
 
-    static TypeSpec returnTypeSpec = ModelVector<TimeTree>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = ModelVector<TimeTree>::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

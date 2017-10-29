@@ -42,7 +42,7 @@ using namespace RevBayesCore;
  */
 double RbStatistics::NegativeBinomial::cdf(double r, double p, double x) {
 
-    if(RbMath::isInt(r))
+    if (RbMath::isInt(r))
         {
         std::ostringstream s;
         s << "Cannot compute cdf of the negative binomial distribution because r = " << r << " is not an interger";
@@ -50,7 +50,7 @@ double RbStatistics::NegativeBinomial::cdf(double r, double p, double x) {
         }
     r = int(r);
     /* PR#8560: r=1 is a valid value */
-    if(r < 1 || p < 0 || p > 1)
+    if (r < 1 || p < 0 || p > 1)
         {
         std::ostringstream s;
         s << "Cannot compute cdf of the negative binomial distribution for r = " << r << " and p = " << p;
@@ -150,8 +150,8 @@ double RbStatistics::NegativeBinomial::pdf(double r, double p, double q, double 
  */
 #include "DistributionNormal.h"
 
-double RbStatistics::NegativeBinomial::quantile(double p, double n, double pr) {
-    throw RbException("Quantiles not implemented for NegBinomial");
+double RbStatistics::NegativeBinomial::quantile(double r, double p, double x) {
+    throw RbException("Quantiles not implemented for nbinomial");
 }
 
 /*!
@@ -188,13 +188,13 @@ double RbStatistics::NegativeBinomial::quantile(double p, double n, double pr) {
 #include <limits.h>
 #include "RandomNumberGenerator.h"
 
-#define repeat for(;;)
+#define repeat for (;;)
 
 int RbStatistics::NegativeBinomial::rv(double r, double p, RevBayesCore::RandomNumberGenerator &rng)
 {
 	double y = RbStatistics::Gamma::rv(r,(1-p)/p,rng);
-	if(y > 2.0e9)
-		return RbConstants::Integer::inf;
+	if (y > 2.0e9)
+	    throw RbException("NaN produced in rnbinom");
 	return RbStatistics::Poisson::rv(y,rng);
 }
 

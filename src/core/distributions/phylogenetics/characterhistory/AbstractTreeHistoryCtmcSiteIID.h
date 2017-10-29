@@ -325,12 +325,12 @@
 //    
 //    tipProbs.clear();
 //    
-//    size_t numTaxa = tp->getNumberOfTaxa();
+//    size_t num_taxa = tp->getNumberOfTaxa();
 //    size_t numCharacters = tp->getNumberOfCharacters();
 //    
 //    const std::vector<TopologyNode*>& nodes = this->tau->getValue().getNodes();
 //    
-//    tipProbs.resize(numTaxa);
+//    tipProbs.resize(num_taxa);
 //    const ContinuousCharacterData* ccdp = static_cast<const ContinuousCharacterData*>(tp);
 //    for (size_t i = 0; i < nodes.size(); i++)
 //    {

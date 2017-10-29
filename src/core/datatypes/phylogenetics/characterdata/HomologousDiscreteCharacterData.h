@@ -437,8 +437,11 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
     for (size_t i=0; i<obsd.getNumberOfTaxa(); ++i)
     {
         const std::string &n = obsd.getTaxonNameWithIndex( i );
-        size_t idx = getIndexOfTaxon( n );
-        if ( idx == RbConstants::Size_t::inf )
+        try
+        {
+            getIndexOfTaxon( n );
+        }
+        catch(RbException &e)
         {
             if ( type == "union" )
             {
@@ -457,27 +460,30 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         const std::string &n = taxa[i].getName();
         DiscreteTaxonData<charType>& taxon = getTaxonData( n );
         
-        size_t idx = obsd.getIndexOfTaxon( n );
-        if ( idx != RbConstants::Size_t::inf )
+        try
         {
-//            used[idx] = true;
-            taxon.concatenate( obsd.getTaxonData( n ) );
+            obsd.getIndexOfTaxon( n );
         }
-        else if (type == "intersection")
+        catch(RbException &e)
         {
-            toDelete.push_back(n);
+            if (type == "intersection")
+            {
+                toDelete.push_back(n);
+            }
+            else if (type == "union")
+            {
+                AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
+                taxon_data->setAllCharactersMissing();
+                taxon.concatenate( *taxon_data );
+                delete taxon_data;
+            }
+            else
+            {
+                throw RbException("Cannot concatenate two character data objects because second character data object has no taxon with name '" + n + "n'!");
+            }
         }
-        else if (type == "union")
-        {
-            AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
-            taxon_data->setAllCharactersMissing();
-            taxon.concatenate( *taxon_data );
-            delete taxon_data;
-        }
-        else
-        {
-            throw RbException("Cannot concatenate two character data objects because second character data object has no taxon with name '" + n + "n'!");
-        }
+
+        taxon.concatenate( obsd.getTaxonData( n ) );
     }
     for (size_t i=0; i<toDelete.size(); i++)
     {
@@ -803,12 +809,12 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
 
     RbBitSet observed( getNumberOfStates() );
 
-    for(size_t j = 0; j < getNumberOfCharacters(); j++)
+    for (size_t j = 0; j < getNumberOfCharacters(); j++)
     {
-        if( isCharacterExcluded(j) )
+        if ( isCharacterExcluded(j) )
             continue;
 
-        for(size_t i = 0; i < getNumberOfTaxa(); i++)
+        for (size_t i = 0; i < getNumberOfTaxa(); i++)
         {
             const DiscreteTaxonData<charType>& sequence = getTaxonData( i );
             observed |= sequence[j].getState();
@@ -818,7 +824,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
     int max;
     for (max = long(observed.size()) - 1; max >= 0; max--)
     {
-        if(observed.isSet(max))
+        if (observed.isSet(max))
         {
             break;
         }

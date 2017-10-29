@@ -18,7 +18,7 @@ CorrelationMatrixReparameterizationMove::CorrelationMatrixReparameterizationMove
 {
     
     PhyloMultivariateBrownianProcessREML* dist = dynamic_cast<PhyloMultivariateBrownianProcessREML *>( &mvbm->getDistribution() );
-    if(dist == NULL)
+    if (dist == NULL)
     {
         throw(RbException("CorrelationMatrixReparameterization move only works for multivariate phylogenetic Brownian motion models."));
     }
@@ -82,9 +82,9 @@ void CorrelationMatrixReparameterizationMove::performMcmcMove( double lHeat, dou
     
     // compute the sum of squared values for each trait across contrasts
     std::vector<double> squared_trait_sums(num_traits, 0.0);
-    for(size_t i = 0; i < num_contrasts; ++i)
+    for (size_t i = 0; i < num_contrasts; ++i)
     {
-        for(size_t j = 0; j < num_traits; ++j)
+        for (size_t j = 0; j < num_traits; ++j)
         {
             squared_trait_sums[j] += pow(contrasts[i][j], 2.0);
         }
@@ -92,15 +92,15 @@ void CorrelationMatrixReparameterizationMove::performMcmcMove( double lHeat, dou
     
     // rescale the contrasts so that the sum of squared contrasts for each trait is 1
     std::vector<double> scale_factor(num_traits, 0.0);
-    for(size_t i = 0; i < num_traits; ++i)
+    for (size_t i = 0; i < num_traits; ++i)
     {
         scale_factor[i] = pow(1.0 / squared_trait_sums[i], 0.5);
     }
     
     std::vector<std::vector<double> > transformed_contrasts = contrasts;
-    for(size_t i = 0; i < num_contrasts; ++i)
+    for (size_t i = 0; i < num_contrasts; ++i)
     {
-        for(size_t j = 0; j < num_traits; ++j)
+        for (size_t j = 0; j < num_traits; ++j)
         {
             transformed_contrasts[i][j] *= scale_factor[j];
         }
@@ -113,13 +113,13 @@ void CorrelationMatrixReparameterizationMove::performMcmcMove( double lHeat, dou
     MatrixReal S(num_traits, num_traits);
     std::vector<double> var = variance->getValue();
     
-    for(size_t i = 0; i < num_contrasts; ++i)
+    for (size_t i = 0; i < num_contrasts; ++i)
     {
         std::vector<double> &these_contrasts  = transformed_contrasts[i];
         double              &this_contrast_sd = contrast_sds[i];
-        for(size_t j = 0; j < num_traits; j++)
+        for (size_t j = 0; j < num_traits; j++)
         {
-            for(size_t k = j; k < num_traits; k++)
+            for (size_t k = j; k < num_traits; k++)
             {
                 E[j][k] = these_contrasts[j] * these_contrasts[k];
                 E[k][j] = these_contrasts[j] * these_contrasts[k];
@@ -135,7 +135,7 @@ void CorrelationMatrixReparameterizationMove::performMcmcMove( double lHeat, dou
 
     // compute the scaling matrix, D, necessary to get back to the correlation matrix
     MatrixReal D_inv(num_traits, num_traits);
-    for(size_t i = 0; i < num_traits; ++i)
+    for (size_t i = 0; i < num_traits; ++i)
     {
         D_inv[i][i] = 1.0 / pow(new_vcv[i][i], 0.5);
     }
@@ -229,7 +229,8 @@ void CorrelationMatrixReparameterizationMove::printSummary(std::ostream &o) cons
     o << " ";
     
     // print the weight
-    int w_length = 4 - (int)log10(weight);
+    int w_length = 4;
+    if (weight > 0) w_length -= (int)log10(weight);
     for (int i = 0; i < w_length; ++i)
     {
         o << " ";
@@ -238,7 +239,8 @@ void CorrelationMatrixReparameterizationMove::printSummary(std::ostream &o) cons
     o << " ";
     
     // print the number of tries
-    int t_length = 9 - (int)log10(num_tried);
+    int t_length = 9;
+    if (num_tried > 0) t_length -= (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";

@@ -39,6 +39,7 @@ namespace RevBayesCore {
         void            getOldestTip(Tree* t, TopologyNode *n, double& oldest);
         void            getTaxaInSubtree(TopologyNode *n, std::vector<TopologyNode*> &taxa );
         void            offsetTree(Tree *t, TopologyNode *n, double factor);
+        void            makeUltrametric(Tree *t); // make the tree ultrametric by extending terminal branches
         void            rescaleSubtree(Tree *t, TopologyNode *n, double factor, bool v=false);
         void            rescaleTree(Tree *t, TopologyNode *n, double factor);
         void            setAges(Tree *t, TopologyNode *n, std::vector<double>& ages);

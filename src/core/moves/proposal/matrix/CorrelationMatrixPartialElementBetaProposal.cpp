@@ -68,7 +68,7 @@ const std::string& CorrelationMatrixPartialElementBetaProposal::getProposalName(
 /**
  * Perform the proposal.
  *
- * A Beta proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * A Beta proposal draws a random uniform number u ~ unif (-0.5,0.5)
  * and MatrixRealSingleElementBetas the current vale by
  * delta = lambda * u
  * where lambda is the tuning parameter of the proposal to influence the size of the proposals.
@@ -93,10 +93,10 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
     // compute the correlation matrix
     MatrixReal partial_correlations(dim, dim);
 
-    for(size_t i = 0; i < dim; ++i)
+    for (size_t i = 0; i < dim; ++i)
     {
         partial_correlations[i][i] = 1.0;
-        for(size_t j = i + 1; j < dim; ++j)
+        for (size_t j = i + 1; j < dim; ++j)
         {
             partial_correlations[i][j] = -inverse_matrix[i][j] / std::pow( inverse_matrix[i][i] * inverse_matrix[j][j], 0.5);
             partial_correlations[j][i] = -inverse_matrix[j][i] / std::pow( inverse_matrix[i][i] * inverse_matrix[j][j], 0.5);
@@ -106,9 +106,9 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
     // compute the Jacobian of the transformation from a correlation matrix
     // to a partial correlation matrix
     double ln_jacobian = 0.0;
-    for(size_t k = 0; k < dim - 1; ++k)
+    for (size_t k = 0; k < dim - 1; ++k)
     {
-        for(size_t i = k + 1; i < dim; ++i)
+        for (size_t i = k + 1; i < dim; ++i)
         {
             ln_jacobian += (dim - k - 1) * std::log(1 - pow(partial_correlations[k][i],2) );
         }
@@ -143,12 +143,12 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
     
     // now transform the partial correlations back into a correlation matrix
     MatrixReal P(dim, dim, 1.0);
-    for(int k = 0; k < dim - 1; ++k)
+    for (int k = 0; k < dim - 1; ++k)
     {
-        for(int i = k + 1; i < dim; ++i)
+        for (int i = k + 1; i < dim; ++i)
         {
             double p = partial_correlations[k][i]; // initial value for the product-moment correlation
-            for(int l = k - 1; l >= 0; --l)
+            for (int l = k - 1; l >= 0; --l)
             {
                 p = p * pow( ( 1.0 - pow(partial_correlations[l][i], 2) ) * ( 1.0 - pow(partial_correlations[l][k], 2) ), 0.5) + partial_correlations[l][i] * partial_correlations[l][k];
             }
@@ -159,9 +159,9 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
 
     // now set the value of the variable
     MatrixReal& current_matrix = variable->getValue();
-    for(size_t i = 0; i < (dim - 1); ++i)
+    for (size_t i = 0; i < (dim - 1); ++i)
     {
-        for(size_t j = i+1; j < dim; ++j)
+        for (size_t j = i+1; j < dim; ++j)
         {
             current_matrix[i][j] = P[i][j];
             current_matrix[j][i] = P[i][j];
@@ -229,9 +229,9 @@ void CorrelationMatrixPartialElementBetaProposal::undoProposal( void )
     // swap current value and stored value
     MatrixReal& current_matrix = variable->getValue();
     size_t size = current_matrix.getNumberOfRows();
-    for(size_t i = 0; i < size; ++i)
+    for (size_t i = 0; i < size; ++i)
     {
-        for(size_t j = i; j < size; ++j){
+        for (size_t j = i; j < size; ++j){
             current_matrix[i][j] = stored_matrix[i][j];
             current_matrix[j][i] = stored_matrix[i][j];
         }

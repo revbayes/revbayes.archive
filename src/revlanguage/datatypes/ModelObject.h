@@ -202,7 +202,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::ModelObject<rbType>::
     {
         RevPtr<RevVariable> retVal = rmo->executeMethod(name, args, found);
 
-        if( found == true)
+        if ( found == true)
         {
             return retVal;
         }

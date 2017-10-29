@@ -57,19 +57,19 @@ void Move_MatrixSingleElementSlide::constructInternalObject( void )
 
     RevBayesCore::Proposal *p = NULL;
 
-    if(v->getRevObject().isType( MatrixReal::getClassTypeSpec() ))
+    if (v->getRevObject().isType( MatrixReal::getClassTypeSpec() ))
     {
         RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* tmp = static_cast<const MatrixReal &>( v->getRevObject() ).getDagNode();
         RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( tmp );
         p = new RevBayesCore::MatrixRealSingleElementSlideProposal(n,l, v->getRevObject().isType( MatrixRealSymmetric::getClassTypeSpec() ) );
     }
-    else if(v->getRevObject().isType( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() ))
+    else if (v->getRevObject().isType( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() ))
     {
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* tmp = static_cast<const ModelVector<ModelVector<RealPos> > &>( v->getRevObject() ).getDagNode();
         RevBayesCore::StochasticNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > > *>( tmp );
         p = new RevBayesCore::MatrixRealSingleElementSlideProposal(n,l);
     }
-    else if(v->getRevObject().isType( ModelVector<ModelVector<Real> >::getClassTypeSpec() ))
+    else if (v->getRevObject().isType( ModelVector<ModelVector<Real> >::getClassTypeSpec() ))
     {
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* tmp = static_cast<const ModelVector<ModelVector<Real> > &>( v->getRevObject() ).getDagNode();
         RevBayesCore::StochasticNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > > *>( tmp );

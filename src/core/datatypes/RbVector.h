@@ -64,7 +64,7 @@ namespace RevBayesCore {
         
 //        StringUtilities::fillWithSpaces( s, columnWidth, false );
         void                                                sort(bool ascending = true) {
-                                                                if( ascending == true)
+                                                                if ( ascending == true)
                                                                 {
                                                                     std::sort(this->std::vector<double>::begin(), this->std::vector<double>::end() );
                                                                 }
@@ -186,10 +186,10 @@ int RevBayesCore::RbVector<valueType>::pivot(int first, int last)
     int  p = first;
     const valueType& pivotElement = this->operator[](first);
     
-    for(int i = first+1 ; i <= last ; i++)
+    for (int i = first+1 ; i <= last ; i++)
     {
         /* If you want to sort the list in the other order, change "<=" to ">" */
-        if(this->operator[](i) <= pivotElement)
+        if (this->operator[](i) <= pivotElement)
         {
             p++;
             

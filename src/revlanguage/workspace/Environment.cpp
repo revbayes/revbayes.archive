@@ -13,7 +13,7 @@ using namespace RevLanguage;
 
 /** Construct environment with NULL parent */
 Environment::Environment(const std::string &n) :
-    functionTable(),
+    function_table(),
     numUnnamedVariables(0),
     parentEnvironment(NULL),
     variableTable(),
@@ -26,7 +26,7 @@ Environment::Environment(const std::string &n) :
 
 /** Construct environment with parent */
 Environment::Environment(Environment* parentEnv, const std::string &n) :
-    functionTable(&parentEnv->getFunctionTable()),
+    function_table(&parentEnv->getFunctionTable()),
     numUnnamedVariables(0),
     parentEnvironment(parentEnv),
     variableTable(),
@@ -39,7 +39,7 @@ Environment::Environment(Environment* parentEnv, const std::string &n) :
 
 /** Copy constructor. We need to make sure we have a deep copy of the variable table, because a shallow copy is the default. */
 Environment::Environment(const Environment &x) :
-    functionTable( x.functionTable ),
+    function_table( x.function_table ),
     numUnnamedVariables( x.numUnnamedVariables ),
     parentEnvironment( x.parentEnvironment ),
     variableTable( x.variableTable ),
@@ -83,7 +83,7 @@ Environment& Environment::operator=(const Environment &x)
         parentEnvironment = x.parentEnvironment;
 
         // Make a deep copy of function table by using assignment operator in FunctionTable
-        functionTable = x.functionTable;
+        function_table = x.function_table;
     }
 
     return *this;
@@ -91,7 +91,7 @@ Environment& Environment::operator=(const Environment &x)
 
 
 /** Add alias to variable to frame. */
-void Environment::addAlias( const std::string& name, const RevPtr<RevVariable>& theVar )
+void Environment::addAlias( const std::string& name, const RevPtr<RevVariable>& the_var )
 {
     
     /* Throw an error if the name string is empty. */
@@ -109,7 +109,7 @@ void Environment::addAlias( const std::string& name, const RevPtr<RevVariable>& 
     }
     
     /* Insert new alias to variable in variable table (we do not and should not name it) */
-    variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theVar ) );
+    variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, the_var ) );
     
 }
 
@@ -126,7 +126,7 @@ bool Environment::addFunction( Function* func )
         throw RbException("There is already a variable named '" + name + "' in the workspace");
     }
     
-    functionTable.addFunction( func );
+    function_table.addFunction( func );
     
     // add the help entry for this function to the global help system instance
     // but only if this is not an internal function
@@ -151,7 +151,7 @@ void Environment::addNullVariable( const std::string& name )
 
 
 /** Add reference to variable to frame. */
-void Environment::addReference( const std::string& name, const RevPtr<RevVariable>& theVar )
+void Environment::addReference( const std::string& name, const RevPtr<RevVariable>& the_var )
 {
     
     /* Throw an error if the name string is empty. */
@@ -169,7 +169,7 @@ void Environment::addReference( const std::string& name, const RevPtr<RevVariabl
     }
     
     /* Insert new reference variable in variable table */
-    RevPtr<RevVariable> theRef = new RevVariable( theVar );
+    RevPtr<RevVariable> theRef = new RevVariable( the_var );
     variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theRef ) );
     theRef->setName( name );
     
@@ -177,7 +177,7 @@ void Environment::addReference( const std::string& name, const RevPtr<RevVariabl
 
 
 /** Add variable to frame. */
-void Environment::addVariable( const std::string& name, const RevPtr<RevVariable>& theVar )
+void Environment::addVariable( const std::string& name, const RevPtr<RevVariable>& the_var )
 {
     
     /* Throw an error if the name string is empty. */
@@ -195,8 +195,8 @@ void Environment::addVariable( const std::string& name, const RevPtr<RevVariable
     }
     
     /* Insert new RevVariable in variable table */
-    variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theVar ) );
-    theVar->setName( name );
+    variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, the_var ) );
+    the_var->setName( name );
 
 }
 
@@ -231,7 +231,7 @@ void Environment::clear(void)
     variableTable.clear();
 
     // Empty the function table.
-    functionTable.clear();
+    function_table.clear();
 }
 
 
@@ -268,7 +268,7 @@ void Environment::eraseVariable(const RevPtr<RevVariable>& var)
 bool Environment::existsFunction(std::string const &name) const
 {
     // We delegate the query to the function table
-    return functionTable.existsFunction(name);
+    return function_table.existsFunction(name);
 }
 
 
@@ -337,7 +337,7 @@ Environment* Environment::getChildEnvironment(const std::string &name)
 Function* Environment::getFunction(const std::string& name)
 {
     
-    return functionTable.getFunction(name);
+    return function_table.getFunction(name);
 }
 
 
@@ -345,7 +345,7 @@ Function* Environment::getFunction(const std::string& name)
 const Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const
 {
     
-    return functionTable.getFunction(name, args, once);
+    return function_table.getFunction(name, args, once);
 }
 
 
@@ -353,7 +353,7 @@ const Function& Environment::getFunction(const std::string& name, const std::vec
 const FunctionTable& Environment::getFunctionTable(void) const
 {
 
-    return functionTable;
+    return function_table;
 }
 
 
@@ -361,7 +361,7 @@ const FunctionTable& Environment::getFunctionTable(void) const
 FunctionTable& Environment::getFunctionTable(void)
 {
 
-    return functionTable;
+    return function_table;
 }
 
 
@@ -459,7 +459,7 @@ bool Environment::hasChildEnvironment(const std::string &name)
  */
 bool Environment::isProcedure(const std::string& fxnName) const
 {
-    return functionTable.isProcedure( fxnName );
+    return function_table.isProcedure( fxnName );
 }
 
 /**

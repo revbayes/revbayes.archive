@@ -1,4 +1,3 @@
-#include "AbstractCladogenicStateFunction.h"
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "SSE_ODE.h"
 #include "Clade.h"
@@ -158,15 +157,15 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
         
     }
     
-    size_t num_initial_lineages = 2;
+    double num_initial_lineages = 2; // this needs to be a double!
     const TopologyNode& root = value->getRoot();
 
-    if (use_origin) {
+    if ( use_origin == true )
+    {
         // If we are conditioning on survival from the origin,
         // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
         num_initial_lineages = 1;
     }
-
     // if conditioning on root, root node must be a "true" bifurcation event
     else if (root.getChild(0).isSampledAncestor() || root.getChild(1).isSampledAncestor())
     {
@@ -192,7 +191,7 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
         }
     }
 
-    if( value->getNumberOfNodes() != dirty_nodes.size() )
+    if ( value->getNumberOfNodes() != dirty_nodes.size() )
     {
         dirty_nodes = std::vector<bool>(value->getNumberOfNodes(), true);
         changed_nodes = std::vector<bool>(value->getNumberOfNodes(), false);
@@ -221,8 +220,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
 {
     
     // check for recomputation
-    if ( dirty_nodes[node_index] == true )
-//    if ( true )
+    if ( dirty_nodes[node_index] == true || sample_character_history == true )
     {
         // mark as computed
         dirty_nodes[node_index] = false;
@@ -237,7 +235,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             std::vector<double> sampling(num_states, rho->getValue());
             std::vector<double> extinction(num_states, 1.0 - rho->getValue());
 
-            if(psi != NULL && node.isFossil())
+            if (psi != NULL && node.isFossil())
             {
                 sampling = psi->getValue();
                 extinction = pExtinction(0.0, node.getAge());
@@ -246,7 +244,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             RbBitSet obs_state(num_states, true);
             bool gap = true;
 
-            if(tree->hasCharacterData())
+            if ( tree->hasCharacterData() == true )
             {
                 const DiscreteCharacterState &state = tree->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
                 obs_state = state.getState();
@@ -258,7 +256,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                 
                 node_likelihood[j] = extinction[j];
                 
-                if ( obs_state.isSet( j ) == true || gap )
+                if ( obs_state.isSet( j ) == true || gap == true )
                 {
                     node_likelihood[num_states+j] = sampling[j];
                 }
@@ -289,10 +287,6 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             if ( use_cladogenetic_events == true )
             {
                 // get cladogenesis event map (sparse speciation rate matrix)
-                //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-                //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-                //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-                //eventMap = csf->getEventMap();
                 eventMap = cladogenesis_matrix->getValue().getEventMap();
             }
             else
@@ -301,7 +295,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             }
             
             bool speciation_node = true;
-            if( left.isSampledAncestor() || right.isSampledAncestor() )
+            if ( left.isSampledAncestor() || right.isSampledAncestor() )
             {
                 speciation_node = (psi == NULL);
             }
@@ -335,6 +329,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                     node_likelihood[num_states + i] *= speciation_node ? speciation_rates[i] : 1.0;
                 }
             }
+            
         }
         
         double begin_age = node.getAge();
@@ -384,7 +379,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             }
         }
         
-        if ( RbSettings::userSettings().getUseScaling() == true && node_index % RbSettings::userSettings().getScalingDensity() == 0 )
+        if ( RbSettings::userSettings().getUseScaling() == true ) //&& node_index % RbSettings::userSettings().getScalingDensity() == 0 )
         {
             // rescale the conditional likelihoods at the "end" of the branch
             double max = 0.0;
@@ -402,7 +397,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
 
             scaling_factors[node_index][active_likelihood[node_index]] = log(max);
 
-            if( node.isTip() == false )
+            if ( node.isTip() == false )
             {
                 const TopologyNode          &left           = node.getChild(0);
                 size_t                      left_index      = left.getIndex();
@@ -439,10 +434,6 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     if ( use_cladogenetic_events == true )
     {
         // get cladogenesis event map (sparse speciation rate matrix)
-        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        //eventMap = csf->getEventMap();
         eventMap = cladogenesis_matrix->getValue().getEventMap();
     }
     else
@@ -451,7 +442,7 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     }
 
     bool speciation_node = true;
-    if( left.isSampledAncestor() || right.isSampledAncestor() )
+    if ( left.isSampledAncestor() || right.isSampledAncestor() )
     {
         speciation_node = (psi == NULL);
     }
@@ -487,7 +478,7 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     }
     
     // calculate likelihoods for the root branch
-    if( use_origin )
+    if ( use_origin )
     {
         double begin_age = getRootAge();
         double end_age = getOriginAge();
@@ -572,10 +563,6 @@ void StateDependentSpeciationExtinctionProcess::drawJointConditionalAncestralSta
     if ( use_cladogenetic_events == true )
     {
         // get cladogenesis event map (sparse speciation rate matrix)
-        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        //eventMap = csf->getEventMap();
         eventMap = cladogenesis_matrix->getValue().getEventMap();
     }
     else
@@ -753,7 +740,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         state_type branch_conditional_probs = std::vector<double>(2 * num_states, 0);
         size_t start_state = startStates[node_index];
         branch_conditional_probs[ num_states + start_state ] = 1.0;
-        
+
         // first calculate extinction likelihoods via a backward time pass
         double end_age = node.getParent().getAge();
         numericallyIntegrateProcess(branch_conditional_probs, 0, end_age, true, true);
@@ -767,10 +754,6 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         if ( use_cladogenetic_events == true )
         {
             // get cladogenesis event map (sparse speciation rate matrix)
-            //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-            //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-            //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-            //event_map = csf->getEventMap();
             event_map = cladogenesis_matrix->getValue().getEventMap();
         }
         else
@@ -915,10 +898,6 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
     if ( use_cladogenetic_events == true )
     {
         // get cladogenesis event map (sparse speciation rate matrix)
-        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        //eventMap = csf->getEventMap();
         eventMap = cladogenesis_matrix->getValue().getEventMap();
     }
     else
@@ -1070,7 +1049,6 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         {
             probs_sum += branch_conditional_probs[i + num_states] * branch_partial_likelihoods[node_index][downpass_dt][i];
         }
-        
         if ( probs_sum == 0.0 )
         {
             RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -1196,10 +1174,6 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         if ( use_cladogenetic_events == true )
         {
             // get cladogenesis event map (sparse speciation rate matrix)
-            //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-            //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-            //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-            //event_map = csf->getEventMap();
             event_map = cladogenesis_matrix->getValue().getEventMap();
         }
         else
@@ -1376,7 +1350,7 @@ void StateDependentSpeciationExtinctionProcess::getAffected(RbOrderedSet<DagNode
 double StateDependentSpeciationExtinctionProcess::getEventRate(void) const
 {
 
-    if( rate != NULL )
+    if ( rate != NULL )
     {
         return rate->getValue();
     }
@@ -1394,7 +1368,7 @@ double StateDependentSpeciationExtinctionProcess::getEventRate(void) const
 const RateGenerator& StateDependentSpeciationExtinctionProcess::getEventRateMatrix(void) const
 {
 
-    if( Q != NULL )
+    if ( Q != NULL )
     {
         return Q->getValue();
     }
@@ -1420,9 +1394,9 @@ double StateDependentSpeciationExtinctionProcess::getOriginAge( void ) const
 double StateDependentSpeciationExtinctionProcess::getRootAge( void ) const
 {
 
-    if(use_origin)
+    if (use_origin)
     {
-        if(value->getNumberOfNodes() > 0)
+        if (value->getNumberOfNodes() > 0)
         {
             return value->getRoot().getAge();
         }
@@ -1442,7 +1416,7 @@ double StateDependentSpeciationExtinctionProcess::getRootAge( void ) const
 std::vector<double> StateDependentSpeciationExtinctionProcess::getRootFrequencies(void) const
 {
 
-    if( pi != NULL )
+    if ( pi != NULL )
     {
         return pi->getValue();
     }
@@ -1551,7 +1525,7 @@ void StateDependentSpeciationExtinctionProcess::restoreSpecialization(DagNode *a
     
     if ( affecter == process_age )
     {
-        if( use_origin == false )
+        if ( use_origin == false )
         {
             value->getRoot().setAge( process_age->getValue() );
         }
@@ -1769,7 +1743,7 @@ void StateDependentSpeciationExtinctionProcess::touchSpecialization(DagNode *aff
     
     if ( affecter == process_age )
     {
-        if( use_origin == false)
+        if ( use_origin == false)
         {
             value->getRoot().setAge( process_age->getValue() );
         }
@@ -1814,10 +1788,6 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
         cladogenesis_matrix->getValue(); // we must call getValue() to update the speciation and extinction rates in the event map
         
         // get cladogenesis event map (sparse speciation rate matrix)
-        //const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        //const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        //const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        //std::map<std::vector<unsigned>, double> event_map = csf->getEventMap();
         std::map<std::vector<unsigned>, double> event_map = cladogenesis_matrix->getValue().getEventMap();
         
         ode.setEventMap( event_map );
@@ -1828,7 +1798,7 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
         ode.setSpeciationRate( speciation_rates );
     }
 
-    if( psi != NULL )
+    if ( psi != NULL )
     {
         const std::vector<double> &serial_sampling_rates = psi->getValue();
         ode.setSerialSamplingRate( serial_sampling_rates );
@@ -1839,8 +1809,9 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
 
     // catch negative extinction probabilities that can result from
     // rounding errors in the ODE stepper
-    for (size_t i = 0; i < num_states; ++i)
+    for (size_t i = 0; i < 2 * num_states; ++i)
     {
         likelihoods[i] = ( likelihoods[i] < 0.0 ? 0.0 : likelihoods[i] );
+        likelihoods[i] = ( likelihoods[i] > 1.0 ? 1.0 : likelihoods[i] );
     }
 }

@@ -266,15 +266,15 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     // ancestral and descendant branches; otherwise, return -Inf
     std::vector<CharacterEvent*> curr_state = bh->getParentCharacters();
     std::vector<CharacterEvent*> end_state  = bh->getChildCharacters();
-    for(size_t i = 0; i < node.getNumberOfChildren(); ++i)
+    for (size_t i = 0; i < node.getNumberOfChildren(); ++i)
     {
         const TopologyNode &child = node.getChild(i);
         size_t child_index = child.getIndex();
         BranchHistory* child_bh = this->histories[child_index];
         std::vector<CharacterEvent*> child_state = child_bh->getParentCharacters();
-        for(size_t j = 0; j < this->num_sites; ++j)
+        for (size_t j = 0; j < this->num_sites; ++j)
         {
-            if( end_state[j]->getState() != child_state[j]->getState() )
+            if ( end_state[j]->getState() != child_state[j]->getState() )
             {
                 //                std::cerr << "Rejecting: " << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
                 return RbConstants::Double::neginf;

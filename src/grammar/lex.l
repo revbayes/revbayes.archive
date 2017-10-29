@@ -59,7 +59,7 @@ size_t yycolumn;
 DIGIT    [0-9] 
 EXP      [Ee][+-]?[0-9]+
 ID       [_]*[a-zA-Z][a-zA-Z0-9_]*
-STRING   \x22[^"]*\x22
+STRING   \x22(\\.|[^\"])*\x22
 COMMENT  \x23.*
 
 %%
@@ -122,6 +122,18 @@ FALSE                                   {
                                         }
 TRUE                                    {
                                             return TRUE;
+                                        }
+const                                   {
+                                            return MOD_CONST;
+                                        }
+dynamic                                 {
+                                            return MOD_DYNAMIC;
+                                        }
+stochastic                              {
+                                            return MOD_STOCHASTIC;
+                                        }
+deterministic                           {
+                                            return MOD_DETERMINISTIC;
                                         }
 protected                               {
                                             return PROTECTED;

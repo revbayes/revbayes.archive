@@ -53,7 +53,7 @@ void RateMatrix_Kimura80::calculateTransitionProbabilities(double startAge, doub
     double t = rate * (startAge - endAge);
     
     // compute beta
-    double beta = 1.0 / (0.5+kappa*0.5);
+    double beta = 1.0 / (0.5+kappa*0.25);
     
     // calculate the transition probabilities
     

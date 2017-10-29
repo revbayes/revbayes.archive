@@ -54,20 +54,20 @@ AminoAcidState CodonState::getAminoAcidState( void ) const
     std::vector<unsigned int> codon_pos = getTripletStates();
     
     // test if the first codon position is an 'A'
-    if ( (codon_pos[2] & 0x100) == 0x100 )
+    if ( codon_pos[0] == 1 )
     {
         
         // test if the second codon position is an 'A'
-        if ( (codon_pos[1] & 0x010) == 0x010 )
+        if ( codon_pos[1] == 1 )
         {
             
             // test if the third codon position is an 'A' or a 'G'
-            if ( (codon_pos[0] & 0x001) == 0x001 || (codon_pos[0] & 0x004) == 0x004 )
+            if ( codon_pos[2] == 1 || codon_pos[2] == 3 )
             {
                 // we have a Lysine
                 aa.addState("K");
             }
-            else if ( (codon_pos[0] & 0x002) == 0x002 || (codon_pos[0] & 0x008) == 0x008 )
+            else if ( codon_pos[2] == 2 || codon_pos[2] == 4 )
             {
                 // we have a Asparagine
                 aa.addState("N");
@@ -78,23 +78,23 @@ AminoAcidState CodonState::getAminoAcidState( void ) const
             }
             
         }
-        else if ( (codon_pos[1] & 0x020) == 0x020 ) // test if the second codon position is an 'C'
+        else if ( codon_pos[1] == 2 ) // test if the second codon position is an 'C'
         {
                 
             // we have a Threonine
             aa.addState("T");
             
         }
-        else if ( (codon_pos[1] & 0x040) == 0x040 ) // test if the second codon position is an 'G'
+        else if ( codon_pos[1] == 3 ) // test if the second codon position is an 'G'
         {
             
             // test if the third codon position is an 'A' or a 'G'
-            if ( (codon_pos[0] & 0x001) == 0x001 || (codon_pos[0] & 0x004) == 0x004 )
+            if ( codon_pos[2] == 1 || codon_pos[2] == 3 )
             {
                 // we have a Arginine
                 aa.addState("R");
             }
-            else if ( (codon_pos[0] & 0x002) == 0x002 || (codon_pos[0] & 0x008) == 0x008 )
+            else if ( codon_pos[2] == 2 || codon_pos[2] == 4 )
             {
                 // we have a Serine
                 aa.addState("S");
@@ -105,16 +105,16 @@ AminoAcidState CodonState::getAminoAcidState( void ) const
             }
             
         }
-        else if ( (codon_pos[1] & 0x080) == 0x080 ) // test if the second codon position is an 'T'
+        else if ( codon_pos[1] == 4 ) // test if the second codon position is an 'T'
         {
             
             // test if the third codon position is an 'A' or a 'C' or a 'T'
-            if ( (codon_pos[0] & 0x001) == 0x001 || (codon_pos[0] & 0x002) == 0x002 || (codon_pos[0] & 0x008) == 0x008 )
+            if ( codon_pos[2] == 1 || codon_pos[2] == 2 || codon_pos[2] == 4 )
             {
                 // we have a Isoleucine
                 aa.addState("I");
             }
-            else if ( (codon_pos[0] & 0x004) == 0x004 )
+            else if ( codon_pos[2] == 3 )
             {
                 // we have a Methionine
                 aa.addState("M");
@@ -131,20 +131,20 @@ AminoAcidState CodonState::getAminoAcidState( void ) const
         }
         
     }
-    else if ( (codon_pos[2] & 0x200) == 0x200 ) // test if the first codon position is a 'C'
+    else if ( codon_pos[0] == 2 ) // test if the first codon position is a 'C'
     {
         
         // test if the second codon position is an 'A'
-        if ( (codon_pos[1] & 0x010) == 0x010 )
+        if ( codon_pos[1] == 1 )
         {
             
             // test if the third codon position is an 'A' or a 'G'
-            if ( (codon_pos[0] & 0x001) == 0x001 || (codon_pos[0] & 0x004) == 0x004 )
+            if ( codon_pos[2] == 1 || codon_pos[2] == 3 )
             {
                 // we have a Glutamine
                 aa.addState("Q");
             }
-            else if ( (codon_pos[0] & 0x002) == 0x002 || (codon_pos[0] & 0x008) == 0x008 )
+            else if ( codon_pos[2] == 2 || codon_pos[2] == 4 )
             {
                 // we have a Histidine
                 aa.addState("H");
@@ -155,21 +155,21 @@ AminoAcidState CodonState::getAminoAcidState( void ) const
             }
             
         }
-        else if ( (codon_pos[1] & 0x020) == 0x020 ) // test if the second codon position is an 'C'
+        else if ( codon_pos[1] == 2 ) // test if the second codon position is an 'C'
         {
             
             // we have a Proline
             aa.addState("P");
             
         }
-        else if ( (codon_pos[1] & 0x040) == 0x040 ) // test if the second codon position is an 'G'
+        else if ( codon_pos[1] == 3 ) // test if the second codon position is an 'G'
         {
             
             // we have a Arginine
             aa.addState("R");
             
         }
-        else if ( (codon_pos[1] & 0x080) == 0x080 ) // test if the second codon position is an 'T'
+        else if ( codon_pos[1] == 4 ) // test if the second codon position is an 'T'
         {
             
             // we have a Leucine
@@ -182,20 +182,20 @@ AminoAcidState CodonState::getAminoAcidState( void ) const
         }
         
     }
-    else if ( (codon_pos[2] & 0x400) == 0x400 ) // test if the first codon position is a 'G'
+    else if ( codon_pos[0] == 3 ) // test if the first codon position is a 'G'
     {
         
         // test if the second codon position is an 'A'
-        if ( (codon_pos[1] & 0x010) == 0x010 )
+        if ( codon_pos[1] == 1 )
         {
             
             // test if the third codon position is an 'A' or a 'G'
-            if ( (codon_pos[0] & 0x001) == 0x001 || (codon_pos[0] & 0x004) == 0x004 )
+            if ( codon_pos[2]== 1 || codon_pos[2] == 3 )
             {
                 // we have a Glutamic Acid
                 aa.addState("E");
             }
-            else if ( (codon_pos[0] & 0x002) == 0x002 || (codon_pos[0] & 0x008) == 0x008 )
+            else if ( codon_pos[2] == 2 || codon_pos[2] == 4 )
             {
                 // we have a Aspartic Acid
                 aa.addState("D");
@@ -206,21 +206,21 @@ AminoAcidState CodonState::getAminoAcidState( void ) const
             }
             
         }
-        else if ( (codon_pos[1] & 0x020) == 0x020 ) // test if the second codon position is an 'C'
+        else if ( codon_pos[1] == 2 ) // test if the second codon position is an 'C'
         {
             
             // we have a Alanine
             aa.addState("A");
             
         }
-        else if ( (codon_pos[1] & 0x040) == 0x040 ) // test if the second codon position is an 'G'
+        else if ( codon_pos[1] == 3 ) // test if the second codon position is an 'G'
         {
             
             // we have a Glycine
             aa.addState("G");
             
         }
-        else if ( (codon_pos[1] & 0x080) == 0x080 ) // test if the second codon position is an 'T'
+        else if ( codon_pos[1] == 4 ) // test if the second codon position is an 'T'
         {
             
             // we have a Valine
@@ -233,20 +233,20 @@ AminoAcidState CodonState::getAminoAcidState( void ) const
         }
         
     }
-    else if ( (codon_pos[2] & 0x800) == 0x800 ) // test if the first codon position is an 'T'
+    else if ( codon_pos[0] == 4 ) // test if the first codon position is an 'T'
     {
         
         // test if the second codon position is an 'A'
-        if ( (codon_pos[1] & 0x010) == 0x010 )
+        if ( codon_pos[1] == 1 )
         {
             
             // test if the third codon position is an 'A' or a 'G'
-            if ( (codon_pos[0] & 0x001) == 0x001 || (codon_pos[0] & 0x004) == 0x004 )
+            if ( codon_pos[2] == 1 || codon_pos[2] == 3 )
             {
                 // we have a stopp codon
-                aa.addState("?");
+                aa.setMissingState( true );
             }
-            else if ( (codon_pos[0] & 0x002) == 0x002 || (codon_pos[0] & 0x008) == 0x008 )
+            else if ( codon_pos[2] == 2 || codon_pos[2] == 4 )
             {
                 // we have a Tyrosine
                 aa.addState("Y");
@@ -257,28 +257,28 @@ AminoAcidState CodonState::getAminoAcidState( void ) const
             }
             
         }
-        else if ( (codon_pos[1] & 0x020) == 0x020 ) // test if the second codon position is an 'C'
+        else if ( codon_pos[1] == 2 ) // test if the second codon position is an 'C'
         {
             
             // we have a Serine
             aa.addState("S");
             
         }
-        else if ( (codon_pos[1] & 0x040) == 0x040 ) // test if the second codon position is an 'G'
+        else if ( codon_pos[1] == 3 ) // test if the second codon position is an 'G'
         {
             
             // test if the third codon position is an 'A' or a 'G'
-            if ( (codon_pos[0] & 0x001) == 0x001 )
+            if ( codon_pos[2] == 1 )
             {
                 // we have a stopp codon
-                aa.addState("?");
+                aa.setMissingState( true );
             }
-            else if ( (codon_pos[0] & 0x004) == 0x004 )
+            else if ( codon_pos[2] == 3 )
             {
                 // we have a Tryptophan
                 aa.addState("W");
             }
-            else if ( (codon_pos[0] & 0x002) == 0x002 || (codon_pos[0] & 0x008) == 0x008 )
+            else if ( codon_pos[2] == 2 || codon_pos[2] == 4 )
             {
                 // we have a Cysteine
                 aa.addState("C");
@@ -289,16 +289,16 @@ AminoAcidState CodonState::getAminoAcidState( void ) const
             }
             
         }
-        else if ( (codon_pos[1] & 0x080) == 0x080 ) // test if the second codon position is an 'T'
+        else if ( codon_pos[1] == 4 ) // test if the second codon position is an 'T'
         {
             
             // test if the third codon position is an 'A' or a 'G'
-            if ( (codon_pos[0] & 0x001) == 0x001 || (codon_pos[0] & 0x004) == 0x004)
+            if ( codon_pos[2] == 1 || codon_pos[2] == 3 )
             {
                 // we have a Leucine
                 aa.addState("L");
             }
-            else if ( (codon_pos[0] & 0x002) == 0x002 || (codon_pos[0] & 0x008) == 0x008 )
+            else if ( codon_pos[2] == 2 || codon_pos[2] == 4 )
             {
                 // we have a Phenylalanine
                 aa.addState("F");
@@ -424,9 +424,9 @@ std::vector<unsigned int> CodonState::getTripletStates( void ) const
     
     
     std::vector<unsigned int> codon_pos = std::vector<unsigned int>(3,0);
-    codon_pos[0] = getStateIndex() % 4;
-    codon_pos[1] = int(getStateIndex() / 4) % 4;
-    codon_pos[2] = int(getStateIndex() / 16) % 4;
+    codon_pos[0] = getStateIndex() % 4 + 1;
+    codon_pos[1] = int(getStateIndex() / 4) % 4 + 1;
+    codon_pos[2] = int(getStateIndex() / 16) % 4 + 1;
     
     return codon_pos;
 }
@@ -438,7 +438,7 @@ bool CodonState::isStopCodon( void ) const
     std::vector<unsigned int> codon_pos = getTripletStates();
     
     
-    if ( (codon_pos[2] & 0x800) == 0x800 ) // test if the first codon position is an 'T'
+    if ( (codon_pos[0] & 0x800) == 0x800 ) // test if the first codon position is an 'T'
     {
         
         // test if the second codon position is an 'A'
@@ -446,7 +446,7 @@ bool CodonState::isStopCodon( void ) const
         {
             
             // test if the third codon position is an 'A' or a 'G'
-            if ( (codon_pos[0] & 0x001) == 0x001 || (codon_pos[0] & 0x004) == 0x004 )
+            if ( (codon_pos[2] & 0x001) == 0x001 || (codon_pos[2] & 0x004) == 0x004 )
             {
                 // we have a stopp codon
                 return true;
@@ -457,7 +457,7 @@ bool CodonState::isStopCodon( void ) const
         {
             
             // test if the third codon position is an 'A' or a 'G'
-            if ( (codon_pos[0] & 0x001) == 0x001 )
+            if ( (codon_pos[2] & 0x001) == 0x001 )
             {
                 // we have a stopp codon
                 return true;

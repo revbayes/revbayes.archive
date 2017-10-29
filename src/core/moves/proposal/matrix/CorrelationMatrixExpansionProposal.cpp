@@ -24,7 +24,7 @@ CorrelationMatrixExpansionProposal::CorrelationMatrixExpansionProposal( Stochast
 {
     
     PhyloMultivariateBrownianProcessREML* dist = dynamic_cast<PhyloMultivariateBrownianProcessREML *>( &mvbm->getDistribution() );
-    if(dist == NULL)
+    if (dist == NULL)
     {
         throw(RbException("CorrelationMatrixExpansion move only works for multivariate phylogenetic Brownian motion models."));
     }
@@ -75,7 +75,7 @@ const std::string& CorrelationMatrixExpansionProposal::getProposalName( void ) c
 /**
  * Perform the proposal.
  *
- * A Beta proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * A Beta proposal draws a random uniform number u ~ unif (-0.5,0.5)
  * and MatrixRealSingleElementBetas the current vale by
  * delta = lambda * u
  * where lambda is the tuning parameter of the proposal to influence the size of the proposals.
@@ -102,9 +102,9 @@ double CorrelationMatrixExpansionProposal::doProposal( void )
     
     // compute the sum of squared values for each trait across contrasts
     std::vector<double> squared_trait_sums(num_traits, 0.0);
-    for(size_t i = 0; i < num_contrasts; ++i)
+    for (size_t i = 0; i < num_contrasts; ++i)
     {
-        for(size_t j = 0; j < num_traits; ++j)
+        for (size_t j = 0; j < num_traits; ++j)
         {
             squared_trait_sums[j] += pow(contrasts[i][j], 2.0);
         }
@@ -112,15 +112,15 @@ double CorrelationMatrixExpansionProposal::doProposal( void )
     
     // rescale the contrasts so that the sum of squared contrasts for each trait is 1
     std::vector<double> scale_factor(num_traits, 0.0);
-    for(size_t i = 0; i < num_traits; ++i)
+    for (size_t i = 0; i < num_traits; ++i)
     {
         scale_factor[i] = pow(1.0 / squared_trait_sums[i], 0.5);
     }
     
     std::vector<std::vector<double> > transformed_contrasts = contrasts;
-    for(size_t i = 0; i < num_contrasts; ++i)
+    for (size_t i = 0; i < num_contrasts; ++i)
     {
-        for(size_t j = 0; j < num_traits; ++j)
+        for (size_t j = 0; j < num_traits; ++j)
         {
             transformed_contrasts[i][j] *= scale_factor[j];
         }
@@ -133,13 +133,13 @@ double CorrelationMatrixExpansionProposal::doProposal( void )
     MatrixReal S(num_traits, num_traits);
     std::vector<double> var = variance->getValue();
     
-    for(size_t i = 0; i < num_contrasts; ++i)
+    for (size_t i = 0; i < num_contrasts; ++i)
     {
         std::vector<double> &these_contrasts  = transformed_contrasts[i];
         double              &this_contrast_sd = contrast_sds[i];
-        for(size_t j = 0; j < num_traits; j++)
+        for (size_t j = 0; j < num_traits; j++)
         {
-            for(size_t k = j; k < num_traits; k++)
+            for (size_t k = j; k < num_traits; k++)
             {
                 E[j][k] = these_contrasts[j] * these_contrasts[k];
                 E[k][j] = these_contrasts[j] * these_contrasts[k];
@@ -155,7 +155,7 @@ double CorrelationMatrixExpansionProposal::doProposal( void )
     
     // compute the scaling matrix, D, necessary to get back to the correlation matrix
     MatrixReal D_inv(num_traits, num_traits);
-    for(size_t i = 0; i < num_traits; ++i)
+    for (size_t i = 0; i < num_traits; ++i)
     {
         D_inv[i][i] = 1.0 / pow(new_vcv[i][i], 0.5);
     }
@@ -168,9 +168,9 @@ double CorrelationMatrixExpansionProposal::doProposal( void )
     // update the parameters and compute the prior ratio
 //    double ln_likelihood_before = mvbm->getLnProbability();
     MatrixReal& current_matrix = correlation_matrix->getValue();
-    for(size_t i = 0; i < num_traits; ++i)
+    for (size_t i = 0; i < num_traits; ++i)
     {
-        for(size_t j = i; j < num_traits; ++j){
+        for (size_t j = i; j < num_traits; ++j){
             current_matrix[i][j] = new_correlation_matrix[i][j];
             current_matrix[j][i] = new_correlation_matrix[i][j];
         }
@@ -226,9 +226,9 @@ void CorrelationMatrixExpansionProposal::undoProposal( void )
     
     MatrixReal& current_matrix = correlation_matrix->getValue();
     size_t size = current_matrix.getNumberOfRows();
-    for(size_t i = 0; i < size; ++i)
+    for (size_t i = 0; i < size; ++i)
     {
-        for(size_t j = i; j < size; ++j){
+        for (size_t j = i; j < size; ++j){
             current_matrix[i][j] = stored_matrix[i][j];
             current_matrix[j][i] = stored_matrix[i][j];
         }
