@@ -1,11 +1,10 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
-#include "Move_EventTimeSlide.h"
-#include "EventTimeSlideProposal.h"
+#include "Move_BirthDeathEventDiscrete.h"
+#include "DiscreteEventBirthDeathProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RlBoolean.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -18,7 +17,7 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Move_EventTimeSlide::Move_EventTimeSlide() : Move()
+Move_BirthDeathEventDiscrete::Move_BirthDeathEventDiscrete() : Move()
 {
     
 }
@@ -30,10 +29,10 @@ Move_EventTimeSlide::Move_EventTimeSlide() : Move()
  *
  * \return A new copy of the move.
  */
-Move_EventTimeSlide* Move_EventTimeSlide::clone(void) const
+Move_BirthDeathEventDiscrete* Move_BirthDeathEventDiscrete::clone(void) const
 {
     
-    return new Move_EventTimeSlide(*this);
+    return new Move_BirthDeathEventDiscrete(*this);
 }
 
 
@@ -46,7 +45,7 @@ Move_EventTimeSlide* Move_EventTimeSlide::clone(void) const
  * constructor. The move constructor takes care of the proper hook-ups.
  *
  */
-void Move_EventTimeSlide::constructInternalObject( void )
+void Move_BirthDeathEventDiscrete::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -55,11 +54,9 @@ void Move_EventTimeSlide::constructInternalObject( void )
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
-    double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
-    bool tu = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::EventTimeSlideProposal(n,d);
-    value = new RevBayesCore::MetropolisHastingsMove(p,w,tu);
+    RevBayesCore::Proposal *p = new RevBayesCore::DiscreteEventBirthDeathProposal(n);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w);
     
 }
 
@@ -69,10 +66,10 @@ void Move_EventTimeSlide::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& Move_EventTimeSlide::getClassType(void)
+const std::string& Move_BirthDeathEventDiscrete::getClassType(void)
 {
     
-    static std::string rev_type = "Move_EventTimeSlide";
+    static std::string rev_type = "Move_BirthDeathEventDiscrete";
     
     return rev_type;
 }
@@ -83,7 +80,7 @@ const std::string& Move_EventTimeSlide::getClassType(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Move_EventTimeSlide::getClassTypeSpec(void)
+const TypeSpec& Move_BirthDeathEventDiscrete::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -93,14 +90,29 @@ const TypeSpec& Move_EventTimeSlide::getClassTypeSpec(void)
 
 
 /**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Move_BirthDeathEventDiscrete::getMoveAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "BirthDeathEventDiscrete" );
+    
+    return a_names;
+}
+
+
+/**
  * Get the Rev name for the constructor function.
  *
  * \return Rev name of constructor function.
  */
-std::string Move_EventTimeSlide::getMoveName( void ) const
+std::string Move_BirthDeathEventDiscrete::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "EventTimeSlide";
+    std::string c_name = "BirthDeathEvent";
     
     return c_name;
 }
@@ -114,7 +126,7 @@ std::string Move_EventTimeSlide::getMoveName( void ) const
  *
  * \return The member rules.
  */
-const MemberRules& Move_EventTimeSlide::getParameterRules(void) const
+const MemberRules& Move_BirthDeathEventDiscrete::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -123,9 +135,6 @@ const MemberRules& Move_EventTimeSlide::getParameterRules(void) const
     if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The time-tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        memberRules.push_back( new ArgumentRule( "delta"  , RealPos::getClassTypeSpec()  , "The concentration parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 1.0 ) ) );
-        memberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), "Should we tune the concentration parameter during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
-        
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -143,7 +152,7 @@ const MemberRules& Move_EventTimeSlide::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Move_EventTimeSlide::getTypeSpec( void ) const
+const TypeSpec& Move_BirthDeathEventDiscrete::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -155,10 +164,10 @@ const TypeSpec& Move_EventTimeSlide::getTypeSpec( void ) const
 /**
  * Print the value for the user.
  */
-void Move_EventTimeSlide::printValue(std::ostream &o) const
+void Move_BirthDeathEventDiscrete::printValue(std::ostream &o) const
 {
     
-    o << "EventTimeSlide(";
+    o << "BirthDeathEvent(";
     if (tree != NULL)
     {
         o << tree->getName();
@@ -182,20 +191,12 @@ void Move_EventTimeSlide::printValue(std::ostream &o) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_EventTimeSlide::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_BirthDeathEventDiscrete::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )
     {
         tree = var;
-    }
-    else if ( name == "delta" )
-    {
-        delta = var;
-    }
-    else if ( name == "tune" )
-    {
-        tune = var;
     }
     else
     {
