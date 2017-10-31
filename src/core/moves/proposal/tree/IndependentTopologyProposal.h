@@ -44,8 +44,8 @@ namespace RevBayesCore {
         
         Clade                                   outgroup;
         TypedDistribution<Tree>*                proposal_distribution;
-        StochasticNode< RbVector<double> >*     substitution_rates_node;
-        std::vector<StochasticNode<double>* >   substitution_rates_vector;
+        StochasticNode< RbVector<double> >*     rates_node;
+        std::vector<StochasticNode<double>* >   rates_vector;
         StochasticNode<Tree>*                   variable;
 
         double                                  proposal_ln_num_rankings;
@@ -53,6 +53,7 @@ namespace RevBayesCore {
         std::vector<double>                     stored_rates;
         Tree                                    stored_tree;
         
+        bool                                    init;
     };
     
 }
