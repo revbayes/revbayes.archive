@@ -30,7 +30,7 @@ namespace RevBayesCore {
     
     class EigenSystem;
     
-    class Simplex : public RbVector<double> {
+    class Simplex : public RbVector<double>, public MemberObject<double> {
         
     public:
         Simplex(void);                       //!< Default constructor required by revlanguage use of this class
@@ -49,6 +49,7 @@ namespace RevBayesCore {
         Simplex*                                clone(void) const;
         
         // utility funcions
+        void                                    executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;       //!< Map the member methods to internal function calls
         virtual void                            initFromString(const std::string &s);
         
     protected:
