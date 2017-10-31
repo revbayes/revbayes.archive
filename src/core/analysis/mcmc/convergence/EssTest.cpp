@@ -11,17 +11,11 @@ EssTest::EssTest(double t) : ConvergenceDiagnosticContinuous(),
 }
 
 
-bool EssTest::assessConvergenceSingleChain(const std::vector<double> &values, size_t burnin)
+bool EssTest::assessConvergence(const TraceNumeric& trace)
 {
     
     // make mean invalid for recalculation
-    analysis.analyseMean(values, burnin);
-    
-    // analyse trace for this burnin
-    analysis.analyseCorrelation(values,burnin);
-    
-    double ess = analysis.getEss();
-    
-    return  ess > k;
+    trace.computeCorrelation();
+    return  trace.getEss() > k;
 }
 

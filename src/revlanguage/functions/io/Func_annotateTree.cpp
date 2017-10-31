@@ -12,8 +12,6 @@
 #include "RlTraceTree.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TreeSummary.h"
-#include "TraceTree.h"
 
 #include <map>
 #include <set>
@@ -87,7 +85,7 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
     }
     
     Tree* t;
-    if ( tt.getValue().getTreeTrace().isClock() )
+    if ( tt.getValue().isClock() )
     {
         t = new TimeTree( tree );
     }

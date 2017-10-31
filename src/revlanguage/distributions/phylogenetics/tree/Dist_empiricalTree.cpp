@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_empiricalTree.h"
+#include "EmpiricalDistribution.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
@@ -9,9 +10,8 @@
 #include "RealPos.h"
 #include "RlDistributionMemberFunction.h"
 #include "RlString.h"
-#include "StochasticNode.h"
-#include "EmpiricalTreeDistribution.h"
 #include "RlTraceTree.h"
+#include "StochasticNode.h"
 
 using namespace RevLanguage;
 
@@ -45,28 +45,16 @@ Dist_empiricalTree* Dist_empiricalTree::clone( void ) const
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::EmpiricalTreeDistribution* Dist_empiricalTree::createDistribution( void ) const
+RevBayesCore::EmpiricalDistribution<RevBayesCore::Tree>* Dist_empiricalTree::createDistribution( void ) const
 {
     
     // get the parameters
     
     // tree trace
-    const RevBayesCore::TraceTree &tt = static_cast<const TraceTree &>( trace->getRevObject() ).getValue().getTreeTrace();
-    // burnin
-    int b = 0;
+    const RevBayesCore::TraceTree& tt = static_cast<const TraceTree &>( trace->getRevObject() ).getValue();
 
-    RevObject& burn = burnin->getRevObject();
-    if ( burn.isType( Integer::getClassTypeSpec() ) )
-    {
-        b = static_cast<const Integer &>(burn).getValue();
-    }
-    else
-    {
-        double burninFrac = static_cast<const Probability &>(burn).getValue();
-        b = int( floor( tt.getSamples()*burninFrac ) );
-    }
     // create the internal distribution object
-    RevBayesCore::EmpiricalTreeDistribution*   d = new RevBayesCore::EmpiricalTreeDistribution( tt, b );
+    RevBayesCore::EmpiricalDistribution<RevBayesCore::Tree>* d = new RevBayesCore::EmpiricalDistribution<RevBayesCore::Tree>( tt );
     
     return d;
 }
@@ -132,10 +120,6 @@ const MemberRules& Dist_empiricalTree::getParameterRules(void) const
     if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        std::vector<TypeSpec> burninTypes;
-        burninTypes.push_back( Probability::getClassTypeSpec() );
-        burninTypes.push_back( Integer::getClassTypeSpec() );
-        memberRules.push_back( new ArgumentRule( "burnin", burninTypes, "The fraction/number of samples to discard.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
         
         rules_set = true;
     }
@@ -159,9 +143,6 @@ void Dist_empiricalTree::setConstParameter(const std::string& name, const RevPtr
     
     if ( name == "trace" ) {
         trace = var;
-    }
-    else if ( name == "burnin" ) {
-        burnin = var;
     }
     else {
         Distribution::setConstParameter(name, var);

@@ -3,7 +3,6 @@
 
 #include <string>
 
-#include "EmpiricalTreeDistribution.h"
 #include "Proposal.h"
 #include "StochasticNode.h"
 #include "Tree.h"

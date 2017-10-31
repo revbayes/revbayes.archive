@@ -18,7 +18,7 @@
 #ifndef RlModelTrace_H
 #define RlModelTrace_H
 
-#include "ModelTrace.h"
+#include "Trace.h"
 #include "TypedDagNode.h"
 #include "WorkspaceToCoreWrapperObject.h"
 

@@ -20,16 +20,12 @@
 #ifndef Sample_H
 #define Sample_H
 
-#include "Sample.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
+#include "TraceNumeric.h"
 
 namespace RevBayesCore {
 
     template<class valueType>
-    class Sample {
+    class Sample : public TraceNumeric {
 
     public:
         Sample(const valueType& v = valueType(), unsigned int f=0);
@@ -41,39 +37,27 @@ namespace RevBayesCore {
         bool                            operator!=(const Sample &s) const;
     
         // getters and setters
+        void                            addNonObservations(size_t);
         void                            addObservation(bool tf);
-        void                            computeStatistics(void);
-        double                          getEss(void) const;
         unsigned int                    getFrequency(void) const;
-        size_t                          getSampleSize(void) const;
-        const std::vector<double>&      getTrace(void) const;
         const valueType&                getValue(void) const;
         void                            setFrequency(unsigned int f);
-        void                            setTrace(const std::vector<double> &t);
         void                            setValue(const valueType &v);
     
     private:
         
         valueType           value;
         unsigned int        frequency;
-        std::vector<double> trace;
-        double              ess;
 
     };
     
 }
 
 
-
-#include "TraceAnalysisContinuous.h"
-
-
 template <class valueType>
 RevBayesCore::Sample<valueType>::Sample(const valueType &v, unsigned int f) :
     value( v ),
-    frequency( f ),
-    trace(),
-    ess(0)
+    frequency( f )
 {
     
 }
@@ -112,37 +96,20 @@ bool RevBayesCore::Sample<valueType>::operator!=(const Sample &s) const
 
 
 template <class valueType>
+void RevBayesCore::Sample<valueType>::addNonObservations( size_t n )
+{
+
+    values.insert(values.begin(), n, 0.0);
+}
+
+
+template <class valueType>
 void RevBayesCore::Sample<valueType>::addObservation( bool tf )
 {
-    
-    if ( tf == true )
-    {
-        this->frequency++;
-        trace.push_back( 1.0 );
-    }
-    else
-    {
-        trace.push_back( 0.0 );
-    }
-    
-}
 
+    this->frequency += tf;
+    addObject( tf );
 
-template <class valueType>
-void RevBayesCore::Sample<valueType>::computeStatistics( void )
-{
-    
-    TraceAnalysisContinuous a;
-    a.analyseCorrelation( trace );
-    ess = a.getEss();
-}
-
-
-template <class valueType>
-double RevBayesCore::Sample<valueType>::getEss( void ) const
-{
-    const_cast< Sample<valueType>* >(this)->computeStatistics();
-    return ess;
 }
 
 
@@ -151,22 +118,6 @@ unsigned int RevBayesCore::Sample<valueType>::getFrequency( void ) const
 {
     
     return frequency;
-}
-
-
-template <class valueType>
-size_t RevBayesCore::Sample<valueType>::getSampleSize( void ) const
-{
-    
-    return trace.size();
-}
-
-
-template <class valueType>
-const std::vector<double>& RevBayesCore::Sample<valueType>::getTrace( void ) const
-{
-    
-    return trace;
 }
 
 
@@ -183,15 +134,6 @@ void RevBayesCore::Sample<valueType>::setFrequency( unsigned int f )
 {
     
     frequency = f;
-    
-}
-
-
-template <class valueType>
-void RevBayesCore::Sample<valueType>::setTrace( const std::vector<double> &t )
-{
-    
-    trace = t;
     
 }
 

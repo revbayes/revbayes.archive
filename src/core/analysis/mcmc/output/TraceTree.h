@@ -1,101 +1,108 @@
 #ifndef TraceTree_H
 #define TraceTree_H
 
+#include "Clade.h"
+#include "NewickConverter.h"
+#include "ProgressBar.h"
+#include "RlUserInterface.h"
+#include "Sample.h"
 #include "Tree.h"
-#include "Trace.h"
 
+#include <algorithm>
+#include <map>
 #include <string>
-#include <vector>
-
-#define FAILED 0
-#define PASSED 1
-#define NOT_CHECKED 2
 
 namespace RevBayesCore {
 
-    class TraceTree : public Trace {
+    /*
+     * This functor is used as a comparator to identify equivalence classes
+     * of unrooted splits, and rooted clades with or without sampled mrcas
+     */
+    struct CladeComparator
+    {
+        CladeComparator(bool r = true, const Clade& c = Clade() ) : clade(c), rooted(r) {};
+
+        bool operator()(const Clade& a, const Clade& b) const;
+        bool operator()(const Sample<Clade>& s) const;
+
+        Clade clade;
+        bool rooted;
+    };
     
-    public:
-    
-        TraceTree( bool c );
-        virtual                    ~TraceTree();
-    
-        // overloaded functions from RbObject
-        TraceTree*                  clone(void) const;                                                          //!< Clone object
-        void                        printValue(std::ostream& o) const;                                          //!< Print value for user
-		
-        void                        addObject(Tree *d);
-        void                        addValueFromString(const std::string &s);
-        bool                        isCoveredInInterval(const std::string &v, double i, bool verbose) const;
-        const Tree&                 objectAt(size_t index) const                   { return values.at(index); }
-        void                        removeLastObject();
-        void                        removeObjectAtIndex(int index);
-        size_t                      size() const { return values.size(); }
-    
-        // getters and setters
-        int                         getBurnin() const                               { return burnin; }
-        double                      getEss() const                                  { return ess; }
-        std::string                 getFileName() const                             { return fileName; }
-        std::string                 getParameterName() const                        { return parmName; }
-        int                         getSamples() const                              { return (int)values.size(); }
-        int                         getStepSize() const                             { return stepSize; }
-        std::vector<Tree>           getValues() const                               { return values; }
-        int                         hasConverged() const                            { return converged; }
-        int                         hasPassedEssThreshold() const                   { return passedEssThreshold; }
-        int                         hasPassedGelmanRubinTest() const                { return passedGelmanRubinTest; }
-        int                         hasPassedGewekeTest() const                     { return passedGewekeTest; }
-        int                         hasPassedIidBetweenChainsStatistic() const      { return passedIidBetweenChainsStatistic; }
-        int                         hasPassedSemThreshold() const                   { return passedSemThreshold; }
-        int                         hasPassedStationarityTest() const               { return passedStationarityTest; }
-        bool                        isClock(void) const                             { return clock; }
+    struct AnnotationReport
+    {
         
-        void                        setBurnin(int b)                                { burnin = b; }
-        void                        setEss(double e)                                { ess = e; }
-        void                        setFileName(std::string fn)                     { fileName = fn; }
-        void                        setParameterName(std::string pm)                { parmName = pm; }
-        void                        setStepSize( int s)                             { stepSize = s; }
-        void                        setValues(const std::vector<Tree> &v)           { values = v; }
-        void                        setConverged(bool c)                            { converged = c; }
-        void                        setPassedEssThreshold(int p)                    { passedEssThreshold = p; }
-        void                        setPassedGelmanRubinTest(int p)                 { passedGelmanRubinTest = p; }
-        void                        setPassedGewekeTest(int p)                      { passedGewekeTest = p; }
-        void                        setPassedIidBetweenChainsStatistic(int p)       { passedIidBetweenChainsStatistic = p; }
-        void                        setPassedSemThreshold(int p)                    { passedSemThreshold = p; }
-        void                        setPassedStationarityTest(int p)                { passedStationarityTest = p; }
-    
-    protected:
-    
-        void                        invalidate();
-    
-    
-    private:
-    
-        std::vector<Tree>           values;                                     //!< the values of this TraceTree
-    
-        bool                        clock;
+        AnnotationReport() :
+            ages(true),
+            cc_ages(false),
+            ccp(true),
+            tree_ages(false),
+            hpd(0.95),
+            map_parameters(false),
+            mean(true),
+            posterior(true),
+            sa(true) {}
         
-        std::string                 parmName;
-        std::string                 fileName;
-        std::string                 outgroup;                                   //!< The outgroup species for artificially rooting unrooted trees
-        
-        int                         burnin;
-        double                      ess;                                        //!< the effective sample saize for this TraceTree
-        int                         stepSize;                                   //!< the step size between samples
-    
-        int                         converged;                                  //!< Whether this parameter in itself has converged.
-        int                         passedStationarityTest;                     //!< Whether this parameter passed the stationarity test.
-        int                         passedGewekeTest;                           //!< Whether this parameter passed the Geweke statistic.
-        //    int                     passedHeidelbergerWelcheStatistic;          //!< Whether this parameter passed the Heidelberger-Welch statistic.
-        int                         passedEssThreshold;                         //!< Whether this parameter passed the threshold for the ESS.
-        int                         passedSemThreshold;                         //!< Whether this parameter passed the threshold for the SEM.
-        int                         passedIidBetweenChainsStatistic;            //!< Whether this parameter passed the iid test of chains.
-        int                         passedGelmanRubinTest;                      //!< Whether this parameter passed the Gelman-Rubin statistic.
-    
+        bool ages;
+        bool cc_ages;
+        bool ccp;
+        bool tree_ages;
+        double hpd;
+        bool map_parameters;
+        bool mean;
+        bool posterior;
+        bool sa;
     };
 
-    
-}
+    class TraceTree : public Trace<Tree> {
+        
+    public:
+        
+        TraceTree( bool c = true );
+        virtual ~TraceTree(){};
+        
+        TraceTree*                                 clone(void) const;
+        void                                       annotateTree(Tree &inputTree, AnnotationReport report, bool verbose );
+        double                                     cladeProbability(const Clade &c, bool verbose);
+        double                                     computeEntropy( double credible_interval_size, int num_taxa, bool verbose );
+        std::vector<double>                        computePairwiseRFDistance( double credible_interval_size, bool verbose );
+        std::vector<double>                        computeTreeLengths(void);
+        int                                        getBurnin(void) const;
+        std::vector<Tree>                          getUniqueTrees(double ci=0.95, bool verbose=true);
+        int                                        getTopologyFrequency(const Tree &t, bool verbose);
+        bool                                       isClock(void);
+        bool                                       isCoveredInInterval(const std::string &v, double size, bool verbose);
+        Tree*                                      mapTree(AnnotationReport report, bool verbose);
+        Tree*                                      mccTree(AnnotationReport report, bool verbose);
+        Tree*                                      mrTree(AnnotationReport report, double cutoff, bool verbose);
+        void                                       printTreeSummary(std::ostream& o, double ci=0.95, bool verbose=true);
+        void                                       printCladeSummary(std::ostream& o, double minP=0.05, bool verbose=true);
 
+    private:
+
+        void                                       enforceNonnegativeBranchLengths(TopologyNode& tree) const;
+        Clade                                      fillConditionalClades(const TopologyNode &n, std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> &cc);
+        const Sample<Clade>&                       findCladeSample(const Clade &n) const;
+        TopologyNode*                              findParentNode(TopologyNode&, const Clade &, std::vector<TopologyNode*>&, RbBitSet& ) const;
+        void                                       mapContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, bool np=true ) const;
+        void                                       mapDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, bool np=true ) const;
+        void                                       mapParameters(Tree &inputTree) const;
+        void                                       summarize(bool verbose);
+
+        bool                                       clock;
+        bool                                       rooted;
+
+        std::vector<Sample<Clade> >                cladeSamples;
+        std::map<Taxon, Sample<Taxon> >            sampledAncestorSamples;
+        std::vector<Sample<std::string> >          treeSamples;
+
+        std::map<Clade, std::vector<double>, CladeComparator >                                    cladeAges;
+        std::map<Clade, std::map<Clade, std::vector<double>, CladeComparator >, CladeComparator > conditionalCladeAges;
+        std::map<std::string, std::map<Clade, std::vector<double>, CladeComparator > >            treeCladeAges;
+    };
+    
+
+} //end namespace RevBayesCore
 
 
 #endif

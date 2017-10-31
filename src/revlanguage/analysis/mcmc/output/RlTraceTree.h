@@ -4,14 +4,13 @@
 #include "TraceTree.h"
 #include "TypedDagNode.h"
 #include "WorkspaceToCoreWrapperObject.h"
-#include "TreeSummary.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class TraceTree : public WorkspaceToCoreWrapperObject<RevBayesCore::TreeSummary> {
+    class TraceTree : public WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree> {
         
     public:
         

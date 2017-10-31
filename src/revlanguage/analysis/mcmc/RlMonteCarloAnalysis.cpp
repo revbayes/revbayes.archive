@@ -4,7 +4,6 @@
 #include "ConstantNode.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
-#include "ModelTrace.h"
 #include "Model.h"
 #include "Natural.h"
 #include "OptionRule.h"

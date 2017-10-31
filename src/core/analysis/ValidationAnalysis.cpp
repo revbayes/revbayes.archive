@@ -420,7 +420,7 @@ void ValidationAnalysis::summarizeSim(double credible_interval_size, size_t idx)
     
     std::vector<DagNode*> nodes = simulation_values[idx]->getDagNodes();
     
-    std::map<std::string,Trace*> trace_map;
+    std::map<std::string,AbstractTrace*> trace_map;
     // now for the numerical parameters
     for ( size_t j=0; j<n_traces; ++j )
     {
@@ -434,7 +434,7 @@ void ValidationAnalysis::summarizeSim(double credible_interval_size, size_t idx)
             if ( the_node->getName() == parameter_name )
             {
                 // create a trace
-                Trace *t = the_node->createTraceObject();
+                AbstractTrace *t = the_node->createTraceObject();
                 trace_map[parameter_name] = t;
             }
             

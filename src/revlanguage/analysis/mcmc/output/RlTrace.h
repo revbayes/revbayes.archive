@@ -18,7 +18,7 @@
 #ifndef RlTrace_H
 #define RlTrace_H
 
-#include "TraceNumeric.h"
+#include "Trace.h"
 #include "TypedDagNode.h"
 #include "WorkspaceToCoreWrapperObject.h"
 

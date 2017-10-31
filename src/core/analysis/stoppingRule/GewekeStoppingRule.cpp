@@ -62,28 +62,24 @@ bool GewekeStoppingRule::stop( size_t g )
         
         size_t maxBurnin = 0;
         
+        // find the max burnin
         for ( size_t j = 0; j < data.size(); ++j)
         {
-            TraceNumeric &t = data[j];
-            const std::vector<double> &v = t.getValues();
-            size_t b = burninEst->estimateBurnin( v );
+            size_t b = burninEst->estimateBurnin( data[j] );
+
             if ( maxBurnin < b )
             {
                 maxBurnin = b;
             }
-            
         }
         
         GewekeTest gTest = GewekeTest( alpha, frac1, frac2 );
         
+        // set the burnins and conduct the tests
         for ( size_t j = 0; j < data.size(); ++j)
         {
-            RevBayesCore::TraceNumeric &t = data[j];
-            const std::vector<double> &v = t.getValues();
-            t.setBurnin( maxBurnin );
-            t.computeStatistics();
-            
-            passed &= gTest.assessConvergenceSingleChain( v, maxBurnin );
+            data[j].setBurnin( maxBurnin );
+            passed &= gTest.assessConvergence( data[j] );
         }
         
     }

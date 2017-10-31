@@ -8,7 +8,6 @@
 #include "RlString.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TraceNumeric.h"
 #include "RlTrace.h"
 #include "RlUserInterface.h"
 #include "WorkspaceVector.h"

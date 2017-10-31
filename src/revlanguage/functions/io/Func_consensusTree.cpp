@@ -13,8 +13,6 @@
 #include "RlUtils.h"
 #include "Probability.h"
 #include "StringUtilities.h"
-#include "TreeSummary.h"
-#include "TraceTree.h"
 
 #include <map>
 #include <set>
@@ -75,7 +73,7 @@ RevPtr<RevVariable> Func_consensusTree::execute(void)
     }
     
     Tree* t;
-    if ( tt.getValue().getTreeTrace().isClock() )
+    if ( tt.getValue().isClock() )
     {
         t = new TimeTree( tree );
     }

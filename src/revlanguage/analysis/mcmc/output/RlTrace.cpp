@@ -133,15 +133,13 @@ void Trace::printValue(std::ostream &o) const
     
     o << "Filename:                  " << value->getFileName() << std::endl;
     o << "Parameter:                 " << value->getParameterName() << std::endl;
-    o << "Samples:                   " << value->getSamples() << std::endl;
-    o << "Stepsize:                  " << value->getStepSize() << std::endl;
+    o << "#Samples:                  " << value->size() << std::endl;
     o << "ESS:                       " << value->getEss() << std::endl;
     o << "Burnin:                    " << value->getBurnin() << std::endl;
     o << "Mean:                      " << value->getMean() << std::endl;
     o << "SEM:                       " << value->getSem() << std::endl;
     o << "Geweke-test:               " << (value->hasPassedGewekeTest() ? "TRUE" : "FALSE") << std::endl;
     o << "stationarity-test:         " << (value->hasPassedStationarityTest() ? "TRUE" : "FALSE") << std::endl;
-//    o << "Heidelberger-Welch-test:   " << (value->hasPassedHeidelbergerWelchTest() ? "TRUE" : "FALSE") << std::endl;
 }
 
 

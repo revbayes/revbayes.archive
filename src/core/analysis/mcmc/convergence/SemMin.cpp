@@ -38,21 +38,19 @@ SemMin* SemMin::clone( void ) const
 }
 
 
-size_t SemMin::estimateBurnin(const std::vector<double>& values) {
+size_t SemMin::estimateBurnin(const TraceNumeric& trace) {
     // init
     double  min_sem     = RbConstants::Double::max;
     size_t  best_burnin = 0;
     
     // iterate over possible burnins
-    for (size_t i=0; i<values.size(); i+=blockSize) {
+    for (size_t i=0; i<trace.size(); i+=blockSize) {
         // make mean invalid for recalculation
-        analysis.analyseMean(values, i);
-        // analyse trace for this burnin
-        analysis.analyseCorrelation(values,i);
+        trace.computeCorrelation(i,trace.size());
         
         // check if the new ess is better than any previous ones
-        if (RbMath::isFinite(analysis.getStdErrorOfMean()) && analysis.getStdErrorOfMean() > 0 && min_sem > analysis.getStdErrorOfMean()) {
-            min_sem = analysis.getStdErrorOfMean();
+        if (RbMath::isFinite(trace.getSem()) && trace.getSem() > 0 && min_sem > trace.getSem()) {
+            min_sem = trace.getSem();
             best_burnin = i;
         }
     }

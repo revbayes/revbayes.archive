@@ -14,33 +14,28 @@ GewekeTest::GewekeTest(double f, double f1, double f2) : ConvergenceDiagnosticCo
     
 }
 
-bool GewekeTest::assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin)
+bool GewekeTest::assessConvergence(const TraceNumeric& trace)
 {
-    // get the number of values
-    size_t valueCount = values.size();
-    
     // get the sample size
-    size_t sampleSize = valueCount - burnin;
+    size_t sampleSize = trace.size(true);
     
     // set the indices for start and end of the first window
-    size_t startwindow1    = burnin;
-    size_t endWindow1      = size_t(sampleSize * frac1) + burnin;
+    size_t startwindow1    = trace.getBurnin();
+    size_t endWindow1      = size_t(sampleSize * frac1) + trace.getBurnin();
     
     // get mean and variance of the first window
-    analysis.analyseMean(values, startwindow1, endWindow1);
-    double meanWindow1  = analysis.getMean();
-    analysis.analyseCorrelation(values, startwindow1, endWindow1);
-    double varWindow1   = analysis.getStdErrorOfMean()*analysis.getStdErrorOfMean();
+    trace.computeCorrelation(startwindow1, endWindow1);
+    double meanWindow1  = trace.getMean();
+    double varWindow1   = trace.getSem()*trace.getSem();
     
     // set the indices for start and end of the second window
-    size_t startwindow2    = valueCount - size_t(sampleSize * frac2);
-    size_t endWindow2      = valueCount;
+    size_t startwindow2    = trace.size() - size_t(sampleSize * frac2);
+    size_t endWindow2      = trace.size();
     
     // get mean and variance of the second window
-    analysis.analyseMean(values, startwindow2, endWindow2);
-    double meanWindow2  = analysis.getMean();
-    analysis.analyseCorrelation(values, startwindow2, endWindow2);
-    double varWindow2   = analysis.getStdErrorOfMean()*analysis.getStdErrorOfMean();
+    trace.computeCorrelation(startwindow2, endWindow2);
+    double meanWindow2  = trace.getMean();
+    double varWindow2   = trace.getSem()*trace.getSem();
     
     // get z
     double z            = (meanWindow1 - meanWindow2)/sqrt(varWindow1 + varWindow2);
