@@ -1,9 +1,8 @@
-#ifndef EmpiricalProposal_H
-#define EmpiricalProposal_H
+#ifndef IndependentPriorProposal_H
+#define IndependentPriorProposal_H
 
 #include <string>
 
-#include "EmpiricalDistribution.h"
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -12,9 +11,9 @@
 namespace RevBayesCore {
     
     /**
-     * An empirical distribution proposal.
+     * An independent prior distribution proposal.
      *
-     * Propose a new value from the empirical distribution.
+     * Propose a new value from the prior distribution.
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Will Pett)
@@ -22,14 +21,14 @@ namespace RevBayesCore {
      *
      */
     template <class valueType>
-    class EmpiricalProposal : public Proposal {
+    class IndependentPriorProposal : public Proposal {
         
     public:
-        EmpiricalProposal( StochasticNode<valueType> *n, bool mh);                                               //!<  constructor
+        IndependentPriorProposal( StochasticNode<valueType> *n, bool mh = true);                            //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
-        EmpiricalProposal*                      clone(void) const;                                          //!< Clone object
+        IndependentPriorProposal*               clone(void) const;                                          //!< Clone object
         double                                  doProposal(void);                                           //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                      //!< Prepare the proposal
@@ -45,7 +44,7 @@ namespace RevBayesCore {
     private:
         
         StochasticNode<valueType>*              variable;
-        size_t                                  old_index;
+        valueType                               stored_value;
         bool                                    metropolisHastings;
 
     };
@@ -54,10 +53,10 @@ namespace RevBayesCore {
 
 
 template <class valueType>
-RevBayesCore::EmpiricalProposal<valueType>::EmpiricalProposal( RevBayesCore::StochasticNode<valueType> *v, bool mh) : RevBayesCore::Proposal(),
+RevBayesCore::IndependentPriorProposal<valueType>::IndependentPriorProposal( RevBayesCore::StochasticNode<valueType> *v, bool mh) : RevBayesCore::Proposal(),
     variable( v ),
-    old_index(),
-    metropolisHastings( mh )
+    stored_value(v->getValue()),
+    metropolisHastings(mh)
 {
 
     addNode( variable );
@@ -72,16 +71,16 @@ RevBayesCore::EmpiricalProposal<valueType>::EmpiricalProposal( RevBayesCore::Sto
  * \return A new copy of the process.
  */
 template <class valueType>
-RevBayesCore::EmpiricalProposal<valueType>* RevBayesCore::EmpiricalProposal<valueType>::clone( void ) const
+RevBayesCore::IndependentPriorProposal<valueType>* RevBayesCore::IndependentPriorProposal<valueType>::clone( void ) const
 {
 
-    return new EmpiricalProposal( *this );
+    return new IndependentPriorProposal( *this );
 }
 
 
 /** Clean the proposal */
 template <class valueType>
-void RevBayesCore::EmpiricalProposal<valueType>::cleanProposal( void )
+void RevBayesCore::IndependentPriorProposal<valueType>::cleanProposal( void )
 {
 
     // nothing to do
@@ -89,9 +88,9 @@ void RevBayesCore::EmpiricalProposal<valueType>::cleanProposal( void )
 
 
 template <class valueType>
-const std::string& RevBayesCore::EmpiricalProposal<valueType>::getProposalName( void ) const
+const std::string& RevBayesCore::IndependentPriorProposal<valueType>::getProposalName( void ) const
 {
-    static std::string name = "EmpiricalMove";
+    static std::string name = "IndependentPriorMove";
 
     return name;
 }
@@ -100,39 +99,12 @@ const std::string& RevBayesCore::EmpiricalProposal<valueType>::getProposalName( 
 
 /** Perform the move */
 template <class valueType>
-double RevBayesCore::EmpiricalProposal<valueType>::doProposal( void )
+double RevBayesCore::IndependentPriorProposal<valueType>::doProposal( void )
 {
 
-    EmpiricalDistribution<valueType>& dist = static_cast<EmpiricalDistribution<valueType> &>( variable->getDistribution() );
+    stored_value = variable->getValue();
 
-    size_t total_tree_samples = dist.getNumberOfSamples();
-    size_t burnin = dist.getBurnin();
-
-    // just in case there is only one tree in the empirical tree sample
-    if (total_tree_samples - burnin > 1)
-    {
-        // get the current tree index
-        old_index = dist.getCurrentIndex();
-
-        // draw a new tree
-        // in the old way we simply proposed any tree, even the current tree
-        // dist.redrawValue();
-        // we try to be more efficient by not proposing the same tree again
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-
-        // draw a new tree index until it is different from the old tree index
-        double u = rng->uniform01();
-        size_t new_tree_index = (size_t)( u * (total_tree_samples - burnin) + burnin );
-
-        while ( new_tree_index == old_index )
-        {
-            u = rng->uniform01();
-            new_tree_index = (size_t)( u * (total_tree_samples - burnin) + burnin );
-        }
-
-        dist.setCurrentIndex( new_tree_index );
-
-    }
+    variable->getDistribution().redrawValue();
 
     variable->touch( true );
 
@@ -147,7 +119,7 @@ double RevBayesCore::EmpiricalProposal<valueType>::doProposal( void )
 
 /** Prepare the proposal */
 template <class valueType>
-void RevBayesCore::EmpiricalProposal<valueType>::prepareProposal( void )
+void RevBayesCore::IndependentPriorProposal<valueType>::prepareProposal( void )
 {
 
     // nothing to do
@@ -157,7 +129,7 @@ void RevBayesCore::EmpiricalProposal<valueType>::prepareProposal( void )
 
 /** Print the parameter summary */
 template <class valueType>
-void RevBayesCore::EmpiricalProposal<valueType>::printParameterSummary(std::ostream &o) const
+void RevBayesCore::IndependentPriorProposal<valueType>::printParameterSummary(std::ostream &o) const
 {
 
     // nothing to do
@@ -165,19 +137,18 @@ void RevBayesCore::EmpiricalProposal<valueType>::printParameterSummary(std::ostr
 
 
 template <class valueType>
-void RevBayesCore::EmpiricalProposal<valueType>::undoProposal( void )
+void RevBayesCore::IndependentPriorProposal<valueType>::undoProposal( void )
 {
 
     // reset to the old tree
-    EmpiricalDistribution<valueType>& dist = static_cast<EmpiricalDistribution<valueType> &>( variable->getDistribution() );
-    dist.setCurrentIndex( old_index );
+    variable->setValue(new valueType(stored_value));
 
 }
 
 
 /** Tune the proposal */
 template <class valueType>
-void RevBayesCore::EmpiricalProposal<valueType>::tune(double r)
+void RevBayesCore::IndependentPriorProposal<valueType>::tune(double r)
 {
 
     // nothing to do
@@ -185,7 +156,7 @@ void RevBayesCore::EmpiricalProposal<valueType>::tune(double r)
 
 
 template <class valueType>
-void RevBayesCore::EmpiricalProposal<valueType>::swapNodeInternal(RevBayesCore::DagNode *oldN, RevBayesCore::DagNode *newN)
+void RevBayesCore::IndependentPriorProposal<valueType>::swapNodeInternal(RevBayesCore::DagNode *oldN, RevBayesCore::DagNode *newN)
 {
 
     variable = static_cast<StochasticNode<valueType>* >( newN );

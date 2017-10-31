@@ -1,7 +1,7 @@
 #include "Move_EmpiricalTree.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "EmpiricalProposal.h"
+#include "IndependentPriorProposal.h"
 #include "ModelVector.h"
 #include "MetropolisHastingsMove.h"
 #include "RbException.h"
@@ -45,8 +45,8 @@ void Move_EmpiricalTree::constructInternalObject( void )
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
     bool mh = static_cast<const RlBoolean &>( metropolisHastings->getRevObject() ).getValue();
-    
-    RevBayesCore::Proposal *p = new RevBayesCore::EmpiricalProposal<RevBayesCore::Tree>(t, mh);
+
+    RevBayesCore::Proposal *p = new RevBayesCore::IndependentPriorProposal<RevBayesCore::Tree>(t, mh);
     value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
     
 }
