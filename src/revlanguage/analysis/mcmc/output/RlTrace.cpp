@@ -68,21 +68,33 @@ RevPtr<RevVariable> Trace::executeMethod(std::string const &name, const std::vec
     if (name == "summarize")
     {
         found = true;
-        
-//        int b = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-//        RevBayesCore::TreeSummary<RevBayesCore::Tree> summary = RevBayesCore::TreeSummary<RevBayesCore::Tree>( *this->value );
-//        summary.summarize( b );
-//        summary.printTreeSummary(std::cerr);
-        
+
+        std::stringstream ss;
+        ss << "Trace (";
+        ss << getValue().getParameterName();
+        ss << ")" << std::endl;
+        ss << "Filename:                  " << value->getFileName() << std::endl;
+        ss << "Parameter:                 " << value->getParameterName() << std::endl;
+        ss << "Samples:                   " << value->size() << std::endl;
+        ss << "ESS:                       " << value->getESS() << std::endl;
+        ss << "Burnin:                    " << value->getBurnin() << std::endl;
+        ss << "Mean:                      " << value->getMean() << std::endl;
+        ss << "SEM:                       " << value->getSEM() << std::endl;
+        ss << "Geweke test:               " << (value->hasPassedGewekeTest() ? "TRUE" : "FALSE") << std::endl;
+        ss << "Stationarity test:         " << (value->hasPassedStationarityTest() ? "TRUE" : "FALSE") << std::endl;
+
+        RBOUT(ss.str());
+
         return NULL;
-    } 
+    }
     
     return RevObject::executeMethod( name, args, found );
 }
 
 
 /** Get Rev type of object */
-const std::string& Trace::getClassType(void) { 
+const std::string& Trace::getClassType(void)
+{
     
     static std::string rev_type = "Trace";
     
@@ -128,44 +140,23 @@ const TypeSpec& Trace::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Trace::printValue(std::ostream &o) const
+void Trace::printValue(std::ostream &o, bool user) const
 {
-    
-    o << "Filename:                  " << value->getFileName() << std::endl;
-    o << "Parameter:                 " << value->getParameterName() << std::endl;
-    o << "#Samples:                  " << value->size() << std::endl;
-    o << "ESS:                       " << value->getEss() << std::endl;
-    o << "Burnin:                    " << value->getBurnin() << std::endl;
-    o << "Mean:                      " << value->getMean() << std::endl;
-    o << "SEM:                       " << value->getSem() << std::endl;
-    o << "Geweke-test:               " << (value->hasPassedGewekeTest() ? "TRUE" : "FALSE") << std::endl;
-    o << "stationarity-test:         " << (value->hasPassedStationarityTest() ? "TRUE" : "FALSE") << std::endl;
+    o << "Trace (";
+    o << getValue().getParameterName();
+    o << ")\n";
 }
 
 
 /** Set a member variable */
-void Trace::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Trace::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "xxx") {
         
     } 
-    else {
+    else
+    {
         RevObject::setConstParameter(name, var);
     }
-}
-
-
-std::ostream& RevLanguage::operator<<(std::ostream& o, const RevLanguage::Trace& x) {
-//    o << x.getParameterName();
-    o << "Trace (";
-//    const std::vector<double>& values = x.getValues();
-//    for (std::vector<double>::const_iterator it = values.begin(); it != values.end(); ++it) {
-//        if ( it != values.begin() ) {
-//            o << ", ";
-//        }
-//        o << *it;
-//    }
-    o << ")";
-    
-    return o;
 }

@@ -78,15 +78,8 @@ namespace RevBayesCore {
     // Global functions using the class
     template <class valueType>
     std::ostream&                       operator<<(std::ostream& o, const Trace<valueType>& x) {
+        o << "Trace(";
         o << x.getParameterName();
-        o << " (";
-    //    const std::vector<valueType>& values = x.getValues();
-    //    for (std::vector<valueType>::const_iterator it = values.begin(); it != values.end(); ++it) {
-    //        if ( it != values.begin() ) {
-    //            o << ", ";
-    //        }
-    //        o << *it;
-    //    }
         o << ")";
 
         return o;

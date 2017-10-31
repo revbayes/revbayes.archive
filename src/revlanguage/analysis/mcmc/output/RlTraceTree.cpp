@@ -336,10 +336,10 @@ void TraceTree::initMethods( void )
 
 /** Get type spec */
 
-void TraceTree::printValue(std::ostream &o) const
+void TraceTree::printValue(std::ostream &o, bool user) const
 {
     
-    o << "TreeTrace";
+    o << "TreeTrace (" << getValue().getFileName() << ")";
 }
 
 
