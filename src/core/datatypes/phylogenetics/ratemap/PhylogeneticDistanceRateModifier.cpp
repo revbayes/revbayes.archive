@@ -1,14 +1,6 @@
-//
-//  PhylogeneticDistanceRateModifier.cpp
-//  revbayes-branch-proj
-//
-//  Created by Michael Landis on 2/24/17.
-//  Copyright © 2017 Michael Landis. All rights reserved.
-//
-
 #include <iomanip>
 #include <cmath>
-#include "CharacterEvent.h"
+#include "CharacterEventDiscrete.h"
 #include "PhylogeneticDistanceRateModifier.h"
 #include "RbConstants.h"
 #include "Tree.h"
@@ -17,8 +9,8 @@
 using namespace RevBayesCore;
 
 PhylogeneticDistanceRateModifier::PhylogeneticDistanceRateModifier(size_t ns, size_t nc) : CharacterHistoryRateModifier(ns, nc),
-scale( 1.0 ),
-num_branches( 0 )
+    scale( 1.0 ),
+    num_branches( 0 )
 {
     ;
 }
@@ -48,14 +40,14 @@ PhylogeneticDistanceRateModifier& PhylogeneticDistanceRateModifier::assign(const
     }
 }
 
-double PhylogeneticDistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double PhylogeneticDistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEventDiscrete* newState, double age)
 {
     
     // which character will be gained?
     size_t index = newState->getSiteIndex();
     
     // losses are independent of other species
-    if (currState[index]->getState() > newState->getState() || scale == 0.0)
+    if ( static_cast<CharacterEventDiscrete*>(currState[index])->getState() > newState->getState() || scale == 0.0)
     {
         return 1.0;
     }
@@ -66,7 +58,7 @@ double PhylogeneticDistanceRateModifier::computeRateMultiplier(std::vector<Chara
     std::vector<std::set<size_t> > states_by_sites(this->num_characters);
     for (size_t i = 0; i < this->num_characters; i++)
     {
-        states_by_sites[i].insert( currState[i]->getState() );
+        states_by_sites[i].insert( static_cast<CharacterEventDiscrete*>(currState[i])->getState() );
     }
     
     // get phylogenetic distance between current lineage and new lineage at age

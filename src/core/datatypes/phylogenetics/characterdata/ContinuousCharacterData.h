@@ -50,12 +50,16 @@ namespace RevBayesCore {
         void                                            executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         const double&                                   getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         std::string                                     getDataType(void) const;
+        double                                          getMaxDifference(size_t index) const;                                       //!< Get the maximum difference between two observations
+        double                                          getMeanDifference(size_t index) const;                                      //!< Get the mean of the differences between two observations
+        double                                          getMinDifference(size_t index) const;                                       //!< Get the minimum difference between two observations
         size_t                                          getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                          getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
         ContinuousTaxonData&                            getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const ContinuousTaxonData&                      getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         ContinuousTaxonData&                            getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
         const ContinuousTaxonData&                      getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
+        double                                          getVarDifference(size_t index) const;                                       //!< Get the variance of the differences between two observations
         void                                            includeCharacter(size_t i);                                                 //!< Include character
         bool                                            isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                            isCharacterResolved(size_t txIdx, size_t chIdx) const;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")

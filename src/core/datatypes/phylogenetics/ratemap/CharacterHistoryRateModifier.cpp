@@ -44,12 +44,12 @@ CharacterHistoryRateModifier& CharacterHistoryRateModifier::assign(const Assigna
 }
 
 
-double CharacterHistoryRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, std::vector<size_t> counts, double age)
+double CharacterHistoryRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, std::vector<size_t> counts, double age)
 {
     return computeRateMultiplier(currState, newState);
 }
 
-double CharacterHistoryRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, std::vector<std::set<size_t> > sites_with_states, double age)
+double CharacterHistoryRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, std::vector<std::set<size_t> > sites_with_states, double age)
 {
     
     return computeRateMultiplier(currState, newState);

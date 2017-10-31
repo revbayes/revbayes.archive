@@ -2,7 +2,7 @@
 #define HeterogeneousRateBirthDeath_H
 
 #include "AbstractCharacterHistoryBirthDeathProcess.h"
-#include "CharacterHistory.h"
+#include "CharacterHistoryDiscrete.h"
 #include "MemberObject.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
@@ -32,8 +32,8 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<long> &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
-        CharacterHistory&                                   getCharacterHistory(void);                                  //!< Get the character histories
-        CharacterHistory                                    getCharacterHistory(void) const;                                  //!< Get the character histories
+        CharacterHistoryDiscrete&                           getCharacterHistory(void);                                  //!< Get the character histories
+        const CharacterHistoryDiscrete&                     getCharacterHistory(void) const;                                  //!< Get the character histories
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
         void                                                setValue(Tree *v, bool force);
         
@@ -63,13 +63,13 @@ namespace RevBayesCore {
 
         // members
         const TypedDagNode<double>*                         root_age;
-        const TypedDagNode<long>*                            root_state;
+        const TypedDagNode<long>*                           root_state;
         const TypedDagNode< RbVector<double> >*             speciation;
         const TypedDagNode< RbVector<double> >*             extinction;
         const TypedDagNode<double>*                         event_rate;
         const TypedDagNode<double>*                         rho;                                                                                                //!< Sampling probability of each species.
 
-        CharacterHistory                                    branch_histories;
+        CharacterHistoryDiscrete                            branch_histories;
         
         std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
         size_t                                              num_taxa;

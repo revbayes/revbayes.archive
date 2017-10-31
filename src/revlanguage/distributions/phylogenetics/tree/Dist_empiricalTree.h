@@ -19,8 +19,7 @@
 
 #include "EmpiricalDistribution.h"
 #include "Tree.h"
-#include "RlBranchLengthTree.h"
-#include "RlTimeTree.h"
+#include "RlTree.h"
 #include "RlTypedDistribution.h"
 
 namespace RevLanguage {

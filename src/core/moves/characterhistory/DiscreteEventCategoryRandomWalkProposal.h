@@ -44,7 +44,7 @@ namespace RevBayesCore {
         StochasticNode<Tree>*                           variable;                                                                           //!< The variable the Proposal is working on
         HeterogeneousRateBirthDeath*                    distribution;
         
-        CharacterEvent*                                 stored_value;                                                                        //!< The stored value of the Proposal used for rejections.
+        CharacterEventDiscrete*                         stored_value;                                                                        //!< The stored value of the Proposal used for rejections.
         size_t                                          stored_category;                                                                              //!< The value we propose.
         bool                                            failed;
     };

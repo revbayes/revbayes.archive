@@ -18,10 +18,10 @@ namespace RevBayesCore
 
         DistanceRateModifier&               assign(const Assignable &m);
 //        double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
-        double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
+        double                              computeRateMultiplier(std::vector<CharacterEvent*> curState, CharacterEventDiscrete* newState, double age=0.0);
 //        double                              computeRateMultiplier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
 //        double                              computeRateModifier_test(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
-        double                              computeSiteRateMultiplier(CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
+        double                              computeSiteRateMultiplier(CharacterEvent* curState, CharacterEventDiscrete* newState, double age=0.0);
         double                              computeSiteRateMultiplier(size_t curState, size_t newState, size_t charIdx=0, double age=0.0);
         unsigned                            getNumAvailableAreas(std::vector<CharacterEvent*> curState, double age=0.0);
         unsigned                            getNumEmigratableAreas(std::vector<CharacterEvent*> curState, double age=0.0);
@@ -39,7 +39,7 @@ namespace RevBayesCore
         const bool                          getUseAreaAdjacency(void) const;
 
         void                                update(void);
-        DistanceRateModifier*              clone(void) const;
+        DistanceRateModifier*               clone(void) const;
         void                                print(std::vector<std::vector<double> > m);
         void                                printAll(void);
 

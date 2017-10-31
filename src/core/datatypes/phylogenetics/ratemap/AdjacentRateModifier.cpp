@@ -1,25 +1,17 @@
-//
-//  AdjacentRateModifier.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 8/8/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
 #include <iomanip>
 #include <cmath>
-#include "CharacterEvent.h"
+#include "CharacterEventDiscrete.h"
 #include "AdjacentRateModifier.h"
 #include "RbConstants.h"
 
 using namespace RevBayesCore;
 
 AdjacentRateModifier::AdjacentRateModifier(size_t ns, size_t nc) : CharacterHistoryRateModifier(ns, nc),
-  width(1),
-  gain_factor(0.0),
-  loss_factor(0.0),
-  context_matrix( std::vector<std::vector<adjacency> >() ),
-  context_type("width")
+    width(1),
+    gain_factor(0.0),
+    loss_factor(0.0),
+    context_matrix( std::vector<std::vector<adjacency> >() ),
+    context_type("width")
 {
     ;
 }
@@ -51,11 +43,12 @@ AdjacentRateModifier& AdjacentRateModifier::assign(const Assignable &m)
     }
 }
 
-double AdjacentRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double AdjacentRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEventDiscrete* newState, double age)
 {
     
     
-    if (context_type=="width") {
+    if (context_type=="width")
+    {
         return computeRateMultiplierUsingWidth(currState, newState, age);
     }
     else if (context_type=="matrix")
@@ -72,7 +65,7 @@ double AdjacentRateModifier::computeRateMultiplier(std::vector<CharacterEvent *>
 }
 
 
-double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age)
+double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age)
 {
     std::vector<double> match(2, 0.0);
     
@@ -86,7 +79,7 @@ double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<Charact
     {
         if (i == to_index)
             continue;
-        else if (currState[i]->getState() == to_state)
+        else if ( static_cast<CharacterEventDiscrete*>(currState[i])->getState() == to_state)
         {
             match[1] += 1.0;
         }
@@ -103,7 +96,7 @@ double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<Charact
     return r;
 }
 
-double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age)
+double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age)
 {
     std::vector<double> match(2, 0.0);
     
@@ -120,7 +113,7 @@ double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<Charac
         {
             continue;
         }
-        else if (currState[edge.to]->getState() == s)
+        else if ( static_cast<CharacterEventDiscrete*>(currState[edge.to])->getState() == s)
         {
             match[1] += edge.weight;
         }
@@ -136,7 +129,7 @@ double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<Charac
 }
 
 
-double AdjacentRateModifier::computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
+double AdjacentRateModifier::computeSiteRateMultiplier(const TopologyNode& node, CharacterEventDiscrete* currState, CharacterEventDiscrete* newState, double age)
 {
     return 1.0;
 }

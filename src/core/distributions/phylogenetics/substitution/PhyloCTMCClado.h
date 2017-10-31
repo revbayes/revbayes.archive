@@ -89,6 +89,7 @@ namespace RevBayesCore {
 }
 
 #include "AbstractCharacterHistoryBirthDeathProcess.h"
+#include "BranchHistory.h"
 #include "ConstantNode.h"
 #include "StochasticNode.h"
 #include "ChromosomesCladogenicStateFunction.h"
@@ -1786,8 +1787,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
         const AbstractCharacterHistoryBirthDeathProcess* dist = dynamic_cast<const AbstractCharacterHistoryBirthDeathProcess* >( &this->tau->getDistribution() );
         
         // get history information
-        CharacterHistory tree_history = dist->getCharacterHistory();
-        BranchHistory branch_history = tree_history[nodeIdx];
+        const CharacterHistory &tree_history = dist->getCharacterHistory();
+        const BranchHistory &branch_history = tree_history[nodeIdx];
         const std::multiset<CharacterEvent*,CharacterEventCompare>& events = branch_history.getHistory();
         
         if (events.size() == 0)
