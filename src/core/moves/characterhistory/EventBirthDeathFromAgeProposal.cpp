@@ -117,7 +117,7 @@ double EventBirthDeathFromAgeProposal::doBirthProposal( void )
     was_birth_proposal = true;
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
-    CharacterHistoryDiscrete &history = distribution->getCharacterHistory();
+    CharacterHistoryDiscrete &history = static_cast<CharacterHistoryDiscrete&>(distribution->getCharacterHistory());
     
     size_t num_events_before = history.getNumberEvents();
     size_t num_branches = history.getNumberBranches();
@@ -154,7 +154,7 @@ double EventBirthDeathFromAgeProposal::doDeathProposal( void )
     // set the flag that this was a death proposal
     was_birth_proposal = false;
     
-    CharacterHistoryDiscrete &history = distribution->getCharacterHistory();
+    CharacterHistoryDiscrete &history = static_cast<CharacterHistoryDiscrete&>(distribution->getCharacterHistory());
     
     size_t num_events_before = history.getNumberEvents();
     size_t num_branches = history.getNumberBranches();

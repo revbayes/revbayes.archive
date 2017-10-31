@@ -1,6 +1,7 @@
 #ifndef ConditionedBirthDeathShiftProcessContinuous_H
 #define ConditionedBirthDeathShiftProcessContinuous_H
 
+#include "AbstractCharacterHistoryBirthDeathProcess.h"
 #include "CharacterHistoryContinuous.h"
 #include "MemberObject.h"
 #include "Tree.h"
@@ -11,7 +12,7 @@ namespace RevBayesCore {
     
     class Clade;
     
-    class ConditionedBirthDeathShiftProcessContinuous : public TypedDistribution<Tree>, public MemberObject< RbVector<long> >, public MemberObject< RbVector<double> > {
+    class ConditionedBirthDeathShiftProcessContinuous : public AbstractCharacterHistoryBirthDeathProcess, public MemberObject< RbVector<long> >, public MemberObject< RbVector<double> > {
         
     public:
         ConditionedBirthDeathShiftProcessContinuous(const TypedDagNode<double> *a,
@@ -31,8 +32,8 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<long> &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
-        std::vector<CharacterHistoryContinuous>&            getCharacterHistory(void);                                  //!< Get the character histories
-        const std::vector<CharacterHistoryContinuous>&      getCharacterHistory(void) const;                                  //!< Get the character histories
+        CharacterHistoryContinuous&                         getCharacterHistory(void);                                  //!< Get the character histories
+        const CharacterHistoryContinuous&                   getCharacterHistory(void) const;                                  //!< Get the character histories
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
         void                                                setValue(Tree *v, bool force);
         
@@ -70,7 +71,7 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                         shift_rate;
         const TypedDagNode<double>*                         rho;                                                                                                //!< Sampling probability of each species.
         
-        std::vector<CharacterHistoryContinuous>             branch_histories;
+        CharacterHistoryContinuous                          branch_histories;
         
         std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
         size_t                                              num_taxa;

@@ -59,7 +59,7 @@ const std::string& DiscreteEventBirthDeathProposal::getProposalName( void ) cons
 double DiscreteEventBirthDeathProposal::computeEventProposalProbability(CharacterEvent *event)
 {
     
-    CharacterHistoryDiscrete &history = distribution->getCharacterHistory();
+    CharacterHistoryDiscrete &history = static_cast<CharacterHistoryDiscrete&>(distribution->getCharacterHistory());
     
     size_t num_states         = history.getNumberStates();
     
@@ -70,7 +70,7 @@ double DiscreteEventBirthDeathProposal::computeEventProposalProbability(Characte
 CharacterEvent* DiscreteEventBirthDeathProposal::drawNewEvent(double event_time)
 {
 
-    CharacterHistoryDiscrete &history = distribution->getCharacterHistory();
+    CharacterHistoryDiscrete &history = static_cast<CharacterHistoryDiscrete&>(distribution->getCharacterHistory());
     
     size_t num_states         = history.getNumberStates();
     

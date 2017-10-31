@@ -19,14 +19,15 @@ namespace RevBayesCore {
         ~CharacterEventContinuous(void);
         
         CharacterEventContinuous*           clone(void) const;
-        double                              getState(void) const;
+        double                              getState(size_t i) const;
         std::string                         getStateStr(void) const;
-        void                                setState(double s);
+        void                                resize(size_t i);
+        void                                setState(double s, size_t i);
         
         
     private:
 
-        double                              value;                                             // the value/state of this event
+        std::vector<double>                 value;                                             // the value/state of this event
         
         
     };
