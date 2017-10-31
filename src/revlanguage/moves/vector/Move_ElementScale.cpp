@@ -155,16 +155,20 @@ void Move_ElementScale::printValue(std::ostream &o) const
 /** Set a member variable */
 void Move_ElementScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
-    if ( name == "x" ) {
+    if ( name == "x" )
+    {
         x = var;
     }
-    else if ( name == "lambda" ) {
+    else if ( name == "lambda" )
+    {
         lambda = var;
     }
-    else if ( name == "tune" ) {
+    else if ( name == "tune" )
+    {
         tune = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
 }

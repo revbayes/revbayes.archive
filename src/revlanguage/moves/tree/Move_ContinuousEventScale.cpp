@@ -1,8 +1,8 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
-#include "Move_EventTimeSlide.h"
-#include "EventTimeSlideProposal.h"
+#include "Move_ContinuousEventScale.h"
+#include "ContinuousEventScaleProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
@@ -18,7 +18,7 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Move_EventTimeSlide::Move_EventTimeSlide() : Move()
+Move_ContinuousEventScale::Move_ContinuousEventScale() : Move()
 {
     
 }
@@ -30,10 +30,10 @@ Move_EventTimeSlide::Move_EventTimeSlide() : Move()
  *
  * \return A new copy of the move.
  */
-Move_EventTimeSlide* Move_EventTimeSlide::clone(void) const
+Move_ContinuousEventScale* Move_ContinuousEventScale::clone(void) const
 {
     
-    return new Move_EventTimeSlide(*this);
+    return new Move_ContinuousEventScale(*this);
 }
 
 
@@ -46,20 +46,21 @@ Move_EventTimeSlide* Move_EventTimeSlide::clone(void) const
  * constructor. The move constructor takes care of the proper hook-ups.
  *
  */
-void Move_EventTimeSlide::constructInternalObject( void )
+void Move_ContinuousEventScale::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
+    // now allocate a new scaling move
+    double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
-    double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
-    bool tu = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::EventTimeSlideProposal(n,d);
-    value = new RevBayesCore::MetropolisHastingsMove(p,w,tu);
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::ContinuousEventScaleProposal(n,l);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
     
 }
 
@@ -69,10 +70,10 @@ void Move_EventTimeSlide::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& Move_EventTimeSlide::getClassType(void)
+const std::string& Move_ContinuousEventScale::getClassType(void)
 {
     
-    static std::string rev_type = "Move_EventTimeSlide";
+    static std::string rev_type = "Move_ContinuousEventScale";
     
     return rev_type;
 }
@@ -83,7 +84,7 @@ const std::string& Move_EventTimeSlide::getClassType(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Move_EventTimeSlide::getClassTypeSpec(void)
+const TypeSpec& Move_ContinuousEventScale::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -97,10 +98,10 @@ const TypeSpec& Move_EventTimeSlide::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_EventTimeSlide::getMoveName( void ) const
+std::string Move_ContinuousEventScale::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "EventTimeSlide";
+    std::string c_name = "ContinuousEventScale";
     
     return c_name;
 }
@@ -114,27 +115,26 @@ std::string Move_EventTimeSlide::getMoveName( void ) const
  *
  * \return The member rules.
  */
-const MemberRules& Move_EventTimeSlide::getParameterRules(void) const
+const MemberRules& Move_ContinuousEventScale::getParameterRules(void) const
 {
     
-    static MemberRules memberRules;
+    static MemberRules move_member_rules;
     static bool rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The time-tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        memberRules.push_back( new ArgumentRule( "delta"  , RealPos::getClassTypeSpec()  , "The concentration parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 1.0 ) ) );
-        memberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), "Should we tune the concentration parameter during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
-        
+        move_member_rules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec()             , "The time-tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        move_member_rules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()            , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
+        move_member_rules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()          , "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getParameterRules();
-        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
+        const MemberRules& inherited_rules = Move::getParameterRules();
+        move_member_rules.insert( move_member_rules.end(), inherited_rules.begin(), inherited_rules.end() );
         
         rules_set = true;
     }
     
-    return memberRules;
+    return move_member_rules;
 }
 
 
@@ -143,32 +143,12 @@ const MemberRules& Move_EventTimeSlide::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Move_EventTimeSlide::getTypeSpec( void ) const
+const TypeSpec& Move_ContinuousEventScale::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
     
     return type_spec;
-}
-
-
-/**
- * Print the value for the user.
- */
-void Move_EventTimeSlide::printValue(std::ostream &o) const
-{
-    
-    o << "EventTimeSlide(";
-    if (tree != NULL)
-    {
-        o << tree->getName();
-    }
-    else
-    {
-        o << "?";
-    }
-    o << ")";
-    
 }
 
 
@@ -182,16 +162,16 @@ void Move_EventTimeSlide::printValue(std::ostream &o) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_EventTimeSlide::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_ContinuousEventScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )
     {
         tree = var;
     }
-    else if ( name == "delta" )
+    else if ( name == "lambda" )
     {
-        delta = var;
+        lambda = var;
     }
     else if ( name == "tune" )
     {
@@ -203,6 +183,7 @@ void Move_EventTimeSlide::setConstParameter(const std::string& name, const RevPt
     }
     
 }
+
 
 
 

@@ -83,9 +83,9 @@ double ScaleProposal::propose( double &val )
     val *= scaling_factor;
     
     // compute the Hastings ratio
-    double lnHastingsratio = log( scaling_factor );
+    double ln_hastings_ratio = log( scaling_factor );
     
-    return lnHastingsratio;
+    return ln_hastings_ratio;
 }
 
 

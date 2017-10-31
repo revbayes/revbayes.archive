@@ -201,10 +201,6 @@ double ConditionedBirthDeathShiftProcessContinuous::computeBranchProbability(dou
 double ConditionedBirthDeathShiftProcessContinuous::computeLnProbability( void )
 {
     
-    initializeBranchHistories( value->getRoot(), value->getRoot().getIndex(), 0, root_speciation->getValue() );
-    initializeBranchHistories( value->getRoot(), value->getRoot().getIndex(), 1, root_extinction->getValue() );
-
-    
     // Variable declarations and initialization
     double ln_prob = 0.0;
     double age = root_age->getValue();
@@ -310,16 +306,22 @@ double ConditionedBirthDeathShiftProcessContinuous::computeNodeProbability(const
         const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
         for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
         {
-            CharacterEvent* event = *it;
-            double event_time = event->getAge();
             
             // we need to set the current rate category
-            double current_value_birth = computeStateValue( node.getIndex(), 0, event_time );
-            double current_value_death = computeStateValue( node.getIndex(), 1, event_time );
+            double current_value_birth = computeStateValue( node.getIndex(), 0, begin_time );
+            double current_value_death = computeStateValue( node.getIndex(), 1, begin_time );
+
+            speciation->setValue( new double(current_value_birth) );
+            extinction->setValue( new double(current_value_death) );
+            
+            CharacterEvent* event = *it;
+            double event_time = event->getAge();
 
             ln_prob_node += computeBranchProbability(begin_time, event_time, current_value_birth, current_value_death, shift_rate->getValue() );
             ln_prob_node += log( shift_rate->getValue() );
-            
+            ln_prob_node += speciation->computeLnProbability();
+            ln_prob_node += extinction->computeLnProbability();
+
             begin_time = event_time;
 
         }

@@ -18,9 +18,9 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 EventBranchTimeBetaProposal::EventBranchTimeBetaProposal( StochasticNode<Tree> *n, double d, double o) : Proposal(),
-variable( n ),
-delta( d ),
-offset( o )
+    variable( n ),
+    delta( d ),
+    offset( o )
 {
     // tell the base class to add the node
     addNode( variable );
