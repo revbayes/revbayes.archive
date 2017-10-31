@@ -804,8 +804,36 @@ void ConditionedBirthDeathShiftProcessContinuous::swapParameterInternal( const D
     }
     else
     {
-        speciation->swapParameter(oldP,newP);
-        extinction->swapParameter(oldP,newP);
+        const std::vector<const DagNode*>& sp_pars = speciation->getParameters();
+        bool is_speciation_par = false;
+        for (std::vector<const DagNode*>::const_iterator it = sp_pars.begin(); it != sp_pars.end(); ++it)
+        {
+            if ( *it == oldP )
+            {
+                is_speciation_par = true;
+                break;
+            }
+        }
+        if ( is_speciation_par == true )
+        {
+            speciation->swapParameter(oldP,newP);
+        }
+        
+        const std::vector<const DagNode*>& ex_pars = extinction->getParameters();
+        bool is_extinction_par = false;
+        for (std::vector<const DagNode*>::const_iterator it = ex_pars.begin(); it != ex_pars.end(); ++it)
+        {
+            if ( *it == oldP )
+            {
+                is_extinction_par = true;
+                break;
+            }
+        }
+        if ( is_extinction_par == true )
+        {
+            extinction->swapParameter(oldP,newP);
+        }
+        
     }
     
 }
