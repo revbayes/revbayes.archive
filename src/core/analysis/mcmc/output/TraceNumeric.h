@@ -18,6 +18,7 @@ namespace RevBayesCore {
     
     public:
         TraceNumeric();
+        virtual ~TraceNumeric(){};
 
         virtual TraceNumeric*   clone(void) const;                              //!< Clone object
 
