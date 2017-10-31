@@ -1,5 +1,5 @@
-#ifndef Move_BirthDeathEvent_H
-#define Move_BirthDeathEvent_H
+#ifndef Move_BirthDeathEventDiscrete_H
+#define Move_BirthDeathEventDiscrete_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -21,17 +21,18 @@ namespace RevLanguage {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @copyright GPL version 3
      */
-    class Move_BirthDeathEvent : public Move {
+    class Move_BirthDeathEventDiscrete : public Move {
         
     public:
         
-        Move_BirthDeathEvent(void);                                                                                                                    //!< Default constructor
+        Move_BirthDeathEventDiscrete(void);                                                                                                                    //!< Default constructor
         
         // Basic utility functions
-        virtual Move_BirthDeathEvent*               clone(void) const;                                                                      //!< Clone object
+        virtual Move_BirthDeathEventDiscrete*       clone(void) const;                                                                      //!< Clone object
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::vector<std::string>                    getMoveAliases(void) const;                                                             //!< Get the alternative names used for the constructor function in Rev.
         std::string                                 getMoveName(void) const;                                                                //!< Get the name used for the constructor function in Rev.
         const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
