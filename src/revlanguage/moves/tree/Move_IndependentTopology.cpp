@@ -49,17 +49,46 @@ void Move_IndependentTopology::constructInternalObject( void )
     const Distribution& rlDistribution                        = static_cast<const Distribution &>( proposal_distribution->getRevObject() );
     RevBayesCore::TypedDistribution<RevBayesCore::Tree>* prop = static_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rlDistribution.createDistribution() );
 
-    RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *sr = NULL;
-    if( substitution_rates->getRevObject() != RevNullObject::getInstance() )
-    {
-        RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >*tr = static_cast<const ModelVector<RealPos>& >( substitution_rates->getRevObject() ).getDagNode();
-        sr = static_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *>( tr );
-
-    }
-
     const RevBayesCore::Clade& c      = static_cast<const Clade&>( outgroup->getRevObject() ).getValue();
 
-    RevBayesCore::Proposal *p = new RevBayesCore::IndependentTopologyProposal(t, prop, sr, c);
+    RevBayesCore::Proposal *p;
+
+    if( substitution_rates->getRevObject() != RevNullObject::getInstance() )
+    {
+        RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( substitution_rates->getRevObject() ).getDagNode();
+        if( tmp->isStochastic() == true )
+        {
+            RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> >* stoch = dynamic_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> >* >( tmp );
+
+            p = new RevBayesCore::IndependentTopologyProposal(t, prop, stoch, c);
+        }
+        else
+        {
+
+            std::vector<const RevBayesCore::DagNode*> parents = tmp->getParents();
+            std::vector< RevBayesCore::StochasticNode<double> *> n;
+            for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
+            {
+                const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( *it );
+                if ( the_node != NULL )
+                {
+                    n.push_back( const_cast< RevBayesCore::StochasticNode<double>* >( the_node ) );
+                }
+                else
+                {
+                    throw RbException("Substitution rates vector isn't stochastic or a vector of stochastic nodes.");
+                }
+            }
+
+            p = new RevBayesCore::IndependentTopologyProposal(t, prop, n, c);
+        }
+
+    }
+    else
+    {
+        p = new RevBayesCore::IndependentTopologyProposal(t, prop, NULL, c);
+    }
+
     value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
     
 }
@@ -108,7 +137,7 @@ const MemberRules& Move_IndependentTopology::getParameterRules(void) const
     {
         move_member_rules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The stochastic time tree variable on which this moves operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         move_member_rules.push_back( new ArgumentRule( "proposal", TypedDistribution<Tree>::getClassTypeSpec(), "The proposal topology distribution.",  ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        move_member_rules.push_back( new ArgumentRule( "rates", ModelVector<RealPos>::getClassTypeSpec(), "The vector of branch-specific substitution rates.",  ArgumentRule::BY_VALUE, ArgumentRule::STOCHASTIC, NULL ) );
+        move_member_rules.push_back( new ArgumentRule( "rates", ModelVector<RealPos>::getClassTypeSpec(), "The vector of branch-specific substitution rates.",  ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
         move_member_rules.push_back( new ArgumentRule( "outgroup", Clade::getClassTypeSpec(), "Outgroup used to root the proposal topologies.",  ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Clade() ) );
 
         /* Inherit weight from Move, put it after variable */

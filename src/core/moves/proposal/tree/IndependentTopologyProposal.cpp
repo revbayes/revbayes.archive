@@ -10,13 +10,36 @@ using namespace RevBayesCore;
 IndependentTopologyProposal::IndependentTopologyProposal( StochasticNode<Tree> *v, TypedDistribution<Tree>* d,  StochasticNode< RbVector<double> > *r, Clade og ) : Proposal(),
     outgroup( og ),
     proposal_distribution( d ),
-    substitution_rates( r ),
+    substitution_rates_node( r ),
+    variable( v ),
+    stored_ln_num_rankings( 0.0 )
+{
+
+    addNode( variable );
+    addNode( substitution_rates_node );
+
+    outgroup.resetTaxonBitset( variable->getValue().getTaxonBitSetMap() );
+
+    recursivelyRank( variable->getValue().getRoot(), stored_ln_num_rankings );
+
+}
+
+
+IndependentTopologyProposal::IndependentTopologyProposal( StochasticNode<Tree> *v, TypedDistribution<Tree>* d,  std::vector<StochasticNode<double>* >r, Clade og ) : Proposal(),
+    outgroup( og ),
+    proposal_distribution( d ),
+    substitution_rates_node( NULL ),
+    substitution_rates_vector( r ),
     variable( v ),
     stored_ln_num_rankings( 0.0 )
 {
     
     addNode( variable );
-    addNode( substitution_rates);
+
+    for(size_t i = 0; i < substitution_rates_vector.size(); i++)
+    {
+        addNode( substitution_rates_vector[i] );
+    }
 
     outgroup.resetTaxonBitset( variable->getValue().getTaxonBitSetMap() );
 
@@ -179,9 +202,9 @@ double IndependentTopologyProposal::doProposal( void )
     variable->setValue( proposal_tree.clone() );
 
     // update the substitution rates, if applicable
-    if( substitution_rates != NULL )
+    if( substitution_rates_node != NULL )
     {
-        stored_rates = substitution_rates->getValue();
+        stored_rates = substitution_rates_node->getValue();
 
         std::vector<double> rates( stored_rates.size(), 0.0);
 
@@ -190,7 +213,20 @@ double IndependentTopologyProposal::doProposal( void )
             rates[i] = branch_lengths[i] / proposal_tree.getNode(i).getBranchLength();
         }
 
-        substitution_rates->setValue(new RbVector<double>(rates) );
+        substitution_rates_node->setValue(new RbVector<double>(rates) );
+    }
+    else if( substitution_rates_vector.empty() == false )
+    {
+        stored_rates.clear();
+
+        for(size_t i = 0; i < substitution_rates_vector.size(); i++)
+        {
+            stored_rates.push_back(substitution_rates_vector[i]->getValue());
+
+            double rate = branch_lengths[i] / proposal_tree.getNode(i).getBranchLength();
+
+            substitution_rates_vector[i]->setValue(new double(rate));
+        }
     }
 
     return  hr;
@@ -278,9 +314,16 @@ void IndependentTopologyProposal::undoProposal( void )
     // reset to the old tree
     variable->setValue( stored_tree.clone() );
     
-    if( substitution_rates != NULL )
+    if( substitution_rates_node != NULL )
     {
-        substitution_rates->setValue(new RbVector<double>(stored_rates) );
+        substitution_rates_node->setValue(new RbVector<double>(stored_rates) );
+    }
+    else if( substitution_rates_vector.empty() == false )
+    {
+        for(size_t i = 0; i < substitution_rates_vector.size(); i++)
+        {
+            substitution_rates_vector[i]->setValue(new double(stored_rates[i]));
+        }
     }
 }
 
@@ -299,9 +342,19 @@ void IndependentTopologyProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     {
         variable = static_cast<StochasticNode<Tree>* >( newN );
     }
-    else if( oldN == substitution_rates )
+    else if( oldN == substitution_rates_node )
     {
-        substitution_rates = static_cast<StochasticNode<RbVector<double> >* >( newN );
+        substitution_rates_node = static_cast<StochasticNode<RbVector<double> >* >( newN );
+    }
+    else if( substitution_rates_vector.empty() == false )
+    {
+        for(size_t i = 0; i < substitution_rates_vector.size(); i++)
+        {
+            if(oldN == substitution_rates_vector[i])
+            {
+                substitution_rates_vector[i] = static_cast<StochasticNode<double>* >( newN );
+            }
+        }
     }
     
 }
