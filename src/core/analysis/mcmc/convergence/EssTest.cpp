@@ -15,7 +15,6 @@ bool EssTest::assessConvergence(const TraceNumeric& trace)
 {
     
     // make mean invalid for recalculation
-    trace.computeCorrelation();
-    return  trace.getEss() > k;
+    return  trace.getESS() > k;
 }
 

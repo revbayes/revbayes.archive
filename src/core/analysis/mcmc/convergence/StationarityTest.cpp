@@ -23,7 +23,6 @@ bool StationarityTest::assessConvergence(const TraceNumeric& trace)
     double p_corrected = pow(1.0-p, 1.0/nBlocks);
     
     // get the mean for the trace
-    trace.computeMean();
     double traceMean = trace.getMean();
     
     // get a mean and standard error for each block
@@ -31,10 +30,11 @@ bool StationarityTest::assessConvergence(const TraceNumeric& trace)
     std::vector<double> blockSem =  std::vector<double>(nBlocks,0.0);
     for (size_t i=0; i<nBlocks; i++)
     {
-        trace.computeCorrelation(i*blockSize+trace.getBurnin(),(i+1)*blockSize+trace.getBurnin());
+        size_t begin = i*blockSize+trace.getBurnin();
+        size_t end = (i+1)*blockSize+trace.getBurnin();
 
-        blockMeans[i]   = trace.getMean();
-        blockSem[i]     = trace.getSem();
+        blockMeans[i] = trace.getMean(begin, end);
+        blockSem[i]   = trace.getSEM(begin, end);
         
         // get the quantile of a normal with mu=0, var=sem and p=(1-p_corrected)/2
         double quantile = RbStatistics::Normal::quantile(0.0, blockSem[i], p_corrected);
@@ -64,10 +64,8 @@ bool StationarityTest::assessConvergence(const std::vector<TraceNumeric>& traces
     std::vector<double> chainSem =  std::vector<double>(nChains,0.0);
     for (size_t i=0; i<nChains; i++)
     {
-        traces[i].computeCorrelation();
-
         chainMeans[i] = traces[i].getMean();
-        chainSem[i] = traces[i].getSem();
+        chainSem[i]   = traces[i].getSEM();
 
         total_mean += chainMeans[i]*traces[i].size(true);
         total_sample_size += traces[i].size(true);

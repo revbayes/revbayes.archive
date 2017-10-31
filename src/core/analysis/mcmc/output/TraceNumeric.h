@@ -22,18 +22,15 @@ namespace RevBayesCore {
 
         virtual TraceNumeric*   clone(void) const;                              //!< Clone object
 
-        void                    computeCorrelation() const;                                            //!< compute the correlation statistics (act,ess,sem,...)
-        void                    computeMean() const;                                                   //!< compute the mean for the trace
+        double                  getMean() const;                                //!< compute the mean for the trace
+        double                  getESS() const;                                 //!< compute the effective sample size
+        double                  getSEM() const;                                 //!< compute the standard error of the mean
 
-        void                    computeCorrelation(std::size_t begin,std::size_t end) const;           //!< compute the correlation statistics (act,ess,sem,...) with begin and end indices of the values
-        void                    computeMean(std::size_t begin,std::size_t end) const;                  //!< compute the mean for the trace with begin and end indices of the values
+        double                  getMean(long begin, long end) const;            //!< compute the mean for the trace with begin and end indices of the values
+        double                  getESS(long begin, long end) const;             //!< compute the effective sample size with begin and end indices of the values
+        double                  getSEM(long begin, long end) const;             //!< compute the effective sample size with begin and end indices of the values
 
         void                    computeStatistics(void);
-
-        double                  getAct() const;
-        double                  getEss() const;
-        double                  getMean() const;
-        double                  getSem() const;
 
         //int                     hasConverged() const                            { return converged; }
         int                     hasPassedGewekeTest() const                     { return passedGewekeTest; }
@@ -45,21 +42,32 @@ namespace RevBayesCore {
 
     protected:
 
-        // variable holding the data
-        mutable double          act;                                        //!< autocorrelation time
-        mutable double          ess;                                        //!< effective sample size
-        mutable double          mean;                                       //!< mean of trace
-        mutable double          sem;                                        //!< standard error of mean
+        void                    update() const;                                 //!< compute the correlation statistics (act,ess,sem,...)
+        void                    update(long begin, long end) const;             //!< compute the correlation statistics (act,ess,sem,...)
 
-        //int                     converged;                                  //!< Whether this parameter in itself has converged.
-        int                     passedStationarityTest;                     //!< Whether this parameter passed the stationarity test.
-        int                     passedGewekeTest;                           //!< Whether this parameter passed the Geweke statistic.
-        //int                     passedEssThreshold;                         //!< Whether this parameter passed the threshold for the ESS.
-        //int                     passedSemThreshold;                         //!< Whether this parameter passed the threshold for the SEM.
-        //int                     passedIidBetweenChainsStatistic;            //!< Whether this parameter passed the iid test of chains.
-        //int                     passedGelmanRubinTest;                      //!< Whether this parameter passed the Gelman-Rubin statistic.
+        // variable holding the data
+        mutable double          ess;                                            //!< effective sample size
+        mutable double          mean;                                           //!< mean of trace
+        mutable double          sem;                                            //!< standard error of mean
+
+        mutable long            begin;
+        mutable long            end;
+
+        // variable holding the data
+        mutable double          essw;                                            //!< effective sample size
+        mutable double          meanw;                                           //!< mean of trace
+        mutable double          semw;                                            //!< standard error of mean
+
+        //int                     converged;                                      //!< Whether this parameter in itself has converged.
+        int                     passedStationarityTest;                         //!< Whether this parameter passed the stationarity test.
+        int                     passedGewekeTest;                               //!< Whether this parameter passed the Geweke statistic.
+        //int                     passedEssThreshold;                             //!< Whether this parameter passed the threshold for the ESS.
+        //int                     passedSemThreshold;                             //!< Whether this parameter passed the threshold for the SEM.
+        //int                     passedIidBetweenChainsStatistic;                //!< Whether this parameter passed the iid test of chains.
+        //int                     passedGelmanRubinTest;                          //!< Whether this parameter passed the Gelman-Rubin statistic.
 
         mutable bool            stats_dirty;
+        mutable bool            statsw_dirty;
     
     };
 

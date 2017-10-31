@@ -20,7 +20,18 @@ using namespace std;
  * 
  */
 TraceNumeric::TraceNumeric() :
-    stats_dirty( true )
+    ess( 0 ),
+    mean( RbConstants::Double::nan ),
+    sem( RbConstants::Double::nan ),
+    begin( 0 ),
+    end( 0 ),
+    essw( 0 ),
+    meanw( RbConstants::Double::nan ),
+    semw( RbConstants::Double::nan ),
+    passedStationarityTest( false ),
+    passedGewekeTest( false ),
+    stats_dirty( true ),
+    statsw_dirty( true )
 {
     
 }
@@ -37,9 +48,6 @@ TraceNumeric* TraceNumeric::clone() const
 void TraceNumeric::computeStatistics( void )
 {
 
-    computeCorrelation();
-
-
     // test stationarity within chain
     size_t nBlocks = 10;
     StationarityTest testS = StationarityTest(nBlocks, 0.01);
@@ -52,9 +60,9 @@ void TraceNumeric::computeStatistics( void )
 }
 
 
-void TraceNumeric::computeMean() const
+double TraceNumeric::getMean() const
 {
-    if( isDirty() == false ) return;
+    if( isDirty() == false ) return mean;
 
     double m = 0;
     size_t size = values.size();
@@ -68,41 +76,100 @@ void TraceNumeric::computeMean() const
     dirty = false;
 
     stats_dirty = true;
+
+    return mean;
 }
 
 
-void TraceNumeric::computeMean(size_t begin, size_t end) const
+double TraceNumeric::getMean(long inbegin, long inend) const
 {
-    double m = 0;
-    for (size_t i=begin; i<end; i++)
+    if( begin != inbegin || end != inend)
     {
-        m += values.at(i);
-    }
-    
-    mean = m/(end-begin);
+        begin = inbegin;
+        end = inend;
 
-    dirty = true;
+        double m = 0;
+        for (size_t i=begin; i<end; i++)
+        {
+            m += values.at(i);
+        }
+
+        meanw = m/(end-begin);
+
+        statsw_dirty = true;
+    }
+
+    return meanw;
+}
+
+
+/**
+ * Compute the effective sample size within a range of values
+ *
+ * @param begin     begin index for analysis
+ * @param end       end index for analysis
+ *
+ */
+double TraceNumeric::getESS(long inbegin, long inend) const {
+
+    update(inbegin, inend);
+    
+    return essw;
+}
+
+
+/**
+ * @return the ESS
+ */
+double TraceNumeric::getESS() const
+{
+    update();
+    
+    return ess;
+}
+
+
+/**
+ * Compute the standard error of the mean within a range of values
+ *
+ * @param begin     begin index for analysis
+ * @param end       end index for analysis
+ *
+ */
+double TraceNumeric::getSEM(long inbegin, long inend) const {
+
+    update(inbegin, inend);
+
+    return semw;
+}
+
+
+/**
+ * @return the standard error of the mean
+ */
+double TraceNumeric::getSEM() const
+{
+    update();
+    
+    return sem;
 }
 
 
 /**
  * Analyze trace
  *
- * @param burnin   the number of samples to discard
- *
- * @attention This method assumes that the mean was either made invalid before execution or is calculated appropriately for this burnin.
  */
-void TraceNumeric::computeCorrelation() const
+void TraceNumeric::update() const
 {
     // if we have not yet calculated the mean, do this now
-    
-    computeMean();
+
+    getMean();
 
     if( stats_dirty == false ) return;
 
     size_t samples = values.size() - burnin;
     size_t maxLag = (samples - 1 < MAX_LAG ? samples - 1 : MAX_LAG);
-    
+
     double* gammaStat = new double[maxLag];
     // setting values to 0
     for (size_t i=0; i<maxLag; i++)
@@ -110,16 +177,16 @@ void TraceNumeric::computeCorrelation() const
         gammaStat[i] = 0;
     }
     double varStat = 0.0;
-    
+
     for (size_t lag = 0; lag < maxLag; lag++) {
         for (size_t j = 0; j < samples - lag; j++) {
             double del1 = values.at(burnin + j) - mean;
             double del2 = values.at(burnin + j + lag) - mean;
             gammaStat[lag] += (del1 * del2);
         }
-        
+
         gammaStat[lag] /= ((double) (samples - lag));
-        
+
         if (lag == 0) {
             varStat = gammaStat[0];
         } else if (lag % 2 == 0) {
@@ -132,53 +199,51 @@ void TraceNumeric::computeCorrelation() const
                 maxLag = lag;
         }
     }
-    
+
     // standard error of mean
     sem = sqrt(varStat / samples);
-    
+
     // auto correlation time
-    act = varStat / gammaStat[0];
-    
+    double act = varStat / gammaStat[0];
+
     // effective sample size
     ess = samples / act;
-    
+
     stats_dirty = false;
 
     delete[] gammaStat;
 }
 
 /**
- * Analyze trace
+ * Analyze trace within a range of values
  *
- * @param begin     begin index for analysis
- * @param end       end index for analysis
- *
- * @attention This method assumes that the mean was either made invalid before execution or is calculated apropriately for this burnin.
  */
-void TraceNumeric::computeCorrelation(size_t begin, size_t end) const {
-
+void TraceNumeric::update(long inbegin, long inend) const
+{
     // if we have not yet calculated the mean, do this now
-    computeMean(begin,end);
-    
+    getMean(inbegin, inend);
+
+    if( statsw_dirty == false ) return;
+
     size_t samples = end - begin;
     size_t maxLag = (samples - 1 < MAX_LAG ? samples - 1 : MAX_LAG);
-    
+
     double* gammaStat = new double[maxLag];
     // setting values to 0
     for (size_t i=0; i<maxLag; i++) {
         gammaStat[i] = 0;
     }
     double varStat = 0.0;
-    
+
     for (size_t lag = 0; lag < maxLag; lag++) {
         for (size_t j = 0; j < samples - lag; j++) {
-            double del1 = values.at(begin + j) - mean;
-            double del2 = values.at(begin + j + lag) - mean;
+            double del1 = values.at(begin + j) - meanw;
+            double del2 = values.at(begin + j + lag) - meanw;
             gammaStat[lag] += (del1 * del2);
         }
-        
+
         gammaStat[lag] /= ((double) (samples - lag));
-        
+
         if (lag == 0) {
             varStat = gammaStat[0];
         } else if (lag % 2 == 0) {
@@ -191,60 +256,17 @@ void TraceNumeric::computeCorrelation(size_t begin, size_t end) const {
                 maxLag = lag;
         }
     }
-    
+
     // standard error of mean
-    sem = sqrt(varStat / samples);
-    
+    semw = sqrt(varStat / samples);
+
     // auto correlation time
-    act = varStat / gammaStat[0];
-    
+    double act = varStat / gammaStat[0];
+
     // effective sample size
-    ess = samples / act;
-    
+    essw = samples / act;
+
     delete[] gammaStat;
+
+    statsw_dirty = false;
 }
-
-
-/**
- * @return the autocorrelation time
- */
-double TraceNumeric::getAct() const
-{
-    //computeCorrelation();
-    
-    return act;
-}
-
-
-/**
- * @return the eSS
- */
-double TraceNumeric::getEss() const
-{
-    //computeCorrelation();
-    
-    return ess;
-}
-
-
-/**
- * @return the mean
- */
-double TraceNumeric::getMean() const
-{
-    //computeMean();
-    
-    return mean;
-}
-
-
-/**
- * @return the standard error of the mean
- */
-double TraceNumeric::getSem() const
-{
-    //computeCorrelation();
-    
-    return sem;
-}
-

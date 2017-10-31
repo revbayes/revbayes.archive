@@ -24,15 +24,13 @@ bool GelmanRubinTest::assessConvergence(const TraceNumeric& trace)
     size_t burnin          = trace.getBurnin();
     
     // get the mean between all traces
-    trace.computeMean();
     double totalMean = trace.getMean();
     
     // get a mean and standard error for each block
     std::vector<double> batchMeans  = std::vector<double>(nBatches,0.0);
     for (size_t i=0; i<nBatches; i++)
     {
-        trace.computeMean(i*batchSize+burnin,(i+1)*batchSize+burnin);
-        batchMeans[i] = trace.getMean();
+        batchMeans[i] = trace.getMean(i*batchSize+burnin, (i+1)*batchSize+burnin);
         
         // iterate over all samples from the chains
         for (size_t j=i*batchSize+burnin; j<(i+1)*batchSize+burnin; j++)
@@ -62,7 +60,6 @@ bool GelmanRubinTest::assessConvergence(const std::vector<TraceNumeric>& traces)
     std::vector<double> chain_means  = std::vector< double >(nChains,0.0);
     for (size_t i=0; i<nChains; i++)
     {
-        traces[i].computeMean();
         chain_means[i] = traces[i].getMean();
 
         total_mean += chain_means[i]*traces[i].size(true);

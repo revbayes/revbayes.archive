@@ -44,11 +44,11 @@ size_t EssMax::estimateBurnin(const TraceNumeric& trace)
     // iterate over possible burnins
     for (size_t i=0; i<frac*trace.size(); i+=blockSize) {
         // analyse trace for this burnin
-        trace.computeCorrelation(i, trace.size());
+        double ess = trace.getESS(i, trace.size());
         
         // check if the new ess is better than any previous ones
-        if (RbMath::isFinite(trace.getEss()) && max_ess < trace.getEss()) {
-            max_ess = trace.getEss();
+        if (RbMath::isFinite(ess) && max_ess < ess) {
+            max_ess = ess;
             best_burnin = i;
         }
     }

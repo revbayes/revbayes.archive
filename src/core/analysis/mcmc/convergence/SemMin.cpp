@@ -46,11 +46,11 @@ size_t SemMin::estimateBurnin(const TraceNumeric& trace) {
     // iterate over possible burnins
     for (size_t i=0; i<trace.size(); i+=blockSize) {
         // make mean invalid for recalculation
-        trace.computeCorrelation(i,trace.size());
+        double sem = trace.getSEM(i, trace.size());
         
         // check if the new ess is better than any previous ones
-        if (RbMath::isFinite(trace.getSem()) && trace.getSem() > 0 && min_sem > trace.getSem()) {
-            min_sem = trace.getSem();
+        if (RbMath::isFinite(sem) && sem > 0 && min_sem > sem) {
+            min_sem = sem;
             best_burnin = i;
         }
     }

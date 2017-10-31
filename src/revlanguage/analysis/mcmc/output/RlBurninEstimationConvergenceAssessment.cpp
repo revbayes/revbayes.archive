@@ -145,7 +145,7 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
             readTrace(fn, runs[p]);
             
             // add the traces to our runs
-            std::vector<RevBayesCore::TraceNumeric>& data = runs.back();
+            std::vector<RevBayesCore::TraceNumeric>& data = runs[p];
             
             size_t maxBurnin = 0;
             
@@ -165,6 +165,7 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
             for ( size_t i = 0; i < data.size(); ++i)
             {
                 data[i].setBurnin( maxBurnin );
+                data[i].computeStatistics();
                 
                 bool gewekeStat = gewekeTest->assessConvergence( data[i] );
                 bool essStat = essTest->assessConvergence( data[i] );
@@ -184,7 +185,7 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
                 {
                     RBOUT("\t\tResults for parameter '" + data[i].getParameterName() + "'\n" );
                     std::stringstream ss("");
-                    ss << "\t\t\tESS = " << data[i].getEss();
+                    ss << "\t\t\tESS = " << data[i].getESS();
                     RBOUT( ss.str() );
                     std::string p = (gewekeStat ? "TRUE" : "FALSE");
                     RBOUT("\t\t\tPassed Geweke test:\t\t\t\t" + p);

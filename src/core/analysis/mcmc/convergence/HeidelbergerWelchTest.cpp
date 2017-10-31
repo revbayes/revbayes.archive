@@ -24,18 +24,18 @@ bool HeidelbergerWelchTest::assessConvergence(const TraceNumeric& trace)
     size_t endWindow1      = size_t(sampleSize * frac1) + trace.getBurnin();
     
     // get mean and variance of the first window
-    trace.computeCorrelation(startwindow1, endWindow1);
-    double meanWindow1  = trace.getMean();
-    double varWindow1   = trace.getSem()*trace.getSem();
+    double meanWindow1  = trace.getMean(startwindow1, endWindow1);
+    double varWindow1   = trace.getSEM(startwindow1, endWindow1);
+    varWindow1 *= varWindow1;
     
     // set the indices for start and end of the second window
     size_t startwindow2    = trace.size() - size_t(sampleSize * frac2);
     size_t endWindow2      = trace.size();
     
     // get mean and variance of the second window
-    trace.computeCorrelation(startwindow2, endWindow2);
-    double meanWindow2  = trace.getMean();
-    double varWindow2   = trace.getSem()*trace.getSem();
+    double meanWindow2  = trace.getMean(startwindow2, endWindow2);
+    double varWindow2   = trace.getSEM(startwindow2, endWindow2);
+    varWindow2 *= varWindow2;
     
     // get z
     double z            = (meanWindow1 - meanWindow2)/sqrt(varWindow1 + varWindow2);
