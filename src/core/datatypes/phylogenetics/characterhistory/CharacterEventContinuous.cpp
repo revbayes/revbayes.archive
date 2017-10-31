@@ -14,11 +14,20 @@ CharacterEventContinuous::CharacterEventContinuous(void) : CharacterEvent(),
     
 }
 
+
 CharacterEventContinuous::CharacterEventContinuous(size_t i, double v, double a, size_t t) : CharacterEvent(i,a,t),
     value()
 {
     value.push_back( v );
 }
+
+
+CharacterEventContinuous::CharacterEventContinuous(size_t i, const std::vector<double> &v, double a, size_t t) : CharacterEvent(i,a,t),
+    value( v )
+{
+
+}
+
 
 CharacterEventContinuous::CharacterEventContinuous(const CharacterEventContinuous& c) : CharacterEvent(c),
     value(c.value)

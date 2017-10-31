@@ -15,6 +15,7 @@ namespace RevBayesCore {
     public:
         CharacterEventContinuous(void);
         CharacterEventContinuous(size_t ch_idx, double val, double a, size_t t=CharacterEventType::UNDEFINED);
+        CharacterEventContinuous(size_t ch_idx, const std::vector<double> &val, double a, size_t t=CharacterEventType::UNDEFINED);
         CharacterEventContinuous(const CharacterEventContinuous& c);
         ~CharacterEventContinuous(void);
         

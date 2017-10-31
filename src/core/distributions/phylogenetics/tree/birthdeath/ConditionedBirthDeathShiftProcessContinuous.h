@@ -34,6 +34,8 @@ namespace RevBayesCore {
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
         CharacterHistoryContinuous&                         getCharacterHistory(void);                                  //!< Get the character histories
         const CharacterHistoryContinuous&                   getCharacterHistory(void) const;                                  //!< Get the character histories
+        TypedDistribution<double>*                          getExtinctionRateDistibution(void) const;
+        TypedDistribution<double>*                          getSpeciationRateDistibution(void) const;
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
         void                                                setValue(Tree *v, bool force);
         

@@ -137,6 +137,7 @@
 #include "Move_CharacterHistory.h"
 
 
+#include "Move_BirthDeathEventContinuous.h"
 #include "Move_BirthDeathEventDiscrete.h"
 #include "Move_BirthDeathFromAgeEvent.h"
 #include "Move_DiscreteEventCategoryRandomWalk.h"
@@ -296,6 +297,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Tree>( )                  );
 
 
+        addTypeWithConstructor( new Move_BirthDeathEventContinuous()                    );
         addTypeWithConstructor( new Move_BirthDeathEventDiscrete()                      );
         addTypeWithConstructor( new Move_DiscreteEventCategoryRandomWalk()              );
         addTypeWithConstructor( new Move_EventTimeBeta()                                );

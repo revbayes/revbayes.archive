@@ -581,6 +581,19 @@ const CharacterHistoryContinuous& ConditionedBirthDeathShiftProcessContinuous::g
 }
 
 
+TypedDistribution<double>* ConditionedBirthDeathShiftProcessContinuous::getExtinctionRateDistibution(void) const
+{
+    return extinction;
+}
+
+
+TypedDistribution<double>* ConditionedBirthDeathShiftProcessContinuous::getSpeciationRateDistibution(void) const
+{
+    return speciation;
+}
+
+
+
 void ConditionedBirthDeathShiftProcessContinuous::initializeBranchHistories(const TopologyNode &node, size_t nIdx, size_t idx, double val)
 {
     
