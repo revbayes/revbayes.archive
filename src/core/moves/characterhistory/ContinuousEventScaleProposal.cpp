@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "RlMove.h"
 #include "TypedDagNode.h"
 
 #include <cmath>
