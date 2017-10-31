@@ -13,7 +13,7 @@ namespace RevBayesCore {
     class TreeAssemblyFunction : public TypedFunction<Tree> {
         
     public:
-        TreeAssemblyFunction(const TypedDagNode<Tree> *t, const TypedDagNode< RbVector<double> > *b, bool div = false, bool mult = false);
+        TreeAssemblyFunction(const TypedDagNode<Tree> *t, const TypedDagNode< RbVector<double> > *b, bool mult = false);
         TreeAssemblyFunction(const TreeAssemblyFunction &f);
         virtual                                            ~TreeAssemblyFunction(void);                                                         //!< Virtual destructor
         
@@ -37,7 +37,6 @@ namespace RevBayesCore {
         const TypedDagNode<Tree>*                           tau;
         const TypedDagNode< RbVector<double> >*             brlen;
         std::set<size_t>                                    touchedNodeIndices;
-        bool                                                divide;
         bool                                                multiply;
     };
     

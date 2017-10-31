@@ -1,14 +1,11 @@
 #include "TreeAssemblyFunction.h"
-#include "RbConstants.h"
 #include "RbException.h"
-#include "RbMathLogic.h"
 
 using namespace RevBayesCore;
 
-TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Tree> *t, const TypedDagNode< RbVector<double> > *b, bool d, bool m) : TypedFunction<Tree>( NULL ),
+TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Tree> *t, const TypedDagNode< RbVector<double> > *b, bool m) : TypedFunction<Tree>( NULL ),
     tau( t ),
     brlen( b ),
-    divide( d ),
     multiply( m )
 {
 
@@ -27,7 +24,6 @@ TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Tree> *t, const Ty
 TreeAssemblyFunction::TreeAssemblyFunction(const TreeAssemblyFunction &f) : TypedFunction<Tree>( f ),
     tau( f.tau ),
     brlen( f.brlen ),
-    divide( f.divide ),
     multiply( f.multiply)
 {
     
@@ -96,23 +92,9 @@ void TreeAssemblyFunction::update( void )
         for (std::set<size_t>::iterator it = touchedNodeIndices.begin(); it != touchedNodeIndices.end(); ++it)
         {
             double br = tau->getValue().getNode(*it).getBranchLength();
+            br = (multiply == true && br != -1 ) ? br : 1.0;
 
-            br = RbMath::isNan(br) ? 1.0 : br;
-
-            if( multiply )
-            {
-                br *= v[*it];
-            }
-            else if( divide )
-            {
-                br /= v[*it];
-            }
-            else
-            {
-                br = v[*it];
-            }
-
-            value->getNode(*it).setBranchLength(br);
+            value->getNode(*it).setBranchLength(v[*it] * br );
         }
         touchedNodeIndices.clear();
     }
@@ -125,23 +107,9 @@ void TreeAssemblyFunction::update( void )
         for (size_t i = 0; i < v.size(); ++i)
         {
             double br = tau->getValue().getNode(i).getBranchLength();
+            br = (multiply == true && br != -1 ) ? br : 1.0;
 
-            br = RbMath::isNan(br) ? 1.0 : br;
-
-            if( multiply )
-            {
-                br *= v[i];
-            }
-            else if( divide )
-            {
-                br /= v[i];
-            }
-            else
-            {
-                br = v[i];
-            }
-
-            value->getNode(i).setBranchLength(br);
+            value->getNode(i).setBranchLength(v[i] * br );
         }
         
     }
