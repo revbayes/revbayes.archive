@@ -76,6 +76,25 @@ mymcmc = mcmc(mymodel, monitors, moves, moveschedule="single")
 mymcmc.run(generations=1000)
 
 
+# Read in the tree trace and construct the maximum clade credibility (MCC) tree #
+trace = readTreeTrace("data/bears.trees")
+
+# We will prune the fossil taxa for which we do not morphological or molecular data #
+# Import the taxon list to easily access the taxon names
+taxa <- readTaxonData("data/bears_taxa.tsv")
+
+# Use a for-loop to prune each tree in the trace
+for(i in 1:trace.size())
+{
+    trees[i] = fnPruneTree(trace.getTree(i), pruneTaxa=v(taxa[17],taxa[20]))
+}
+
+# Create a tree-trace object from pruned tree list
+trace_pruned = treeTrace(trees)
+
+# Summarize tree trace and save MCC tree to file
+mccTree(trace_pruned, file="output/mcmc_FBDP_mcc.tre" )
+
+
 # you may want to quit RevBayes now
 q()
-
