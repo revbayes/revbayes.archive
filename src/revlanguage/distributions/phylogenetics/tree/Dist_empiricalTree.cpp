@@ -127,7 +127,7 @@ const MemberRules& Dist_empiricalTree::getParameterRules(void) const
     if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "density", Trace::getClassTypeSpec(), "Optional trace of probability density values evaluated for each element of the tree trace.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "density", Trace::getClassTypeSpec(), "Optional trace of probability density values for each tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         rules_set = true;
     }
