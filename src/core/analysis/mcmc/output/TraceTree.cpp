@@ -1562,7 +1562,7 @@ void TraceTree::summarize( bool verbose )
     }
 
     cladeAges = std::map<Clade, std::vector<double>, CladeComparator >( (CladeComparator(rooted)) );
-    //conditionalCladeAges = std::map<Clade, std::map<Clade, std::vector<double>, CladeComparator >, CladeComparator >( CladeComparator(rooted), std::map<Clade, std::vector<double>, CladeComparator >( CladeComparator(rooted) ) );
+    conditionalCladeAges = std::map<Clade, std::map<Clade, std::vector<double>, CladeComparator >, CladeComparator >( (CladeComparator(rooted)) );
 
     sampledAncestorSamples.clear();
     treeCladeAges.clear();
@@ -1598,7 +1598,7 @@ void TraceTree::summarize( bool verbose )
         treeSample.addNonObservations(i - burnin);
         treeSampleMap.insert(std::pair<std::string, Sample<std::string> >(newick, treeSample));
         treeCladeAges.insert(std::pair<std::string, std::map<Clade, std::vector<double>, CladeComparator > >( newick, std::map<Clade, std::vector<double>, CladeComparator >( (CladeComparator(rooted)) ) ) );
-        
+
         // add empty observations for all non-matching trees
         for (std::map<std::string, Sample<std::string> >::iterator it = treeSampleMap.begin(); it != treeSampleMap.end(); ++it)
         {
@@ -1610,9 +1610,9 @@ void TraceTree::summarize( bool verbose )
             {
                 it->second.addObservation(false);
             }
-            
+
         }
-        
+
         // get the clades for this tree
         std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> condClades;
         fillConditionalClades(tree.getRoot(), condClades);
@@ -1621,21 +1621,21 @@ void TraceTree::summarize( bool verbose )
         for (std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator >::iterator it=condClades.begin(); it!=condClades.end(); ++it )
         {
             const Clade& c = it->first;
-            
+
             // insert a new sample
             Sample<Clade> cladeSample = Sample<Clade>(c, 0);
             cladeSample.addNonObservations(i - burnin);
             // insert silently fails if clade has already been seen
             cladeSampleMap.insert(std::pair<Clade, Sample<Clade> >(c, cladeSample));
-            
+
             // store the age for this clade
             // or create a new entry for the age of the clade
             cladeAges[c].push_back( c.getAge() );
             treeCladeAges[newick][c].push_back( c.getAge() );
-            
+
             // this is an empty set if c is a tip node
             const std::set<Clade, CladeComparator>& children = it->second;
-            
+
             // add conditional clade ages
             for (std::set<Clade, CladeComparator>::const_iterator child=children.begin(); child!=children.end(); ++child )
             {
@@ -1654,21 +1654,21 @@ void TraceTree::summarize( bool verbose )
             {
                 it->second.addObservation( false );
             }
-            
+
         }
         
         // collect sampled ancestor probs
         for (size_t j = 0; j < tree.getNumberOfTips(); j++)
         {
             const TopologyNode& tip = tree.getTipNode(j);
-            
+
             Taxon taxon = tip.getTaxon();
-            
+
             Sample<Taxon> taxonSample(taxon, 0);
             taxonSample.addNonObservations(i - burnin);
-            
+
             sampledAncestorSamples.insert( std::pair<Taxon, Sample<Taxon> >(taxon, taxonSample) );
-            
+
             sampledAncestorSamples[taxon].addObservation( tip.isSampledAncestor() );
         }
     }
