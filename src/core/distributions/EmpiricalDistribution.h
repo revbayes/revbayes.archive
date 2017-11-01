@@ -32,7 +32,7 @@ namespace RevBayesCore {
         
     public:
 		
-		EmpiricalDistribution(const Trace<valueType>& t);
+		EmpiricalDistribution(Trace<valueType>* t, Trace<double>* d = NULL);
 		
 		virtual                                             ~EmpiricalDistribution(void);
 
@@ -53,7 +53,8 @@ namespace RevBayesCore {
 	private:
 		
 		size_t                                              current_index;
-		Trace<valueType>                                    trace;
+		Trace<double>*                                      density;
+		Trace<valueType>*                                   trace;
 		
 	};
 
@@ -61,7 +62,8 @@ namespace RevBayesCore {
 
 
 template <class valueType>
-RevBayesCore::EmpiricalDistribution<valueType>::EmpiricalDistribution(const Trace<valueType>& t) : TypedDistribution<valueType>( new valueType() ),
+RevBayesCore::EmpiricalDistribution<valueType>::EmpiricalDistribution(Trace<valueType>* t, Trace<double>* d) : TypedDistribution<valueType>( new valueType() ),
+    density( d ),
     trace( t )
 {
     // draw the first value
@@ -104,7 +106,7 @@ template <class valueType>
 size_t RevBayesCore::EmpiricalDistribution<valueType>::getBurnin( void ) const
 {
 
-    return trace.getBurnin();
+    return trace->getBurnin();
 
 }
 
@@ -122,7 +124,7 @@ template <class valueType>
 size_t RevBayesCore::EmpiricalDistribution<valueType>::getNumberOfSamples( void ) const
 {
 
-    return trace.size();
+    return trace->size();
 
 }
 
@@ -134,10 +136,10 @@ void RevBayesCore::EmpiricalDistribution<valueType>::redrawValue( void )
     // draw a random tree
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
-    current_index = (size_t)( rng->uniform01() * trace.size(true) + trace.getBurnin() );
+    current_index = (size_t)( rng->uniform01() * trace->size(true) + trace->getBurnin() );
 
     delete this->value;
-    this->value = new valueType( trace.objectAt(current_index) );;
+    this->value = new valueType( trace->objectAt(current_index) );;
 
 }
 
@@ -150,7 +152,7 @@ void RevBayesCore::EmpiricalDistribution<valueType>::setCurrentIndex( size_t ind
 
     delete this->value;
 
-    this->value = new valueType( trace.objectAt(current_index) );;
+    this->value = new valueType( trace->objectAt(current_index) );;
 
 }
 
@@ -160,9 +162,9 @@ void RevBayesCore::EmpiricalDistribution<valueType>::setValue(valueType *v, bool
 {
 
     bool found = false;
-    for (size_t i = trace.getBurnin(); i < trace.size(); ++i)
+    for (size_t i = trace->getBurnin(); i < trace->size(); ++i)
     {
-        if (trace.objectAt(i) == *v)
+        if (trace->objectAt(i) == *v)
         {
             found = true;
             current_index = i;
@@ -183,8 +185,14 @@ void RevBayesCore::EmpiricalDistribution<valueType>::setValue(valueType *v, bool
 template <class valueType>
 double RevBayesCore::EmpiricalDistribution<valueType>::computeLnProbability( void )
 {
+    double lnProb = -log( trace->size(true) );
 
-    return -log( trace.size(true) );
+    if( density != NULL )
+    {
+        lnProb += density->objectAt(current_index);
+    }
+
+    return -log( trace->size(true) );
 
 }
 

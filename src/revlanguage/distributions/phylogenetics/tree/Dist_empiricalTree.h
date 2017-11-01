@@ -50,6 +50,7 @@ namespace RevLanguage {
         
     private:
         
+        RevPtr<const RevVariable>                                density;
         RevPtr<const RevVariable>                                trace;
     };
 	

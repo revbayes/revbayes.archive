@@ -10,6 +10,7 @@
 #include "RealPos.h"
 #include "RlDistributionMemberFunction.h"
 #include "RlString.h"
+#include "RlTrace.h"
 #include "RlTraceTree.h"
 #include "StochasticNode.h"
 
@@ -51,10 +52,16 @@ RevBayesCore::EmpiricalDistribution<RevBayesCore::Tree>* Dist_empiricalTree::cre
     // get the parameters
     
     // tree trace
-    const RevBayesCore::TraceTree& tt = static_cast<const TraceTree &>( trace->getRevObject() ).getValue();
+    RevBayesCore::TraceTree* tt = &static_cast<const TraceTree &>( trace->getRevObject() ).getValue();
+
+    RevBayesCore::Trace<double>* nt = NULL;
+    if( density->getRevObject() != RevNullObject::getInstance() )
+    {
+        nt = &static_cast<const Trace &>( density->getRevObject() ).getValue();
+    }
 
     // create the internal distribution object
-    RevBayesCore::EmpiricalDistribution<RevBayesCore::Tree>* d = new RevBayesCore::EmpiricalDistribution<RevBayesCore::Tree>( tt );
+    RevBayesCore::EmpiricalDistribution<RevBayesCore::Tree>* d = new RevBayesCore::EmpiricalDistribution<RevBayesCore::Tree>( tt, nt );
     
     return d;
 }
@@ -119,8 +126,9 @@ const MemberRules& Dist_empiricalTree::getParameterRules(void) const
     
     if ( !rules_set )
     {
-        memberRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        
+        memberRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "density", Trace::getClassTypeSpec(), "Optional trace of probability density values evaluated for each element of the tree trace.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
+
         rules_set = true;
     }
     
@@ -141,8 +149,13 @@ const TypeSpec& Dist_empiricalTree::getTypeSpec( void ) const
 void Dist_empiricalTree::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "trace" ) {
+    if ( name == "trace" )
+    {
         trace = var;
+    }
+    else if ( name == "density" )
+    {
+        density = var;
     }
     else {
         Distribution::setConstParameter(name, var);
