@@ -117,8 +117,6 @@ double EventBirthDeathProposal::doBirthProposal( void )
     double event_time = rng->uniform01() * branch_length + age;
     
     // draw a new state
-//    size_t new_state = size_t( std::floor(num_states * rng->uniform01()) );
-//    CharacterEvent *new_event = new CharacterEventDiscrete(0, new_state, event_time);
     CharacterEvent *new_event = drawNewEvent(event_time);
     double ln_event_value_proposal_prob = computeEventProposalProbability( new_event );
     history.addEvent( new_event, branch_index );
@@ -152,9 +150,9 @@ double EventBirthDeathProposal::doDeathProposal( void )
     history.removeEvent( event, branch_index );
     
     // store the event
-    stored_value = event;
-    stored_branch_index = branch_index;
-    const TopologyNode& node = distribution->getValue().getNode(branch_index);
+    stored_value                = event;
+    stored_branch_index         = branch_index;
+    const TopologyNode& node    = distribution->getValue().getNode(branch_index);
     double branch_length = 0.0;
     if ( node.isRoot() == false )
     {

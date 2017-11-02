@@ -59,7 +59,16 @@ ConditionedBirthDeathShiftProcessContinuous::ConditionedBirthDeathShiftProcessCo
         lnFact += std::log(i);
     }
     
-    log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
+    event_prior_only = false;
+    
+    if ( event_prior_only == false )
+    {
+        log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
+    }
+    else
+    {
+        log_tree_topology_prob = 0.0;
+    }
     
     simulateTree();
 
@@ -168,7 +177,6 @@ double ConditionedBirthDeathShiftProcessContinuous::computeBranchProbability(dou
     
     // add the probability that there was no shiftevent
     ln_prob -= sh_rate*(end-begin);
-//    ln_prob -= sh_rate*(begin-end);
 
     // we need to compute P(N(T)=1|N(start)=1) / P(N(T)=1|N(end)=1)
     // where                      (b-d)^2 * exp(-(b-d)(T-t))
@@ -186,12 +194,15 @@ double ConditionedBirthDeathShiftProcessContinuous::computeBranchProbability(dou
 //    ln_prob -= 2*log(sp_rate-ex_rate) - ((sp_rate-ex_rate)*(present-end));
 //    ln_prob += 2*log(sp_rate - ex_rate*exp((sp_rate-ex_rate)*(present-end)));
 
-    ln_prob += log(sampling) + 2*log(sp_rate-ex_rate) - ((sp_rate-ex_rate)*(end));
-    ln_prob -= 2*log(sampling*sp_rate + (sp_rate*(1-sampling) - ex_rate)*exp((ex_rate-sp_rate)*(end)));
-    
-    ln_prob -= log(sampling) + 2*log(sp_rate-ex_rate) - ((sp_rate-ex_rate)*(begin));
-    ln_prob += 2*log(sampling*sp_rate + (sp_rate*(1-sampling) - ex_rate)*exp((ex_rate-sp_rate)*(begin)));
+    if ( event_prior_only == false )
+    {
+        ln_prob += log(sampling) + 2*log(sp_rate-ex_rate) - ((sp_rate-ex_rate)*(end));
+        ln_prob -= 2*log(sampling*sp_rate + (sp_rate*(1-sampling) - ex_rate)*exp((ex_rate-sp_rate)*(end)));
 
+        ln_prob -= log(sampling) + 2*log(sp_rate-ex_rate) - ((sp_rate-ex_rate)*(begin));
+        ln_prob += 2*log(sampling*sp_rate + (sp_rate*(1-sampling) - ex_rate)*exp((ex_rate-sp_rate)*(begin)));
+    }
+    
     return ln_prob;
     
 }
@@ -272,9 +283,7 @@ double ConditionedBirthDeathShiftProcessContinuous::computeNodeProbability(const
     {
         
         double value_tipwards_birth  = computeStartValue( node_index, 0 );
-        double value_tipwards_death  = computeStartValue( node_index, 1 );
-        double value_rootwards_birth = computeStartValue( node.getParent().getIndex(), 0 );
-        double value_rootwards_death = computeStartValue( node.getParent().getIndex(), 1 );
+//        double value_tipwards_death  = computeStartValue( node_index, 1 );
         
         if ( node.isTip() )
         {
@@ -293,8 +302,15 @@ double ConditionedBirthDeathShiftProcessContinuous::computeNodeProbability(const
             size_t right_index = right.getIndex();
             double ln_prob_right = computeNodeProbability( right, right_index );
             
-            ln_prob_node += ln_prob_left + ln_prob_right + log(value_tipwards_birth);
-            
+            if ( event_prior_only == false )
+            {
+                ln_prob_node += ln_prob_left + ln_prob_right + log(value_tipwards_birth);
+            }
+            else
+            {
+                ln_prob_node += ln_prob_left + ln_prob_right;
+            }
+
         }
         
         // remember that we go back in time (rootwards)
@@ -310,7 +326,7 @@ double ConditionedBirthDeathShiftProcessContinuous::computeNodeProbability(const
             // we need to set the current rate category
             double current_value_birth = computeStateValue( node.getIndex(), 0, begin_time );
             double current_value_death = computeStateValue( node.getIndex(), 1, begin_time );
-
+            
             speciation->setValue( new double(current_value_birth) );
             extinction->setValue( new double(current_value_death) );
             
@@ -325,7 +341,10 @@ double ConditionedBirthDeathShiftProcessContinuous::computeNodeProbability(const
             begin_time = event_time;
 
         }
-        
+
+        double value_rootwards_birth = computeStartValue( node.getParent().getIndex(), 0 );
+        double value_rootwards_death = computeStartValue( node.getParent().getIndex(), 1 );
+
         ln_prob_node += computeBranchProbability(begin_time, end_time, value_rootwards_birth, value_rootwards_death, shift_rate->getValue());
         
     }
@@ -348,16 +367,10 @@ double ConditionedBirthDeathShiftProcessContinuous::computeStartValue(size_t i, 
     {
         const BranchHistory &bh = branch_histories[ node_index ];
         const std::multiset<CharacterEvent*, CharacterEventCompare> &h = bh.getHistory();
-        if ( h.size() > 0 )
-        {
-            CharacterEventContinuous *event = static_cast<CharacterEventContinuous*>(*h.begin());
-            return event->getState(j);
-        }
-        else
-        {
-            CharacterEventContinuous *event = static_cast<CharacterEventContinuous*>(bh.getParentCharacters()[0]);
-            return event->getState(j);
-        }
+        
+        CharacterEventContinuous *event = static_cast<CharacterEventContinuous*>(*h.begin());
+        return event->getState(j);
+        
     }
     else
     {
@@ -653,7 +666,6 @@ void ConditionedBirthDeathShiftProcessContinuous::setValue(Tree *v, bool force)
     TypedDistribution< Tree >::setValue(v, force);
     
     branch_histories.setTree( value );
-    branch_histories.setTree( value );
 
     initializeBranchHistories( value->getRoot(), value->getRoot().getIndex(), 0, root_speciation->getValue() );
     initializeBranchHistories( value->getRoot(), value->getRoot().getIndex(), 1, root_extinction->getValue() );
@@ -727,7 +739,6 @@ void ConditionedBirthDeathShiftProcessContinuous::simulateTree( void )
     // Finally store the new value
     value = psi;
     
-    branch_histories.setTree( psi );
     branch_histories.setTree( psi );
     
     initializeBranchHistories( value->getRoot(), value->getRoot().getIndex(), 0, root_speciation->getValue() );
