@@ -6,31 +6,6 @@
 
 namespace RevBayesCore {
 
-    struct AnnotationReport
-    {
-
-        AnnotationReport() :
-            ages(true),
-            cc_ages(false),
-            ccp(true),
-            tree_ages(false),
-            hpd(0.95),
-            map_parameters(false),
-            mean(true),
-            posterior(true),
-            sa(true) {}
-
-        bool ages;
-        bool cc_ages;
-        bool ccp;
-        bool tree_ages;
-        double hpd;
-        bool map_parameters;
-        bool mean;
-        bool posterior;
-        bool sa;
-    };
-
     class TraceTree : public Trace<Tree> {
 
         /*
@@ -65,6 +40,28 @@ namespace RevBayesCore {
 
     public:
         
+        /*
+         * This struct determines which annotations are reported in the summary tree
+         */
+        struct AnnotationReport
+        {
+            bool clade_probs;
+            bool conditional_clade_ages;
+            bool conditional_clade_probs;
+            bool conditional_tree_ages;
+            bool MAP_parameters;
+            bool node_ages;
+            bool mean_node_ages;
+          double node_ages_HPD;
+            bool sampled_ancestor_probs;
+
+            AnnotationReport();
+        };
+
+
+        /*
+         * Declaration of the TreeTrace class
+         */
         TraceTree( bool c = true );
         virtual ~TraceTree(){}
         
@@ -108,8 +105,7 @@ namespace RevBayesCore {
         std::map<std::string, std::map<Split, std::vector<double> > >   tree_clade_ages;
     };
 
-
-} //end namespace RevBayesCore
+}
 
 
 #endif

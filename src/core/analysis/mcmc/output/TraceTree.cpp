@@ -17,6 +17,26 @@
 
 using namespace RevBayesCore;
 
+
+/*
+ * Default AnnotationReport constructor
+ */
+TraceTree::AnnotationReport::AnnotationReport() :
+    clade_probs             (true),
+    conditional_clade_ages  (false),
+    conditional_clade_probs (false),
+    conditional_tree_ages   (false),
+    MAP_parameters          (false),
+    node_ages               (true),
+    mean_node_ages          (true),
+    node_ages_HPD           (0.95),
+    sampled_ancestor_probs  (true)
+{}
+
+
+/*
+ * TraceTree constructor
+ */
 TraceTree::TraceTree( bool c ) : Trace<Tree>(),
     clock( c ),
     rooted( true )
@@ -545,7 +565,7 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
     
     std::string newick;
     
-    if ( report.tree_ages )
+    if ( report.conditional_tree_ages )
     {
         Tree* tmp_tree = NULL;
         if ( clock == true )
@@ -591,7 +611,7 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
         Split split( clade.getBitRepresentation(), clade.getMrca(), rooted);
         
         // annotate clade posterior prob
-        if ( ( !n->isTip() || ( n->isRoot() && !clade.getMrca().empty() ) ) && report.posterior )
+        if ( ( !n->isTip() || ( n->isRoot() && !clade.getMrca().empty() ) ) && report.clade_probs )
         {
             double pp = cladeProbability( clade, false );
             n->addNodeParameter("posterior",pp);
@@ -603,7 +623,7 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
             double saFreq = sampled_ancestor_counts[n->getTaxon()];
             
             // annotate sampled ancestor prob
-            if ( ((n->isTip() && n->isFossil()) || saFreq > 0) && report.sa )
+            if ( ((n->isTip() && n->isFossil()) || saFreq > 0) && report.sampled_ancestor_probs )
             {
                 n->addNodeParameter("sampled_ancestor", saFreq / sampleSize);
             }
@@ -618,10 +638,10 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
             Split parent_split = Split( parent_clade.getBitRepresentation(), parent_clade.getMrca(), rooted);
 
             std::map<Split, std::vector<double> >& condCladeAges = conditional_clade_ages[parent_split];
-            nodeAges = report.cc_ages ? condCladeAges[split] : clade_ages[split];
+            nodeAges = report.conditional_clade_ages ? condCladeAges[split] : clade_ages[split];
             
             // annotate CCPs
-            if ( !n->isTip() && report.ccp )
+            if ( !n->isTip() && report.conditional_clade_probs )
             {
                 double parentCladeFreq = splitFrequency( parent_split );
                 double ccp = condCladeAges[split].size() / parentCladeFreq;
@@ -633,17 +653,17 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
             nodeAges = clade_ages[split];
         }
         
-        if ( report.tree_ages )
+        if ( report.conditional_tree_ages )
         {
             nodeAges = tree_clade_ages[newick][split];
         }
         
         // set the node ages/branch lengths
-        if ( report.ages )
+        if ( report.node_ages )
         {
             double age = 0.0;
             
-            if ( report.mean )
+            if ( report.mean_node_ages )
             {
                 // finally, we compute the mean conditional age
                 for (size_t i = 0; i<nodeAges.size(); ++i)
@@ -680,7 +700,7 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
         }
         
         // annotate the HPD node age intervals
-        if ( report.hpd )
+        if ( report.node_ages_HPD )
         {
             //nodeAges = cladeAges[c];
             
@@ -690,7 +710,7 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
             double min_range = std::numeric_limits<double>::max();
             
             size_t interval_start = 0;
-            int interval_size = (int)(report.hpd * (double)total_branch_lengths);
+            int interval_size = (int)(report.node_ages_HPD * (double)total_branch_lengths);
             
             // find the smallest interval that contains x% of the samples
             for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++)
@@ -715,13 +735,13 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
             {
                 if ( !n->isTip() || ( ( n->isFossil() || upper != lower) && !n->isSampledAncestor() ) )
                 {
-                    std::string label = "age_" + StringUtilities::toString( (int)(report.hpd * 100) ) + "%_HPD";
+                    std::string label = "age_" + StringUtilities::toString( (int)(report.node_ages_HPD * 100) ) + "%_HPD";
                     n->addNodeParameter(label, interval);
                 }
             }
             else if ( !n->isRoot() )
             {
-                std::string label = "brlen_" + StringUtilities::toString( (int)(report.hpd * 100) ) + "%_HPD";
+                std::string label = "brlen_" + StringUtilities::toString( (int)(report.node_ages_HPD * 100) ) + "%_HPD";
                 n->addBranchParameter(label, interval);
             }
         }
@@ -733,7 +753,7 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
      enforceNonnegativeBranchLengths( tree.getRoot() );
      }*/
     
-    if ( report.map_parameters )
+    if ( report.MAP_parameters )
     {
         mapParameters( tree );
     }
@@ -1193,8 +1213,8 @@ Tree* TraceTree::mapTree( AnnotationReport report, bool verbose )
     TaxonMap tm = TaxonMap( objectAt(0) );
     tmp_tree->setTaxonIndices( tm );
     
-    report.ages            = true;
-    report.map_parameters  = true;
+    report.MAP_parameters = true;
+    report.node_ages      = true;
     annotateTree(*tmp_tree, report, verbose );
     
     return tmp_tree;
@@ -1252,7 +1272,7 @@ Tree* TraceTree::mccTree( AnnotationReport report, bool verbose )
         }
     }
     
-    report.ages = true;
+    report.node_ages = true;
     annotateTree(*best_tree, report, verbose );
     
     return best_tree;
@@ -1385,10 +1405,10 @@ Tree* TraceTree::mrTree(AnnotationReport report, double cutoff, bool verbose)
     //now put the tree together
     consensusTree->setRoot(root, true);
     
-    report.ages      = true;
-    report.cc_ages   = false;
-    report.ccp       = false;
-    report.tree_ages = false;
+    report.conditional_clade_ages  = false;
+    report.conditional_clade_probs = false;
+    report.conditional_tree_ages   = false;
+    report.node_ages               = true;
     annotateTree(*consensusTree, report, verbose );
     
     return consensusTree;
