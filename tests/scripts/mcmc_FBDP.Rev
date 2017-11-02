@@ -86,7 +86,7 @@ taxa <- readTaxonData("data/bears_taxa.tsv")
 # Use a for-loop to prune each tree in the trace
 for(i in 1:trace.size())
 {
-    trees[i] = fnPruneTree(trace.getTree(i), pruneTaxa=v(taxa[17],taxa[20]))
+    trees[i] = fnPruneTree(trace.getTree(i), prune=v(taxa[17],taxa[20]))
 }
 
 # Create a tree-trace object from pruned tree list

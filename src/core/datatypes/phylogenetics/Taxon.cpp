@@ -46,10 +46,10 @@ bool Taxon::operator==(const RevBayesCore::Taxon &t) const
         return false;
     }
     
-    if ( age_range != t.age_range)
-    {
-        return false;
-    }
+//    if ( age_range != t.age_range)
+//    {
+//        return false;
+//    }
 
     return true;
 }
