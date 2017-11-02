@@ -1,37 +1,14 @@
 #ifndef TraceTree_H
 #define TraceTree_H
 
-#include "Clade.h"
-#include "NewickConverter.h"
-#include "ProgressBar.h"
-#include "RlUserInterface.h"
-#include "Sample.h"
+#include "Trace.h"
 #include "Tree.h"
-
-#include <algorithm>
-#include <map>
-#include <string>
 
 namespace RevBayesCore {
 
-    /*
-     * This functor is used as a comparator to identify equivalence classes
-     * of unrooted splits, and rooted clades with or without sampled mrcas
-     */
-    struct CladeComparator
-    {
-        CladeComparator(bool r = true, const Clade& c = Clade() ) : clade(c), rooted(r) {};
-
-        bool operator()(const Clade& a, const Clade& b) const;
-        bool operator()(const Sample<Clade>& s) const;
-
-        Clade clade;
-        bool rooted;
-    };
-    
     struct AnnotationReport
     {
-        
+
         AnnotationReport() :
             ages(true),
             cc_ages(false),
@@ -42,7 +19,7 @@ namespace RevBayesCore {
             mean(true),
             posterior(true),
             sa(true) {}
-        
+
         bool ages;
         bool cc_ages;
         bool ccp;
@@ -55,11 +32,41 @@ namespace RevBayesCore {
     };
 
     class TraceTree : public Trace<Tree> {
-        
+
+        /*
+         * This struct represents a value/count pair that is sorted by count
+         */
+        template <class T>
+        struct Sample : public std::pair<T, long>
+        {
+            Sample(T t, long l) : std::pair<T, long>(t,l) {}
+
+            inline bool operator<(const Sample<T>& rhs) const
+            {
+                if (this->second == rhs.second)
+                    return this->first < rhs.first;
+                else
+                    return this->second < rhs.second;
+            }
+        };
+
+        /*
+         * This struct represents a tree bipartition (split) that can be rooted or unrooted
+         */
+        struct Split : public std::pair<RbBitSet, std::set<Taxon> >
+        {
+            Split( RbBitSet b, std::set<Taxon> m, bool r) : std::pair<RbBitSet, std::set<Taxon> >( !r && b[0] ? ~b : b, m) {}
+
+            inline bool operator()(const Sample<Split>& s)
+            {
+                return (*this) == s.first;
+            }
+        };
+
     public:
         
         TraceTree( bool c = true );
-        virtual ~TraceTree(){};
+        virtual ~TraceTree(){}
         
         TraceTree*                                 clone(void) const;
         void                                       annotateTree(Tree &inputTree, AnnotationReport report, bool verbose );
@@ -80,10 +87,10 @@ namespace RevBayesCore {
 
     private:
 
+        Split                                      collectTreeSample(const TopologyNode&, RbBitSet&, std::string, std::map<Split, long>&);
         void                                       enforceNonnegativeBranchLengths(TopologyNode& tree) const;
-        Clade                                      fillConditionalClades(const TopologyNode &n, std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> &cc);
-        const Sample<Clade>&                       findCladeSample(const Clade &n) const;
-        TopologyNode*                              findParentNode(TopologyNode&, const Clade &, std::vector<TopologyNode*>&, RbBitSet& ) const;
+        long                                       splitFrequency(const Split &n) const;
+        TopologyNode*                              findParentNode(TopologyNode&, const Split &, std::vector<TopologyNode*>&, RbBitSet& ) const;
         void                                       mapContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, bool np=true ) const;
         void                                       mapDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, bool np=true ) const;
         void                                       mapParameters(Tree &inputTree) const;
@@ -92,15 +99,15 @@ namespace RevBayesCore {
         bool                                       clock;
         bool                                       rooted;
 
-        std::vector<Sample<Clade> >                cladeSamples;
-        std::map<Taxon, Sample<Taxon> >            sampledAncestorSamples;
-        std::vector<Sample<std::string> >          treeSamples;
+        std::set<Sample<Split> >                   clade_samples;
+        std::map<Taxon, long >                     sampled_ancestor_counts;
+        std::set<Sample<std::string> >             tree_samples;
 
-        std::map<Clade, std::vector<double>, CladeComparator >                                    cladeAges;
-        std::map<Clade, std::map<Clade, std::vector<double>, CladeComparator >, CladeComparator > conditionalCladeAges;
-        std::map<std::string, std::map<Clade, std::vector<double>, CladeComparator > >            treeCladeAges;
+        std::map<Split, std::vector<double> >                           clade_ages;
+        std::map<Split, std::map<Split, std::vector<double> > >         conditional_clade_ages;
+        std::map<std::string, std::map<Split, std::vector<double> > >   tree_clade_ages;
     };
-    
+
 
 } //end namespace RevBayesCore
 

@@ -5,6 +5,7 @@
 #include "MethodTable.h"
 #include "Natural.h"
 #include "Probability.h"
+#include "RlUserInterface.h"
 #include "RlUtils.h"
 
 using namespace RevLanguage;

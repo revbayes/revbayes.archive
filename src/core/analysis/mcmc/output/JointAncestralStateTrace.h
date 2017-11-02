@@ -6,7 +6,6 @@
 #include "ProgressBar.h"
 #include "ProgressBar.h"
 #include "RlUserInterface.h"
-#include "Sample.h"
 #include "TraceTree.h"
 #include "Tree.h"
 #include "TreeUtilities.h"

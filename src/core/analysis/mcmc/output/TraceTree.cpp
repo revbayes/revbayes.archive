@@ -1,17 +1,19 @@
+#include "NewickConverter.h"
 #include "ProgressBar.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbMathCombinatorialFunctions.h"
 #include "RbMathLogic.h"
 #include "RbVectorUtilities.h"
-#include "Sample.h"
+#include "RlUserInterface.h"
 #include "StringUtilities.h"
 #include "TopologyNode.h"
 #include "TraceTree.h"
 #include "TreeUtilities.h"
 
-#include <boost/math/special_functions/factorials.hpp>
+#include <iomanip>
 
 using namespace RevBayesCore;
 
@@ -125,7 +127,8 @@ void TraceTree::mapDiscrete(Tree &tree, const std::string &n, size_t paramIndex,
     
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
     const std::vector<TopologyNode*> &summary_nodes = tree.getNodes();
-    std::vector<std::map<std::string, Sample<std::string> > > stateAbsencePresence(summary_nodes.size(), std::map<std::string, Sample<std::string> >());
+    //std::vector<std::map<std::string, Sample<std::string> > > stateAbsencePresence(summary_nodes.size(), std::map<std::string, Sample<std::string> >());
+    std::vector<std::map<std::string, long> > state_counts(summary_nodes.size(), std::map<std::string, long>());
     
     bool interiorOnly = true;
     bool tipsChecked = false;
@@ -235,33 +238,7 @@ void TraceTree::mapDiscrete(Tree &tree, const std::string &n, size_t paramIndex,
                 
                 const std::string &state = pair[1];
                 
-                std::map<std::string, Sample<std::string> >::iterator entry = stateAbsencePresence[node_index].find( state );
-                
-                if ( entry == stateAbsencePresence[node_index].end() )
-                {
-                    Sample<std::string> stateSample = Sample<std::string>(state, 0);
-                    if (iteration > burnin)
-                    {
-                        stateSample.addNonObservations(iteration - burnin);
-                    }
-                    stateAbsencePresence[node_index].insert(std::pair<std::string, Sample<std::string> >(state, stateSample));
-                }
-                
-                
-                for (std::map<std::string, Sample<std::string> >::iterator it=stateAbsencePresence[node_index].begin(); it!=stateAbsencePresence[node_index].end(); ++it )
-                {
-                    
-                    const Sample<std::string> &s = it->second;
-                    if ( s.getValue() == state )
-                    {
-                        it->second.addObservation( true );
-                    }
-                    else
-                    {
-                        it->second.addObservation( false );
-                    }
-                    
-                } // end loop over all samples for this node
+                state_counts[node_index][state]++;
                 
             } // end if the sampled tree contained this clade
             
@@ -291,29 +268,25 @@ void TraceTree::mapDiscrete(Tree &tree, const std::string &n, size_t paramIndex,
         {
             
             // collect the samples
-            std::vector<Sample<std::string> > stateSamples;
-            for (std::map<std::string, Sample<std::string> >::iterator it = stateAbsencePresence[i].begin(); it != stateAbsencePresence[i].end(); ++it)
+            std::set<Sample<std::string> > stateSamples;
+            for (std::map<std::string, long>::iterator it = state_counts[i].begin(); it != state_counts[i].end(); ++it)
             {
-                it->second.computeStatistics();
-                stateSamples.push_back(it->second);
+                stateSamples.insert( Sample<std::string>(it->first, it->second) );
             }
-            
-            // sort the samples by frequency
-            sort(stateSamples.begin(), stateSamples.end());
             
             double total_node_pp = 0.0;
             std::string final_state = "{";
-            for (size_t j = 0; j < num && j < stateSamples.size(); ++j)
+            for (std::set<Sample<std::string> >::iterator it = stateSamples.begin(); it != stateSamples.end(); ++it)
             {
                 if ( total_node_pp > 0.9999 ) continue;
                 
-                if (j > 0)
+                if (it != stateSamples.begin())
                 {
                     final_state += ",";
                 }
                 
-                double pp = stateSamples[j].getFrequency() / double(stateSamples[j].size());
-                final_state += stateSamples[j].getValue() + "=" + StringUtilities::toString(pp);
+                double pp = it->second / size(true);
+                final_state += it->first + "=" + StringUtilities::toString(pp);
                 total_node_pp += pp;
                 
             }
@@ -600,7 +573,7 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
         
         delete tmp_tree;
         
-        if ( treeCladeAges.find(newick) == treeCladeAges.end() )
+        if ( tree_clade_ages.find(newick) == tree_clade_ages.end() )
         {
             throw(RbException("Could not find input tree in tree sample"));
         }
@@ -614,20 +587,20 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
     {
         TopologyNode* n = nodes[i];
         
-        Clade c = n->getClade();
+        Clade clade = n->getClade();
+        Split split( clade.getBitRepresentation(), clade.getMrca(), rooted);
         
         // annotate clade posterior prob
-        if ( ( !n->isTip() || ( n->isRoot() && !c.getMrca().empty() ) ) && report.posterior )
+        if ( ( !n->isTip() || ( n->isRoot() && !clade.getMrca().empty() ) ) && report.posterior )
         {
-            double cladeFreq = findCladeSample( c ).getFrequency();
-            double pp = cladeFreq / sampleSize;
+            double pp = cladeProbability( clade, false );
             n->addNodeParameter("posterior",pp);
         }
         
         // are we using sampled ancestors?
-        if ( sampledAncestorSamples.empty() == false )
+        if ( sampled_ancestor_counts.empty() == false )
         {
-            double saFreq = sampledAncestorSamples[n->getTaxon()].getFrequency();
+            double saFreq = sampled_ancestor_counts[n->getTaxon()];
             
             // annotate sampled ancestor prob
             if ( ((n->isTip() && n->isFossil()) || saFreq > 0) && report.sa )
@@ -641,26 +614,28 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
         
         if ( !n->isRoot() )
         {
-            Clade parent = n->getParent().getClade();
-            std::map<Clade, std::vector<double>, CladeComparator >& condCladeAges = conditionalCladeAges[parent];
-            nodeAges = report.cc_ages ? condCladeAges[c] : cladeAges[c];
+            Clade parent_clade = n->getParent().getClade();
+            Split parent_split = Split( parent_clade.getBitRepresentation(), parent_clade.getMrca(), rooted);
+
+            std::map<Split, std::vector<double> >& condCladeAges = conditional_clade_ages[parent_split];
+            nodeAges = report.cc_ages ? condCladeAges[split] : clade_ages[split];
             
             // annotate CCPs
             if ( !n->isTip() && report.ccp )
             {
-                double parentCladeFreq = findCladeSample( parent ).getFrequency();
-                double ccp = condCladeAges[c].size() / parentCladeFreq;
+                double parentCladeFreq = splitFrequency( parent_split );
+                double ccp = condCladeAges[split].size() / parentCladeFreq;
                 n->addNodeParameter("ccp",ccp);
             }
         }
         else
         {
-            nodeAges = cladeAges[c];
+            nodeAges = clade_ages[split];
         }
         
         if ( report.tree_ages )
         {
-            nodeAges = treeCladeAges[newick][ c ];
+            nodeAges = tree_clade_ages[newick][split];
         }
         
         // set the node ages/branch lengths
@@ -777,8 +752,8 @@ double TraceTree::cladeProbability(const RevBayesCore::Clade &c, bool verbose )
     
     try
     {
-        const Sample<Clade> &s = findCladeSample( tmp );
-        f = double(s.getFrequency()) / s.size();
+        double freq = splitFrequency( Split( tmp.getBitRepresentation(), tmp.getMrca(), rooted) );
+        f = freq / size(true);
     }
     catch (RbException& e)
     {
@@ -786,6 +761,65 @@ double TraceTree::cladeProbability(const RevBayesCore::Clade &c, bool verbose )
     }
     
     return f;
+}
+
+
+TraceTree::Split TraceTree::collectTreeSample(const TopologyNode& n, RbBitSet& intaxa, std::string newick, std::map<Split, long>& cladeCountMap)
+{
+    double age = (clock ? n.getAge() : n.getBranchLength() );
+
+    std::vector<Split> child_splits;
+
+    RbBitSet taxa(intaxa.size());
+    std::set<Taxon> mrca;
+
+    if( n.isTip() )
+    {
+        n.getTaxa(taxa);
+
+        if( rooted && n.isSampledAncestor() )
+        {
+            sampled_ancestor_counts[n.getTaxon()]++;
+
+            mrca.insert( n.getTaxon() );
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < n.getNumberOfChildren(); i++)
+        {
+            const TopologyNode &child_node = n.getChild(i);
+
+            child_splits.push_back( collectTreeSample(child_node, taxa, newick, cladeCountMap) );
+
+            if( rooted && child_node.isSampledAncestor() )
+            {
+                mrca.insert(child_node.getTaxon());
+            }
+        }
+    }
+
+    intaxa |= taxa;
+
+    Split parent_split(taxa, mrca, rooted);
+
+    // store the age for this split
+    clade_ages[parent_split].push_back( age );
+
+    // increment split count
+    cladeCountMap[parent_split]++;
+
+    // add conditional clade ages
+    for (std::vector<Split>::iterator child=child_splits.begin(); child !=child_splits.end(); ++child )
+    {
+        // inserts new entries if doesn't already exist
+        conditional_clade_ages[parent_split][*child].push_back( clade_ages[*child].back() );
+    }
+
+    // store the age for this split, conditional on the tree topology
+    tree_clade_ages[newick][parent_split].push_back( age );
+
+    return parent_split;
 }
 
 
@@ -797,9 +831,9 @@ double TraceTree::computeEntropy( double credible_interval_size, int num_taxa, b
     double total_samples = size();
     double entropy = 0.0;
     /*double tree_count = 0.0;*/
-    for (std::vector<Sample<std::string> >::const_reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    for (std::set<Sample<std::string> >::const_reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
     {
-        double freq = it->getFrequency();
+        double freq = it->second;
         double p = freq/(total_samples-burnin);
         /*double p = freq/(total_samples);*/
         total_prob += p;
@@ -812,8 +846,8 @@ double TraceTree::computeEntropy( double credible_interval_size, int num_taxa, b
     }
 
     /*This calculation is directly from AMP / Jeremy's paper.*/
-    double ntopologies = (boost::math::factorial<double>(((2*num_taxa)-5))) / (boost::math::factorial<double>((num_taxa-3)) * (pow(2, num_taxa-3)));
-    entropy += log( ntopologies );
+    double ln_ntopologies = RbMath::lnFactorial(2*num_taxa - 5) - RbMath::lnFactorial(num_taxa - 3) - (num_taxa-3)*RbConstants::LN2;
+    entropy += ln_ntopologies;
     /*std::cout << ntopologies << '\n';*/
     
     return entropy;
@@ -828,15 +862,15 @@ std::vector<double> TraceTree::computePairwiseRFDistance( double credible_interv
     NewickConverter converter;
     double total_prob = 0;
     double total_samples = size();
-    for (std::vector<Sample<std::string> >::const_reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    for (std::set<Sample<std::string> >::const_reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
     {
-        double freq = it->getFrequency();
+        double freq = it->second;
         double p = freq/(total_samples-burnin);
         total_prob += p;
         
         sample_count.push_back( freq );
         
-        Tree* current_tree = converter.convertFromNewick( it->getValue() );
+        Tree* current_tree = converter.convertFromNewick( it->first );
         unique_trees.push_back( *current_tree );
         delete current_tree;
         if ( total_prob >= credible_interval_size )
@@ -905,55 +939,33 @@ void TraceTree::enforceNonnegativeBranchLengths(TopologyNode& node) const
 }
 
 
-//filling in clades and clade ages - including tip nodes in clade sample - to get age for serially sampled tips in time trees
-Clade TraceTree::fillConditionalClades(const TopologyNode &n, std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> &cond_clades)
+long TraceTree::splitFrequency(const Split &n) const
 {
     
-    Clade parent = n.getClade();
-    parent.setAge( (clock == true ? n.getAge() : n.getBranchLength() ) );
+    std::set<Sample<Split> >::const_iterator it = find_if (clade_samples.begin(), clade_samples.end(), n );
     
-    std::set<Clade, CladeComparator> children( (CladeComparator(rooted)) );
-    
-    for (size_t i = 0; i < n.getNumberOfChildren(); i++)
+    if ( it != clade_samples.end() )
     {
-        const TopologyNode &child_node = n.getChild(i);
-        
-        Clade child_clade = fillConditionalClades(child_node, cond_clades);
-        children.insert(child_clade);
+        return it->second;
     }
     
-    cond_clades[parent] = children;
-    
-    return parent;
+    throw RbException("Couldn't find split in set of samples");
 }
 
 
-const Sample<Clade>& TraceTree::findCladeSample(const Clade &n) const
+TopologyNode* TraceTree::findParentNode(TopologyNode& n, const Split& tmp, std::vector<TopologyNode*>& children, RbBitSet& child_b ) const
 {
+    RbBitSet node;
+    n.getTaxa(node);
     
-    std::vector<Sample<Clade> >::const_iterator it = find_if (cladeSamples.begin(), cladeSamples.end(), CladeComparator(rooted, n) );
-    
-    if ( it != cladeSamples.end() )
-    {
-        return *it;
-    }
-    
-    throw RbException("Couldn't find a clade with name '" + n.toString() + "'.");
-}
-
-
-TopologyNode* TraceTree::findParentNode(TopologyNode& n, const Clade& tmp, std::vector<TopologyNode*>& children, RbBitSet& child_b ) const
-{
-    RbBitSet node = n.getClade().getBitRepresentation();
-    
-    Clade c = tmp;
-    RbBitSet clade  = c.getBitRepresentation();
+    RbBitSet clade  = tmp.first;
     
     RbBitSet mask  = node | clade;
     
     bool compatible = (mask == node);
     bool child      = (mask == clade);
     
+    Split c = tmp;
     // check if the flipped unrooted split is compatible
     if ( !rooted && !compatible && !child)
     {
@@ -964,7 +976,7 @@ TopologyNode* TraceTree::findParentNode(TopologyNode& n, const Clade& tmp, std::
         
         if ( compatible )
         {
-            c.setBitRepresentation(clade_flip);
+            c.first = clade_flip;
         }
     }
     
@@ -1043,12 +1055,12 @@ int TraceTree::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbose
     //double total_samples = trace.size();
     double freq = 0;
     
-    for (std::vector<Sample<std::string> >::const_reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    for (std::set<Sample<std::string> >::const_reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
     {
         
-        if ( newick == it->getValue() )
+        if ( newick == it->first )
         {
-            freq =it->getFrequency();
+            freq =it->second;
             //            p = freq/(total_samples-burnin);
             
             // now we found it
@@ -1069,13 +1081,13 @@ std::vector<Tree> TraceTree::getUniqueTrees( double credible_interval_size, bool
     NewickConverter converter;
     double total_prob = 0;
     double total_samples = size();
-    for (std::vector<Sample<std::string> >::const_reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    for (std::set<Sample<std::string> >::const_reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
     {
-        double freq =it->getFrequency();
+        double freq =it->second;
         double p =freq/(total_samples-burnin);
         total_prob += p;
         
-        Tree* current_tree = converter.convertFromNewick( it->getValue() );
+        Tree* current_tree = converter.convertFromNewick( it->first );
         unique_trees.push_back( *current_tree );
         delete current_tree;
         if ( total_prob >= credible_interval_size )
@@ -1114,17 +1126,17 @@ bool TraceTree::isCoveredInInterval(const std::string &v, double ci_size, bool v
     
     double totalSamples = size();
     double totalProb = 0.0;
-    for (std::vector<Sample<std::string> >::reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    for (std::set<Sample<std::string> >::reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
     {
         
-        double p = it->getFrequency()/(totalSamples-burnin);
+        double p = it->second/(totalSamples-burnin);
 //        double include_prob = p / (1.0-totalProb) * (ci_size - totalProb) / (1.0-totalProb);
         double include_prob = (ci_size-totalProb)/p;
 //        double include_prob = p * ci_size;
         
         if ( include_prob > rng->uniform01() )
         {
-            const std::string &current_sample = it->getValue();
+            const std::string &current_sample = it->first;
             if ( newick == current_sample )
             {
                 return true;
@@ -1161,7 +1173,7 @@ Tree* TraceTree::mapTree( AnnotationReport report, bool verbose )
     summarize( verbose );
     
     // get the tree with the highest posterior probability
-    std::string bestNewick = treeSamples.rbegin()->getValue();
+    std::string bestNewick = tree_samples.rbegin()->first;
     NewickConverter converter;
     Tree* tmp_best_tree = converter.convertFromNewick( bestNewick );
     
@@ -1201,19 +1213,19 @@ Tree* TraceTree::mccTree( AnnotationReport report, bool verbose )
     double max_cc = 0;
     
     // find the clade credibility score for each tree
-    for (size_t t = 0; t < treeSamples.size(); t++)
+    for (std::set<Sample<std::string> >::reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
     {
-        std::string newick = treeSamples[t].getValue();
+        std::string newick = it->first;
         
         // now we summarize the clades for the best tree
-        std::map<Clade, std::vector<double>, CladeComparator> cladeAges = treeCladeAges[newick];
+        std::map<Split, std::vector<double> > cladeAges = tree_clade_ages[newick];
         
         double cc = 0;
         
         // find the product of the clade frequencies
-        for (std::map<Clade, std::vector<double>, CladeComparator>::iterator clade = cladeAges.begin(); clade != cladeAges.end(); clade++)
+        for (std::map<Split, std::vector<double> >::iterator clade = cladeAges.begin(); clade != cladeAges.end(); clade++)
         {
-            cc += log( findCladeSample( clade->first ).getFrequency() );
+            cc += log( splitFrequency(clade->first) );
         }
         
         if (cc > max_cc)
@@ -1281,16 +1293,16 @@ Tree* TraceTree::mrTree(AnnotationReport report, double cutoff, bool verbose)
     
     size_t nIndex = tipNames.size();
     
-    for (size_t j = 0; j < cladeSamples.size(); j++)
+    for (std::set<Sample<Split> >::reverse_iterator it = clade_samples.rbegin(); it != clade_samples.rend(); ++it)
     {
-        size_t rIndex = cladeSamples.size() - 1 - j;    //reverse pass through because clades are sorted in ascending frequency
-        float cladeFreq = cladeSamples[rIndex].getFrequency() / (float)(size() - burnin);
+        float cladeFreq = it->second / (float)(size() - burnin);
         if (cladeFreq < cutoff)  break;
         
-        Clade clade = cladeSamples[rIndex].getValue();
+        Split clade = it->first;
         
         //make sure we have an internal node
-        if (clade.size() == 1 || clade.size() == tipNames.size())  continue;
+        size_t clade_size = clade.first.getNumberSetBits();
+        if (clade_size == 1 || clade_size == tipNames.size())  continue;
         
         //find parent node
         std::vector<TopologyNode*> children;
@@ -1305,18 +1317,18 @@ Tree* TraceTree::mrTree(AnnotationReport report, double cutoff, bool verbose)
             std::vector<TopologyNode*> mrca;
             
             // find the mrca child if it exists
-            if ( !clade.getMrca().empty() )
+            if ( clade.second.empty() == false )
             {
                 for (size_t i = 0; i < children.size(); i++)
                 {
-                    if ( children[i]->isTip() && std::find(clade.getMrca().begin(), clade.getMrca().end(), children[i]->getTaxon() ) != clade.getMrca().end() )
+                    if ( children[i]->isTip() && std::find(clade.second.begin(), clade.second.end(), children[i]->getTaxon() ) != clade.second.end() )
                     {
                         mrca.push_back(children[i]);
                     }
                 }
                 
                 // if we couldn't find the mrca, then this clade is not compatible
-                if ( mrca.size() != clade.getMrca().size() )
+                if ( mrca.size() != clade.second.size() )
                 {
                     continue;
                 }
@@ -1346,7 +1358,7 @@ Tree* TraceTree::mrTree(AnnotationReport report, double cutoff, bool verbose)
             parentNode->addChild(intNode);
             
             // add a mrca child if it exists and there is more than one non-mrca taxa
-            if ( !mrca.empty() && children.size() > 2 )
+            if ( mrca.empty() == false && children.size() > 2 )
             {
                 TopologyNode* old_parent = parentNode;
                 
@@ -1415,14 +1427,18 @@ void TraceTree::printCladeSummary(std::ostream &o, double minCladeProbability, b
     
     double totalSamples = size();
     
-    for (std::vector<Sample<Clade> >::reverse_iterator it = cladeSamples.rbegin(); it != cladeSamples.rend(); ++it)
+    std::vector<Taxon> ordered_taxa = objectAt(0).getTaxa();
+    VectorUtilities::sort( ordered_taxa );
+
+    for (std::set<Sample<Split> >::reverse_iterator it = clade_samples.rbegin(); it != clade_samples.rend(); ++it)
     {
-        size_t num_taxa = it->getValue().size();
+        Clade c(it->first.first, ordered_taxa);
+        c.setMrca(it->first.second);
+
+        if ( c.size() == 1 ) continue;
         
-        if ( num_taxa == 1 ) continue;
-        
-        double freq =it->getFrequency();
-        double p =it->getFrequency()/(totalSamples-burnin);
+        double freq = it->second;
+        double p = freq/(totalSamples-burnin);
         
         
         if ( p < minCladeProbability )
@@ -1455,8 +1471,8 @@ void TraceTree::printCladeSummary(std::ostream &o, double minCladeProbability, b
          s = ss.str();
          StringUtilities::fillWithSpaces(s, 16, true);
          o << s;*/
-        
-        o << it->getValue();
+
+        o << c;
         o << std::endl;
         
     }
@@ -1502,10 +1518,10 @@ void TraceTree::printTreeSummary(std::ostream &o, double credibleIntervalSize, b
     o << "----------------------------------------------------------------" << std::endl;
     double totalSamples = size();
     double totalProb = 0.0;
-    for (std::vector<Sample<std::string> >::reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    for (std::set<Sample<std::string> >::reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
     {
-        double freq =it->getFrequency();
-        double p =it->getFrequency()/(totalSamples-burnin);
+        double freq =it->second;
+        double p = freq/(totalSamples-burnin);
         totalProb += p;
         
         ss.str(std::string());
@@ -1532,7 +1548,7 @@ void TraceTree::printTreeSummary(std::ostream &o, double credibleIntervalSize, b
          StringUtilities::fillWithSpaces(s, 16, true);
          o << s;*/
         
-        o << it->getValue();
+        o << it->first;
         o << std::endl;
         
         if ( totalProb >= credibleIntervalSize )
@@ -1561,14 +1577,18 @@ void TraceTree::summarize( bool verbose )
         rooted = objectAt(0).isRooted();
     }
 
-    cladeAges = std::map<Clade, std::vector<double>, CladeComparator >( (CladeComparator(rooted)) );
-    conditionalCladeAges = std::map<Clade, std::map<Clade, std::vector<double>, CladeComparator >, CladeComparator >( (CladeComparator(rooted)) );
+    clade_samples.clear();
+    tree_samples.clear();
 
-    sampledAncestorSamples.clear();
-    treeCladeAges.clear();
+    sampled_ancestor_counts.clear();
+
+    clade_ages.clear();
+    conditional_clade_ages.clear();
+    tree_clade_ages.clear();
     
-    std::map<Clade, Sample<Clade>, CladeComparator > cladeSampleMap( (CladeComparator(rooted)) );
-    std::map<std::string, Sample<std::string> >      treeSampleMap;
+    std::map<Split, long>       clade_counts;
+    std::map<std::string, long> tree_counts;
+
     
     ProgressBar progress = ProgressBar(size(), burnin);
     if ( verbose )
@@ -1579,7 +1599,6 @@ void TraceTree::summarize( bool verbose )
     
     for (size_t i = burnin; i < size(); ++i)
     {
-        
         if ( verbose )
         {
             progress.update(i);
@@ -1593,232 +1612,32 @@ void TraceTree::summarize( bool verbose )
         }
         
         std::string newick = TreeUtilities::uniqueNewickTopology( tree );
-        
-        Sample<std::string> treeSample(newick, 0);
-        treeSample.addNonObservations(i - burnin);
-        treeSampleMap.insert(std::pair<std::string, Sample<std::string> >(newick, treeSample));
-        treeCladeAges.insert(std::pair<std::string, std::map<Clade, std::vector<double>, CladeComparator > >( newick, std::map<Clade, std::vector<double>, CladeComparator >( (CladeComparator(rooted)) ) ) );
 
-        // add empty observations for all non-matching trees
-        for (std::map<std::string, Sample<std::string> >::iterator it = treeSampleMap.begin(); it != treeSampleMap.end(); ++it)
-        {
-            if (it->first == newick)
-            {
-                it->second.addObservation(true);
-            }
-            else
-            {
-                it->second.addObservation(false);
-            }
-
-        }
+        tree_counts[newick]++;
 
         // get the clades for this tree
-        std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator> condClades;
-        fillConditionalClades(tree.getRoot(), condClades);
-        
-        // collect clade ages and increment the clade frequency counter
-        for (std::map<Clade, std::set<Clade, CladeComparator>, CladeComparator >::iterator it=condClades.begin(); it!=condClades.end(); ++it )
-        {
-            const Clade& c = it->first;
-
-            // insert a new sample
-            Sample<Clade> cladeSample = Sample<Clade>(c, 0);
-            cladeSample.addNonObservations(i - burnin);
-            // insert silently fails if clade has already been seen
-            cladeSampleMap.insert(std::pair<Clade, Sample<Clade> >(c, cladeSample));
-
-            // store the age for this clade
-            // or create a new entry for the age of the clade
-            cladeAges[c].push_back( c.getAge() );
-            treeCladeAges[newick][c].push_back( c.getAge() );
-
-            // this is an empty set if c is a tip node
-            const std::set<Clade, CladeComparator>& children = it->second;
-
-            // add conditional clade ages
-            for (std::set<Clade, CladeComparator>::const_iterator child=children.begin(); child!=children.end(); ++child )
-            {
-                // inserts new entries if doesn't already exist
-                conditionalCladeAges[c][*child].push_back( child->getAge() );
-            }
-        }
-        
-        for (std::map<Clade, Sample<Clade>, CladeComparator >::iterator it=cladeSampleMap.begin(); it!=cladeSampleMap.end(); ++it )
-        {
-            if ( condClades.find( it->first ) != condClades.end() )
-            {
-                it->second.addObservation( true );
-            }
-            else
-            {
-                it->second.addObservation( false );
-            }
-
-        }
-        
-        // collect sampled ancestor probs
-        for (size_t j = 0; j < tree.getNumberOfTips(); j++)
-        {
-            const TopologyNode& tip = tree.getTipNode(j);
-
-            Taxon taxon = tip.getTaxon();
-
-            Sample<Taxon> taxonSample(taxon, 0);
-            taxonSample.addNonObservations(i - burnin);
-
-            sampledAncestorSamples.insert( std::pair<Taxon, Sample<Taxon> >(taxon, taxonSample) );
-
-            sampledAncestorSamples[taxon].addObservation( tip.isSampledAncestor() );
-        }
+        RbBitSet b( tree.getNumberOfTips(), false );
+        std::map<Split, long> condClades;
+        collectTreeSample(tree.getRoot(), b, newick, clade_counts);
     }
     
+    // sort the clade samples in ascending frequency
+    for(std::map<Split, long>::iterator it = clade_counts.begin(); it != clade_counts.end(); it++)
+    {
+        clade_samples.insert( Sample<Split>(it->first, it->second) );
+    }
+
+    // sort the tree samples in ascending frequency
+    for(std::map<std::string, long>::iterator it = tree_counts.begin(); it != tree_counts.end(); it++)
+    {
+        tree_samples.insert( Sample<std::string>(it->first, it->second) );
+    }
+
     // finish progress bar
     if ( verbose )
     {
         progress.finish();
-        RBOUT("Collecting samples ...\n");
     }
-    
-    // collect the samples
-    cladeSamples.clear();
-    for (std::map<Clade, Sample<Clade>, CladeComparator >::iterator it = cladeSampleMap.begin(); it != cladeSampleMap.end(); ++it)
-    {
-        it->second.computeStatistics();
-        cladeSamples.push_back(it->second);
-    }
-    
-    // sort the samples by frequency
-    VectorUtilities::sort( cladeSamples );
-    
-    
-    // collect the samples
-    treeSamples.clear();
-    for (std::map<std::string, Sample<std::string> >::iterator it = treeSampleMap.begin(); it != treeSampleMap.end(); ++it)
-    {
-        it->second.computeStatistics();
-        treeSamples.push_back(it->second);
-    }
-    
-    // sort the samples by frequency
-    VectorUtilities::sort( treeSamples );
-    
-    
-    // collect the samples
-    bool using_sampled_ancestors = false;
-    
-    for (std::map<Taxon, Sample<Taxon> >::iterator it = sampledAncestorSamples.begin(); it != sampledAncestorSamples.end(); ++it)
-    {
-        it->second.computeStatistics();
-        
-        using_sampled_ancestors = using_sampled_ancestors || it->second.getFrequency() > 0;
-    }
-    
-    if ( using_sampled_ancestors == false ) sampledAncestorSamples.clear();
     
     dirty = false;
-}
-
-
-/*
- * Sort rooted clades as normal, or by mrcas
- * Sort unrooted clades (splits) by min(bitset,~bitset)
- */
-bool CladeComparator::operator()(const Clade& a, const Clade& b) const
-{
-    const RbBitSet& ab = a.getBitRepresentation();
-    const RbBitSet& bb = b.getBitRepresentation();
-    
-    // If clades are rooted or clades are from different sized trees,
-    // do taxon-wise comparison, taking mrcas into account.
-    if ( rooted || ab.size() != bb.size() )
-    {
-        if ( ab.size() != bb.size() || a.getMrca() == b.getMrca() )
-        {
-            return a < b;
-        }
-        else
-        {
-            return a.getMrca() < b.getMrca();
-        }
-    }
-    
-    if ( ab.empty() || bb.empty() )
-    {
-        throw(RbException("Cannot compare unrooted clades (splits) with empty bitsets"));
-    }
-    
-    // do bitwise comparison
-    
-    // if the first bit is 1, negate the bitset
-    bool neg_ab = ab[0];
-    bool neg_bb = bb[0];
-    
-    for (size_t i = 0; i < ab.size(); i++)
-    {
-        bool vab = ab[i];
-        bool vbb = bb[i];
-        
-        // get bit from min bitset for each clade
-        bool mab = neg_ab ? !vab : vab;
-        bool mbb = neg_bb ? !vbb : vbb;
-        
-        // return result from first mismatch
-        if (mab != mbb)
-        {
-            return mab < mbb;
-        }
-    }
-    
-    // ignore mrca in unrooted comparison
-    return false;
-}
-
-/*
- * Rooted clades are equal iff their taxa and mrcas are equal
- * Unrooted splits are equal iff their taxa are equal or the intersection of their bitsets is empty
- */
-bool CladeComparator::operator()(const Sample<Clade>& s) const
-{
-    const Clade& a = s.getValue();
-    
-    const RbBitSet& ab = a.getBitRepresentation();
-    const RbBitSet& bb = clade.getBitRepresentation();
-    
-    // If clades are rooted or clades are from different sized trees,
-    // do taxon-wise comparison, taking mrcas into account.
-    if ( rooted || ab.size() != bb.size() )
-    {
-        return a == clade && a.getMrca() == clade.getMrca();
-    }
-    
-    if ( ab.empty() || bb.empty() )
-    {
-        throw RbException("Cannot compare unrooted clades (splits) with empty bitsets");
-    }
-    
-    // do bitwise comparison
-    
-    // if the first bit is 1, negate the bitset
-    bool neg_ab = ab[0];
-    bool neg_bb = bb[0];
-    
-    for (size_t i = 0; i < ab.size(); i++)
-    {
-        bool vab = ab[i];
-        bool vbb = bb[i];
-        
-        // get bit from min bitset for each clade
-        bool mab = neg_ab ? !vab : vab;
-        bool mbb = neg_bb ? !vbb : vbb;
-        
-        // return result from first mismatch
-        if (mab != mbb)
-        {
-            return false;
-        }
-    }
-    
-    // ignore mrca in unrooted comparison
-    return true;
 }

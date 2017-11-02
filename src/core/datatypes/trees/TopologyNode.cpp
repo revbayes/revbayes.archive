@@ -885,21 +885,28 @@ Clade TopologyNode::getClade( void ) const
 
     c.setAge( age );
 
-    std::vector<Taxon> mrca;
+    std::set<Taxon> mrca;
 
-    // if a child is a sampled ancestor, its taxon is a mrca
-    for (size_t i = 0; i < children.size(); i++)
+    if( isTip() )
     {
-        if ( children[i]->isSampledAncestor() )
+        if( isSampledAncestor() )
         {
-            mrca.push_back( children[i]->getTaxon() );
+            mrca.insert( getTaxon() );
+        }
+    }
+    else
+    {
+        // if a child is a sampled ancestor, its taxon is a mrca
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            if ( children[i]->isSampledAncestor() )
+            {
+                mrca.insert( children[i]->getTaxon() );
+            }
         }
     }
 
-    if ( !mrca.empty() )
-    {
-        c.setMrca( mrca );
-    }
+    c.setMrca( mrca );
 
     return c;
 }

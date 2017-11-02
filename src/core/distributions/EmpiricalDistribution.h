@@ -21,7 +21,6 @@
 #include "MemberObject.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "Sample.h"
 #include "TypedDistribution.h"
 #include "Trace.h"
 
