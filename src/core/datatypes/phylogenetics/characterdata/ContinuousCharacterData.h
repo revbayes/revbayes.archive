@@ -4,6 +4,7 @@
 #include "ContinuousTaxonData.h"
 #include "HomologousCharacterData.h"
 #include "MemberObject.h"
+#include "Printable.h"
 
 #include <map>
 #include <set>
@@ -24,7 +25,7 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2014-02-16, version 1.0
      */
-    class ContinuousCharacterData : public HomologousCharacterData, public MemberObject<double> {
+    class ContinuousCharacterData : public Printable, public HomologousCharacterData, public MemberObject<double> {
 
     public:
                                                         ContinuousCharacterData(void);                                              //!< Default constructor
@@ -40,6 +41,9 @@ namespace RevBayesCore {
         void                                            initFromFile( const std::string &dir, const std::string &fn );              //!< Read and resurrect this object from a file in its default format.
         void                                            initFromString( const std::string &s );                                     //!< Serialize (resurrect) the object from a string value
         void                                            writeToFile(const std::string &dir, const std::string &fn) const;           //!< Write this object into a file in its default format.
+        void                                            printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const;                    //!< print object for user (in user-formatted way)
+        void                                            printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const;           //!< print object for user (in user-formatted way)
+        void                                            printForComplexStoring( std::ostream &o, const std::string &sep, int l, bool left ) const;          //!< print object for user (in user-formatted way)
 
         // CharacterData functions
         void                                            concatenate(const ContinuousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
@@ -64,7 +68,7 @@ namespace RevBayesCore {
         bool                                            isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                            isCharacterResolved(size_t txIdx, size_t chIdx) const;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         bool                                            isCharacterResolved(const std::string &tn, size_t chIdx) const;             //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
-        void                                            removeExcludedCharacters(void);                                              //!< Remove all the excluded characters
+        void                                            removeExcludedCharacters(void);                                             //!< Remove all the excluded characters
         void                                            restoreCharacter(size_t i);                                                 //!< Restore character
 
         

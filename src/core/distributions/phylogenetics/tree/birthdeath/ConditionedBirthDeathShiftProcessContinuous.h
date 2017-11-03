@@ -81,6 +81,10 @@ namespace RevBayesCore {
         
         double                                              log_tree_topology_prob;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
         
+        
+        // only for testing
+        bool                                                event_prior_only;
+        
     };
     
 }

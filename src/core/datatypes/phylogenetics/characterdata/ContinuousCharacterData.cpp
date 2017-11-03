@@ -683,6 +683,32 @@ bool ContinuousCharacterData::isCharacterResolved(const std::string &tn, size_t 
 }
 
 
+//!< print object for user (in user-formatted way)
+void ContinuousCharacterData::printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const
+{
+    
+    o << *this;
+    
+}
+
+
+//!< print object for user (in user-formatted way)
+void ContinuousCharacterData::printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
+{
+    
+    o << *this;
+    
+}
+
+
+//!< print object for user (in user-formatted way)
+void ContinuousCharacterData::printForComplexStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
+{
+    o << "{Hello}";
+}
+
+
+
 /**
  * Remove all the excluded character.
  *
@@ -707,7 +733,9 @@ void ContinuousCharacterData::restoreCharacter(size_t i)
 {
     
     if (i >= getNumberOfCharacters() )
+    {
         throw RbException( "Character index out of range" );
+    }
     
     deletedCharacters.erase( i );
     
