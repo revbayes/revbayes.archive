@@ -167,4 +167,7 @@ void TimeTree::initMethods( void )
     nodeAgeArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<TimeTree, RealPos>( "nodeAge", this, nodeAgeArgRules   ) );
 
+    ArgumentRules* collessArgRules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<TimeTree, Natural>( "colless", this, collessArgRules ) );
+
 }

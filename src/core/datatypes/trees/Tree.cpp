@@ -334,6 +334,12 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
             rv += nodes[i]->isSampledAncestor();
         }
     }
+    else if (n == "colless")
+    {
+        int s = 0;
+
+        rv = RevBayesCore::TreeUtilities::getCollessMetric( getRoot(), s);
+    }
     else if (n == "nnodes")
     {
         rv = nodes.size();
@@ -454,6 +460,7 @@ const std::vector<std::vector<double> > Tree::getAdjacencyMatrix(void) const
 
     return adjacency;
 }
+
 
 std::vector<Taxon> Tree::getFossilTaxa() const
 {
