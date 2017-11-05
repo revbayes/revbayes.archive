@@ -1,14 +1,6 @@
-//
-//  SiteRateModifier.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 8/8/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
 #include <iomanip>
 #include <cmath>
-#include "CharacterEvent.h"
+#include "CharacterEventDiscrete.h"
 #include "SiteRateModifier.h"
 #include "RbConstants.h"
 
@@ -51,7 +43,7 @@ SiteRateModifier& SiteRateModifier::assign(const Assignable &m)
     }
 }
 
-double SiteRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double SiteRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEventDiscrete* newState, double age)
 {
     
     // the new event acts on which site?
@@ -61,7 +53,7 @@ double SiteRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> cur
     size_t new_site_class = site_classes[new_site];
     
     // the new event is what event type?
-    size_t old_state = currState[new_site]->getState();
+    size_t old_state = static_cast<CharacterEventDiscrete*>(currState[new_site])->getState();
     size_t new_state = newState->getState();
     
     // which event_class does that event belong to?

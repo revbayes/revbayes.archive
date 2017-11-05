@@ -1,24 +1,18 @@
 //
-//  RangeEvolutionRateModifier.cpp
-//  revbayes-branch-proj
-//
-//  Created by Michael Landis on 2/16/17.
-//  Copyright © 2017 Michael Landis. All rights reserved.
-//
-
 #include <iomanip>
 #include <cmath>
-#include "CharacterEvent.h"
+
+#include "CharacterEventDiscrete.h"
 #include "RangeEvolutionRateModifier.h"
 #include "RbConstants.h"
 
 using namespace RevBayesCore;
 
 RangeEvolutionRateModifier::RangeEvolutionRateModifier(size_t nc) : CharacterHistoryRateModifier(2, nc),
-gain_factor(0.0),
-loss_factor(0.0),
-context_matrix( std::vector<std::vector<adjacency> >() ),
-forbid_extinction(true)
+    gain_factor(0.0),
+    loss_factor(0.0),
+    context_matrix( std::vector<std::vector<adjacency> >() ),
+    forbid_extinction(true)
 {
     ;
 }
@@ -49,7 +43,7 @@ RangeEvolutionRateModifier& RangeEvolutionRateModifier::assign(const Assignable 
     }
 }
 
-double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, std::vector<std::set<size_t> > sites_with_states, double age)
+double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, std::vector<std::set<size_t> > sites_with_states, double age)
 {
     
     size_t to_site = newState->getSiteIndex();
@@ -79,23 +73,23 @@ double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEv
     return r;
 }
 
-double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age)
+double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age)
 {
     std::vector<std::set<size_t> > sites_with_states(num_states);
     for (size_t i = 0; i < currState.size(); i++)
     {
-        sites_with_states[ currState[i]->getState() ].insert(i);
+        sites_with_states[ static_cast<CharacterEventDiscrete*>(currState[i])->getState() ].insert(i);
     }
     
     return computeRateMultiplier(currState, newState, sites_with_states, age);
 }
 
-double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, std::vector<size_t> counts, double age)
+double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, std::vector<size_t> counts, double age)
 {
     std::vector<std::set<size_t> > sites_with_states(num_states);
     for (size_t i = 0; i < currState.size(); i++)
     {
-        sites_with_states[ currState[i]->getState() ].insert(i);
+        sites_with_states[ static_cast<CharacterEventDiscrete*>(currState[i])->getState() ].insert(i);
     }
     
     return computeRateMultiplier(currState, newState, sites_with_states, age);

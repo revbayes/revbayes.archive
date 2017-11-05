@@ -22,29 +22,37 @@ namespace RevBayesCore {
     class EventBirthDeathProposal : public Proposal {
         
     public:
-        EventBirthDeathProposal( StochasticNode<Tree> *n);                                                                //!<  constructor
+        
+        virtual EventBirthDeathProposal*        clone(void) const = 0;                                                                  //!< Clone object
+        virtual const std::string&              getProposalName(void) const = 0;                                                        //!< Get the name of the proposal for summary printing
+        
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
-        EventBirthDeathProposal*                clone(void) const;                                                                  //!< Clone object
         double                                  doProposal(void);                                                                   //!< Perform proposal
-        const std::string&                      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                    printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                                    prepareProposal(void);                                                              //!< Prepare the proposal
         void                                    tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                    undoProposal(void);                                                                 //!< Reject the proposal
         
     protected:
-        
+        EventBirthDeathProposal( StochasticNode<Tree> *n);                                                                //!<  constructor
+
+        // pure virtual methods
+        virtual CharacterEvent*                 drawNewEvent(double event_time) = 0;
+        virtual double                          computeEventProposalProbability( CharacterEvent* event ) = 0;
+
         double                                  doBirthProposal(void);
         double                                  doDeathProposal(void);
         void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the DAG nodes on which the Proposal is working on
         
-    private:
         // parameters
-        
-        StochasticNode<Tree>*                   variable;                                                                           //!< The variable the Proposal is working on
         AbstractCharacterHistoryBirthDeathProcess* distribution;
+
+    private:
+        
+        // parameters
+        StochasticNode<Tree>*                   variable;                                                                           //!< The variable the Proposal is working on
         
         size_t accepted_birth;
         size_t trie_birth;

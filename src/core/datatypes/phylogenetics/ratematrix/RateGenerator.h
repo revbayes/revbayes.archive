@@ -2,7 +2,7 @@
 #define RateGenerator_H
 
 #include "Assignable.h"
-#include "CharacterEvent.h"
+#include "CharacterEventDiscrete.h"
 #include "Cloneable.h"
 #include "MatrixReal.h"
 #include "Printable.h"
@@ -32,7 +32,7 @@ namespace RevBayesCore {
         virtual void                        initFromString( const std::string &s ) { throw RbException("Sebastians (29/6/2016): Missing derived implementations!!!"); }                                                 //!< Serialize (resurrect) the object from a string value
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, double age=0.0, double rate=1.0) const;
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, const std::vector<size_t> &counts, double age=0.0, double rate=1.0) const;
-        virtual double                      getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0, double rate=1.0) const;
+        virtual double                      getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, double age=0.0, double rate=1.0) const;
 
         // virtual methods that may need to overwritten
         virtual bool                        simulateStochasticMapping(double startAge, double endAge, double rate,std::vector<size_t>& transition_states, std::vector<double>& transition_times);

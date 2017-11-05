@@ -216,8 +216,8 @@ void ContinuousCharacterData::executeMethod(const std::string &n, const std::vec
     
     if ( n == "get" )
     {
-        int index_taxon = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
-        int index_site = static_cast<const TypedDagNode<long> *>( args[1] )->getValue()-1;
+        long index_taxon = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
+        long index_site = static_cast<const TypedDagNode<long> *>( args[1] )->getValue()-1;
         rv = getTaxonData(index_taxon)[index_site];
     }
     else
@@ -241,7 +241,9 @@ const double& ContinuousCharacterData::getCharacter( size_t tn, size_t cn ) cons
 {
     
     if ( cn >= getNumberOfCharacters() )
+    {
         throw RbException( "Character index out of range" );
+    }
     
     return getTaxonData( tn )[cn];
 }
@@ -258,6 +260,142 @@ std::string ContinuousCharacterData::getDataType(void) const
     std::string dt = "Continuous";
     
     return dt;
+}
+
+
+/**
+ * Get the maximum difference between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getMaxDifference( size_t index ) const
+{
+    
+    double max = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    if ( diff > max )
+                    {
+                        max = diff;
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+
+    return max;
+}
+
+
+/**
+ * Get the mean between all differences between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getMeanDifference( size_t index ) const
+{
+    
+    double mean = 0.0;
+    double n_samples = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+            
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    mean += diff;
+                    ++n_samples;
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    mean /= n_samples;
+    
+    return mean;
+}
+
+
+/**
+ * Get the minimum difference between two observed values.
+ *
+ * \return      The min difference.
+ */
+double ContinuousCharacterData::getMinDifference( size_t index ) const
+{
+    
+    double min = RbConstants::Double::inf;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+            
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    if ( diff < min )
+                    {
+                        min = diff;
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    return min;
 }
 
 
@@ -414,6 +552,53 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &t
 
 
 /**
+ * Get the variance between all differences between two observed values.
+ *
+ * \return      The var difference.
+ */
+double ContinuousCharacterData::getVarDifference( size_t index ) const
+{
+    
+    double mean = getMeanDifference( index );
+    double var = 0.0;
+    double n_samples = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+            
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    var += ((diff-mean)*(diff-mean));
+                    ++n_samples;
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    var /= (n_samples-1);
+    
+    return var;
+}
+
+
+/**
  * Include a character.
  * Since we didn't actually deleted the character but marked it for exclusion
  * we can now simply remove the flag.
@@ -498,6 +683,32 @@ bool ContinuousCharacterData::isCharacterResolved(const std::string &tn, size_t 
 }
 
 
+//!< print object for user (in user-formatted way)
+void ContinuousCharacterData::printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const
+{
+    
+    o << *this;
+    
+}
+
+
+//!< print object for user (in user-formatted way)
+void ContinuousCharacterData::printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
+{
+    
+    o << *this;
+    
+}
+
+
+//!< print object for user (in user-formatted way)
+void ContinuousCharacterData::printForComplexStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
+{
+    o << "{Hello}";
+}
+
+
+
 /**
  * Remove all the excluded character.
  *
@@ -522,7 +733,9 @@ void ContinuousCharacterData::restoreCharacter(size_t i)
 {
     
     if (i >= getNumberOfCharacters() )
+    {
         throw RbException( "Character index out of range" );
+    }
     
     deletedCharacters.erase( i );
     

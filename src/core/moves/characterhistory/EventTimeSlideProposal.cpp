@@ -17,8 +17,8 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 EventTimeSlideProposal::EventTimeSlideProposal( StochasticNode<Tree> *n, double d) : Proposal(),
-variable( n ),
-delta( d )
+    variable( n ),
+    delta( d )
 {
     // tell the base class to add the node
     addNode( variable );

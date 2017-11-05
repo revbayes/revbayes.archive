@@ -1,10 +1,11 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
-#include "Move_BirthDeathEvent.h"
-#include "EventBirthDeathProposal.h"
+#include "Move_ContinuousEventScale.h"
+#include "ContinuousEventScaleProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
+#include "RlBoolean.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -17,7 +18,7 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Move_BirthDeathEvent::Move_BirthDeathEvent() : Move()
+Move_ContinuousEventScale::Move_ContinuousEventScale() : Move()
 {
     
 }
@@ -29,10 +30,10 @@ Move_BirthDeathEvent::Move_BirthDeathEvent() : Move()
  *
  * \return A new copy of the move.
  */
-Move_BirthDeathEvent* Move_BirthDeathEvent::clone(void) const
+Move_ContinuousEventScale* Move_ContinuousEventScale::clone(void) const
 {
     
-    return new Move_BirthDeathEvent(*this);
+    return new Move_ContinuousEventScale(*this);
 }
 
 
@@ -44,20 +45,22 @@ Move_BirthDeathEvent* Move_BirthDeathEvent::clone(void) const
  * constructor and passing the move-parameters (the variable and other parameters) as arguments of the
  * constructor. The move constructor takes care of the proper hook-ups.
  *
- * \return A new internal distribution object.
  */
-void Move_BirthDeathEvent::constructInternalObject( void )
+void Move_ContinuousEventScale::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
+    // now allocate a new scaling move
+    double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
-    RevBayesCore::Proposal *p = new RevBayesCore::EventBirthDeathProposal(n);
-    value = new RevBayesCore::MetropolisHastingsMove(p,w);
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::ContinuousEventScaleProposal(n,l);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
     
 }
 
@@ -67,10 +70,10 @@ void Move_BirthDeathEvent::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& Move_BirthDeathEvent::getClassType(void)
+const std::string& Move_ContinuousEventScale::getClassType(void)
 {
     
-    static std::string rev_type = "Move_BirthDeathEvent";
+    static std::string rev_type = "Move_ContinuousEventScale";
     
     return rev_type;
 }
@@ -81,7 +84,7 @@ const std::string& Move_BirthDeathEvent::getClassType(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Move_BirthDeathEvent::getClassTypeSpec(void)
+const TypeSpec& Move_ContinuousEventScale::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -95,10 +98,10 @@ const TypeSpec& Move_BirthDeathEvent::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_BirthDeathEvent::getMoveName( void ) const
+std::string Move_ContinuousEventScale::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "BirthDeathEvent";
+    std::string c_name = "ContinuousEventScale";
     
     return c_name;
 }
@@ -112,24 +115,26 @@ std::string Move_BirthDeathEvent::getMoveName( void ) const
  *
  * \return The member rules.
  */
-const MemberRules& Move_BirthDeathEvent::getParameterRules(void) const
+const MemberRules& Move_ContinuousEventScale::getParameterRules(void) const
 {
     
-    static MemberRules memberRules;
+    static MemberRules move_member_rules;
     static bool rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The time-tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        move_member_rules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec()             , "The time-tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        move_member_rules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()            , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
+        move_member_rules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()          , "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getParameterRules();
-        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
+        const MemberRules& inherited_rules = Move::getParameterRules();
+        move_member_rules.insert( move_member_rules.end(), inherited_rules.begin(), inherited_rules.end() );
         
         rules_set = true;
     }
     
-    return memberRules;
+    return move_member_rules;
 }
 
 
@@ -138,32 +143,12 @@ const MemberRules& Move_BirthDeathEvent::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Move_BirthDeathEvent::getTypeSpec( void ) const
+const TypeSpec& Move_ContinuousEventScale::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
     
     return type_spec;
-}
-
-
-/**
- * Print the value for the user.
- */
-void Move_BirthDeathEvent::printValue(std::ostream &o) const
-{
-    
-    o << "BirthDeathEvent(";
-    if (tree != NULL)
-    {
-        o << tree->getName();
-    }
-    else
-    {
-        o << "?";
-    }
-    o << ")";
-    
 }
 
 
@@ -177,12 +162,20 @@ void Move_BirthDeathEvent::printValue(std::ostream &o) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_BirthDeathEvent::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_ContinuousEventScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )
     {
         tree = var;
+    }
+    else if ( name == "lambda" )
+    {
+        lambda = var;
+    }
+    else if ( name == "tune" )
+    {
+        tune = var;
     }
     else
     {
@@ -190,6 +183,7 @@ void Move_BirthDeathEvent::setConstParameter(const std::string& name, const RevP
     }
     
 }
+
 
 
 

@@ -2507,7 +2507,7 @@ int TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbo
     std::string outgroup = tip_names[0];
     
     Tree t = tree;
-    
+
     if ( t.isRooted() == false && rooted == false )
     {
         t.reroot( outgroup, true );
@@ -2523,7 +2523,7 @@ int TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbo
         
         if ( newick == it->getValue() )
         {
-            freq =it->getFrequency();
+            freq = it->getFrequency();
             //            p = freq/(total_samples-burnin);
             
             // now we found it

@@ -84,7 +84,7 @@ std::string CharacterHistoryPosteriorPredictiveMonitor::buildExtendedNewick( voi
 std::string CharacterHistoryPosteriorPredictiveMonitor::buildCharacterHistoryString(TopologyNode* n, std::string brEnd)
 {
     
-    BranchHistory bh = branchHistories[n->getIndex()]->getValue();
+    const BranchHistory &bh = branchHistories[n->getIndex()]->getValue();
     std::vector<CharacterEvent*> characters;
     if (brEnd=="child")
         characters = bh.getChildCharacters();
@@ -96,7 +96,7 @@ std::string CharacterHistoryPosteriorPredictiveMonitor::buildCharacterHistoryStr
     {
         if (i != 0)
             ss << ",";
-        ss << characters[i]->getState();
+        ss << characters[i]->getStateStr();
     }
     
     return ss.str();

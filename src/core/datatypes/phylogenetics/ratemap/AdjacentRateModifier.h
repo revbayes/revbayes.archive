@@ -1,13 +1,5 @@
-//
-//  AdjacentRateModifier.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 8/8/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__AdjacentRateModifier__
-#define __rb_mlandis__AdjacentRateModifier__
+#ifndef AdjacentRateModifier_H
+#define AdjacentRateModifier_H
 
 #include "CharacterHistoryRateModifier.h"
 #include "StochasticNode.h"
@@ -21,8 +13,6 @@
 namespace RevBayesCore
 {
     
-    
-    
     class AdjacentRateModifier : public CharacterHistoryRateModifier
     {
     public:
@@ -31,12 +21,12 @@ namespace RevBayesCore
         
         
         AdjacentRateModifier&               assign(const Assignable &m);
-        double                              computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age=0.0);
-        double                              computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age=0.0);
+        double                              computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0);
+        double                              computeSiteRateMultiplier(const TopologyNode& node, CharacterEventDiscrete* currState, CharacterEventDiscrete* newState, double age=0.0);
         double                              computeSiteRateMultiplier(const TopologyNode& node, unsigned currState, unsigned newState, unsigned charIdx=0, double age=0.0);
         
-        double                              computeRateMultiplierUsingWidth(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age=0.0);
-        double                              computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age=0.0);
+        double                              computeRateMultiplierUsingWidth(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0);
+        double                              computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0);
         
         void                                setContextMatrix(const RbVector<RbVector<double> >& c);
         void                                setGainFactor(double f);

@@ -437,7 +437,7 @@ void SampledSpeciationBirthDeathProcess::getAffected(RbOrderedSet<DagNode *> &af
 /**
  * Get the character history object.
  */
-CharacterHistory& SampledSpeciationBirthDeathProcess::getCharacterHistory( void )
+CharacterHistoryDiscrete& SampledSpeciationBirthDeathProcess::getCharacterHistory( void )
 {
     
     return branch_histories;
@@ -446,7 +446,7 @@ CharacterHistory& SampledSpeciationBirthDeathProcess::getCharacterHistory( void 
 /**
  * Get the character history object.
  */
-CharacterHistory SampledSpeciationBirthDeathProcess::getCharacterHistory( void ) const
+const CharacterHistoryDiscrete& SampledSpeciationBirthDeathProcess::getCharacterHistory( void ) const
 {
     
     return branch_histories;
@@ -557,7 +557,7 @@ void SampledSpeciationBirthDeathProcess::simulateEventsForTreeAdHoc( void )
                     if (u < p)
                     {
                         double pos = (startAge - currAge) / (startAge - endAge);
-                        CharacterEvent* evt = new CharacterEvent(0, 0, pos);
+                        CharacterEvent* evt = new CharacterEventDiscrete(0, 0, pos);
                         
                         branch_histories.addEvent(evt, i);
                     }
@@ -793,7 +793,7 @@ void SampledSpeciationBirthDeathProcess::simulateUnsampledLineages(Tree* t, std:
 //        std::cout << nodes[u]->getParent().getIndex() << " " << nodes[u]->getParent().getAge() <<  " -> " << nodes[u]->getIndex() << " " << nodes[u]->getAge() <<"\n";
 //        std::cout << "\n";
         
-        CharacterEvent* evt = new CharacterEvent(0, 0, time);
+        CharacterEvent* evt = new CharacterEventDiscrete(0, 0, time);
         branch_histories.addEvent(evt, node_index);
     }
     
@@ -848,7 +848,7 @@ void SampledSpeciationBirthDeathProcess::simulateUnsampledLineages(Tree* t, std:
      
     for (size_t i = 0; i < rootEventTimes.size(); i++)
     {
-        CharacterEvent* evt = new CharacterEvent(0, 0, rootEventTimes[i]);
+        CharacterEvent* evt = new CharacterEventDiscrete(0, 0, rootEventTimes[i]);
         branch_histories.addEvent(evt, root->getIndex());
     }
     

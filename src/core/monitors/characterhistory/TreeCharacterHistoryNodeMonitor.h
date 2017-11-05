@@ -159,7 +159,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         for (size_t i = 0; i < characters.size(); i++)
         {
 //            if (i != 0) ss << ",";
-            ss << characters[i]->getState();
+            ss << static_cast<CharacterEventDiscrete*>(characters[i])->getState();
         }
     }
     else if (infoStr=="parent")
@@ -168,7 +168,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         for (size_t i = 0; i < characters.size(); i++)
         {
 //            if (i != 0) ss << ",";
-            ss << characters[i]->getState();
+            ss << static_cast<CharacterEventDiscrete*>(characters[i])->getState();
         }
     }
     else if (infoStr=="clado_state")
@@ -208,7 +208,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         std::vector<unsigned> v(num_states,0);
         for (it = evts.begin(); it != evts.end(); it++)
         {
-            size_t s = (*it)->getState();
+            size_t s = static_cast<CharacterEventDiscrete*>(*it)->getState();
             v[s] += 1;
         }
 
@@ -232,8 +232,8 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         for (it = evts.begin(); it != evts.end(); it++)
         {
             size_t idx = (*it)->getSiteIndex();
-            size_t from = characters[idx]->getState();
-            size_t to = (*it)->getState();
+            size_t from = static_cast<CharacterEventDiscrete*>(characters[idx])->getState();
+            size_t to = static_cast<CharacterEventDiscrete*>(*it)->getState();
             v[ num_states*from + to ] += 1;
             characters[idx] = (*it);
         }
@@ -278,7 +278,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
             ss << "{";
             ss << "t:" << (*it)->getAge() << ",";
             ss << "a:" << ndAge - brLen * (*it)->getAge() << ",";
-            ss << "s:" << (*it)->getState() << ",";
+            ss << "s:" << static_cast<CharacterEventDiscrete*>(*it)->getState() << ",";
             ss << "i:" << (*it)->getSiteIndex() << "";
             ss << "}";
 
@@ -384,7 +384,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildNumEve
     unsigned v = 0;
     for (it = evts.begin(); it != evts.end(); it++)
     {
-        if ( (*it)->getState() == state )
+        if ( static_cast<CharacterEventDiscrete*>(*it)->getState() == state )
             v++;
     }
     double eventRatio = (double)v / 1.0;//nd->getBranchLength();
@@ -413,7 +413,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildNumEve
 
         for (it = evts.begin(); it != evts.end(); it++)
         {
-            if ( (*it)->getState() == state )
+            if ( static_cast<CharacterEventDiscrete*>(*it)->getState() == state )
                 v++;
         }
 
