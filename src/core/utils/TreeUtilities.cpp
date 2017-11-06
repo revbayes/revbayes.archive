@@ -382,55 +382,6 @@ void RevBayesCore::TreeUtilities::setAges(Tree *t, TopologyNode *n, std::vector<
 }
 
 
-std::string RevBayesCore::TreeUtilities::uniqueNewickTopology(const Tree &t)
-{
-    return uniqueNewickTopologyRecursive( t.getRoot() );
-}
-
-
-std::string RevBayesCore::TreeUtilities::uniqueNewickTopologyRecursive(const TopologyNode &n)
-{
-    // check whether this is an internal node
-    if ( n.isTip() )
-    {
-        return n.getName();
-    }
-    else
-    {
-        std::string fossil = "";
-        std::string newick = "(";
-        std::vector<std::string> child_newick;
-        for (size_t i = 0; i < n.getNumberOfChildren(); ++i)
-        {
-            const TopologyNode& child = n.getChild( i );
-            if ( child.isSampledAncestor() && (child.getName() < fossil || fossil == "") )
-            {
-                fossil = child.getName();
-            }
-            else
-            {
-                child_newick.push_back( uniqueNewickTopologyRecursive( child ) );
-            }
-        }
-        sort(child_newick.begin(), child_newick.end());
-        for (std::vector<std::string>::iterator it = child_newick.begin(); it != child_newick.end(); ++it)
-        {
-            if ( it != child_newick.begin() )
-            {
-                newick += ",";
-            }
-            newick += *it;
-        }
-        newick += ")";
-        newick += fossil;
-
-        return newick;
-    }
-
-}
-
-
-
 void RevBayesCore::TreeUtilities::processDistsInSubtree(const RevBayesCore::TopologyNode& node, RevBayesCore::MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId)
 {
 	distsToNodeFather.clear();
