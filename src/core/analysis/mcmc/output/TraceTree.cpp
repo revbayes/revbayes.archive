@@ -59,7 +59,7 @@ TraceTree* TraceTree::clone(void) const
 
 
 // annotate the MAP node/branch parameters
-void TraceTree::mapParameters( Tree &tree ) const
+void TraceTree::mapParameters( Tree &tree, bool verbose ) const
 {
     
     const Tree& sample_tree = objectAt( 0 );
@@ -88,11 +88,11 @@ void TraceTree::mapParameters( Tree &tree ) const
         
         if ( StringUtilities::isNumber( pair[1] ) && !StringUtilities::isIntegerNumber( pair[1] ) )
         {
-            mapContinuous(tree, pair[0], i, 0.95, true);
+            mapContinuous(tree, pair[0], i, 0.95, true, verbose);
         }
         else
         {
-            mapDiscrete(tree, pair[0], i, 3, true);
+            mapDiscrete(tree, pair[0], i, 3, true, verbose);
         }
         
     }
@@ -126,11 +126,11 @@ void TraceTree::mapParameters( Tree &tree ) const
         
         if ( StringUtilities::isNumber( pair[1] ) )
         {
-            mapContinuous(tree, pair[0], i, 0.95, false);
+            mapContinuous(tree, pair[0], i, 0.95, false, verbose);
         }
         else
         {
-            mapDiscrete(tree, pair[0], i, 3, false);
+            mapDiscrete(tree, pair[0], i, 3, false, verbose);
         }
         
     }
@@ -142,7 +142,7 @@ void TraceTree::mapParameters( Tree &tree ) const
 /*
  * this method calculates the MAP ancestral character states for the nodes on the input_tree
  */
-void TraceTree::mapDiscrete(Tree &tree, const std::string &n, size_t paramIndex, size_t num, bool isNodeParameter ) const
+void TraceTree::mapDiscrete(Tree &tree, const std::string &n, size_t paramIndex, size_t num, bool isNodeParameter, bool verbose ) const
 {
     
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
@@ -331,7 +331,7 @@ void TraceTree::mapDiscrete(Tree &tree, const std::string &n, size_t paramIndex,
 /*
  * this method calculates the MAP ancestral character states for the nodes on the input_tree
  */
-void TraceTree::mapContinuous(Tree &tree, const std::string &n, size_t paramIndex, double hpd, bool isNodeParameter ) const
+void TraceTree::mapContinuous(Tree &tree, const std::string &n, size_t paramIndex, double hpd, bool isNodeParameter, bool verbose  ) const
 {
     
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
@@ -339,28 +339,65 @@ void TraceTree::mapContinuous(Tree &tree, const std::string &n, size_t paramInde
     std::vector<std::vector<double> > samples(summary_nodes.size(),std::vector<double>());
     
     // flag if only interior nodes are used
-    bool interiorOnly = false;
-    bool tipsChecked = false;
-    bool rootChecked = false;
-    bool useRoot = true;
+    bool interior_only  = false;
+    bool tips_checked   = false;
+    bool root_checked   = false;
+    bool use_root       = true;
+    
+    // get the reference newick representation
+    std::string reference_newick = tree.getPlainNewickRepresentation();
+    
+    // we also need to know the sample size
+    size_t num_samples = size();
+    
+    // start the progress bar
+    ProgressBar progress = ProgressBar(num_samples, burnin);
+    if ( verbose == true )
+    {
+        progress.start();
+    }
+    
+    // for fast access, get the newick strings for all clades
+    std::vector<std::string> summary_newick;
+    size_t num_nodes = summary_nodes.size();
+    for (size_t j = 0; j < num_nodes; ++j)
+    {
+        TopologyNode *node = summary_nodes[j];
+        summary_newick.push_back( node->computePlainNewick() );
+    }
     
     // loop through all trees in tree trace
-    for (size_t i = burnin; i < size(); i++)
+    for (size_t i = burnin; i < num_samples; ++i)
     {
+        
+        if ( verbose == true )
+        {
+            progress.update( i );
+        }
+        
         const Tree &sample_tree = objectAt( i );
         const TopologyNode& sample_root = sample_tree.getRoot();
         
+        // create a map from newick strings to clade indices
+        // we also get the newick representation of this sample
+        std::map<std::string,size_t> sample_clade_indices;
+        std::string sample_newick = sample_root.fillCladeIndices(sample_clade_indices);
+        
+        // compare if this tree is the same as the reference tree
+        bool same_tree = ( reference_newick == sample_newick );
+        
         // loop through all nodes in inputTree
-        for (size_t j = 0; j < summary_nodes.size(); j++)
+        size_t num_nodes = summary_nodes.size();
+        for (size_t j = 0; j < num_nodes; ++j)
         {
             TopologyNode *node = summary_nodes[j];
             if ( node->isTip() == true )
             {
-                if ( tipsChecked == false )
+                if ( tips_checked == false )
                 {
                     
-                    tipsChecked = true;
-                    size_t sample_clade_index = sample_root.getCladeIndex( node );
+                    tips_checked = true;
+                    size_t sample_clade_index = sample_clade_indices[ summary_newick[j] ];
                     
                     const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                     
@@ -387,17 +424,17 @@ void TraceTree::mapContinuous(Tree &tree, const std::string &n, size_t paramInde
                         StringUtilities::stringSplit(tmp, "=", pair);
                         
                         // check if this parameter has the correct name
-                        interiorOnly = pair[0] != n;
+                        interior_only = (pair[0] != n);
                     }
                     else
                     {
-                        interiorOnly = true;
+                        interior_only = true;
                     }
                     
                     
                 }
                 
-                if ( interiorOnly == true )
+                if ( interior_only == true )
                 {
                     continue;
                 }
@@ -405,12 +442,12 @@ void TraceTree::mapContinuous(Tree &tree, const std::string &n, size_t paramInde
             
             if ( node->isRoot() == true )
             {
-                if ( rootChecked == false )
+                if ( root_checked == false )
                 {
                     
-                    rootChecked = true;
+                    root_checked = true;
                     
-                    size_t sample_clade_index = sample_root.getCladeIndex( node );
+                    size_t sample_clade_index = sample_clade_indices[ summary_newick[j] ];
                     
                     const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                     
@@ -437,29 +474,29 @@ void TraceTree::mapContinuous(Tree &tree, const std::string &n, size_t paramInde
                         StringUtilities::stringSplit(tmp, "=", pair);
                         
                         // check if this parameter has the correct name
-                        useRoot = pair[0] == n;
+                        use_root = pair[0] == n;
                     }
                     else
                     {
-                        useRoot = false;
+                        use_root = false;
                     }
                     
                     
                 }
                 
-                if ( useRoot == false )
+                if ( use_root == false )
                 {
                     continue;
                 }
                 
             }
             
-            if ( sample_root.containsClade(node, true) )
+            
+            if ( same_tree == true || sample_clade_indices.find( summary_newick[j] ) != sample_clade_indices.end() )
             {
                 // if the inputTree node is also in the sample tree
                 // we get the ancestral character state from the ancestral state trace
-                size_t sample_clade_index = sample_root.getCladeIndex( node );
-                
+                size_t sample_clade_index = sample_clade_indices[ summary_newick[j] ];
                 const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                 
                 std::vector<std::string> params;
@@ -505,12 +542,18 @@ void TraceTree::mapContinuous(Tree &tree, const std::string &n, size_t paramInde
     } // end loop over each iteration in the trace
     
     
+    // end the progress bar
+    if ( verbose == true )
+    {
+        progress.finish();
+    }
+    
     std::vector<double> posteriors;
-    for (int idx = 0; idx < summary_nodes.size(); ++idx)
+    for (int idx = 0; idx < num_nodes; ++idx)
     {
         
         TopologyNode &node = *summary_nodes[idx];
-        if ( ( node.isTip() == false || interiorOnly == false ) && ( node.isRoot() == false || useRoot == true ) )
+        if ( ( node.isTip() == false || interior_only == false ) && ( node.isRoot() == false || use_root == true ) )
         {
             
             // collect the samples
@@ -548,6 +591,7 @@ void TraceTree::mapContinuous(Tree &tree, const std::string &n, size_t paramInde
                 
                 // make parameter string for this node
                 node.addBranchParameter(n,median);
+
             }
             
         }
@@ -589,7 +633,7 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
             throw(RbException("Rooting of input tree differs from the tree sample"));
         }
         
-        newick = TreeUtilities::uniqueNewickTopology( *tmp_tree );
+        newick = tmp_tree->getPlainNewickRepresentation();
         
         delete tmp_tree;
         
@@ -755,7 +799,7 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
     
     if ( report.MAP_parameters )
     {
-        mapParameters( tree );
+        mapParameters( tree, verbose );
     }
     
 }
@@ -1070,7 +1114,7 @@ int TraceTree::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbose
         t.reroot( outgroup, true );
     }
     
-    std::string newick = TreeUtilities::uniqueNewickTopology( t );
+    std::string newick = t.getPlainNewickRepresentation();
     
     //double total_samples = trace.size();
     double freq = 0;
@@ -1142,7 +1186,7 @@ bool TraceTree::isCoveredInInterval(const std::string &v, double ci_size, bool v
         tree.reroot( outgroup, true );
     }
     
-    std::string newick = TreeUtilities::uniqueNewickTopology(tree);
+    std::string newick = tree.getPlainNewickRepresentation();
     
     double totalSamples = size();
     double totalProb = 0.0;
@@ -1628,7 +1672,7 @@ void TraceTree::summarize( bool verbose )
             tree.reroot( outgroup, true );
         }
         
-        std::string newick = TreeUtilities::uniqueNewickTopology( tree );
+        std::string newick = tree.getPlainNewickRepresentation();
 
         tree_counts[newick]++;
 

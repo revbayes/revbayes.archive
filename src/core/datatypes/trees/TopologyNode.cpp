@@ -741,7 +741,7 @@ std::string TopologyNode::fillCladeIndices(std::map<std::string,size_t> &clade_i
             }
             else
             {
-                child_newick.push_back( child.computePlainNewick() );
+                child_newick.push_back( child.fillCladeIndices(clade_index_map) );
             }
         }
         sort(child_newick.begin(), child_newick.end());

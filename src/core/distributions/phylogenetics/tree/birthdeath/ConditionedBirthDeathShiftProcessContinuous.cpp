@@ -569,6 +569,82 @@ void ConditionedBirthDeathShiftProcessContinuous::executeMethod(const std::strin
         }
         
     }
+    else if ( n == "probabilitySpeciationRateIncrease" )
+    {
+        size_t num_branches = branch_histories.getNumberBranches();
+        rv.clear();
+        rv.resize( num_branches );
+        
+        for (size_t i = 0; i < num_branches; ++i)
+        {
+            const TopologyNode &node = this->value->getNode( i );
+            const BranchHistory& bh = branch_histories[ i ];
+            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+            double value_rootwards = computeStartValue( node.getParent().getIndex(), 0 );
+            double value_tipwards  = computeStartValue( node.getIndex(), 0 );
+            
+            rv[i] = ( value_rootwards < value_tipwards ? 1.0 : 0.0 );
+            
+        }
+        
+    }
+    else if ( n == "probabilitySpeciationRateDecrease" )
+    {
+        size_t num_branches = branch_histories.getNumberBranches();
+        rv.clear();
+        rv.resize( num_branches );
+        
+        for (size_t i = 0; i < num_branches; ++i)
+        {
+            const TopologyNode &node = this->value->getNode( i );
+            const BranchHistory& bh = branch_histories[ i ];
+            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+            double value_rootwards = computeStartValue( node.getParent().getIndex(), 0 );
+            double value_tipwards  = computeStartValue( node.getIndex(), 0 );
+            
+            rv[i] = ( value_rootwards > value_tipwards ? 1.0 : 0.0 );
+            
+        }
+        
+    }
+    else if ( n == "probabilityExtinctionRateIncrease" )
+    {
+        size_t num_branches = branch_histories.getNumberBranches();
+        rv.clear();
+        rv.resize( num_branches );
+        
+        for (size_t i = 0; i < num_branches; ++i)
+        {
+            const TopologyNode &node = this->value->getNode( i );
+            const BranchHistory& bh = branch_histories[ i ];
+            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+            double value_rootwards = computeStartValue( node.getParent().getIndex(), 1 );
+            double value_tipwards  = computeStartValue( node.getIndex(), 1 );
+            
+            rv[i] = ( value_rootwards < value_tipwards ? 1.0 : 0.0 );
+            
+        }
+        
+    }
+    else if ( n == "probabilityExtinctionRateDecrease" )
+    {
+        size_t num_branches = branch_histories.getNumberBranches();
+        rv.clear();
+        rv.resize( num_branches );
+        
+        for (size_t i = 0; i < num_branches; ++i)
+        {
+            const TopologyNode &node = this->value->getNode( i );
+            const BranchHistory& bh = branch_histories[ i ];
+            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+            double value_rootwards = computeStartValue( node.getParent().getIndex(), 1 );
+            double value_tipwards  = computeStartValue( node.getIndex(), 1 );
+            
+            rv[i] = ( value_rootwards > value_tipwards ? 1.0 : 0.0 );
+            
+        }
+        
+    }
     else
     {
         throw RbException("The heterogeneous rate birth-death process does not have a member method called '" + n + "'.");
