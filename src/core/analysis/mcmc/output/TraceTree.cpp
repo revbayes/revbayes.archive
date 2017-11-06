@@ -1592,10 +1592,7 @@ void TraceTree::summarize( bool verbose )
     std::sort(tip_names.begin(),tip_names.end());
     std::string outgroup = tip_names[0];
 
-    if( rooted != objectAt(0).isRooted() )
-    {
-        rooted = objectAt(0).isRooted();
-    }
+    rooted = objectAt(0).isRooted();
 
     clade_samples.clear();
     tree_samples.clear();
@@ -1637,7 +1634,6 @@ void TraceTree::summarize( bool verbose )
 
         // get the clades for this tree
         RbBitSet b( tree.getNumberOfTips(), false );
-        std::map<Split, long> condClades;
         collectTreeSample(tree.getRoot(), b, newick, clade_counts);
     }
     
