@@ -21,7 +21,6 @@
 #include "RlAncestralStateTrace.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "AncestralStateTrace.h"
 #include "TreeUtilities.h"
 #include "WorkspaceVector.h"
 

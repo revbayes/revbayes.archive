@@ -15,7 +15,7 @@
 
 using namespace RevBayesCore;
 
-Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt) : MonteCarloSampler( ),
+Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt, size_t ntries) : MonteCarloSampler(),
 num_chains(nc),
 schedule_type(sT),
 current_generation(0),
@@ -35,7 +35,7 @@ numAcceptedSwaps( 0 )
     heat_ranks.resize(num_chains, 0);
     
     // assign chains to processors, instantiate Mcmc objects
-    base_chain = new Mcmc(m, mv, mn);
+    base_chain = new Mcmc(m, mv, mn, ntries);
     
     
     // initialize the individual chains
@@ -481,6 +481,7 @@ void Mcmcmc::setModel( Model *m, bool redraw )
     delete m;
     
 }
+
 
 void Mcmcmc::setActivePIDSpecialized(size_t i, size_t n)
 {

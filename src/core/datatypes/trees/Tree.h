@@ -114,6 +114,7 @@ namespace RevBayesCore {
         bool                                                isUltrametric(void) const;                                                                          //!< Is this tree ultrametric?
         void                                                makeInternalNodesBifurcating(bool reindex);                                                                 //!< Make all the internal nodes bifurcating.
         void                                                orderNodesByIndex();
+        void                                                pruneTaxa(const RbBitSet&);
         void                                                reroot(const Clade &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
         void                                                reroot(const std::string &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
         void                                                reroot(TopologyNode &n, bool reindex);
@@ -133,7 +134,7 @@ namespace RevBayesCore {
 //    private:
 
         void                                                fillNodesByPhylogeneticTraversal(TopologyNode* node);               //!< fill the nodes vector by a preorder traversal recursively starting with this node.
-
+        bool                                                recursivelyPruneTaxa(TopologyNode*, const RbBitSet&);
 
 
         // private members

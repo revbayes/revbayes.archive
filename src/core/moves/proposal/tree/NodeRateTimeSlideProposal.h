@@ -1,5 +1,5 @@
-#ifndef EmpiricalTreeProposal_H
-#define EmpiricalTreeProposal_H
+#ifndef NodeRateTimeSlideProposal_H
+#define NodeRateTimeSlideProposal_H
 
 #include <string>
 
@@ -10,26 +10,27 @@
 namespace RevBayesCore {
     
     /**
-     * The narrow-exchange operator.
+     * The node-age slide proposal operator using a Uniform distribution.
      *
-     * A narrow-exchange proposal is a NNI (nearest neighbour interchange) proposal on rooted trees without changing the node age.
-     * That is, we pick a random node which is not the root and neither its parent is the root.
-     * Then, we try to exchange the picked node with it's uncle. This move will automatically fail if the uncle is older than the parent.
+     * This node-age proposal is a Uniform-sliding proposal on rooted subtrees without changing the topology.
+     * That is, we pick a random node which is not the root.
+     * Then, we pick an age between the parent and the oldest sampled descendant drawn from a Uniform distribution centered around the current age.
      *
      *
      * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Will Freyman)
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2012-07-12, version 1.0
      *
      */
-    class EmpiricalTreeProposal : public Proposal {
+    class NodeRateTimeSlideProposal : public Proposal {
         
     public:
-        EmpiricalTreeProposal( StochasticNode<Tree> *n, bool mh);                                               //!<  constructor
+        NodeRateTimeSlideProposal( StochasticNode<Tree> *n, StochasticNode< RbVector<double> > *r);         //!<  constructor
+        NodeRateTimeSlideProposal( StochasticNode<Tree> *n, std::vector<StochasticNode<double>* > r);       //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
-        EmpiricalTreeProposal*                  clone(void) const;                                          //!< Clone object
+        NodeRateTimeSlideProposal*              clone(void) const;                                             //!< Clone object
         double                                  doProposal(void);                                           //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                      //!< Prepare the proposal
@@ -44,14 +45,18 @@ namespace RevBayesCore {
         
     private:
         
-        StochasticNode<Tree>*                   variable;
-        size_t                                  old_tree_index;
-        bool                                    metropolisHastings;
-        
+        // parameters
+        StochasticNode< RbVector<double> >*     rates_node;
+        std::vector<StochasticNode<double>* >   rates_vector;
+        StochasticNode<Tree>*                   variable;                                                   //!< The variable the Proposal is working on
+
+        // stored objects to undo proposal
+        double                                  storedAge;
+        TopologyNode*                           storedNode;
+        std::vector<double>                     stored_rates;
     };
     
 }
-
 
 #endif
 

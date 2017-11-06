@@ -14,7 +14,7 @@
 
 
 
-TraceTree::TraceTree(const RevBayesCore::TraceTree &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TreeSummary>( new RevBayesCore::TreeSummary( m ) )
+TraceTree::TraceTree(const RevBayesCore::TraceTree& x) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>( new RevBayesCore::TraceTree(x) )
 {
     
     // initialize the methods
@@ -167,10 +167,10 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         bool post = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
         i += post * this->value->getBurnin();
 
-        const RevBayesCore::Tree &current_tree = this->value->getTreeTrace().objectAt( i );
+        const RevBayesCore::Tree &current_tree = this->value->objectAt( i );
         
         Tree *rl_tree = NULL;
-        if ( this->value->getTreeTrace().isClock() == true )
+        if ( this->value->isClock() == true )
         {
             rl_tree = new TimeTree( current_tree );
         }
@@ -228,7 +228,7 @@ const std::string& TraceTree::getClassType(void)
 const TypeSpec& TraceTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TreeSummary>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>::getClassTypeSpec() ) );
     
     return rev_type_spec;
 }
@@ -336,10 +336,10 @@ void TraceTree::initMethods( void )
 
 /** Get type spec */
 
-void TraceTree::printValue(std::ostream &o) const
+void TraceTree::printValue(std::ostream &o, bool user) const
 {
     
-    o << "TreeTrace";
+    o << "TreeTrace (" << getValue().getFileName() << ")";
 }
 
 

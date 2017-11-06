@@ -56,9 +56,31 @@ Clade::Clade(const std::vector<Taxon> &n, const RbBitSet &b) :
     is_optional_match(false)
 {
     
-    // for identifiability we always keep the taxon names sorted
-//    std::sort(taxa.begin(), taxa.end());
     VectorUtilities::sort( taxa );
+}
+
+
+/**
+ * Default constructor that instantiates the object.
+ * Additionally, we sort the vector of taxon names.
+ *
+ * \param[in]   n    The vector containing the taxon names.
+ */
+Clade::Clade(const RbBitSet &b, const std::vector<Taxon> &n) :
+    age( 0.0 ),
+    bitset( b ),
+    num_missing( b.size() - b.getNumberSetBits() ),
+    is_negative_constraint(false),
+    is_optional_match(false)
+{
+
+    for(size_t i = 0; i < b.size(); i++)
+    {
+        if( b.isSet(i) )
+        {
+            taxa.push_back(n[i]);
+        }
+    }
 }
 
 
@@ -251,7 +273,7 @@ const RbBitSet& Clade::getBitRepresentation( void ) const
  * \return       The mrca taxon
  *
  */
-const std::vector<Taxon>& Clade::getMrca(void) const
+const std::set<Taxon>& Clade::getMrca(void) const
 {
     return mrca;
 }
@@ -421,11 +443,9 @@ void Clade::setBitRepresentation( const RbBitSet &b )
  * \param[in]    t      The taxa to be set as the mrca
  *
  */
-void Clade::setMrca(const std::vector<Taxon>& t)
+void Clade::setMrca(const std::set<Taxon>& t)
 {
     mrca = t;
-
-    VectorUtilities::sort(mrca);
 }
 
 

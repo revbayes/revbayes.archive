@@ -103,9 +103,7 @@ void ModelTrace::printValue(std::ostream &o) const {
     
     o << "Filename:                  " << value->getFileName() << std::endl;
     o << "Parameter:                 " << value->getParameterName() << std::endl;
-    o << "Samples:                   " << value->getSamples() << std::endl;
-    o << "Stepsize:                  " << value->getStepSize() << std::endl;
-    //    o << "Heidelberger-Welch-test:   " << (value->hasPassedHeidelbergerWelchTest() ? "TRUE" : "FALSE") << std::endl;
+    o << "#Samples:                  " << value->size() << std::endl;
 }
 
 

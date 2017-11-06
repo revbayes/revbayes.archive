@@ -59,7 +59,8 @@ void StationarityStoppingRule::setNumberOfRuns(size_t n)
  */
 bool StationarityStoppingRule::stop( size_t g )
 {
-    
+    StationarityTest sTest = StationarityTest( numReplicates, prob );
+
     bool passed = true;
     
     std::vector<std::vector<std::vector<double> > > values;
@@ -80,67 +81,26 @@ bool StationarityStoppingRule::stop( size_t g )
         
         size_t maxBurnin = 0;
         
+        // find the max burnin
         for ( size_t j = 0; j < data.size(); ++j)
         {
-            TraceNumeric &t = data[j];
-            const std::vector<double> &v = t.getValues();
-            size_t b = burninEst->estimateBurnin( v );
+            size_t b = burninEst->estimateBurnin( data[j] );
+
             if ( maxBurnin < b )
             {
                 maxBurnin = b;
             }
-            
         }
         
-        // store the values
+        // set the burnins
         for ( size_t j = 0; j < data.size(); ++j)
         {
-            TraceNumeric &t = data[j];
-            const std::vector<double> &v = t.getValues();
-            
-            // get the matrix of values for the j-th parameter
-            if ( j >= values.size() )
-            {
-                values.push_back( std::vector<std::vector<double> >() );
-            }
-            
-            std::vector<std::vector<double> > &valueMatrix = values[j];
-            
-            // get the vector of values for the i-th run/chain
-            if ( i > valueMatrix.size() )
-            {
-                valueMatrix.push_back( std::vector<double>() );
-            }
-            
-            std::vector<double> &valueVector = valueMatrix[i-1];
-            
-            //            valueVector.insert(valueVector.begin(), v.begin()+maxBurnin, v.end());
-            valueVector.insert(valueVector.begin(), v.begin(), v.end());
-            
-            // get the matrix of values for the j-th parameter
-            if ( j >= burnins.size() )
-            {
-                burnins.push_back( std::vector<size_t>() );
-            }
-            std::vector<size_t> &b = burnins[j];
-            
-            // setting the burnin for th i-th chain.
-            b.push_back(maxBurnin);
-            
+            data[j].setBurnin( maxBurnin );
         }
-        
+
+        // conduct the test
+        passed &= sTest.assessConvergence(data);
     }
-    
-    
-    
-    StationarityTest sTest = StationarityTest( numReplicates, prob );
-    for ( size_t i = 0; i < values.size(); ++i)
-    {
-        const std::vector< std::vector<double> > &v = values[i];
-        
-        passed &= sTest.assessConvergenceMultipleChains(v, burnins[i]);
-    }
-    
     
     return passed;
 }

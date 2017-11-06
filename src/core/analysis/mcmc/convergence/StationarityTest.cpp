@@ -14,28 +14,27 @@ StationarityTest::StationarityTest(size_t b, double f) : ConvergenceDiagnosticCo
 
 }
 
-bool StationarityTest::assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin)
+bool StationarityTest::assessConvergence(const TraceNumeric& trace)
 {
     // calculate the block size
-    size_t blockSize = (values.size()-burnin) / nBlocks;
+    size_t blockSize = trace.size(true) / nBlocks;
     
     // use correction for multiple sampling
     double p_corrected = pow(1.0-p, 1.0/nBlocks);
     
     // get the mean for the trace
-    analysis.analyseMean(values,burnin);
-    double traceMean = analysis.getMean();
+    double traceMean = trace.getMean();
     
     // get a mean and standard error for each block
     std::vector<double> blockMeans =  std::vector<double>(nBlocks,0.0);
     std::vector<double> blockSem =  std::vector<double>(nBlocks,0.0);
     for (size_t i=0; i<nBlocks; i++)
     {
-        analysis.analyseMean(values,i*blockSize+burnin,(i+1)*blockSize+burnin);
-        blockMeans[i]   = analysis.getMean();
-        
-        analysis.analyseCorrelation(values,i*blockSize+burnin,(i+1)*blockSize+burnin);
-        blockSem[i]     = analysis.getStdErrorOfMean();
+        size_t begin = i*blockSize+trace.getBurnin();
+        size_t end = (i+1)*blockSize+trace.getBurnin();
+
+        blockMeans[i] = trace.getMean(begin, end);
+        blockSem[i]   = trace.getSEM(begin, end);
         
         // get the quantile of a normal with mu=0, var=sem and p=(1-p_corrected)/2
         double quantile = RbStatistics::Normal::quantile(0.0, blockSem[i], p_corrected);
@@ -50,35 +49,39 @@ bool StationarityTest::assessConvergenceSingleChain(const std::vector<double>& v
     return true;
 }
 
-bool StationarityTest::assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<size_t>& burnins)
+bool StationarityTest::assessConvergence(const std::vector<TraceNumeric>& traces)
 {
     
     // get number of chains
-    size_t nChains = values.size();
-    // use correction for multiple sampling
-    double p_corrected = pow(1.0-p, 1.0/nChains);
+    size_t nChains = traces.size();
     
     // get the mean between all traces
-    analysis.analyseMean(values,burnins);
-    double totalMean = analysis.getMean();
-    
-    // get a mean and standard error for each block
+    double total_mean = 0.0;
+    size_t total_sample_size = 0.0;
+
+    // get the mean and standard error for each chain
     std::vector<double> chainMeans =  std::vector<double>(nChains,0.0);
     std::vector<double> chainSem =  std::vector<double>(nChains,0.0);
     for (size_t i=0; i<nChains; i++)
     {
-        const std::vector<double>& chain    = values.at(i);
-        size_t burnin                       = burnins.at(i);
-        analysis.analyseMean(chain,burnin);
-        chainMeans[i]                       = analysis.getMean();
-        
-        analysis.analyseCorrelation(chain,burnin);
-        chainSem[i]                         = analysis.getStdErrorOfMean();
-        
+        chainMeans[i] = traces[i].getMean();
+        chainSem[i]   = traces[i].getSEM();
+
+        total_mean += chainMeans[i]*traces[i].size(true);
+        total_sample_size += traces[i].size(true);
+    }
+    
+    total_mean /= double(total_sample_size);
+
+    // use correction for multiple sampling
+    double p_corrected = pow(1.0-p, 1.0/nChains);
+
+    for (size_t i=0; i<nChains; i++)
+    {
         // get the quantile of a normal with mu=0, var=sem and p=(1-p_corrected)/2
         double quantile = RbStatistics::Normal::quantile(0.0, chainSem[i], p_corrected);
         // check if the trace mean is outside this confidence interval
-        if (chainMeans[i]-quantile > totalMean || chainMeans[i]+quantile < totalMean)
+        if (chainMeans[i]-quantile > total_mean || chainMeans[i]+quantile < total_mean)
         {
             // the mean of the whole trace falls out of the confidence interval for this block and hence we cannot reject with p-confidence that the trace has not converged
             return false;

@@ -12,15 +12,15 @@ using namespace RevBayesCore;
 
 PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const TypedDagNode<Tree> *t, const TypedDagNode<MatrixReal> *c, size_t ns) :
     AbstractPhyloBrownianProcess( t, ns ),
-    rate_matrix( c ),
     partial_likelihoods( std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) ) ),
     contrasts( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0.0) ) ) ),
     contrast_uncertainty( std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) ) ),
+    active_likelihood( std::vector<size_t>(this->num_nodes, 0) ),
     independent_contrasts( std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0.0) ) ),
     independent_contrasts_sds( std::vector<double>(this->num_nodes, 0.0) ),
-    active_likelihood( std::vector<size_t>(this->num_nodes, 0) ),
     changed_nodes( std::vector<bool>(this->num_nodes, false) ),
     dirty_nodes( std::vector<bool>(this->num_nodes, true) ),
+    rate_matrix( c ),
     active_matrix(0),
     precision_matrices( std::vector<MatrixReal>( 2, MatrixReal(num_sites) ) )
 {

@@ -3,9 +3,9 @@
 
 #include "Cloneable.h"
 #include "Model.h"
-#include "RbVector.h"
-#include "ModelTrace.h"
 #include "Parallelizable.h"
+#include "RbVector.h"
+#include "Trace.h"
 
 namespace RevBayesCore {
     

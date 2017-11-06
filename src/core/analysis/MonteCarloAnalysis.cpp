@@ -286,7 +286,7 @@ const Model& MonteCarloAnalysis::getModel( void ) const
 
 void MonteCarloAnalysis::initializeFromTrace( RbVector<ModelTrace> traces )
 {
-    size_t n_samples = traces[0].getSamples();
+    size_t n_samples = traces[0].size();
     size_t last_generation = 0;
     size_t n_traces = traces.size();
     

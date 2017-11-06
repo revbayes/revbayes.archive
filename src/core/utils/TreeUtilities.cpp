@@ -569,3 +569,33 @@ double RevBayesCore::TreeUtilities::getAgeOfMRCA(const Tree &t, std::string firs
     }
 
 }
+
+
+int RevBayesCore::TreeUtilities::getCollessMetric(const TopologyNode & node, int& size)
+{
+    if( node.isTip() )
+    {
+        size = (node.getAge() == 0.0);
+        return 0.0;
+    }
+
+    const TopologyNode& left = node.getChild(0);
+    const TopologyNode& right = node.getChild(1);
+
+    int left_size  = 0;
+    int right_size = 0;
+
+    double left_metric  = getCollessMetric(left, left_size);
+    double right_metric = getCollessMetric(right, right_size);
+
+    size = left_size + right_size;
+
+    int metric = std::abs( left_size - right_size);
+
+    if( left_size == 0 || right_size == 0 )
+    {
+        metric = 0;
+    }
+
+    return left_metric + right_metric + metric;
+}
