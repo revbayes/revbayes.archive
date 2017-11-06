@@ -102,9 +102,9 @@ namespace RevBayesCore {
         TopologyNode*                                                           findParentNode(TopologyNode&, const Clade &, std::vector<TopologyNode*>&, RbBitSet& ) const;
         std::string                                                             getSiteState( const std::string &site_sample, size_t site );
         std::vector< std::pair<size_t, double> >                                parseSIMMAPForNode(std::string character_history);
-        void                                                                    mapContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, bool np=true ) const;
-        void                                                                    mapDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, bool np=true ) const;
-        void                                                                    mapParameters(Tree &inputTree) const;
+        void                                                                    mapContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd, bool np, bool verbose ) const;
+        void                                                                    mapDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num, bool np ) const;
+        void                                                                    mapParameters(Tree &inputTree, bool verbose) const;
         void                                                                    summarize(bool verbose);
 
         size_t                                                                  burnin;

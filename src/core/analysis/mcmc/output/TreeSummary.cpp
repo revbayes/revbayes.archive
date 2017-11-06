@@ -1481,7 +1481,7 @@ std::vector< std::pair<size_t, double> > TreeSummary::parseSIMMAPForNode(std::st
 
 
 // annotate the MAP node/branch parameters
-void TreeSummary::mapParameters( Tree &tree ) const
+void TreeSummary::mapParameters( Tree &tree, bool verbose ) const
 {
     
     const Tree& sample_tree = trace.objectAt( 0 );
@@ -1510,7 +1510,7 @@ void TreeSummary::mapParameters( Tree &tree ) const
         
         if ( StringUtilities::isNumber( pair[1] ) && !StringUtilities::isIntegerNumber( pair[1] ) )
         {
-            mapContinuous(tree, pair[0], i, 0.95, true);
+            mapContinuous(tree, pair[0], i, 0.95, true, verbose);
         }
         else
         {
@@ -1548,7 +1548,7 @@ void TreeSummary::mapParameters( Tree &tree ) const
         
         if ( StringUtilities::isNumber( pair[1] ) )
         {
-            mapContinuous(tree, pair[0], i, 0.95, false);
+            mapContinuous(tree, pair[0], i, 0.95, false, verbose);
         }
         else
         {
@@ -1786,7 +1786,7 @@ void TreeSummary::mapDiscrete(Tree &tree, const std::string &n, size_t paramInde
 /*
  * this method calculates the MAP ancestral character states for the nodes on the input_tree
  */
-void TreeSummary::mapContinuous(Tree &tree, const std::string &n, size_t paramIndex, double hpd, bool isNodeParameter ) const
+void TreeSummary::mapContinuous(Tree &tree, const std::string &n, size_t paramIndex, double hpd, bool isNodeParameter, bool verbose ) const
 {
     
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
@@ -1794,28 +1794,62 @@ void TreeSummary::mapContinuous(Tree &tree, const std::string &n, size_t paramIn
     std::vector<std::vector<double> > samples(summary_nodes.size(),std::vector<double>());
     
     // flag if only interior nodes are used
-    bool interiorOnly = false;
-    bool tipsChecked = false;
-    bool rootChecked = false;
-    bool useRoot = true;
+    bool interior_only  = false;
+    bool tips_checked   = false;
+    bool root_checked   = false;
+    bool use_root       = true;
+    
+    std::string reference_newick = tree.getPlainNewickRepresentation();
+    
+    size_t num_samples = trace.size();
+
+    ProgressBar progress = ProgressBar(num_samples, burnin);
+    if ( verbose == true )
+    {
+        progress.start();
+    }
+    
+    std::vector<std::string> summary_newick;
+    size_t num_nodes = summary_nodes.size();
+    for (size_t j = 0; j < num_nodes; ++j)
+    {
+        TopologyNode *node = summary_nodes[j];
+        summary_newick.push_back( node->computePlainNewick() );
+    }
+    
     
     // loop through all trees in tree trace
-    for (size_t i = burnin; i < trace.size(); i++)
+    for (size_t i = burnin; i < num_samples; ++i)
     {
+        
+        if ( verbose == true )
+        {
+            progress.update( i );
+        }
+
         const Tree &sample_tree = trace.objectAt( i );
         const TopologyNode& sample_root = sample_tree.getRoot();
         
+        // create a map from newick strings to clade indices
+        // we also get the newick representation of this sample
+        std::map<std::string,size_t> sample_clade_indices;
+        std::string sample_newick = sample_tree.getRoot().fillCladeIndices(sample_clade_indices);
+        
+        // compare if this tree is the same as the reference tree
+        bool same_tree = ( reference_newick == sample_newick );
+        
         // loop through all nodes in inputTree
-        for (size_t j = 0; j < summary_nodes.size(); j++)
+        size_t num_nodes = summary_nodes.size();
+        for (size_t j = 0; j < num_nodes; ++j)
         {
             TopologyNode *node = summary_nodes[j];
             if ( node->isTip() == true )
             {
-                if ( tipsChecked == false )
+                if ( tips_checked == false )
                 {
                     
-                    tipsChecked = true;
-                    size_t sample_clade_index = sample_root.getCladeIndex( node );
+                    tips_checked = true;
+                    size_t sample_clade_index = sample_clade_indices[ summary_newick[j] ];
                     
                     const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                     
@@ -1842,17 +1876,17 @@ void TreeSummary::mapContinuous(Tree &tree, const std::string &n, size_t paramIn
                         StringUtilities::stringSplit(tmp, "=", pair);
                         
                         // check if this parameter has the correct name
-                        interiorOnly = pair[0] != n;
+                        interior_only = (pair[0] != n);
                     }
                     else
                     {
-                        interiorOnly = true;
+                        interior_only = true;
                     }
                     
                     
                 }
                 
-                if ( interiorOnly == true )
+                if ( interior_only == true )
                 {
                     continue;
                 }
@@ -1860,12 +1894,12 @@ void TreeSummary::mapContinuous(Tree &tree, const std::string &n, size_t paramIn
             
             if ( node->isRoot() == true )
             {
-                if ( rootChecked == false )
+                if ( root_checked == false )
                 {
                     
-                    rootChecked = true;
+                    root_checked = true;
                     
-                    size_t sample_clade_index = sample_root.getCladeIndex( node );
+                    size_t sample_clade_index = sample_clade_indices[ summary_newick[j] ];
                     
                     const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                     
@@ -1892,29 +1926,28 @@ void TreeSummary::mapContinuous(Tree &tree, const std::string &n, size_t paramIn
                         StringUtilities::stringSplit(tmp, "=", pair);
                         
                         // check if this parameter has the correct name
-                        useRoot = pair[0] == n;
+                        use_root = (pair[0] == n);
                     }
                     else
                     {
-                        useRoot = false;
+                        use_root = false;
                     }
                     
                     
                 }
                 
-                if ( useRoot == false )
+                if ( use_root == false )
                 {
                     continue;
                 }
                 
             }
             
-            if ( sample_root.containsClade(node, true) )
+            if ( same_tree == true || sample_clade_indices.find( summary_newick[j] ) != sample_clade_indices.end() )
             {
                 // if the inputTree node is also in the sample tree
                 // we get the ancestral character state from the ancestral state trace
-                size_t sample_clade_index = sample_root.getCladeIndex( node );
-                
+                size_t sample_clade_index = sample_clade_indices[ summary_newick[j] ];
                 const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                 
                 std::vector<std::string> params;
@@ -1959,13 +1992,17 @@ void TreeSummary::mapContinuous(Tree &tree, const std::string &n, size_t paramIn
         
     } // end loop over each iteration in the trace
     
+    if ( verbose == true )
+    {
+        progress.finish();
+    }
     
     std::vector<double> posteriors;
     for (int idx = 0; idx < summary_nodes.size(); ++idx)
     {
         
         TopologyNode &node = *summary_nodes[idx];
-        if ( ( node.isTip() == false || interiorOnly == false ) && ( node.isRoot() == false || useRoot == true ) )
+        if ( ( node.isTip() == false || interior_only == false ) && ( node.isRoot() == false || use_root == true ) )
         {
             
             // collect the samples
@@ -2008,6 +2045,7 @@ void TreeSummary::mapContinuous(Tree &tree, const std::string &n, size_t paramIn
         }
         
     }
+    
     
 }
 
@@ -2208,7 +2246,7 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report, bool verbos
     
     if ( report.map_parameters )
     {
-        mapParameters( tree );
+        mapParameters( tree, verbose );
     }
     
 }
