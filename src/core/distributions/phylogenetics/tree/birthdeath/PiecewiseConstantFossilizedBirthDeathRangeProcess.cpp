@@ -36,13 +36,13 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
     num_fossil_counts(1), homogeneous_rho(inrho), timeline( intimes ), condition(incondition), taxa(intaxa)
 {
     // initialize all the pointers to NULL
-    homogeneous_lambda   = NULL;
-    homogeneous_mu       = NULL;
-    homogeneous_psi      = NULL;
+    homogeneous_lambda          = NULL;
+    homogeneous_mu              = NULL;
+    homogeneous_psi             = NULL;
     homogeneous_fossil_counts   = NULL;
-    heterogeneous_lambda = NULL;
-    heterogeneous_mu     = NULL;
-    heterogeneous_psi    = NULL;
+    heterogeneous_lambda        = NULL;
+    heterogeneous_mu            = NULL;
+    heterogeneous_psi           = NULL;
     heterogeneous_fossil_counts = NULL;
 
     const TypedDagNode<RbVector<double> > *tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
@@ -100,7 +100,33 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
 
     if (tmp_cv == NULL && tmp_cc == NULL)
     {
-        throw(RbException("Fossil counts rate must be of type Int or Int[]"));
+        if( incounts != NULL )
+        {
+            throw(RbException("Fossil counts must be of type Natural or Natural[]"));
+        }
+
+        num_fossil_counts = 0;
+
+        heterogeneous_psi = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inpsi);
+        if ( heterogeneous_psi == NULL )
+        {
+            homogeneous_psi = static_cast<const TypedDagNode<double >*>(inpsi);
+            addParameter( homogeneous_psi );
+        }
+        else
+        {
+            if ( heterogeneous_psi == NULL )
+            {
+                throw(RbException("Fossil sampling rate must be of type RealPos or RealPos[]"));
+            }
+            if (heterogeneous_psi->getValue().size() != timeline->getValue().size() + 1)
+            {
+                std::stringstream ss;
+                ss << "Number of fossil sampling rates (" << heterogeneous_psi->getValue().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
+                throw(RbException(ss.str()));
+            }
+            addParameter( heterogeneous_psi );
+        }
     }
     else if (tmp_cv == NULL)
     {
@@ -137,6 +163,10 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
         }
         else
         {
+            if ( heterogeneous_psi == NULL )
+            {
+                throw(RbException("Fossil sampling rate must be of type RealPos or RealPos[]"));
+            }
             if (heterogeneous_psi->getValue().size() != timeline->getValue().size() + 1)
             {
                 std::stringstream ss;
@@ -165,14 +195,14 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
         }
     }
 
-    p_i       = std::vector<double>(num_intervals+1, 1.0);
-    q_i       = std::vector<double>(num_intervals+1, 1.0);
-    q_tilde_i = std::vector<double>(num_intervals+1, 1.0);
+    p_i         = std::vector<double>(num_intervals+1, 1.0);
+    q_i         = std::vector<double>(num_intervals+1, 1.0);
+    q_tilde_i   = std::vector<double>(num_intervals+1, 1.0);
 
-    birth     = std::vector<double>(num_intervals, 0.0);
-    death     = std::vector<double>(num_intervals, 0.0);
-    fossil    = std::vector<double>(num_intervals, 0.0);
-    times     = std::vector<double>(num_intervals, 0.0);
+    birth       = std::vector<double>(num_intervals, 0.0);
+    death       = std::vector<double>(num_intervals, 0.0);
+    fossil      = std::vector<double>(num_intervals, 0.0);
+    times       = std::vector<double>(num_intervals, 0.0);
 
     dirty_gamma = std::vector<bool>(taxa.size(), true);
     gamma_i     = std::vector<size_t>(taxa.size(), 0);
@@ -215,6 +245,9 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
     double maxb = 0;
     double maxl = 0;
 
+    std::vector<int>    kappa_prime (num_intervals, 0);
+    std::vector<double> L (num_intervals, 0.0);
+
     // add the fossil tip age terms
     for (size_t i = 0; i < taxa.size(); ++i)
     {
@@ -240,6 +273,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         size_t bi = l(b);
         size_t di = l(d);
         size_t oi = l(o);
+        size_t yi = l(y);
 
         double lambda = birth[bi];
         double mu = death[di];
@@ -265,14 +299,55 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         {
             lnProbTimes += log(q_tilde_i[j+1]);
         }
+
+        // update the marginalized fossil count data
+        if( num_fossil_counts == 0 )
+        {
+            kappa_prime[oi]++;
+            if( o != y )
+            {
+                kappa_prime[yi]++;
+            }
+
+            if( oi == yi )
+            {
+                L[oi] += o - y;
+            }
+            else
+            {
+                L[oi] += o - getIntervalTime(oi);
+
+                for(size_t i = oi + 1; i < yi; i++)
+                {
+                    L[i] += getIntervalTime(i) - getIntervalTime(i-1);
+                }
+
+                L[yi] += getIntervalTime(yi-1) - y;
+            }
+        }
     }
     
     // the origin is not a speciation event
     lnProbTimes -= log(maxl);
 
-    for (size_t i = 0; i < num_fossil_counts; ++i)
+    // check if we marginalize over fossil counts
+    if( num_fossil_counts > 0 )
     {
-        lnProbTimes += getFossilCount(i)*log(getFossilizationRate(i));
+        // no
+        for (size_t i = 0; i < num_fossil_counts; ++i)
+        {
+            lnProbTimes += getFossilCount(i)*log(getFossilizationRate(i));
+        }
+    }
+    else
+    {
+        // yes
+        for (size_t i = 0; i < num_intervals; ++i)
+        {
+            double psi_i = getFossilizationRate(i);
+
+            lnProbTimes += kappa_prime[i]*log(psi_i) + psi_i*L[i];
+        }
     }
 
     // add the sampled extant tip age term

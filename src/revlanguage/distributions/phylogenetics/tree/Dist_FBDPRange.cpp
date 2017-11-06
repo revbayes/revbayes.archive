@@ -78,13 +78,13 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
     {
         piecewisePsi = true;
 
-        if ( !fossil_counts->getRevObject().isType( ModelVector<Integer>::getClassTypeSpec() ) )
+        if ( fossil_counts->getRevObject() != RevNullObject::getInstance() && !fossil_counts->getRevObject().isType( ModelVector<Integer>::getClassTypeSpec() ) )
         {
             throw(RbException("Heterogeneous fossil sampling rates provided, but not fossil counts"));
         }
     }
 
-    if ( fossil_counts->getRevObject().isType( ModelVector<Integer>::getClassTypeSpec() ) )
+    if ( fossil_counts->getRevObject().isType( ModelVector<Natural>::getClassTypeSpec() ) )
     {
         piecewiseCounts = true;
     }
@@ -97,13 +97,13 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
     }
 
     // speciation rate
-    RevBayesCore::DagNode* l;
+    RevBayesCore::DagNode* l = NULL;
     // extinction rate
-    RevBayesCore::DagNode* m;
+    RevBayesCore::DagNode* m = NULL;
     // fossilization rate
-    RevBayesCore::DagNode* p;
+    RevBayesCore::DagNode* p = NULL;
     // fossil counts
-    RevBayesCore::DagNode* c;
+    RevBayesCore::DagNode* c = NULL;
 
     if (piecewiseLambda)
     {
@@ -126,18 +126,22 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
     if (piecewisePsi)
     {
         p = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
-        c = static_cast<const ModelVector<Integer> &>( fossil_counts->getRevObject() ).getDagNode();
+
+        if( fossil_counts->getRevObject() != RevNullObject::getInstance() )
+        {
+            c = static_cast<const ModelVector<Natural> &>( fossil_counts->getRevObject() ).getDagNode();
+        }
     }
     else
     {
         p = static_cast<const RealPos &>( psi->getRevObject() ).getDagNode();
         if ( piecewiseCounts == true )
         {
-            c = static_cast<const ModelVector<Integer> &>( fossil_counts->getRevObject() ).getDagNode();
+            c = static_cast<const ModelVector<Natural> &>( fossil_counts->getRevObject() ).getDagNode();
         }
-        else
+        else if( fossil_counts->getRevObject() != RevNullObject::getInstance() )
         {
-            c = static_cast<const Integer &>( fossil_counts->getRevObject() ).getDagNode();
+            c = static_cast<const Natural &>( fossil_counts->getRevObject() ).getDagNode();
         }
     }
 
@@ -247,9 +251,9 @@ const MemberRules& Dist_FBDPRange::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "timeline",   ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the piecewise constant process (from oldest to youngest).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         std::vector<TypeSpec> intTypes;
-        intTypes.push_back( Integer::getClassTypeSpec() );
-        intTypes.push_back( ModelVector<Integer>::getClassTypeSpec() );
-        dist_member_rules.push_back( new ArgumentRule( "k",   intTypes, "The total number of fossil observations (in each time interval).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        intTypes.push_back( Natural::getClassTypeSpec() );
+        intTypes.push_back( ModelVector<Natural>::getClassTypeSpec() );
+        dist_member_rules.push_back( new ArgumentRule( "k",   intTypes, "The total number of fossil observations (in each time interval).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );

@@ -88,8 +88,8 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*          heterogeneous_psi;                                     //!< The heterogeneous speciation rates.
         const TypedDagNode<double >*                    homogeneous_rho;                                       //!< The homogeneous speciation rates.
         const TypedDagNode<RbVector<double> >*          timeline;                                              //!< The times of the instantaneous sampling events.
-        const TypedDagNode<long>*                        homogeneous_fossil_counts;                             //!< The number of fossil observations, per interval.
-        const TypedDagNode<RbVector<long> >*             heterogeneous_fossil_counts;                           //!< The number of fossil observations, per interval.
+        const TypedDagNode<long>*                       homogeneous_fossil_counts;                             //!< The number of fossil observations, per interval.
+        const TypedDagNode<RbVector<long> >*            heterogeneous_fossil_counts;                           //!< The number of fossil observations, per interval.
 
         std::vector<double>                             birth;
         std::vector<double>                             death;
@@ -103,7 +103,6 @@ namespace RevBayesCore {
         std::vector<size_t>                             gamma_i;
         std::vector<std::vector<bool> >                 gamma_links;
         std::vector<bool>                               dirty_gamma;
-
 
         std::string                                     condition;
         std::vector<Taxon>                              taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
