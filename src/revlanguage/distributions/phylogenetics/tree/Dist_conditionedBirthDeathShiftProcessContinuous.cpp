@@ -113,7 +113,19 @@ MethodTable Dist_conditionedBirthDeathShiftProcessContinuous::getDistributionMet
     
     ArgumentRules* avgExtinctionArgRules = new ArgumentRules();
     methods.addFunction( new DistributionMemberFunction<Dist_conditionedBirthDeathShiftProcessContinuous, ModelVector<RealPos> >( "averageExtinctionRate", variable, avgExtinctionArgRules   ) );
-    
+
+    ArgumentRules* prob_speciation_inc_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_conditionedBirthDeathShiftProcessContinuous, ModelVector<RealPos> >( "probabilitySpeciationRateIncrease", variable, prob_speciation_inc_arg_rules   ) );
+
+    ArgumentRules* prob_speciation_dec_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_conditionedBirthDeathShiftProcessContinuous, ModelVector<RealPos> >( "probabilitySpeciationRateDecrease", variable, prob_speciation_dec_arg_rules   ) );
+
+    ArgumentRules* prob_extinction_inc_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_conditionedBirthDeathShiftProcessContinuous, ModelVector<RealPos> >( "probabilityExtinctionRateIncrease", variable, prob_extinction_inc_arg_rules   ) );
+
+    ArgumentRules* prob_extinction_dec_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_conditionedBirthDeathShiftProcessContinuous, ModelVector<RealPos> >( "probabilityExtinctionRateDecrease", variable, prob_extinction_dec_arg_rules   ) );
+
     return methods;
 }
 

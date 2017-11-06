@@ -713,7 +713,62 @@ bool TopologyNode::equals(const TopologyNode& node) const
 }
 
 
-void TopologyNode::fireTreeChangeEvent( const unsigned& m ) {
+/*
+ * Fill this map recursively with all clade indices.
+ */
+std::string TopologyNode::fillCladeIndices(std::map<std::string,size_t> &clade_index_map) const
+{
+    
+    std::string newick = "";
+    
+    if ( isTip() == true )
+    {
+        newick = taxon.getName();
+    }
+    else
+    {
+        std::string fossil = "";
+        newick = "(";
+        std::vector<std::string> child_newick;
+        for (size_t i = 0; i < getNumberOfChildren(); ++i)
+        {
+            const TopologyNode& child = getChild( i );
+            if ( RbSettings::userSettings().getCollapseSampledAncestors()
+                && child.isSampledAncestor()
+                && (child.getName() < fossil || fossil == "") )
+            {
+                fossil = child.getName();
+            }
+            else
+            {
+                child_newick.push_back( child.fillCladeIndices(clade_index_map) );
+            }
+        }
+        sort(child_newick.begin(), child_newick.end());
+        for (std::vector<std::string>::iterator it = child_newick.begin(); it != child_newick.end(); ++it)
+        {
+            if ( it != child_newick.begin() )
+            {
+                newick += ",";
+            }
+            newick += *it;
+        }
+        newick += ")";
+        newick += fossil;
+
+    }
+    
+    // now insert the newick string for this node/clade with the index of this node
+    clade_index_map.insert( std::pair<std::string,size_t>(newick,index) );
+    
+    
+    // finally return my newick string so that my parents can use it
+    return newick;
+}
+
+
+void TopologyNode::fireTreeChangeEvent( const unsigned& m )
+{
     
     // fire tree change event
     if ( tree != NULL )

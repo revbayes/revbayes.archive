@@ -8,12 +8,12 @@
 using namespace RevBayesCore;
 
 JointAncestralStateTrace::JointAncestralStateTrace(std::vector<AncestralStateTrace> at, TraceTree tt ) :
-    ancestral_state_traces(at),
-    tree_trace(tt),
-    burnin(0)
+ancestral_state_traces(at),
+tree_trace(tt),
+burnin(0)
 {
     num_sampled_states = ancestral_state_traces[0].size();
-
+    
     if ( num_sampled_states != tree_trace.size() )
     {
         throw RbException("The tree trace and the ancestral state trace must contain the same number of samples.");
@@ -30,7 +30,7 @@ JointAncestralStateTrace::JointAncestralStateTrace(std::vector<AncestralStateTra
 
 JointAncestralStateTrace* JointAncestralStateTrace::clone(void) const
 {
-
+    
     return new JointAncestralStateTrace(*this);
 }
 
@@ -41,7 +41,7 @@ void JointAncestralStateTrace::setBurnin(size_t b)
     {
         throw RbException("Burnin size is too large for the ancestral state trace.");
     }
-
+    
     burnin = b;
 }
 
@@ -78,11 +78,11 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
         parent_node_index = summary_nodes[node_index]->getParent().getIndex();
     }
     
-//    if (root == true)
-//    {
-//
-//        true;
-//    }
+    //    if (root == true)
+    //    {
+    //
+    //        true;
+    //    }
     
     size_t sample_clade_index;
     size_t parent_sample_clade_index;
@@ -124,7 +124,7 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
         //        std::cout << "\n" << node_index << " " << j << "\n" << sample_tree << "\n\n";
         
         bool parent_sample_clade_found = true;
-
+        
         if ( usingTreeTrace() == true )
         {
             // check if the clade in the summary tree is also in the sampled tree
@@ -146,7 +146,7 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
             {
                 parent_sample_clade_found = false;
             }
-
+            
             // then we must find the ancestral state traces for this sampled node
             trace_found_end_state = false;
             trace_found_start_1 = false;
@@ -158,17 +158,17 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
             sample_clade_index = summary_nodes[node_index]->getIndex();
             parent_sample_clade_index = parent_node_index;
         }
-
+        
         // record the states if the sample tree contains the summary node's clade
-
+        
         num_samples_clade += 1;
-
+        
         size_t sample_clade_index_child_1 = 0;
         size_t sample_clade_index_child_2 = 0;
-
+        
         bool found_child_clade_1 = true;
         bool found_child_clade_2 = true;
-
+        
         if ( !summary_nodes[node_index]->isTip() && clado == true )
         {
             const TopologyNode& sample_node = sample_tree.getNode( sample_clade_index );
@@ -189,12 +189,12 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
                 found_child_clade_2 = false;
             }
         }
-
+        
         std::string sample_clade_index_anc_str = StringUtilities::toString(sample_clade_index + 1);
         std::string sample_clade_index_end_str = "end_" + StringUtilities::toString(sample_clade_index + 1);
         std::string sample_clade_index_child_1_start_str = "start_" + StringUtilities::toString(sample_clade_index_child_1 + 1);
         std::string sample_clade_index_child_2_start_str = "start_" + StringUtilities::toString(sample_clade_index_child_2 + 1);
-
+        
         // find the appropriate end state
         if (ancestral_state_traces_lookup.find(sample_clade_index_anc_str) != ancestral_state_traces_lookup.end())
         {
@@ -208,18 +208,18 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
             ancestral_state_trace_end_state = &ancestral_state_traces[idx];
             trace_found_end_state = true;
         }
-
+        
         // find start state traces if necessary
         if ( clado == true && (!summary_nodes[node_index]->isTip()) )
         {
-
+            
             if (ancestral_state_traces_lookup.find(sample_clade_index_child_1_start_str) != ancestral_state_traces_lookup.end() && found_child_clade_1 == true )
             {
                 size_t idx = ancestral_state_traces_lookup[sample_clade_index_child_1_start_str];
                 ancestral_state_trace_start_1 = &ancestral_state_traces[idx];
                 trace_found_start_1 = true;
             }
-
+            
             if (ancestral_state_traces_lookup.find(sample_clade_index_child_2_start_str) != ancestral_state_traces_lookup.end() && found_child_clade_2 == true )
             {
                 size_t idx = ancestral_state_traces_lookup[sample_clade_index_child_2_start_str];
@@ -232,7 +232,7 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
             trace_found_start_1 = true;
             trace_found_start_2 = true;
         }
-
+        
         // if we are conditioning on the parent's state we must get the corresponding sample from the parent
         if ( conditional == true && root == false && parent_trace_found == false && parent_sample_clade_found == true )
         {
@@ -254,11 +254,11 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
                 }
             }
         }
-
+        
         // get the sampled ancestral state for this iteration
         const std::vector<std::string>& ancestral_state_vector_end = ancestral_state_trace_end_state->getValues();
         std::string ancestral_state_end = getSiteState( ancestral_state_vector_end[j], site );
-
+        
         // get the sampled ancestral state from the parent node
         bool count_sample = false;
         std::string sampled_parent_state = "";
@@ -266,19 +266,19 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
         {
             const std::vector<std::string>& parent_ancestral_state_vector = parent_ancestral_state_trace->getValues();
             sampled_parent_state = getSiteState( parent_ancestral_state_vector[j], site );
-
+            
             // condition on the parent state?
             if ( sampled_parent_state == map_parent_state )
             {
                 count_sample = true;
             }
         }
-
+        
         if ( conditional == false || root == true )
         {
             count_sample = true;
         }
-
+        
         // finally add the sample to our vectors of samples
         if ( count_sample == true )
         {
@@ -288,7 +288,7 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
                 std::string ancestral_state_start_2 = "";
                 size_t child1 = summary_nodes[node_index]->getChild(0).getIndex();
                 size_t child2 = summary_nodes[node_index]->getChild(1).getIndex();
-
+                
                 // find & store end states
                 bool end_state_found = false;
                 size_t k_end = 0;
@@ -304,19 +304,19 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
                 {
                     pp_end[node_index].push_back(1.0);
                     end_states[node_index].push_back( ancestral_state_end );
-
+                    
                 }
                 else
                 {
                     pp_end[node_index][k_end] += 1.0;
                 }
-
+                
                 // find & store start_state_1
                 if (trace_found_start_1 && trace_found_start_2)
                 {
                     std::vector<std::string> ancestral_state_trace_start_1_vector = ancestral_state_trace_start_1->getValues();
                     ancestral_state_start_1 = getSiteState( ancestral_state_trace_start_1_vector[j], site );
-
+                    
                     bool start_state_1_found = false;
                     size_t k_start_1 = 0;
                     for (; k_start_1 < pp_start[child1].size(); k_start_1++)
@@ -331,13 +331,13 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
                     {
                         pp_start[child1].push_back(1.0);
                         start_states[child1].push_back( ancestral_state_start_1 );
-
+                        
                     }
                     else
                     {
                         pp_start[child1][k_start_1] += 1.0;
                     }
-
+                    
                     num_samples_start_1 += 1;
                     //                    }
                     //
@@ -346,7 +346,7 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
                     //                    {
                     std::vector<std::string> ancestral_state_trace_start_2_vector = ancestral_state_trace_start_2->getValues();
                     ancestral_state_start_2 = getSiteState( ancestral_state_trace_start_2_vector[j], site );
-
+                    
                     bool start_state_2_found = false;
                     size_t k_start_2 = 0;
                     for (; k_start_2 < pp_start[child2].size(); k_start_2++)
@@ -361,13 +361,13 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
                     {
                         pp_start[child2].push_back(1.0);
                         start_states[child2].push_back( ancestral_state_start_2 );
-
+                        
                     }
                     else
                     {
                         pp_start[child2][k_start_2] += 1.0;
                     }
-
+                    
                     num_samples_start_2 += 1;
                 }
             }
@@ -1035,7 +1035,7 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
             {
                 // check if the clade in the summary tree is also in the sampled tree
                 sample_clade_index = sample_root.getCladeIndex( summary_nodes[node_index] );
-
+                
                 // and we must also find the trace for this node index
                 trace_found = false;
             }
@@ -1043,15 +1043,15 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
             {
                 sample_clade_index = summary_nodes[node_index]->getIndex();
             }
-
+            
         }
         catch(RbException&)
         {
             continue;
         }
-
+        
         bool use_sample = true;
-
+        
         // check if we must condition on the parent's end state
         if ( conditional == true && root == false )
         {
@@ -1065,7 +1065,7 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
             {
                 sample_parent_index = summary_nodes[sample_clade_index]->getParent().getIndex();
             }
-
+            
             if ( parent_trace_found == false )
             {
                 for (size_t k = 0; k < ancestral_state_traces.size(); ++k)
@@ -1078,14 +1078,14 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
                     }
                 }
             }
-
+            
             // get the sampled character history for the parent for this iteration
             const std::vector<std::string>& parent_vector = parent_trace->getValues();
             std::string character_history = parent_vector[j];
-
+            
             // parse sampled SIMMAP string
             std::vector< std::pair<size_t, double> > parent_branch_map = parseSIMMAPForNode(character_history);
-
+            
             // finally check against the map state of the parent
             size_t parent_end_state = parent_branch_map[ parent_branch_map.size() - 1 ].first;
             if ( parent_end_state != map_parent_state )
@@ -1093,7 +1093,7 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
                 use_sample = false;
             }
         }
-
+        
         // if necessary find the AncestralStateTrace for the sampled node
         if ( trace_found == false )
         {
@@ -1107,14 +1107,14 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
                 }
             }
         }
-
+        
         // get the sampled character history for this iteration
         const std::vector<std::string>& ancestralstate_vector = ancestralstate_trace->getValues();
         std::string character_history = ancestralstate_vector[j];
-
+        
         // parse sampled SIMMAP string
         std::vector< std::pair<size_t, double> > this_branch_map = parseSIMMAPForNode(character_history);
-
+        
         if ( use_sample == true )
         {
             branch_maps_conditional.push_back(this_branch_map);
@@ -1462,14 +1462,14 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
             break;
         }
     }
-
+    
     if ( trace_found == false )
     {
         throw RbException("The ancestral state trace is missing the 'Iteration' column.");
     }
     
     const std::vector<std::string>& iteration_vector = iteration_trace->getValues();
-
+    
     // loop through all nodes
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1499,7 +1499,7 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
                         // check if the clade in the summary tree is also in the sampled tree
                         const TopologyNode& sample_root = sample_tree.getRoot();
                         sample_clade_index = sample_root.getCladeIndex( summary_nodes[i] );
-
+                        
                         // and we must also find the trace for this node index
                         trace_found = false;
                     }
@@ -1513,7 +1513,7 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
             {
                 continue;
             }
-
+            
             // if necessary find the AncestralStateTrace for the sampled node
             if ( trace_found == false )
             {
@@ -1531,16 +1531,16 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
             
             // get the iteration
             std::string iteration = iteration_vector[j];
-
+            
             // get the sampled character history for this node for this iteration
             std::string character_history = ancestralstate_vector[j];
-
+            
             // parse sampled SIMMAP string
             std::vector< std::pair<size_t, double> > this_branch_map = parseSIMMAPForNode(character_history);
-
+            
             double start_time = sample_tree.getNode( sample_clade_index ).getAge() + sample_tree.getNode( sample_clade_index ).getBranchLength();
             double end_time = sample_tree.getNode( sample_clade_index ).getAge();
-
+            
             double current_time = start_time;
             size_t current_state;
             size_t end_state;
@@ -1553,7 +1553,7 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
             {
                 throw RbException("There were no sampled character histories for node " + StringUtilities::toString(sample_clade_index + 1) + " in the summary tree.");
             }
-
+            
             // write output if there was no change along the branch
             if (this_branch_map.size() == 1)
             {
@@ -1573,7 +1573,7 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
                 // write branch start/end times
                 out << start_time << separator;
                 out << end_time << separator;
-
+                
                 // write start state
                 out << current_state << separator;
                 
@@ -1616,7 +1616,7 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
                 out << parent_index << separator;
                 out << child1_index << separator << child2_index << std::endl;
             }
-
+            
             // write output for each anagenetic transition along the branch in forward time (towards tips)
             for (size_t k = 1; k < this_branch_map.size(); k++)
             {
@@ -1684,10 +1684,10 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
                 current_state = this_branch_map[k].first;
                 current_time = current_time - this_branch_map[k - 1].second;
             }
-
+            
             // now check this node's children's start states to see if there were any cladogenetic transitions
             std::vector<int> children_indices = sample_tree.getNode( sample_clade_index ).getChildrenIndices();
-
+            
             for (int k = 0; k < children_indices.size(); k++)
             {
                 size_t child_index = children_indices[k];
@@ -1704,10 +1704,10 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
                 // get the sampled character history for the child for this iteration
                 const std::vector<std::string>& ancestralstate_vector_child = character_map_trace->getValues();
                 std::string character_history_child = ancestralstate_vector_child[j];
-
+                
                 // parse sampled SIMMAP string
                 std::vector< std::pair<size_t, double> > child_branch_map = parseSIMMAPForNode(character_history_child);
-
+                
                 // get child's start state
                 size_t child_start_state = child_branch_map[0].first;
                 
@@ -1729,10 +1729,10 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
                     // write branch start/end times
                     out << start_time << separator;
                     out << end_time << separator;
-
+                    
                     // write start state
                     out << end_state << separator;
-
+                    
                     // write end state
                     out << child_start_state << separator;
                     
@@ -1794,7 +1794,7 @@ std::string JointAncestralStateTrace::getSiteState( const std::string &site_samp
     std::vector<std::string> states;
     std::istringstream ss( site_sample );
     std::string state;
-
+    
     while(std::getline(ss, state, ','))
     {
         states.push_back(state);
