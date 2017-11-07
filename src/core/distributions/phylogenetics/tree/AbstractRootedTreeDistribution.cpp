@@ -113,13 +113,30 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
         const TopologyNode &the_node = *(*it);
         if ( the_node.isRoot() == false )
         {
-            double age_diff = the_node.getAge() - the_node.getParent().getAge();
-
-            if ( age_diff > 0 && the_node.isSampledAncestor() == false )
+            if( the_node.isTip() )
             {
-                return RbConstants::Double::neginf;
+                if( the_node.getAge() < the_node.getTaxon().getAgeRange().getMin() || the_node.getAge() > the_node.getTaxon().getAgeRange().getMax() )
+                {
+                    return RbConstants::Double::neginf;
+                }
+                else if ( the_node.isSampledAncestor() == true )
+                {
+                    if( the_node.getAge() - the_node.getParent().getAge() != 0 )
+                    {
+                        return RbConstants::Double::neginf;
+                    }
+                    else if ( the_node.isFossil() == false )
+                    {
+                        return RbConstants::Double::neginf;
+                    }
+                    else if ( the_node.getBranchLength() != 0 )
+                    {
+                        return RbConstants::Double::neginf;
+                    }
+
+                }
             }
-            else if ( age_diff != 0 && the_node.isSampledAncestor() == true )
+            else if( the_node.getAge() - the_node.getParent().getAge() > 0 )
             {
                 return RbConstants::Double::neginf;
             }
@@ -128,27 +145,6 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
         else if ( the_node.getAge() > getOriginAge() )
         {
             return RbConstants::Double::neginf;
-        }
-        
-    }
-    
-    // check that the sampled ancestor nodes have a zero branch length
-    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
-    {
-        
-        const TopologyNode &the_node = *(*it);
-        if ( the_node.isSampledAncestor() == true )
-        {
-            
-            if ( the_node.isFossil() == false )
-            {
-                return RbConstants::Double::neginf;
-            }
-            else if ( the_node.getBranchLength() != 0 )
-            {
-                return RbConstants::Double::neginf;
-            }
-            
         }
         
         if ( the_node.getBranchLength() < 0 )

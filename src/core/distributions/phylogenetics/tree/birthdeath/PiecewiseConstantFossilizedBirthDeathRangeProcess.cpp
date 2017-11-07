@@ -258,8 +258,8 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         
         double b = (*this->value)[i][0];
         double d = (*this->value)[i][1];
-        double o = taxa[i].getAgeRange().getEnd();
-        double y = taxa[i].getAgeRange().getStart();
+        double o = taxa[i].getAgeRange().getMax();
+        double y = taxa[i].getAgeRange().getMin();
 
         // check constraints
         if ( !( b > o && o >= y && (y > d || (y == d && y == 0.0)) ) )
@@ -636,7 +636,7 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::redrawValue(void)
     // get the max first occurence
     for (size_t i = 0; i < taxa.size(); i++)
     {
-        double o = taxa[i].getAgeRange().getEnd();
+        double o = taxa[i].getAgeRange().getMax();
         if ( o > max ) max = o;
     }
     
@@ -650,8 +650,8 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::redrawValue(void)
     // get random uniform draws
     for (size_t i = 0; i < taxa.size(); i++)
     {
-        double b = taxa[i].getAgeRange().getEnd() + rng->uniform01()*(max - taxa[i].getAgeRange().getEnd());
-        double d = rng->uniform01()*taxa[i].getAgeRange().getStart();
+        double b = taxa[i].getAgeRange().getMax() + rng->uniform01()*(max - taxa[i].getAgeRange().getMax());
+        double d = rng->uniform01()*taxa[i].getAgeRange().getMin();
 
         (*this->value)[i][0] = b;
         (*this->value)[i][1] = d;
