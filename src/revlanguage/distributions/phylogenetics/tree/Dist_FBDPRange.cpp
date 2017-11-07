@@ -78,7 +78,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess* Dist_FBDPRange:
     {
         piecewisePsi = true;
 
-        if ( fossil_counts->getRevObject() != RevNullObject::getInstance() && !fossil_counts->getRevObject().isType( ModelVector<Integer>::getClassTypeSpec() ) )
+        if ( fossil_counts->getRevObject() != RevNullObject::getInstance() && !fossil_counts->getRevObject().isType( ModelVector<Natural>::getClassTypeSpec() ) )
         {
             throw(RbException("Heterogeneous fossil sampling rates provided, but not fossil counts"));
         }

@@ -303,8 +303,11 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         // update the marginalized fossil count data
         if( num_fossil_counts == 0 )
         {
-            kappa_prime[oi]++;
-            if( o != y )
+            if( o > 0.0 )
+            {
+                kappa_prime[oi]++;
+            }
+            if( o != y && y > 0.0)
             {
                 kappa_prime[yi]++;
             }
@@ -317,9 +320,9 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
             {
                 L[oi] += o - getIntervalTime(oi);
 
-                for(size_t i = oi + 1; i < yi; i++)
+                for(size_t j = oi + 1; j < yi; j++)
                 {
-                    L[i] += getIntervalTime(i) - getIntervalTime(i-1);
+                    L[j] += getIntervalTime(j-1) - getIntervalTime(j);
                 }
 
                 L[yi] += getIntervalTime(yi-1) - y;
