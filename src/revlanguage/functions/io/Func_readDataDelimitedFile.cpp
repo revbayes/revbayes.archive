@@ -297,8 +297,21 @@ std::string Func_readDataDelimitedFile::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
     std::string f_name = "readDataDelimitedFile";
-    
+
     return f_name;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::vector<std::string> Func_readDataDelimitedFile::getFunctionNameAliases( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::vector<std::string> f_names;
+    f_names.push_back("readTable");
+
+    return f_names;
 }
 
 
