@@ -26,10 +26,10 @@ using namespace RevBayesCore;
  * \param[in]    c              Clades conditioned to be present.
  */
 PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledBirthDeathProcess(const TypedDagNode<double> *ra,
-                                                                                           const DagNode *l,
-                                                                                           const DagNode *m,
-                                                                                           const DagNode *p,
-                                                                                           const DagNode *r,
+                                                                                           const DagNode *inspeciation,
+                                                                                           const DagNode *inextinction,
+                                                                                           const DagNode *inpsi,
+                                                                                           const DagNode *inrho,
                                                                                            const TypedDagNode< RbVector<double> > *ht,
                                                                                            const TypedDagNode< RbVector<double> > *lt,
                                                                                            const TypedDagNode< RbVector<double> > *mt,
@@ -73,21 +73,20 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
         addParameter( homogeneous_timeline );
     }
 
-    const TypedDagNode<RbVector<double> > *tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(l);
-    const TypedDagNode<double> *tmp_c = dynamic_cast<const TypedDagNode<double >*>(l);
+    heterogeneous_lambda = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
+    homogeneous_lambda = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
 
-    if (tmp_v == NULL && tmp_c == NULL)
+    addParameter( homogeneous_lambda );
+    addParameter( heterogeneous_lambda );
+
+    if ( heterogeneous_lambda == NULL && homogeneous_lambda == NULL)
     {
         throw(RbException("Speciation rate must be of type RealPos or RealPos[]"));
     }
-    else if (tmp_v == NULL)
+    else if( heterogeneous_lambda != NULL )
     {
-        homogeneous_lambda = tmp_c;
-        addParameter( homogeneous_lambda );
-    }
-    else
-    {
-        heterogeneous_lambda = tmp_v;
+        if( homogeneous_timeline == NULL && lambda_timeline == NULL ) throw( RbException("No time intervals provided for piecewise constant speciation rates") );
+
         if ( lambda_timeline != NULL && heterogeneous_lambda->getValue().size() != lambda_timeline->getValue().size() + 1 )
         {
             std::stringstream ss;
@@ -112,26 +111,23 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
                 throw(RbException("Speciation rate change times must be provided in descending order"));
             }
         }
-
-        addParameter( heterogeneous_lambda );
-        addParameter( lambda_timeline );
     }
 
-    tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(m);
-    tmp_c = dynamic_cast<const TypedDagNode<double >*>(m);
 
-    if (tmp_v == NULL && tmp_c == NULL)
+    heterogeneous_mu = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
+    homogeneous_mu = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
+
+    addParameter( homogeneous_mu );
+    addParameter( heterogeneous_mu );
+
+    if ( heterogeneous_mu == NULL && homogeneous_mu == NULL)
     {
         throw(RbException("Extinction rate must be of type RealPos or RealPos[]"));
     }
-    else if (tmp_v == NULL)
+    else if( heterogeneous_mu != NULL )
     {
-        homogeneous_mu = tmp_c;
-        addParameter( homogeneous_mu );
-    }
-    else
-    {
-        heterogeneous_mu = tmp_v;
+        if( homogeneous_timeline == NULL && mu_timeline == NULL ) throw( RbException("No time intervals provided for piecewise constant extinction rates") );
+
         if ( mu_timeline != NULL && heterogeneous_mu->getValue().size() != mu_timeline->getValue().size() + 1 )
         {
             std::stringstream ss;
@@ -156,26 +152,23 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
                 throw(RbException("Extinction rate change times must be provided in descending order"));
             }
         }
-
-        addParameter( heterogeneous_mu );
-        addParameter( mu_timeline );
     }
 
-    tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(p);
-    tmp_c = dynamic_cast<const TypedDagNode<double >*>(p);
 
-    if (tmp_v == NULL && tmp_c == NULL)
+    heterogeneous_psi = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
+    homogeneous_psi = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
+
+    addParameter( homogeneous_psi );
+    addParameter( heterogeneous_psi );
+
+    if ( heterogeneous_psi == NULL && homogeneous_psi == NULL)
     {
         throw(RbException("Serial sampling rate must be of type RealPos or RealPos[]"));
     }
-    else if (tmp_v == NULL)
+    else if( heterogeneous_psi != NULL )
     {
-        homogeneous_psi = tmp_c;
-        addParameter( homogeneous_psi );
-    }
-    else
-    {
-        heterogeneous_psi = tmp_v;
+        if( homogeneous_timeline == NULL && psi_timeline == NULL ) throw( RbException("No time intervals provided for piecewise constant serial sampling rates") );
+
         if ( psi_timeline != NULL && heterogeneous_psi->getValue().size() != psi_timeline->getValue().size() + 1 )
         {
             std::stringstream ss;
@@ -200,36 +193,33 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
                 throw(RbException("Serial sampling rate change times must be provided in descending order"));
             }
         }
-
-        addParameter( heterogeneous_psi );
-        addParameter( psi_timeline );
     }
 
-    tmp_v = dynamic_cast<const TypedDagNode<RbVector<double> >*>(r);
-    tmp_c = dynamic_cast<const TypedDagNode<double >*>(r);
 
-    if (tmp_v == NULL && tmp_c == NULL)
+    heterogeneous_rho = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
+    homogeneous_rho = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
+
+    addParameter( homogeneous_rho );
+    addParameter( heterogeneous_rho );
+
+    if ( heterogeneous_rho == NULL && homogeneous_rho == NULL)
     {
-        throw(RbException("Taxon sampling probabilities must be of type RealPos or RealPos[]"));
+        throw(RbException("Periodic sampling fraction must be of type RealPos or RealPos[]"));
     }
-    else if (tmp_v == NULL)
+    else if( heterogeneous_rho != NULL )
     {
-        homogeneous_rho = tmp_c;
-        addParameter( homogeneous_rho );
-    }
-    else
-    {
-        heterogeneous_rho = tmp_v;
+        if( homogeneous_timeline == NULL && rho_timeline == NULL ) throw( RbException("No time intervals provided for piecewise constant periodic sampling fractions") );
+
         if ( rho_timeline != NULL && heterogeneous_rho->getValue().size() != rho_timeline->getValue().size() + 1 )
         {
             std::stringstream ss;
-            ss << "Number of taxon sampling probabilities (" << heterogeneous_rho->getValue().size() << ") does not match number of time intervals (" << rho_timeline->getValue().size() + 1 << ")";
+            ss << "Number of periodic sampling fractions (" << heterogeneous_rho->getValue().size() << ") does not match number of time intervals (" << rho_timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
         else if (homogeneous_timeline != NULL && heterogeneous_rho->getValue().size() != homogeneous_timeline->getValue().size() + 1)
         {
             std::stringstream ss;
-            ss << "Number of taxon sampling probabilities (" << heterogeneous_rho->getValue().size() << ") does not match number of time intervals (" << homogeneous_timeline->getValue().size() + 1 << ")";
+            ss << "Number of periodic sampling fractions (" << heterogeneous_rho->getValue().size() << ") does not match number of time intervals (" << homogeneous_timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
 
@@ -241,13 +231,11 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
 
             if (rt != t)
             {
-                throw(RbException("taxon sampling probability change times must be provided in descending order"));
+                throw(RbException("Periodic sampling fraction rate change times must be provided in descending order"));
             }
         }
-
-        addParameter( heterogeneous_rho );
-        addParameter( rho_timeline );
     }
+
 
     simulateTree();
 }

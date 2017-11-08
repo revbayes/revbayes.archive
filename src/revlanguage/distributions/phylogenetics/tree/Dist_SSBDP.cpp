@@ -67,78 +67,40 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
     std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     
-    bool piecewiseLambda = false;
-    bool piecewiseMu = false;
-    bool piecewisePsi = false;
-    bool piecewiseRho = false;
+    bool piecewise = false;
 
     if ( lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        piecewiseLambda = true;
+        piecewise = true;
     }
 
     if ( mu->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        piecewiseMu = true;
+        piecewise = true;
     }
 
     if ( psi->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        piecewisePsi = true;
+        piecewise = true;
     }
 
     if ( rho->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        piecewiseRho = true;
+        piecewise = true;
     }
-
-    bool piecewise = piecewiseLambda || piecewiseMu || piecewisePsi || piecewiseRho;
-
-    if ( piecewise && timeline->getRevObject() == RevNullObject::getInstance()
-            && lambda_timeline->getRevObject() == RevNullObject::getInstance()
-            && mu_timeline->getRevObject() == RevNullObject::getInstance()
-            && psi_timeline->getRevObject() == RevNullObject::getInstance()
-            && rho_timeline->getRevObject() == RevNullObject::getInstance() )
-    {
-        throw(RbException("No time intervals provided for piecewise constant birth death process"));
-    }
-
-    if ( timeline->getRevObject() == RevNullObject::getInstance() )
-    {
-        if ( piecewiseLambda && lambda_timeline->getRevObject() == RevNullObject::getInstance() )
-        {
-            throw(RbException("No time intervals provided for piecewise constant speciation rates"));
-        }
-
-        if ( piecewiseMu && mu_timeline->getRevObject() == RevNullObject::getInstance() )
-        {
-            throw(RbException("No time intervals provided for piecewise constant extinction rates"));
-        }
-
-        if ( piecewisePsi && psi_timeline->getRevObject() == RevNullObject::getInstance() )
-        {
-            throw(RbException("No time intervals provided for piecewise constant serial sampling rates"));
-        }
-
-        if ( piecewiseRho && rho_timeline->getRevObject() == RevNullObject::getInstance() )
-        {
-            throw(RbException("No time intervals provided for piecewise constant taxon sampling fractions"));
-        }
-    }
-
 
     RevBayesCore::AbstractBirthDeathProcess* d;
 
     if ( piecewise )
     {
         // speciation rate
-        RevBayesCore::DagNode* l;
+        RevBayesCore::DagNode* l = lambda->getRevObject().getDagNode();
         // extinction rate
-        RevBayesCore::DagNode* m;
+        RevBayesCore::DagNode* m = mu->getRevObject().getDagNode();
         // serial sampling rate
-        RevBayesCore::DagNode* p;
+        RevBayesCore::DagNode* p = psi->getRevObject().getDagNode();
         // taxon sampling fraction
-        RevBayesCore::DagNode* r;
+        RevBayesCore::DagNode* r = rho->getRevObject().getDagNode();
 
         // rate change times
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ht = NULL;
@@ -147,56 +109,24 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* pt = NULL;
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt = NULL;
 
-        if (piecewiseLambda)
+        if ( lambda_timeline->getRevObject() != RevNullObject::getInstance() )
         {
-            l = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
-            if ( lambda_timeline->getRevObject() != RevNullObject::getInstance() )
-            {
-                lt = static_cast<const ModelVector<RealPos> &>( lambda_timeline->getRevObject() ).getDagNode();
-            }
+            lt = static_cast<const ModelVector<RealPos> &>( lambda_timeline->getRevObject() ).getDagNode();
         }
-        else
+
+        if ( mu_timeline->getRevObject() != RevNullObject::getInstance() )
         {
-            l = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
+            mt = static_cast<const ModelVector<RealPos> &>( mu_timeline->getRevObject() ).getDagNode();
         }
-        // extinction rate
-        if (piecewiseMu)
+
+        if ( psi_timeline->getRevObject() != RevNullObject::getInstance() )
         {
-            m = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
-            if ( mu_timeline->getRevObject() != RevNullObject::getInstance() )
-            {
-                mt = static_cast<const ModelVector<RealPos> &>( mu_timeline->getRevObject() ).getDagNode();
-            }
+            pt = static_cast<const ModelVector<RealPos> &>( psi_timeline->getRevObject() ).getDagNode();
         }
-        else
+
+        if ( rho_timeline->getRevObject() != RevNullObject::getInstance() )
         {
-            m = static_cast<const RealPos &>( mu->getRevObject() ).getDagNode();
-        }
-        // serial sampling rate
-        if (piecewisePsi)
-        {
-            p = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
-            if ( psi_timeline->getRevObject() != RevNullObject::getInstance() )
-            {
-                pt = static_cast<const ModelVector<RealPos> &>( psi_timeline->getRevObject() ).getDagNode();
-            }
-        }
-        else
-        {
-            p = static_cast<const RealPos &>( psi->getRevObject() ).getDagNode();
-        }
-        // taxon sampling fraction
-        if (piecewiseRho)
-        {
-            r = static_cast<const ModelVector<Probability> &>( rho->getRevObject() ).getDagNode();
-            if ( rho_timeline->getRevObject() != RevNullObject::getInstance() )
-            {
-                rt = static_cast<const ModelVector<RealPos> &>( rho_timeline->getRevObject() ).getDagNode();
-            }
-        }
-        else
-        {
-            r = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
+            rt = static_cast<const ModelVector<RealPos> &>( rho_timeline->getRevObject() ).getDagNode();
         }
 
         if ( timeline->getRevObject() != RevNullObject::getInstance() )
@@ -319,13 +249,13 @@ const MemberRules& Dist_SSBDP::getParameterRules(void) const
         std::vector<TypeSpec> rho_paramTypes;
         rho_paramTypes.push_back( Probability::getClassTypeSpec() );
         rho_paramTypes.push_back( ModelVector<Probability>::getClassTypeSpec() );
-        dist_member_rules.push_back( new ArgumentRule( "rho",     rho_paramTypes, "The taxon sampling fraction(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "rho",     rho_paramTypes, "The periodic sampling fraction(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
 
         dist_member_rules.push_back( new ArgumentRule( "timeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "lambdaTimes", ModelVector<RealPos>::getClassTypeSpec(), "The speciation rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "muTimes",     ModelVector<RealPos>::getClassTypeSpec(), "The extinction rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "psiTimes",    ModelVector<RealPos>::getClassTypeSpec(), "The serial sampling rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        dist_member_rules.push_back( new ArgumentRule( "rhoTimes",    ModelVector<RealPos>::getClassTypeSpec(), "The taxon sampling fraction change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "rhoTimes",    ModelVector<RealPos>::getClassTypeSpec(), "The periodic sampling fraction change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
