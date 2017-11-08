@@ -287,7 +287,8 @@ const std::string& AbstractCharacterData::getFileName(void) const {
  *
  * \return    The original file path.
  */
-const std::string& AbstractCharacterData::getFilePath(void) const {
+const std::string& AbstractCharacterData::getFilePath(void) const
+{
     
     return filePath;
 }
@@ -300,7 +301,8 @@ const std::string& AbstractCharacterData::getFilePath(void) const {
  * \return      The index.
  *
  */
-size_t AbstractCharacterData::getIndexOfTaxon(const std::string &n) const {
+size_t AbstractCharacterData::getIndexOfTaxon(const std::string &n) const
+{
     
     for (size_t i=0; i<taxa.size(); ++i)
     {
@@ -474,21 +476,21 @@ const AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string 
 AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string &tn ) {
     
     if ( tn == "" )
-        {
+    {
         throw RbException("Ambiguous taxon name.");
-        }
+    }
     
     const std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find(tn);
     
     if (i != taxonMap.end() )
-        {
+    {
         return *(i->second);
-        }
+    }
     else
-        {
+    {
         
         throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
-        }
+    }
 }
 
 
@@ -497,7 +499,8 @@ AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string &tn ) 
  *
  * \return     A vector of all taxon names.
  */
-const std::vector<Taxon>& AbstractCharacterData::getTaxa( void ) const {
+const std::vector<Taxon>& AbstractCharacterData::getTaxa( void ) const
+{
     
     return taxa;
 }
