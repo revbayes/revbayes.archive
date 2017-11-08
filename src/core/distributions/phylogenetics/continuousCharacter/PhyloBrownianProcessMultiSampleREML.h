@@ -20,12 +20,12 @@ namespace RevBayesCore {
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
         PhyloBrownianProcessMultiSampleREML(const TypedDagNode<Tree> *tr, const TypedDagNode< RbVector< double > > *v, const std::vector<Taxon> &ta, size_t ns );
-        virtual                                                            ~PhyloBrownianProcessMultiSampleREML(void);                                                              //!< Virtual destructor
+        virtual                                                            ~PhyloBrownianProcessMultiSampleREML(void);                                                                      //!< Virtual destructor
         
         // public member functions
-        virtual PhyloBrownianProcessMultiSampleREML*                        clone(void) const;                                                                      //!< Create an independent clone
+        virtual PhyloBrownianProcessMultiSampleREML*                        clone(void) const;                                                                                              //!< Create an independent clone
         double                                                              computeLnProbability(void);
-        void                                                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                             //!< The tree has changed and we want to know which part.
+        void                                                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                                //!< The tree has changed and we want to know which part.
         void                                                                redrawValue(void);
         
     protected:
@@ -44,7 +44,7 @@ namespace RevBayesCore {
         virtual void                                                        touchSpecialization(DagNode *toucher, bool touchAll);
         
         // Parameter management functions.
-        virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter
+        virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                                //!< Swap a parameter
         
         const TypedDagNode< RbVector< double > >*                           within_species_variances;
 

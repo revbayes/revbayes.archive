@@ -152,8 +152,6 @@ double PhyloBrownianProcessMultiSampleREML::computeMeanForSpecies(const std::str
 }
 
 
-
-
 void PhyloBrownianProcessMultiSampleREML::fireTreeChangeEvent( const TopologyNode &n, const unsigned& m )
 {
     

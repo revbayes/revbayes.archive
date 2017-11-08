@@ -98,6 +98,20 @@ std::string Dist_conditionedBirthDeathShiftProcessContinuous::getDistributionFun
 }
 
 
+/**
+ * Get the method table for this distribution.
+ * We need to implement this function when a random variable drawn from this distribution
+ * has specific member method. Here, these are:
+ * - x.numberEvents()
+ * - x.averageSpeciationRate()
+ * - x.averageExtinctionRate()
+ * - x.probabilitySpeciationRateIncrease()
+ * - x.probabilitySpeciationRateDecrease()
+ * - x.probabilityExtinctionRateIncrease()
+ * - x.probabilityExtinctionRateDecrease()
+ *
+ * \return Rev name of constructor function.
+ */
 MethodTable Dist_conditionedBirthDeathShiftProcessContinuous::getDistributionMethods( void ) const
 {
     

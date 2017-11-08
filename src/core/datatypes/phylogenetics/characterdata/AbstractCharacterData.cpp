@@ -649,7 +649,8 @@ void AbstractCharacterData::setFileName(const std::string& fn) {
  *
  * \param[in]    fn    The new file path.
  */
-void AbstractCharacterData::setFilePath(const std::string& fn) {
+void AbstractCharacterData::setFilePath(const std::string& fn)
+{
     
     filePath = fn;
 }
@@ -661,7 +662,8 @@ void AbstractCharacterData::setFilePath(const std::string& fn) {
  * \param[in] currentName    self explanatory.
  * \param[in] newName        self explanatory.
  */
-void AbstractCharacterData::setTaxonName(const std::string& currentName, const std::string& newName) {
+void AbstractCharacterData::setTaxonName(const std::string& currentName, const std::string& newName)
+{
 
     AbstractTaxonData& t = getTaxonData( currentName );
     t.setTaxon( Taxon(newName) );
@@ -676,6 +678,31 @@ void AbstractCharacterData::setTaxonName(const std::string& currentName, const s
         }
     taxonMap.erase( currentName );
     taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( newName, t.clone() ) );
+}
+
+
+/**
+ * Change the name of a taxon
+ *
+ * \param[in] current_name   self explanatory.
+ * \param[in] new_taxon      self explanatory.
+ */
+void AbstractCharacterData::setTaxonObject(const std::string& current_name, const Taxon& new_taxon)
+{
+    
+    AbstractTaxonData& t = getTaxonData( current_name );
+    t.setTaxon( new_taxon );
+    size_t num_taxa = taxa.size();
+    for (size_t i = 0; i < num_taxa ; ++i)
+    {
+        if ( taxa[i].getName() == current_name)
+        {
+            taxa[i] = new_taxon;
+            break;
+        }
+    }
+    taxonMap.erase( current_name );
+    taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( new_taxon.getName(), t.clone() ) );
 }
 
 
