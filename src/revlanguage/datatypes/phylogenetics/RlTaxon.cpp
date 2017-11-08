@@ -13,72 +13,32 @@ using namespace RevLanguage;
 /** Default constructor */
 Taxon::Taxon(void) : ModelObject<RevBayesCore::Taxon>()
 {
-
-    ArgumentRules* speciesNameArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getSpeciesName", RlString::getClassTypeSpec(), speciesNameArgRules ) );
     
-    ArgumentRules* ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getAge", RlString::getClassTypeSpec(), ageArgRules ) );
-    
-    ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getMinAge", RlString::getClassTypeSpec(), ageArgRules ) );
-
-    ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getMaxAge", RlString::getClassTypeSpec(), ageArgRules ) );
+    initMethods();
 
 }
 
 /** Construct from core Taxon */
 Taxon::Taxon(RevBayesCore::Taxon *c) : ModelObject<RevBayesCore::Taxon>( c )
 {
-
-    ArgumentRules* speciesNameArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getSpeciesName", RlString::getClassTypeSpec(), speciesNameArgRules ) );
     
-    ArgumentRules* ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getAge", RlString::getClassTypeSpec(), ageArgRules ) );
-    
-    ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getMinAge", RlString::getClassTypeSpec(), ageArgRules ) );
-
-    ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getMaxAge", RlString::getClassTypeSpec(), ageArgRules ) );
+    initMethods();
 
 }
 
 /** Construct from core Taxon */
 Taxon::Taxon(const RevBayesCore::Taxon &t) : ModelObject<RevBayesCore::Taxon>( new RevBayesCore::Taxon( t ) )
 {
-
-    ArgumentRules* speciesNameArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getSpeciesName", RlString::getClassTypeSpec(), speciesNameArgRules ) );
     
-    ArgumentRules* ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getAge", RlString::getClassTypeSpec(), ageArgRules ) );
-    
-    ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getMinAge", RlString::getClassTypeSpec(), ageArgRules ) );
-
-    ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getMaxAge", RlString::getClassTypeSpec(), ageArgRules ) );
+    initMethods();
 
 }
 
 /** Construct from DAG node */
 Taxon::Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n) : ModelObject<RevBayesCore::Taxon>( n )
 {
-
-    ArgumentRules* speciesNameArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getSpeciesName", RlString::getClassTypeSpec(), speciesNameArgRules ) );
     
-    ArgumentRules* ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getAge", RlString::getClassTypeSpec(), ageArgRules ) );
-
-    ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getMinAge", RlString::getClassTypeSpec(), ageArgRules ) );
-
-    ageArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getMaxAge", RlString::getClassTypeSpec(), ageArgRules ) );
+    initMethods();
 
 }
 
@@ -135,7 +95,14 @@ void Taxon::constructInternalObject( void )
 RevLanguage::RevPtr<RevLanguage::RevVariable> Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-    if (name == "getSpeciesName")
+    if (name == "getName")
+    {
+        found = true;
+        
+        std::string n = this->dag_node->getValue().getName();
+        return RevPtr<RevVariable>( new RevVariable( new RlString( n ) ) );
+    }
+    else if (name == "getSpeciesName")
     {
         found = true;
         
@@ -233,6 +200,30 @@ const TypeSpec& Taxon::getTypeSpec( void ) const
     static TypeSpec type_spec = getClassTypeSpec();
     
     return type_spec;
+}
+
+
+/**
+ * Initialize the member methods.
+ */
+void Taxon::initMethods( void )
+{
+    
+    ArgumentRules* name_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getName", RlString::getClassTypeSpec(), name_arg_rules ) );
+    
+    ArgumentRules* species_name_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getSpeciesName", RlString::getClassTypeSpec(), species_name_arg_rules ) );
+    
+    ArgumentRules* age_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getAge", RlString::getClassTypeSpec(), age_arg_rules ) );
+    
+    age_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getMinAge", RlString::getClassTypeSpec(), age_arg_rules ) );
+
+    age_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getMaxAge", RlString::getClassTypeSpec(), age_arg_rules ) );
+
 }
 
 

@@ -462,7 +462,8 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         
         try
         {
-            obsd.getIndexOfTaxon( n );
+            size_t idx = obsd.getIndexOfTaxon( n );
+            taxon.concatenate( obsd.getTaxonData( n ) );
         }
         catch(RbException &e)
         {
@@ -483,7 +484,6 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
             }
         }
 
-        taxon.concatenate( obsd.getTaxonData( n ) );
     }
     for (size_t i=0; i<toDelete.size(); i++)
     {
@@ -1273,7 +1273,6 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::includeCharacter(s
 /**
  * Initialize this object from a file
  *
- * \param[in]   idx    The site at which we want to know if it is constant?
  */
 template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromFile(const std::string &dir, const std::string &fn)

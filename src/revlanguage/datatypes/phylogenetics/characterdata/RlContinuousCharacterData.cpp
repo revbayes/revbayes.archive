@@ -149,6 +149,16 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
         
         return new RevVariable( new Real(max) );
     }
+    else if ( name == "maxSpeciesDifference" )
+    {
+        found = true;
+        
+        // get the argument for the index
+        long index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        double max = this->dag_node->getValue().getMaxSpeciesDifference( index );
+        
+        return new RevVariable( new Real(max) );
+    }
     else if ( name == "meanDifference" )
     {
         found = true;
@@ -159,7 +169,27 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
         
         return new RevVariable( new Real(mean) );
     }
+    else if ( name == "meanSpeciesDifference" )
+    {
+        found = true;
+        
+        // get the argument for the index
+        long index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        double mean = this->dag_node->getValue().getMeanSpeciesDifference( index );
+        
+        return new RevVariable( new Real(mean) );
+    }
     else if ( name == "minDifference" )
+    {
+        found = true;
+        
+        // get the argument for the index
+        long index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        double min = this->dag_node->getValue().getMinSpeciesDifference( index );
+        
+        return new RevVariable( new Real(min) );
+    }
+    else if ( name == "minSpeciesDifference" )
     {
         found = true;
         
@@ -170,6 +200,16 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
         return new RevVariable( new Real(min) );
     }
     else if ( name == "varDifference" )
+    {
+        found = true;
+        
+        // get the argument for the index
+        long index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        double var = this->dag_node->getValue().getVarSpeciesDifference( index );
+        
+        return new RevVariable( new Real(var) );
+    }
+    else if ( name == "varSpeciesDifference" )
     {
         found = true;
         
@@ -244,17 +284,33 @@ void ContinuousCharacterData::initMethods( void )
     max_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "maxDifference", Real::getClassTypeSpec(), max_diff_arg_rules ) );
 
+    ArgumentRules* max_species_diff_arg_rules = new ArgumentRules();
+    max_species_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "maxSpeciesDifference", Real::getClassTypeSpec(), max_species_diff_arg_rules ) );
+
     ArgumentRules* mean_diff_arg_rules = new ArgumentRules();
     mean_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "meanDifference", Real::getClassTypeSpec(), mean_diff_arg_rules ) );
+
+    ArgumentRules* mean_species_diff_arg_rules = new ArgumentRules();
+    mean_species_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "meanSpeciesDifference", Real::getClassTypeSpec(), mean_species_diff_arg_rules ) );
 
     ArgumentRules* min_diff_arg_rules = new ArgumentRules();
     min_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "minDifference", Real::getClassTypeSpec(), min_diff_arg_rules ) );
 
+    ArgumentRules* min_species_diff_arg_rules = new ArgumentRules();
+    min_species_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "minSpeciesDifference", Real::getClassTypeSpec(), min_species_diff_arg_rules ) );
+
     ArgumentRules* var_diff_arg_rules = new ArgumentRules();
     var_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "varDifference", Real::getClassTypeSpec(), var_diff_arg_rules ) );
+
+    ArgumentRules* var_species_diff_arg_rules = new ArgumentRules();
+    var_species_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "varSpeciesDifference", Real::getClassTypeSpec(), var_species_diff_arg_rules ) );
 
     
     // member functions
