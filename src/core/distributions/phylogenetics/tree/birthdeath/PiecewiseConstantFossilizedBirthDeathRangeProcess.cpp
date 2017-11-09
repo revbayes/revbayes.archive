@@ -160,7 +160,7 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
         else if ( species_interval_fossil_counts != NULL && species_interval_fossil_counts->getValue().front().size() != timeline->getValue().size() + 1)
         {
             std::stringstream ss;
-            ss << "Number of fossil counts (" << species_interval_fossil_counts->getValue().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
+            ss << "Number of fossil counts per species (" << species_interval_fossil_counts->getValue().front().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
     }
@@ -322,10 +322,11 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
             {
                 long count = getFossilCount(i,bi);
 
-                kappa_prime[bi] += count;
-
-                double Ls = (b - d);
-                L[bi] += getFossilizationRate(bi)*Ls + log( 1.0 - exp( - Ls * getFossilizationRate(bi) ) );
+                if( count > 0 )
+                {
+                    double Ls = (b - d);
+                    L[bi] += getFossilizationRate(bi)*Ls + log( 1.0 - exp( - Ls * getFossilizationRate(bi) ) );
+                }
             }
             else
             {
@@ -481,7 +482,7 @@ long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t s
     }
     else if( interval_fossil_counts != NULL)
     {
-        if (index > interval_fossil_counts->getValue().size())
+        if (index >= interval_fossil_counts->getValue().size())
         {
             throw(RbException("Fossil count index out of bounds"));
         }
@@ -489,11 +490,11 @@ long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t s
     }
     else if( species_interval_fossil_counts != NULL )
     {
-        if (species > species_interval_fossil_counts->getValue().size())
+        if (species >= species_interval_fossil_counts->getValue().size())
         {
             throw(RbException("Fossil count index out of bounds"));
         }
-        if (index > species_interval_fossil_counts->getValue()[species].size())
+        if (index >= species_interval_fossil_counts->getValue()[species].size())
         {
             throw(RbException("Fossil count index out of bounds"));
         }
