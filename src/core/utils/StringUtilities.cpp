@@ -341,13 +341,46 @@ bool StringUtilities::isFormattingChar(char c)
 bool StringUtilities::isIntegerNumber(const std::string& s)
 {
     
-    if ( isNumber(s) )
+    bool exponent = false;
+    bool sign = false;
+    bool digit = false;
+
+    for (size_t i=0; i<s.size(); i++)
     {
-        std::size_t found = s.find('.') || (s.find('e') && s.find('-')) ;
-        if (found != std::string::npos)
+        if ( isdigit(s[i]) )
+        {
+            digit = true;
+        }
+        else if(s[i] == '.')
         {
             return false;
         }
+        else if(s[i] == 'e')
+        {
+            if( exponent || !digit ) return false;
+
+            exponent = true;
+
+            sign = false;
+            digit = false;
+        }
+        else if(s[i] == '+')
+        {
+            if( sign || digit ) return false;
+
+            sign = true;
+        }
+        else if(s[i] == '-')
+        {
+            if( sign || digit || exponent ) return false;
+
+            sign = true;
+        }
+        else
+        {
+            return false;
+        }
+
     }
     
     return true;
@@ -357,10 +390,40 @@ bool StringUtilities::isIntegerNumber(const std::string& s)
 /** Determine if the string s represents a number */
 bool StringUtilities::isNumber(const std::string& s)
 {
+    bool exponent = false;
+    bool sign = false;
+    bool decimal = false;
+    bool digit = false;
 
     for (size_t i=0; i<s.size(); i++)
     {
-        if (!isdigit(s[i]) && s[i] != '.' && s[i] != '-' && s[i] != '+' && s[i] != 'e')
+        if ( isdigit(s[i]) )
+        {
+            digit = true;
+        }
+        else if(s[i] == '.')
+        {
+            if( decimal ) return false;
+
+            decimal = true;
+        }
+        else if(s[i] == 'e')
+        {
+            if( exponent || !digit ) return false;
+
+            exponent = true;
+
+            sign = false;
+            decimal = false;
+            digit = false;
+        }
+        else if(s[i] == '+' || s[i] == '-')
+        {
+            if( sign || digit || decimal ) return false;
+
+            sign = true;
+        }
+        else
         {
             return false;
         }
