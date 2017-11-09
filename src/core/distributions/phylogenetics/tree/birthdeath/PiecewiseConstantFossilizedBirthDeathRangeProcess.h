@@ -49,7 +49,8 @@ namespace RevBayesCore {
         PiecewiseConstantFossilizedBirthDeathRangeProcess*   clone(void) const;                                         //!< Create an independent clone
 
         double                                          getExtinctionRate( size_t index ) const;
-        long                                            getFossilCount( size_t taxon, size_t index ) const;
+        long                                            getFossilCount( size_t index, size_t taxon ) const;
+        long                                            getFossilCount( size_t index ) const;
         double                                          getFossilizationRate( size_t index ) const;
         double                                          getIntervalTime( size_t index ) const;
         double                                          getSpeciationRate( size_t index ) const;
@@ -76,6 +77,8 @@ namespace RevBayesCore {
 
         void                                            updateIntervals();
         void                                            redrawValue(void);
+
+        bool                                            ascending;
 
         size_t                                          num_intervals;
 

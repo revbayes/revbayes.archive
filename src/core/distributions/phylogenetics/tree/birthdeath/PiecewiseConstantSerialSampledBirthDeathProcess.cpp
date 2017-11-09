@@ -42,7 +42,8 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     lambda_timeline(lt),
     mu_timeline(mt),
     psi_timeline(pt),
-    rho_timeline(rt)
+    rho_timeline(rt),
+    ascending(false)
 {
     // initialize all the pointers to NULL
     homogeneous_lambda   = NULL;
@@ -61,13 +62,20 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
             throw(RbException("Both heterogeneous and homogeneous rate change times provided"));
         }
 
-        std::vector<double> t = homogeneous_timeline->getValue();
-        std::vector<double> rt = t;
-        std::sort(rt.rbegin(), rt.rend());
+        std::vector<double> times = homogeneous_timeline->getValue();
+        std::vector<double> times_sorted_ascending = times;
+        std::vector<double> times_sorted_descending = times;
 
-        if (rt != t)
+        sort(times_sorted_ascending.begin(), times_sorted_ascending.end() );
+        sort(times_sorted_descending.rbegin(), times_sorted_descending.rend() );
+
+        if( times == times_sorted_ascending )
         {
-            throw(RbException("Rate change times must be provided in descending order"));
+            ascending = true;
+        }
+        else if ( times != times_sorted_ascending )
+        {
+            throw(RbException("Rate change times must be provided in sorted order"));
         }
 
         addParameter( homogeneous_timeline );
@@ -102,13 +110,20 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
 
         if (lambda_timeline != NULL)
         {
-            std::vector<double> t = lambda_timeline->getValue();
-            std::vector<double> rt = t;
-            std::sort(rt.rbegin(), rt.rend());
+            std::vector<double> times = lambda_timeline->getValue();
+            std::vector<double> times_sorted_ascending = times;
+            std::vector<double> times_sorted_descending = times;
 
-            if (rt != t)
+            sort(times_sorted_ascending.begin(), times_sorted_ascending.end() );
+            sort(times_sorted_descending.rbegin(), times_sorted_descending.rend() );
+
+            if( times == times_sorted_ascending )
             {
-                throw(RbException("Speciation rate change times must be provided in descending order"));
+                ascending = true;
+            }
+            else if ( times != times_sorted_ascending )
+            {
+                throw(RbException("Speciation rate change times must be provided in order"));
             }
         }
     }
@@ -143,13 +158,21 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
 
         if (mu_timeline != NULL)
         {
-            std::vector<double> t = mu_timeline->getValue();
-            std::vector<double> rt = t;
-            std::sort(rt.rbegin(), rt.rend());
+            std::vector<double> times = mu_timeline->getValue();
+            std::vector<double> times_sorted = times;
 
-            if (rt != t)
+            if( ascending )
             {
-                throw(RbException("Extinction rate change times must be provided in descending order"));
+                sort(times_sorted.begin(), times_sorted.end() );
+            }
+            else
+            {
+                sort(times_sorted.rbegin(), times_sorted.rend() );
+            }
+
+            if ( times != times_sorted )
+            {
+                throw(RbException("Extinction rate change times must be provided in order"));
             }
         }
     }
@@ -184,13 +207,21 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
 
         if (psi_timeline != NULL)
         {
-            std::vector<double> t = psi_timeline->getValue();
-            std::vector<double> rt = t;
-            std::sort(rt.rbegin(), rt.rend());
+            std::vector<double> times = psi_timeline->getValue();
+            std::vector<double> times_sorted = times;
 
-            if (rt != t)
+            if( ascending )
             {
-                throw(RbException("Serial sampling rate change times must be provided in descending order"));
+                sort(times_sorted.begin(), times_sorted.end() );
+            }
+            else
+            {
+                sort(times_sorted.rbegin(), times_sorted.rend() );
+            }
+
+            if ( times != times_sorted )
+            {
+                throw(RbException("Serial sampling rate change times must be provided in order"));
             }
         }
     }
@@ -225,13 +256,21 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
 
         if (rho_timeline != NULL)
         {
-            std::vector<double> t = rho_timeline->getValue();
-            std::vector<double> rt = t;
-            std::sort(rt.rbegin(), rt.rend());
+            std::vector<double> times = rho_timeline->getValue();
+            std::vector<double> times_sorted = times;
 
-            if (rt != t)
+            if( ascending )
             {
-                throw(RbException("Periodic sampling fraction rate change times must be provided in descending order"));
+                sort(times_sorted.begin(), times_sorted.end() );
+            }
+            else
+            {
+                sort(times_sorted.rbegin(), times_sorted.rend() );
+            }
+
+            if ( times != times_sorted )
+            {
+                throw(RbException("Periodic sampling fraction change times must be provided in order"));
             }
         }
     }
@@ -364,18 +403,38 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     if ( heterogeneous_rho != NULL )
     {
         std::vector<double> rho_times = rho_timeline->getValue();
-        rho_times.push_back(0.0);
+        if( ascending )
+        {
+            rho_times.insert(rho_times.begin(), 0.0);
+        }
+        else
+        {
+            rho_times.push_back(0.0);
+        }
 
         for (size_t i = 0; i < value->getNumberOfTips(); i++)
         {
             const TopologyNode& n = value->getNode( i );
 
-            std::vector<double>::iterator it = std::find(rho_times.begin(), rho_times.end(), n.getAge() );
-
-            if ( it != rho_times.end() )
+            if( ascending )
             {
-                // add the rho-sampled tip age term
-                lnProbTimes += log( heterogeneous_rho->getValue()[size_t( it - rho_times.begin() )] );
+                std::vector<double>::reverse_iterator it = std::find(rho_times.rbegin(), rho_times.rend(), n.getAge() );
+
+                if ( it != rho_times.rend() )
+                {
+                    // add the rho-sampled tip age term
+                    lnProbTimes += log( getTaxonSamplingProbability( std::distance(rho_times.rbegin(), it) ) );
+                }
+            }
+            else
+            {
+                std::vector<double>::iterator it = std::find(rho_times.begin(), rho_times.end(), n.getAge() );
+
+                if ( it != rho_times.end() )
+                {
+                    // add the rho-sampled tip age term
+                    lnProbTimes += log( getTaxonSamplingProbability( std::distance(rho_times.begin(), it) ) );
+                }
             }
         }
     }
@@ -616,9 +675,11 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
         {
             if ( lambda_timeline != NULL )
             {
-                lambda.push_back( heterogeneous_lambda->getValue()[birth_index] );
+                size_t index = ascending ? heterogeneous_lambda->getValue().size() - 1 - birth_index : birth_index;
 
-                if ( birth_index < lambda_timeline->getValue().size() && lambda_timeline->getValue()[birth_index] == timeline[i] )
+                lambda.push_back( heterogeneous_lambda->getValue()[index] );
+
+                if ( birth_index < lambda_timeline->getValue().size() && lambda_timeline->getValue()[index] == timeline[i] )
                 {
                     birth_index++;
                 }
@@ -630,9 +691,11 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
 
             if ( mu_timeline != NULL )
             {
-                mu.push_back( heterogeneous_mu->getValue()[death_index] );
+                size_t index = ascending ? heterogeneous_mu->getValue().size() - 1 - death_index : death_index;
 
-                if ( death_index < mu_timeline->getValue().size() && mu_timeline->getValue()[death_index] == timeline[i] )
+                mu.push_back( heterogeneous_mu->getValue()[index] );
+
+                if ( death_index < mu_timeline->getValue().size() && mu_timeline->getValue()[index] == timeline[i] )
                 {
                     death_index++;
                 }
@@ -644,9 +707,11 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
 
             if ( psi_timeline != NULL )
             {
-                psi.push_back( heterogeneous_psi->getValue()[serial_index] );
+                size_t index = ascending ? heterogeneous_psi->getValue().size() - 1 - serial_index : serial_index;
 
-                if ( serial_index < psi_timeline->getValue().size() && psi_timeline->getValue()[serial_index] == timeline[i] )
+                psi.push_back( heterogeneous_psi->getValue()[index] );
+
+                if ( serial_index < psi_timeline->getValue().size() && psi_timeline->getValue()[index] == timeline[i] )
                 {
                     serial_index++;
                 }
@@ -658,9 +723,11 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
 
             if ( rho_timeline != NULL )
             {
-                rho.push_back( heterogeneous_rho->getValue()[fraction_index] );
+                size_t index = ascending ? heterogeneous_rho->getValue().size() - 1 - fraction_index : fraction_index;
 
-                if ( fraction_index < rho_timeline->getValue().size() && rho_timeline->getValue()[fraction_index] == timeline[i] )
+                rho.push_back( heterogeneous_rho->getValue()[index] );
+
+                if ( fraction_index < rho_timeline->getValue().size() && rho_timeline->getValue()[index] == timeline[i] )
                 {
                     fraction_index++;
                 }
@@ -723,11 +790,13 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::getExtinctionRate( size_
     }
     else
     {
-        if (index > heterogeneous_mu->getValue().size())
+        size_t num = heterogeneous_mu->getValue().size();
+
+        if (index >= num)
         {
             throw(RbException("Extinction rate index out of bounds"));
         }
-        return heterogeneous_mu->getValue()[index];
+        return ascending ? heterogeneous_mu->getValue()[num - 1 - index] : heterogeneous_mu->getValue()[index];
     }
 }
 
@@ -742,11 +811,13 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::getSerialSamplingRate( s
     }
     else
     {
-        if (index > heterogeneous_psi->getValue().size())
+        size_t num = heterogeneous_psi->getValue().size();
+
+        if (index >= num)
         {
             throw(RbException("Serial sampling rate index out of bounds"));
         }
-        return heterogeneous_psi->getValue()[index];
+        return ascending ? heterogeneous_psi->getValue()[num - 1 - index] : heterogeneous_psi->getValue()[index];
     }
 }
 
@@ -761,11 +832,13 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::getSpeciationRate( size_
     }
     else
     {
-        if (index > heterogeneous_lambda->getValue().size())
+        size_t num = heterogeneous_lambda->getValue().size();
+
+        if (index >= num)
         {
             throw(RbException("Speciation rate index out of bounds"));
         }
-        return heterogeneous_lambda->getValue()[index];
+        return ascending ? heterogeneous_lambda->getValue()[num - 1 - index] : heterogeneous_lambda->getValue()[index];
     }
 }
 
@@ -787,11 +860,13 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::getTaxonSamplingProbabil
     }
     else
     {
-        if (index > heterogeneous_rho->getValue().size())
+        size_t num = heterogeneous_rho->getValue().size();
+
+        if ( index > num )
         {
             throw(RbException("Taxon sampling fraction index out of bounds"));
         }
-        return heterogeneous_rho->getValue()[index];
+        return ascending ? heterogeneous_rho->getValue()[num - 1 - index] : heterogeneous_rho->getValue()[index];
     }
 }
 

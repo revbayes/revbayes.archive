@@ -34,7 +34,7 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
                                                                                                      const std::string &incondition,
                                                                                                      const std::vector<Taxon> &intaxa,
                                                                                                      bool pa ) : TypedDistribution<MatrixReal>(new MatrixReal(intaxa.size(), 2)),
-    homogeneous_rho(inrho), timeline( intimes ), condition(incondition), taxa(intaxa), presence_absence(pa)
+    ascending(false), homogeneous_rho(inrho), timeline( intimes ), condition(incondition), taxa(intaxa), presence_absence(pa)
 {
     // initialize all the pointers to NULL
     homogeneous_lambda             = NULL;
@@ -173,13 +173,19 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
     if ( num_intervals > 1 )
     {
         std::vector<double> times = timeline->getValue();
-        std::vector<double> times_sorted = times;
+        std::vector<double> times_sorted_ascending = times;
+        std::vector<double> times_sorted_descending = times;
 
-        sort(times_sorted.rbegin(), times_sorted.rend() );
+        sort(times_sorted_ascending.begin(), times_sorted_ascending.end() );
+        sort(times_sorted_descending.rbegin(), times_sorted_descending.rend() );
 
-        if (times != times_sorted)
+        if( times == times_sorted_ascending )
         {
-            throw(RbException("Interval times must be provided in descending order (oldest to youngest)"));
+            ascending = true;
+        }
+        else if ( times != times_sorted_ascending )
+        {
+            throw(RbException("Interval times must be provided in order"));
         }
     }
 
@@ -320,7 +326,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         {
             if( bi == di )
             {
-                long count = getFossilCount(i,bi);
+                long count = getFossilCount(bi,i);
 
                 if( count > 0 )
                 {
@@ -330,7 +336,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
             }
             else
             {
-                long count = getFossilCount(i,bi);
+                long count = getFossilCount(bi,i);
 
                 double Ls = b - getIntervalTime(bi);
                 if( count > 0 )
@@ -340,7 +346,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 
                 for(size_t j = bi + 1; j < di; j++)
                 {
-                    count = getFossilCount(i,j);
+                    count = getFossilCount(j,i);
                     if( count > 0 )
                     {
                         Ls = getIntervalTime(j-1) - getIntervalTime(j);
@@ -348,7 +354,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
                     }
                 }
 
-                count = getFossilCount(i,di);
+                count = getFossilCount(di,i);
                 if( count > 0 )
                 {
                     Ls = getIntervalTime(di-1) - d;
@@ -372,12 +378,20 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         {
             double psi_i = getFossilizationRate(i);
 
-            lnProbTimes += kappa_prime[i]*log(psi_i);
+            size_t k;
 
             if( marginalize_k )
             {
+                k = kappa_prime[i];
+
                 lnProbTimes += psi_i*L[i];
             }
+            else
+            {
+                k = getFossilCount(i);
+            }
+
+            lnProbTimes += k*log(psi_i);
         }
     }
 
@@ -463,16 +477,18 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::getExtinctionRate( siz
     }
     else
     {
-        if (index > heterogeneous_mu->getValue().size())
+        size_t num = heterogeneous_mu->getValue().size();
+
+        if (index >= num)
         {
             throw(RbException("Extinction rate index out of bounds"));
         }
-        return heterogeneous_mu->getValue()[index];
+        return ascending ? heterogeneous_mu->getValue()[num - 1 - index] : heterogeneous_mu->getValue()[index];
     }
 }
 
 
-long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t species, size_t index ) const
+long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t interval, size_t species ) const
 {
 
     // remove the old parameter first
@@ -482,23 +498,71 @@ long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t s
     }
     else if( interval_fossil_counts != NULL)
     {
-        if (index >= interval_fossil_counts->getValue().size())
+        size_t num = interval_fossil_counts->getValue().size();
+
+        if (interval >= num)
         {
             throw(RbException("Fossil count index out of bounds"));
         }
-        return interval_fossil_counts->getValue()[index];
+        return ascending ? interval_fossil_counts->getValue()[num - 1 - interval] : interval_fossil_counts->getValue()[interval];
     }
     else if( species_interval_fossil_counts != NULL )
     {
-        if (species >= species_interval_fossil_counts->getValue().size())
+        size_t num = species_interval_fossil_counts->getValue().size();
+
+        if (species >= num)
         {
             throw(RbException("Fossil count index out of bounds"));
         }
-        if (index >= species_interval_fossil_counts->getValue()[species].size())
+
+        num = species_interval_fossil_counts->getValue()[species].size();
+
+        if (interval >= num)
         {
             throw(RbException("Fossil count index out of bounds"));
         }
-        return species_interval_fossil_counts->getValue()[species][index];
+        return ascending ? species_interval_fossil_counts->getValue()[species][num - 1 - interval] : species_interval_fossil_counts->getValue()[species][interval];
+    }
+
+    throw(RbException("Fossil counts have been marginalized"));
+}
+
+
+long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t interval ) const
+{
+
+    // remove the old parameter first
+    if ( fossil_counts != NULL )
+    {
+        return fossil_counts->getValue();
+    }
+    else if( interval_fossil_counts != NULL)
+    {
+        size_t num = interval_fossil_counts->getValue().size();
+
+        if (interval >= num)
+        {
+            throw(RbException("Fossil count index out of bounds"));
+        }
+        return ascending ? interval_fossil_counts->getValue()[num - 1 - interval] : interval_fossil_counts->getValue()[interval];
+    }
+    else if( species_interval_fossil_counts != NULL )
+    {
+        size_t num = species_interval_fossil_counts->getValue().front().size();
+
+        if (interval >= num)
+        {
+            throw(RbException("Fossil count index out of bounds"));
+        }
+
+        long total = 0;
+
+        for(size_t i = 0; i < species_interval_fossil_counts->getValue().size(); i++)
+        {
+            total += ascending ? species_interval_fossil_counts->getValue()[i][num - 1 - interval] : species_interval_fossil_counts->getValue()[i][interval];
+        }
+
+        return total;
     }
 
     throw(RbException("Fossil counts have been marginalized"));
@@ -515,11 +579,13 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilizationRate( 
     }
     else
     {
-        if (index > heterogeneous_psi->getValue().size())
+        size_t num = heterogeneous_psi->getValue().size();
+
+        if (index >= num)
         {
             throw(RbException("Fossil sampling rate index out of bounds"));
         }
-        return heterogeneous_psi->getValue()[index];
+        return ascending ? heterogeneous_psi->getValue()[num - 1 - index] : heterogeneous_psi->getValue()[index];
     }
 }
 
@@ -527,18 +593,20 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilizationRate( 
 double PiecewiseConstantFossilizedBirthDeathRangeProcess::getIntervalTime( size_t index ) const
 {
 
-    if ( index == num_intervals - 1)
+    if ( index == num_intervals - 1 )
     {
         return 0.0;
     }
     // remove the old parameter first
     else if ( timeline != NULL )
     {
-        if (index > timeline->getValue().size())
+        size_t num = timeline->getValue().size();
+
+        if (index >= num)
         {
             throw(RbException("Interval time index out of bounds"));
         }
-        return timeline->getValue()[index];
+        return ascending ? timeline->getValue()[num - 1 - index] : timeline->getValue()[index];
     }
     else
     {
@@ -557,11 +625,13 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::getSpeciationRate( siz
     }
     else
     {
-        if (index > heterogeneous_lambda->getValue().size())
+        size_t num = heterogeneous_lambda->getValue().size();
+
+        if (index >= num)
         {
             throw(RbException("Speciation rate index out of bounds"));
         }
-        return heterogeneous_lambda->getValue()[index];
+        return ascending ? heterogeneous_lambda->getValue()[num - 1 - index] : heterogeneous_lambda->getValue()[index];
     }
 }
 
