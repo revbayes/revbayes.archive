@@ -159,6 +159,7 @@
 #include "Move_NarrowExchange.h"
 #include "Move_NNIClock.h"
 #include "Move_NNINonclock.h"
+#include "Move_NodeRateTimeSlide.h"
 #include "Move_NodeTimeScale.h"
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideBeta.h"
@@ -307,21 +308,22 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()                       );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-        addTypeWithConstructor( new Move_AddRemoveTip()     );
+        addTypeWithConstructor( new Move_AddRemoveTip()                   );
         addTypeWithConstructor( new Move_CollapseExpandFossilBranch()     );
-        addTypeWithConstructor( new Move_IndependentTopology()                  );
+        addTypeWithConstructor( new Move_IndependentTopology()            );
 		addTypeWithConstructor( new Move_EmpiricalTree()                  );
         addTypeWithConstructor( new Move_FNPR()                           );
         addTypeWithConstructor( new Move_GibbsPruneAndRegraft()           );
-        addTypeWithConstructor( new Move_LayeredScaleProposal()                 );
+        addTypeWithConstructor( new Move_LayeredScaleProposal()           );
         addTypeWithConstructor( new Move_NarrowExchange()                 );
         addTypeWithConstructor( new Move_NNIClock()                       );
         addTypeWithConstructor( new Move_NNINonclock()                    );
+        addTypeWithConstructor( new Move_NodeRateTimeSlide()              );
         addTypeWithConstructor( new Move_NodeTimeScale()                  );
         addTypeWithConstructor( new Move_NodeTimeSlideUniform()           );
         addTypeWithConstructor( new Move_NodeTimeSlideBeta()              );
         addTypeWithConstructor( new Move_RateAgeBetaShift()               );
-        addTypeWithConstructor( new Move_RootTimeScaleBactrian()           );
+        addTypeWithConstructor( new Move_RootTimeScaleBactrian()          );
         addTypeWithConstructor( new Move_RootTimeSlideUniform()           );
         addTypeWithConstructor( new Move_SubtreeScale()                   );
         addTypeWithConstructor( new Move_SPRNonclock()                    );

@@ -23,25 +23,25 @@ namespace RevBayesCore {
                                     const TypedDagNode<double> *ev,
                                     const TypedDagNode<double> *r,
                                     const std::string &cdt,
-                                    const std::vector<Taxon> &n);                                                       //!< Constructor
+                                    const std::vector<Taxon> &n);                                                                                                           //!< Constructor
         
-        virtual                                            ~ConditionedBirthDeathShiftProcessContinuous(void);          //!< Virtual destructor
+        virtual                                            ~ConditionedBirthDeathShiftProcessContinuous(void);                                                              //!< Virtual destructor
         
         // public member functions
-        ConditionedBirthDeathShiftProcessContinuous*        clone(void) const;                                          //!< Create an independent clone
-        double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
-        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<long> &rv) const;     //!< Map the member methods to internal function calls
-        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
-        CharacterHistoryContinuous&                         getCharacterHistory(void);                                  //!< Get the character histories
-        const CharacterHistoryContinuous&                   getCharacterHistory(void) const;                                  //!< Get the character histories
+        ConditionedBirthDeathShiftProcessContinuous*        clone(void) const;                                                                                              //!< Create an independent clone
+        double                                              computeLnProbability(void);                                                                                     //!< Compute ln prob of current value
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<long> &rv) const;         //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;       //!< Map the member methods to internal function calls
+        CharacterHistoryContinuous&                         getCharacterHistory(void);                                                                                      //!< Get the character histories
+        const CharacterHistoryContinuous&                   getCharacterHistory(void) const;                                                                                //!< Get the character histories
         TypedDistribution<double>*                          getExtinctionRateDistibution(void) const;
         TypedDistribution<double>*                          getSpeciationRateDistibution(void) const;
-        void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
+        void                                                redrawValue(void);                                                                                              //!< Draw a new random value from distribution
         void                                                setValue(Tree *v, bool force);
         
     protected:
         // Parameter management functions
-        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                      //!< get affected nodes
+        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                              //!< get affected nodes
         virtual void                                        keepSpecialization(DagNode* affecter);
         virtual void                                        restoreSpecialization(DagNode *restorer);
         virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
@@ -50,7 +50,7 @@ namespace RevBayesCore {
         double                                              computeRootLikelihood(void);
         
         
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                                //!< Swap a parameter
         
     private:
         
@@ -71,15 +71,15 @@ namespace RevBayesCore {
         TypedDistribution<double>*                          speciation;
         TypedDistribution<double>*                          extinction;
         const TypedDagNode<double>*                         shift_rate;
-        const TypedDagNode<double>*                         rho;                                                                                                //!< Sampling probability of each species.
+        const TypedDagNode<double>*                         rho;                                                                                                            //!< Sampling probability of each species.
         
         CharacterHistoryContinuous                          branch_histories;
         
-        std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
+        std::string                                         condition;                                                                                                      //!< The condition of the process (none/survival/#taxa).
         size_t                                              num_taxa;
         std::vector<Taxon>                                  taxa;
         
-        double                                              log_tree_topology_prob;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
+        double                                              log_tree_topology_prob;                                                                                         //!< Log-transformed tree topology probability (combinatorial constant).
         
         
         // only for testing

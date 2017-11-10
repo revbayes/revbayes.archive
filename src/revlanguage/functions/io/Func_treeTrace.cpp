@@ -17,7 +17,6 @@
 #include "RbException.h"
 #include "RlTree.h"
 #include "RlTraceTree.h"
-#include "TraceTree.h"
 #include "TypedDagNode.h"
 
 #include <map>

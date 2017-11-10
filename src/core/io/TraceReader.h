@@ -1,7 +1,7 @@
 #ifndef TraceReader_H
 #define TraceReader_H
 
-#include "ModelTrace.h"
+#include "Trace.h"
 
 #include <vector>
 #include <string>

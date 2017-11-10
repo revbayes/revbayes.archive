@@ -2,6 +2,7 @@
 #include "OptionRule.h"
 #include "ConstantNode.h"
 #include "Func_ancestralStateTree.h"
+#include "JointAncestralStateTrace.h"
 #include "ModelVector.h"
 #include "NexusWriter.h"
 #include "Probability.h"
@@ -14,9 +15,6 @@
 #include "RlAncestralStateTrace.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TreeSummary.h"
-#include "TraceTree.h"
-#include "AncestralStateTrace.h"
 #include "WorkspaceVector.h"
 
 #include <map>
@@ -58,14 +56,11 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     const TraceTree& tt = static_cast<const TraceTree&>( args[2].getVariable()->getRevObject() );
     
     // make a new tree summary object
-    RevBayesCore::TreeSummary summary;
+    RevBayesCore::TraceTree tree_trace;
+
     if (args[2].getVariable()->getRevObject() != RevNullObject::getInstance())
     {
-        summary = tt.getValue();
-    }
-    else
-    {
-        summary = RevBayesCore::TreeSummary();
+        tree_trace = tt.getValue();
     }
     
     // should we annotate start states?
@@ -106,14 +101,17 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     bool verbose = static_cast<const RlBoolean &>(args[9].getVariable()->getRevObject()).getValue();
     
     // get the tree with ancestral states
+    RevBayesCore::JointAncestralStateTrace joint_trace(ancestralstate_traces, tree_trace);
+    joint_trace.setBurnin(burnin);
+
     RevBayesCore::Tree* tree;
     if (start_states)
     {
-        tree = summary.cladoAncestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, conditional, false, verbose);
+        tree = joint_trace.cladoAncestralStateTree(it->getValue(), summary_stat, site, conditional, false, verbose);
     }
     else
     {
-        tree = summary.ancestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, conditional, false, verbose);
+        tree = joint_trace.ancestralStateTree(it->getValue(), summary_stat, site, conditional, false, verbose);
     }
     
     // return the tree

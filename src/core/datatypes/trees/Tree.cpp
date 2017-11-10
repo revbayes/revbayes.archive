@@ -334,6 +334,12 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
             rv += nodes[i]->isSampledAncestor();
         }
     }
+    else if (n == "colless")
+    {
+        int s = 0;
+
+        rv = RevBayesCore::TreeUtilities::getCollessMetric( getRoot(), s);
+    }
     else if (n == "nnodes")
     {
         rv = nodes.size();
@@ -454,6 +460,7 @@ const std::vector<std::vector<double> > Tree::getAdjacencyMatrix(void) const
 
     return adjacency;
 }
+
 
 std::vector<Taxon> Tree::getFossilTaxa() const
 {
@@ -1058,11 +1065,136 @@ void Tree::orderNodesByIndex( void )
 
 }
 
+void Tree::pruneTaxa(const RbBitSet& prune_map )
+{
+    nodes.clear();
+
+    // bootstrap all nodes from the root and add the in a pre-order traversal
+    recursivelyPruneTaxa(root, prune_map);
+
+    for (unsigned int i = 0; i < nodes.size(); ++i)
+    {
+        nodes[i]->setIndex(i);
+    }
+}
+
+bool Tree::recursivelyPruneTaxa( TopologyNode* n, const RbBitSet& prune_map )
+{
+    if( n->isTip()  )
+    {
+        bool prune = prune_map[n->getIndex()];
+
+        if( prune == false )
+        {
+            nodes.insert(nodes.begin(), n);
+        }
+
+        return prune;
+    }
+
+    std::vector<TopologyNode*> children = n->getChildren();
+
+    //std::vector<TopologyNode*> retained_children;
+    std::vector<TopologyNode*> pruned_children;
+    for(size_t i = 0; i < children.size(); i++)
+    {
+        if( recursivelyPruneTaxa(children[i], prune_map) )
+        {
+            pruned_children.push_back(children[i]);
+        }
+    }
+
+    // if we don't prune any children, then add this node to the list of keepers
+    if( pruned_children.empty() )
+    {
+        nodes.push_back(n);
+    }
+
+    // if we prune all or zero children, then just continue up the tree
+    if( pruned_children.empty() || pruned_children.size() == children.size() )
+    {
+        return pruned_children.size() == children.size();
+    }
+
+    // if we prune some, but not all children, then patch over this node
+
+    // first prune the dead branches
+    for(size_t i = 0; i < pruned_children.size(); i++)
+    {
+        n->removeChild(pruned_children[i]);
+        pruned_children[i]->setParent(NULL);
+        delete pruned_children[i];
+    }
+
+    // if there are still enough retained root children, then return
+    if( n->isRoot() && rooted == false && children.size() - pruned_children.size() < 3 )
+    {
+        // there are not enough retained children
+        // patch up the node
+        std::vector<TopologyNode*> retained_children = n->getChildren();
+
+        for(size_t i = 0; i < retained_children.size(); i++)
+        {
+            n->removeChild(retained_children[i]);
+            retained_children[i]->setParent(NULL);
+        }
+
+        delete n;
+
+        if( retained_children.size() == 1 )
+        {
+            n = retained_children.back();
+
+            retained_children = n->getChildren();
+            for(size_t i = 0; i < retained_children.size(); i++)
+            {
+                n->removeChild(retained_children[i]);
+                retained_children[i]->setParent(NULL);
+            }
+
+            delete n;
+        }
+
+        root = retained_children.back();
+        root->addChild(retained_children.front());
+        retained_children.front()->setParent(root);
+    }
+    // if there are still at least 2 retained children, then return
+    else if( children.size() - pruned_children.size() < 2 )
+    {
+        // there is only one retained child
+        // patch up the 2-degree node
+        TopologyNode* retained_child = &n->getChild(0);
+
+        n->removeChild(retained_child);
+
+        if( n->isRoot() )
+        {
+            retained_child->setParent(NULL);
+            root = retained_child;
+        }
+        else
+        {
+            TopologyNode* parent = &n->getParent();
+
+            parent->removeChild(n);
+            parent->addChild(retained_child);
+            retained_child->setParent(parent);
+            n->setParent(NULL);
+        }
+
+        delete n;
+    }
+
+    return false;
+}
+
 
 void Tree::renameNodeParameter(const std::string &old_name, const std::string &new_name)
 {
     getRoot().renameNodeParameter(old_name, new_name);
 }
+
 
 void Tree::reroot(const Clade &o, bool reindex)
 {
@@ -1114,6 +1246,7 @@ void Tree::reroot(const Clade &o, bool reindex)
 
 }
 
+
 void Tree::reroot(const std::string &outgroup, bool reindex)
 {
     std::vector<std::string> tip_names = getTipNames();
@@ -1141,6 +1274,7 @@ void Tree::reroot(const std::string &outgroup, bool reindex)
 	setRoot( &outgroup_node.getParent(), reindex );
 
 }
+
 
 void Tree::reroot(TopologyNode &n, bool reindex)
 {
@@ -1176,10 +1310,12 @@ TopologyNode& Tree::reverseParentChild(TopologyNode &n)
     return *ret;
 }
 
+
 void Tree::setNegativeConstraint(bool tf)
 {
     is_negative_constraint = tf;
 }
+
 
 void Tree::setRooted(bool tf)
 {
@@ -1259,6 +1395,7 @@ void Tree::setTaxonIndices(const TaxonMap &tm)
 
 
 }
+
 
 // Write this object into a file in its default format.
 void Tree::writeToFile( const std::string &dir, const std::string &fn ) const

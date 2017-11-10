@@ -3,10 +3,10 @@
 
 #include "Cloneable.h"
 #include "MonteCarloSampler.h"
-#include "ModelTrace.h"
 #include "Parallelizable.h"
 #include "RbVector.h"
 #include "StoppingRule.h"
+#include "Trace.h"
 
 #include <vector>
 

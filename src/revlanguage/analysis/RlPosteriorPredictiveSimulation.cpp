@@ -8,7 +8,6 @@
 #include "RlString.h"
 #include "RlModelTrace.h"
 #include "RlUtils.h"
-#include "TreeSummary.h"
 #include "WorkspaceVector.h"
 
 using namespace RevLanguage;

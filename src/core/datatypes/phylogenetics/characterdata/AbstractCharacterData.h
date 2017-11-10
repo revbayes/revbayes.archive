@@ -77,6 +77,7 @@ namespace RevBayesCore {
         void                                        setFileName(const std::string &fn);                                         //!< Set the file name
         void                                        setFilePath(const std::string &fn);                                         //!< Set the file path
         void                                        setTaxonName(const std::string& currentName, const std::string& newName);   //!< Change the name of a taxon
+        void                                        setTaxonObject(const std::string& currentName, const Taxon& new_taxon);     //!< Change the name of a taxon
         void                                        show(std::ostream &out) const;                                              //!< Show the entire content
         
         

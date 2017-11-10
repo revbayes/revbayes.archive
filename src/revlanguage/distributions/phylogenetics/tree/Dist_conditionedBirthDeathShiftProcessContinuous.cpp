@@ -98,6 +98,20 @@ std::string Dist_conditionedBirthDeathShiftProcessContinuous::getDistributionFun
 }
 
 
+/**
+ * Get the method table for this distribution.
+ * We need to implement this function when a random variable drawn from this distribution
+ * has specific member method. Here, these are:
+ * - x.numberEvents()
+ * - x.averageSpeciationRate()
+ * - x.averageExtinctionRate()
+ * - x.probabilitySpeciationRateIncrease()
+ * - x.probabilitySpeciationRateDecrease()
+ * - x.probabilityExtinctionRateIncrease()
+ * - x.probabilityExtinctionRateDecrease()
+ *
+ * \return Rev name of constructor function.
+ */
 MethodTable Dist_conditionedBirthDeathShiftProcessContinuous::getDistributionMethods( void ) const
 {
     
@@ -113,7 +127,19 @@ MethodTable Dist_conditionedBirthDeathShiftProcessContinuous::getDistributionMet
     
     ArgumentRules* avgExtinctionArgRules = new ArgumentRules();
     methods.addFunction( new DistributionMemberFunction<Dist_conditionedBirthDeathShiftProcessContinuous, ModelVector<RealPos> >( "averageExtinctionRate", variable, avgExtinctionArgRules   ) );
-    
+
+    ArgumentRules* prob_speciation_inc_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_conditionedBirthDeathShiftProcessContinuous, ModelVector<RealPos> >( "probabilitySpeciationRateIncrease", variable, prob_speciation_inc_arg_rules   ) );
+
+    ArgumentRules* prob_speciation_dec_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_conditionedBirthDeathShiftProcessContinuous, ModelVector<RealPos> >( "probabilitySpeciationRateDecrease", variable, prob_speciation_dec_arg_rules   ) );
+
+    ArgumentRules* prob_extinction_inc_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_conditionedBirthDeathShiftProcessContinuous, ModelVector<RealPos> >( "probabilityExtinctionRateIncrease", variable, prob_extinction_inc_arg_rules   ) );
+
+    ArgumentRules* prob_extinction_dec_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_conditionedBirthDeathShiftProcessContinuous, ModelVector<RealPos> >( "probabilityExtinctionRateDecrease", variable, prob_extinction_dec_arg_rules   ) );
+
     return methods;
 }
 

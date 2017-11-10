@@ -38,8 +38,6 @@ RevPtr<RevVariable> Func_getwd::execute( void )
     RbSettings& s = RbSettings::userSettings();
     const std::string& wd = s.getWorkingDirectory();
     
-    std::cerr << "Test:\t\t" << wd << std::endl;
-    
     RlString* type = new RlString( wd, false );
     
     return new RevVariable( type );

@@ -43,19 +43,17 @@ namespace RevBayesCore {
         void            rescaleSubtree(Tree *t, TopologyNode *n, double factor, bool v=false);
         void            rescaleTree(Tree *t, TopologyNode *n, double factor);
         void            setAges(Tree *t, TopologyNode *n, std::vector<double>& ages);
-        std::string     uniqueNewickTopology(const Tree &t);
 
         // internal helper functions
         void            constructTimeTreeRecursively(TopologyNode *tn, const TopologyNode &n, std::vector<TopologyNode*> &nodes, std::vector<double> &ages, double depth);
 //        void            constructAdmixtureTreeRecursively(AdmixtureNode *tn, const TopologyNode &n, std::vector<AdmixtureNode*> &nodes, std::vector<double> &ages);
-        std::string     uniqueNewickTopologyRecursive(const TopologyNode &n);
 
 
 		void            processDistsInSubtree(const TopologyNode& node, MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId);
         void            climbUpTheTree(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromNodeToRoot) ;
         double          getAgeOfMRCARecursive(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) ;
         double          getAgeOfMRCA(const Tree &t, std::string first, std::string second) ;
-
+        int             getCollessMetric(const TopologyNode&, int& size);
 
 
 

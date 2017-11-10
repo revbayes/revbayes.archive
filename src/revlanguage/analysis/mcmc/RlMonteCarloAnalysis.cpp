@@ -4,7 +4,6 @@
 #include "ConstantNode.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
-#include "ModelTrace.h"
 #include "Model.h"
 #include "Natural.h"
 #include "OptionRule.h"
@@ -190,7 +189,8 @@ const MemberRules& MonteCarloAnalysis::getParameterRules(void) const
         
         memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options, "The strategy how the moves are used." ) );
         memberRules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec(), "The number of replicate analyses.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        
+        memberRules.push_back( new ArgumentRule("ntries"   , Natural::getClassTypeSpec(), "The number of initialization attempts.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1000) ) );
+
         rules_set = true;
     }
     
@@ -269,6 +269,10 @@ void MonteCarloAnalysis::setConstParameter(const std::string& name, const RevPtr
     else if ( name == "nruns")
     {
         num_runs = var;
+    }
+    else if ( name == "ntries")
+    {
+        num_init_attempts = var;
     }
     else
     {

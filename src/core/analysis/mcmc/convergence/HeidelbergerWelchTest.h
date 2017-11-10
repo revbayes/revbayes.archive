@@ -26,7 +26,7 @@ namespace RevBayesCore {
         HeidelbergerWelchTest(double p=0.01, double f1=0.1, double f2=0.5);
         
         // implementen functions from convergence diagnostic
-        bool        assessConvergenceSingleChain(const std::vector<double>& values, std::size_t burnin);
+        bool        assessConvergence(const TraceNumeric& values);
         
         // setters
         void        setFraction1(double f1) { frac1 = f1; }

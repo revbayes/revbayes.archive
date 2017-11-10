@@ -2,7 +2,6 @@
 #include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "Func_readStochasticVariableTrace.h"
-#include "ModelTrace.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RlString.h"

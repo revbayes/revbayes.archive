@@ -382,55 +382,6 @@ void RevBayesCore::TreeUtilities::setAges(Tree *t, TopologyNode *n, std::vector<
 }
 
 
-std::string RevBayesCore::TreeUtilities::uniqueNewickTopology(const Tree &t)
-{
-    return uniqueNewickTopologyRecursive( t.getRoot() );
-}
-
-
-std::string RevBayesCore::TreeUtilities::uniqueNewickTopologyRecursive(const TopologyNode &n)
-{
-    // check whether this is an internal node
-    if ( n.isTip() )
-    {
-        return n.getName();
-    }
-    else
-    {
-        std::string fossil = "";
-        std::string newick = "(";
-        std::vector<std::string> child_newick;
-        for (size_t i = 0; i < n.getNumberOfChildren(); ++i)
-        {
-            const TopologyNode& child = n.getChild( i );
-            if ( child.isSampledAncestor() && (child.getName() < fossil || fossil == "") )
-            {
-                fossil = child.getName();
-            }
-            else
-            {
-                child_newick.push_back( uniqueNewickTopologyRecursive( child ) );
-            }
-        }
-        sort(child_newick.begin(), child_newick.end());
-        for (std::vector<std::string>::iterator it = child_newick.begin(); it != child_newick.end(); ++it)
-        {
-            if ( it != child_newick.begin() )
-            {
-                newick += ",";
-            }
-            newick += *it;
-        }
-        newick += ")";
-        newick += fossil;
-
-        return newick;
-    }
-
-}
-
-
-
 void RevBayesCore::TreeUtilities::processDistsInSubtree(const RevBayesCore::TopologyNode& node, RevBayesCore::MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId)
 {
 	distsToNodeFather.clear();
@@ -568,4 +519,34 @@ double RevBayesCore::TreeUtilities::getAgeOfMRCA(const Tree &t, std::string firs
         return node1.getAge();
     }
 
+}
+
+
+int RevBayesCore::TreeUtilities::getCollessMetric(const TopologyNode & node, int& size)
+{
+    if( node.isTip() )
+    {
+        size = (node.getAge() == 0.0);
+        return 0.0;
+    }
+
+    const TopologyNode& left = node.getChild(0);
+    const TopologyNode& right = node.getChild(1);
+
+    int left_size  = 0;
+    int right_size = 0;
+
+    double left_metric  = getCollessMetric(left, left_size);
+    double right_metric = getCollessMetric(right, right_size);
+
+    size = left_size + right_size;
+
+    int metric = std::abs( left_size - right_size);
+
+    if( left_size == 0 || right_size == 0 )
+    {
+        metric = 0;
+    }
+
+    return left_metric + right_metric + metric;
 }
