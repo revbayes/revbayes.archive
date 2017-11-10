@@ -45,7 +45,8 @@ namespace RevBayesCore {
             map_parameters(false),
             mean(true),
             posterior(true),
-            sa(true) {}
+            sa(true),
+            force_positive_branch_lengths(false) {}
         
         bool ages;
         bool cc_ages;
@@ -56,6 +57,7 @@ namespace RevBayesCore {
         bool mean;
         bool posterior;
         bool sa;
+        bool force_positive_branch_lengths;
     };
 
     class TreeSummary : public Cloneable {
