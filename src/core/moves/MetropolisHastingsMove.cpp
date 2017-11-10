@@ -201,8 +201,6 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
     
     if ( RbMath::isAComputableNumber(ln_posterior_ratio) == false || ln_posterior_ratio < 0.0 )
     {
-        //        std::cerr << "Reject.\n";
-        
         
         proposal->undoProposal();
         

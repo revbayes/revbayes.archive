@@ -22,9 +22,8 @@ using namespace RevBayesCore;
  * The constructor connects the parameters of the birth-death process (DAG structure)
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  *
- * \param[in]    o         Origin or time of the process.
+ * \param[in]    ra        Origin or time of the process.
  * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
- * \param[in]    nTaxa     Number of taxa (used for initialization during simulation).
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
