@@ -339,6 +339,11 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
     
     std::vector<std::string> fossil_comments;
 
+    // ensure we have an updated copy of branch_length variables
+    if (!isRoot()) {
+        recomputeBranchLength();
+    }
+
     // test whether this is a internal or external node
     if ( tip_node == true )
     {

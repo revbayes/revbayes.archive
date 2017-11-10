@@ -2203,8 +2203,7 @@ void TreeSummary::annotateTree( Tree &tree, AnnotationReport report, bool verbos
     
     if ( !report.tree_ages && clock && report.force_positive_branch_lengths )
     {
-        
-         enforceNonnegativeBranchLengths( tree.getRoot() );
+        enforceNonnegativeBranchLengths( tree.getRoot() );
     }
     
     if ( report.map_parameters )
@@ -2338,12 +2337,11 @@ std::vector<double> TreeSummary::computeTreeLengths( void )
     return tree_lengths;
 }
 
-
 void TreeSummary::enforceNonnegativeBranchLengths(TopologyNode& node) const
 {
     std::vector<TopologyNode*> children = node.getChildren();
     
-    double minimum_branch_length = 1e-5;
+    double minimum_branch_length = 1e-3;
     for (size_t i = 0; i < children.size(); i++)
     {
         if (children[i]->getAge() > node.getAge())
