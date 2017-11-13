@@ -52,6 +52,7 @@
 #include "RlMove.h"
 
 /* Moves on real values */
+#include "Move_ConditionalClockIS.h"
 #include "Move_SliceSampling.h"
 #include "Move_Scale.h"
 #include "Move_ScaleBactrian.h"
@@ -191,6 +192,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Regular moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
 
         /* Moves on real values */
+        addTypeWithConstructor( new Move_ConditionalClockIS() );
         addTypeWithConstructor( new Move_Scale() );
         addTypeWithConstructor( new Move_ScaleBactrian() );
         addTypeWithConstructor( new Move_Slide() );
