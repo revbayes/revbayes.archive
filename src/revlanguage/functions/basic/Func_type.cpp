@@ -11,7 +11,8 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_type::Func_type( void ) : Procedure() {
+Func_type::Func_type( void ) : Procedure()
+{
     
 }
 
@@ -22,14 +23,16 @@ Func_type::Func_type( void ) : Procedure() {
  *
  * \return A new copy of the process.
  */
-Func_type* Func_type::clone( void ) const {
+Func_type* Func_type::clone( void ) const
+{
     
     return new Func_type( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_type::execute( void ) {
+RevPtr<RevVariable> Func_type::execute( void )
+{
     
     RlString* type = new RlString( args[0].getVariable()->getRevObject().getType() );
     
@@ -41,18 +44,18 @@ RevPtr<RevVariable> Func_type::execute( void ) {
 const ArgumentRules& Func_type::getArgumentRules( void ) const
 {
     
-    static ArgumentRules argumentRules = ArgumentRules();
+    static ArgumentRules argument_rules = ArgumentRules();
     static bool rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", RevObject::getClassTypeSpec(), "A variable.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new ArgumentRule( "x", RevObject::getClassTypeSpec(), "A variable.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rules_set = true;
         
     }
     
-    return argumentRules;
+    return argument_rules;
 }
 
 
