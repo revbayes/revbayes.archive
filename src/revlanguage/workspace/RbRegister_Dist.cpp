@@ -175,6 +175,8 @@
 #include "Dist_multivariateNorm.h"
 #include "Dist_nbinomial.h"
 #include "Dist_norm.h"
+#include "Dist_normTruncated.h"
+#include "Dist_normTruncatedPositive.h"
 #include "Dist_poisson.h"
 #include "Dist_scaledDirichlet.h"
 #include "Dist_softBoundUniformNormal.h"
@@ -406,6 +408,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // normal distribution
         AddContinuousDistribution< Real             >( new Dist_norm() );
+        AddContinuousDistribution< Real             >( new Dist_normTruncated() );
+        AddContinuousDistribution< RealPos          >( new Dist_normTruncatedPositive() );
 
         // Uniform distribution with normal distributed bounds
         AddContinuousDistribution< Real             >( new Dist_SoftBoundUniformNormal() );

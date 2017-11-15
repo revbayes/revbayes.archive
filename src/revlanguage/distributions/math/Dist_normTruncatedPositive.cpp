@@ -1,7 +1,7 @@
- #include "ArgumentRule.h"
+#include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
-#include "Dist_norm.h"
+#include "Dist_normTruncatedPositive.h"
 #include "NormalDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -14,9 +14,9 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Dist_norm::Dist_norm() : ContinuousDistribution()
+Dist_normTruncatedPositive::Dist_normTruncatedPositive() : PositiveContinuousDistribution()
 {
-
+    
 }
 
 
@@ -30,14 +30,16 @@ Dist_norm::Dist_norm() : ContinuousDistribution()
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::NormalDistribution* Dist_norm::createDistribution( void ) const
+RevBayesCore::NormalDistribution* Dist_normTruncatedPositive::createDistribution( void ) const
 {
-
+    
     // get the parameters
     RevBayesCore::TypedDagNode<double>* m = static_cast<const Real &>( mean->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( sd->getRevObject() ).getDagNode();
-    RevBayesCore::NormalDistribution*   d = new RevBayesCore::NormalDistribution(m, s);
-
+    RevBayesCore::TypedDagNode<double>* mi  = static_cast<const RealPos &>( min->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ma  = static_cast<const RealPos &>( max->getRevObject() ).getDagNode();
+    RevBayesCore::NormalDistribution*   d = new RevBayesCore::NormalDistribution(m, s, mi, ma);
+    
     return d;
 }
 
@@ -48,10 +50,10 @@ RevBayesCore::NormalDistribution* Dist_norm::createDistribution( void ) const
  *
  * \return A new copy of the process.
  */
-Dist_norm* Dist_norm::clone( void ) const
+Dist_normTruncatedPositive* Dist_normTruncatedPositive::clone( void ) const
 {
-
-    return new Dist_norm(*this);
+    
+    return new Dist_normTruncatedPositive(*this);
 }
 
 
@@ -60,12 +62,12 @@ Dist_norm* Dist_norm::clone( void ) const
  *
  * \return The class' name.
  */
-const std::string& Dist_norm::getClassType(void)
+const std::string& Dist_normTruncatedPositive::getClassType(void)
 {
-
-    static std::string rev_type = "Dist_norm";
-
-	return rev_type;
+    
+    static std::string rev_type = "Dist_normTruncatedPositive";
+    
+    return rev_type;
 }
 
 
@@ -74,12 +76,12 @@ const std::string& Dist_norm::getClassType(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Dist_norm::getClassTypeSpec(void)
+const TypeSpec& Dist_normTruncatedPositive::getClassTypeSpec(void)
 {
-
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
-
-	return rev_type_spec;
+    
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
+    
+    return rev_type_spec;
 }
 
 
@@ -88,12 +90,12 @@ const TypeSpec& Dist_norm::getClassTypeSpec(void)
  *
  * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Dist_norm::getDistributionFunctionAliases( void ) const
+std::vector<std::string> Dist_normTruncatedPositive::getDistributionFunctionAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
     a_names.push_back( "norm" );
-
+    
     return a_names;
 }
 
@@ -105,11 +107,11 @@ std::vector<std::string> Dist_norm::getDistributionFunctionAliases( void ) const
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_norm::getDistributionFunctionName( void ) const
+std::string Dist_normTruncatedPositive::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "normal";
-
+    
     return d_name;
 }
 
@@ -117,12 +119,12 @@ std::string Dist_norm::getDistributionFunctionName( void ) const
 /**
  * Get the author(s) of this function so they can receive credit (and blame) for it.
  */
-std::vector<std::string> Dist_norm::getHelpAuthor(void) const
+std::vector<std::string> Dist_normTruncatedPositive::getHelpAuthor(void) const
 {
     // create a vector of authors for this function
     std::vector<std::string> authors;
     authors.push_back( "Sebastian Hoehna" );
-
+    
     return authors;
 }
 
@@ -130,12 +132,12 @@ std::vector<std::string> Dist_norm::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_norm::getHelpDescription(void) const
+std::vector<std::string> Dist_normTruncatedPositive::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
     descriptions.push_back( "Normal (gaussian) distribution with mean equal to ‘mean’ and standard deviation equal to ‘sd’." );
-
+    
     return descriptions;
 }
 
@@ -143,27 +145,27 @@ std::vector<std::string> Dist_norm::getHelpDescription(void) const
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_norm::getHelpDetails(void) const
+std::vector<std::string> Dist_normTruncatedPositive::getHelpDetails(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> details;
-
+    
     std::string details_1 = "";
     details_1 += "The normal distribution has density:";
-
+    
     details.push_back( details_1 );
-
+    
     std::string details_2 = "";
     details_2 += "f(x) = 1/(sqrt(2 pi) sigma) e^-((x - mu)^2/(2 sigma^2))";
-
+    
     details.push_back( details_2 );
-
+    
     std::string details_3 = "";
     details_3 += "where mu is the mean of the distribution and sigma the standard deviation.";
-
+    
     details.push_back( details_3 );
-
-
+    
+    
     return details;
 }
 
@@ -173,11 +175,11 @@ std::vector<std::string> Dist_norm::getHelpDetails(void) const
  * These example should help the users to show how this function works but
  * are also used to test if this function still works.
  */
-std::string Dist_norm::getHelpExample(void) const
+std::string Dist_normTruncatedPositive::getHelpExample(void) const
 {
     // create an example as a single string variable.
     std::string example = "";
-
+    
     example += "# we simulate some observations\n";
     example += "x <- rnorm(n=10,mean=5,sd=10)\n";
     example += "# let's see what the minimum is (you could do the max too)\n";
@@ -186,7 +188,7 @@ std::string Dist_norm::getHelpExample(void) const
     example += "mean(x)\n";
     example += "var(x)\n";
     example += "sd(x)\n";
-
+    
     return example;
 }
 
@@ -195,12 +197,12 @@ std::string Dist_norm::getHelpExample(void) const
  * Get some references/citations for this function
  *
  */
-std::vector<RevBayesCore::RbHelpReference> Dist_norm::getHelpReferences(void) const
+std::vector<RevBayesCore::RbHelpReference> Dist_normTruncatedPositive::getHelpReferences(void) const
 {
     // create an entry for each reference
     std::vector<RevBayesCore::RbHelpReference> references;
-
-
+    
+    
     return references;
 }
 
@@ -208,13 +210,13 @@ std::vector<RevBayesCore::RbHelpReference> Dist_norm::getHelpReferences(void) co
 /**
  * Get the names of similar and suggested other functions
  */
-std::vector<std::string> Dist_norm::getHelpSeeAlso(void) const
+std::vector<std::string> Dist_normTruncatedPositive::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
     see_also.push_back( "dnLognormal" );
-
-
+    
+    
     return see_also;
 }
 
@@ -222,11 +224,11 @@ std::vector<std::string> Dist_norm::getHelpSeeAlso(void) const
 /**
  * Get the title of this help entry
  */
-std::string Dist_norm::getHelpTitle(void) const
+std::string Dist_normTruncatedPositive::getHelpTitle(void) const
 {
     // create a title variable
     std::string title = "Normal Distribution";
-
+    
     return title;
 }
 
@@ -240,20 +242,22 @@ std::string Dist_norm::getHelpTitle(void) const
  *
  * \return The member rules.
  */
-const MemberRules& Dist_norm::getParameterRules(void) const
+const MemberRules& Dist_normTruncatedPositive::getParameterRules(void) const
 {
-
+    
     static MemberRules dist_member_rules;
     static bool rules_set = false;
-
+    
     if ( rules_set == false )
     {
         dist_member_rules.push_back( new ArgumentRule( "mean", Real::getClassTypeSpec()   , "The mean parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         dist_member_rules.push_back( new ArgumentRule( "sd"  , RealPos::getClassTypeSpec(), "The standard deviation parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "min", RealPos::getClassTypeSpec(), "The minimum.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY));
+        dist_member_rules.push_back( new ArgumentRule( "max", RealPos::getClassTypeSpec(), "The maximum.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY));
         
         rules_set = true;
     }
-
+    
     return dist_member_rules;
 }
 
@@ -263,19 +267,19 @@ const MemberRules& Dist_norm::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Dist_norm::getTypeSpec( void ) const
+const TypeSpec& Dist_normTruncatedPositive::getTypeSpec( void ) const
 {
-
+    
     static TypeSpec ts = getClassTypeSpec();
-
+    
     return ts;
 }
 
 
 /** Print value for user */
-void Dist_norm::printValue(std::ostream& o) const
+void Dist_normTruncatedPositive::printValue(std::ostream& o) const
 {
-
+    
     o << " norm(mean=";
     if ( mean != NULL )
     {
@@ -308,9 +312,9 @@ void Dist_norm::printValue(std::ostream& o) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_norm::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Dist_normTruncatedPositive::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
-
+    
     if ( name == "mean" )
     {
         mean = var;
@@ -319,8 +323,17 @@ void Dist_norm::setConstParameter(const std::string& name, const RevPtr<const Re
     {
         sd = var;
     }
+    else if ( name == "min")
+    {
+        min = var;
+    }
+    else if ( name == "max")
+    {
+        max = var;
+    }
     else
     {
-        ContinuousDistribution::setConstParameter(name, var);
+        PositiveContinuousDistribution::setConstParameter(name, var);
     }
 }
+
