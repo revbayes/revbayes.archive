@@ -387,6 +387,8 @@ template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousCharacterData &obsd, std::string type)
 {
     
+    std::cerr << "Start Concatenate HomologousCharacterData" << std::endl;
+    
     const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
     if ( rhs == NULL )
     {
@@ -407,6 +409,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
 template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractHomologousDiscreteCharacterData &obsd, std::string type)
 {
+    std::cerr << "Start Concatenate AbstractHomologousDiscreteCharacterData" << std::endl;
     
     const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
     if ( rhs == NULL )
