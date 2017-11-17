@@ -372,7 +372,7 @@ int PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t in
     // remove the old parameter first
     if ( homogeneous_fossil_counts != NULL )
     {
-        return homogeneous_fossil_counts->getValue();
+        return (int)homogeneous_fossil_counts->getValue();
     }
     else
     {
@@ -380,7 +380,7 @@ int PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t in
         {
             throw(RbException("Fossil count index out of bounds"));
         }
-        return heterogeneous_fossil_counts->getValue()[index];
+        return (int)heterogeneous_fossil_counts->getValue()[index];
     }
 }
 
@@ -618,7 +618,7 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::touchSpecialization(DagN
  */
 void PiecewiseConstantFossilizedBirthDeathRangeProcess::updateIntervals( )
 {
-    for (int i = num_intervals - 1; i >= 0; i--)
+    for (int i = (int)num_intervals - 1; i >= 0; i--)
     {
         double b = getSpeciationRate(i);
         double d = getExtinctionRate(i);

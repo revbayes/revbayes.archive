@@ -81,7 +81,7 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
     RevObject& b = args[5].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
-        burnin = static_cast<const Integer &>(b).getValue();
+        burnin = (int)static_cast<const Integer &>(b).getValue();
     }
     else
     {
@@ -100,7 +100,7 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
         throw RbException("Joint ancestral state summaries are not yet implemented. Coming soon!");
     }
     
-    int num_time_slices = static_cast<const Integer &>(args[7].getVariable()->getRevObject()).getValue();
+    int num_time_slices = (int)static_cast<const Integer &>(args[7].getVariable()->getRevObject()).getValue();
     
     bool verbose = static_cast<const RlBoolean &>(args[8].getVariable()->getRevObject()).getValue();
     

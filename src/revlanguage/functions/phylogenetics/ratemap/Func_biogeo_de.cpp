@@ -66,7 +66,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGeneratorSequence >* Func_biogeo_
         grm = static_cast<const CharacterHistoryRateModifier&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     }
 
-    unsigned nc  = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
+    unsigned nc  = (unsigned)static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
     bool fe      = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getValue();
     
     RevBayesCore::BiogeographyRateGeneratorSequenceFunction* f = new RevBayesCore::BiogeographyRateGeneratorSequenceFunction(nc,fe,nc); //(nc, true);

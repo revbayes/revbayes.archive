@@ -85,11 +85,11 @@ MarginalLikelihoodEstimator::MarginalLikelihoodEstimator(const std::string &fn, 
                 
                     if ( columns[j] == pn )
                     {
-                        powerColumnIndex = j;
+                        powerColumnIndex = (int)j;
                     }
                     else if ( columns[j] == ln )
                     {
-                        likelihoodColumnIndex = j;
+                        likelihoodColumnIndex = (int)j;
                     }
                 
                 }

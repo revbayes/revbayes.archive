@@ -84,7 +84,7 @@ double AbstractBirthDeathProcess::lnProbTreeShape(void) const
     // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n-1} / n!
     // see Gernhard 2008
 
-    return (value->getNumberOfTips() - 1) * RbConstants::LN2 - RbMath::lnFactorial(value->getNumberOfTips());
+    return (value->getNumberOfTips() - 1) * RbConstants::LN2 - RbMath::lnFactorial( (int)value->getNumberOfTips() );
 }
 
 

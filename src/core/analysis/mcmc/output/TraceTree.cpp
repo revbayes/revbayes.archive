@@ -1106,7 +1106,7 @@ TopologyNode* TraceTree::findParentNode(TopologyNode& n, const Split& tmp, std::
 int TraceTree::getBurnin( void ) const
 {
     
-    return burnin;
+    return (int)burnin;
 }
 
 

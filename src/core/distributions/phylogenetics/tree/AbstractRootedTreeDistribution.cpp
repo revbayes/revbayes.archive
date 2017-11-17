@@ -431,7 +431,7 @@ double AbstractRootedTreeDistribution::lnProbTreeShape(void) const
 
     size_t num_taxa = value->getNumberOfTips();
 
-    return (num_taxa - 1) * RbConstants::LN2 - 2.0 * RbMath::lnFactorial(num_taxa) + log(num_taxa);
+    return (num_taxa - 1) * RbConstants::LN2 - 2.0 * RbMath::lnFactorial((int)num_taxa) + log(num_taxa);
 }
 
 

@@ -45,15 +45,15 @@ void Mntr_CharacterHistoryNhxFile::constructInternalObject( void ) {
     // now allocate a new sliding move
     const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
-    int g = static_cast<const Natural &>( samplegen->getRevObject() ).getValue();
-    int mg = static_cast<const Natural &>( maxgen->getRevObject() ).getValue();
+    int g = (int)static_cast<const Natural &>( samplegen->getRevObject() ).getValue();
+    int mg = (int)static_cast<const Natural &>( maxgen->getRevObject() ).getValue();
     
     int burn = 0;
 
     RevObject& b = burnin->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
-        burn = static_cast<const Integer &>(b).getValue();
+        burn = (int)static_cast<const Integer &>(b).getValue();
     }
     else
     {
