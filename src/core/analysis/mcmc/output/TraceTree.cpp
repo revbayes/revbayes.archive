@@ -755,15 +755,14 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
             double min_range = std::numeric_limits<double>::max();
             
             size_t interval_start = 0;
-            double lower = node_ages[0];
-            double upper = node_ages[0];
+            double lower = node_ages[(int)(0.5 * (double)total_branch_lengths)];
+            double upper = node_ages[(int)(0.5 * (double)total_branch_lengths)];
             
+            int interval_size = (int)(report.node_ages_HPD * (double)total_branch_lengths);
             // we need to make sure that we sampled more than one age
-            if ( total_branch_lengths > 1 )
+            if ( interval_size > 1 )
             {
 
-                int interval_size = (int)(report.node_ages_HPD * (double)total_branch_lengths);
-            
                 // find the smallest interval that contains x% of the samples
                 for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++)
                 {
@@ -786,15 +785,15 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
             std::string interval = "{" + StringUtilities::toString(lower)
             + "," + StringUtilities::toString(upper) + "}";
             
-            if ( clock )
+            if ( clock == true )
             {
-                if ( !n->isTip() || ( ( n->isFossil() || upper != lower) && !n->isSampledAncestor() ) )
+                if ( n->isTip() == false || ( ( n->isFossil() || upper != lower) && !n->isSampledAncestor() ) )
                 {
                     std::string label = "age_" + StringUtilities::toString( (int)(report.node_ages_HPD * 100) ) + "%_HPD";
                     n->addNodeParameter(label, interval);
                 }
             }
-            else if ( !n->isRoot() )
+            else if ( n->isRoot() == false )
             {
                 std::string label = "brlen_" + StringUtilities::toString( (int)(report.node_ages_HPD * 100) ) + "%_HPD";
                 n->addBranchParameter(label, interval);
