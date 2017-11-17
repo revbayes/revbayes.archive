@@ -36,16 +36,12 @@ Func_concatenateFromVector* Func_concatenateFromVector::clone( void ) const
 RevPtr<RevVariable> Func_concatenateFromVector::execute( void )
 {
     const ModelVector<AbstractHomologousDiscreteCharacterData>& v = static_cast<const ModelVector<AbstractHomologousDiscreteCharacterData> &>( args[0].getVariable()->getRevObject() );
-//    const WorkspaceVector<AbstractHomologousDiscreteCharacterData>& v = static_cast<const WorkspaceVector<AbstractHomologousDiscreteCharacterData> &>( args[0].getVariable()->getRevObject() );
     const std::string& type = static_cast<const RlString &>( args[1].getVariable()->getRevObject() ).getValue();
     
     AbstractHomologousDiscreteCharacterData* a = dynamic_cast<const AbstractHomologousDiscreteCharacterData *>( v.getElement(0) )->clone();
-    std::cerr << "In fnConcatenateVector:\t\ttype(a) = " << a << std::endl;
     for (size_t i = 1; i < v.size(); ++i)
     {
         const AbstractHomologousDiscreteCharacterData* b = dynamic_cast<const AbstractHomologousDiscreteCharacterData *>( v.getElement(i) );
-        std::cerr << "In fnConcatenateVector:\t\ttype(b) = " << b << std::endl;
-//        const AbstractHomologousDiscreteCharacterData& b = v[i];
         
         a->concatenate( *b, type );
         

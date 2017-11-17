@@ -372,8 +372,6 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         throw RbException("Adding wrong character data type into CharacterData!!!");
     }
     
-    std::cerr << "Concatenate AbstractCharacterData" << std::endl;
-    
     concatenate( *rhs, type );
 }
 
@@ -387,15 +385,11 @@ template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousCharacterData &obsd, std::string type)
 {
     
-    std::cerr << "Start Concatenate HomologousCharacterData" << std::endl;
-    
     const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
     if ( rhs == NULL )
     {
         throw RbException("Adding wrong character data type into CharacterData!!!");
     }
-    
-    std::cerr << "Concatenate HomologousCharacterData" << std::endl;
     
     concatenate( *rhs, type );
 }
@@ -409,15 +403,12 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
 template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractHomologousDiscreteCharacterData &obsd, std::string type)
 {
-    std::cerr << "Start Concatenate AbstractHomologousDiscreteCharacterData" << std::endl;
     
     const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
     if ( rhs == NULL )
     {
         throw RbException("Adding wrong character data type into CharacterData!!!");
     }
-    
-    std::cerr << "Concatenate AbstractHomologousDiscreteCharacterData" << std::endl;
     
     concatenate( *rhs, type );
 }
@@ -432,11 +423,7 @@ template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousDiscreteCharacterData<charType> &obsd, std::string type)
 {
     
-    std::cerr << "Concatenate HomologousDiscreteCharacterData<???>" << std::endl;
-    
     size_t sequence_length = getNumberOfCharacters();
-    
-    std::cerr << "sl = " << sequence_length << std::endl;
     
     // check if both have the same number of taxa
     if ( taxa.size() != obsd.getNumberOfTaxa() && type != "union" && type != "intersection")
@@ -468,9 +455,6 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         }
     }
     
-    
-    std::cerr << "td = " << to_delete.size() << std::endl;
-    
     for (size_t i=0; i<taxa.size(); ++i )
     {
         const std::string &n = taxa[i].getName();
@@ -501,12 +485,11 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         }
 
     }
-    std::cerr << "td = " << to_delete.size() << std::endl;
+    
     for (size_t i=0; i<to_delete.size(); i++)
     {
         deleteTaxon(to_delete[i]);
     }
-    std::cerr << "#T = " << getNumberOfTaxa() << std::endl;
     
     const std::set<size_t> &exclChars = obsd.getExcludedCharacters();
     for (std::set<size_t>::const_iterator it = exclChars.begin(); it != exclChars.end(); ++it)

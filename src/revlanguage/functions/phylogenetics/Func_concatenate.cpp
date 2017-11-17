@@ -39,20 +39,11 @@ RevPtr<RevVariable> Func_concatenate::execute( void )
     const AbstractHomologousDiscreteCharacterData& b = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[1].getVariable()->getRevObject() );
     const std::string& type = static_cast<const RlString &>( args[2].getVariable()->getRevObject() ).getValue();
 
-    std::cerr << "In fnConcatenate" << std::endl;
-
     AbstractHomologousDiscreteCharacterData *d = a.clone();
-    std::cerr << "In fnConcatenate:\t\ttype(d) = " << d->getType() << std::endl;
-    std::cerr << "In fnConcatenate:\t\ttype(d) = " << args[0].getVariable()->getRevObject().getType() << std::endl;
-    std::cerr << "In fnConcatenate:\t\ttype(b) = " << b.getType() << std::endl;
-    std::cerr << "In fnConcatenate:\t\ttype(b) = " << args[1].getVariable()->getRevObject().getType() << std::endl;
     d->concatenate( b, type );
     for (size_t i = 3; i < args.size(); ++i)
     {
         const AbstractHomologousDiscreteCharacterData& c = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[i].getVariable()->getRevObject() );
-        std::cerr << "In fnConcatenate:\t\ttype(d) = " << d->getType() << std::endl;
-        std::cerr << "In fnConcatenate:\t\ttype(c) = " << c.getType() << std::endl;
-        std::cerr << "In fnConcatenate:\t\ttype(c) = " << args[i].getVariable()->getRevObject().getType() << std::endl;
         d->concatenate( c, type );
     }
     
