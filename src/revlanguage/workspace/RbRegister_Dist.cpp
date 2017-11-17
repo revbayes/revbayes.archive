@@ -170,6 +170,7 @@
 #include "Dist_lnorm.h"
 #include "Dist_lnormOffset.h"
 #include "Dist_lnormOffsetPositive.h"
+#include "Dist_logExponential.h"
 #include "Dist_logUniform.h"
 #include "Dist_multinomial.h"
 #include "Dist_multivariateNorm.h"
@@ -396,6 +397,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddContinuousDistribution< RealPos          >( new Dist_lnorm() );
         AddContinuousDistribution< Real             >( new Dist_lnormOffset() );
         AddContinuousDistribution< RealPos          >( new Dist_lnormOffsetPositive() );
+        
+        // LogExponential distribution
+        AddContinuousDistribution< Real             >( new Dist_logExponential() );
         
         // LogUniform distribution
         AddContinuousDistribution< RealPos          >( new Dist_logUniform() );
