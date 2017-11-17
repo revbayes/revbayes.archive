@@ -15,9 +15,8 @@
 using namespace RevLanguage;
 
 /** Basic constructor */
-UserFunction::UserFunction( UserFunctionDef* def ) :
-    Function(),
-    functionDef( def )
+UserFunction::UserFunction( UserFunctionDef* def ) : Function(),
+    function_def( def )
 {
 }
 
@@ -58,7 +57,7 @@ RevPtr<RevVariable> UserFunction::execute( void )
 RevPtr<RevVariable> UserFunction::executeCode( void )
 {
     // Create new evaluation frame with function base class execution environment as parent
-    Environment* functionFrame = new Environment( getEnvironment(), "UserFunctionEnvironment" );
+    Environment* function_frame = new Environment( getEnvironment(), "UserFunctionEnvironment" );
     
     // Add the arguments to our environment
     for ( std::vector<Argument>::iterator it = args.begin(); it != args.end(); ++it )
@@ -66,21 +65,21 @@ RevPtr<RevVariable> UserFunction::executeCode( void )
         // Note: We can add also temporary variable arguments as references because we
         // currently store them as arguments of the Rev function in UserFunctionArgs
         // as long as the UserFunctionCall exists.
-        functionFrame->addReference( it->getLabel(), it->getVariable() );
+        function_frame->addReference( it->getLabel(), it->getVariable() );
     }
 
     // Clear signals
     Signals::getSignals().clearFlags();
     
     // Set initial return value
-    RevPtr<RevVariable> retVar = NULL;
+    RevPtr<RevVariable> ret_var = NULL;
     
     // Execute code
-    const std::list<SyntaxElement*>& code = functionDef->getCode();
+    const std::list<SyntaxElement*>& code = function_def->getCode();
     for ( std::list<SyntaxElement*>::const_iterator it = code.begin(); it != code.end(); ++it )
     {
-        SyntaxElement* theSyntaxElement = *it;
-        retVar = theSyntaxElement->evaluateContent( *functionFrame );
+        SyntaxElement* the_syntax_element = *it;
+        ret_var = the_syntax_element->evaluateContent( *function_frame );
         
         if ( Signals::getSignals().isSet( Signals::RETURN ) )
         {
@@ -93,35 +92,35 @@ RevPtr<RevVariable> UserFunction::executeCode( void )
     if ( getReturnType() != RevObject::getClassTypeSpec() )
     {
         // void return value?
-        if (retVar == NULL)
+        if (ret_var == NULL)
         {
             throw(RbException("No return value in function '"+this->getFunctionName()+"' returning non-void type "+getReturnType().getType()));
         }
-        else if ( retVar->getRevObject().isType( getReturnType() ) == true )
+        else if ( ret_var->getRevObject().isType( getReturnType() ) == true )
         {
-            if ( retVar->getRevObject().getTypeSpec() != getReturnType() )
+            if ( ret_var->getRevObject().getTypeSpec() != getReturnType() && ret_var->getRevObject().getTypeSpec().isDerivedOf( getReturnType() ) == false )
             {
                 // compatible but differing return value
-                if ( retVar->getRevObject().isConvertibleTo(getReturnType(),true) >= 0 )
+                if ( ret_var->getRevObject().isConvertibleTo(getReturnType(),true) >= 0 )
                 {
                     //convert the return value
-                    retVar = new RevVariable( retVar->getRevObject().convertTo(getReturnType()) );
+                    ret_var = new RevVariable( ret_var->getRevObject().convertTo(getReturnType()) );
                 }
                 // incompatible return value?
                 else
                 {
-                    throw(RbException("Returning "+retVar->getRevObject().getTypeSpec().getType()+" in function '"+this->getFunctionName()+"' with incompatible return type "+getReturnType().getType()));
+                    throw(RbException("Returning "+ret_var->getRevObject().getTypeSpec().getType()+" in function '"+this->getFunctionName()+"' with incompatible return type "+getReturnType().getType()));
                 }
             }
         }
         else
         {
-            throw(RbException("Returning "+retVar->getRevObject().getTypeSpec().getType()+" in function '"+this->getFunctionName()+"' with incompatible return type "+getReturnType().getType()));
+            throw(RbException("Returning "+ret_var->getRevObject().getTypeSpec().getType()+" in function '"+this->getFunctionName()+"' with incompatible return type "+getReturnType().getType()));
         }
     }
 
     // Return the return value
-    return retVar;
+    return ret_var;
 }
 
 
@@ -150,8 +149,12 @@ std::vector<const RevBayesCore::DagNode*> UserFunction::getParameters(void) cons
 
     for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); ++it )
     {
+        
         if ( (*it).getVariable()->getRevObject().isModelObject() )
+        {
             params.push_back( (*it).getVariable()->getRevObject().getDagNode() );
+        }
+        
     }
 
     return params;
@@ -164,7 +167,7 @@ std::vector<const RevBayesCore::DagNode*> UserFunction::getParameters(void) cons
 std::string UserFunction::getFunctionName( void ) const
 {
     // create a name variable that is NOT the same for all instance of this class
-    std::string f_name = functionDef->getName();
+    std::string f_name = function_def->getName();
     
     return f_name;
 }
@@ -180,13 +183,13 @@ const TypeSpec& UserFunction::getTypeSpec( void ) const
 /** Get argument rules */
 const ArgumentRules& UserFunction::getArgumentRules(void) const
 {
-    return functionDef->getArgumentRules();
+    return function_def->getArgumentRules();
 }
 
 
 /** Get return type */
 const TypeSpec& UserFunction::getReturnType(void) const
 {
-    return functionDef->getReturnType();
+    return function_def->getReturnType();
 }
 

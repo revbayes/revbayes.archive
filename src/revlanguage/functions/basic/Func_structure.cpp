@@ -72,6 +72,11 @@ RevPtr<RevVariable> Func_structure::execute( void )
         
     }
     
+    o << "_RevType      = " << the_var->getRevObject().getType() << std::endl;
+    o << "_value        = ";
+    the_var->printValue(o, true);
+    o << std::endl;
+    
     if ( the_var->isWorkspaceVariable() && verbose == true )
     {
         o << "_varType      = workspace (control)" << std::endl;

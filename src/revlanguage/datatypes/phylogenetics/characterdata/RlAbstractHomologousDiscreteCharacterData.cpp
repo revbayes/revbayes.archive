@@ -63,6 +63,7 @@ AbstractHomologousDiscreteCharacterData::~AbstractHomologousDiscreteCharacterDat
 
 void AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d, std::string type) const
 {
+    
     const AbstractHomologousDiscreteCharacterData* tmp = dynamic_cast<const AbstractHomologousDiscreteCharacterData*>( &d );
     if ( tmp != NULL )
     {
@@ -79,11 +80,11 @@ void AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d, st
 void AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type) const
 {
     
-        // we need to make this a constant DAG node so that we can actually modify the value
-        // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
-        //    clone_obj->makeConstantValue();
-    
-        // now concatenate
+    // we need to make this a constant DAG node so that we can actually modify the value
+    // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
+    //    clone_obj->makeConstantValue();
+        
+    // now concatenate
     getDagNode()->getValue().concatenate( d.getValue(), type );
     
 }

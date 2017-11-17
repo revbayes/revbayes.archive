@@ -58,7 +58,7 @@ const ArgumentRules& Func_concatenate::getArgumentRules( void ) const
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
         
         argumentRules.push_back( new ArgumentRule( "a", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "First character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );

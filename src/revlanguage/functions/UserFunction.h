@@ -42,7 +42,7 @@ namespace RevLanguage {
         
     protected:
         // Member variable
-        RevPtr<UserFunctionDef>                     functionDef;                                                //!< The function definition
+        RevPtr<UserFunctionDef>                     function_def;                                                //!< The function definition
     };
     
 }
