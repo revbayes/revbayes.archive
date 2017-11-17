@@ -92,6 +92,7 @@ ConstantRateOutgroupBirthDeathProcess* ConstantRateOutgroupBirthDeathProcess::cl
 
 bool ConstantRateOutgroupBirthDeathProcess::isLnProbabilityNonZero( void ) {
     // first check if the current tree matches the clade constraints
+    return true;
     recursivelyUpdateClades( value->getRoot() );
     return( matchesConstraints() );
     
@@ -116,59 +117,73 @@ double ConstantRateOutgroupBirthDeathProcess::computeLnProbabilityTimes( void ) 
     // variable declarations and initialization
     double birth_rate = lambda->getValue();
     double death_rate = mu->getValue();
-    double rho_in     = rho_ingroup->getValue();
-    double rho_out    = rho_outgroup->getValue();
     
-    // get node/time variables
-    size_t num_nodes = value->getNumberOfNodes();
+    double rho_in = 1.0;
+    if ( sampling_strategy_ingroup == "uniform" ) {
+        rho_in = rho_ingroup->getValue();
+    }
+    double rho_out = 1.0;
+    if ( sampling_strategy_outgroup == "uniform" ) {
+        rho_out = rho_outgroup->getValue();
+    }
     
     // get node ages for ingroup
     TopologyNode* ingroup_mrca = findMrcaNode( clade_ingroup );
     std::vector<double> ingroup_ages = std::vector<double>();
     recursivelyCollectCladeAges(ingroup_mrca, ingroup_ages);
     std::sort(ingroup_ages.begin(), ingroup_ages.end());
-    double ingroup_stem_age = ingroup_mrca->getParent().getAge();
     
     // remaining node ages are from the outgroup
     std::vector<double> outgroup_ages = std::vector<double>();
     recursivelyCollectCladeAges(root, outgroup_ages, ingroup_mrca);
     std::sort(outgroup_ages.begin(), outgroup_ages.end());
     
-    // ingroup
-    lnProbTimes += log(pOne(ingroup_stem_age, birth_rate, death_rate, rho_in));
+    // ingroup divergence time probabilities
     for (size_t i=0; i<ingroup_ages.size(); i++)
     {
         double t = ingroup_ages[i];
         lnProbTimes += log(birth_rate * pOne(t, birth_rate, death_rate, rho_in));
     }
-    lnProbTimes -= log(1.0 - pZero(ingroup_stem_age, birth_rate, death_rate, rho_in));
     
- 
-    
-    
-    // ingroup
+    // outgroup divergence time probabilities
     lnProbTimes += log(pOne(process_time, birth_rate, death_rate, rho_out));
     for (size_t i=0; i<outgroup_ages.size(); i++)
     {
         double t = outgroup_ages[i];
         lnProbTimes += log(birth_rate * pOne(t, birth_rate, death_rate, rho_out));
     }
-    lnProbTimes -= log(1.0 - pZero(process_time, birth_rate, death_rate, rho_out));
     
-    // outgroup
-//    lnProbTimes += log(pOne(process_time, birth_rate, death_rate, rho_out));
-//    lnProbTimes -= log(1.0 - pZero(process_time, birth_rate, death_rate, rho_out));
+    // sampling strategies for ingroup/outgroup
+    if (sampling_strategy_ingroup == "diversified") {
+        lnProbTimes += computeLnProbabilityDiversifiedSampling( ingroup_ages, ingroup_mrca->getAge(), rho_in, taxa_ingroup.size() );
+    }
+    if (sampling_strategy_outgroup == "diversified") {
+        lnProbTimes += computeLnProbabilityDiversifiedSampling( outgroup_ages, root->getAge(), rho_out, taxa_outgroup.size() );
+    }
+
+    // condition on one ingroup and one outgroup lineage surviving, under their respective sampling probs
+    if (this->condition == "survival")
+    {
+        double ln_factor_to_remove = 2.0 * -log( pSurvival(0, root->getAge()) );
+        double ln_factor_to_add = -log( pSurvival(0, root->getAge(), rho_out) * pSurvival(0, root->getAge(), rho_in ) );
+        lnProbTimes += ln_factor_to_add - ln_factor_to_remove;
+    }
+    
     
     return lnProbTimes;
     
 }
 
-double ConstantRateOutgroupBirthDeathProcess::computeLnProbabilityDiversifiedSampling(std::vector<double> ages, double presentTime, double samplingProb) const
+double ConstantRateOutgroupBirthDeathProcess::computeLnProbabilityDiversifiedSampling(std::vector<double> ages, double presentTime, double samplingProb, size_t num_taxa) const
 {
-    size_t num_taxa = value->getNumberOfTips();
+    
+    if (ages.size() < 1) {
+        std::cout << "MJL: Warning! something weird w/ OutgroupBDP ages.size() for diversified sampling\n";
+        return 0.0;
+    }
     
     // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
-    double last_event = ages[ages.size()-2];
+    double last_event = ages[ages.size()-1];
 
     double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
     double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
@@ -176,7 +191,9 @@ double ConstantRateOutgroupBirthDeathProcess::computeLnProbabilityDiversifiedSam
 
     // get an estimate of the actual number of taxa
     double m = round(num_taxa / samplingProb);
-    double lnP = (m-num_taxa) * log(F_t) + log(RbMath::choose(m,num_taxa));
+    int m_int = m;
+    if (m_int == 0) m_int = 1;
+    double lnP = (m-num_taxa) * log(F_t) + log(RbMath::choose(m_int,num_taxa));
     
     return lnP;
 }
@@ -278,7 +295,7 @@ double ConstantRateOutgroupBirthDeathProcess::pSurvival(double start, double end
     // variable declarations and initialization
     double birth_rate = lambda->getValue();
     double death_rate = mu->getValue();
-    double sampling_prob = rho_ingroup->getValue();
+    double sampling_prob = rho_outgroup->getValue();
     
     double p0 = pZero(end, birth_rate, death_rate, sampling_prob);
     
@@ -300,8 +317,10 @@ void ConstantRateOutgroupBirthDeathProcess::recursivelyCollectCladeAges( Topolog
 //    std::cout << node << " " << barrier_node << "\n";
     if (node == barrier_node) return;
     
+    if (node->isTip()) return;
+    
     ages.push_back( node->getAge() );
-    std::cout << node << " " << node->getAge() << " " << node->getName() << "\n";
+//    std::cout << node << " " << node->getAge() << " " << node->getName() << "\n";
     
     const std::vector<TopologyNode*> children = node->getChildren();
     for (size_t i = 0; i < children.size(); i++) {

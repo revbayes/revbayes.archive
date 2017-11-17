@@ -49,7 +49,7 @@ namespace RevBayesCore {
 //        void                                                recursivelyCollectIngroupAges( TopologyNode* node, std::vector<double>& ages ) const;
         // helper functions
         double                                              computeLnProbabilityTimes(void) const;                                          //!< Compute the log-transformed probability of the current value.
-        double                                              computeLnProbabilityDiversifiedSampling(std::vector<double> ages, double presentTime, double samplingProb) const;
+        double                                              computeLnProbabilityDiversifiedSampling(std::vector<double> ages, double presentTime, double samplingProb, size_t num_taxa) const;
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const              { throw RbException("Cannot compute P(nTaxa)."); }
         double                                              simulateDivergenceTime(double origin, double present) const;                    //!< Simulate a speciation event.
         void                                                simulateOutgroupTree( void );
