@@ -355,7 +355,8 @@ double RbStatistics::Normal::quantile(double p) {
  * \return Returns the quantile.
  * \throws Does not throw an error.
  */
-double RbStatistics::Normal::quantile(double mu, double sigma, double p) {
+double RbStatistics::Normal::quantile(double mu, double sigma, double p)
+{
 	
 	double z = Normal::quantile(p);
 	double x = z * sigma + mu;
@@ -374,7 +375,8 @@ double RbStatistics::Normal::quantile(double mu, double sigma, double p) {
  * \return Returns the quantile.
  * \throws Does not throw an error.
  */
-double RbStatistics::Normal::quantile(double mu, double sigma, double p, double min, double max) {
+double RbStatistics::Normal::quantile(double mu, double sigma, double p, double min, double max)
+{
     double a, b;
     if (min == RbConstants::Double::neginf)
         a = 0;
@@ -384,11 +386,12 @@ double RbStatistics::Normal::quantile(double mu, double sigma, double p, double 
         b = 1;
     else
         b = Normal::cdf((max - mu) / sigma);
-    double x = Normal::quantile(a + p * (b - a));
+    double x = Normal::quantile(mu, sigma, a + p * (b - a));
     return x;
 }
 
-double RbStatistics::Normal::rv(RandomNumberGenerator& rng) {
+double RbStatistics::Normal::rv(RandomNumberGenerator& rng)
+{
     
 	double v1 = 0.0;
 	double v2 = 0.0; // NOTE: We should eventually implement this so you generate and
@@ -406,7 +409,8 @@ double RbStatistics::Normal::rv(RandomNumberGenerator& rng) {
 	return ( v2 * fac );
 }
 
-double RbStatistics::Normal::rv(double mu, double sigma, RandomNumberGenerator& rng) {
+double RbStatistics::Normal::rv(double mu, double sigma, RandomNumberGenerator& rng)
+{
     
 	double v1 = 0.0;
 	double v2 = 0.0; // NOTE: We should eventually implement this so you generate and
