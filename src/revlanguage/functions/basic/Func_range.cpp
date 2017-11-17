@@ -28,7 +28,8 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_range::Func_range( void ) : Procedure() {
+Func_range::Func_range( void ) : Procedure()
+{
     
 }
 
@@ -39,7 +40,8 @@ Func_range::Func_range( void ) : Procedure() {
  *
  * \return A new copy of the process.
  */
-Func_range* Func_range::clone( void ) const {
+Func_range* Func_range::clone( void ) const
+{
     
     return new Func_range( *this );
 }
@@ -49,26 +51,54 @@ Func_range* Func_range::clone( void ) const {
 RevPtr<RevVariable> Func_range::execute( void )
 {
     
-    int f = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getValue();
-    int l = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
+    long f = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getValue();
+    long l = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
     
-    ModelVector<Integer> *range = new ModelVector<Integer>( RevBayesCore::RbVector<long>() );
-    if (f < l)
+    if ( f >= 0 && l >= 0 )
     {
-        for ( int i = f; i <= l; i++ )
+
+        ModelVector<Natural> *range = new ModelVector<Natural>( RevBayesCore::RbVector<long>() );
+        if (f < l)
         {
-            range->push_back( Integer(i) );
+            for ( long i = f; i <= l; i++ )
+            {
+                range->push_back( Natural(i) );
+            }
         }
+        else
+        {
+            for ( long i = f; i >= l; i-- )
+            {
+                range->push_back( Natural(i) );
+            }
+        }
+        
+        return new RevVariable( range );
+
     }
     else
     {
-        for ( int i = f; i >= l; i-- )
+
+        ModelVector<Integer> *range = new ModelVector<Integer>( RevBayesCore::RbVector<long>() );
+        if (f < l)
         {
-            range->push_back( Integer(i) );
+            for ( long i = f; i <= l; i++ )
+            {
+                range->push_back( Integer(i) );
+            }
         }
+        else
+        {
+            for ( long i = f; i >= l; i-- )
+            {
+                range->push_back( Integer(i) );
+            }
+        }
+    
+        return new RevVariable( range );
+        
     }
     
-    return new RevVariable( range );
 }
 
 
