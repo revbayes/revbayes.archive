@@ -42,6 +42,10 @@ RevPtr<RevVariable> Func_concatenate::execute( void )
     std::cerr << "In fnConcatenate" << std::endl;
 
     AbstractHomologousDiscreteCharacterData *d = a.clone();
+    std::cerr << "In fnConcatenate:\t\ttype(d) = " << d->getType() << std::endl;
+    std::cerr << "In fnConcatenate:\t\ttype(d) = " << args[0].getVariable()->getRevObject().getType() << std::endl;
+    std::cerr << "In fnConcatenate:\t\ttype(b) = " << b.getType() << std::endl;
+    std::cerr << "In fnConcatenate:\t\ttype(b) = " << args[1].getVariable()->getRevObject().getType() << std::endl;
     d->concatenate( b, type );
     for (size_t i = 3; i < args.size(); ++i)
     {
@@ -63,7 +67,7 @@ const ArgumentRules& Func_concatenate::getArgumentRules( void ) const
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
         
         argumentRules.push_back( new ArgumentRule( "a", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "First character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
