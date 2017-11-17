@@ -57,7 +57,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGeneratorSequence >* Func_biogeo_
     
     
     RevBayesCore::TypedDagNode< RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::Simplex >* rf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    // RevBayesCore::TypedDagNode< RevBayesCore::Simplex >* rf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<RevBayesCore::CharacterHistoryRateModifier>* grm = NULL;
 

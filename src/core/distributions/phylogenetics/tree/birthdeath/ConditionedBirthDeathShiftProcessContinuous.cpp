@@ -579,7 +579,8 @@ void ConditionedBirthDeathShiftProcessContinuous::executeMethod(const std::strin
         {
             const TopologyNode &node = this->value->getNode( i );
             const BranchHistory& bh = branch_histories[ i ];
-            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+            // const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+            bh.getHistory();
             double value_rootwards = computeStartValue( node.getParent().getIndex(), 0 );
             double value_tipwards  = computeStartValue( node.getIndex(), 0 );
             
@@ -598,7 +599,8 @@ void ConditionedBirthDeathShiftProcessContinuous::executeMethod(const std::strin
         {
             const TopologyNode &node = this->value->getNode( i );
             const BranchHistory& bh = branch_histories[ i ];
-            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+//            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+            bh.getHistory();
             double value_rootwards = computeStartValue( node.getParent().getIndex(), 0 );
             double value_tipwards  = computeStartValue( node.getIndex(), 0 );
             
@@ -617,7 +619,8 @@ void ConditionedBirthDeathShiftProcessContinuous::executeMethod(const std::strin
         {
             const TopologyNode &node = this->value->getNode( i );
             const BranchHistory& bh = branch_histories[ i ];
-            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+//            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+            bh.getHistory();
             double value_rootwards = computeStartValue( node.getParent().getIndex(), 1 );
             double value_tipwards  = computeStartValue( node.getIndex(), 1 );
             
@@ -636,7 +639,8 @@ void ConditionedBirthDeathShiftProcessContinuous::executeMethod(const std::strin
         {
             const TopologyNode &node = this->value->getNode( i );
             const BranchHistory& bh = branch_histories[ i ];
-            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+//            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+            bh.getHistory();
             double value_rootwards = computeStartValue( node.getParent().getIndex(), 1 );
             double value_tipwards  = computeStartValue( node.getIndex(), 1 );
             

@@ -86,7 +86,7 @@ double SlideBactrianProposalContinuous::doProposal( void )
     double min = variable->getMin();
     double max = variable->getMax();
         
-    double size = max - min;
+    //double size = max - min;
     
     double u = rng->uniform01();
     double delta = RbStatistics::Normal::rv(*GLOBAL_RNG) * RbConstants::BACT_SD;

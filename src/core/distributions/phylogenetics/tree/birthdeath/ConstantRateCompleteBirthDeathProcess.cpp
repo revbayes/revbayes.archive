@@ -138,8 +138,8 @@ double ConstantRateCompleteBirthDeathProcess::lnProbTreeShape(void) const
     // by multiplying by 2^{n-1} / (n-m)!
     // where n is the number of tips and m is the number of extinct tips
 
-    size_t n = value->getNumberOfTips();
-    size_t m = value->getNumberOfExtinctTips();
+    int n = (int)value->getNumberOfTips();
+    int m = (int)value->getNumberOfExtinctTips();
 
     // condition on survival
     if (n == m)

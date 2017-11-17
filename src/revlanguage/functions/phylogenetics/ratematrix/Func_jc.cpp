@@ -29,8 +29,8 @@ Func_jc* Func_jc::clone( void ) const
 RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_jc::createFunction( void ) const
 {
     
-    int ns = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getValue();
-    RevBayesCore::JcRateMatrixFunction* f = new RevBayesCore::JcRateMatrixFunction( size_t(ns) );
+    size_t ns = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getValue();
+    RevBayesCore::JcRateMatrixFunction* f = new RevBayesCore::JcRateMatrixFunction( ns );
     
     return f;
 }

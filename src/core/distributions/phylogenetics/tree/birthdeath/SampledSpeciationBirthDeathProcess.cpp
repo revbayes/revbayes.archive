@@ -349,7 +349,7 @@ double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
     
     // fill the likelihoods
     if (!true) {
-        computeNodeProbability(root, root.getIndex() );
+        ; //computeNodeProbability(root, root.getIndex() );
     }
     else {
         const TopologyNode &left = root.getChild(0);
