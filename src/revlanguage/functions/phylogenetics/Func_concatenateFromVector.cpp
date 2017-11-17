@@ -39,13 +39,15 @@ RevPtr<RevVariable> Func_concatenateFromVector::execute( void )
 //    const WorkspaceVector<AbstractHomologousDiscreteCharacterData>& v = static_cast<const WorkspaceVector<AbstractHomologousDiscreteCharacterData> &>( args[0].getVariable()->getRevObject() );
     const std::string& type = static_cast<const RlString &>( args[1].getVariable()->getRevObject() ).getValue();
     
-    AbstractHomologousDiscreteCharacterData* a = static_cast<const AbstractHomologousDiscreteCharacterData &>( v[0] ).clone();
+    AbstractHomologousDiscreteCharacterData* a = dynamic_cast<const AbstractHomologousDiscreteCharacterData *>( v.getElement(0) )->clone();
+    std::cerr << "In fnConcatenateVector:\t\ttype(a) = " << a << std::endl;
     for (size_t i = 1; i < v.size(); ++i)
     {
-        const AbstractHomologousDiscreteCharacterData& b = static_cast<const AbstractHomologousDiscreteCharacterData &>( v[i] );
+        const AbstractHomologousDiscreteCharacterData* b = dynamic_cast<const AbstractHomologousDiscreteCharacterData *>( v.getElement(i) );
+        std::cerr << "In fnConcatenateVector:\t\ttype(b) = " << b << std::endl;
 //        const AbstractHomologousDiscreteCharacterData& b = v[i];
         
-        a->concatenate( b, type );
+        a->concatenate( *b, type );
         
     }
     
