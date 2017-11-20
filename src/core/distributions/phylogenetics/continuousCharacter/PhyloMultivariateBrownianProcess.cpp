@@ -1,12 +1,3 @@
-//
-//  PhyloMultivariateBrownianProcess.cpp
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-26.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
-
-
 #include "PhyloMultivariateBrownianProcess.h"
 
 #include "ConstantNode.h"
@@ -125,10 +116,12 @@ void PhyloMultivariateBrownianProcess::simulate() {
 }
 
 
-void PhyloMultivariateBrownianProcess::recursiveSimulate(const TopologyNode& from)  {
+void PhyloMultivariateBrownianProcess::recursiveSimulate(const TopologyNode& from)
+{
     
     size_t index = from.getIndex();
-    if (from.isRoot())    {
+    if (from.isRoot())
+    {
         
         std::vector<double>& val = (*value)[index];
         for (size_t i=0; i<getDim(); i++)   {

@@ -122,11 +122,9 @@ void AbstractPhyloContinuousCharacterProcess::redrawValue( void )
     // recursively simulate the sequences
     simulateRecursively( tau->getValue().getRoot(), taxa );
     
-    // add the taxon data to the character data
-    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
-    {
-        this->value->addTaxonData( taxa[i] );
-    }
+    // we call now our method to resample the tips
+    // this is important if we have multiple samples (e.g. individuals) per species
+    simulateTipSamples( taxa );
     
     // tell the derived classes
     this->resetValue();
@@ -259,6 +257,18 @@ void AbstractPhyloContinuousCharacterProcess::setValue(ContinuousCharacterData *
     
     // tell the derived classes
     this->resetValue();
+    
+}
+
+
+void AbstractPhyloContinuousCharacterProcess::simulateTipSamples( const std::vector< ContinuousTaxonData > &taxon_data )
+{
+    
+    // add the taxon data to the character data
+    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+    {
+        this->value->addTaxonData( taxon_data[i] );
+    }
     
 }
 
