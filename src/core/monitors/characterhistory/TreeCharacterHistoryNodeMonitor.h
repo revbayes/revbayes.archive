@@ -173,7 +173,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
     }
     else if (infoStr=="clado_state")
     {
-        GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
+        // GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
         // @MJL: fix this
 //        int cladoState = q->getCladogenicState(*n);
         int cladoState = 0;
@@ -192,7 +192,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
     }
     else if (infoStr=="bud_state")
     {
-        GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
+        // GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
         // @MJL: fix this
 //        int budState = (q)->getBuddingState(*n);
         int budState = 0;
@@ -429,8 +429,8 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCladoF
 {
     std::stringstream ss;
 
-    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
-    GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
+   //  TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    // GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
 
     const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
 
@@ -450,8 +450,8 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCladoS
 {
     std::stringstream ss;
 
-    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
-    GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
+   //  TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    // GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
     
     // @MJL: fix this
 //    int cladoState = q->getCladogenicState(*nd);

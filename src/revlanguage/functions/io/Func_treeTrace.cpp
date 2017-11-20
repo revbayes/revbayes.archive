@@ -58,7 +58,7 @@ RevPtr<RevVariable> Func_treeTrace::execute( void )
     RevObject& b = args[1].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
-        burnin = static_cast<const Integer &>(b).getValue();
+        burnin = (int)static_cast<const Integer &>(b).getValue();
     }
     else
     {

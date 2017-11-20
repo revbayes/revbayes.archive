@@ -292,7 +292,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n
         rv.clear();
         rv.resize( num_sites );
 
-        int index = static_cast<const TypedDagNode<long>* >( args[0] )->getValue() - 1;
+        int index = (int)static_cast<const TypedDagNode<long>* >( args[0] )->getValue() - 1;
 
         //        const BranchHistory& bh = branch_histories[ index ];
         const std::multiset<CharacterEvent*,CharacterEventCompare> &states = this->histories[index]->getHistory();

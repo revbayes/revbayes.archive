@@ -179,7 +179,7 @@ void RevBayesCore::UPPAllocationProposal<mixtureType>::undoProposal( void )
 {
     
     UniformPartitioningDistribution<mixtureType>& dist = static_cast<UniformPartitioningDistribution<mixtureType> &>( variable->getDistribution() );
-    dist.setCurrentIndex( old_partition );
+    dist.setCurrentIndex( (int)old_partition );
     dist.setValueAssignments( old_value_assignments );
     
 }

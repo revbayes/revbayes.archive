@@ -46,7 +46,7 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void )
     // now allocate a new sliding move
     const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
-    int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
+    int g = (int)static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::Tree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     vars.erase( unique( vars.begin(), vars.end() ), vars.end() );

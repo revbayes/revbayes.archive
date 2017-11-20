@@ -148,7 +148,7 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
 
         if ( b.isType( Integer::getClassTypeSpec() ) )
         {
-            burnin = static_cast<const Integer &>(b).getValue();
+            burnin = (int)static_cast<const Integer &>(b).getValue();
         }
         else
         {

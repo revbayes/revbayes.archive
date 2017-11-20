@@ -35,7 +35,7 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticSpeciationRateMatrix >* F
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
-    int ns = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
+    int ns = (int)static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
     
     RevBayesCore::ChromosomesCladogenicBirthDeathFunction* f = new RevBayesCore::ChromosomesCladogenicBirthDeathFunction( sr, ns );
     

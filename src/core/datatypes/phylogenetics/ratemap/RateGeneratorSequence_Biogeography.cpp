@@ -327,10 +327,10 @@ double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterE
         return getUnnormalizedSumOfRates( from, counts, age);
 
     // get rate away away from currState
-    unsigned n0 = counts[0];
+    unsigned n0 = (unsigned)counts[0];
 //    if (useDistanceRateModifier)
 //        n0 = distanceRateModifier->getNumAvailableAreas(node, from, age);
-    unsigned n1 = counts[1];
+    unsigned n1 = (unsigned)counts[1];
 
     // forbid extinction events
 //    if (counts[1] == 1 && forbidExtinction)

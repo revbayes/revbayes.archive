@@ -173,7 +173,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
     }
     
     // compute the index and internal name for this variable
-    int idx = static_cast<Integer&>( indexVar->getRevObject() ).getValue();
+    int idx = (int)static_cast<Integer&>( indexVar->getRevObject() ).getValue();
     std::string identifier = theParentVar->getName() + "[" + idx + "]";
     
     // mark the parent variable as a vector variable

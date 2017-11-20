@@ -53,7 +53,7 @@ void ValidationAnalysis::constructInternalObject( void )
     
     // now allocate a new sliding move
     const RevBayesCore::MonteCarloAnalysis&         s   = static_cast<const MonteCarloAnalysis &>( sampler->getRevObject() ).getValue();
-    int                                             n   = static_cast<const Natural &>( simulations->getRevObject() ).getValue();
+    int                                             n   = (int)static_cast<const Natural &>( simulations->getRevObject() ).getValue();
     
     value = new RevBayesCore::ValidationAnalysis( s, size_t(n) );
     
@@ -85,7 +85,7 @@ RevPtr<RevVariable> ValidationAnalysis::executeMethod(std::string const &name, c
         
         // get the member with given index
         
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         value->runAll( size_t(gen) );
         
         return NULL;
@@ -95,8 +95,8 @@ RevPtr<RevVariable> ValidationAnalysis::executeMethod(std::string const &name, c
         found = true;
         
         // get the member with given index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
+        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int tuningInterval = (int)static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         value->burnin( size_t(gen), size_t(tuningInterval) );
         
         return NULL;

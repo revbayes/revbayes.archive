@@ -462,7 +462,8 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         
         try
         {
-            size_t idx = obsd.getIndexOfTaxon( n );
+            //size_t idx = obsd.getIndexOfTaxon( n );
+            obsd.getIndexOfTaxon( n );
             taxon.concatenate( obsd.getTaxonData( n ) );
         }
         catch(RbException &e)
@@ -823,7 +824,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
     }
 
     int max;
-    for (max = long(observed.size()) - 1; max >= 0; max--)
+    for (max = int(observed.size()) - 1; max >= 0; max--)
     {
         if (observed.isSet(max))
         {

@@ -71,7 +71,7 @@ void PomoRootFrequenciesFunction::update( void )
     const std::vector<double>& fnrf = fixedNucleotideRootFrequencies->getValue();
     const double& fopar = frequencyOfPolymorphismsAtTheRoot->getValue();
     
-    const unsigned int& ps = populationSize->getValue();
+    const unsigned int& ps = (unsigned int)populationSize->getValue();
     
     double OneMinusFopar = 1 - fopar;
     // compute all root frequencies as in De Maio, Schlötterer, Kosiol 2013

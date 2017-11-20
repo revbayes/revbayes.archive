@@ -74,7 +74,7 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     RevObject& b = args[5].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
-        burnin = static_cast<const Integer &>(b).getValue();
+        burnin = (int)static_cast<const Integer &>(b).getValue();
     }
     else
     {
@@ -96,7 +96,7 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
         throw RbException("Joint ancestral state summaries are not yet implemented. Coming soon!");
     }
     
-    int site = static_cast<const Integer &>(args[8].getVariable()->getRevObject()).getValue() - 1;
+    int site = (int)static_cast<const Integer &>(args[8].getVariable()->getRevObject()).getValue() - 1;
     
     bool verbose = static_cast<const RlBoolean &>(args[9].getVariable()->getRevObject()).getValue();
     

@@ -81,7 +81,7 @@ void MrcaIndexStatistic::update( void )
             if ( clade_size < min_clade_size && clade_size >= taxa_count && node->containsClade( clade, false ) )
             {
                 
-                index = node->getIndex();
+                index = (int)node->getIndex();
                 min_clade_size = clade_size;
                 if ( taxa_count == clade_size )
                 {

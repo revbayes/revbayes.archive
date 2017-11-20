@@ -416,7 +416,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
                         {
                             if (state.isSet(k) && k +1 > max)
                             {
-                                max = k+1;
+                                max = (int)(k+1);
                             }
                         }
                     }
