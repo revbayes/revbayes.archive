@@ -74,6 +74,7 @@ namespace RevBayesCore {
         double                                          pSurvival(double start, double end) const;             //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                          p(size_t i, double t) const;
         double                                          q(size_t i, double t, bool tilde = false) const;
+        double                                          integrateQ(size_t i, double t) const;
 
         void                                            updateIntervals();
         void                                            redrawValue(void);
@@ -113,6 +114,8 @@ namespace RevBayesCore {
 
         bool                                            marginalize_k;
         bool                                            presence_absence;
+
+        std::vector<size_t>                             first_intervals;
     };
 }
 
