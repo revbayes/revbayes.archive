@@ -1612,14 +1612,14 @@ void TopologyNode::setAge(double a, bool propagate)
 }
 
 
-void TopologyNode::setBranchLength(double b)
+void TopologyNode::setBranchLength(double b, bool flag_dirty)
 {
     
     branch_length = b;
     
     
     // fire tree change event
-    if ( tree != NULL )
+    if ( flag_dirty == true && tree != NULL )
     {
         tree->getTreeChangeEventHandler().fire( *this, RevBayesCore::TreeChangeEventMessage::BRANCH_LENGTH );
     }

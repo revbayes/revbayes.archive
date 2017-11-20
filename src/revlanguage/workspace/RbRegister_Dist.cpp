@@ -141,6 +141,7 @@
 #include "Dist_SSBDP.h"
 #include "Dist_uniformTimeTree.h"
 #include "Dist_uniformTopology.h"
+#include "Dist_uniformTopologyBranchLength.h"
 
 /* Distributions on simple variables (in folder "distributions/math") */
 #include "Dist_bernoulli.h"
@@ -314,6 +315,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // uniform topology distribution
         AddDistribution< BranchLengthTree           >( new Dist_uniformTopology() );
+        
+        // uniform topology with branch lengths distribution
+        AddDistribution< BranchLengthTree           >( new Dist_uniformTopologyBranchLength() );
 
 		// empirical tree distributions
 		AddDistribution< Tree                       >( new Dist_empiricalTree() );
