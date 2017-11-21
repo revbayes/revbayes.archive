@@ -249,7 +249,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
     {
         if ( RbMath::isFinite(lnProbTimes) == false )
         {
-            return RbConstants::Double::nan;
+            return RbConstants::Double::neginf;
         }
         
         double b = (*this->value)[i][0];
@@ -441,10 +441,10 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
     {
         lnProbTimes -= log( pSurvival(maxb,0) );
     }
-    
+
     if ( RbMath::isFinite(lnProbTimes) == false )
     {
-        return RbConstants::Double::nan;
+        return RbConstants::Double::neginf;
     }
 
 
