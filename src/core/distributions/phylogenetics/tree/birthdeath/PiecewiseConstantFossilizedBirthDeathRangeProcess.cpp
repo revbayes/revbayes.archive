@@ -272,12 +272,15 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         double o = taxa[i].getAgeRange().getMax();
         double y = taxa[i].getAgeRange().getMin();
 
-        if( presence_absence && b < d )
+        if( presence_absence )
         {
-            return RbConstants::Double::neginf;
+            if( !( b > d && d >= 0.0 ) )
+            {
+                return RbConstants::Double::neginf;
+            }
         }
         // check constraints
-        else if ( !( b > o && o >= y && (y > d || (y == d && y == 0.0)) ) )
+        else if ( !( b > o && o >= y && (y > d || (y == d && y == 0.0)) && d >= 0.0 ) )
         {
             return RbConstants::Double::neginf;
         }
