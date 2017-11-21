@@ -115,7 +115,8 @@ namespace RevBayesCore {
         bool                                            marginalize_k;
         bool                                            presence_absence;
 
-        std::vector<size_t>                             first_intervals;
+        std::vector<size_t>                             oldest_intervals;
+        std::vector<size_t>                             youngest_intervals;
     };
 }
 

@@ -202,25 +202,10 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
     gamma_i     = std::vector<size_t>(taxa.size(), 0);
     gamma_links = std::vector<std::vector<bool> >(taxa.size(), std::vector<bool>(taxa.size(), false));
 
-    // update first_intervals
-    if( presence_absence )
-    {
-        first_intervals = std::vector<size_t>( taxa.size(), num_intervals - 1 );
-        for(size_t i = 0; i < taxa.size(); i++)
-        {
-            for(size_t j = 0; j < num_intervals; j++)
-            {
-                if( getFossilCount(j,i) > 0 )
-                {
-                    first_intervals[i] = j;
-                    break;
-                }
-            }
-        }
-    }
+    oldest_intervals = std::vector<size_t>( taxa.size(), num_intervals - 1 );
+    youngest_intervals = std::vector<size_t>( taxa.size(), num_intervals - 1 );
 
     redrawValue();
-
     updateGamma(true);
 }
 
@@ -272,26 +257,29 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         double o = taxa[i].getAgeRange().getMax();
         double y = taxa[i].getAgeRange().getMin();
 
+        size_t bi = l(b);
+        size_t di = l(d);
+        size_t oi = presence_absence ? oldest_intervals[i] : l(o);
+        size_t yi = presence_absence ? youngest_intervals[i] : l(y);
+
+        // check constraints
         if( presence_absence )
         {
-            if( !( b > d && d >= 0.0 ) )
+            if( !( b > d && (( y == 0.0 && d == 0.0 ) || ( y != 0.0 && d >= 0.0 && yi <= di )) ) )
             {
                 return RbConstants::Double::neginf;
             }
         }
-        // check constraints
         else if ( !( b > o && o >= y && (y > d || (y == d && y == 0.0)) && d >= 0.0 ) )
         {
             return RbConstants::Double::neginf;
         }
 
+
+        // count the number of rho-sampled tips
         num_extant_sampled  += (d == 0.0 && y == 0.0);  // l
         num_extant_unsampled += (d == 0.0 && y != 0.0); // n - m - l
 
-        size_t bi = l(b);
-        size_t di = l(d);
-        size_t oi = presence_absence ? first_intervals[i] : l(o);
-        size_t yi = l(y);
 
         double lambda = birth[bi];
         double mu = death[di];
@@ -340,14 +328,14 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
             }
             else
             {
-                L[oi] += o - getIntervalTime(oi);
+                L[oi] += o - times[oi];
 
                 for(size_t j = oi + 1; j < yi; j++)
                 {
-                    L[j] += getIntervalTime(j-1) - getIntervalTime(j);
+                    L[j] += times[j-1] - times[j];
                 }
 
-                L[yi] += getIntervalTime(yi-1) - y;
+                L[yi] += times[yi-1] - y;
             }
         }
         else if( presence_absence )
@@ -358,7 +346,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 
                 if( count > 0 )
                 {
-                    L[bi] += log( integrateQ(bi,b) - integrateQ(di,d) ) + log(getFossilizationRate(bi)) - getFossilizationRate(di)*( d-getIntervalTime(di) );
+                    L[bi] += log( integrateQ(bi,b) - integrateQ(di,d) ) + log(fossil[bi]) - fossil[di]*( d-getIntervalTime(di) );
                 }
             }
             else
@@ -367,10 +355,10 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 
                 long count = getFossilCount(bi,i);
 
-                double Ls = b - getIntervalTime(bi);
+                double Ls = b - times[bi];
                 if( count > 0 )
                 {
-                    L[bi] += log( integrateQ( bi, b ) - integrateQ( bi, getIntervalTime(bi) ) ) + log(getFossilizationRate(bi));
+                    L[bi] += log( integrateQ( bi, b ) - integrateQ( bi, times[bi] ) ) + log(fossil[bi]);
                     first = false;
                 }
 
@@ -381,13 +369,13 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
                     {
                         if( first )
                         {
-                            L[j] += log( integrateQ( j, getIntervalTime(j-1) ) - integrateQ( j, getIntervalTime(j) ) ) + log(getFossilizationRate(j));
+                            L[j] += log( integrateQ( j, times[j-1] ) - integrateQ( j, times[j] ) ) + log(fossil[j]);
                             first = false;
                         }
                         else
                         {
-                            Ls = getIntervalTime(j-1) - getIntervalTime(j);
-                            L[j] += getFossilizationRate(j)*Ls + log( 1.0 - exp( - Ls * getFossilizationRate(j) ) );
+                            Ls = times[j-1] - times[j];
+                            L[j] += fossil[j]*Ls + log( 1.0 - exp( - Ls * fossil[j] ) );
                         }
                     }
                 }
@@ -397,13 +385,13 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
                 {
                     if( first )
                     {
-                        L[di] += log( integrateQ( di, getIntervalTime(di-1) ) - integrateQ( di, d ) ) + log(getFossilizationRate(di)) - getFossilizationRate(di)*( d-getIntervalTime(di) );
+                        L[di] += log( integrateQ( di, times[di-1] ) - integrateQ( di, d ) ) + log(fossil[di]) - fossil[di]*( d-times[di] );
                         first = false;
                     }
                     else
                     {
-                        Ls = getIntervalTime(di-1) - d;
-                        L[di] += getFossilizationRate(di)*Ls + log( 1.0 - exp( - Ls * getFossilizationRate(di) ) );
+                        Ls = times[di-1] - d;
+                        L[di] += fossil[di]*Ls + log( 1.0 - exp( - Ls * fossil[di] ) );
                     }
                 }
             }
@@ -422,22 +410,20 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         }
         else
         {
-            double psi_i = getFossilizationRate(i);
-
             size_t k;
 
             if( marginalize_k )
             {
                 k = kappa_prime[i];
 
-                lnProbTimes += psi_i*L[i];
+                lnProbTimes += fossil[i]*L[i];
             }
             else
             {
                 k = getFossilCount(i);
             }
 
-            lnProbTimes += k*log(psi_i);
+            lnProbTimes += k*log(fossil[i]);
         }
     }
 
@@ -886,6 +872,8 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::touchSpecialization(DagN
  */
 void PiecewiseConstantFossilizedBirthDeathRangeProcess::updateIntervals( )
 {
+    std::vector<bool> youngest(taxa.size(), true);
+
     for (int i = num_intervals - 1; i >= 0; i--)
     {
         double b = getSpeciationRate(i);
@@ -917,6 +905,22 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::updateIntervals( )
             q_i[i]       = 4.0*e / (tmp*tmp);
             q_tilde_i[i] = sqrt(q_i[i]*exp(-(b+d+f)*dt));
             p_i[i]       = (b + d + f - A * ((1.0+B)-e*(1.0-B))/tmp)/(2.0*b);
+        }
+
+        if( presence_absence )
+        {
+            for(size_t j = 0; j < taxa.size(); j++)
+            {
+                if( getFossilCount(i,j) > 0 )
+                {
+                    oldest_intervals[j] = i;
+                    if( youngest[j] )
+                    {
+                        youngest_intervals[j] = i;
+                        youngest[j] = false;
+                    }
+                }
+            }
         }
     }
 }
