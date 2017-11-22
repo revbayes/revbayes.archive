@@ -187,6 +187,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0; i<num_states; ++i)
     {
+        
         CodonState c1 = CodonState( codons[i] );
         std::vector<unsigned int> codon_from = c1.getTripletStates();
         unsigned int codon_from_pos_1 = codon_from[0];
@@ -197,6 +198,9 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
         
         for (size_t j=i+1; j<num_states; ++j)
         {
+            
+            size_t position_of_change = 0;
+
             CodonState c2 = CodonState( codons[j] );
             
             std::vector<unsigned int> codon_to = c2.getTripletStates();
@@ -206,9 +210,12 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
             
             AminoAcidState aa_to = c2.getAminoAcidState();
             
-            rateClass = 0;
+            rateClass = -1;
             if (codon_from_pos_1 != codon_to_pos_1)
             {
+                // change at position 0
+                position_of_change = 0;
+                
                 if ( (codon_from_pos_1 == 0 && codon_to_pos_1 == 2) || (codon_from_pos_1 == 2 && codon_to_pos_1 == 0) || // A <-> G
                      (codon_from_pos_1 == 1 && codon_to_pos_1 == 3) || (codon_from_pos_1 == 3 && codon_to_pos_1 == 1) )  // C <-> T
                 {
@@ -222,6 +229,9 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
             
             if (codon_from_pos_2 != codon_to_pos_2)
             {
+                
+                // change at position 1
+                position_of_change = 1;
                 
                 if (rateClass == -1)
                 {
@@ -244,6 +254,9 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
             
             if (codon_from_pos_3 != codon_to_pos_3)
             {
+                
+                // change at position 2
+                position_of_change = 2;
                 
                 if (rateClass == -1)
                 {
@@ -275,14 +288,23 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
                 
             }
             
-            m[i][j] = rate[rateClass] * stationary_freqs[j];
-            m[j][i] = rate[rateClass] * stationary_freqs[i];
+            size_t index_nuc_from   = codon_from[position_of_change]-1;
+            size_t index_nuc_to     = codon_to[position_of_change]-1;
+            m[i][j] = rate[rateClass] * stationary_freqs[index_nuc_to];
+            m[j][i] = rate[rateClass] * stationary_freqs[index_nuc_from];
             
         }
     }
     
     // set flags
     needs_update = true;
+}
+
+
+std::vector<double> RateMatrix_CodonSynonymousNonsynonymous::getStationaryFrequencies( void ) const
+{
+    
+    return this->calculateStationaryFrequencies();
 }
 
 
