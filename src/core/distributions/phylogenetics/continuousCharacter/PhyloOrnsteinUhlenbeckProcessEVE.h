@@ -22,7 +22,12 @@ namespace RevBayesCore {
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
         PhyloOrnsteinUhlenbeckProcessEVE(const TypedDagNode<Tree> *t, size_t ns );
+        PhyloOrnsteinUhlenbeckProcessEVE(const PhyloOrnsteinUhlenbeckProcessEVE &p);
         virtual                                                            ~PhyloOrnsteinUhlenbeckProcessEVE(void);                                                              //!< Virtual destructor
+        
+        PhyloOrnsteinUhlenbeckProcessEVE&                                   operator=(const PhyloOrnsteinUhlenbeckProcessEVE &p);
+
+        
         
         // public member functions
         // pure virtual
@@ -75,7 +80,7 @@ namespace RevBayesCore {
         const TypedDagNode< RbVector< double > >*                           heterogeneous_sigma;
         const TypedDagNode< RbVector< double > >*                           heterogeneous_theta;
         
-        size_t                                                              num_tips;
+        size_t                                                              num_species;
         std::vector<std::vector<double> >                                   obs;
         std::vector<double>*                                                means;
 //        std::vector<double>*                                                stored_means;

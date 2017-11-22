@@ -15,13 +15,13 @@
 using namespace RevBayesCore;
 
 PhyloOrnsteinUhlenbeckProcessEVE::PhyloOrnsteinUhlenbeckProcessEVE(const TypedDagNode<Tree> *t, size_t ns) : AbstractPhyloContinuousCharacterProcess( t, ns ),
-    num_tips( t->getValue().getNumberOfTips() ),
-    obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
-    means( new std::vector<double>(num_tips, 0.0) ),
-//stored_means( new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
-    phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
-//stored_phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
-    inverse_phylogenetic_covariance_matrix( num_tips, num_tips ),
+    num_species( t->getValue().getNumberOfTips() ),
+    obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_species, 0.0) ) ),
+    means( new std::vector<double>(num_species, 0.0) ),
+//stored_means( new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_species, 0.0) ) ),
+    phylogenetic_covariance_matrix( new MatrixReal(num_species, num_species) ),
+//stored_phylogenetic_covariance_matrix( new MatrixReal(num_species, num_species) ),
+    inverse_phylogenetic_covariance_matrix( num_species, num_species ),
     changed_covariance(false),
     needs_covariance_recomputation( true ),
     needs_scale_recomputation( true )
@@ -49,6 +49,27 @@ PhyloOrnsteinUhlenbeckProcessEVE::PhyloOrnsteinUhlenbeckProcessEVE(const TypedDa
 }
 
 
+PhyloOrnsteinUhlenbeckProcessEVE::PhyloOrnsteinUhlenbeckProcessEVE(const PhyloOrnsteinUhlenbeckProcessEVE &p) : AbstractPhyloContinuousCharacterProcess( p ),
+    root_state( p.root_state ),
+    homogeneous_alpha( p.homogeneous_alpha ),
+    homogeneous_sigma( p.homogeneous_sigma ),
+    homogeneous_theta( p.homogeneous_theta ),
+    heterogeneous_alpha( p.heterogeneous_alpha ),
+    heterogeneous_sigma( p.heterogeneous_sigma ),
+    heterogeneous_theta( p.heterogeneous_theta ),
+    num_species( p.num_species ),
+    obs( p.obs ),
+    means( new std::vector<double>( *p.means ) ),
+    phylogenetic_covariance_matrix( p.phylogenetic_covariance_matrix->clone() ),
+    inverse_phylogenetic_covariance_matrix( p.inverse_phylogenetic_covariance_matrix ),
+    changed_covariance( p.changed_covariance ),
+    needs_covariance_recomputation( p.needs_covariance_recomputation ),
+    needs_scale_recomputation( p.needs_scale_recomputation )
+{
+    
+}
+
+
 /**
  * Destructor. Because we added ourselves as a reference to tau when we added a listener to its
  * TreeChangeEventHandler, we need to remove ourselves as a reference and possibly delete tau
@@ -57,8 +78,41 @@ PhyloOrnsteinUhlenbeckProcessEVE::PhyloOrnsteinUhlenbeckProcessEVE(const TypedDa
 PhyloOrnsteinUhlenbeckProcessEVE::~PhyloOrnsteinUhlenbeckProcessEVE( void )
 {
     
-    //    delete phylogenetic_covariance_matrix;
+    delete means;
+    delete phylogenetic_covariance_matrix;
     //    delete stored_phylogenetic_covariance_matrix;
+}
+
+
+
+PhyloOrnsteinUhlenbeckProcessEVE& PhyloOrnsteinUhlenbeckProcessEVE::operator=(const PhyloOrnsteinUhlenbeckProcessEVE &p)
+{
+    
+    if ( this != &p )
+    {
+        AbstractPhyloContinuousCharacterProcess::operator=( p );
+        
+        delete means;
+        delete phylogenetic_covariance_matrix;
+        
+        root_state                              = p.root_state;
+        homogeneous_alpha                       = p.homogeneous_alpha;
+        homogeneous_sigma                       = p.homogeneous_sigma;
+        homogeneous_theta                       = p.homogeneous_theta;
+        heterogeneous_alpha                     = p.heterogeneous_alpha;
+        heterogeneous_sigma                     = p.heterogeneous_sigma;
+        heterogeneous_theta                     = p.heterogeneous_theta;
+        num_species                             = p.num_species;
+        obs                                     = p.obs;
+        means                                   = new std::vector<double>( *p.means );
+        phylogenetic_covariance_matrix          = p.phylogenetic_covariance_matrix->clone();
+        inverse_phylogenetic_covariance_matrix  = p.inverse_phylogenetic_covariance_matrix;
+        changed_covariance                      = p.changed_covariance;
+        needs_covariance_recomputation          = p.needs_covariance_recomputation;
+        needs_scale_recomputation               = p.needs_scale_recomputation;
+    }
+
+    return *this;
 }
 
 
@@ -94,17 +148,17 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeCovariance(MatrixReal &covariance)
     }
     
     //copy Vars to Cov diag
-    for (size_t i=0; i<num_tips; ++i)
+    for (size_t i=0; i<num_species; ++i)
     {
         covariance[i][i] = variance[i];
     }
     
     //calc cov between all leaf pairs
-    for (size_t left_index=0; left_index<num_tips; ++left_index)
+    for (size_t left_index=0; left_index<num_species; ++left_index)
     {
         const TopologyNode *left_tip_node = &this->tau->getValue().getTipNode( left_index );
         
-        for (size_t right_index=(left_index+1); right_index<num_tips; ++right_index)
+        for (size_t right_index=(left_index+1); right_index<num_species; ++right_index)
         {
             
             const TopologyNode *right_tip_node = &this->tau->getValue().getTipNode( right_index );
@@ -140,9 +194,9 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeCovariance(MatrixReal &covariance)
         
     }
     
-    for (size_t i=0; i<num_tips; ++i)
+    for (size_t i=0; i<num_species; ++i)
     {
-        for (size_t j=0; j<num_tips; ++j)
+        for (size_t j=0; j<num_species; ++j)
         {
             covariance[j][i] = covariance[i][j];
         }
@@ -339,7 +393,7 @@ void PhyloOrnsteinUhlenbeckProcessEVE::resetValue( void )
         siteIndex++;
     }
     
-    obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) );
+    obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_species, 0.0) );
     
     std::vector<TopologyNode*> nodes = this->tau->getValue().getNodes();
     for (size_t site = 0; site < this->num_sites; ++site)
@@ -359,8 +413,8 @@ void PhyloOrnsteinUhlenbeckProcessEVE::resetValue( void )
     // reset the means vectors
     delete means;
 //    delete stored_means;
-    means = new std::vector<double>(num_tips, 0.0);
-//    stored_means    = new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) );
+    means = new std::vector<double>(num_species, 0.0);
+//    stored_means    = new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_species, 0.0) );
     
     
     
