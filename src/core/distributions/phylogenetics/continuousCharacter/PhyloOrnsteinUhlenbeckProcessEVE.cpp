@@ -41,6 +41,8 @@ PhyloOrnsteinUhlenbeckProcessEVE::PhyloOrnsteinUhlenbeckProcessEVE(const TypedDa
     addParameter( homogeneous_sigma );
     addParameter( homogeneous_theta );
     
+    // we need to make sure that we can use the Cholesky decomposition
+    inverse_phylogenetic_covariance_matrix.setCholesky( true );
     
     // now we need to reset the value
     this->redrawValue();
@@ -231,6 +233,9 @@ double PhyloOrnsteinUhlenbeckProcessEVE::computeLnProbability( void )
     computeCovariance( *phylogenetic_covariance_matrix );
     
     inverse_phylogenetic_covariance_matrix = phylogenetic_covariance_matrix->computeInverse();
+    
+    // we need to make sure that we can use the Cholesky decomposition
+    inverse_phylogenetic_covariance_matrix.setCholesky( true );
     
     // sum the partials up
     this->ln_prob = sumRootLikelihood();

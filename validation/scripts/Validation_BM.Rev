@@ -17,7 +17,7 @@
 
 ### Read in sequence data for both genes
 
-data <- readContinuousCharacterData("data/primates_lht.nex")
+data <- readContinuousCharacterData("data/primates_lhtlog.nex")
 
 data.excludeAll()
 data.includeCharacter(1) 
@@ -48,7 +48,7 @@ moves[++mvi] = mvScale(sigma, lambda=1.0, tune=true, weight=2.0)
 
 
 #psi <- simTree(30,"caterpillar")
-psi <- readTrees( "data/Primates_tree.nex" )[1]
+psi <- readTrees( "data/primates.tree" )[1]
 
 
 
