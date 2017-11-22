@@ -7,24 +7,24 @@
 #include "RbException.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
+#include "TreeUtilities.h"
 
 #include <cmath>
 
 
 using namespace RevBayesCore;
 
-PhyloOrnsteinUhlenbeckProcessEVE::PhyloOrnsteinUhlenbeckProcessEVE(const TypedDagNode<Tree> *t, size_t ns) :
-AbstractPhyloContinuousCharacterProcess( t, ns ),
-num_tips( t->getValue().getNumberOfTips() ),
-obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
-means( new std::vector<double>(num_tips, 0.0) ),
+PhyloOrnsteinUhlenbeckProcessEVE::PhyloOrnsteinUhlenbeckProcessEVE(const TypedDagNode<Tree> *t, size_t ns) : AbstractPhyloContinuousCharacterProcess( t, ns ),
+    num_tips( t->getValue().getNumberOfTips() ),
+    obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
+    means( new std::vector<double>(num_tips, 0.0) ),
 //stored_means( new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
-phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
+    phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
 //stored_phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
-inverse_phylogenetic_covariance_matrix( num_tips, num_tips ),
-changed_covariance(false),
-needs_covariance_recomputation( true ),
-needs_scale_recomputation( true )
+    inverse_phylogenetic_covariance_matrix( num_tips, num_tips ),
+    changed_covariance(false),
+    needs_covariance_recomputation( true ),
+    needs_scale_recomputation( true )
 {
     // initialize default parameters
     root_state                  = new ConstantNode<double>("", new double(0.0) );
@@ -107,10 +107,10 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeCovariance(MatrixReal &covariance)
             
             const TopologyNode *right_tip_node = &this->tau->getValue().getTipNode( right_index );
             
-            //get mrca
-            size_t mrca_index = computeMrcaIndex(left_tip_node, right_tip_node);
+            // get mrca
+            size_t mrca_index = TreeUtilities::getMrcaIndex(left_tip_node, right_tip_node);
             
-            //get sum of alpha*branchlength for non-shared branches
+            // get sum of alpha*branchlength for non-shared branches
             double sum_AT = 0.0;
             
             // first the computation for the left subtree
@@ -137,8 +137,6 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeCovariance(MatrixReal &covariance)
         }
         
     }
-    
-    expandCovariance( covariance );
     
     for (size_t i=0; i<num_tips; ++i)
     {
@@ -167,29 +165,6 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeExpectation(std::vector<double> &e
     {
         const TopologyNode &child = root.getChild( i );
         computeExpectationRecursive(child, my_expectation, expectations);
-    }
-    
-    // expand the expectation to multiple samples per species
-    expandExpectation( expectations);
-    
-}
-
-
-size_t PhyloOrnsteinUhlenbeckProcessEVE::computeMrcaIndex(const TopologyNode *left, const TopologyNode *right)
-{
-    
-    //printf("mrca of %d and %d", nodei, nodej);
-    if ( left == right )  //same
-    {
-        return left->getIndex();
-    }
-    else if ( left->getAge() < right->getAge() )
-    {
-        return computeMrcaIndex( &left->getParent(), right );
-    }
-    else
-    {
-        return computeMrcaIndex( left, &right->getParent() );
     }
     
 }
@@ -250,46 +225,12 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeVarianceRecursive(const TopologyNo
 
 double PhyloOrnsteinUhlenbeckProcessEVE::computeLnProbability( void )
 {
-    
-    // compute the ln probability by recursively calling the probability calculation for each node
-//    const TopologyNode &root = this->tau->getValue().getRoot();
-//    
-//    // we start with the root and then traverse down the tree
-//    size_t root_index = root.getIndex();
-//    
-//    std::vector<double> expectations = std::vector<double>(num_tips, 0.0);
-//    std::vector<std::vector<double> > covariance = std::vector<std::vector<double> >( num_tips, std::vector<double>(num_tips, 0.0) );
 
-    //get exp and cov
+    // get exp and cov
     computeExpectation( *means );
     computeCovariance( *phylogenetic_covariance_matrix );
     
-//    //check for zero cov
-//    if (matrixSum(gCov, totnindiv, totnindiv) <= 0.0) {
-//        if (matrixSum(gCov, totnindiv, totnindiv) < 0.0) {
-//            if (verbose > 90) { printf("got less than zero covariance matrix with gparmin %le and regime ", gparmin); printDouArr(regimes[0], 4); }
-//            if (vectorEquals(expr[findmaxgenei], gEs, totnindiv) == 1)
-//                return(0.0);
-//            else
-//                return(-1000000.0);//-10000000000000000.0);
-//        }
-//        if (verbose > 90) { printf("got zero covariance matrix with gparmin %le and regime ", gparmin); printDouArr(regimes[0], 4); }
-//        if (vectorEquals(expr[findmaxgenei], gEs, totnindiv) == 1)
-//            return(0.0);
-//        else
-//            return(-1000000.0);//-10000000000000000.0);
-//    }
-    
-//    //convert to gsl data types
-//    douArr2gslVec(gEs, ggslE, totnindiv);
-//    dou2DArr2gslMat(gCov, ggslCov, totnindiv, totnindiv);
-//    douArr2gslVec(expr[findmaxgenei], ggslexpr, totnindiv);
-    
-    //get logL
-//    lL = dmvnorm(totnindiv, ggslexpr, ggslE, ggslCov);
-    
     inverse_phylogenetic_covariance_matrix = phylogenetic_covariance_matrix->computeInverse();
-
     
     // sum the partials up
     this->ln_prob = sumRootLikelihood();
@@ -360,66 +301,6 @@ double PhyloOrnsteinUhlenbeckProcessEVE::computeRootState( void ) const
     
     return root_state;
 }
-
-
-void PhyloOrnsteinUhlenbeckProcessEVE::expandExpectation( std::vector<double> &e ) //(double *lE, double *iE) {
-{
-//    int j, iEi=0;
-//    
-//    for (size_t i=0; i<num_tips; ++i)
-//    {
-//        
-//        for (size_t j=0; j<(tree[i].nindiv); j++)
-//        {
-//            iE[iEi] = lE[i];
-//            iEi++;
-//        }
-//    }
-    
-}
-
-
-void PhyloOrnsteinUhlenbeckProcessEVE::expandCovariance( MatrixReal &covariance )
-{
-    
-//    int i, j, ii, ij, iCovi, iCovj;
-//    double inpopvar;
-//    
-//    iCovi=0;
-//    for (size_t i=0; i<num_tips; ++i)
-//    {
-//        size_t iCovj=iCovi;
-//        
-//        for (j=i; j<nspecies; j++)
-//        {
-//            for (ii=0; ii<(tree[i].nindiv); ii++)
-//            {
-//                for (ij=0; ij<(tree[j].nindiv); ij++)
-//                {
-//                    covariance[(iCovi+ii)][(iCovj+ij)] = lCov[i][j];
-//                }
-//            }
-//            iCovj += tree[j].nindiv;
-//        }
-//        iCovi += tree[i].nindiv;
-//    }
-//    
-//    //add in variance within pops
-//    iCovi=0;
-//    for (size_t i=0; i<num_tips; ++i)
-//    {
-//        double inpopvar = 1.0 * computeBranchSigma(i)/(2.0*computeBranchSigma(i)) * regimes[tree[i].regime][3];
-//        for (ii=0; ii<tree[i].nindiv; ii++)
-//        {
-//            covariance[iCovi][iCovi] += inpopvar;
-//            iCovi++;
-//        }
-//    }
-
-    
-}
-
-
 
 
 void PhyloOrnsteinUhlenbeckProcessEVE::keepSpecialization( DagNode* affecter )

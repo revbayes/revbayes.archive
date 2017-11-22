@@ -1,45 +1,47 @@
-#include "Dist_PhyloOrnsteinUhlenbeckMVN.h"
-#include "PhyloOrnsteinUhlenbeckProcessMVN.h"
-#include "PhyloOrnsteinUhlenbeckProcessEVE.h"
+#include "Dist_PhyloMultiSampleOrnsteinUhlenbeck.h"
+#include "PhyloMultiSampleOrnsteinUhlenbeckProcess.h"
 #include "OptionRule.h"
 #include "RevNullObject.h"
 #include "RlBoolean.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RlTree.h"
 
 using namespace RevLanguage;
 
 
-Dist_PhyloOrnsteinUhlenbeckMVN::Dist_PhyloOrnsteinUhlenbeckMVN() : TypedDistribution< ContinuousCharacterData >()
+Dist_PhyloMultiSampleOrnsteinUhlenbeck::Dist_PhyloMultiSampleOrnsteinUhlenbeck() : TypedDistribution< ContinuousCharacterData >()
 {
     
 }
 
 
-Dist_PhyloOrnsteinUhlenbeckMVN::~Dist_PhyloOrnsteinUhlenbeckMVN()
+Dist_PhyloMultiSampleOrnsteinUhlenbeck::~Dist_PhyloMultiSampleOrnsteinUhlenbeck()
 {
     
 }
 
 
 
-Dist_PhyloOrnsteinUhlenbeckMVN* Dist_PhyloOrnsteinUhlenbeckMVN::clone( void ) const
+Dist_PhyloMultiSampleOrnsteinUhlenbeck* Dist_PhyloMultiSampleOrnsteinUhlenbeck::clone( void ) const
 {
     
-    return new Dist_PhyloOrnsteinUhlenbeckMVN(*this);
+    return new Dist_PhyloMultiSampleOrnsteinUhlenbeck(*this);
 }
 
 
-RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_PhyloOrnsteinUhlenbeckMVN::createDistribution( void ) const
+RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_PhyloMultiSampleOrnsteinUhlenbeck::createDistribution( void ) const
 {
     
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     size_t n = size_t( static_cast<const Natural &>( n_sites->getRevObject() ).getValue() );
     size_t n_nodes = tau->getValue().getNumberOfNodes();
-    
-//    RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN *dist = new RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN(tau, n);
-    RevBayesCore::PhyloOrnsteinUhlenbeckProcessEVE *dist = new RevBayesCore::PhyloOrnsteinUhlenbeckProcessEVE(tau, n);
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* var = static_cast<const ModelVector<RealPos> &>( within_species_variances->getRevObject() ).getDagNode();
+    const std::vector<RevBayesCore::Taxon>      &t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
+
+    //    RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN *dist = new RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN(tau, n);
+    RevBayesCore::PhyloMultiSampleOrnsteinUhlenbeckProcess *dist = new RevBayesCore::PhyloMultiSampleOrnsteinUhlenbeckProcess(tau, var, t, n);
     
     
     // set the clock rates
@@ -112,18 +114,18 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
         dist->setSigma( s );
     }
     
-
+    
     // set the root states
-//    if ( rootStates->getRevObject().isType( ModelVector<Real>::getClassTypeSpec() ) )
-//    {
-//        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rs = static_cast<const ModelVector<Real> &>( rootStates->getRevObject() ).getDagNode();
-//        dist->setRootState( rs );
-//    }
-//    else
-//    {
-        RevBayesCore::TypedDagNode< double >* rs = static_cast<const Real &>( root_states->getRevObject() ).getDagNode();
-        dist->setRootState( rs );
-//    }
+    //    if ( rootStates->getRevObject().isType( ModelVector<Real>::getClassTypeSpec() ) )
+    //    {
+    //        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rs = static_cast<const ModelVector<Real> &>( rootStates->getRevObject() ).getDagNode();
+    //        dist->setRootState( rs );
+    //    }
+    //    else
+    //    {
+    RevBayesCore::TypedDagNode< double >* rs = static_cast<const Real &>( root_states->getRevObject() ).getDagNode();
+    dist->setRootState( rs );
+    //    }
     
     return dist;
 }
@@ -131,16 +133,16 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
 
 
 /* Get Rev type of object */
-const std::string& Dist_PhyloOrnsteinUhlenbeckMVN::getClassType(void)
+const std::string& Dist_PhyloMultiSampleOrnsteinUhlenbeck::getClassType(void)
 {
     
-    static std::string rev_type = "Dist_PhyloOrnsteinUhlenbeckMVN";
+    static std::string rev_type = "Dist_PhyloMultiSampleOrnsteinUhlenbeck";
     
     return rev_type;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_PhyloOrnsteinUhlenbeckMVN::getClassTypeSpec(void)
+const TypeSpec& Dist_PhyloMultiSampleOrnsteinUhlenbeck::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
@@ -156,17 +158,17 @@ const TypeSpec& Dist_PhyloOrnsteinUhlenbeckMVN::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_PhyloOrnsteinUhlenbeckMVN::getDistributionFunctionName( void ) const
+std::string Dist_PhyloMultiSampleOrnsteinUhlenbeck::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "PhyloOrnsteinUhlenbeckMVN";
+    std::string d_name = "PhyloMultiSampleOrnsteinUhlenbeck";
     
     return d_name;
 }
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_PhyloOrnsteinUhlenbeckMVN::getParameterRules(void) const
+const MemberRules& Dist_PhyloMultiSampleOrnsteinUhlenbeck::getParameterRules(void) const
 {
     
     static MemberRules dist_member_rules;
@@ -202,6 +204,8 @@ const MemberRules& Dist_PhyloOrnsteinUhlenbeckMVN::getParameterRules(void) const
         sigmaTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         dist_member_rules.push_back( new ArgumentRule( "sigma" , sigmaTypes, "The rate of random drift (per branch).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
+        dist_member_rules.push_back( new ArgumentRule( "withinSpeciesVariances" , ModelVector<RealPos>::getClassTypeSpec(), "The per species within-species variances.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+
         std::vector<TypeSpec> rootStateTypes;
         rootStateTypes.push_back( Real::getClassTypeSpec() );
         rootStateTypes.push_back( ModelVector<Real>::getClassTypeSpec() );
@@ -209,7 +213,8 @@ const MemberRules& Dist_PhyloOrnsteinUhlenbeckMVN::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "rootStates" , rootStateTypes, "The vector of root states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultRootStates ) );
         
         dist_member_rules.push_back( new ArgumentRule( "nSites"         ,  Natural::getClassTypeSpec(), "The number of sites which is used for the initialized (random draw) from this distribution.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
-        
+        dist_member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+
         rules_set = true;
     }
     
@@ -217,7 +222,7 @@ const MemberRules& Dist_PhyloOrnsteinUhlenbeckMVN::getParameterRules(void) const
 }
 
 
-const TypeSpec& Dist_PhyloOrnsteinUhlenbeckMVN::getTypeSpec( void ) const
+const TypeSpec& Dist_PhyloMultiSampleOrnsteinUhlenbeck::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -227,7 +232,7 @@ const TypeSpec& Dist_PhyloOrnsteinUhlenbeckMVN::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void Dist_PhyloOrnsteinUhlenbeckMVN::printValue(std::ostream& o) const
+void Dist_PhyloMultiSampleOrnsteinUhlenbeck::printValue(std::ostream& o) const
 {
     
     o << "PhyloOrnsteinUhlenbeckProcess(tree=";
@@ -272,7 +277,7 @@ void Dist_PhyloOrnsteinUhlenbeckMVN::printValue(std::ostream& o) const
 
 
 /** Set a member variable */
-void Dist_PhyloOrnsteinUhlenbeckMVN::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Dist_PhyloMultiSampleOrnsteinUhlenbeck::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )
@@ -299,6 +304,10 @@ void Dist_PhyloOrnsteinUhlenbeckMVN::setConstParameter(const std::string& name, 
     {
         sigma = var;
     }
+    else if ( name == "withinSpeciesVariances" )
+    {
+        within_species_variances = var;
+    }
     else if ( name == "rootStates" )
     {
         root_states = var;
@@ -307,9 +316,14 @@ void Dist_PhyloOrnsteinUhlenbeckMVN::setConstParameter(const std::string& name, 
     {
         n_sites = var;
     }
+    else if ( name == "taxa" )
+    {
+        taxa = var;
+    }
     else
     {
         Distribution::setConstParameter(name, var);
     }
     
 }
+

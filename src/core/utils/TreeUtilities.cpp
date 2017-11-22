@@ -215,6 +215,25 @@ RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(con
 }
 
 
+size_t RevBayesCore::TreeUtilities::getMrcaIndex(const TopologyNode *left, const TopologyNode *right)
+{
+    
+    if ( left == right )  //same
+    {
+        return left->getIndex();
+    }
+    else if ( left->getAge() < right->getAge() )
+    {
+        return RevBayesCore::TreeUtilities::getMrcaIndex( &left->getParent(), right );
+    }
+    else
+    {
+        return RevBayesCore::TreeUtilities::getMrcaIndex( left, &right->getParent() );
+    }
+    
+}
+
+
 void RevBayesCore::TreeUtilities::getOldestTip(Tree* t, TopologyNode *n, double& oldest)
 {
 

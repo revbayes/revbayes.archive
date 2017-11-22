@@ -22,6 +22,7 @@ namespace RevBayesCore {
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
         PhyloMultiSampleOrnsteinUhlenbeckProcess(const TypedDagNode<Tree> *t, const TypedDagNode< RbVector< double > > *v, const std::vector<Taxon> &ta, size_t ns );
+        PhyloMultiSampleOrnsteinUhlenbeckProcess(const PhyloMultiSampleOrnsteinUhlenbeckProcess &p);
         virtual                                                            ~PhyloMultiSampleOrnsteinUhlenbeckProcess(void);                                                              //!< Virtual destructor
         
         // public member functions
@@ -56,11 +57,10 @@ namespace RevBayesCore {
         void                                                                computeExpectation(std::vector<double> &e);
         void                                                                computeExpectationRecursive(const TopologyNode &n, double me, std::vector<double> &e);
         double                                                              computeMeanForSpecies(const std::string &n, size_t i);
-        size_t                                                              computeMrcaIndex(const TopologyNode *l, const TopologyNode *r);
         //        void                                                                computeLeafExpectation(std::vector<double> &e);
         void                                                                computeVarianceRecursive(const TopologyNode &n, std::vector<double> &v);
-        void                                                                expandExpectation(std::vector<double> &e);
-        void                                                                expandCovariance(MatrixReal &cv);
+        void                                                                expandExpectation(std::vector<double> &ind_exp, const std::vector<double> &sp_exp);
+        void                                                                expandCovariance(MatrixReal &ind_cov, const MatrixReal &sp_cov);
         double                                                              getNumberOfSamplesForSpecies(const std::string &n);
         double                                                              getWithingSpeciesVariance(const std::string &n);
 
@@ -85,7 +85,9 @@ namespace RevBayesCore {
       
         const TypedDagNode< RbVector< double > >*                           within_species_variances;
 
-        size_t                                                              num_tips;
+        size_t                                                              num_species;
+        size_t                                                              num_individuals;
+        std::vector<size_t>                                                 num_individuals_per_species;
         std::vector<Taxon>                                                  taxa;
         std::vector<std::vector<double> >                                   obs;
         std::vector<double>*                                                means;

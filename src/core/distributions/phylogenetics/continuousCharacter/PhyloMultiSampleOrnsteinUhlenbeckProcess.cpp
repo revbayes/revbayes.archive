@@ -6,6 +6,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "StochasticNode.h"
+#include "TreeUtilities.h"
 #include "TopologyNode.h"
 
 #include <cmath>
@@ -15,14 +16,15 @@ using namespace RevBayesCore;
 
 PhyloMultiSampleOrnsteinUhlenbeckProcess::PhyloMultiSampleOrnsteinUhlenbeckProcess(const TypedDagNode<Tree> *t, const TypedDagNode< RbVector< double > > *v, const std::vector<Taxon> &ta, size_t ns) : AbstractPhyloContinuousCharacterProcess( t, ns ),
     within_species_variances( v ),
-    num_tips( t->getValue().getNumberOfTips() ),
+    num_species( t->getValue().getNumberOfTips() ),
+    num_individuals( ta.size() ),
     taxa( ta ),
-    obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
-    means( new std::vector<double>(num_tips, 0.0) ),
+    obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_individuals, 0.0) ) ),
+    means( new std::vector<double>(num_individuals, 0.0) ),
 //stored_means( new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
-    phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
+    phylogenetic_covariance_matrix( new MatrixReal(num_individuals, num_individuals) ),
 //stored_phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
-    inverse_phylogenetic_covariance_matrix( num_tips, num_tips ),
+    inverse_phylogenetic_covariance_matrix( num_individuals, num_individuals ),
     changed_covariance(false),
     needs_covariance_recomputation( true ),
     needs_scale_recomputation( true )
@@ -43,10 +45,45 @@ PhyloMultiSampleOrnsteinUhlenbeckProcess::PhyloMultiSampleOrnsteinUhlenbeckProce
     addParameter( homogeneous_sigma );
     addParameter( homogeneous_theta );
     
+    num_individuals_per_species = std::vector<size_t>(num_species,0);
+    const std::vector<TopologyNode *> &nodes = tau->getValue().getNodes();
+    for (size_t i=0; i<num_species; ++i)
+    {
+        const std::string &species_name = nodes[i]->getSpeciesName();
+        num_individuals_per_species[i] = getNumberOfSamplesForSpecies( species_name );
+    }
+    
+    inverse_phylogenetic_covariance_matrix.setCholesky( true );
+    
     
     // now we need to reset the value
     this->redrawValue();
 }
+
+PhyloMultiSampleOrnsteinUhlenbeckProcess::PhyloMultiSampleOrnsteinUhlenbeckProcess(const PhyloMultiSampleOrnsteinUhlenbeckProcess &p) : AbstractPhyloContinuousCharacterProcess( p ),
+    root_state( p.root_state ),
+    homogeneous_alpha( p.homogeneous_alpha ),
+    homogeneous_sigma( p.homogeneous_sigma ),
+    homogeneous_theta( p.homogeneous_theta ),
+    heterogeneous_alpha( p.heterogeneous_alpha ),
+    heterogeneous_sigma( p.heterogeneous_sigma ),
+    heterogeneous_theta( p.heterogeneous_theta ),
+    within_species_variances( p.within_species_variances ),
+    num_species( p.num_species ),
+    num_individuals( p.num_individuals ),
+    num_individuals_per_species( p.num_individuals_per_species ),
+    taxa( p.taxa ),
+    obs( p.obs ),
+    means( new std::vector<double>( *p.means ) ),
+    phylogenetic_covariance_matrix( p.phylogenetic_covariance_matrix->clone() ),
+    inverse_phylogenetic_covariance_matrix( p.inverse_phylogenetic_covariance_matrix ),
+    changed_covariance( p.changed_covariance ),
+    needs_covariance_recomputation( p.needs_covariance_recomputation ),
+    needs_scale_recomputation( p.needs_scale_recomputation )
+{
+    
+}
+
 
 
 /**
@@ -57,7 +94,8 @@ PhyloMultiSampleOrnsteinUhlenbeckProcess::PhyloMultiSampleOrnsteinUhlenbeckProce
 PhyloMultiSampleOrnsteinUhlenbeckProcess::~PhyloMultiSampleOrnsteinUhlenbeckProcess( void )
 {
     
-    //    delete phylogenetic_covariance_matrix;
+    delete means;
+    delete phylogenetic_covariance_matrix;
     //    delete stored_phylogenetic_covariance_matrix;
 }
 
@@ -70,8 +108,11 @@ PhyloMultiSampleOrnsteinUhlenbeckProcess* PhyloMultiSampleOrnsteinUhlenbeckProce
 }
 
 
-void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeCovariance(MatrixReal &covariance)
+void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeCovariance(MatrixReal &individual_covariance)
 {
+    // create a temporary matrix for the species covariances
+    MatrixReal species_covariance = MatrixReal(num_species,num_species);
+    
     const TopologyNode &root = this->tau->getValue().getRoot();
     size_t root_index = root.getIndex();
     
@@ -94,25 +135,25 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeCovariance(MatrixReal &cov
     }
     
     // copy variances into covariance diagonals
-    for (size_t i=0; i<num_tips; ++i)
+    for (size_t i=0; i<num_species; ++i)
     {
-        covariance[i][i] = variance[i];
+        species_covariance[i][i] = variance[i];
     }
     
     // calculate the covariance between all leaf pairs
-    for (size_t left_index=0; left_index<num_tips; ++left_index)
+    for (size_t left_index=0; left_index<num_species; ++left_index)
     {
         const TopologyNode *left_tip_node = &this->tau->getValue().getTipNode( left_index );
         
-        for (size_t right_index=(left_index+1); right_index<num_tips; ++right_index)
+        for (size_t right_index=(left_index+1); right_index<num_species; ++right_index)
         {
             
             const TopologyNode *right_tip_node = &this->tau->getValue().getTipNode( right_index );
             
-            //get mrca
-            size_t mrca_index = computeMrcaIndex(left_tip_node, right_tip_node);
+            // get mrca
+            size_t mrca_index = TreeUtilities::getMrcaIndex(left_tip_node, right_tip_node);
             
-            //get sum of alpha*branchlength for non-shared branches
+            // get sum of alpha*branchlength for non-shared branches
             double sum_AT = 0.0;
             
             // first the computation for the left subtree
@@ -135,18 +176,20 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeCovariance(MatrixReal &cov
                 current_index = current_node->getIndex();
             }
             
-            covariance[left_index][right_index] = variance[mrca_index] * exp(-sum_AT);
+            species_covariance[left_index][right_index] = variance[mrca_index] * exp(-sum_AT);
         }
         
     }
     
-    expandCovariance( covariance );
+    expandCovariance( individual_covariance, species_covariance );
     
-    for (size_t i=0; i<num_tips; ++i)
+    // make the matrix symmetric and fill remaining half.
+    for (size_t i=0; i<num_individuals; ++i)
     {
-        for (size_t j=0; j<num_tips; ++j)
+        
+        for (size_t j=0; j<num_individuals; ++j)
         {
-            covariance[j][i] = covariance[i][j];
+            individual_covariance[j][i] = individual_covariance[i][j];
         }
         
     }
@@ -155,8 +198,10 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeCovariance(MatrixReal &cov
 
 
 
-void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeExpectation(std::vector<double> &expectations)
+void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeExpectation(std::vector<double> &individual_expectations)
 {
+    // create a temporary matrix for the species covariances
+    std::vector<double> species_expectation = std::vector<double>(num_species, 0);
     
     const TopologyNode &root = this->tau->getValue().getRoot();
     
@@ -168,31 +213,11 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeExpectation(std::vector<do
     for (size_t i=0; i<root.getNumberOfChildren(); ++i)
     {
         const TopologyNode &child = root.getChild( i );
-        computeExpectationRecursive(child, my_expectation, expectations);
+        computeExpectationRecursive(child, my_expectation, species_expectation);
     }
     
     // expand the expectation to multiple samples per species
-    expandExpectation( expectations);
-    
-}
-
-
-size_t PhyloMultiSampleOrnsteinUhlenbeckProcess::computeMrcaIndex(const TopologyNode *left, const TopologyNode *right)
-{
-    
-    //printf("mrca of %d and %d", nodei, nodej);
-    if ( left == right )  //same
-    {
-        return left->getIndex();
-    }
-    else if ( left->getAge() < right->getAge() )
-    {
-        return computeMrcaIndex( &left->getParent(), right );
-    }
-    else
-    {
-        return computeMrcaIndex( left, &right->getParent() );
-    }
+    expandExpectation( individual_expectations, species_expectation );
     
 }
 
@@ -253,45 +278,12 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeVarianceRecursive(const To
 double PhyloMultiSampleOrnsteinUhlenbeckProcess::computeLnProbability( void )
 {
     
-    // compute the ln probability by recursively calling the probability calculation for each node
-    //    const TopologyNode &root = this->tau->getValue().getRoot();
-    //
-    //    // we start with the root and then traverse down the tree
-    //    size_t root_index = root.getIndex();
-    //
-    //    std::vector<double> expectations = std::vector<double>(num_tips, 0.0);
-    //    std::vector<std::vector<double> > covariance = std::vector<std::vector<double> >( num_tips, std::vector<double>(num_tips, 0.0) );
-    
     //get exp and cov
     computeExpectation( *means );
     computeCovariance( *phylogenetic_covariance_matrix );
     
-    //    //check for zero cov
-    //    if (matrixSum(gCov, totnindiv, totnindiv) <= 0.0) {
-    //        if (matrixSum(gCov, totnindiv, totnindiv) < 0.0) {
-    //            if (verbose > 90) { printf("got less than zero covariance matrix with gparmin %le and regime ", gparmin); printDouArr(regimes[0], 4); }
-    //            if (vectorEquals(expr[findmaxgenei], gEs, totnindiv) == 1)
-    //                return(0.0);
-    //            else
-    //                return(-1000000.0);//-10000000000000000.0);
-    //        }
-    //        if (verbose > 90) { printf("got zero covariance matrix with gparmin %le and regime ", gparmin); printDouArr(regimes[0], 4); }
-    //        if (vectorEquals(expr[findmaxgenei], gEs, totnindiv) == 1)
-    //            return(0.0);
-    //        else
-    //            return(-1000000.0);//-10000000000000000.0);
-    //    }
-    
-    //    //convert to gsl data types
-    //    douArr2gslVec(gEs, ggslE, totnindiv);
-    //    dou2DArr2gslMat(gCov, ggslCov, totnindiv, totnindiv);
-    //    douArr2gslVec(expr[findmaxgenei], ggslexpr, totnindiv);
-    
-    //get logL
-    //    lL = dmvnorm(totnindiv, ggslexpr, ggslE, ggslCov);
-    
     inverse_phylogenetic_covariance_matrix = phylogenetic_covariance_matrix->computeInverse();
-    
+    inverse_phylogenetic_covariance_matrix.setCholesky( true );
     
     // sum the partials up
     this->ln_prob = sumRootLikelihood();
@@ -364,61 +356,85 @@ double PhyloMultiSampleOrnsteinUhlenbeckProcess::computeRootState( void ) const
 }
 
 
-void PhyloMultiSampleOrnsteinUhlenbeckProcess::expandExpectation( std::vector<double> &e ) //(double *lE, double *iE) {
+void PhyloMultiSampleOrnsteinUhlenbeckProcess::expandExpectation( std::vector<double> &individual_expectation, const std::vector<double> &species_expectation )
 {
-    //    int j, iEi=0;
-    //
-    //    for (size_t i=0; i<num_tips; ++i)
-    //    {
-    //
-    //        for (size_t j=0; j<(tree[i].nindiv); j++)
-    //        {
-    //            iE[iEi] = lE[i];
-    //            iEi++;
-    //        }
-    //    }
+
+    size_t index_expectation_individual = 0;
+    for (size_t i=0; i<num_species; ++i)
+    {
+
+        for (size_t j=0; j<num_individuals_per_species[i]; ++j)
+        {
+            individual_expectation[index_expectation_individual] = species_expectation[i];
+            ++index_expectation_individual;
+        }
+        
+    }
     
 }
 
 
-void PhyloMultiSampleOrnsteinUhlenbeckProcess::expandCovariance( MatrixReal &covariance )
+void PhyloMultiSampleOrnsteinUhlenbeckProcess::expandCovariance( MatrixReal &individual_covariance, const MatrixReal &species_covariance )
+{
+
+    size_t index_covariance_i = 0;
+    for (size_t i=0; i<num_species; ++i)
+    {
+        size_t index_covariance_j = index_covariance_i;
+        
+        size_t num_indiv_in_pop_i = num_individuals_per_species[i];
+        for (size_t j=i; j<num_species; ++j)
+        {
+            size_t num_indiv_in_pop_j = num_individuals_per_species[j];
+            for (size_t ii=0; ii<num_indiv_in_pop_i; ++ii)
+            {
+                for (size_t ij=0; ij<num_indiv_in_pop_j; ++ij)
+                {
+                    individual_covariance[index_covariance_i+ii][index_covariance_j+ij] = species_covariance[i][j];
+                }
+            }
+            index_covariance_j += num_indiv_in_pop_j;
+        }
+        index_covariance_i += num_indiv_in_pop_i;
+    }
+
+    //add in variance within pops
+    index_covariance_i = 0;
+    const RbVector<double> &variances_per_species = within_species_variances->getValue();
+    for (size_t i=0; i<num_species; ++i)
+    {
+        
+        double var_in_species_i = variances_per_species[i];
+        for (size_t j=0; j<num_individuals_per_species[i]; ++j)
+        {
+            individual_covariance[index_covariance_i][index_covariance_i] += var_in_species_i;
+            index_covariance_i++;
+        }
+        
+    }
+    
+    
+}
+
+
+double PhyloMultiSampleOrnsteinUhlenbeckProcess::getNumberOfSamplesForSpecies(const std::string &name)
 {
     
-    //    int i, j, ii, ij, iCovi, iCovj;
-    //    double inpopvar;
-    //
-    //    iCovi=0;
-    //    for (size_t i=0; i<num_tips; ++i)
-    //    {
-    //        size_t iCovj=iCovi;
-    //
-    //        for (j=i; j<nspecies; j++)
-    //        {
-    //            for (ii=0; ii<(tree[i].nindiv); ii++)
-    //            {
-    //                for (ij=0; ij<(tree[j].nindiv); ij++)
-    //                {
-    //                    covariance[(iCovi+ii)][(iCovj+ij)] = lCov[i][j];
-    //                }
-    //            }
-    //            iCovj += tree[j].nindiv;
-    //        }
-    //        iCovi += tree[i].nindiv;
-    //    }
-    //
-    //    //add in variance within pops
-    //    iCovi=0;
-    //    for (size_t i=0; i<num_tips; ++i)
-    //    {
-    //        double inpopvar = 1.0 * computeBranchSigma(i)/(2.0*computeBranchSigma(i)) * regimes[tree[i].regime][3];
-    //        for (ii=0; ii<tree[i].nindiv; ii++)
-    //        {
-    //            covariance[iCovi][iCovi] += inpopvar;
-    //            iCovi++;
-    //        }
-    //    }
+    double num_samples = 0.0;
+    
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        if ( name == t.getSpeciesName() )
+        {
+            ++num_samples;
+        }
+        
+    }
     
     
+    return num_samples;
 }
 
 
@@ -495,43 +511,41 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::resetValue( void )
     
     // create a vector with the correct site indices
     // some of the sites may have been excluded
-    std::vector<size_t> siteIndices = std::vector<size_t>(this->num_sites,0);
-    size_t siteIndex = 0;
+    std::vector<size_t> site_indices = std::vector<size_t>(this->num_sites,0);
+    size_t site_index = 0;
     for (size_t i = 0; i < this->num_sites; ++i)
     {
-        while ( this->value->isCharacterExcluded(siteIndex) )
+        while ( this->value->isCharacterExcluded(site_index) )
         {
-            siteIndex++;
-            if ( siteIndex >= this->value->getNumberOfCharacters()  )
+            site_index++;
+            if ( site_index >= this->value->getNumberOfCharacters()  )
             {
                 throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
             }
         }
-        siteIndices[i] = siteIndex;
-        siteIndex++;
+        site_indices[i] = site_index;
+        site_index++;
     }
     
-    obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) );
+    obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_individuals, 0.0) );
     
     std::vector<TopologyNode*> nodes = this->tau->getValue().getNodes();
     for (size_t site = 0; site < this->num_sites; ++site)
     {
         
-        for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        size_t index = 0;
+        for (std::vector<Taxon>::iterator it = taxa.begin(); it != taxa.end(); ++it)
         {
-            if ( (*it)->isTip() )
-            {
-                ContinuousTaxonData& taxon = this->value->getTaxonData( (*it)->getName() );
-                double &c = taxon.getCharacter(siteIndices[site]);
-                obs[site][(*it)->getIndex()] = c;
-            }
+            ContinuousTaxonData& taxon = this->value->getTaxonData( it->getName() );
+            double &c = taxon.getCharacter(site_indices[site]);
+            obs[site][index++] = c;
         }
     }
     
     // reset the means vectors
     delete means;
     //    delete stored_means;
-    means = new std::vector<double>(num_tips, 0.0);
+    means = new std::vector<double>(num_individuals, 0.0);
     //    stored_means    = new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) );
     
     
@@ -962,6 +976,15 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::swapParameterInternal(const DagNo
     }
     
     this->AbstractPhyloContinuousCharacterProcess::swapParameterInternal(oldP, newP);
+    
+    
+    num_individuals_per_species = std::vector<size_t>(num_species,0);
+    const std::vector<TopologyNode *> &nodes = tau->getValue().getNodes();
+    for (size_t i=0; i<num_species; ++i)
+    {
+        const std::string &species_name = nodes[i]->getSpeciesName();
+        num_individuals_per_species[i] = getNumberOfSamplesForSpecies( species_name );
+    }
     
 }
 

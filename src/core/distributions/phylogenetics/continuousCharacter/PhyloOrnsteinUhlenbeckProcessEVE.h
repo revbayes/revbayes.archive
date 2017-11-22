@@ -54,11 +54,7 @@ namespace RevBayesCore {
         void                                                                computeCovarianceRecursive(const TopologyNode &n, MatrixReal &cv);
         void                                                                computeExpectation(std::vector<double> &e);
         void                                                                computeExpectationRecursive(const TopologyNode &n, double me, std::vector<double> &e);
-        size_t                                                              computeMrcaIndex(const TopologyNode *l, const TopologyNode *r);
-//        void                                                                computeLeafExpectation(std::vector<double> &e);
         void                                                                computeVarianceRecursive(const TopologyNode &n, std::vector<double> &v);
-        void                                                                expandExpectation(std::vector<double> &e);
-        void                                                                expandCovariance(MatrixReal &cv);
 
         // Parameter management functions.
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter
