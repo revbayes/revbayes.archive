@@ -12,22 +12,39 @@
 
 using namespace RevBayesCore;
 
-PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, size_t ns) :
-    AbstractPhyloBrownianProcess( t, ns ),
-    numTips( t->getValue().getNumberOfTips() ),
-    obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(numTips, 0.0) ) ),
-    phylogeneticCovarianceMatrix( new MatrixReal(numTips, numTips) ),
-    storedPhylogeneticCovarianceMatrix( new MatrixReal(numTips, numTips) ),
-    inversePhylogeneticCovarianceMatrix( numTips, numTips ),
-    changedCovariance(false),
-    needsCovarianceRecomputation( true ),
-    needsScaleRecomputation( true )
+PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, size_t ns) : AbstractPhyloBrownianProcess( t, ns ),
+    num_tips( t->getValue().getNumberOfTips() ),
+    obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
+    phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
+    stored_phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
+    inverse_phylogenetic_covariance_matrix( num_tips, num_tips ),
+    changed_covariance(false),
+    needs_covariance_recomputation( true ),
+    needs_scale_recomputation( true )
 {
     homogeneous_root_state      = new ConstantNode<double>("", new double(0.0) );
     heterogeneous_root_state    = NULL;
 
     addParameter( homogeneous_root_state );
     
+    
+    // now we need to reset the value
+    this->redrawValue();
+}
+
+
+PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const PhyloBrownianProcessMVN &p) : AbstractPhyloBrownianProcess( p ),
+    homogeneous_root_state( p.homogeneous_root_state ),
+    heterogeneous_root_state( p.heterogeneous_root_state ),
+    num_tips( p.num_tips ),
+    obs( p.obs ),
+    phylogenetic_covariance_matrix( p.phylogenetic_covariance_matrix->clone() ),
+    stored_phylogenetic_covariance_matrix( p.stored_phylogenetic_covariance_matrix->clone() ),
+    inverse_phylogenetic_covariance_matrix( p.inverse_phylogenetic_covariance_matrix ),
+    changed_covariance( p.changed_covariance ),
+    needs_covariance_recomputation( p.needs_covariance_recomputation ),
+    needs_scale_recomputation( p.needs_scale_recomputation )
+{
     
     // now we need to reset the value
     this->redrawValue();
@@ -42,7 +59,37 @@ PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, si
 PhyloBrownianProcessMVN::~PhyloBrownianProcessMVN( void )
 {
     // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
+    delete phylogenetic_covariance_matrix;
+    delete stored_phylogenetic_covariance_matrix;
     
+}
+
+
+
+PhyloBrownianProcessMVN& PhyloBrownianProcessMVN::operator=(const PhyloBrownianProcessMVN &p)
+
+{
+    
+    if ( this != &p )
+    {
+        AbstractPhyloBrownianProcess::operator=( p );
+        
+        delete phylogenetic_covariance_matrix;
+        delete stored_phylogenetic_covariance_matrix;
+        
+        homogeneous_root_state                      = p.homogeneous_root_state;
+        heterogeneous_root_state                    = p.heterogeneous_root_state;
+        num_tips                                    = p.num_tips;
+        obs                                         = p.obs;
+        phylogenetic_covariance_matrix              = p.phylogenetic_covariance_matrix->clone();
+        stored_phylogenetic_covariance_matrix       = p.stored_phylogenetic_covariance_matrix->clone();
+        inverse_phylogenetic_covariance_matrix      = p.inverse_phylogenetic_covariance_matrix;
+        changed_covariance                          = p.changed_covariance;
+        needs_covariance_recomputation              = p.needs_covariance_recomputation;
+        needs_scale_recomputation                   = p.needs_scale_recomputation;
+    }
+    
+    return *this;
 }
 
 
@@ -63,13 +110,15 @@ double PhyloBrownianProcessMVN::computeLnProbability( void )
     // we start with the root and then traverse down the tree
     size_t rootIndex = root.getIndex();
     
-    if ( needsCovarianceRecomputation == true )
+    if ( needs_covariance_recomputation == true )
     {
         // perhaps there is a more efficient way to reset the matrix to 0.
-        phylogeneticCovarianceMatrix = new MatrixReal(numTips, numTips);
-        recursiveComputeCovarianceMatrix(*phylogeneticCovarianceMatrix, root, rootIndex);
-        needsCovarianceRecomputation = false;
-        inversePhylogeneticCovarianceMatrix = phylogeneticCovarianceMatrix->computeInverse();
+        delete phylogenetic_covariance_matrix;
+        phylogenetic_covariance_matrix = new MatrixReal(num_tips, num_tips);
+        recursiveComputeCovarianceMatrix(*phylogenetic_covariance_matrix, root, rootIndex);
+        needs_covariance_recomputation = false;
+        inverse_phylogenetic_covariance_matrix = phylogenetic_covariance_matrix->computeInverse();
+        inverse_phylogenetic_covariance_matrix.setCholesky( true );
     }
     
     // sum the partials up
@@ -103,8 +152,8 @@ void PhyloBrownianProcessMVN::keepSpecialization( DagNode* affecter )
 {
     
     // reset the flags
-    changedCovariance = false;
-    needsCovarianceRecomputation = false;
+    changed_covariance = false;
+    needs_covariance_recomputation = false;
     
 }
 
@@ -130,7 +179,7 @@ void PhyloBrownianProcessMVN::resetValue( void )
         siteIndex++;
     }
     
-    obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(numTips, 0.0) );
+    obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) );
     
     std::vector<TopologyNode*> nodes = this->tau->getValue().getNodes();
     for (size_t site = 0; site < this->num_sites; ++site)
@@ -149,8 +198,8 @@ void PhyloBrownianProcessMVN::resetValue( void )
     
     
     // finally we set all the flags for recomputation
-    needsCovarianceRecomputation = true;
-    needsScaleRecomputation = true;
+    needs_covariance_recomputation = true;
+    needs_scale_recomputation = true;
     
     //    for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
     //    {
@@ -228,14 +277,14 @@ void PhyloBrownianProcessMVN::restoreSpecialization( DagNode* affecter )
 {
     
     // reset the flags
-    if ( changedCovariance == true )
+    if ( changed_covariance == true )
     {
-        changedCovariance = false;
-        needsCovarianceRecomputation = false;
+        changed_covariance = false;
+        needs_covariance_recomputation = false;
         
-        MatrixReal *tmp = phylogeneticCovarianceMatrix;
-        phylogeneticCovarianceMatrix = storedPhylogeneticCovarianceMatrix;
-        storedPhylogeneticCovarianceMatrix = tmp;
+        MatrixReal *tmp = phylogenetic_covariance_matrix;
+        phylogenetic_covariance_matrix = stored_phylogenetic_covariance_matrix;
+        stored_phylogenetic_covariance_matrix = tmp;
         
     }
     
@@ -312,11 +361,11 @@ double PhyloBrownianProcessMVN::sumRootLikelihood( void )
     double sumPartialProbs = 0.0;
     for (size_t site = 0; site < this->num_sites; ++site)
     {
-        std::vector<double> m = std::vector<double>(numTips, computeRootState(site) );
+        std::vector<double> m = std::vector<double>(num_tips, computeRootState(site) );
         
         double sigma = this->computeSiteRate(site);
-        //        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfCovariance(m, *phylogeneticCovarianceMatrix, obs[site], sigma*sigma);
-        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfPrecision(m, inversePhylogeneticCovarianceMatrix, obs[site], sigma*sigma);
+        //        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfCovariance(m, *phylogenetic_covariance_matrix, obs[site], sigma*sigma);
+        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfPrecision(m, inverse_phylogenetic_covariance_matrix, obs[site], sigma*sigma);
     }
     
     return sumPartialProbs;
@@ -339,34 +388,38 @@ void PhyloBrownianProcessMVN::touchSpecialization( DagNode* affecter, bool touch
     }
     else if ( affecter == this->homogeneous_clock_rate )
     {
-        needsCovarianceRecomputation = true;
-        if ( changedCovariance == false )
+        needs_covariance_recomputation = true;
+        if ( changed_covariance == false )
         {
-            MatrixReal *tmp = phylogeneticCovarianceMatrix;
-            phylogeneticCovarianceMatrix = storedPhylogeneticCovarianceMatrix;
-            storedPhylogeneticCovarianceMatrix = tmp;
+            MatrixReal *tmp = phylogenetic_covariance_matrix;
+            phylogenetic_covariance_matrix = stored_phylogenetic_covariance_matrix;
+            stored_phylogenetic_covariance_matrix = tmp;
         }
-        changedCovariance = true;
+        changed_covariance = true;
         
     }
     else if ( affecter == this->heterogeneous_clock_rates )
     {
-        needsCovarianceRecomputation = true;
-        if ( changedCovariance == false )
+        needs_covariance_recomputation = true;
+        if ( changed_covariance == false )
         {
-            storedPhylogeneticCovarianceMatrix = phylogeneticCovarianceMatrix;
+            MatrixReal *tmp = phylogenetic_covariance_matrix;
+            phylogenetic_covariance_matrix = stored_phylogenetic_covariance_matrix;
+            stored_phylogenetic_covariance_matrix = tmp;
         }
-        changedCovariance = true;
+        changed_covariance = true;
         
     }
     else if ( affecter == this->tau )
     {
-        needsCovarianceRecomputation = true;
-        if ( changedCovariance == false )
+        needs_covariance_recomputation = true;
+        if ( changed_covariance == false )
         {
-            storedPhylogeneticCovarianceMatrix = phylogeneticCovarianceMatrix;
+            MatrixReal *tmp = phylogenetic_covariance_matrix;
+            phylogenetic_covariance_matrix = stored_phylogenetic_covariance_matrix;
+            stored_phylogenetic_covariance_matrix = tmp;
         }
-        changedCovariance = true;
+        changed_covariance = true;
         
     }
     else if ( affecter != this->tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
