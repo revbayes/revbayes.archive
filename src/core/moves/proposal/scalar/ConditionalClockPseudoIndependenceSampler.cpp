@@ -80,63 +80,63 @@ const std::string& ConditionalClockISProposal::getProposalName( void ) const
 double ConditionalClockISProposal::doProposal( void )
 {
     
+//    std::cout << "PROPOSING proposal on clock rate" <<std::endl;
+
     // Get current value
     double &val = variable->getValue();
-    std::cout << "old clock rate (variable): " << val <<std::endl;
+//    std::cout << "old clock rate (variable): " << val <<std::endl;
     
     // copy value
     storedValue = val;
-
-    return 0.0;
     
-//    // Get the clock rate (on the non-log scale) for calculations regarding tree length (in substitutions)
-//    if ( isLogScale ) {
-//        val = std::exp(val);
-//    }
-//    
-//    // Get random number generator
-//    RandomNumberGenerator* rng     = GLOBAL_RNG;
-//    
-//    Tree& tau = tree->getValue();
-//    double treeLength = tau.getTreeLength();
-//    
+    // Get the clock rate (on the non-log scale) for calculations regarding tree length (in substitutions)
+    if ( isLogScale ) {
+        val = std::exp(val);
+    }
+    
+    // Get random number generator
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
+    
+    Tree& tau = tree->getValue();
+    double treeLength = tau.getTreeLength();
+    
 //    std::cout << "current tree length (time): " << treeLength <<std::endl;
-//    // What we really have is a pseudo-independence sampler on the tree length in expected substitutions per site
-//    double logSubsTL = std::log(rate * treeLength);
-//    
+    // What we really have is a pseudo-independence sampler on the tree length in expected substitutions per site
+    double logSubsTL = std::log(val * treeLength);
+    
 //    std::cout << "current tree length (substitutions): " << std::exp(logSubsTL) <<std::endl;
-//    
-//    double logMean = std::log(-std::log( (nInv + 0.5) / (nSites + 0.5)));
-//
+    
+    double logMean = std::log(-std::log( (nInv + 0.5) / (nSites + 0.5)));
+
 //    std::cout << "distro median: " << std::exp(logMean) <<std::endl;
-//    
-//    // draw new substitution tree length
-//    double new_logSubsTL = RbStatistics::Normal::rv(*GLOBAL_RNG) * sigma + logMean;
-//    
-//    // compute the hastings ratio at the same time (easy since kernel is independent of current state)
-//    double probNew = RbStatistics::Normal::lnPdf(logMean, sigma, new_logSubsTL);
-//    double probOld = RbStatistics::Normal::lnPdf(logMean, sigma, logSubsTL);
-//    double lnHastingsratio = probOld - probNew;
-//    
-//    // transform tree length into clock rate
-//    double newVal = std::exp(new_logSubsTL)/treeLength;
-//    if ( isLogScale ) {
-//        newVal = std::log(newVal);
-//    }
-//    
+    
+    // draw new substitution tree length
+    double new_logSubsTL = RbStatistics::Normal::rv(*GLOBAL_RNG) * sigma + logMean;
+    
+    // compute the hastings ratio at the same time (easy since kernel is independent of current state)
+    double probNew = RbStatistics::Normal::lnPdf(logMean, sigma, new_logSubsTL);
+    double probOld = RbStatistics::Normal::lnPdf(logMean, sigma, logSubsTL);
+    double lnHastingsratio = probOld - probNew;
+    
+    // transform tree length into clock rate
+    double newVal = std::exp(new_logSubsTL)/treeLength;
+    if ( isLogScale ) {
+        newVal = std::log(newVal);
+    }
+    
 //    std::cout << "old clock rate: " << val <<std::endl;
-//    // Set variable value to new value
-////    variable->setValue( new double(newVal) );
-////    double &the_val = variable->getValue();
-////    the_val = newVal;
-//    storedValue = newVal;
+    // Set variable value to new value
+    variable->setValue( new double(newVal) );
+//    double &the_val = variable->getValue();
+//    the_val = newVal;
 //    variable->getValue() = newVal;
-//    
+    
 //    std::cout << "new clock rate: " << newVal <<std::endl;
-//    
+    
 //    std::cout << "lnHastingsratio: " << lnHastingsratio <<std::endl;
-//    
-//    return lnHastingsratio;
+//    std::cout << "PROPOSED" <<std::endl;
+
+    return lnHastingsratio;
 }
 
 
@@ -175,9 +175,11 @@ void ConditionalClockISProposal::printParameterSummary(std::ostream &o) const
  */
 void ConditionalClockISProposal::undoProposal( void )
 {
-    std::cout << "UNDOING proposal on clock rate" <<std::endl;
+//    std::cout << "UNDOING proposal on clock rate" <<std::endl;
+//    std::cout << "old clock rate (variable): " << variable->getValue() <<std::endl;
     variable->setValue( new double(storedValue) );
-    
+//    std::cout << "new clock rate (variable): " << variable->getValue() <<std::endl;
+//    std::cout << "UNDONE" <<std::endl;
 }
 
 
@@ -190,10 +192,16 @@ void ConditionalClockISProposal::undoProposal( void )
 void ConditionalClockISProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<double>* >(newN);
+    if ( oldN == variable )
+    {
+        variable = static_cast<StochasticNode<double>* >(newN);
+    }
+    else if ( oldN == tree )
+    {
+        tree = static_cast<StochasticNode<Tree>* >(newN);
+    }
     
 }
-
 
 /**
  * Tune the Proposal to accept the desired acceptance ratio.
@@ -205,13 +213,13 @@ void ConditionalClockISProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void ConditionalClockISProposal::tune( double rate )
 {
     
-    if ( rate > 0.23 )
+    if ( rate > 0.6 )
     {
-        sigma *= (1.0 + ((rate-0.23)/0.77) );
+        sigma *= (1.0 + ((rate-0.6)/0.77) );
     }
     else
     {
-        sigma /= (2.0 - rate/0.23 );
+        sigma /= (2.0 - rate/0.6 );
     }
     
 }
