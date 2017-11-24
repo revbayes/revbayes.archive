@@ -19,7 +19,7 @@ seed(12345)
 
 ### Read in sequence data for both genes
 
-data <- readContinuousCharacterData("data/primates_lht.nex")
+data <- readContinuousCharacterData("data/primates_lhtlog.nex")
 
 data.excludeAll()
 data.includeCharacter(1) 
@@ -38,9 +38,12 @@ mvi = 0
 
 
 # sigma: variance per unit of time of the Brownian motion
-sigma ~ dnExponential(1.0)
+sigma ~ dnLognormal( ln(10.0), sd=0.587405 )
+root_state ~ dnUniform(-10.0,10.0)
+rate_scale <- 10.0
 
 moves[++mvi] = mvScale(sigma, lambda=1.0, tune=true, weight=2.0) 
+moves[++mvi] = mvSlide(root_state, delta=1.0, tune=true, weight=2.0) 
 
 
 
@@ -49,7 +52,7 @@ moves[++mvi] = mvScale(sigma, lambda=1.0, tune=true, weight=2.0)
 ##############
 
 
-psi <- readTrees( "data/Primates_tree.nex" )[1]
+psi <- readTrees( "data/primates.tree" )[1]
 
 
 
@@ -58,7 +61,7 @@ psi <- readTrees( "data/Primates_tree.nex" )[1]
 # PhyloCTMC Model #
 ###################
 
-traits ~ dnPhyloBrownianREML(psi, branchRates=1.0, siteRates=sigma, nSites=1)
+traits ~ dnPhyloBrownianMVN(psi, branchRates=sigma, siteRates=rate_scale, rootStates=root_state, nSites=1)
 
 # attach the data
 traits.clamp(data)
@@ -76,12 +79,12 @@ mymodel = model(psi)
 
 
 mni = 0
-monitors[++mni] = mnModel(filename="output/primates_BM.log",printgen=10, separator = TAB)
-monitors[++mni] = mnScreen(printgen=1000, sigma)
+monitors[++mni] = mnModel(filename="output/primates_BM_MVN.log",printgen=10, separator = TAB)
+monitors[++mni] = mnScreen(printgen=100, sigma)
 
 mymcmc = mcmc(mymodel, monitors, moves)
-mymcmc.burnin(generations=5000,tuningInterval=250)
-mymcmc.run(generations=5000)
+mymcmc.burnin(generations=500,tuningInterval=100)
+mymcmc.run(generations=500)
 
 
 # you may want to quit RevBayes now
