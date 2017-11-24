@@ -83,9 +83,7 @@ namespace RevBayesCore {
         size_t                                                              num_species;
         std::vector<std::vector<double> >                                   obs;
         std::vector<double>*                                                means;
-//        std::vector<double>*                                                stored_means;
         MatrixReal*                                                         phylogenetic_covariance_matrix;
-//        MatrixReal*                                                         stored_phylogenetic_covariance_matrix;
         MatrixReal                                                          inverse_phylogenetic_covariance_matrix;
         bool                                                                changed_covariance;
         bool                                                                needs_covariance_recomputation;

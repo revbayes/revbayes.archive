@@ -18,9 +18,7 @@ PhyloOrnsteinUhlenbeckProcessEVE::PhyloOrnsteinUhlenbeckProcessEVE(const TypedDa
     num_species( t->getValue().getNumberOfTips() ),
     obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_species, 0.0) ) ),
     means( new std::vector<double>(num_species, 0.0) ),
-//stored_means( new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_species, 0.0) ) ),
     phylogenetic_covariance_matrix( new MatrixReal(num_species, num_species) ),
-//stored_phylogenetic_covariance_matrix( new MatrixReal(num_species, num_species) ),
     inverse_phylogenetic_covariance_matrix( num_species, num_species ),
     changed_covariance(false),
     needs_covariance_recomputation( true ),
@@ -28,7 +26,7 @@ PhyloOrnsteinUhlenbeckProcessEVE::PhyloOrnsteinUhlenbeckProcessEVE(const TypedDa
 {
     // initialize default parameters
     root_state                  = new ConstantNode<double>("", new double(0.0) );
-    homogeneous_alpha           = new ConstantNode<double>("", new double(1.0) );
+    homogeneous_alpha           = new ConstantNode<double>("", new double(0.0) );
     homogeneous_sigma           = new ConstantNode<double>("", new double(1.0) );
     homogeneous_theta           = new ConstantNode<double>("", new double(0.0) );
     heterogeneous_alpha         = NULL;
@@ -80,7 +78,7 @@ PhyloOrnsteinUhlenbeckProcessEVE::~PhyloOrnsteinUhlenbeckProcessEVE( void )
     
     delete means;
     delete phylogenetic_covariance_matrix;
-    //    delete stored_phylogenetic_covariance_matrix;
+    
 }
 
 
@@ -130,16 +128,10 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeCovariance(MatrixReal &covariance)
     size_t root_index = root.getIndex();
     
     std::vector<double> variance = std::vector<double>(this->tau->getValue().getNumberOfNodes(), 0.0);
+
     // set the variance at the root
-    if ( computeBranchAlpha(root_index) > 1E-10) // to stationary variance if alpha>0
-    {
-        variance[root_index] = computeBranchSigma( root_index ) / (2.0*computeBranchAlpha(root_index));
-    }
-    else // to 0 otherwise
-    {
-        variance[root_index] = 0.0;
-//        variance[root_index] = computeBranchSigma( root_index );
-    }
+    // we always set this to 0.0 because we expect a root-state parameter
+    variance[root_index] = 0.0;
     
     // calculate variance on daughter branches
     for (size_t i=0; i<root.getNumberOfChildren(); ++i)
@@ -216,7 +208,8 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeExpectation(std::vector<double> &e
     // set the expectation at the root to the provided root state
     double my_expectation = computeRootState();
     
-    //run leaf expecation on daughter branches
+    // now compute the expectation for all other nodes recursively,
+    // starting with the children of the root
     for (size_t i=0; i<root.getNumberOfChildren(); ++i)
     {
         const TopologyNode &child = root.getChild( i );
@@ -237,10 +230,14 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeExpectationRecursive(const Topolog
     double bl               = node.getBranchLength();
     
     double eAT = exp(-1.0 * alpha * bl);
-    double my_expectation = parent_expectation;
+    double my_expectation = 0.0;
     if ( eAT > 1E-10 )
     {
         my_expectation = parent_expectation*eAT + theta*(1.0-eAT);
+    }
+    else
+    {
+        my_expectation = parent_expectation;
     }
     
     if ( node.isTip() )
@@ -249,7 +246,7 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeExpectationRecursive(const Topolog
     }
     else
     {
-        //run leaf expecation on daughter branches
+        // keep on computing the expectation for all descendant nodes recursively
         for (size_t i=0; i<node.getNumberOfChildren(); ++i)
         {
             const TopologyNode &child = node.getChild( i );
@@ -279,6 +276,7 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeVarianceRecursive(const TopologyNo
     {
         variance[node_index] = sigma_square*bl + variance[parent_index];
     }
+    
     for (size_t i=0; i<node.getNumberOfChildren(); ++i)
     {
         const TopologyNode &child = node.getChild( i );
@@ -292,18 +290,16 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeVarianceRecursive(const TopologyNo
 double PhyloOrnsteinUhlenbeckProcessEVE::computeLnProbability( void )
 {
 
-    // get exp and cov
+    // first, compute the expectations for all tips and the variance-covariance matrix
     computeExpectation( *means );
     computeCovariance( *phylogenetic_covariance_matrix );
-    
-    phylogenetic_covariance_matrix->setCholesky( false );
     
     inverse_phylogenetic_covariance_matrix = phylogenetic_covariance_matrix->computeInverse();
     
     // we need to make sure that we can use the Cholesky decomposition
     inverse_phylogenetic_covariance_matrix.setCholesky( true );
     
-    // sum the partials up
+    // sum the probability for each site (column) up
     this->ln_prob = sumRootLikelihood();
     
     return this->ln_prob;
@@ -331,7 +327,7 @@ double PhyloOrnsteinUhlenbeckProcessEVE::computeBranchAlpha(size_t branch_idx) c
 double PhyloOrnsteinUhlenbeckProcessEVE::computeBranchSigma(size_t branch_idx) const
 {
     
-    // get the selection rate for the branch
+    // get the drift rate for the branch
     double s;
     if ( this->heterogeneous_sigma != NULL )
     {
@@ -349,7 +345,7 @@ double PhyloOrnsteinUhlenbeckProcessEVE::computeBranchSigma(size_t branch_idx) c
 double PhyloOrnsteinUhlenbeckProcessEVE::computeBranchTheta(size_t branch_idx) const
 {
     
-    // get the selection rate for the branch
+    // get the optimum (theta) for the branch
     double t;
     if ( this->heterogeneous_theta != NULL )
     {
@@ -367,7 +363,7 @@ double PhyloOrnsteinUhlenbeckProcessEVE::computeBranchTheta(size_t branch_idx) c
 double PhyloOrnsteinUhlenbeckProcessEVE::computeRootState( void ) const
 {
     
-    // second, get the clock rate for the branch
+    // get the root-state parameter
     double root_state = this->root_state->getValue();
     
     return root_state;
@@ -389,20 +385,20 @@ void PhyloOrnsteinUhlenbeckProcessEVE::resetValue( void )
     
     // create a vector with the correct site indices
     // some of the sites may have been excluded
-    std::vector<size_t> siteIndices = std::vector<size_t>(this->num_sites,0);
-    size_t siteIndex = 0;
+    std::vector<size_t> site_indices = std::vector<size_t>(this->num_sites,0);
+    size_t site_index = 0;
     for (size_t i = 0; i < this->num_sites; ++i)
     {
-        while ( this->value->isCharacterExcluded(siteIndex) )
+        while ( this->value->isCharacterExcluded(site_index) )
         {
-            siteIndex++;
-            if ( siteIndex >= this->value->getNumberOfCharacters()  )
+            ++site_index;
+            if ( site_index >= this->value->getNumberOfCharacters()  )
             {
                 throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
             }
         }
-        siteIndices[i] = siteIndex;
-        siteIndex++;
+        site_indices[i] = site_index;
+        ++site_index;
     }
     
     obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_species, 0.0) );
@@ -416,7 +412,7 @@ void PhyloOrnsteinUhlenbeckProcessEVE::resetValue( void )
             if ( (*it)->isTip() )
             {
                 ContinuousTaxonData& taxon = this->value->getTaxonData( (*it)->getName() );
-                double &c = taxon.getCharacter(siteIndices[site]);
+                double &c = taxon.getCharacter(site_indices[site]);
                 obs[site][(*it)->getIndex()] = c;
             }
         }
@@ -424,9 +420,7 @@ void PhyloOrnsteinUhlenbeckProcessEVE::resetValue( void )
     
     // reset the means vectors
     delete means;
-//    delete stored_means;
     means = new std::vector<double>(num_species, 0.0);
-//    stored_means    = new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_species, 0.0) );
     
     
     
@@ -543,10 +537,6 @@ void PhyloOrnsteinUhlenbeckProcessEVE::restoreSpecialization( DagNode* affecter 
     {
         changed_covariance = false;
         needs_covariance_recomputation = false;
-        
-//        MatrixReal *tmp = phylogenetic_covariance_matrix;
-//        phylogenetic_covariance_matrix = stored_phylogenetic_covariance_matrix;
-//        stored_phylogenetic_covariance_matrix = tmp;
         
     }
     
@@ -742,7 +732,6 @@ void PhyloOrnsteinUhlenbeckProcessEVE::simulateRecursively( const TopologyNode &
         double branch_length = child.getBranchLength();
         
         // get the branch specific rate
-//        double branch_time = sqrt( computeBranchTime( child.getIndex(), branch_length ) );
         double branch_time = computeBranchTime( child.getIndex(), branch_length );
         
         // get the branch specific rate
@@ -761,44 +750,24 @@ void PhyloOrnsteinUhlenbeckProcessEVE::simulateRecursively( const TopologyNode &
             double parent_state = parent.getCharacter( i );
             
             // compute the standard deviation for this site
-            double this_site_rate = computeSiteRate( i );
-            double branch_rate = branch_time * this_site_rate * this_site_rate;
+            double branch_rate = branch_time;
             
             double e = exp(-branch_alpha * branch_rate);
             double e2 = exp(-2.0 * branch_alpha * branch_rate);
             double m = e * parent_state + (1 - e) * branch_theta;
             
-            
-//            if ( branch_alpha > 1E-10 )
-//            {
-//                double e2AT = exp(-2.0 * alpha * bl);
-//                variance[node_index] = (sigma_square / (2.0*alpha))*(1.0 - e2AT) + variance[parent_index]*e2AT;
-//            }
-//            else
-//            {
-//                variance[node_index] = sigma_square*bl + variance[parent_index];
-//            }
-            
             double stand_dev = 0.0;
             if ( branch_alpha > 1E-10 )
             {
-//                standDev = branch_sigma * sqrt((1 - e2) / 2 / branch_alpha);
-//                standDev = branch_sigma * branch_rate * sqrt(e);
-//                standDev = branch_sigma * branch_rate * sqrt(e / branch_alpha);
-//                double e2AT = exp(-2.0 * alpha * bl);
-//                variance[node_index] = (sigma_square / (2.0*alpha))*(1.0 - e2AT) + variance[parent_index]*e2AT;
                 double sigma_square = branch_sigma * branch_sigma;
-//                stand_dev = sqrt( (sigma_square / (2.0*branch_alpha))*(1.0 - e2)); // + variance[parent_index]*e2AT;
-//                stand_dev = sqrt( (sigma_square / (2.0*branch_alpha))*(1.0 - e2)) + branch_sigma * sqrt(branch_rate*e2);
-                stand_dev = sqrt( (sigma_square / (2.0*branch_alpha)*(1.0 - e2))  +  (sigma_square*branch_rate*e2)  );
-//                stand_dev = sqrt( (sigma_square / (2.0*branch_alpha)))*(1.0 - e2) + branch_sigma * sqrt(branch_rate)*e2;
-//                (sigma_square / (2.0*alpha))*(1.0 - e2AT)
+                stand_dev = sqrt( (sigma_square / (2.0*branch_alpha)*(1.0 - e2)) );
             }
             else
             {
                 // compute the standard deviation for this site
                 stand_dev = branch_sigma * sqrt(branch_rate);
             }
+            
             // create the character
             double c = RbStatistics::Normal::rv( m, stand_dev, *rng);
             
@@ -841,8 +810,7 @@ double PhyloOrnsteinUhlenbeckProcessEVE::sumRootLikelihood( void )
     double sum_site_probs = 0.0;
     for (size_t site = 0; site < this->num_sites; ++site)
     {
-        double sr = this->computeSiteRate(site);
-        sum_site_probs += RbStatistics::MultivariateNormal::lnPdfPrecision( (*means), inverse_phylogenetic_covariance_matrix, obs[site], sr*sr);
+        sum_site_probs += RbStatistics::MultivariateNormal::lnPdfPrecision( (*means), inverse_phylogenetic_covariance_matrix, obs[site], 1.0);
     }
     
     return sum_site_probs;

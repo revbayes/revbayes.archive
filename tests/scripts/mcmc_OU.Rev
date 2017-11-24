@@ -61,9 +61,10 @@ psi <- readTrees( "data/primates.tree" )[1]
 # PhyloCTMC Model #
 ###################
 
-# We use an empirical estimate of the clock rate which is 0.01 (=1%) per mvillion years per site
-traits ~ dnPhyloOrnsteinUhlenbeckMVN(psi, branchRates=sigma, siteRates=1.0, alpha=attraction, theta=optimum, rootState=optimum, nSites=1)
+traits ~ dnPhyloOrnsteinUhlenbeckMVN(psi, sigma=sigma, alpha=attraction, theta=optimum, rootState=optimum, nSites=1)
 
+# attach the data
+traits.clamp(data)
 
 
 #############
