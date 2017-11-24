@@ -26,7 +26,8 @@ PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, si
     heterogeneous_root_state    = NULL;
 
     addParameter( homogeneous_root_state );
-    
+    phylogenetic_covariance_matrix->setCholesky( true );
+    stored_phylogenetic_covariance_matrix->setCholesky( true );
     
     // now we need to reset the value
     this->redrawValue();
@@ -46,8 +47,6 @@ PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const PhyloBrownianProcessMVN &
     needs_scale_recomputation( p.needs_scale_recomputation )
 {
     
-    // now we need to reset the value
-    this->redrawValue();
 }
 
 
@@ -115,6 +114,7 @@ double PhyloBrownianProcessMVN::computeLnProbability( void )
         // perhaps there is a more efficient way to reset the matrix to 0.
         delete phylogenetic_covariance_matrix;
         phylogenetic_covariance_matrix = new MatrixReal(num_tips, num_tips);
+        phylogenetic_covariance_matrix->setCholesky( true );
         recursiveComputeCovarianceMatrix(*phylogenetic_covariance_matrix, root, rootIndex);
         needs_covariance_recomputation = false;
         inverse_phylogenetic_covariance_matrix = phylogenetic_covariance_matrix->computeInverse();
@@ -163,20 +163,20 @@ void PhyloBrownianProcessMVN::resetValue( void )
     
     // create a vector with the correct site indices
     // some of the sites may have been excluded
-    std::vector<size_t> siteIndices = std::vector<size_t>(this->num_sites,0);
-    size_t siteIndex = 0;
+    std::vector<size_t> site_indices = std::vector<size_t>(this->num_sites,0);
+    size_t site_index = 0;
     for (size_t i = 0; i < this->num_sites; ++i)
     {
-        while ( this->value->isCharacterExcluded(siteIndex) )
+        while ( this->value->isCharacterExcluded(site_index) )
         {
-            siteIndex++;
-            if ( siteIndex >= this->value->getNumberOfCharacters()  )
+            ++site_index;
+            if ( site_index >= this->value->getNumberOfCharacters()  )
             {
                 throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
             }
         }
-        siteIndices[i] = siteIndex;
-        siteIndex++;
+        site_indices[i] = site_index;
+        ++site_index;
     }
     
     obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) );
@@ -190,7 +190,7 @@ void PhyloBrownianProcessMVN::resetValue( void )
             if ( (*it)->isTip() )
             {
                 ContinuousTaxonData& taxon = this->value->getTaxonData( (*it)->getName() );
-                double &c = taxon.getCharacter(siteIndices[site]);
+                double &c = taxon.getCharacter(site_indices[site]);
                 obs[site][(*it)->getIndex()] = c;
             }
         }
@@ -201,17 +201,6 @@ void PhyloBrownianProcessMVN::resetValue( void )
     needs_covariance_recomputation = true;
     needs_scale_recomputation = true;
     
-    //    for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
-    //    {
-    //        (*it) = true;
-    //    }
-    //
-    //    // flip the active likelihood pointers
-    //    for (size_t index = 0; index < changed_nodes.size(); ++index)
-    //    {
-    //        activeLikelihood[index] = 0;
-    //        changed_nodes[index] = true;
-    //    }
 }
 
 
@@ -255,7 +244,7 @@ std::set<size_t> PhyloBrownianProcessMVN::recursiveComputeCovarianceMatrix(Matri
         }
         
     }
-    else
+    else // this is the root node
     {
         
         for (size_t i = 0; i < node.getNumberOfChildren(); ++i)
