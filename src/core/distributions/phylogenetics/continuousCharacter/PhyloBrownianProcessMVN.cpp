@@ -358,17 +358,16 @@ double PhyloBrownianProcessMVN::sumRootLikelihood( void )
 {
     
     // sum the log-likelihoods for all sites together
-    double sumPartialProbs = 0.0;
+    double sum_site_probs = 0.0;
     for (size_t site = 0; site < this->num_sites; ++site)
     {
         std::vector<double> m = std::vector<double>(num_tips, computeRootState(site) );
         
-        double sigma = this->computeSiteRate(site);
-        //        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfCovariance(m, *phylogenetic_covariance_matrix, obs[site], sigma*sigma);
-        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfPrecision(m, inverse_phylogenetic_covariance_matrix, obs[site], sigma*sigma);
+        double sr = this->computeSiteRate(site);
+        sum_site_probs += RbStatistics::MultivariateNormal::lnPdfPrecision(m, inverse_phylogenetic_covariance_matrix, obs[site], sr*sr);
     }
     
-    return sumPartialProbs;
+    return sum_site_probs;
 }
 
 
