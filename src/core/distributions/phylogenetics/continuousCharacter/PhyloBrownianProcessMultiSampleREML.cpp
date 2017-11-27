@@ -246,8 +246,7 @@ void PhyloBrownianProcessMultiSampleREML::recursiveComputeLnProbability( const T
                     double x = taxon.getCharacter( site_indices[i] );
                     
                     // get the site specific rate of evolution
-//                    double standDev = this->computeSiteRate(i) * stdev;
-                    double standDev = stdev;
+                    double standDev = this->computeSiteRate(i) * stdev;
                     
                     // compute the contrasts for this site and node
                     double contrast = mu_node[i] - x;

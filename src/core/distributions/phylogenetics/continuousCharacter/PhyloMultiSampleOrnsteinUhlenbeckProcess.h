@@ -25,6 +25,8 @@ namespace RevBayesCore {
         PhyloMultiSampleOrnsteinUhlenbeckProcess(const PhyloMultiSampleOrnsteinUhlenbeckProcess &p);
         virtual                                                            ~PhyloMultiSampleOrnsteinUhlenbeckProcess(void);                                                              //!< Virtual destructor
         
+        PhyloMultiSampleOrnsteinUhlenbeckProcess&                           operator=(const PhyloMultiSampleOrnsteinUhlenbeckProcess &p);
+
         // public member functions
         // pure virtual
         virtual PhyloMultiSampleOrnsteinUhlenbeckProcess*                   clone(void) const;                                                                      //!< Create an independent clone

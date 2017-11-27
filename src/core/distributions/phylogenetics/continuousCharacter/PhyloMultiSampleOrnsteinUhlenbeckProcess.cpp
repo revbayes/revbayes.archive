@@ -21,9 +21,7 @@ PhyloMultiSampleOrnsteinUhlenbeckProcess::PhyloMultiSampleOrnsteinUhlenbeckProce
     taxa( ta ),
     obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_individuals, 0.0) ) ),
     means( new std::vector<double>(num_individuals, 0.0) ),
-//stored_means( new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
     phylogenetic_covariance_matrix( new MatrixReal(num_individuals, num_individuals) ),
-//stored_phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
     inverse_phylogenetic_covariance_matrix( num_individuals, num_individuals ),
     changed_covariance(false),
     needs_covariance_recomputation( true ),
@@ -31,7 +29,7 @@ PhyloMultiSampleOrnsteinUhlenbeckProcess::PhyloMultiSampleOrnsteinUhlenbeckProce
 {
     // initialize default parameters
     root_state                  = new ConstantNode<double>("", new double(0.0) );
-    homogeneous_alpha           = new ConstantNode<double>("", new double(1.0) );
+    homogeneous_alpha           = new ConstantNode<double>("", new double(0.0) );
     homogeneous_sigma           = new ConstantNode<double>("", new double(1.0) );
     homogeneous_theta           = new ConstantNode<double>("", new double(0.0) );
     heterogeneous_alpha         = NULL;
@@ -96,7 +94,40 @@ PhyloMultiSampleOrnsteinUhlenbeckProcess::~PhyloMultiSampleOrnsteinUhlenbeckProc
     
     delete means;
     delete phylogenetic_covariance_matrix;
-    //    delete stored_phylogenetic_covariance_matrix;
+    
+}
+
+
+
+PhyloMultiSampleOrnsteinUhlenbeckProcess& PhyloMultiSampleOrnsteinUhlenbeckProcess::operator=(const PhyloMultiSampleOrnsteinUhlenbeckProcess &p)
+{
+    
+    if ( this != &p )
+    {
+        AbstractPhyloContinuousCharacterProcess::operator=( p );
+        
+        delete means;
+        delete phylogenetic_covariance_matrix;
+        
+        root_state                              = p.root_state;
+        homogeneous_alpha                       = p.homogeneous_alpha;
+        homogeneous_sigma                       = p.homogeneous_sigma;
+        homogeneous_theta                       = p.homogeneous_theta;
+        heterogeneous_alpha                     = p.heterogeneous_alpha;
+        heterogeneous_sigma                     = p.heterogeneous_sigma;
+        heterogeneous_theta                     = p.heterogeneous_theta;
+        within_species_variances                = p.within_species_variances;
+        num_species                             = p.num_species;
+        obs                                     = p.obs;
+        means                                   = new std::vector<double>( *p.means );
+        phylogenetic_covariance_matrix          = p.phylogenetic_covariance_matrix->clone();
+        inverse_phylogenetic_covariance_matrix  = p.inverse_phylogenetic_covariance_matrix;
+        changed_covariance                      = p.changed_covariance;
+        needs_covariance_recomputation          = p.needs_covariance_recomputation;
+        needs_scale_recomputation               = p.needs_scale_recomputation;
+    }
+    
+    return *this;
 }
 
 
@@ -117,15 +148,10 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeCovariance(MatrixReal &ind
     size_t root_index = root.getIndex();
     
     std::vector<double> variance = std::vector<double>(this->tau->getValue().getNumberOfNodes(), 0.0);
-    //set rootVar
-    if ( computeBranchAlpha(root_index) > 0) //to stationary var if alpha>0
-    {
-        variance[root_index] = computeBranchSigma( root_index ) / (2.0*computeBranchAlpha(root_index));
-    }
-    else //to 0 otherwise
-    {
-        variance[root_index] = 0.0;
-    }
+    
+    // set the variance at the root
+    // we always set this to 0.0 because we expect a root-state parameter
+    variance[root_index] = 0.0;
     
     // calculate variance on daughter branches
     for (size_t i=0; i<root.getNumberOfChildren(); ++i)
@@ -205,11 +231,11 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeExpectation(std::vector<do
     
     const TopologyNode &root = this->tau->getValue().getRoot();
     
-    // init root E to theta (be it longrun theta (in OU)
-    // or theta_root (in non-evol, BM)
+    // set the expectation at the root to the provided root state
     double my_expectation = computeRootState();
     
-    //run leaf expecation on daughter branches
+    // now compute the expectation for all other nodes recursively,
+    // starting with the children of the root
     for (size_t i=0; i<root.getNumberOfChildren(); ++i)
     {
         const TopologyNode &child = root.getChild( i );
@@ -233,7 +259,15 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeExpectationRecursive(const
     double bl               = node.getBranchLength();
     
     double eAT = exp(-1.0 * alpha * bl);
-    double my_expectation = parent_expectation*eAT + theta*(1.0-eAT);
+    double my_expectation = 0.0;
+    if ( eAT > 1E-10 )
+    {
+        my_expectation = parent_expectation*eAT + theta*(1.0-eAT);
+    }
+    else
+    {
+        my_expectation = parent_expectation;
+    }
     
     if ( node.isTip() )
     {
@@ -241,7 +275,7 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeExpectationRecursive(const
     }
     else
     {
-        //run leaf expecation on daughter branches
+        // keep on computing the expectation for all descendant nodes recursively
         for (size_t i=0; i<node.getNumberOfChildren(); ++i)
         {
             const TopologyNode &child = node.getChild( i );
@@ -261,9 +295,15 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeVarianceRecursive(const To
     double sigma_square     = computeBranchSigma(node_index);
     double bl               = node.getBranchLength();
     
-    double e2AT = exp(-2.0 * alpha * bl);
-    
-    variance[node_index] = (sigma_square / (2.0*alpha))*(1.0 - e2AT) + variance[parent_index]*e2AT;
+    if ( alpha > 1E-10 )
+    {
+        double e2AT = exp(-2.0 * alpha * bl);
+        variance[node_index] = (sigma_square / (2.0*alpha))*(1.0 - e2AT) + variance[parent_index]*e2AT;
+    }
+    else
+    {
+        variance[node_index] = sigma_square*bl + variance[parent_index];
+    }
     
     for (size_t i=0; i<node.getNumberOfChildren(); ++i)
     {
@@ -278,14 +318,16 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeVarianceRecursive(const To
 double PhyloMultiSampleOrnsteinUhlenbeckProcess::computeLnProbability( void )
 {
     
-    //get exp and cov
+    // first, compute the expectations for all tips and the variance-covariance matrix
     computeExpectation( *means );
     computeCovariance( *phylogenetic_covariance_matrix );
     
     inverse_phylogenetic_covariance_matrix = phylogenetic_covariance_matrix->computeInverse();
+    
+    // we need to make sure that we can use the Cholesky decomposition
     inverse_phylogenetic_covariance_matrix.setCholesky( true );
     
-    // sum the partials up
+    // sum the probability for each site (column) up
     this->ln_prob = sumRootLikelihood();
     
     return this->ln_prob;
@@ -313,7 +355,7 @@ double PhyloMultiSampleOrnsteinUhlenbeckProcess::computeBranchAlpha(size_t branc
 double PhyloMultiSampleOrnsteinUhlenbeckProcess::computeBranchSigma(size_t branch_idx) const
 {
     
-    // get the selection rate for the branch
+    // get the drift rate for the branch
     double s;
     if ( this->heterogeneous_sigma != NULL )
     {
@@ -331,7 +373,7 @@ double PhyloMultiSampleOrnsteinUhlenbeckProcess::computeBranchSigma(size_t branc
 double PhyloMultiSampleOrnsteinUhlenbeckProcess::computeBranchTheta(size_t branch_idx) const
 {
     
-    // get the selection rate for the branch
+    // get the optimum (theta) rate for the branch
     double t;
     if ( this->heterogeneous_theta != NULL )
     {
@@ -349,7 +391,7 @@ double PhyloMultiSampleOrnsteinUhlenbeckProcess::computeBranchTheta(size_t branc
 double PhyloMultiSampleOrnsteinUhlenbeckProcess::computeRootState( void ) const
 {
     
-    // second, get the clock rate for the branch
+    // get the root-state parameter
     double root_state = this->root_state->getValue();
     
     return root_state;
@@ -359,6 +401,7 @@ double PhyloMultiSampleOrnsteinUhlenbeckProcess::computeRootState( void ) const
 void PhyloMultiSampleOrnsteinUhlenbeckProcess::expandExpectation( std::vector<double> &individual_expectation, const std::vector<double> &species_expectation )
 {
 
+    // expand the species to individuals
     size_t index_expectation_individual = 0;
     for (size_t i=0; i<num_species; ++i)
     {
@@ -377,6 +420,7 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::expandExpectation( std::vector<do
 void PhyloMultiSampleOrnsteinUhlenbeckProcess::expandCovariance( MatrixReal &individual_covariance, const MatrixReal &species_covariance )
 {
 
+    // expand the species to individuals
     size_t index_covariance_i = 0;
     for (size_t i=0; i<num_species; ++i)
     {
@@ -487,7 +531,7 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::simulateTipSamples( const std::ve
                     double parent_state = species_data.getCharacter(k);
                     
                     // compute the standard deviation for this site
-                    double stand_dev = species_sigma * computeSiteRate( k );
+                    double stand_dev = species_sigma;
                     
                     // create the character
                     double c = RbStatistics::Normal::rv( parent_state, stand_dev, *rng);
@@ -544,9 +588,7 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::resetValue( void )
     
     // reset the means vectors
     delete means;
-    //    delete stored_means;
     means = new std::vector<double>(num_individuals, 0.0);
-    //    stored_means    = new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) );
     
     
     
@@ -663,10 +705,6 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::restoreSpecialization( DagNode* a
     {
         changed_covariance = false;
         needs_covariance_recomputation = false;
-        
-        //        MatrixReal *tmp = phylogenetic_covariance_matrix;
-        //        phylogenetic_covariance_matrix = stored_phylogenetic_covariance_matrix;
-        //        stored_phylogenetic_covariance_matrix = tmp;
         
     }
     
@@ -862,7 +900,7 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::simulateRecursively( const Topolo
         double branch_length = child.getBranchLength();
         
         // get the branch specific rate
-        double branch_time = sqrt( computeBranchTime( child.getIndex(), branch_length ) );
+        double branch_time = computeBranchTime( child.getIndex(), branch_length );
         
         // get the branch specific rate
         double branch_sigma = computeBranchSigma( child.getIndex() );
@@ -885,10 +923,21 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::simulateRecursively( const Topolo
             double e = exp(-branch_alpha * branch_rate);
             double e2 = exp(-2 * branch_alpha * branch_rate);
             double m = e * parent_state + (1 - e) * branch_theta;
-            double standDev = branch_sigma * sqrt((1 - e2) / 2 / branch_alpha);
+            
+            double stand_dev = 0.0;
+            if ( branch_alpha > 1E-10 )
+            {
+                double sigma_square = branch_sigma * branch_sigma;
+                stand_dev = sqrt( (sigma_square / (2.0*branch_alpha)*(1.0 - e2)) );
+            }
+            else
+            {
+                // compute the standard deviation for this site
+                stand_dev = branch_sigma * sqrt(branch_rate);
+            }
             
             // create the character
-            double c = RbStatistics::Normal::rv( m, standDev, *rng);
+            double c = RbStatistics::Normal::rv( m, stand_dev, *rng);
             
             // add the character to the sequence
             taxon.addCharacter( c );
@@ -926,16 +975,13 @@ double PhyloMultiSampleOrnsteinUhlenbeckProcess::sumRootLikelihood( void )
 {
     
     // sum the log-likelihoods for all sites together
-    double sumPartialProbs = 0.0;
+    double sum_site_probs = 0.0;
     for (size_t site = 0; site < this->num_sites; ++site)
     {
-        double sr = this->computeSiteRate(site);
-        
-        //        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfCovariance(m, *phylogeneticCovarianceMatrix, obs[site], sigma*sigma);
-        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfPrecision( (*means), inverse_phylogenetic_covariance_matrix, obs[site], sr*sr);
+        sum_site_probs += RbStatistics::MultivariateNormal::lnPdfPrecision( (*means), inverse_phylogenetic_covariance_matrix, obs[site], 1.0);
     }
     
-    return sumPartialProbs;
+    return sum_site_probs;
 }
 
 

@@ -40,43 +40,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* var = static_cast<const ModelVector<RealPos> &>( within_species_variances->getRevObject() ).getDagNode();
     const std::vector<RevBayesCore::Taxon>      &t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
-    //    RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN *dist = new RevBayesCore::PhyloOrnsteinUhlenbeckProcessMVN(tau, n);
     RevBayesCore::PhyloMultiSampleOrnsteinUhlenbeckProcess *dist = new RevBayesCore::PhyloMultiSampleOrnsteinUhlenbeckProcess(tau, var, t, n);
-    
-    
-    // set the clock rates
-    if ( branch_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
-    {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* br = static_cast<const ModelVector<RealPos> &>( branch_rates->getRevObject() ).getDagNode();
-        
-        // sanity check
-        size_t n_rates = br->getValue().size();
-        if ( (n_nodes-1) != n_rates )
-        {
-            throw RbException( "The number of clock rates does not match the number of branches" );
-        }
-        
-        dist->setBranchRate( br );
-        
-    }
-    else
-    {
-        RevBayesCore::TypedDagNode< double >* br = static_cast<const RealPos &>( branch_rates->getRevObject() ).getDagNode();
-        
-        dist->setBranchRate( br );
-    }
-    
-    // set the clock rates
-    if ( site_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
-    {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sr = static_cast<const ModelVector<RealPos> &>( site_rates->getRevObject() ).getDagNode();
-        dist->setSiteRate( sr );
-    }
-    else
-    {
-        RevBayesCore::TypedDagNode< double >* sr = static_cast<const RealPos &>( site_rates->getRevObject() ).getDagNode();
-        dist->setSiteRate( sr );
-    }
     
     // set alpha
     if ( alpha->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
@@ -178,17 +142,6 @@ const MemberRules& Dist_PhyloMultiSampleOrnsteinUhlenbeck::getParameterRules(voi
     {
         dist_member_rules.push_back( new ArgumentRule( "tree" , Tree::getClassTypeSpec(), "The tree along which the character evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        std::vector<TypeSpec> branchRateTypes;
-        branchRateTypes.push_back( RealPos::getClassTypeSpec() );
-        branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        dist_member_rules.push_back( new ArgumentRule( "branchRates" , branchRateTypes, "The rate of evolution along a branch.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
-        
-        std::vector<TypeSpec> siteRateTypes;
-        siteRateTypes.push_back( RealPos::getClassTypeSpec() );
-        siteRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        RealPos *defaultSiteRates = new RealPos(1.0);
-        dist_member_rules.push_back( new ArgumentRule( "siteRates" , siteRateTypes, "The rate of evolution per site.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
-        
         std::vector<TypeSpec> alphaTypes;
         alphaTypes.push_back( RealPos::getClassTypeSpec() );
         alphaTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
@@ -235,7 +188,7 @@ const TypeSpec& Dist_PhyloMultiSampleOrnsteinUhlenbeck::getTypeSpec( void ) cons
 void Dist_PhyloMultiSampleOrnsteinUhlenbeck::printValue(std::ostream& o) const
 {
     
-    o << "PhyloOrnsteinUhlenbeckProcess(tree=";
+    o << "PhyloMultiSampleOrnsteinUhlenbeck(tree=";
     if ( tree != NULL )
     {
         o << tree->getName();
@@ -244,19 +197,28 @@ void Dist_PhyloMultiSampleOrnsteinUhlenbeck::printValue(std::ostream& o) const
     {
         o << "?";
     }
-    o << ", branchRates=";
-    if ( branch_rates != NULL )
+    o << ", sigma=";
+    if ( sigma != NULL )
     {
-        o << branch_rates->getName();
+        o << sigma->getName();
     }
     else
     {
         o << "?";
     }
-    o << ", siteRates=";
-    if ( site_rates != NULL )
+    o << ", theta=";
+    if ( theta != NULL )
     {
-        o << site_rates->getName();
+        o << theta->getName();
+    }
+    else
+    {
+        o << "?";
+    }
+    o << ", alpha=";
+    if ( alpha != NULL )
+    {
+        o << alpha->getName();
     }
     else
     {
@@ -283,14 +245,6 @@ void Dist_PhyloMultiSampleOrnsteinUhlenbeck::setConstParameter(const std::string
     if ( name == "tree" )
     {
         tree = var;
-    }
-    else if ( name == "branchRates" )
-    {
-        branch_rates = var;
-    }
-    else if ( name == "siteRates" )
-    {
-        site_rates = var;
     }
     else if ( name == "alpha" )
     {

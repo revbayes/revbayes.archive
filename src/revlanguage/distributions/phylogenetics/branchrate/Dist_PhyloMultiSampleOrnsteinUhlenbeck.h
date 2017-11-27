@@ -35,8 +35,6 @@ namespace RevLanguage {
     private:
         
         RevPtr<const RevVariable>                               tree;
-        RevPtr<const RevVariable>                               branch_rates;
-        RevPtr<const RevVariable>                               site_rates;
         RevPtr<const RevVariable>                               alpha;
         RevPtr<const RevVariable>                               theta;
         RevPtr<const RevVariable>                               sigma;
