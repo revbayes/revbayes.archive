@@ -146,7 +146,7 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeCovariance(MatrixReal &covariance)
         covariance[i][i] = variance[i];
     }
     
-    //calc cov between all leaf pairs
+    // calculate the covariance between all leaf pairs
     for (size_t left_index=0; left_index<num_species; ++left_index)
     {
         const TopologyNode *left_tip_node = &this->tau->getValue().getTipNode( left_index );
@@ -183,6 +183,7 @@ void PhyloOrnsteinUhlenbeckProcessEVE::computeCovariance(MatrixReal &covariance)
             }
             
             covariance[left_index][right_index] = variance[mrca_index] * exp(-sum_AT);
+
         }
         
     }

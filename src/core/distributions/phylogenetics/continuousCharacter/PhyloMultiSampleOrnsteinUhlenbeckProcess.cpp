@@ -220,6 +220,7 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeCovariance(MatrixReal &ind
         
     }
     
+    
 }
 
 
@@ -292,7 +293,8 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::computeVarianceRecursive(const To
     size_t node_index       = node.getIndex();
     size_t parent_index     = node.getParent().getIndex();
     double alpha            = computeBranchAlpha(node_index);
-    double sigma_square     = computeBranchSigma(node_index);
+    double sigma            = computeBranchSigma(node_index);
+    double sigma_square     = sigma * sigma;
     double bl               = node.getBranchLength();
     
     if ( alpha > 1E-10 )
@@ -421,29 +423,29 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::expandCovariance( MatrixReal &ind
 {
 
     // expand the species to individuals
-    size_t index_covariance_i = 0;
+    size_t index_covariance_first_species = 0;
     for (size_t i=0; i<num_species; ++i)
     {
-        size_t index_covariance_j = index_covariance_i;
+        size_t index_covariance_second_species = index_covariance_first_species;
         
-        size_t num_indiv_in_pop_i = num_individuals_per_species[i];
+        size_t num_indiv_in_first_pop = num_individuals_per_species[i];
         for (size_t j=i; j<num_species; ++j)
         {
-            size_t num_indiv_in_pop_j = num_individuals_per_species[j];
-            for (size_t ii=0; ii<num_indiv_in_pop_i; ++ii)
+            size_t num_indiv_in_second_pop = num_individuals_per_species[j];
+            for (size_t ii=0; ii<num_indiv_in_first_pop; ++ii)
             {
-                for (size_t ij=0; ij<num_indiv_in_pop_j; ++ij)
+                for (size_t jj=0; jj<num_indiv_in_second_pop; ++jj)
                 {
-                    individual_covariance[index_covariance_i+ii][index_covariance_j+ij] = species_covariance[i][j];
+                    individual_covariance[index_covariance_first_species+ii][index_covariance_second_species+jj] = species_covariance[i][j];
                 }
             }
-            index_covariance_j += num_indiv_in_pop_j;
+            index_covariance_second_species += num_indiv_in_second_pop;
         }
-        index_covariance_i += num_indiv_in_pop_i;
+        index_covariance_first_species += num_indiv_in_first_pop;
     }
 
-    //add in variance within pops
-    index_covariance_i = 0;
+    // add variance within each species
+    index_covariance_first_species = 0;
     const RbVector<double> &variances_per_species = within_species_variances->getValue();
     for (size_t i=0; i<num_species; ++i)
     {
@@ -451,8 +453,8 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::expandCovariance( MatrixReal &ind
         double var_in_species_i = variances_per_species[i];
         for (size_t j=0; j<num_individuals_per_species[i]; ++j)
         {
-            individual_covariance[index_covariance_i][index_covariance_i] += var_in_species_i;
-            index_covariance_i++;
+            individual_covariance[index_covariance_first_species][index_covariance_first_species] += var_in_species_i;
+            ++index_covariance_first_species;
         }
         
     }
@@ -574,15 +576,27 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::resetValue( void )
     obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_individuals, 0.0) );
     
     std::vector<TopologyNode*> nodes = this->tau->getValue().getNodes();
+    std::vector<size_t> used_indiv_per_species = std::vector<size_t>(num_species,0);
+    std::vector<size_t> species_offsets = std::vector<size_t>(num_species,0);
+    for (size_t i=1; i<num_species; ++i)
+    {
+        species_offsets[i] = species_offsets[i-1] + num_individuals_per_species[i-1];
+    }
+
     for (size_t site = 0; site < this->num_sites; ++site)
     {
         
-        size_t index = 0;
         for (std::vector<Taxon>::iterator it = taxa.begin(); it != taxa.end(); ++it)
         {
+            const std::string &species_name = it->getSpeciesName();
+            size_t species_index = this->tau->getValue().getTipIndex( species_name );
+            size_t index = species_offsets[species_index] + used_indiv_per_species[species_index];
+            
             ContinuousTaxonData& taxon = this->value->getTaxonData( it->getName() );
             double &c = taxon.getCharacter(site_indices[site]);
-            obs[site][index++] = c;
+            obs[site][index] = c;
+            
+            ++used_indiv_per_species[species_index];
         }
     }
     
@@ -1019,6 +1033,11 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::swapParameterInternal(const DagNo
     else if (oldP == heterogeneous_theta)
     {
         heterogeneous_theta = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+    }
+    
+    if (oldP == within_species_variances)
+    {
+        within_species_variances = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     
     this->AbstractPhyloContinuousCharacterProcess::swapParameterInternal(oldP, newP);

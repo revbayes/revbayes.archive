@@ -182,7 +182,7 @@ double PhyloBrownianProcessMultiSampleREML::getNumberOfSamplesForSpecies(const s
 }
 
 
-double PhyloBrownianProcessMultiSampleREML::getWithingSpeciesVariance(const std::string &name)
+double PhyloBrownianProcessMultiSampleREML::getWithinSpeciesVariance(const std::string &name)
 {
     
     size_t index = this->tau->getValue().getTipIndex( name );
@@ -223,7 +223,7 @@ void PhyloBrownianProcessMultiSampleREML::recursiveComputeLnProbability( const T
         const std::string &name = this->tau->getValue().getNode( node_index ).getName();
         double num_samples = 0.0;
         
-        double var = getWithingSpeciesVariance(name);
+        double var = getWithinSpeciesVariance(name);
         
         double stdev = sqrt( var );
         
@@ -416,7 +416,7 @@ void PhyloBrownianProcessMultiSampleREML::redrawValue( void )
     {
         const std::string &species_name = tau->getValue().getNode(i).getName();
         const ContinuousTaxonData &species_data = taxon_data[i];
-        double species_sigma = sqrt( getWithingSpeciesVariance( species_name ) );
+        double species_sigma = sqrt( getWithinSpeciesVariance( species_name ) );
         
         for ( size_t j=0; j<taxa.size(); ++j )
         {
@@ -491,8 +491,8 @@ void PhyloBrownianProcessMultiSampleREML::resetValue( void )
                 double c = computeMeanForSpecies(name, site_indices[site]);
                 contrasts[0][(*it)->getIndex()][site] = c;
                 contrasts[1][(*it)->getIndex()][site] = c;
-                contrast_uncertainty[0][(*it)->getIndex()] = getWithingSpeciesVariance(name) / getNumberOfSamplesForSpecies(name);
-                contrast_uncertainty[1][(*it)->getIndex()] = getWithingSpeciesVariance(name) / getNumberOfSamplesForSpecies(name);
+                contrast_uncertainty[0][(*it)->getIndex()] = sqrt( getWithinSpeciesVariance(name) ) / getNumberOfSamplesForSpecies(name);
+                contrast_uncertainty[1][(*it)->getIndex()] = sqrt( getWithinSpeciesVariance(name) ) / getNumberOfSamplesForSpecies(name);
             }
         }
     }

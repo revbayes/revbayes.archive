@@ -59,7 +59,6 @@ namespace RevBayesCore {
         void                                                                computeExpectation(std::vector<double> &e);
         void                                                                computeExpectationRecursive(const TopologyNode &n, double me, std::vector<double> &e);
         double                                                              computeMeanForSpecies(const std::string &n, size_t i);
-        //        void                                                                computeLeafExpectation(std::vector<double> &e);
         void                                                                computeVarianceRecursive(const TopologyNode &n, std::vector<double> &v);
         void                                                                expandExpectation(std::vector<double> &ind_exp, const std::vector<double> &sp_exp);
         void                                                                expandCovariance(MatrixReal &ind_cov, const MatrixReal &sp_cov);
@@ -93,9 +92,7 @@ namespace RevBayesCore {
         std::vector<Taxon>                                                  taxa;
         std::vector<std::vector<double> >                                   obs;
         std::vector<double>*                                                means;
-        //        std::vector<double>*                                                stored_means;
         MatrixReal*                                                         phylogenetic_covariance_matrix;
-        //        MatrixReal*                                                         stored_phylogenetic_covariance_matrix;
         MatrixReal                                                          inverse_phylogenetic_covariance_matrix;
         bool                                                                changed_covariance;
         bool                                                                needs_covariance_recomputation;
