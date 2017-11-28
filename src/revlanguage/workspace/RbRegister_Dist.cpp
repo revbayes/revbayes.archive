@@ -113,6 +113,7 @@
 #include "Dist_PhyloMultivariateBrownianREML.h"
 #include "Dist_PhyloOrnsteinUhlenbeck.h"
 #include "Dist_PhyloOrnsteinUhlenbeckMVN.h"
+#include "Dist_PhyloOrnsteinUhlenbeckREML.h"
 #include "Dist_PhyloWhiteNoise.h"
 
 /* Tree priors (in folder "distributions/phylogenetics/tree") */
@@ -244,6 +245,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloMultivariateBrownianREML()         );
         AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()                );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()             );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckREML()            );
         
         // multivariate brownian motion
         AddDistribution< ModelVector< ModelVector<Real> > >( new Dist_PhyloMvtBrownian() );

@@ -86,7 +86,8 @@ double RbStatistics::Normal::pdf(double mu, double sigma, double x, double min, 
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Normal::lnPdf(double x) {
+double RbStatistics::Normal::lnPdf(double x)
+{
     
 	return - RbConstants::LN_SQRT_2PI - 0.5 * x * x;
 }
@@ -103,7 +104,8 @@ double RbStatistics::Normal::lnPdf(double x) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Normal::lnPdf(double mu, double sigma, double x) {
+double RbStatistics::Normal::lnPdf(double mu, double sigma, double x)
+{
     
 	return - RbConstants::LN_SQRT_2PI - std::log(sigma) - 0.5 * (x - mu) * (x - mu) / (sigma * sigma);
 }
