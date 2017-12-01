@@ -315,15 +315,21 @@ void PhyloOrnsteinUhlenbeckREML::recursiveComputeLnProbability( const TopologyNo
 //                lnl_node -= ( (contrast-mu_node[i])*(contrast-mu_node[i]) ) / (2.0*var_node);
 //                lnl_node -= ( mu_node[i]*mu_node[i] ) / (2.0*var_node);
                 
-                // sum up the probabilities of the contrasts
-                p_node[i] = lnl_node + p_left[i] + p_right[i];
-                
                 if ( node.isRoot() == true )
                 {
                     double root_state = computeRootState();
-//                    p_node[i] -= ( log(z_node) + RbConstants::LN_SQRT_2PI + log( sqrt( var_node ) ) );
-                    p_node[i] += RbStatistics::Normal::lnPdf( root_state, sqrt((var_left*var_right) / (var_left+var_right)), mu_node[i]);
+//                    lnl_node -= ( log(z_node) + RbConstants::LN_SQRT_2PI + log( sqrt( var_node ) ) );
+//                    lnl_node += RbStatistics::Normal::lnPdf( root_state, sqrt((var_left*var_right) / (var_left+var_right)), mu_node[i]);
+                    double diff = root_state - mu_node[i];
+                    double v = (var_left*var_right) / (var_left+var_right);
+                    double sd = sqrt(v);
+                    diff /= sd;
+                    lnl_node += RbStatistics::Normal::lnPdf( 0.0, 1.0, diff);
+                    lnl_node -= log(sd);
                 }
+                
+                // sum up the probabilities of the contrasts
+                p_node[i] = lnl_node + p_left[i] + p_right[i];
                 
             } // end for-loop over all sites
             
