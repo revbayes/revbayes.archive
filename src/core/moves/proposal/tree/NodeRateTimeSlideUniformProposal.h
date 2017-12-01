@@ -1,5 +1,5 @@
-#ifndef NodeRateTimeSlideProposal_H
-#define NodeRateTimeSlideProposal_H
+#ifndef NodeRateTimeSlideUniformProposal_H
+#define NodeRateTimeSlideUniformProposal_H
 
 #include <string>
 
@@ -22,15 +22,15 @@ namespace RevBayesCore {
      * @since 2012-07-12, version 1.0
      *
      */
-    class NodeRateTimeSlideProposal : public Proposal {
+    class NodeRateTimeSlideUniformProposal : public Proposal {
         
     public:
-        NodeRateTimeSlideProposal( StochasticNode<Tree> *n, StochasticNode< RbVector<double> > *r);         //!<  constructor
-        NodeRateTimeSlideProposal( StochasticNode<Tree> *n, std::vector<StochasticNode<double>* > r);       //!<  constructor
+        NodeRateTimeSlideUniformProposal( StochasticNode<Tree> *n, StochasticNode< RbVector<double> > *r);         //!<  constructor
+        NodeRateTimeSlideUniformProposal( StochasticNode<Tree> *n, std::vector<StochasticNode<double>* > r);       //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
-        NodeRateTimeSlideProposal*              clone(void) const;                                             //!< Clone object
+        NodeRateTimeSlideUniformProposal*              clone(void) const;                                             //!< Clone object
         double                                  doProposal(void);                                           //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                      //!< Prepare the proposal

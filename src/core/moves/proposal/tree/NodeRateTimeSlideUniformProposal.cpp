@@ -1,5 +1,5 @@
 #include "DistributionUniform.h"
-#include "NodeRateTimeSlideProposal.h"
+#include "NodeRateTimeSlideUniformProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -16,7 +16,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-NodeRateTimeSlideProposal::NodeRateTimeSlideProposal( StochasticNode<Tree> *n, StochasticNode< RbVector<double> > *r ) : Proposal(),
+NodeRateTimeSlideUniformProposal::NodeRateTimeSlideUniformProposal( StochasticNode<Tree> *n, StochasticNode< RbVector<double> > *r ) : Proposal(),
     rates_node( r ),
     variable( n )
 {
@@ -31,7 +31,7 @@ NodeRateTimeSlideProposal::NodeRateTimeSlideProposal( StochasticNode<Tree> *n, S
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-NodeRateTimeSlideProposal::NodeRateTimeSlideProposal( StochasticNode<Tree> *n, std::vector<StochasticNode<double>* > r ) : Proposal(),
+NodeRateTimeSlideUniformProposal::NodeRateTimeSlideUniformProposal( StochasticNode<Tree> *n, std::vector<StochasticNode<double>* > r ) : Proposal(),
     rates_node( NULL ),
     rates_vector( r ),
     variable( n )
@@ -52,7 +52,7 @@ NodeRateTimeSlideProposal::NodeRateTimeSlideProposal( StochasticNode<Tree> *n, s
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void NodeRateTimeSlideProposal::cleanProposal( void )
+void NodeRateTimeSlideUniformProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -63,10 +63,10 @@ void NodeRateTimeSlideProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-NodeRateTimeSlideProposal* NodeRateTimeSlideProposal::clone( void ) const
+NodeRateTimeSlideUniformProposal* NodeRateTimeSlideUniformProposal::clone( void ) const
 {
     
-    return new NodeRateTimeSlideProposal( *this );
+    return new NodeRateTimeSlideUniformProposal( *this );
 }
 
 
@@ -75,9 +75,9 @@ NodeRateTimeSlideProposal* NodeRateTimeSlideProposal::clone( void ) const
  *
  * \return The Proposals' name.
  */
-const std::string& NodeRateTimeSlideProposal::getProposalName( void ) const
+const std::string& NodeRateTimeSlideUniformProposal::getProposalName( void ) const
 {
-    static std::string name = "NodeRateTimeSlide";
+    static std::string name = "NodeRateTimeSlideUniform";
     
     return name;
 }
@@ -92,7 +92,7 @@ const std::string& NodeRateTimeSlideProposal::getProposalName( void ) const
  *
  * \return The hastings ratio.
  */
-double NodeRateTimeSlideProposal::doProposal( void )
+double NodeRateTimeSlideUniformProposal::doProposal( void )
 {
     
     // Get random number generator
@@ -183,7 +183,7 @@ double NodeRateTimeSlideProposal::doProposal( void )
 /**
  *
  */
-void NodeRateTimeSlideProposal::prepareProposal( void )
+void NodeRateTimeSlideUniformProposal::prepareProposal( void )
 {
     
 }
@@ -197,7 +197,7 @@ void NodeRateTimeSlideProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NodeRateTimeSlideProposal::printParameterSummary(std::ostream &o) const
+void NodeRateTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
 {
     
 }
@@ -210,7 +210,7 @@ void NodeRateTimeSlideProposal::printParameterSummary(std::ostream &o) const
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void NodeRateTimeSlideProposal::undoProposal( void )
+void NodeRateTimeSlideUniformProposal::undoProposal( void )
 {
     
     // undo the proposal
@@ -236,7 +236,7 @@ void NodeRateTimeSlideProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void NodeRateTimeSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void NodeRateTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     if( oldN == variable )
     {
@@ -267,7 +267,7 @@ void NodeRateTimeSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void NodeRateTimeSlideProposal::tune( double rate )
+void NodeRateTimeSlideUniformProposal::tune( double rate )
 {
     
 }
