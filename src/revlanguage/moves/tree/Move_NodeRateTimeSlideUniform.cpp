@@ -1,9 +1,9 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
-#include "Move_NodeRateTimeSlide.h"
+#include "Move_NodeRateTimeSlideUniform.h"
 #include "ModelVector.h"
-#include "NodeRateTimeSlideProposal.h"
+#include "NodeRateTimeSlideUniformProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -14,7 +14,7 @@
 
 using namespace RevLanguage;
 
-Move_NodeRateTimeSlide::Move_NodeRateTimeSlide() : Move()
+Move_NodeRateTimeSlideUniform::Move_NodeRateTimeSlideUniform() : Move()
 {
     
 }
@@ -26,14 +26,14 @@ Move_NodeRateTimeSlide::Move_NodeRateTimeSlide() : Move()
  *
  * \return A new copy of the process.
  */
-Move_NodeRateTimeSlide* Move_NodeRateTimeSlide::clone(void) const
+Move_NodeRateTimeSlideUniform* Move_NodeRateTimeSlideUniform::clone(void) const
 {
     
-	return new Move_NodeRateTimeSlide(*this);
+	return new Move_NodeRateTimeSlideUniform(*this);
 }
 
 
-void Move_NodeRateTimeSlide::constructInternalObject( void )
+void Move_NodeRateTimeSlideUniform::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -51,7 +51,7 @@ void Move_NodeRateTimeSlide::constructInternalObject( void )
     {
         RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> >* stoch = dynamic_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> >* >( r );
 
-        p = new RevBayesCore::NodeRateTimeSlideProposal(t, stoch);
+        p = new RevBayesCore::NodeRateTimeSlideUniformProposal(t, stoch);
     }
     else
     {
@@ -71,7 +71,7 @@ void Move_NodeRateTimeSlide::constructInternalObject( void )
             }
         }
 
-        p = new RevBayesCore::NodeRateTimeSlideProposal(t, n);
+        p = new RevBayesCore::NodeRateTimeSlideUniformProposal(t, n);
     }
 
     value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
@@ -79,16 +79,16 @@ void Move_NodeRateTimeSlide::constructInternalObject( void )
 
 
 /** Get Rev type of object */
-const std::string& Move_NodeRateTimeSlide::getClassType(void)
+const std::string& Move_NodeRateTimeSlideUniform::getClassType(void)
 {
     
-    static std::string rev_type = "Move_NodeRateTimeSlide";
+    static std::string rev_type = "Move_NodeRateTimeSlideUniform";
     
 	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_NodeRateTimeSlide::getClassTypeSpec(void)
+const TypeSpec& Move_NodeRateTimeSlideUniform::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -102,17 +102,17 @@ const TypeSpec& Move_NodeRateTimeSlide::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_NodeRateTimeSlide::getMoveName( void ) const
+std::string Move_NodeRateTimeSlideUniform::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "NodeRateTimeSlide";
+    std::string c_name = "NodeRateTimeSlideUniform";
     
     return c_name;
 }
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_NodeRateTimeSlide::getParameterRules(void) const
+const MemberRules& Move_NodeRateTimeSlideUniform::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -135,7 +135,7 @@ const MemberRules& Move_NodeRateTimeSlide::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_NodeRateTimeSlide::getTypeSpec( void ) const
+const TypeSpec& Move_NodeRateTimeSlideUniform::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -146,10 +146,10 @@ const TypeSpec& Move_NodeRateTimeSlide::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_NodeRateTimeSlide::printValue(std::ostream &o) const
+void Move_NodeRateTimeSlideUniform::printValue(std::ostream &o) const
 {
     
-    o << "Move_NodeRateTimeSlide(";
+    o << "Move_NodeRateTimeSlideUniform(";
     if (tree != NULL)
     {
         o << tree->getName();
@@ -163,7 +163,7 @@ void Move_NodeRateTimeSlide::printValue(std::ostream &o) const
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_NodeRateTimeSlide::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_NodeRateTimeSlideUniform::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )
