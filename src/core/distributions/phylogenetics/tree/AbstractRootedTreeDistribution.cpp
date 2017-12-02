@@ -115,11 +115,7 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
         {
             if( the_node.isTip() )
             {
-                if( the_node.getAge() < the_node.getTaxon().getAgeRange().getMin() || the_node.getAge() > the_node.getTaxon().getAgeRange().getMax() )
-                {
-                    return RbConstants::Double::neginf;
-                }
-                else if ( the_node.isSampledAncestor() == true )
+                if ( the_node.isSampledAncestor() == true )
                 {
                     if( the_node.getAge() - the_node.getParent().getAge() != 0 )
                     {
