@@ -1702,7 +1702,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     // simulate the root sequence
     std::vector<std::vector<double> > freqs;
     this->getRootFrequencies(freqs);
-    const std::vector< double > &stationary_freqs = this->getRootFrequencies();
+    // const std::vector< double > &stationary_freqs = this->getRootFrequencies();
+    this->getRootFrequencies();
     DiscreteTaxonData< charType > &root = taxa[ this->tau->getValue().getRoot().getIndex() ];
     for ( size_t i = 0; i < this->num_sites; ++i )
     {

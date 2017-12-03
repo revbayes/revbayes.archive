@@ -71,7 +71,7 @@ void Move_SynchronizedVectorFixedSingleElementSlide::constructInternalObject( vo
     }
     else
     {
-        int index = static_cast<const Natural &>( which_element->getRevObject() ).getValue();
+        int index = (int)static_cast<const Natural &>( which_element->getRevObject() ).getValue();
         e.push_back( index );
     }
     

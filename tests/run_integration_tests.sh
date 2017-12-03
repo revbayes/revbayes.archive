@@ -10,7 +10,7 @@ printf "\n\n#### Checking output from test scripts... \n"
 for f in $(ls output); do
     res=$(diff <(tail -n +3 output/$f) <(tail -n +3 output_expected/$f) | wc -l)
     if [ $res -gt 0 ]; then
-        printf "#### Warning! Test failed: $f\n"
+        printf ">>>> Warning! Test failed: $f\n"
         (( failed++ ))
     else
         printf "#### Test passed: $f\n"

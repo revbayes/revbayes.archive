@@ -423,7 +423,7 @@ template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousDiscreteCharacterData<charType> &obsd, std::string type)
 {
     
-    size_t sequenceLength = getNumberOfCharacters();
+    size_t sequence_length = getNumberOfCharacters();
     
     // check if both have the same number of taxa
     if ( taxa.size() != obsd.getNumberOfTaxa() && type != "union" && type != "intersection")
@@ -431,7 +431,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         throw RbException("Cannot concatenate two character data objects with different number of taxa!");
     }
     
-    std::vector<string> toDelete;
+    std::vector<string> to_delete;
     //    std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
     
     for (size_t i=0; i<obsd.getNumberOfTaxa(); ++i)
@@ -455,21 +455,22 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         }
     }
     
-    for (size_t i=0; i<taxa.size(); i++ )
+    for (size_t i=0; i<taxa.size(); ++i )
     {
         const std::string &n = taxa[i].getName();
         DiscreteTaxonData<charType>& taxon = getTaxonData( n );
         
         try
         {
-            size_t idx = obsd.getIndexOfTaxon( n );
+            //size_t idx = obsd.getIndexOfTaxon( n );
+            obsd.getIndexOfTaxon( n );
             taxon.concatenate( obsd.getTaxonData( n ) );
         }
         catch(RbException &e)
         {
             if (type == "intersection")
             {
-                toDelete.push_back(n);
+                to_delete.push_back(n);
             }
             else if (type == "union")
             {
@@ -485,15 +486,16 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         }
 
     }
-    for (size_t i=0; i<toDelete.size(); i++)
+    
+    for (size_t i=0; i<to_delete.size(); i++)
     {
-        deleteTaxon(toDelete[i]);
+        deleteTaxon(to_delete[i]);
     }
     
     const std::set<size_t> &exclChars = obsd.getExcludedCharacters();
     for (std::set<size_t>::const_iterator it = exclChars.begin(); it != exclChars.end(); ++it)
     {
-        deletedCharacters.insert( *it + sequenceLength );
+        deletedCharacters.insert( *it + sequence_length );
     }
     
 }
@@ -822,7 +824,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
     }
 
     int max;
-    for (max = long(observed.size()) - 1; max >= 0; max--)
+    for (max = int(observed.size()) - 1; max >= 0; max--)
     {
         if (observed.isSet(max))
         {

@@ -72,8 +72,8 @@ void PowerPosteriorAnalysis::constructInternalObject( void )
     }
     const std::string&                              fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const double                                    alpha   = static_cast<const RealPos &>( alphaVal->getRevObject() ).getValue();
-    const int                                       sf      = static_cast<const Natural &>( sampFreq->getRevObject() ).getValue();
-    const int                                       k       = static_cast<const Natural &>( proc_per_lik->getRevObject() ).getValue();
+    const int                                       sf      = (int)static_cast<const Natural &>( sampFreq->getRevObject() ).getValue();
+    const int                                       k       = (int)static_cast<const Natural &>( proc_per_lik->getRevObject() ).getValue();
 
     RevBayesCore::Mcmc *m = new RevBayesCore::Mcmc(mdl, mvs, mntr);
     m->setScheduleType( "random" );
@@ -87,7 +87,7 @@ void PowerPosteriorAnalysis::constructInternalObject( void )
     }
     else
     {
-        int k = static_cast<const Natural &>( cats->getRevObject() ).getValue();
+        int k = (int)static_cast<const Natural &>( cats->getRevObject() ).getValue();
         for (int i = k; i >= 0; --i)
         {
             double b = RevBayesCore::RbStatistics::Beta::quantile(alpha,1.0,i / double(k));
@@ -110,7 +110,7 @@ RevPtr<RevVariable> PowerPosteriorAnalysis::executeMethod(std::string const &nam
         found = true;
 
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         value->runAll( size_t(gen) );
 
         return NULL;
@@ -120,8 +120,8 @@ RevPtr<RevVariable> PowerPosteriorAnalysis::executeMethod(std::string const &nam
         found = true;
 
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
+        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int tuningInterval = (int)static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         value->burnin( size_t(gen), size_t(tuningInterval) );
 
         return NULL;

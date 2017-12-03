@@ -157,9 +157,21 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t, bool
     tt->setRoot( root, resetIndex );
 
     // set the ages
-    for (size_t i = 0; i < nodes.size(); ++i)
+    for (size_t i=0; i<nodes.size(); ++i)
     {
         nodes[i]->setAge( ages[i] );
+    }
+    
+    // set the sampled ancestors
+    for (size_t i=0; i<nodes.size(); ++i)
+    {
+        
+        TopologyNode *the_node = nodes[i];
+        if ( the_node->isRoot() == false && the_node->isTip() == true )
+        {
+            the_node->setSampledAncestor( (the_node->getParent().getAge() - the_node->getAge()) == 0.0 );
+        }
+        
     }
 
     return tt;
@@ -212,6 +224,25 @@ RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(con
     delete matrix;
 
     return distMat;
+}
+
+
+size_t RevBayesCore::TreeUtilities::getMrcaIndex(const TopologyNode *left, const TopologyNode *right)
+{
+    
+    if ( left == right )  //same
+    {
+        return left->getIndex();
+    }
+    else if ( left->getAge() < right->getAge() )
+    {
+        return RevBayesCore::TreeUtilities::getMrcaIndex( &left->getParent(), right );
+    }
+    else
+    {
+        return RevBayesCore::TreeUtilities::getMrcaIndex( left, &right->getParent() );
+    }
+    
 }
 
 

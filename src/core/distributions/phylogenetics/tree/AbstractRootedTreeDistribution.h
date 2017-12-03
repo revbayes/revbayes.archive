@@ -43,6 +43,8 @@ namespace RevBayesCore {
     protected:
         // pure virtual helper functions
         virtual double                                      computeLnProbabilityDivergenceTimes(void) const = 0;                                                //!< Compute the log-transformed probability of the current value.
+
+        virtual bool                                        isLnProbabilityNonZero(void);
         virtual double                                      simulateDivergenceTime(double origin, double present) const = 0;                                    //!< Simulate a speciation event.
         virtual std::vector<double>                         simulateDivergenceTimes(size_t n, double origin, double present, double min) const = 0;             //!< Simulate n speciation events.
         
@@ -63,6 +65,7 @@ namespace RevBayesCore {
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.
         std::vector<double>                                 getAgesOfInternalNodesFromMostRecentSample(void) const;                                             //!< Get the ages of all internal nodes since the time of the most recent tip age.
         std::vector<double>                                 getAgesOfTipsFromMostRecentSample(void) const;                                                      //!< Get the ages of all tip nodes since the time of the most recent tip age.
+
         double                                              simulateNextAge(size_t n, double origin, double present, double min) const;
         void                                                simulateTree(void);
         

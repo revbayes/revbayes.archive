@@ -527,9 +527,9 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::lnProbTreeShape(void) co
     // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / n!
     // where n is the number of extant tips, m is the number of extinct tips
 
-    size_t num_taxa = value->getNumberOfTips();
-    size_t num_extinct = value->getNumberOfExtinctTips();
-    size_t num_sa = value->getNumberOfSampledAncestors();
+    int num_taxa = (int)value->getNumberOfTips();
+    int num_extinct = (int)value->getNumberOfExtinctTips();
+    int num_sa = (int)value->getNumberOfSampledAncestors();
 
     return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct);
 }

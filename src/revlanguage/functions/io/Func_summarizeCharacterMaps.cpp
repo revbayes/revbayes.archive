@@ -75,7 +75,7 @@ RevPtr<RevVariable> Func_summarizeCharacterMaps::execute( void )
     RevObject& b = args[4].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
-        burnin = static_cast<const Integer &>(b).getValue();
+        burnin = (int)static_cast<const Integer &>(b).getValue();
     }
     else
     {

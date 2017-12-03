@@ -133,7 +133,6 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         }
     }
 
-    std::cerr << std::endl;
 }
 
 

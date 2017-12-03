@@ -199,18 +199,18 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
     if ( statementType == For )
     {
         // Convert expression to for condition
-        SyntaxForLoop* forLoop = dynamic_cast<SyntaxForLoop*>( expression );
-        assert ( forLoop != NULL );
+        SyntaxForLoop* for_loop = dynamic_cast<SyntaxForLoop*>( expression );
+        assert ( for_loop != NULL );
 
         // Initialize for loop. We use current environment for the loop variables (as in R)
         Signals::getSignals().clearFlags();
-        forLoop->initializeLoop( env );
+        for_loop->initializeLoop( env );
 
         // Now loop over statements inside the for loop
-        while ( forLoop->isFinished() == false )
+        while ( for_loop->isFinished() == false )
         {
             // Get next loop state. This will update the value of the loop variable
-            forLoop->getNextLoopState();
+            for_loop->getNextLoopState();
 
             for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
             {
@@ -259,7 +259,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
         }
         
         // Finalize the loop (resets the forloop state for next execution round)
-        forLoop->finalizeLoop();
+        for_loop->finalizeLoop();
         
     }
     else if ( statementType == Break )
@@ -275,7 +275,8 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
     else if ( statementType == While )
     {
         // Loop over statements inside the while loop, first checking the expression
-        while ( isTrue( expression, env ) ) {
+        while ( isTrue( expression, env ) )
+        {
 
             for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
             {

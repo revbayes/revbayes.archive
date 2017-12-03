@@ -41,10 +41,10 @@ namespace RevLanguage {
         void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable>& var);       //!< Set member variable
         
     private:
-        RevPtr<const RevVariable>                           baseDistribution;
+        RevPtr<const RevVariable>                           base_distribution;
         RevPtr<const RevVariable>                           constraints;
         RevPtr<const RevVariable>                           backbone;
-        RevPtr<const RevVariable>                           invertConstraint;                                                                       //!< Boolean indicating whether topologies are rooted
+        RevPtr<const RevVariable>                           invert_constraint;                                                                      //!< Boolean indicating whether topologies are rooted
     };
 }
 

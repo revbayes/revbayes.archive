@@ -86,10 +86,10 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         }
 
         int currentGen = int(value->getCurrentGeneration());
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() + currentGen;
+        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() + currentGen;
         rules.push_back( RevBayesCore::MaxIterationStoppingRule(gen) );
         
-        int tuning_interval = static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
+        int tuning_interval = (int)static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
         bool prior = static_cast<const RlBoolean &>( args[3].getVariable()->getRevObject() ).getValue();
         if ( prior == true )
         {
@@ -111,8 +111,8 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         found = true;
         
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
+        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int tuningInterval = (int)static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         bool prior = static_cast<const RlBoolean &>( args[2].getVariable()->getRevObject() ).getValue();
 
         value->burnin( gen, tuningInterval, prior );

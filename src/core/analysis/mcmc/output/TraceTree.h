@@ -54,7 +54,8 @@ namespace RevBayesCore {
             bool mean_node_ages;
             double node_ages_HPD;
             bool sampled_ancestor_probs;
-
+            bool force_positive_branch_lengths;
+            
             AnnotationReport();
         };
 

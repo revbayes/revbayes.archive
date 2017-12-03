@@ -339,6 +339,11 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
     
     std::vector<std::string> fossil_comments;
 
+    // ensure we have an updated copy of branch_length variables
+    if (!isRoot()) {
+        recomputeBranchLength();
+    }
+
     // test whether this is a internal or external node
     if ( tip_node == true )
     {
@@ -1607,14 +1612,14 @@ void TopologyNode::setAge(double a, bool propagate)
 }
 
 
-void TopologyNode::setBranchLength(double b)
+void TopologyNode::setBranchLength(double b, bool flag_dirty)
 {
     
     branch_length = b;
     
     
     // fire tree change event
-    if ( tree != NULL )
+    if ( flag_dirty == true && tree != NULL )
     {
         tree->getTreeChangeEventHandler().fire( *this, RevBayesCore::TreeChangeEventMessage::BRANCH_LENGTH );
     }

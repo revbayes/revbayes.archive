@@ -28,6 +28,7 @@ namespace RevBayesCore {
         TopologyConstrainedTreeDistribution(const TopologyConstrainedTreeDistribution &d);
         
         virtual ~TopologyConstrainedTreeDistribution(void);
+        
         // pure virtual member functions
         virtual TopologyConstrainedTreeDistribution*        clone(void) const;                                                                                  //!< Create an independent clone
         

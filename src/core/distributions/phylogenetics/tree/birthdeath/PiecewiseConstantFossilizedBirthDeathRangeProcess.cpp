@@ -541,7 +541,7 @@ long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t i
     // remove the old parameter first
     if ( fossil_counts != NULL )
     {
-        return fossil_counts->getValue();
+        return (int)fossil_counts->getValue();
     }
     else if( interval_fossil_counts != NULL)
     {
@@ -568,7 +568,7 @@ long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t i
         {
             throw(RbException("Fossil count index out of bounds"));
         }
-        return ascending ? species_interval_fossil_counts->getValue()[species][num - 1 - interval] : species_interval_fossil_counts->getValue()[species][interval];
+        return ascending ? (int)species_interval_fossil_counts->getValue()[species][num - 1 - interval] : (int)species_interval_fossil_counts->getValue()[species][interval];
     }
 
     throw(RbException("Fossil counts have been marginalized"));
@@ -889,7 +889,7 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::updateIntervals( )
 {
     std::vector<bool> youngest(taxa.size(), true);
 
-    for (int i = num_intervals - 1; i >= 0; i--)
+    for (int i = (int)num_intervals - 1; i >= 0; i--)
     {
         double b = getSpeciationRate(i);
         double d = getExtinctionRate(i);

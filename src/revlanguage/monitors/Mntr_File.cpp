@@ -42,7 +42,7 @@ void Mntr_File::constructInternalObject( void )
     // now allocate a new sliding move
     const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
-    int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
+    int g = (int)static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     
     // sort, remove duplicates, the create monitor vector
     vars.erase( unique( vars.begin(), vars.end() ), vars.end() );

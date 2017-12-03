@@ -109,9 +109,12 @@
 #include "Dist_PhyloBrownianREML.h"
 #include "Dist_PhyloBrownianMultiSampleREML.h"
 #include "Dist_PhyloMvtBrownian.h"
+#include "Dist_PhyloMultiSampleOrnsteinUhlenbeck.h"
 #include "Dist_PhyloMultivariateBrownianREML.h"
 #include "Dist_PhyloOrnsteinUhlenbeck.h"
 #include "Dist_PhyloOrnsteinUhlenbeckMVN.h"
+#include "Dist_PhyloOrnsteinUhlenbeckREML.h"
+#include "Dist_PhyloOrnsteinUhlenbeckThreePoint.h"
 #include "Dist_PhyloWhiteNoise.h"
 
 /* Tree priors (in folder "distributions/phylogenetics/tree") */
@@ -142,6 +145,7 @@
 #include "Dist_SSBDP.h"
 #include "Dist_uniformTimeTree.h"
 #include "Dist_uniformTopology.h"
+#include "Dist_uniformTopologyBranchLength.h"
 
 /* Distributions on simple variables (in folder "distributions/math") */
 #include "Dist_bernoulli.h"
@@ -171,11 +175,14 @@
 #include "Dist_lnorm.h"
 #include "Dist_lnormOffset.h"
 #include "Dist_lnormOffsetPositive.h"
+#include "Dist_logExponential.h"
 #include "Dist_logUniform.h"
 #include "Dist_multinomial.h"
 #include "Dist_multivariateNorm.h"
 #include "Dist_nbinomial.h"
 #include "Dist_norm.h"
+#include "Dist_normTruncated.h"
+#include "Dist_normTruncatedPositive.h"
 #include "Dist_poisson.h"
 #include "Dist_scaledDirichlet.h"
 #include "Dist_softBoundUniformNormal.h"
@@ -232,13 +239,16 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         /* trait evolution (in folder "distributions/phylogenetics/branchrate") */
 
         // brownian motion
-        AddDistribution< ModelVector<Real>          >( new Dist_PhyloBrownian()                 );
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianREML()             );
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMVN()              );
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMultiSampleREML()  );
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloMultivariateBrownianREML() );
-        AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()        );
-        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()     );
+        AddDistribution< ModelVector<Real>          >( new Dist_PhyloBrownian()                         );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianREML()                     );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMVN()                      );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMultiSampleREML()          );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloMultiSampleOrnsteinUhlenbeck()     );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloMultivariateBrownianREML()         );
+        AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()                );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()             );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckREML()            );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckThreePoint()      );
         
         // multivariate brownian motion
         AddDistribution< ModelVector< ModelVector<Real> > >( new Dist_PhyloMvtBrownian() );
@@ -265,7 +275,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_CharacterDependentCladoBirthDeathProcess() );
         AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_conditionedBirthDeathShiftProcessContinuous() );
-        //AddDistribution< TimeTree                   >( new Dist_outgroupBirthDeath() );
+        AddDistribution< TimeTree                   >( new Dist_outgroupBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_sampledSpeciationBirthDeathProcess() );
         
         
@@ -313,6 +323,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // uniform topology distribution
         AddDistribution< BranchLengthTree           >( new Dist_uniformTopology() );
+        
+        // uniform topology with branch lengths distribution
+        AddDistribution< BranchLengthTree           >( new Dist_uniformTopologyBranchLength() );
 
 		// empirical tree distributions
 		AddDistribution< Tree                       >( new Dist_empiricalTree() );
@@ -397,6 +410,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddContinuousDistribution< Real             >( new Dist_lnormOffset() );
         AddContinuousDistribution< RealPos          >( new Dist_lnormOffsetPositive() );
         
+        // LogExponential distribution
+        AddContinuousDistribution< Real             >( new Dist_logExponential() );
+        
         // LogUniform distribution
         AddContinuousDistribution< RealPos          >( new Dist_logUniform() );
 
@@ -408,6 +424,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // normal distribution
         AddContinuousDistribution< Real             >( new Dist_norm() );
+        AddContinuousDistribution< Real             >( new Dist_normTruncated() );
+        AddContinuousDistribution< RealPos          >( new Dist_normTruncatedPositive() );
 
         // Uniform distribution with normal distributed bounds
         AddContinuousDistribution< Real             >( new Dist_SoftBoundUniformNormal() );
