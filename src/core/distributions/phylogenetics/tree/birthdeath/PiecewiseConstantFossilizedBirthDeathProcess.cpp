@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbMathCombinatorialFunctions.h"
 #include "RbMathLogic.h"
 #include "StochasticNode.h"
 #include "TypedDistribution.h"
@@ -203,6 +204,8 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     oldest_intervals = std::vector<size_t>( taxa.size(), num_intervals - 1 );
     youngest_intervals = std::vector<size_t>( taxa.size(), num_intervals - 1 );
 
+    updateIntervals();
+
     redrawValue();
 }
 
@@ -253,8 +256,8 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 
         double b = getBirthTime( node );
         double d = node.getAge();
-        double o = taxa[i].getAgeRange().getMax();
-        double y = taxa[i].getAgeRange().getMin();
+        double o = node.getTaxon().getAgeRange().getMax();
+        double y = node.getTaxon().getAgeRange().getMin();
 
         size_t bi = l(b);
         size_t di = l(d);
@@ -472,14 +475,14 @@ double PiecewiseConstantFossilizedBirthDeathProcess::getBirthTime( const Topolog
     {
         const TopologyNode& parent = node.getParent();
 
-        // define left child as new species
+        // define left child as ancestral species
         if( node.getIndex() == parent.getChild(0).getIndex() )
         {
-            return node.getAge();
+            return getBirthTime( parent );
         }
         else
         {
-            return getBirthTime( parent );
+            return parent.getAge();
         }
     }
 }
@@ -722,6 +725,16 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::l(double t) const
 }
 
 
+double PiecewiseConstantFossilizedBirthDeathProcess::lnProbTreeShape(void) const
+{
+    // the fossilized birth death divergence times density is derived for an unlabeled oriented tree
+    // so we convert to a labeled oriented tree probability by multiplying by 1 / n!
+    // where n is the number of extant tips
+
+    return - RbMath::lnFactorial( value->getNumberOfExtantTips() );
+}
+
+
 /**
  * p_i(t)
  */
@@ -820,10 +833,29 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
     std::vector<double> first_occurrences;
 
     double current_age = RbConstants::Double::inf;
+    double minimum_age = 0.0;
 
     for (size_t i = 0; i < n.size(); ++i)
     {
-        first_occurrences.push_back( getMaxTaxonAge( *n[i] ) );
+        // make sure the tip age is younger than the last occurrence
+        if( n[i]->isTip() )
+        {
+            double min = n[i]->getTaxon().getAgeRange().getMin();
+
+            if( min == n[i]->getAge() )
+            {
+                n[i]->setAge( present + rng->uniform01() * ( min - present ) );
+            }
+        }
+
+        double first_occurrence = getMaxTaxonAge( *n[i] );
+
+        if( first_occurrence > minimum_age )
+        {
+            minimum_age = first_occurrence;
+        }
+
+        first_occurrences.push_back( first_occurrence );
 
         if ( current_age > n[i]->getAge() )
         {
@@ -832,13 +864,22 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
 
     }
 
+    // reset the age
+    double max_age = getOriginAge();
+
+    if ( age <= minimum_age )
+    {
+        age = rng->uniform01() * ( max_age - minimum_age ) + minimum_age;
+    }
+
+
     std::vector<double> ages;
     while ( n.size() > 2 && current_age < age )
     {
 
         // get all the nodes with first occurrences younger than the current age
         std::vector<TopologyNode*> active_nodes;
-        std::vector<TopologyNode*> active_left_nodes;
+        std::vector<TopologyNode*> active_right_nodes;
         for (size_t i = 0; i < n.size(); ++i)
         {
 
@@ -846,9 +887,9 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
             {
                 active_nodes.push_back( n[i] );
             }
-            if( current_age > first_occurrences[i] )
+            if( current_age >= first_occurrences[i] )
             {
-                active_left_nodes.push_back( n[i] );
+                active_right_nodes.push_back( n[i] );
             }
 
         }
@@ -861,11 +902,15 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
             {
                 next_node_age = n[i]->getAge();
             }
+            if ( current_age < first_occurrences[i] && first_occurrences[i] < next_node_age )
+            {
+                next_node_age = first_occurrences[i];
+            }
 
         }
 
         // only simulate if there are at least two valid/active nodes and one active left node
-        if ( active_nodes.size() <= 2 || active_left_nodes.empty() )
+        if ( active_nodes.size() <= 2 || active_right_nodes.empty() )
         {
             current_age = next_node_age;
         }
@@ -877,32 +922,35 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
             if ( next_sim_age < next_node_age )
             {
                 // randomly pick two nodes
-                size_t index_left = static_cast<size_t>( floor(rng->uniform01()*active_left_nodes.size()) );
-                TopologyNode* left_child = active_left_nodes[index_left];
+                size_t index_left = static_cast<size_t>( floor(rng->uniform01()*active_nodes.size()) );
+                TopologyNode* left_child = active_nodes[index_left];
 
-                size_t index_right = static_cast<size_t>( floor(rng->uniform01()*active_nodes.size()) );
-                while( index_right == index_left )
+                size_t index_right = static_cast<size_t>( floor(rng->uniform01()*active_right_nodes.size()) );
+                TopologyNode* right_child = active_right_nodes[index_right];
+
+                while( left_child == right_child )
                 {
-                    index_right = static_cast<size_t>( floor(rng->uniform01()*active_nodes.size()) );
+                    index_left = static_cast<size_t>( floor(rng->uniform01()*active_nodes.size()) );
+                    left_child = active_nodes[index_left];
+
+                    index_right = static_cast<size_t>( floor(rng->uniform01()*active_right_nodes.size()) );
+                    right_child = active_right_nodes[index_right];
                 }
 
-                TopologyNode* right_child = active_nodes[index_right];
-
                 // erase the nodes also from the origin nodes vector
-                std::vector<TopologyNode *>::iterator child_it_A = std::find( n.begin(), n.end(), left_child );
-                std::vector<TopologyNode *>::iterator child_it_B = std::find( n.begin(), n.end(), right_child );
+                std::vector<TopologyNode *>::iterator child_it_left = std::find( n.begin(), n.end(), left_child );
+                std::vector<double>::iterator fa_it_left = first_occurrences.begin() + std::distance( n.begin(), child_it_left );
+                double fa_left = *fa_it_left;
 
-                std::vector<double>::iterator fa_it_A = first_occurrences.begin() + std::distance( n.begin(), child_it_A );
-                std::vector<double>::iterator fa_it_B = first_occurrences.begin() + std::distance( n.begin(), child_it_B );
+                first_occurrences.erase(fa_it_left);
+                n.erase(child_it_left);
 
-                double fa_A = *fa_it_A;
-                double fa_B = *fa_it_B;
+                std::vector<TopologyNode *>::iterator child_it_right = std::find( n.begin(), n.end(), right_child );
+                std::vector<double>::iterator fa_it_right = first_occurrences.begin() + std::distance( n.begin(), child_it_right );
+                double fa_right = *fa_it_right;
 
-                first_occurrences.erase(fa_it_A);
-                first_occurrences.erase(fa_it_B);
-
-                n.erase(child_it_A);
-                n.erase(child_it_B);
+                first_occurrences.erase(fa_it_right);
+                n.erase(child_it_right);
 
 
                 // create a parent for the two
@@ -915,7 +963,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
 
                 // insert the parent to our list
                 n.push_back( parent );
-                first_occurrences.push_back( std::max(fa_A, fa_B) );
+                first_occurrences.push_back( std::max(fa_left, fa_right) );
 
                 current_age = next_sim_age;
                 ages.push_back( next_sim_age );
@@ -940,20 +988,23 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
         TopologyNode* right_child = n[1];
 
         // make sure the speciation event is older than the new species first occurrence
-        if( first_occurrences[0] > age )
+        if( first_occurrences[1] > age )
         {
-            if( first_occurrences[1] > age )
+            if( first_occurrences[0] > age )
             {
-                throw RbException("Unexpected clade age (" + StringUtilities::toString(age) + ") in tree simulation");
+                throw(RbException("Cannot simulate clade of age " + StringUtilities::toString(age) + ", minimum age is " + StringUtilities::toString(minimum_age) ));
             }
             else
             {
                 std::swap( left_child, right_child );
             }
         }
-        else if( age > first_occurrences[1] && rng->uniform01() < 0.5 )
+        else if( age > first_occurrences[0] )
         {
-            std::swap( left_child, right_child );
+            if( rng->uniform01() < 0.5 )
+            {
+                std::swap( left_child, right_child );
+            }
         }
 
         // erase the nodes also from the origin nodes vector
