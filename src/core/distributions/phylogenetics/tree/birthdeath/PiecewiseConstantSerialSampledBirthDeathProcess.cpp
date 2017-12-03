@@ -3,8 +3,8 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "RbMathLogic.h"
 #include "RbMathCombinatorialFunctions.h"
+#include "RbMathLogic.h"
 #include "StochasticNode.h"
 
 #include <algorithm>
@@ -524,15 +524,14 @@ size_t PiecewiseConstantSerialSampledBirthDeathProcess::l(double t) const
 double PiecewiseConstantSerialSampledBirthDeathProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
-    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / (n!(m+k)!)
+    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / n!
     // where n is the number of extant tips, m is the number of extinct tips
-    // and k is the number of sampled ancestors
 
     size_t num_taxa = value->getNumberOfTips();
     size_t num_extinct = value->getNumberOfExtinctTips();
     size_t num_sa = value->getNumberOfSampledAncestors();
 
-    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct) - RbMath::lnFactorial(num_extinct);
+    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct);
 }
 
 

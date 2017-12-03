@@ -135,8 +135,8 @@ double ConstantRateCompleteBirthDeathProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
     // so we convert to the probability of a (ranked) non-oriented tree with labeled extant tips
-    // by multiplying by 2^{n-1} / (n-m)!
-    // where n is the number of tips and m is the number of extinct tips
+    // by multiplying by 2^{n-1} / n!
+    // where n is the number of tips
 
     size_t n = value->getNumberOfTips();
     size_t m = value->getNumberOfExtinctTips();
@@ -147,7 +147,7 @@ double ConstantRateCompleteBirthDeathProcess::lnProbTreeShape(void) const
         return RbConstants::Double::neginf;
     }
 
-    return (n - 1) * RbConstants::LN2 - RbMath::lnFactorial(n - m) - RbMath::lnFactorial(m);
+    return (n - 1) * RbConstants::LN2 - RbMath::lnFactorial(n - m);
 }
 
 
