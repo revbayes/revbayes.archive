@@ -740,7 +740,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
             clade_age = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
         }
         
-        tree_base_distribution->simulateClade(nodes_in_clade, clade_age, max_age);
+        tree_base_distribution->simulateClade(nodes_in_clade, clade_age, 0.0);
         nodes.push_back( nodes_in_clade[0] );
         
         std::vector<Taxon> v_taxa;

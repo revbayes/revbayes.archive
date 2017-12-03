@@ -275,6 +275,7 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
         }
     }
 
+    prepareProbComputation();
 
     simulateTree();
 }
@@ -876,36 +877,51 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::getTaxonSamplingProbabil
  */
 double PiecewiseConstantSerialSampledBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
-    // incorrect placeholder for constant FBDP
-    // previous simSpeciations did not generate trees with defined likelihoods
+    // incorrect placeholder for constant SSBDP
 
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    
+
+    size_t i = l(present);
+
     // get the parameters
-    double age = present - origin;
-    double b = getSpeciationRate(0);
-    double d = getExtinctionRate(0);
-    double r = getTaxonSamplingProbability(0);
+    double age = origin - present;
+    double b = lambda[i];
+    double d = mu[i];
+    double r = rho[i];
 
     
     // get a random draw
     double u = rng->uniform01();
     
     // compute the time for this draw
+    // see Hartmann et al. 2010 and Stadler 2011
     double t = 0.0;
     if ( b > d )
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        if( r > 0.0 )
+        {
+            t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
+        }
+        else
+        {
+            t = log( 1 - u * (exp(age*(d-b)) - 1) / exp(age*(d-b)) ) / (b-d);
+        }
     }
     else
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        if( r > 0.0 )
+        {
+            t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
+        }
+        else
+        {
+            t = log( 1 - u * (1 - exp(age*(b-d)))  ) / (b-d);
+        }
     }
-    
-    
-    return present - t;
+
+    return present + t;
 }
 
 

@@ -27,6 +27,8 @@ EpisodicBirthDeathProcess::EpisodicBirthDeathProcess(const TypedDagNode<double> 
     addParameter( mu_rates );
     addParameter( mu_times );
     
+    prepareProbComputation();
+
     simulateTree();
     
 }
@@ -400,14 +402,21 @@ double EpisodicBirthDeathProcess::rateIntegral(double start, double end) const
 
 double EpisodicBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
+    // incorrect placeholder for constant EBDP
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
+    size_t index = 0;
+    if ( rate_change_times.size() > 0 )
+    {
+        index = lower_index(present);
+    }
+
     // get the parameters
-    double age = present - origin;
-    double b = lambda_rates->getValue()[0];
-    double d = mu_rates->getValue()[0];
+    double age = origin - present;
+    double b = birth[index];
+    double d = death[index];
     double r = rho->getValue();
     
     
@@ -415,18 +424,18 @@ double EpisodicBirthDeathProcess::simulateDivergenceTime(double origin, double p
     double u = rng->uniform01();
     
     // compute the time for this draw
+    // see Hartmann et al. 2010 and Stadler 2011
     double t = 0.0;
     if ( b > d )
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     }
     else
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     }
     
-    
-    return present - t;
+    return present + t;
 }
 
 
