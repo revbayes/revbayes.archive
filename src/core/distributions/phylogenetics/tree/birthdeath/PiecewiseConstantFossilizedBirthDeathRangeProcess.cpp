@@ -252,6 +252,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
             return RbConstants::Double::neginf;
         }
         
+
         double b = (*this->value)[i][0];
         double d = (*this->value)[i][1];
         double o = taxa[i].getAgeRange().getMax();
@@ -261,6 +262,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         size_t di = l(d);
         size_t oi = presence_absence ? oldest_intervals[i] : l(o);
         size_t yi = presence_absence ? youngest_intervals[i] : l(y);
+
 
         // check constraints
         if( presence_absence )
@@ -281,34 +283,47 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         num_extant_unsampled += (d == 0.0 && y != 0.0); // n - m - l
 
 
-        double lambda = birth[bi];
-        double mu = death[di];
-
         // find the origin time
         if (b > maxb)
         {
             maxb = b;
-            maxl = lambda;
+            maxl = birth[bi];
         }
 
-        if (d > 0.0) lnProbTimes += log( mu );
 
-        lnProbTimes += log(lambda);
-        lnProbTimes += log(gamma_i[i] == 0 ? 1 : gamma_i[i]);
-        lnProbTimes += log(q(bi, b)) - log(q(di, d, true));
-        if( presence_absence == false )
-        {
-            lnProbTimes += log(q(oi, o, true)) - log(q(oi, o));
-        }
+        // include speciation density
+        lnProbTimes += log( birth[bi] );
 
+        // multiply by the number of possible birth locations
+        lnProbTimes += log( gamma_i[i] == 0 ? 1 : gamma_i[i] );
+
+        // multiply by q at the birth time
+        lnProbTimes += log( q(bi, b) );
+
+        // include intermediate q terms
         for (size_t j = bi; j < oi; j++)
         {
-            lnProbTimes += log(q_i[j+1]);
+            lnProbTimes += log( q_i[j+1] );
         }
+
+        // include factor for the first appearance
+        if( presence_absence == false )
+        {
+            lnProbTimes += log( q(oi, o, true) ) - log( q(oi, o) );
+        }
+
+        // include intermediate q_tilde terms
         for (size_t j = oi; j < di; j++)
         {
-            lnProbTimes += log(q_tilde_i[j+1]);
+            lnProbTimes += log( q_tilde_i[j+1] );
         }
+
+        // divide by q_tilde at the death time
+        lnProbTimes -= log( q( di, d, true) );
+
+        // include extinction density
+        if (d > 0.0) lnProbTimes += log( death[di] );
+
 
         // update the marginalized fossil count data
         if( marginalize_k )
