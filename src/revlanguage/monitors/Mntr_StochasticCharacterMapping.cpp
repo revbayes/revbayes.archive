@@ -51,12 +51,13 @@ Mntr_StochasticCharacterMapping* Mntr_StochasticCharacterMapping::clone(void) co
 void Mntr_StochasticCharacterMapping::constructInternalObject( void )
 {
     
-    const std::string& file_name      = static_cast<const RlString  &>( filename->getRevObject()       ).getValue();
-    bool               is             = static_cast<const RlBoolean &>( include_simmap->getRevObject() ).getValue();
+    const std::string& file_name      = static_cast<const RlString  &>( filename->getRevObject()           ).getValue();
+    bool               is             = static_cast<const RlBoolean &>( include_simmap->getRevObject()     ).getValue();
     bool               sd             = static_cast<const RlBoolean &>( use_simmap_default->getRevObject() ).getValue();
-    const std::string& sep            = static_cast<const RlString  &>( separator->getRevObject()      ).getValue();
-    int                print_gen      = (int)static_cast<const Natural   &>( printgen->getRevObject()       ).getValue();
-    bool               app            = static_cast<const RlBoolean &>( append->getRevObject()         ).getValue();
+    const std::string& sep            = static_cast<const RlString  &>( separator->getRevObject()          ).getValue();
+    int                print_gen      = (int)static_cast<const Natural   &>( printgen->getRevObject()      ).getValue();
+    bool               app            = static_cast<const RlBoolean &>( append->getRevObject()             ).getValue();
+    bool               wv             = static_cast<const RlBoolean &>( version->getRevObject()            ).getValue();
     
     
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn = NULL;
@@ -95,6 +96,7 @@ void Mntr_StochasticCharacterMapping::constructInternalObject( void )
         m = new RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>( cdbdp_sn, (unsigned long)print_gen, file_name, is, sd, sep );
     }
     m->setAppend( app );
+    m->setPrintVersion( wv );
     
     delete value;
     value = m;
@@ -157,6 +159,8 @@ const MemberRules& Mntr_StochasticCharacterMapping::getParameterRules(void) cons
         monitor_rules.push_back( new ArgumentRule("printgen"       , Natural::getClassTypeSpec()  , "How frequently (in number of iterations) should we save sampled character histories? 1 by default.",                              ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new Natural(1) ) );
         monitor_rules.push_back( new ArgumentRule("separator"      , RlString::getClassTypeSpec() , "The delimiter between variables. \t by default.",                              ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new RlString("\t") ) );
         monitor_rules.push_back( new ArgumentRule("append"         , RlBoolean::getClassTypeSpec(), "Should we append to an existing file? False by default.",                  ArgumentRule::BY_VALUE,     ArgumentRule::ANY, new RlBoolean(false) ) );
+        monitor_rules.push_back( new ArgumentRule("version"        , RlBoolean::getClassTypeSpec(), "Should we record the software version?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+
         rules_set = true;
     }
     
@@ -223,6 +227,10 @@ void Mntr_StochasticCharacterMapping::setConstParameter(const std::string& name,
     else if ( name == "use_simmap_default" )
     {
         use_simmap_default = var;
+    }
+    else if ( name == "version" )
+    {
+        version = var;
     }
     else
     {

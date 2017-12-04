@@ -34,6 +34,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   printgen;
         RevPtr<const RevVariable>                   separator;
         RevPtr<const RevVariable>                   append;
+        RevPtr<const RevVariable>                   version;
         
     };
     
