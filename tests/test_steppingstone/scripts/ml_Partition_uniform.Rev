@@ -111,7 +111,7 @@ monitors[++mni] = mnFile(psi, filename="output/PS_uniform.trees", printgen=10)
 monitors[++mni] = mnModel(filename="output/PS_uniform.log",printgen=10)
 
 # run the analysis
-pow_p = powerPosterior(mymodel, moves, monitors, "output/model_uniform.out", cats=10)
+pow_p = powerPosterior(mymodel, moves, monitors, "output/model_uniform.out", cats=10, sampleFreq=1)
 pow_p.burnin(generations=100,tuningInterval=200)
 pow_p.run(generations=10)
 
