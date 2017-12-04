@@ -58,6 +58,7 @@ namespace RevBayesCore {
         double                                          getMaxSpeciesDifference(size_t index) const;                                //!< Get the maximum difference between two observations
         double                                          getMeanDifference(size_t index) const;                                      //!< Get the mean of the differences between two observations
         double                                          getMeanSpeciesDifference(size_t index) const;                               //!< Get the mean of the differences between two observations
+        double                                          getMeanValue(size_t index) const;                                      //!< Get the mean of the differences between two observations
         double                                          getMinDifference(size_t index) const;                                       //!< Get the minimum difference between two observations
         double                                          getMinSpeciesDifference(size_t index) const;                                //!< Get the minimum difference between two observations
         size_t                                          getNumberOfCharacters(void) const;                                          //!< Number of characters
