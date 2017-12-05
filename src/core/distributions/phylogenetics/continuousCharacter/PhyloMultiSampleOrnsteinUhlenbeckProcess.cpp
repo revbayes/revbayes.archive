@@ -484,7 +484,7 @@ double PhyloMultiSampleOrnsteinUhlenbeckProcess::getNumberOfSamplesForSpecies(co
 }
 
 
-double PhyloMultiSampleOrnsteinUhlenbeckProcess::getWithingSpeciesVariance(const std::string &name)
+double PhyloMultiSampleOrnsteinUhlenbeckProcess::getWithinSpeciesVariance(const std::string &name)
 {
     
     size_t index = this->tau->getValue().getTipIndex( name );
@@ -516,7 +516,7 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcess::simulateTipSamples( const std::ve
     {
         const std::string &species_name = tau->getValue().getNode(i).getName();
         const ContinuousTaxonData &species_data = taxon_data[i];
-        double species_sigma = sqrt( getWithingSpeciesVariance( species_name ) );
+        double species_sigma = sqrt( getWithinSpeciesVariance( species_name ) );
         
         for ( size_t j=0; j<taxa.size(); ++j )
         {
