@@ -51,7 +51,7 @@ while [  $i -lt ${#tests[@]} ]; do
     for f in $(ls output_expected); do
         if [ ! -e output/$f ]; then
             errs+=("missing:  $f")
-        elif ! diff <(tail -n +3 output/$f) <(tail -n +3 output_expected/$f) > /dev/null; then
+        elif ! diff output/$f output_expected/$f > /dev/null; then
             errs+=("mismatch: $f")
         fi
     done

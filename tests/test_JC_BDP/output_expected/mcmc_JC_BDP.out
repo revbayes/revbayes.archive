@@ -1,5 +1,3 @@
-#RevBayes version (1.0.6)
-#Build from development (83adba) on Wed Sep 13 09:26:32 PDT 2017
 Iteration	diversification	psi	root	turnover
 0	1.344527	((Lemur_catta[&index=5]:0.926427,Alouatta_palliata[&index=4]:0.926427)[&index=6]:71.474918,(Pan_paniscus[&index=3]:2.277588,(Galago_senegalensis[&index=2]:1.248944,Tarsius_syrichta[&index=1]:1.248944)[&index=7]:1.028645)[&index=8]:70.123757)[&index=9]:0.000000;	72.40134	0.6744662
 1	1.344527	((Lemur_catta[&index=5]:0.926427,Alouatta_palliata[&index=4]:0.926427)[&index=6]:71.474918,(Pan_paniscus[&index=3]:47.392688,(Galago_senegalensis[&index=2]:25.988363,Tarsius_syrichta[&index=1]:25.988363)[&index=7]:21.404326)[&index=8]:25.008656)[&index=9]:0.000000;	72.40134	0.6744662
