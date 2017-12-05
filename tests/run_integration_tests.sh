@@ -4,13 +4,15 @@ tests=()
 status=()
 
 for t in test_*; do
+    testname=`echo $t | cut -d _ -f 2-`
+
     if [ -d $t ]; then
-        tests+=($t)
+        tests+=($testname)
     else
         continue
     fi
-    
-    printf "\n\n#### Running test: $t\n\n"
+
+    printf "\n\n#### Running test: $testname\n\n"
     cd $t
     
     rm -rf output data
@@ -46,7 +48,7 @@ failed=0
 i=0
 while [  $i -lt ${#tests[@]} ]; do
     t=${tests[$i]}
-    cd $t
+    cd test_$t
 
     # check if output matches expected output
     errs=()
@@ -58,11 +60,12 @@ while [  $i -lt ${#tests[@]} ]; do
         fi
     done
 
+    # check if a script exited with an error
     if [ "${status[$i]}" != 0 ]; then
         errs=("${status[$i]}")
     fi
 
-    # failure if the output doesn't match, or the script aborted
+    # failure if we have an error message
     if [ ${#errs[@]} -gt 0 ]; then
         ((failed++))
         printf ">>>> Test failed: $t\n"
