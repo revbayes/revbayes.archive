@@ -23,8 +23,10 @@ for t in test_*; do
         res="$?"
         if [ $res = 1 ]; then
             res="error: $f"
+            break
         elif [ $res = 139 ]; then
             res="segfault: $f"
+            break
         elif [ $res != 0 ]; then
             res="error $res: $f"
             break
