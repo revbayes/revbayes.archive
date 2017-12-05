@@ -179,6 +179,16 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
         
         return new RevVariable( new Real(mean) );
     }
+    else if ( name == "meanValue" )
+    {
+        found = true;
+        
+        // get the argument for the index
+        long index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        double mean = this->dag_node->getValue().getMeanValue( index );
+        
+        return new RevVariable( new Real(mean) );
+    }
     else if ( name == "minDifference" )
     {
         found = true;
@@ -288,10 +298,14 @@ void ContinuousCharacterData::initMethods( void )
     max_species_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "maxSpeciesDifference", Real::getClassTypeSpec(), max_species_diff_arg_rules ) );
 
+    ArgumentRules* mean_value_arg_rules = new ArgumentRules();
+    mean_value_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "meanValue", Real::getClassTypeSpec(), mean_value_arg_rules ) );
+
     ArgumentRules* mean_diff_arg_rules = new ArgumentRules();
     mean_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "meanDifference", Real::getClassTypeSpec(), mean_diff_arg_rules ) );
-
+    
     ArgumentRules* mean_species_diff_arg_rules = new ArgumentRules();
     mean_species_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "meanSpeciesDifference", Real::getClassTypeSpec(), mean_species_diff_arg_rules ) );

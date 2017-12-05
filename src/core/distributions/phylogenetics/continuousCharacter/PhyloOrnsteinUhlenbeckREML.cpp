@@ -254,7 +254,8 @@ void PhyloOrnsteinUhlenbeckREML::recursiveComputeLnProbability( const TopologyNo
                 double alpha_left = computeBranchAlpha(left_index);
                 if ( alpha_left > 1E-20 )
                 {
-                    v_left = (sigma_left*sigma_left) / (2.0*alpha_left) * (1.0 - exp(-2.0*alpha_left*bl_left) );
+//                    v_left = (sigma_left*sigma_left) / (2.0*alpha_left) * (1.0 - exp(-2.0*alpha_left*bl_left) );
+                    v_left = (sigma_left*sigma_left) / (2.0*alpha_left) * (exp(2.0*alpha_left*bl_left) - 1.0 );
                 }
                 else
                 {
@@ -268,7 +269,8 @@ void PhyloOrnsteinUhlenbeckREML::recursiveComputeLnProbability( const TopologyNo
             double v_right =0.0;
             if ( alpha_right > 1E-20 )
             {
-                v_right = (sigma_right*sigma_right) / (2.0*alpha_right) * (1.0 - exp(-2.0*alpha_right*bl_right) );
+//                v_right = (sigma_right*sigma_right) / (2.0*alpha_right) * (1.0 - exp(-2.0*alpha_right*bl_right) );
+                v_right = (sigma_right*sigma_right) / (2.0*alpha_right) * (exp(2.0*alpha_right*bl_right) - 1.0 );
             }
             else
             {
@@ -276,8 +278,8 @@ void PhyloOrnsteinUhlenbeckREML::recursiveComputeLnProbability( const TopologyNo
             }
             
             // add the propagated uncertainty to the branch lengths
-            double var_left  = (v_left  + delta_left ) * exp(2.0*alpha_left *bl_left);
-            double var_right = (v_right + delta_right) * exp(2.0*alpha_right*bl_right);
+            double var_left  = (v_left)  + delta_left  * exp(2.0*alpha_left *bl_left);
+            double var_right = (v_right) + delta_right * exp(2.0*alpha_right*bl_right);
             
             // set delta_node = (t_l*t_r)/(t_l+t_r);
             double var_node = (var_left*var_right) / (var_left+var_right);
@@ -293,7 +295,6 @@ void PhyloOrnsteinUhlenbeckREML::recursiveComputeLnProbability( const TopologyNo
                 double m_left   = exp(1.0 * bl_left  * alpha_left ) * (mu_left[i]  - theta_left)  + theta_left;
                 double m_right  = exp(1.0 * bl_right * alpha_right) * (mu_right[i] - theta_right) + theta_right;
                 mu_node[i] = (m_left*var_right + m_right*var_left) / (var_left+var_right);
-                double tmp = (mu_left[i]*var_right + mu_right[i]*var_left) / (var_left+var_right);
                 
                 // get the site specific rate of evolution
                 double standDev = this->computeSiteRate(i) * stdev;
@@ -302,13 +303,10 @@ void PhyloOrnsteinUhlenbeckREML::recursiveComputeLnProbability( const TopologyNo
                 double contrast = m_left - m_right;
                 
                 // compute the probability for the contrasts at this node
-                double tmp_2 = RbStatistics::Normal::lnPdf(0, standDev, contrast);
                 double z_left  = norm_const_left[i];
                 double z_right = norm_const_right[i];
                 double z_node  = exp(alpha_left*bl_left+alpha_right*bl_right)/(z_left*z_right) * exp( -1.0 * contrast * contrast / ( 2.0 *(var_left+var_right) ) ) / RbConstants::SQRT_2PI / stdev;
-//                z_node = 1.0;
                 norm_const_node[i] = 1.0;
-//                norm_const_node[i] = z_node;
                 
                 double lnl_node = log( z_node );
 //                lnl_node -= RbConstants::LN_SQRT_2PI - log( sqrt( var_node ) );
@@ -318,14 +316,8 @@ void PhyloOrnsteinUhlenbeckREML::recursiveComputeLnProbability( const TopologyNo
                 if ( node.isRoot() == true )
                 {
                     double root_state = computeRootState();
-//                    lnl_node -= ( log(z_node) + RbConstants::LN_SQRT_2PI + log( sqrt( var_node ) ) );
-//                    lnl_node += RbStatistics::Normal::lnPdf( root_state, sqrt((var_left*var_right) / (var_left+var_right)), mu_node[i]);
-                    double diff = root_state - mu_node[i];
-                    double v = (var_left*var_right) / (var_left+var_right);
-                    double sd = sqrt(v);
-                    diff /= sd;
-                    lnl_node += RbStatistics::Normal::lnPdf( 0.0, 1.0, diff);
-                    lnl_node -= log(sd);
+                    // dnorm(root.x, vals[1], sqrt(vals[2]), TRUE)
+                    lnl_node += RbStatistics::Normal::lnPdf( root_state, sqrt((var_left*var_right) / (var_left+var_right)), mu_node[i]);
                 }
                 
                 // sum up the probabilities of the contrasts

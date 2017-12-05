@@ -79,42 +79,13 @@ double PhyloBrownianProcessMultiSampleREML::computeLnProbability( void )
     const TopologyNode &root = this->tau->getValue().getRoot();
     
     // we start with the root and then traverse down the tree
-    size_t rootIndex = root.getIndex();
+    size_t root_index = root.getIndex();
     
     // only necessary if the root is actually dirty
-    if ( this->dirty_nodes[rootIndex] )
+    if ( this->dirty_nodes[root_index] )
     {
         
-        
-        recursiveComputeLnProbability( root, rootIndex );
-        
-        // start by filling the likelihood vector for the children of the root
-        if ( root.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
-        {
-            
-            //            recursiveComputeLnProbability( root, rootIndex );
-            
-        }
-        else if ( root.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
-        {
-            //            const TopologyNode &left = root.getChild(0);
-            //            size_t left_index = left.getIndex();
-            //            recursiveComputeLnProbability( left, left_index );
-            //            const TopologyNode &right = root.getChild(1);
-            //            size_t right_index = right.getIndex();
-            //            recursiveComputeLnProbability( right, right_index );
-            //            const TopologyNode &middle = root.getChild(2);
-            //            size_t middleIndex = middle.getIndex();
-            //            recursiveComputeLnProbability( middle, middleIndex );
-            
-            //            computeRootLikelihood( rootIndex, left_index, right_index, middleIndex );
-            
-        }
-        else
-        {
-            throw RbException("The root node has an unexpected number of children. Only 2 (for rooted trees) or 3 (for unrooted trees) are allowed.");
-        }
-        
+        recursiveComputeLnProbability( root, root_index );
         
         // sum the partials up
         this->ln_prob = sumRootLikelihood();
@@ -176,7 +147,6 @@ double PhyloBrownianProcessMultiSampleREML::getNumberOfSamplesForSpecies(const s
         }
         
     }
-    
     
     return num_samples;
 }

@@ -25,12 +25,13 @@ class RevLanguageMain {
     
     public:
     
-        RevLanguageMain(void);
+        RevLanguageMain(bool batch = false);
     
         void startRevLanguageEnvironment(std::vector<std::string> sourceFiles);
 
     private:
     
+        bool batch_mode;
 };
 
 #endif
