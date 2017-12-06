@@ -125,11 +125,20 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
 
     double r = rm->getRate(from_state, to_state, age, rate);
     
+    if (r < 0.0) {
+        
+        true;
+    }
+    
     for (size_t i = 0; i < rateModifiers->size(); i++)
     {
         r *= (*rateModifiers)[i].computeRateMultiplier(from, to, age);
     }
 
+    if (r < 0.0) {
+        
+        true;
+    }
     return r;
 
 }

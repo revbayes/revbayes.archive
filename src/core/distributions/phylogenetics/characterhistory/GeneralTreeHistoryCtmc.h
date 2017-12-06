@@ -301,7 +301,10 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
 //
 //>>>>>>> development
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
-    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+    std::multiset<CharacterEvent*,CharacterEventCompare>::reverse_iterator it_h;
+    
+//    std::cout << "lnLike\n";
+//    bh->print();
     
     // stepwise events
     double lnL = 0.0;
@@ -310,7 +313,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     double event_age;
     double sr = rm.getSumOfRates(curr_state, counts, current_age, branch_rate);
     
-    for (it_h = history.begin(); it_h != history.end(); ++it_h)
+    for (it_h = history.rbegin(); it_h != history.rend(); ++it_h)
     {
         CharacterEventDiscrete* char_event = static_cast<CharacterEventDiscrete*>(*it_h);
         
@@ -322,6 +325,12 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         // lnL for stepwise events for p(x->y)
 //        double tr = rm.getRate(curr_state[idx]->getState(), char_event->getState(), current_age, branch_rate);
         double tr = rm.getRate(curr_state, char_event, current_age, branch_rate);
+        
+        if (tr < 0.0) {
+            
+            bh->print();
+            true;
+        }
 //        double sr = rm.getSumOfRates(curr_state, counts) * branch_rate;
         lnL += log(tr) - sr * (current_age - event_age);
         
@@ -391,16 +400,11 @@ template<class charType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
 {
     
-//<<<<<<< HEAD
+    // convert the tip values of the data matrix into branch history objects
     if ( this->tipsInitialized == false )
     {
         initializeTipValues();
     }
-//=======
-//    std::set<size_t> indexSet;
-//    for (size_t i = 0; i < this->num_sites; i++)
-//        indexSet.insert(i);
-//>>>>>>> development
     
     // sample node states
     std::vector<TopologyNode*> nodes = this->tau->getValue().getNodes();
@@ -433,7 +437,12 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
             ++samplePathHistoryCount;
         } while (samplePathHistory(*nd) == false && samplePathHistoryCount < 100);
         
-        //        this->histories[i]->print();
+        this->histories[i]->print();
+        
+        double branch_lnL = computeInternalNodeLikelihood(*nd);
+        
+        std::cout << branch_lnL << "\n";
+        std::cout << "\n";
     }
     
     double lnL = this->computeLnProbability();
@@ -843,66 +852,50 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
     
     // get parent BranchHistory state
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
-//<<<<<<< HEAD
     std::vector<size_t> counts = computeCounts(currState);
     std::set<CharacterEvent*,CharacterEventCompare> history;
-    
     
     // get start sum of rates
     double sr = rm.getSumOfRates(currState, counts, start_age, branch_rate);
     
-//=======
-//    unsigned counts[ this->num_chars ];
-//    computeCounts(currState, counts);
-//    std::set<CharacterEvent*,CharacterEventCompare> history;
-//    
-////    for (size_t i = 0; i < this->num_chars; i++)
-////         std::cout << counts[i] << " ";
-////    std::cout <<"\n";
-//>>>>>>> development
-    
     // simulate path
-    double t = start_age;
+    double curr_age = start_age;
     double dt = 0.0;
-    while (t - dt > end_age)
+    while (curr_age - dt > end_age)
     {
         
         // sample next event time
         dt = RbStatistics::Exponential::rv(sr, *GLOBAL_RNG);
-        if (t - dt > end_age)
+        if (curr_age - dt > end_age)
         {
-            double sr = rm.getSumOfRates(currState, counts, t, branch_rate);
+            double sr = rm.getSumOfRates(currState, counts, curr_age, branch_rate);
             
             // next event type
-            CharacterEventDiscrete* evt = new CharacterEventDiscrete(0, 0, t - dt);
+            CharacterEventDiscrete* evt = new CharacterEventDiscrete(0, 0, curr_age - dt);
             double u = GLOBAL_RNG->uniform01() * sr;
             
             bool found = false;
-//<<<<<<< HEAD
             size_t i;
             size_t s = 0;
             for (i = 0; !found && i < this->num_sites; i++)
             {
+                
                 evt->setSiteIndex(i);
+                size_t curr_state = static_cast<CharacterEventDiscrete*>(currState[i])->getState();
                 for (s = 0; !found && s < this->num_states; ++s)
-//=======
-//            size_t i, s = 0;
-//            for (i = 0; !found && i < this->num_sites; i++)
-//            {
-//                evt->setCharacterIndex(i);
-//                for (s = 0; !found && s < this->num_chars; s++)
-//>>>>>>> development
                 {
                     // disregard virtual events (self-transitions)
-                    if (s != static_cast<CharacterEventDiscrete*>(currState[i])->getState())
+                    if (s != curr_state)
                     {
                         evt->setState(s);
-//                        double r = rm.getRate(currState[i]->getState(), evt->getState(), t, branch_rate);
-                        double r = rm.getRate(currState, evt, t, branch_rate);
+                        double r = rm.getRate(currState, evt, curr_age, branch_rate);
                         
                         u -= r;
                         if (u <= 0.0)
                         {
+                            std::cout << "i = " << i << "\n";
+                            std::cout << "(t -> t') = (" << curr_age << " -> " << curr_age-dt << ")\n";
+                            std::cout << "(s -> s') = (" << curr_state << " -> " << s << ")\n\n";
                             found = true;
                             history.insert(evt);
                         }
@@ -910,6 +903,11 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
                     if (found) break;
                 }
                 if (found) break;
+            }
+            
+            if (!found && u > 0.0) {
+                
+                std::cout << "hmm\n";
             }
             
             // update sum of rates
@@ -920,19 +918,25 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
             counts[s] += 1;
             
             // update history
-            t -= dt;
+            curr_age -= dt;
             currState[i] = evt;
         }
     }
     
     bh->setHistory(history);
+   
+    
     for (size_t i = 0; i < this->num_sites; i++)
     {
         size_t s = static_cast<CharacterEventDiscrete*>(currState[i])->getState();
-        currState[i] = new CharacterEventDiscrete(i, s, 1.0);
+        currState[i] = new CharacterEventDiscrete(i, s, end_age);
     }
     
     bh->setChildCharacters(currState);
+    
+    
+    bh->print(&node);
+    true;
     
 }
 
