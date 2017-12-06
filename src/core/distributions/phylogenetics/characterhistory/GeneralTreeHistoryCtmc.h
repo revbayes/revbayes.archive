@@ -249,7 +249,6 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     }
     
     size_t node_index = node.getIndex();
-//<<<<<<< HEAD
     double branch_rate = this->getBranchRate(node_index);
     const RateGeneratorSequence& rm = homogeneousRateGenerator->getValue();
     
@@ -290,21 +289,9 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     // we need the counts for faster computation
     std::vector<size_t> counts = computeCounts(curr_state);
     
-//=======
-//    double branchLength = node.getBranchLength();
-//    const RateMap& rm = homogeneousRateMap->getValue();
-//    
-//    BranchHistory* bh = this->histories[node_index];
-//    std::vector<CharacterEvent*> currState = bh->getParentCharacters();
-//    unsigned counts[this->num_chars];
-//    computeCounts(currState, counts);
-//
-//>>>>>>> development
+    // get branch history set and iterator
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::reverse_iterator it_h;
-    
-//    std::cout << "lnLike\n";
-//    bh->print();
     
     // stepwise events
     double lnL = 0.0;
@@ -326,11 +313,6 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
 //        double tr = rm.getRate(curr_state[idx]->getState(), char_event->getState(), current_age, branch_rate);
         double tr = rm.getRate(curr_state, char_event, current_age, branch_rate);
         
-        if (tr < 0.0) {
-            
-            bh->print();
-            true;
-        }
 //        double sr = rm.getSumOfRates(curr_state, counts) * branch_rate;
         lnL += log(tr) - sr * (current_age - event_age);
         
@@ -437,12 +419,8 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
             ++samplePathHistoryCount;
         } while (samplePathHistory(*nd) == false && samplePathHistoryCount < 100);
         
-        this->histories[i]->print();
+       // double branch_lnL = computeInternalNodeLikelihood(*nd);
         
-        double branch_lnL = computeInternalNodeLikelihood(*nd);
-        
-        std::cout << branch_lnL << "\n";
-        std::cout << "\n";
     }
     
     double lnL = this->computeLnProbability();
@@ -893,9 +871,9 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
                         u -= r;
                         if (u <= 0.0)
                         {
-                            std::cout << "i = " << i << "\n";
-                            std::cout << "(t -> t') = (" << curr_age << " -> " << curr_age-dt << ")\n";
-                            std::cout << "(s -> s') = (" << curr_state << " -> " << s << ")\n\n";
+//                            std::cout << "i = " << i << "\n";
+//                            std::cout << "(t -> t') = (" << curr_age << " -> " << curr_age-dt << ")\n";
+//                            std::cout << "(s -> s') = (" << curr_state << " -> " << s << ")\n\n";
                             found = true;
                             history.insert(evt);
                         }
@@ -903,11 +881,6 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
                     if (found) break;
                 }
                 if (found) break;
-            }
-            
-            if (!found && u > 0.0) {
-                
-                std::cout << "hmm\n";
             }
             
             // update sum of rates
@@ -933,11 +906,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
     }
     
     bh->setChildCharacters(currState);
-    
-    
-    bh->print(&node);
-    true;
-    
+        
 }
 
 template<class charType>
