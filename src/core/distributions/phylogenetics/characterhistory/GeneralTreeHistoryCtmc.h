@@ -279,10 +279,10 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
                 //                std::cerr << "Rejecting: " << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
                 return RbConstants::Double::neginf;
             }
-            //            else
-            //            {
-            //                std::cerr << "Not rejecting: " << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
-            //            }
+//            else
+//            {
+//                std::cerr << "Not rejecting: " << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
+//            }
         }
     }
     
@@ -298,8 +298,12 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     double current_age = node.getParent().getAge();
     double end_age = node.getAge();
     double event_age;
-    double sr = rm.getSumOfRates(curr_state, counts, current_age, branch_rate);
+//    double sr = rm.getSumOfRates(curr_state, counts, current_age, branch_rate);
+    double sr = rm.getSumOfRates(curr_state, current_age, branch_rate);
+
     
+//    bh->print();
+   
     for (it_h = history.rbegin(); it_h != history.rend(); ++it_h)
     {
         CharacterEventDiscrete* char_event = static_cast<CharacterEventDiscrete*>(*it_h);
@@ -327,6 +331,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         curr_state[idx] = char_event;
         current_age = event_age;
     }
+//    bh->print();
     
     // lnL that nothing else happens
 //    double sr = rm.getSumOfRates(curr_state) * branch_rate;
