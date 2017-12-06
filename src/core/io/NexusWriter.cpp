@@ -3,6 +3,8 @@
 #include "NexusWriter.h"
 #include "RbFileManager.h"
 
+#include <iomanip>
+
 using namespace RevBayesCore;
 
 
@@ -113,6 +115,11 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
 void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
 {
     
+    std::streamsize previousPrecision = outStream.precision();
+    std::ios_base::fmtflags previousFlags = outStream.flags();
+    
+    outStream << std::fixed;
+    
     // write initial lines of the character block
     outStream << std::endl;
     outStream << "Begin data;" << std::endl;
@@ -153,6 +160,8 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
     outStream << "End;" << std::endl;
     outStream << std::endl;
     
+    outStream.setf(previousFlags);
+    outStream.precision(previousPrecision);
 }
 
 

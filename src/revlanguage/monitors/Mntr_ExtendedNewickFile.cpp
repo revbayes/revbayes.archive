@@ -47,6 +47,7 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void )
     const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = (int)static_cast<const Natural &>( printgen->getRevObject() ).getValue();
+    bool wv = static_cast<const RlBoolean &>( version->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::Tree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     vars.erase( unique( vars.begin(), vars.end() ), vars.end() );
@@ -69,7 +70,12 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void )
     bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
     bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
     bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
-    value = new RevBayesCore::ExtendedNewickTreeMonitor(t, n, np, size_t(g), fn, sep, pp, l, pr);
+
+    RevBayesCore::ExtendedNewickTreeMonitor* m = new RevBayesCore::ExtendedNewickTreeMonitor(t, n, np, size_t(g), fn, sep, pp, l, pr);
+
+    m->setPrintVersion( wv );
+
+    value = m;
 }
 
 
@@ -125,7 +131,7 @@ const MemberRules& Mntr_ExtendedNewickFile::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), "Should we print the posterior probability as well.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         memberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), "Should we print the likelihood as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         memberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), "Should we print the prior probability as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        
+        memberRules.push_back( new ArgumentRule("version"   , RlBoolean::getClassTypeSpec(), "Should we record the software version?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         
         rules_set = true;
     }
@@ -189,6 +195,10 @@ void Mntr_ExtendedNewickFile::setConstParameter(const std::string& name, const R
     else if ( name == "likelihood" )
     {
         likelihood = var;
+    }
+    else if ( name == "version" )
+    {
+        version = var;
     }
     else
     {

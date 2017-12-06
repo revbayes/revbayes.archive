@@ -63,7 +63,7 @@ namespace RevBayesCore {
         void                                                                expandExpectation(std::vector<double> &ind_exp, const std::vector<double> &sp_exp);
         void                                                                expandCovariance(MatrixReal &ind_cov, const MatrixReal &sp_cov);
         double                                                              getNumberOfSamplesForSpecies(const std::string &n);
-        double                                                              getWithingSpeciesVariance(const std::string &n);
+        double                                                              getWithinSpeciesVariance(const std::string &n);
 
         // Parameter management functions.
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter

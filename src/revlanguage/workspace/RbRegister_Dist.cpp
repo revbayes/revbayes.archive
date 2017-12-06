@@ -110,10 +110,12 @@
 #include "Dist_PhyloBrownianMultiSampleREML.h"
 #include "Dist_PhyloMvtBrownian.h"
 #include "Dist_PhyloMultiSampleOrnsteinUhlenbeck.h"
+#include "Dist_PhyloMultiSampleOrnsteinUhlenbeckREML.h"
 #include "Dist_PhyloMultivariateBrownianREML.h"
 #include "Dist_PhyloOrnsteinUhlenbeck.h"
 #include "Dist_PhyloOrnsteinUhlenbeckMVN.h"
 #include "Dist_PhyloOrnsteinUhlenbeckREML.h"
+#include "Dist_PhyloOrnsteinUhlenbeckThreePoint.h"
 #include "Dist_PhyloWhiteNoise.h"
 
 /* Tree priors (in folder "distributions/phylogenetics/tree") */
@@ -242,10 +244,12 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMVN()                      );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMultiSampleREML()          );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloMultiSampleOrnsteinUhlenbeck()     );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloMultiSampleOrnsteinUhlenbeckREML() );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloMultivariateBrownianREML()         );
         AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()                );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()             );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckREML()            );
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckThreePoint()      );
         
         // multivariate brownian motion
         AddDistribution< ModelVector< ModelVector<Real> > >( new Dist_PhyloMvtBrownian() );

@@ -174,6 +174,11 @@ void PowerPosteriorAnalysis::runAll(size_t gen)
 
 //    initMPI();
     
+    if( gen < sampleFreq )
+    {
+        throw(RbException("Trying to run power posterior analysis for fewer generations than sampleFreq, no samples will be stored"));
+    }
+
     // disable the screen monitor(s) if any
     sampler->disableScreenMonitor(true, 0);
     
