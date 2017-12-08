@@ -6,12 +6,12 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-CodonState::CodonState(size_t n) : DiscreteCharacterState( 64 ),
+CodonState::CodonState(size_t n) : DiscreteCharacterState( 61 ),
     is_gap( false ),
     is_missing( false ),
     index_single_state( 0 ),
     num_observed_states( 0 ),
-    state(64)
+    state(61)
 {
     
     setState("---");
@@ -19,12 +19,12 @@ CodonState::CodonState(size_t n) : DiscreteCharacterState( 64 ),
 
 
 /** Constructor that sets the observation */
-CodonState::CodonState(const std::string &s) : DiscreteCharacterState( 64 ),
+CodonState::CodonState(const std::string &s) : DiscreteCharacterState( 61 ),
     is_gap( false ),
     is_missing( false ),
     index_single_state( 0 ),
     num_observed_states( 0 ),
-    state(64)
+    state(61)
 {
     
     setState(s);
@@ -32,7 +32,7 @@ CodonState::CodonState(const std::string &s) : DiscreteCharacterState( 64 ),
 
 
 ///** Constructor that sets the observation */
-//CodonState::CodonState(size_t index) : DiscreteCharacterState( 64 )
+//CodonState::CodonState(size_t index) : DiscreteCharacterState( 61 )
 //{
 //    
 //    setStateByIndex(index);
@@ -456,7 +456,7 @@ bool CodonState::isStopCodon( void ) const
         else if ( (codon_pos[1] & 0x040) == 0x040 ) // test if the second codon position is an 'G'
         {
             
-            // test if the third codon position is an 'A' or a 'G'
+            // test if the third codon position is an 'A'
             if ( (codon_pos[2] & 0x001) == 0x001 )
             {
                 // we have a stopp codon
@@ -567,10 +567,47 @@ void CodonState::setState(const std::string &symbol)
             current_state = 65;
     }
     
+    std::string codons [] = {
+        "AAA", "AAC", "AAG", "AAT",
+        "ACA", "ACC", "ACG", "ACT",
+        "AGA", "AGC", "AGG", "AGT",
+        "ATA", "ATC", "ATG", "ATT",
+        "CAA", "CAC", "CAG", "CAT",
+        "CCA", "CCC", "CCG", "CCT",
+        "CGA", "CGC", "CGG", "CGT",
+        "CTA", "CTC", "CTG", "CTT",
+        "GAA", "GAC", "GAG", "GAT",
+        "GCA", "GCC", "GCG", "GCT",
+        "GGA", "GGC", "GGG", "GGT",
+        "GTA", "GTC", "GTG", "GTT",
+        //        "TAA", "TAC", "TAG", "TAT",
+        "TAC", "TAT",
+        "TCA", "TCC", "TCG", "TCT",
+        //        "TGA", "TGC", "TGG", "TGT",
+        "TGC", "TGG", "TGT",
+        "TTA", "TTC", "TTG", "TTT",
+    };
+    
+    for (size_t i=0; i<61; ++i)
+    {
+        if ( codons[i] == symbol )
+        {
+            current_state = i;
+            break;
+        }
+    }
+    
     state.clear();
-    state.set( current_state );
-    index_single_state = current_state;
-    num_observed_states = 1;
+    if ( current_state <= 64  )
+    {
+        state.set( current_state );
+        index_single_state = current_state;
+        num_observed_states = 1;
+    }
+    else
+    {
+        setMissingState( true );
+    }
 }
 
 

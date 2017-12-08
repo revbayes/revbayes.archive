@@ -704,6 +704,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 {
                     // we use the index of the state
                     char_matrix[node_index][patternIndex] = c.getStateIndex();
+                    if ( c.getStateIndex() >= this->num_chars )
+                        throw RbException("Problem with state index in PhyloCTMC!");
                 }
                 else
                 {
@@ -2750,7 +2752,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(con
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm)
+{
     
     // remove the old parameter first
     if ( homogeneous_rate_matrix != NULL )

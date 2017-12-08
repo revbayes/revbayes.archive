@@ -164,6 +164,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeRootLikelihood( si
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
+        
         // get the root frequencies
         const std::vector<double> &f                    = ff[mixture % ff.size()];
         std::vector<double>::const_iterator f_end       = f.end();

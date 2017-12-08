@@ -41,7 +41,7 @@ void CodonSynonymousNonsynonymousRateMatrixFunction::update( void )
     
     
     // set the base frequencies
-    static_cast< RateMatrix_CodonSynonymousNonsynonymous* >(value)->setStationaryFrequencies( f );
+    static_cast< RateMatrix_CodonSynonymousNonsynonymous* >(value)->setNucleotideFrequencies( f );
     static_cast< RateMatrix_CodonSynonymousNonsynonymous* >(value)->setKappa( k );
     static_cast< RateMatrix_CodonSynonymousNonsynonymous* >(value)->setOmega( o );
     
