@@ -159,8 +159,8 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         double dt = 0.0;
         double prev_age = startAge;
         double event_age = prev_age;
-        std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
-        for (it = events.begin(); it != events.end(); it++)
+        std::multiset<CharacterEvent*,CharacterEventCompare>::reverse_iterator it;
+        for (it = events.rbegin(); it != events.rend(); it++)
         {
             
             prev_age = event_age;

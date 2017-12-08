@@ -281,7 +281,7 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         double prev_time     = 0.0;
         
         // compute probability for the observed and sampled speciation events on the branch
-        for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
+        for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_reverse_iterator it=hist.rbegin(); it!=hist.rend(); ++it)
         {
             CharacterEvent* event = *it;
             double curr_time = event->getAge(); // CHECK THIS AGE
@@ -408,7 +408,7 @@ void SampledSpeciationBirthDeathProcess::executeMethod(const std::string &n, con
             
             size_t j = 0;
             std::multiset<CharacterEvent*, CharacterEventCompare> h = branch_histories[i].getHistory();
-            for ( std::multiset<CharacterEvent*, CharacterEventCompare>::iterator it = h.begin(); it != h.end(); it++ )
+            for ( std::multiset<CharacterEvent*, CharacterEventCompare>::reverse_iterator it = h.rbegin(); it != h.rend(); it++ )
             {
                 rv[i][j++] = (*it)->getAge(); // CHECK THIS AGE
                 if (j > num_slots) break;

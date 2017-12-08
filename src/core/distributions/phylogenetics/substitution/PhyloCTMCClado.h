@@ -1590,8 +1590,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
             double dt = 0.0;
             double event_age = startAge;
             bool first_event = true;
-            std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
-            for (it = events.begin(); it != events.end(); it++)
+            std::multiset<CharacterEvent*,CharacterEventCompare>::reverse_iterator it;
+            for (it = events.rbegin(); it != events.rend(); it++)
             {
                 t += dt;
                 dt = (*it)->getAge() - t;

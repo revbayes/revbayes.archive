@@ -103,13 +103,11 @@ double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<Charac
     size_t i = newState->getSiteIndex();
     size_t s = newState->getState();
     
-//    for (size_t i = 0; i < context_matrix.size(); i++)
-//    {
     
     for (size_t j = 0; j < context_matrix[i].size(); j++)
     {
         const adjacency& edge = context_matrix[i][j];
-        if (i == j)
+        if (edge.from == edge.to)
         {
             continue;
         }
