@@ -425,7 +425,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                 }
                 else if (currState != endState)
                 {
-                    for (std::set<CharacterEvent*>::iterator it_h = tmpHistory.begin(); it_h != tmpHistory.end(); it_h++)
+                    for (std::set<CharacterEvent*>::reverse_iterator it_h = tmpHistory.rbegin(); it_h != tmpHistory.rend(); it_h++)
                     {
                         delete *it_h;
                     }
