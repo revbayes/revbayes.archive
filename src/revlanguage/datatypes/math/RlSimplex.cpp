@@ -15,7 +15,7 @@ using namespace RevLanguage;
  * Construct an empty simplex.
  * We simply rely on the base class.
  */
-Simplex::Simplex( void ) : ModelObject<RevBayesCore::Simplex>()
+Simplex::Simplex( void ) : ModelObject<RevBayesCore::Simplex>( new RevBayesCore::Simplex() )
 {
     initMethods();
 }

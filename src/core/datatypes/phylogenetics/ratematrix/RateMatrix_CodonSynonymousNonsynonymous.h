@@ -45,7 +45,7 @@ namespace RevBayesCore {
         virtual RateMatrix_CodonSynonymousNonsynonymous&        assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
         void                                                    calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
         RateMatrix_CodonSynonymousNonsynonymous*                clone(void) const;
-        std::vector<double>                                     getStationaryFrequencies(void) const;                                               //!< Return the stationary frequencies
+        void                                                    setNucleotideFrequencies(const std::vector<double> &f);                             //!< Set the nucleotide frequencies
         void                                                    setKappa(double k);
         void                                                    setOmega(double o);
         void                                                    update(void);
@@ -57,12 +57,13 @@ namespace RevBayesCore {
         void                                                    tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
         void                                                    updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
         
-        EigenSystem*                                            theEigenSystem;                                                                     //!< Holds the eigen system
+        EigenSystem*                                            eigen_system;                                                                       //!< Holds the eigen system
         std::vector<double>                                     c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >                      cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
         
         double                                                  kappa;
         double                                                  omega;
+        std::vector<double>                                     nucleotide_freqs;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
 
     };
     
