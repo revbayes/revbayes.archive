@@ -8,13 +8,13 @@
 using namespace RevBayesCore;
 
 JointAncestralStateTrace::JointAncestralStateTrace(std::vector<AncestralStateTrace> at, TraceTree tt ) :
-ancestral_state_traces(at),
-tree_trace(tt),
-burnin(0)
+    ancestral_state_traces(at),
+    tree_trace(tt),
+    burnin(0)
 {
     num_sampled_states = ancestral_state_traces[0].size();
     
-    if ( num_sampled_states != tree_trace.size() )
+    if ( tree_trace.size() > 0 && num_sampled_states != tree_trace.size() )
     {
         throw RbException("The tree trace and the ancestral state trace must contain the same number of samples.");
     }

@@ -1,11 +1,3 @@
-//
-//  TreeScaleFunction.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 2/6/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
 #include "TreeScaleFunction.h"
 #include "RbException.h"
 
