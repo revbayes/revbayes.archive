@@ -50,7 +50,7 @@ RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_
     if ( this->args[3].getVariable()->getRevObject().isType( ModelVector<ModelVector<Real> >::getClassTypeSpec() ) )
     {
         
-        c = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
+        c = static_cast<const ModelVector<ModelVector<Real> > &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
     }
     size_t ns = static_cast<const Natural&>( this->args[4].getVariable()->getRevObject() ).getValue();
     size_t nc = static_cast<const Natural&>( this->args[5].getVariable()->getRevObject() ).getValue();
