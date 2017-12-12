@@ -106,8 +106,9 @@ RateGeneratorSequenceUsingMatrix* RateGeneratorSequenceUsingMatrix::clone(void) 
 
 std::set<size_t> RateGeneratorSequenceUsingMatrix::getAffectedSites(CharacterEventDiscrete* to) const
 {
-    std::set<size_t> s;
-    
+    size_t s_init[] = { to->getSiteIndex() };
+    std::set<size_t> s( s_init, s_init+1 );
+
     for (size_t i = 0; i < rateModifiers->size(); i++) {
         std::set<size_t> tmp = (*rateModifiers)[i].getAffectedSites(to);
         s.insert( tmp.begin(), tmp.end() );
