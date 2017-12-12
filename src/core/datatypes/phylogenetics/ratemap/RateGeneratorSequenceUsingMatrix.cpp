@@ -103,6 +103,20 @@ RateGeneratorSequenceUsingMatrix* RateGeneratorSequenceUsingMatrix::clone(void) 
 }
 
 
+
+std::set<size_t> RateGeneratorSequenceUsingMatrix::getAffectedSites(CharacterEventDiscrete* to) const
+{
+    std::set<size_t> s;
+    
+    for (size_t i = 0; i < rateModifiers->size(); i++) {
+        std::set<size_t> tmp = (*rateModifiers)[i].getAffectedSites(to);
+        s.insert( tmp.begin(), tmp.end() );
+    }
+    
+    return s;
+    
+}
+
 double RateGeneratorSequenceUsingMatrix::getRate(size_t from, size_t to, double age, double rate) const
 {
 
@@ -308,6 +322,9 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRatesDifferential(std::vector<C
     
     CharacterEventDiscrete* possible_event = new CharacterEventDiscrete(*to);
     
+    std::set<size_t> affected_sites = getAffectedSites(to);
+    
+    
     for (size_t s = 0; s < num_states; s++)
     {
         possible_event->setState(s);
@@ -335,36 +352,57 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRatesDifferential(std::vector<C
 
 double RateGeneratorSequenceUsingMatrix::getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, double age, double rate) const
 {
+    // this will return the rate differential
     double r = 0.0;
+
+    // get the old and new states for the transition
+    size_t to_index = to->getSiteIndex();
+    size_t old_to_state = static_cast<CharacterEventDiscrete*>(from[ to->getSiteIndex() ])->getState();
+    size_t new_to_state = to->getState();
     
-    size_t index = to->getSiteIndex();
-    size_t old_state = static_cast<CharacterEventDiscrete*>(from[ index ])->getState();
-    size_t new_state = to->getState();
+    // collect the sites affected by the transition
+    std::set<size_t> affected_sites = getAffectedSites(to);
     
-    CharacterEventDiscrete* possible_event = new CharacterEventDiscrete(*to);
-    
-    for (size_t s = 0; s < num_states; s++)
-    {
-        possible_event->setState(s);
+    // subtract the sum of rates contribution leaving the old from state
+    for (std::set<size_t>::iterator it = affected_sites.begin(); it != affected_sites.end(); it++) {
         
-        // subtract the contribution of rates leaving the old state
-        if (s != old_state)
-        {
-            r -= getRate(from, possible_event, age, rate);
+        // index of affected site
+        size_t index = *it;
+        
+        // create a dummy event for the affected site
+        CharacterEventDiscrete* possible_event = new CharacterEventDiscrete( *(static_cast<CharacterEventDiscrete*>(from[index])) );
+        
+        // first subtract the sum of rates leaving each old site-state
+        size_t old_from_state = static_cast<CharacterEventDiscrete*>(from[index])->getState();
+        for (size_t s = 0; s < num_states; s++) {
+            if (s != old_from_state)
+            {
+                possible_event->setState(s);
+                r -= getRate(from, possible_event, age, rate);
+            }
         }
         
-        static_cast<CharacterEventDiscrete*>(from[ index ])->setState( new_state );
-        // add the contribution of rates leaving the new state
-        if (s != new_state)
-        {
-            r += getRate(from, possible_event, age, rate);
+        // apply the new to-state
+        static_cast<CharacterEventDiscrete*>(from[to_index])->setState(new_to_state);
+        
+        // then add the sum of rates leaving each new site-state
+        size_t new_from_state = static_cast<CharacterEventDiscrete*>(from[index])->getState();
+        for (size_t s = 0; s < num_states; s++) {
+            if (s != new_from_state)
+            {
+                possible_event->setState(s);
+                r += getRate(from, possible_event, age, rate);
+            }
         }
         
-        static_cast<CharacterEventDiscrete*>(from[ index ])->setState( old_state );
+        // restore the old to-state
+        static_cast<CharacterEventDiscrete*>(from[to_index])->setState(old_to_state);
+        
+        // free memory for the dummy state
+        delete possible_event;
     }
     
-    delete possible_event;
-    
+    // return the rate differential
     return r;
 }
 

@@ -259,11 +259,8 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         lnL += log(tr) - sr * (current_age - event_age);
         
         // update sum of rates
-        // NOTE: The rate differential trick does not work when the remaining sites' rates also depend
-        //       on the changed site's state -- i.e. when rates are non-independent. The rate of leaving
-        //       the sequence must be entirely recomputed.
-
-//        sr += rm.getSumOfRatesDifferential(curr_state, char_event, event_age, branch_rate);
+        double sr_diff = rm.getSumOfRatesDifferential(curr_state, char_event, event_age, branch_rate);
+        sr += sr_diff;
         
         // update counts
         counts[static_cast<CharacterEventDiscrete*>(curr_state[idx])->getState()] -= 1;
@@ -272,18 +269,12 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         // update time and state
         curr_state[idx] = char_event;
         current_age = event_age;
-        
 
-        sr = rm.getSumOfRates(curr_state, event_age, branch_rate);
-
-        
     }
-//    bh->print();
     
     // lnL that nothing else happens
-//    double sr = rm.getSumOfRates(curr_state) * branch_rate;
     lnL -= sr * (current_age - end_age);
-    
+
     return lnL;
 }
 

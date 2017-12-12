@@ -25,6 +25,7 @@ namespace RevBayesCore
         virtual double                      computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0) = 0;
         virtual double                      computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, std::vector<size_t> counts, double age=0.0);
         virtual double                      computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, std::vector<std::set<size_t> > sites_with_states, double age=0.0);
+        virtual std::set<size_t>            getAffectedSites(CharacterEventDiscrete* newState) const;
 
         virtual void                        update(void) = 0;
         CharacterHistoryRateModifier*       clone( void ) const = 0;
@@ -34,7 +35,7 @@ namespace RevBayesCore
         size_t                              num_characters;
 
     private:
-
+        std::set<size_t>                    all_sites;
 
     };
     std::ostream& operator<<(std::ostream& o, const CharacterHistoryRateModifier& x);                                         //!< Overloaded output operator

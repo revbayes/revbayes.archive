@@ -11,7 +11,10 @@ AdjacentRateModifier::AdjacentRateModifier(size_t ns, size_t nc) : CharacterHist
     gain_factor(0.0),
     loss_factor(0.0),
     context_matrix( std::vector<std::vector<adjacency> >() ),
-    context_type("width")
+    context_set( std::vector<std::set<size_t> >() ),
+    context_type("width"),
+    exp_gain_factors( std::vector<double>(nc,1.0) ),
+    exp_loss_factors( std::vector<double>(nc,1.0) )
 {
     ;
 }
@@ -25,7 +28,10 @@ AdjacentRateModifier::AdjacentRateModifier(const AdjacentRateModifier& g) : Char
         gain_factor = g.gain_factor;
         loss_factor = g.loss_factor;
         context_matrix = g.context_matrix;
+        context_set = g.context_set;
         context_type = g.context_type;
+        exp_gain_factors = g.exp_gain_factors;
+        exp_loss_factors = g.exp_loss_factors;
     }
 }
 
@@ -91,7 +97,8 @@ double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<Charact
     }
     
 //    double r = exp(num_match * factor);
-    double r = exp(gain_factor * match[1] + loss_factor * match[0]);
+    double r = exp_gain_factors[ match[1] ] * exp_loss_factors[ match[0] ];
+    //exp(gain_factor * match[1] + loss_factor * match[0]);
     
     return r;
 }
@@ -121,7 +128,8 @@ double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<Charac
         }
     }
     
-    double r = exp(gain_factor * match[1] + loss_factor * match[0]);
+//    double r = exp(gain_factor * match[1] + loss_factor * match[0]);
+    double r = exp_gain_factors[ match[1] ] * exp_loss_factors[ match[0] ];
     
     return r;
 }
@@ -143,19 +151,47 @@ AdjacentRateModifier* AdjacentRateModifier::clone(void) const
     return new AdjacentRateModifier(*this);
 }
 
-void AdjacentRateModifier::update(void)
+std::set<size_t> AdjacentRateModifier::getAffectedSites(CharacterEventDiscrete* newState) const
 {
-    ; // do nothing
+    std::set<size_t> s = context_set[ newState->getSiteIndex() ];
+    
+    return s;
 }
+
+
 
 void AdjacentRateModifier::setGainFactor(double f)
 {
+    // update factor
     gain_factor = f;
+    
+    // get exponent factor
+    double m = exp(f);
+    
+    // reset factor vector
+    exp_gain_factors = std::vector<double>( num_characters, 1.0 );
+    exp_gain_factors[0] = 1.0;
+    for (size_t i = 1; i < num_characters; i++)
+    {
+        exp_gain_factors[i] = exp_gain_factors[i-1] * m;
+    }
 }
 
 void AdjacentRateModifier::setLossFactor(double f)
 {
+    // update factor
     loss_factor = f;
+    
+    // get exponent factor
+    double m = exp(f);
+    
+    // reset factor vector
+    exp_loss_factors = std::vector<double>( num_characters, 1.0 );
+    exp_loss_factors[0] = 1.0;
+    for (size_t i = 1; i < num_characters; i++)
+    {
+        exp_loss_factors[i] = exp_loss_factors[i-1] * m;
+    }
 }
 
 
@@ -170,6 +206,7 @@ void AdjacentRateModifier::setContextMatrix(const RbVector<RbVector<double> >& c
 
     context_type = "matrix";
     context_matrix = std::vector<std::vector<adjacency> >(this->num_characters);
+    context_set = std::vector<std::set<size_t> >(this->num_characters);
     
     for (size_t i = 0; i < this->num_characters; i++)
     {
@@ -177,15 +214,27 @@ void AdjacentRateModifier::setContextMatrix(const RbVector<RbVector<double> >& c
         {
             if (c[i][j] != 0.0)
             {
+                // add adjacency
                 adjacency v;
                 v.from = i;
                 v.to = j;
                 v.weight = c[i][j];
                 context_matrix[i].push_back(v);
+                
+                // add dependent context set -- site j whose rate depends on the state of site i
+                context_set[i].insert(j);
             }
+            
         }
+        context_set[i].insert(i);
     }
 }
+
+void AdjacentRateModifier::update(void)
+{
+    ; // do nothing
+}
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const AdjacentRateModifier& x)
 {
