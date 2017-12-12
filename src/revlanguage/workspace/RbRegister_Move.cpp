@@ -80,13 +80,14 @@
 #include "Move_BetaSimplex.h"
 #include "Move_ElementSwapSimplex.h"
 
-/* Moves on real valued vectors */
+/* Moves on vectors */
 #include "Move_ElementScale.h"
 #include "Move_ElementSlide.h"
 #include "Move_ShrinkExpand.h"
 #include "Move_SingleElementScale.h"
 #include "Move_SingleElementSlide.h"
 #include "Move_SynchronizedVectorFixedSingleElementSlide.h"
+#include "Move_VectorBinarySwitch.h"
 #include "Move_VectorSingleElementScale.h"
 #include "Move_VectorSingleElementSlide.h"
 #include "Move_VectorFixedSingleElementSlide.h"
@@ -222,10 +223,11 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BetaSimplex() );
         addTypeWithConstructor( new Move_ElementSwapSimplex() );
 
-        /* Moves on vectors of real values */
+        /* Moves on vectors */
         addTypeWithConstructor( new Move_SingleElementSlide() );
         addTypeWithConstructor( new Move_SingleElementScale() );
         addTypeWithConstructor( new Move_ShrinkExpand() );
+        addTypeWithConstructor( new Move_VectorBinarySwitch() );
         addTypeWithConstructor( new Move_VectorScale() );
         addTypeWithConstructor( new Move_VectorSlide() );
         addTypeWithConstructor( new Move_VectorSlideRecenter() );
