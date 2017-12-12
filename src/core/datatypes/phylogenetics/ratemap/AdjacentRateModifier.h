@@ -30,7 +30,7 @@ namespace RevBayesCore
         virtual std::set<size_t>            getAffectedSites(CharacterEventDiscrete* newState) const;
 
         
-        void                                setContextMatrix(const RbVector<RbVector<double> >& c);
+        void                                setContextMatrix(const RbVector<RbVector<long> >& c);
         void                                setGainFactor(double f);
         void                                setLossFactor(double f);
         void                                setWidth(size_t w);
@@ -43,7 +43,7 @@ namespace RevBayesCore
        
         
     private:
-        void                                initializeContexts(RbVector<RbVector<double> > c);
+        void                                initializeContexts(RbVector<RbVector<long> > c);
         
         struct adjacency {
             size_t                          from;

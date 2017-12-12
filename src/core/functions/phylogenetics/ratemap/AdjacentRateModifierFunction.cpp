@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-AdjacentRateModifierFunction::AdjacentRateModifierFunction(const TypedDagNode<double>* gf, const TypedDagNode<double>* lf, const TypedDagNode<long>* w, const TypedDagNode<RbVector<RbVector<double> > >* c, size_t ns, size_t nc) : TypedFunction<CharacterHistoryRateModifier>( new AdjacentRateModifier(ns, nc) ),
+AdjacentRateModifierFunction::AdjacentRateModifierFunction(const TypedDagNode<double>* gf, const TypedDagNode<double>* lf, const TypedDagNode<long>* w, const TypedDagNode<RbVector<RbVector<long> > >* c, size_t ns, size_t nc) : TypedFunction<CharacterHistoryRateModifier>( new AdjacentRateModifier(ns, nc) ),
     gainFactor(gf),
     lossFactor(lf),
     width(w),
@@ -75,7 +75,7 @@ void AdjacentRateModifierFunction::update( void )
     }
     else if (context_type=="matrix")
     {
-        RbVector<RbVector<double> > c = context_matrix->getValue();
+        RbVector<RbVector<long> > c = context_matrix->getValue();
         static_cast<AdjacentRateModifier*>(value)->setContextMatrix(c);
     }
     
@@ -100,6 +100,6 @@ void AdjacentRateModifierFunction::swapParameterInternal(const DagNode *oldP, co
     }
     else if (oldP == context_matrix)
     {
-        context_matrix = static_cast<const TypedDagNode<RbVector<RbVector<double> > >* >( newP );
+        context_matrix = static_cast<const TypedDagNode<RbVector<RbVector<long> > >* >( newP );
     }
 }

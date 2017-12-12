@@ -201,7 +201,7 @@ void AdjacentRateModifier::setWidth(size_t w)
     width = w;
 }
 
-void AdjacentRateModifier::setContextMatrix(const RbVector<RbVector<double> >& c)
+void AdjacentRateModifier::setContextMatrix(const RbVector<RbVector<long> >& c)
 {
 
     context_type = "matrix";

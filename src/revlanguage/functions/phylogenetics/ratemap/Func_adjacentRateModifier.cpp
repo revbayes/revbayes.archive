@@ -46,11 +46,11 @@ RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_
     RevBayesCore::TypedDagNode<double>* gf = static_cast<const Real&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* lf = static_cast<const Real&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<long>* w = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* c = NULL;
-    if ( this->args[3].getVariable()->getRevObject().isType( ModelVector<ModelVector<Real> >::getClassTypeSpec() ) )
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* c = NULL;
+    if ( this->args[3].getVariable()->getRevObject().isType( ModelVector<ModelVector<Natural> >::getClassTypeSpec() ) )
     {
         
-        c = static_cast<const ModelVector<ModelVector<Real> > &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
+        c = static_cast<const ModelVector<ModelVector<Natural> > &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
     }
     size_t ns = static_cast<const Natural&>( this->args[4].getVariable()->getRevObject() ).getValue();
     size_t nc = static_cast<const Natural&>( this->args[5].getVariable()->getRevObject() ).getValue();
@@ -88,7 +88,7 @@ const ArgumentRules& Func_adjacentRateModifier::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "gainFactor", Real::getClassTypeSpec(), "Multiplicative factor (r' = r * e^{ n_1 * f }) for characters in context set", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         argumentRules.push_back( new ArgumentRule( "lossFactor", Real::getClassTypeSpec(), "Multiplicative factor (r' = r * e^{ n_0 * f }) for characters in context set", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         argumentRules.push_back( new ArgumentRule( "width",  Natural::getClassTypeSpec(), "Width of context-dependence window", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(1) ) );
-        argumentRules.push_back( new ArgumentRule( "matrix",  ModelVector<ModelVector<Real> >::getClassTypeSpec(), "Weighted character adjacency matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "matrix",  ModelVector<ModelVector<Natural> >::getClassTypeSpec(), "Weighted character adjacency matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), "Number of states", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
         argumentRules.push_back( new ArgumentRule( "numChars", Natural::getClassTypeSpec(), "Number of characters", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
         
