@@ -1,15 +1,16 @@
-#include "PhylogeneticIndependentContrastsFunction.h"
+#include "PhylogeneticIndependentContrastsMultiSampleFunction.h"
 #include "RbException.h"
 
 #include <cmath>
 
 using namespace RevBayesCore;
 
-PhylogeneticIndependentContrastsFunction::PhylogeneticIndependentContrastsFunction(const TypedDagNode<Tree> *t, const TypedDagNode<ContinuousCharacterData> *d, const TypedDagNode<long> *s, bool n ) : TypedFunction< RbVector<double> >( new RbVector<double>() ),
+PhylogeneticIndependentContrastsMultiSampleFunction::PhylogeneticIndependentContrastsMultiSampleFunction(const TypedDagNode<Tree> *t, const TypedDagNode<ContinuousCharacterData> *d, const TypedDagNode<long> *s, const std::vector<Taxon> &ta, bool n ) : TypedFunction< RbVector<double> >( new RbVector<double>() ),
     tau( t ),
     data( d ),
     site( s ),
-    normalized( n )
+    normalized( n ),
+    taxa( ta )
 {
     // add the lambda parameter as a parent
     addParameter( tau );
@@ -22,20 +23,102 @@ PhylogeneticIndependentContrastsFunction::PhylogeneticIndependentContrastsFuncti
 }
 
 
-PhylogeneticIndependentContrastsFunction::~PhylogeneticIndependentContrastsFunction( void )
+PhylogeneticIndependentContrastsMultiSampleFunction::~PhylogeneticIndependentContrastsMultiSampleFunction( void )
 {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-PhylogeneticIndependentContrastsFunction* PhylogeneticIndependentContrastsFunction::clone( void ) const
+PhylogeneticIndependentContrastsMultiSampleFunction* PhylogeneticIndependentContrastsMultiSampleFunction::clone( void ) const
 {
-    return new PhylogeneticIndependentContrastsFunction( *this );
+    return new PhylogeneticIndependentContrastsMultiSampleFunction( *this );
 }
 
 
-void PhylogeneticIndependentContrastsFunction::update( void )
+double PhylogeneticIndependentContrastsMultiSampleFunction::computeMeanForSpecies(const std::string &name, size_t index)
+{
+    
+    double mean = 0.0;
+    double num_samples = 0.0;
+    
+    const ContinuousCharacterData &d = data->getValue();
+    
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        if ( name == t.getSpeciesName() )
+        {
+            const ContinuousTaxonData& taxon = d.getTaxonData( t.getName() );
+            mean += taxon.getCharacter(index);
+            
+            ++num_samples;
+        }
+        
+    }
+    
+    // normalize
+    mean /= num_samples;
+    
+    
+    return mean;
+}
+
+
+double PhylogeneticIndependentContrastsMultiSampleFunction::getNumberOfSamplesForSpecies(const std::string &name)
+{
+    
+    double num_samples = 0.0;
+    
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        if ( name == t.getSpeciesName() )
+        {
+            ++num_samples;
+        }
+        
+    }
+    
+    return num_samples;
+}
+
+
+double PhylogeneticIndependentContrastsMultiSampleFunction::getWithinSpeciesVariance(const std::string &name, size_t index)
+{
+    
+    double mean = computeMeanForSpecies(name, index);
+
+    double var = 0.0;
+    double num_samples = 0.0;
+    
+    const ContinuousCharacterData &d = data->getValue();
+    
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        if ( name == t.getSpeciesName() )
+        {
+            const ContinuousTaxonData& taxon = d.getTaxonData( t.getName() );
+            var += (taxon.getCharacter(index) - mean) * (taxon.getCharacter(index) - mean);
+            
+            ++num_samples;
+        }
+        
+    }
+    
+    // normalize
+    var /= (num_samples-1);
+    
+    
+    return var;
+}
+
+
+void PhylogeneticIndependentContrastsMultiSampleFunction::update( void )
 {
     
     RbVector<double> &v = *value;
@@ -64,7 +147,7 @@ void PhylogeneticIndependentContrastsFunction::update( void )
 }
 
 
-void PhylogeneticIndependentContrastsFunction::recursiveComputeLnProbability( const TopologyNode &node, size_t node_index )
+void PhylogeneticIndependentContrastsMultiSampleFunction::recursiveComputeLnProbability( const TopologyNode &node, size_t node_index )
 {
     
     // check for recomputation
@@ -121,7 +204,7 @@ void PhylogeneticIndependentContrastsFunction::recursiveComputeLnProbability( co
             stdev = sqrt(t_left+t_right);
             
             mu_node = (mu_left*t_right + mu_right*t_left) / (t_left+t_right);
-                
+            
             // compute the contrasts for this node
             contrast = mu_left - mu_right;
             
@@ -132,7 +215,7 @@ void PhylogeneticIndependentContrastsFunction::recursiveComputeLnProbability( co
 }
 
 
-void PhylogeneticIndependentContrastsFunction::resetContrasts( void )
+void PhylogeneticIndependentContrastsMultiSampleFunction::resetContrasts( void )
 {
     size_t num_nodes = tau->getValue().getNumberOfNodes();
     
@@ -151,16 +234,19 @@ void PhylogeneticIndependentContrastsFunction::resetContrasts( void )
     {
         if ( (*it)->isTip() )
         {
-            const ContinuousTaxonData& taxon = data->getValue().getTaxonData( (*it)->getName() );
-            double c = taxon.getCharacter(site_index);
+            
+            const std::string &name = (*it)->getName();
+            double c = computeMeanForSpecies(name, site_index);
             contrasts[(*it)->getIndex()] = c;
-            contrast_uncertainty[(*it)->getIndex()] = 0;
+            contrast_uncertainty[(*it)->getIndex()] = sqrt( getWithinSpeciesVariance(name,site_index) ) / getNumberOfSamplesForSpecies(name);
+        
         }
+
     }
     
 }
 
-void PhylogeneticIndependentContrastsFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void PhylogeneticIndependentContrastsMultiSampleFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == tau)
@@ -176,6 +262,7 @@ void PhylogeneticIndependentContrastsFunction::swapParameterInternal(const DagNo
         site = static_cast<const TypedDagNode<long>* >( newP );
     }
 }
+
 
 
 
