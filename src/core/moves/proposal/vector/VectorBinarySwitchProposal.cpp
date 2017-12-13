@@ -21,9 +21,11 @@ length( indices.size() ),
 switch_probability( sp )
 {
     // tell the base class to add the node
-    for (std::vector< StochasticNode<long> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
+    // for (std::vector< StochasticNode<long> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
+    for (size_t i = 0; i < indices.size(); i++)
     {
-        addNode( *it );
+        size_t index = indices[i]-1;
+        addNode( variables[index] );
     }
     
     // if the length is 0 then we use all elements (no indices were provided)
@@ -58,20 +60,6 @@ VectorBinarySwitchProposal* VectorBinarySwitchProposal::clone( void ) const
     return new VectorBinarySwitchProposal( *this );
 }
 
-
-/**
- * Get Proposals' name of object
- *
- * \return The Proposals' name.
- */
-const std::string& VectorBinarySwitchProposal::getProposalName( void ) const
-{
-    static std::string name = "VectorBinarySwitch";
-    
-    return name;
-}
-
-
 /**
  * Perform the proposal.
  *
@@ -95,25 +83,55 @@ double VectorBinarySwitchProposal::doProposal( void )
     update_set.clear();
     
     // get values to flip
-//    RbVector<long> &val = variables->getValue();
- 
+    //    RbVector<long> &val = variables->getValue();
+    
     // choose one value in the vector to flip
     double u = (size_t)(rng->uniform01() * length);
-//    long v = variables[u]->getValue() == 0 ? 1 : 0;
-    variables[u]->setValue( new long(variables[u]->getValue() == 0 ? 1 : 0) ); //(variables[u]->getValue() == 0 ? 1 : 0) );
-    update_set.insert(u);
+    size_t first_index = indices[u]-1;
+    //    long v = variables[u]->getValue() == 0 ? 1 : 0;
+    variables[first_index]->setValue( new long(variables[first_index]->getValue() == 0 ? 1 : 0) ); //(variables[u]->getValue() == 0 ? 1 : 0) );
+    update_set.insert(first_index);
     
     // flip all remaining values in indices according to switch_probability
-    for (size_t i = 0; i < length; i++) {
-        size_t index = ( n_indices == 0 ? i : indices[i]);
-        if (rng->uniform01() < switch_probability) {
+    for (size_t i = 0; i < length; i++)
+    {
+        size_t index = ( n_indices == 0 ? i : indices[i]-1 );
+        if (rng->uniform01() < switch_probability && index != first_index)
+        {
             variables[index]->setValue( new long(variables[index]->getValue() == 0 ? 1 : 0) );
-//            val[index] = ( val[index]==0 ? 1 : 0 );
+            //            val[index] = ( val[index]==0 ? 1 : 0 );
             update_set.insert( index );
         }
     }
     
     return 0.0;
+}
+
+
+/**
+ * Get Proposals' name of object
+ *
+ * \return The Proposals' name.
+ */
+const std::string& VectorBinarySwitchProposal::getProposalName( void ) const
+{
+    static std::string name = "VectorBinarySwitch";
+    
+    return name;
+}
+
+
+std::vector<DagNode*> VectorBinarySwitchProposal::identifyNodesToTouch(void)
+{
+    std::vector<DagNode*> nodes_to_touch;
+ 
+    for (size_t i = 0; i < indices.size(); i++) {
+        size_t index = indices[i]-1;
+        if ( update_set.find(index) != update_set.end() ) {
+            nodes_to_touch.push_back( nodes[i] );
+        }
+    }
+    return nodes_to_touch;
 }
 
 
@@ -202,10 +220,14 @@ void VectorBinarySwitchProposal::tune( double rate )
         switch_probability /= (2.0 - rate/0.44 );
     }
     
-    if (switch_probability > 1.0) {
+    // bound value s.t. 0 < switch_probability <= 1.0
+    if (switch_probability > 1.0)
+    {
         switch_probability = 1.0;
-    } else if (switch_probability < 1 / length) {
-        switch_probability = 1 / length;
+    }
+    else if (switch_probability < 1.0 / length)
+    {
+        switch_probability = 1.0 / length;
     }
     
 }

@@ -31,6 +31,7 @@ namespace RevBayesCore {
         VectorBinarySwitchProposal*                 clone(void) const;                                                                  //!< Clone object
         double                                      doProposal(void);                                                                   //!< Perform proposal
         const std::string&                          getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
+        std::vector<DagNode*>                       identifyNodesToTouch(void);
         void                                        printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                                        prepareProposal(void);                                                              //!< Prepare the proposal
         void                                        tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
@@ -43,7 +44,7 @@ namespace RevBayesCore {
         
     private:
         // parameters
-        std::vector<StochasticNode<long>* >       variables;
+        std::vector<StochasticNode<long>* >         variables;
         std::vector<long>                           indices;
         size_t                                      length;
         double                                      switch_probability;
