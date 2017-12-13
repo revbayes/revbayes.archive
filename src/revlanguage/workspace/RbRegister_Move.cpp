@@ -110,6 +110,11 @@
 //#include "Move_CorrelationMatrixReparameterization.h"
 //#include "Move_CorrelationMatrixExpansion.h"
 
+/* Moves on random adjacency graphs */
+#include "Move_GraphFlipEdge.h"
+#include "Move_GraphFlipChord.h"
+#include "Move_GraphShiftEdge.h"
+
 /* Moves on continuous character data (real valued matrices) */
 #include "Move_ContinuousCharacterDataSlide.h"
 
@@ -259,6 +264,11 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_ConjugateInverseWishart() );
 
+        /* Moves of random adjacency graphs */
+        addTypeWithConstructor( new Move_GraphFlipEdge() );
+        addTypeWithConstructor( new Move_GraphFlipChord() );
+        addTypeWithConstructor( new Move_GraphShiftEdge() );
+        
         /* Moves on continuous character data (matrices of real values) */
         addTypeWithConstructor( new Move_ContinuousCharacterDataSlide() );
 
