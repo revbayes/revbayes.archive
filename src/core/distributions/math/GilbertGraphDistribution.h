@@ -14,7 +14,7 @@ namespace RevBayesCore {
     public:
         
         // LKJPartial distribution with parameter eta
-        GilbertGraphDistribution(const TypedDagNode<double> *p, size_t n);
+        GilbertGraphDistribution(size_t n, const TypedDagNode<double> *p);
         
         virtual                                            ~GilbertGraphDistribution(void) {}
         

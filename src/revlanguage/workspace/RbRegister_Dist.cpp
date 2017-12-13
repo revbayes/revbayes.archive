@@ -163,6 +163,7 @@
 #include "Dist_exponentialOffsetPositive.h"
 #include "Dist_gamma.h"
 #include "Dist_geom.h"
+#include "Dist_GilbertGraph.h"
 #include "Dist_halfCauchy.h"
 #include "Dist_halfCauchyPositive.h"
 #include "Dist_halfNormal.h"
@@ -404,6 +405,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // LKJ distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_LKJ() );
         AddDistribution< MatrixRealSymmetric        >( new Dist_LKJPartial() );
+        
+        // random graph distributions
+        AddDistribution< MatrixRealSymmetric        >( new Dist_GilbertGraph() );
         
         // lognormal distribution
         AddContinuousDistribution< RealPos          >( new Dist_lnorm() );
