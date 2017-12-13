@@ -259,10 +259,10 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
 
     std::vector<std::set<size_t> > sites_with_states(this->num_states);
     
-    for (size_t i = 0; i < from.size(); i++)
-    {
-        sites_with_states[ static_cast<CharacterEventDiscrete*>(from[i])->getState() ].insert(i);
-    }
+//    for (size_t i = 0; i < from.size(); i++)
+//    {
+//        sites_with_states[ static_cast<CharacterEventDiscrete*>(from[i])->getState() ].insert(i);
+//    }
 
     return getSumOfRates( from, sites_with_states, age, rate);
 }
