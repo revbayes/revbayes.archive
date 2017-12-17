@@ -37,8 +37,8 @@ namespace RevBayesCore {
     private:
     
         // members
-        std::string             fileName;                                                                   //!< The file name
-        std::fstream            outStream;                                                                  //!< the filestream object
+        std::string             file_name;                                                                   //!< The file name
+        std::fstream            out_stream;                                                                  //!< the filestream object
         
     };
     
