@@ -59,7 +59,16 @@ namespace RevBayesCore {
         size_t                                  absent_switch_idx;
         bool                                    undo_needed;
         
-        std::set<size_t>                        touched_edge_elements;
+        struct Edge {
+            Edge(size_t f, size_t t, double v) : from(f), to(t), value(v) {}
+            size_t from;
+            size_t to;
+            double value;
+        };
+        std::vector<Edge>                       touched_edge_elements;
+        
+        
+
     };
     
 }

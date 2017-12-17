@@ -2,6 +2,7 @@
 #define AdjacentRateModifier_H
 
 #include "CharacterHistoryRateModifier.h"
+#include "MatrixReal.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
 
@@ -31,6 +32,7 @@ namespace RevBayesCore
 
         
         void                                setContextMatrix(const RbVector<RbVector<long> >& c);
+        void                                setContextMatrix(const MatrixReal& c);
         void                                setGainFactor(double f);
         void                                setLossFactor(double f);
         void                                setWidth(size_t w);

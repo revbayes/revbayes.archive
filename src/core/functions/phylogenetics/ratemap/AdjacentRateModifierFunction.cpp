@@ -17,8 +17,30 @@ AdjacentRateModifierFunction::AdjacentRateModifierFunction(const TypedDagNode<do
     gainFactor(gf),
     lossFactor(lf),
     width(w),
-    context_matrix(c),
+    context_matrix(NULL),
+    context_array(c),
     context_type("width")
+{
+    if (context_array != NULL) {
+        context_type = "array";
+    }
+    
+    // add the parameters as parents
+    addParameter(gainFactor);
+    addParameter(lossFactor);
+    addParameter(width);
+    addParameter(context_array);
+    
+    update();
+}
+
+AdjacentRateModifierFunction::AdjacentRateModifierFunction(const TypedDagNode<double>* gf, const TypedDagNode<double>* lf, const TypedDagNode<long>* w, const TypedDagNode<MatrixReal>* c, size_t ns, size_t nc) : TypedFunction<CharacterHistoryRateModifier>( new AdjacentRateModifier(ns, nc) ),
+gainFactor(gf),
+lossFactor(lf),
+width(w),
+context_array(NULL),
+context_matrix(c),
+context_type("width")
 {
     if (context_matrix != NULL) {
         context_type = "matrix";
@@ -39,6 +61,7 @@ AdjacentRateModifierFunction::AdjacentRateModifierFunction(const AdjacentRateMod
     lossFactor = m.lossFactor;
     width = m.width;
     context_matrix = m.context_matrix;
+    context_array = m.context_array;
     context_type = m.context_type;
 }
 
@@ -67,15 +90,19 @@ void AdjacentRateModifierFunction::update( void )
     double lf = lossFactor->getValue();
     static_cast<AdjacentRateModifier*>(value)->setLossFactor(lf);
     
-    
     if (context_type == "width")
     {
         size_t w = width->getValue();
         static_cast<AdjacentRateModifier*>(value)->setWidth(w);
     }
+    else if (context_type=="array")
+    {
+        RbVector<RbVector<long> > c = context_array->getValue();
+        static_cast<AdjacentRateModifier*>(value)->setContextMatrix(c);
+    }
     else if (context_type=="matrix")
     {
-        RbVector<RbVector<long> > c = context_matrix->getValue();
+        MatrixReal c = context_matrix->getValue();
         static_cast<AdjacentRateModifier*>(value)->setContextMatrix(c);
     }
     
@@ -98,8 +125,12 @@ void AdjacentRateModifierFunction::swapParameterInternal(const DagNode *oldP, co
     {
         width = static_cast<const TypedDagNode<long>* >( newP );
     }
+    else if (oldP == context_array)
+    {
+        context_array = static_cast<const TypedDagNode<RbVector<RbVector<long> > >* >( newP );
+    }
     else if (oldP == context_matrix)
     {
-        context_matrix = static_cast<const TypedDagNode<RbVector<RbVector<long> > >* >( newP );
+        context_matrix = static_cast<const TypedDagNode<MatrixReal>* >( newP );
     }
 }
