@@ -16,7 +16,6 @@
 #include "RbConstants.h"
 #include "RbMathFunctions.h"
 #include "RbStatisticsHelper.h"
-#include "DistributionBinomial.h"
 
 
 using namespace RevBayesCore;
@@ -52,7 +51,6 @@ double RbStatistics::GilbertGraph::lnPdf(double p, const MatrixReal &z)
 {
     
     size_t dim = z.getNumberOfRows();
-    
     size_t num_possible_edges = dim * (dim-1) / 2;
     size_t num_assigned_edges = 0;
     for (size_t i = 0; i < z.size(); i++) {
@@ -60,9 +58,9 @@ double RbStatistics::GilbertGraph::lnPdf(double p, const MatrixReal &z)
             num_assigned_edges += z[i][j];
         }
     }
-    
-    return RbStatistics::Binomial::lnPdf( num_possible_edges, p, num_assigned_edges );
-
+    size_t num_unassigned_edges = num_possible_edges - num_assigned_edges;
+    double ret = num_assigned_edges * log(p) + num_unassigned_edges * log(1.0-p);
+    return ret;
 }
 
 

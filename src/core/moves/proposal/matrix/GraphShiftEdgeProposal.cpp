@@ -1,3 +1,4 @@
+#include "DistributionBinomial.h"
 #include "GraphShiftEdgeProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -69,7 +70,7 @@ GraphShiftEdgeProposal* GraphShiftEdgeProposal::clone( void ) const
  */
 const std::string& GraphShiftEdgeProposal::getProposalName( void ) const
 {
-    static std::string name = "MatrixRealSingleElementSlideMove";
+    static std::string name = "GraphShiftEdgeMove";
     
     return name;
 }
@@ -91,23 +92,42 @@ double GraphShiftEdgeProposal::doProposal( void )
     // undo not necessarily needed
     undo_needed = false;
     
-    // clear touched edge elements set
-    touched_edge_elements = std::set<size_t>();
+    // clear touched edge vector
+    touched_edge_elements = std::vector<Edge>();
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     MatrixReal& v = matrix->getValue();
     
-    // Find all vertices with >1 edge
-    std::vector<size_t> valid_vertices;
-    std::vector< std::vector<size_t> > edge_list( vertices.size() );
     
-    // Store all edges
-    if (symmetric)
-    {
+    // print
+//    std::cout << "before\n";
+//    for (size_t i = 0; i < v.size(); i++) {
+//        for (size_t j = 0; j < v.size(); j++) {
+//            std::cout << ( v[i][j] == 0 ? "  " : ". ");
+//        }
+//        std::cout << "\n";
+//    }
+//    std::cout << "\n";
+    
+    // Always shift the first sampled edge
+    size_t n_to_shift = RbStatistics::Binomial::rv( vertices.size(), sampling_probability, *GLOBAL_RNG );
+    if (n_to_shift == 0) {
+        n_to_shift = 1;
+    }
+    
+    // repeat the shift procedure multiple times
+    for (size_t k = 0; k < n_to_shift; k++) {
+       
+        // Find all vertices with >1 edge
+        std::vector<size_t> valid_vertices;
+        std::vector< std::vector<size_t> > edge_list( vertices.size() );
+        
+        // Collect all valid vertices (vertices with one edge)
         for (size_t i = 0; i < vertices.size(); i++)
         {
             size_t idx = vertices[i]-1;
+            
             for (size_t j = 0; j < vertices.size(); j++)
             {
                 size_t jdx = vertices[j]-1;
@@ -117,85 +137,84 @@ double GraphShiftEdgeProposal::doProposal( void )
                 }
             }
         }
-    }
-    
-    // Sample one vertex among vertices of degree > 0
-    size_t vertex_sample_pos = size_t( rng->uniform01() * valid_vertices.size() );
-    from_idx = valid_vertices[ vertex_sample_pos ];
-    
-    // Collect all the present and absent edges adjacent to the sampled vertex
-    std::vector<size_t> present_edge;
-    std::vector<size_t> absent_edge;
-    for (size_t i = 0; i < vertices.size(); i++)
-    {
-        size_t to_idx = vertices[i]-1;
-        if (v[from_idx][to_idx] == 0)
-        {
-            absent_edge.push_back(to_idx);
+        
+        // return if no valid switch options
+        if (valid_vertices.size() == 0) {
+            return 0.0;
         }
-        else
+        
+        // Sample one vertex among vertices of degree > 0
+        size_t vertex_sample_pos = size_t( rng->uniform01() * valid_vertices.size() );
+        from_idx = valid_vertices[ vertex_sample_pos ];
+        
+        // Collect all the present and absent edges adjacent to the sampled vertex
+        std::vector<size_t> present_edge;
+        std::vector<size_t> absent_edge;
+        for (size_t i = 0; i < vertices.size(); i++)
         {
-            present_edge.push_back(to_idx);
+            size_t to_idx = vertices[i]-1;
+            if (from_idx == to_idx) {
+                continue;
+            }
+            else if (v[from_idx][to_idx] == 0)
+            {
+                absent_edge.push_back(to_idx);
+            }
+            else
+            {
+                present_edge.push_back(to_idx);
+            }
         }
+        
+        // abort if no shiftable edges
+        if (present_edge.size() == 0 || absent_edge.size() == 0)
+        {
+            continue;
+        }
+        
+        // moving forward, undoo is needed
+        undo_needed = true;
+        
+        // Sample one present edge to shift to the position of an absent edge
+        present_switch_idx = present_edge[ size_t( rng->uniform01() * present_edge.size() ) ];
+        absent_switch_idx = absent_edge[ size_t( rng->uniform01() * absent_edge.size() ) ];
+        
+        
+        //    std::cout << "before\n";
+        //    std::cout << v << "\n";
+        // Switch sampled values
+        v[ from_idx ][ present_switch_idx ] = 0;
+        touched_edge_elements.push_back( Edge(from_idx, present_switch_idx, 1) );
+        v[ from_idx ][ absent_switch_idx ] = 1;
+        touched_edge_elements.push_back( Edge(from_idx, absent_switch_idx, 0) );
+        
+//        std::cout << "SWITCH " << from_idx << "," << present_switch_idx << " -> " << from_idx << "," << absent_switch_idx << "\n";
+        
+        if (symmetric) {
+            v[ present_switch_idx ][ from_idx ] = 0;
+//            touched_edge_elements.push_back( Edge(present_switch_idx, from_idx, 1) );
+            v[ absent_switch_idx ][ from_idx ] = 1;
+//            touched_edge_elements.push_back( Edge(absent_switch_idx, from_idx, 0) );
+        }
+        
+        matrix->addTouchedElementIndex( from_idx * v.getNumberOfRows() + present_switch_idx );
+        matrix->addTouchedElementIndex( from_idx * v.getNumberOfRows() + absent_switch_idx );
+        if (symmetric) {
+            matrix->addTouchedElementIndex( absent_switch_idx * v.getNumberOfRows() + from_idx );
+            matrix->addTouchedElementIndex( present_switch_idx * v.getNumberOfRows() + from_idx );
+        }
+    
     }
-    
-    // abort if no shiftable edges
-    if (present_edge.size() == 0 || absent_edge.size() == 0)
-    {
-        return 0.0;
-    }
-    
-    // moving forward, undoo is needed
-    undo_needed = true;
-    
-    // Sample one present edge to shift to the position of an absent edge
-    present_switch_idx = present_edge[ size_t( rng->uniform01() * present_edge.size() ) ];
-    absent_switch_idx = absent_edge[ size_t( rng->uniform01() * absent_edge.size() ) ];
-    
-    
-//    std::cout << "before\n";
-//    std::cout << v << "\n";
-    // Switch sampled values
-    v[ from_idx ][ present_switch_idx ] = 0;
-    v[ from_idx ][ absent_switch_idx ] = 1;
-    if (symmetric) {
-        v[ present_switch_idx ][ from_idx ] = 0;
-        v[ absent_switch_idx ][ from_idx ] = 1;
-    }
-    
     
 //    std::cout << "after\n";
-//    std::cout << v << "\n";
-    
-    matrix->addTouchedElementIndex( from_idx * v.getNumberOfRows() + present_switch_idx );
-    matrix->addTouchedElementIndex( from_idx * v.getNumberOfRows() + absent_switch_idx );
-    if (symmetric) {
-        matrix->addTouchedElementIndex( absent_switch_idx * v.getNumberOfRows() + from_idx );
-        matrix->addTouchedElementIndex( present_switch_idx * v.getNumberOfRows() + from_idx );
-    }
+//    for (size_t i = 0; i < v.size(); i++) {
+//        for (size_t j = 0; j < v.size(); j++) {
+//            std::cout << ( v[i][j] == 0 ? "  " : ". ");
+//        }
+//        std::cout << "\n";
+//    }
+//    std::cout << "\n";
 
-//    // sample the vertex to update w.p. 1
-//    size_t first_index = size_t( rng->uniform01() * vertex_list_length );
-//    touched_edge_elements.insert( first_index );
-//    
-//    // sample additional edges to update w.p. p
-//    for (size_t i = 0; i < edge_list_length; i++) {
-//        if (rng->uniform01() < sampling_probability) {
-//            touched_edge_elements.insert( i );
-//        }
-//    }
-//    
-//    // flip and touch all sampled edges
-//    for (std::set<size_t>::iterator it = touched_edge_elements.begin(); it != touched_edge_elements.end(); it++) {
-//        size_t i = edges[ *it ][ 0 ] - 1;
-//        size_t j = edges[ *it ][ 1 ] - 1;
-//        v[i][j] = ( v[i][j] == 1 ? 0 : 1 );
-//        if (symmetric) {
-//            v[j][i] = v[i][j];
-//        }
-//        matrix->addTouchedElementIndex( i * v.getNumberOfRows() + j );
-//        
-//    }
     
     // symmetric proposal
     return 0;
@@ -243,18 +262,36 @@ void GraphShiftEdgeProposal::undoProposal( void )
     
     MatrixReal& v = matrix->getValue();
     
-    v[ from_idx ][ present_switch_idx ] = 1;
-    v[ from_idx ][ absent_switch_idx ] = 0;
-    if (symmetric) {
-        v[ present_switch_idx ][ from_idx ] = 1;
-        v[ absent_switch_idx ][ from_idx ] = 0;
+    for (std::vector<Edge>::reverse_iterator rit = touched_edge_elements.rbegin(); rit != touched_edge_elements.rend(); rit++)
+    {
+        v[ rit->from ][ rit->to ] = rit->value;
+//        std::cout << "UNDO " << rit->from << "," << rit->to << " = " << rit->value << "\n";
+        if (symmetric) {
+            v[ rit->to ][ rit->from ] = rit->value;
+        }
+//        v[ from_idx ][ present_switch_idx ] = 1;
+//        v[ from_idx ][ absent_switch_idx ] = 0;
+//        if (symmetric) {
+//            v[ present_switch_idx ][ from_idx ] = 1;
+//            v[ absent_switch_idx ][ from_idx ] = 0;
+//        }
+    
     }
-
+    
+//    std::cout << "restored\n";
+//    for (size_t i = 0; i < v.size(); i++) {
+//        for (size_t j = 0; j < v.size(); j++) {
+//            std::cout << ( v[i][j] == 0 ? "  " : ". ");
+//        }
+//        std::cout << "\n";
+//    }
+//    std::cout << "\n";
+    
     // clear all touched elements
     matrix->clearTouchedElementIndices();
     
     // clear touched edge elements set
-    touched_edge_elements = std::set<size_t>();
+    touched_edge_elements = std::vector<Edge>();
 }
 
 

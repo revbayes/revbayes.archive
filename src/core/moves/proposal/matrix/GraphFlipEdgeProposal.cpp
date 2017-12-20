@@ -51,7 +51,8 @@ symmetric( s )
  */
 void GraphFlipEdgeProposal::cleanProposal( void )
 {
-    ; // do nothing
+    // clear touched edge elements set
+    touched_edge_elements = std::set<size_t>();
 }
 
 /**
@@ -74,7 +75,7 @@ GraphFlipEdgeProposal* GraphFlipEdgeProposal::clone( void ) const
  */
 const std::string& GraphFlipEdgeProposal::getProposalName( void ) const
 {
-    static std::string name = "MatrixRealSingleElementSlideMove";
+    static std::string name = "GraphFlipEdgeMove";
     
     return name;
 }
@@ -92,37 +93,44 @@ const std::string& GraphFlipEdgeProposal::getProposalName( void ) const
  */
 double GraphFlipEdgeProposal::doProposal( void )
 {
-    // clear touched edge elements set
-    touched_edge_elements = std::set<size_t>();
     
     // Get random number generator
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    MatrixReal& v = matrix->getValue();
+    // clear touched edge elements set
+    touched_edge_elements = std::set<size_t>();
     
     // sample the first edge to update w.p. 1
     size_t first_index = size_t( rng->uniform01() * edge_list_length );
     touched_edge_elements.insert( first_index );
     
     // sample additional edges to update w.p. p
-    for (size_t i = 0; i < edge_list_length; i++) {
-        if (rng->uniform01() < sampling_probability) {
-            touched_edge_elements.insert( i );
+    if (sampling_probability > 0.0) {
+        for (size_t i = 0; i < edge_list_length; i++) {
+            if (rng->uniform01() < sampling_probability) {
+                touched_edge_elements.insert( i );
+            }
         }
     }
     
     // flip and touch all sampled edges
+    MatrixReal& v = matrix->getValue();
     for (std::set<size_t>::iterator it = touched_edge_elements.begin(); it != touched_edge_elements.end(); it++) {
         size_t i = edges[ *it ][ 0 ] - 1;
         size_t j = edges[ *it ][ 1 ] - 1;
         v[i][j] = ( v[i][j] == 1 ? 0 : 1 );
         if (symmetric) {
             v[j][i] = v[i][j];
+            matrix->addTouchedElementIndex( j * v.getNumberOfRows() + i );
         }
         matrix->addTouchedElementIndex( i * v.getNumberOfRows() + j );
 
     }
     
+//    if (!v.isSymmetric()) {
+//        throw RbException("matrix is not symmetric!\n");
+//    }
+
     // symmetric proposal
     return 0;
 }
@@ -162,11 +170,9 @@ void GraphFlipEdgeProposal::printParameterSummary(std::ostream &o) const
  */
 void GraphFlipEdgeProposal::undoProposal( void )
 {
-    
 
-    MatrixReal& v = matrix->getValue();
-    
     // revert all flipped edges
+    MatrixReal& v = matrix->getValue();
     for (std::set<size_t>::iterator it = touched_edge_elements.begin(); it != touched_edge_elements.end(); it++) {
         size_t i = edges[ *it ][ 0 ] - 1;
         size_t j = edges[ *it ][ 1 ] - 1;
@@ -178,6 +184,10 @@ void GraphFlipEdgeProposal::undoProposal( void )
     
     // clear all touched elements
     matrix->clearTouchedElementIndices();
+    
+//    if (!v.isSymmetric()) {
+//        throw RbException("matrix is not symmetric!\n");
+//    }
     
     // clear touched edge elements set
     touched_edge_elements = std::set<size_t>();
@@ -196,7 +206,7 @@ void GraphFlipEdgeProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     {
         array = static_cast< StochasticNode<RbVector<RbVector<double> > >* >(newN) ;
     }
-    else
+    else if (oldN == matrix)
     {
         matrix = static_cast< StochasticNode<MatrixReal>* >(newN) ;
     }

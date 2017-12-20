@@ -204,6 +204,35 @@ void AdjacentRateModifier::setWidth(size_t w)
 void AdjacentRateModifier::setContextMatrix(const RbVector<RbVector<long> >& c)
 {
 
+    context_type = "array";
+    context_matrix = std::vector<std::vector<adjacency> >(this->num_characters);
+    context_set = std::vector<std::set<size_t> >(this->num_characters);
+    
+    for (size_t i = 0; i < this->num_characters; i++)
+    {
+        for (size_t j = 0; j < this->num_characters; j++)
+        {
+            if (c[i][j] != 0.0)
+            {
+                // add adjacency
+                adjacency v;
+                v.from = i;
+                v.to = j;
+                v.weight = c[i][j];
+                context_matrix[i].push_back(v);
+                
+                // add dependent context set -- site j whose rate depends on the state of site i
+                context_set[i].insert(j);
+            }
+            
+        }
+        context_set[i].insert(i);
+    }
+}
+
+void AdjacentRateModifier::setContextMatrix(const MatrixReal& c)
+{
+    
     context_type = "matrix";
     context_matrix = std::vector<std::vector<adjacency> >(this->num_characters);
     context_set = std::vector<std::set<size_t> >(this->num_characters);

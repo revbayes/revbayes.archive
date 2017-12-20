@@ -244,7 +244,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     
     
     // Identify nodes that proposal touches
-    std::vector<DagNode*> touched_nodes = proposal->identifyNodesToTouch();
+    std::vector<DagNode*> touched_nodes = nodes; //proposal->identifyNodesToTouch();
     
     // first we touch all the nodes
     // that will set the flags for recomputation
