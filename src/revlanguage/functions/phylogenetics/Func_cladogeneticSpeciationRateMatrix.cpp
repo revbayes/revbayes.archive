@@ -35,7 +35,7 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticSpeciationRateMatrix >* F
    
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* events = static_cast<const ModelVector<ModelVector<Natural> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* spec_rates = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    int n_states = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
+    int n_states = (int)static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
     
     RevBayesCore::CladogeneticSpeciationRateMatrixFunction* f = new RevBayesCore::CladogeneticSpeciationRateMatrixFunction( events, spec_rates, n_states );
     

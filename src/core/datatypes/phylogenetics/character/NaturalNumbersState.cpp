@@ -160,10 +160,36 @@ void NaturalNumbersState::setState(const std::string &symbol)
         try
         {
             state.clear();
-            size_t pos = boost::lexical_cast<size_t>( symbol );
-            state.set( pos );
-            num_observed_states = 1;
-            index_single_state = pos;
+
+            if (symbol[0] == '(')
+            {
+                // parse ambiguous character states like (2 4 5)
+                std::string temp = "";
+                size_t num_observed = 0;
+                for (size_t i = 1; i < symbol.size(); ++i)
+                {
+                    if (symbol[i] == ' ' || symbol[i] == ')') 
+                    {
+                        size_t pos = boost::lexical_cast<size_t>( temp );
+                        state.set( pos );
+                        num_observed++;
+                        index_single_state = pos;
+                        temp = "";
+                    }
+                    else
+                    {
+                        temp = temp + symbol[i];
+                    }
+                }
+                num_observed_states = num_observed;
+            } 
+            else
+            {
+                size_t pos = boost::lexical_cast<size_t>( symbol );
+                state.set( pos );
+                num_observed_states = 1;
+                index_single_state = pos;
+            }
         }
         catch( boost::bad_lexical_cast const& )
         {

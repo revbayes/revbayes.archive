@@ -29,29 +29,34 @@ NormalDistribution::NormalDistribution(const TypedDagNode<double> *m, const Type
 }
 
 
-NormalDistribution::~NormalDistribution( void ) {
+NormalDistribution::~NormalDistribution( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
-double NormalDistribution::cdf( void ) const {
+double NormalDistribution::cdf( void ) const
+{
     return RbStatistics::Normal::cdf( mean->getValue(), stDev->getValue(), *value, getMin(), getMax());
 
 }
 
 
-NormalDistribution* NormalDistribution::clone( void ) const {
+NormalDistribution* NormalDistribution::clone( void ) const
+{
     return new NormalDistribution( *this );
 }
 
 
-double NormalDistribution::computeLnProbability( void ) {
+double NormalDistribution::computeLnProbability( void )
+{
     return RbStatistics::Normal::lnPdf(mean->getValue(), stDev->getValue(), *value, getMin(), getMax());
 
 }
 
 
-double NormalDistribution::getMax( void ) const {
+double NormalDistribution::getMax( void ) const
+{
     if ( max != NULL )
     {
         return max->getValue();
@@ -63,7 +68,8 @@ double NormalDistribution::getMax( void ) const {
 }
 
 
-double NormalDistribution::getMin( void ) const {
+double NormalDistribution::getMin( void ) const
+{
     if ( min != NULL )
     {
         return min->getValue();
@@ -75,12 +81,14 @@ double NormalDistribution::getMin( void ) const {
 }
 
 
-double NormalDistribution::quantile(double p) const {
+double NormalDistribution::quantile(double p) const
+{
     return RbStatistics::Normal::quantile(mean->getValue(), stDev->getValue(), p, getMin(), getMax());
 }
 
 
-void NormalDistribution::redrawValue( void ) {
+void NormalDistribution::redrawValue( void )
+{
     if ( getMin() == RbConstants::Double::neginf && getMax() == RbConstants::Double::inf )
     {
         *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);

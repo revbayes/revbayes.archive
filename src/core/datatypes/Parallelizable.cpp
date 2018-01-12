@@ -87,7 +87,7 @@ void Parallelizable::setActivePID(size_t a, size_t n)
 {
     
     active_PID      = a;
-    num_processes   = n;
+    num_processes   = (int)n;
     process_active  = ( active_PID == pid );
     
     // delegate call for derived classes

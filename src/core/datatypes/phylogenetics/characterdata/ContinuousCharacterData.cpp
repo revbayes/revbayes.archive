@@ -512,6 +512,39 @@ double ContinuousCharacterData::getMeanSpeciesDifference( size_t char_index ) co
 }
 
 
+
+/**
+ * Get the mean between all differences between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getMeanValue( size_t index ) const
+{
+    
+    double mean = 0.0;
+    double n_samples = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+                    
+            mean += a;
+            ++n_samples;
+            
+        }
+        
+    }
+    
+    mean /= n_samples;
+    
+    return mean;
+}
+
+
 /**
  * Get the minimum difference between two observed values.
  *

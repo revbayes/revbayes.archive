@@ -44,7 +44,7 @@ namespace RevBayesCore {
         std::multiset<CharacterEvent*,CharacterEventCompare>&           getHistory(void);
         const std::multiset<CharacterEvent*,CharacterEventCompare>&     getHistory(void) const;
 
-        void                                                            print(void) const;
+        void                                                            print(const TopologyNode* nd=NULL) const;
 
         // setters
         void                                                            setParentCharacters(const std::set<CharacterEvent*>& s);

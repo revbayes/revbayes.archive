@@ -389,7 +389,7 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
         
         // create master list of event times and types
         // pre-defined events are either a sample (lineage size up) or theta changepoint (lineage size constant)
-        size_t nEvents = 0;
+        // size_t nEvents = 0;
         size_t nTotalEvents = intervals.size() + serialTimes.size();
         for (size_t nEvents = 0; nEvents < nTotalEvents; ++nEvents)
         {

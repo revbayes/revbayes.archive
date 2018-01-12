@@ -69,19 +69,19 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
  * \param[in]    c         Clade constraints.
  */
 TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(const TopologyConstrainedTreeDistribution &d) : TypedDistribution<Tree>( d ),
-active_backbone_clades( d.active_backbone_clades ),
-active_clades( d.active_clades ),
-backbone_constraints( d.backbone_constraints ),
-backbone_mask( d.backbone_mask ),
-backbone_topology( d.backbone_topology ),
-backbone_topologies( d.backbone_topologies ),
-base_distribution( d.base_distribution->clone() ),
-dirty_nodes( d.dirty_nodes ),
-monophyly_constraints( d.monophyly_constraints ),
-stored_backbone_clades( d.stored_backbone_clades ),
-stored_clades( d.stored_clades ),
-num_backbones( d.num_backbones ),
-use_multiple_backbones( d.use_multiple_backbones )
+    active_backbone_clades( d.active_backbone_clades ),
+    active_clades( d.active_clades ),
+    backbone_constraints( d.backbone_constraints ),
+    backbone_mask( d.backbone_mask ),
+    backbone_topology( d.backbone_topology ),
+    backbone_topologies( d.backbone_topologies ),
+    base_distribution( d.base_distribution->clone() ),
+    dirty_nodes( d.dirty_nodes ),
+    monophyly_constraints( d.monophyly_constraints ),
+    stored_backbone_clades( d.stored_backbone_clades ),
+    stored_clades( d.stored_clades ),
+    num_backbones( d.num_backbones ),
+    use_multiple_backbones( d.use_multiple_backbones )
 {
     // the copy constructor of the TypedDistribution creates a new copy of the value
     // however, here we want to hold exactly the same value as the base-distribution

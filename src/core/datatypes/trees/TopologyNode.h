@@ -131,8 +131,8 @@ namespace RevBayesCore {
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
         void                                        removeChild(TopologyNode* c);                                                       //!< Removes a specific child
         void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
-        void                                        setAge(double a, bool propagate = true );                                                                   //!< Set the age of this node (should only be done for tips).
-        void                                        setBranchLength(double b);                                                          //!< Set the length of the branch leading to this node.
+        void                                        setAge(double a, bool propagate = true );                                           //!< Set the age of this node (should only be done for tips).
+        void                                        setBranchLength(double b, bool flag_dirty=true);                                    //!< Set the length of the branch leading to this node.
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
 
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node

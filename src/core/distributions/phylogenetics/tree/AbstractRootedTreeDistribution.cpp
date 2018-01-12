@@ -103,6 +103,10 @@ void AbstractRootedTreeDistribution::buildRandomBinaryTree(std::vector<TopologyN
 double AbstractRootedTreeDistribution::computeLnProbability( void )
 {
     
+    // proceed as long as derived classes validate a non-zero likeilhood
+    if (!isLnProbabilityNonZero()) {
+        return RbConstants::Double::neginf;
+    }
     
     // check that the ages are in correct chronological order
     // i.e., no child is older than its parent
@@ -183,6 +187,16 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
     lnProbTimes += computeLnProbabilityDivergenceTimes();
     
     return lnProbTimes + lnProbTreeShape();
+}
+
+
+/**
+ * A non-const virtual function to let derived classes to abort computing the likelihood.
+ *
+ * \return     A vector of times. The caller needs to deallocate this vector.
+ */
+bool AbstractRootedTreeDistribution::isLnProbabilityNonZero(void) {
+    return true;
 }
 
 
@@ -417,7 +431,7 @@ double AbstractRootedTreeDistribution::lnProbTreeShape(void) const
 
     size_t num_taxa = value->getNumberOfTips();
 
-    return (num_taxa - 1) * RbConstants::LN2 - 2.0 * RbMath::lnFactorial(num_taxa) + log(num_taxa);
+    return (num_taxa - 1) * RbConstants::LN2 - 2.0 * RbMath::lnFactorial((int)num_taxa) + log(num_taxa);
 }
 
 

@@ -59,7 +59,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         RevObject& b = args[0].getVariable()->getRevObject();
         if ( b.isType( Integer::getClassTypeSpec() ) )
         {
-            burnin = static_cast<const Integer &>(b).getValue();
+            burnin = (int)static_cast<const Integer &>(b).getValue();
         }
         else
         {
@@ -101,7 +101,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         found = true;
         
         double tree_CI  = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
-        int num_taxa    = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
+        int num_taxa    = (int)static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
         bool verbose    = static_cast<const RlBoolean &>( args[2].getVariable()->getRevObject() ).getValue();
         
         double entropy = this->value->computeEntropy(tree_CI, num_taxa, verbose);
@@ -145,7 +145,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         
         bool post = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getValue();
         
-        int n = this->value->size(post);
+        int n = (int)this->value->size(post);
         
         return new RevVariable( new Natural( n ) );
     }

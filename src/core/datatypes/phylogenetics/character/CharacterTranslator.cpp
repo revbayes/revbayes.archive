@@ -1,5 +1,6 @@
 #include "CharacterTranslator.h"
 #include "RbException.h"
+#include "StringUtilities.h"
 
 
 
@@ -53,6 +54,10 @@ RevBayesCore::AbstractDiscreteTaxonData* CharacterTranslator::translateCharacter
         if ( d.getCharacter(0).getDataType() == "DNA" )
         {
             trans_taxon_data = translateToCodonFromDna( dynamic_cast< const DiscreteTaxonData<DnaState>& >(d) );
+        }
+        else if ( d.getCharacter(0).getDataType() == "RNA" )
+        {
+            trans_taxon_data = translateToCodonFromRna( dynamic_cast< const DiscreteTaxonData<RnaState>& >(d) );
         }
         else
         {
@@ -111,6 +116,27 @@ DiscreteTaxonData<CodonState>* CharacterTranslator::translateToCodonFromDna(cons
         std::string codon_string = d.getCharacter(i).getStringValue();
         codon_string += d.getCharacter(i+1).getStringValue();
         codon_string += d.getCharacter(i+2).getStringValue();
+        CodonState cs = CodonState( codon_string );
+        
+        trans_taxon_data->addCharacter( cs );
+    }
+    
+    return trans_taxon_data;
+}
+
+
+DiscreteTaxonData<CodonState>* CharacterTranslator::translateToCodonFromRna(const DiscreteTaxonData<RnaState> &d)
+{
+    size_t length = d.getNumberOfCharacters();
+    
+    DiscreteTaxonData<CodonState> *trans_taxon_data = new DiscreteTaxonData<CodonState>( d.getTaxon() );
+    
+    for (size_t i=0; i<(length-2); i+=3)
+    {
+        std::string codon_string = d.getCharacter(i).getStringValue();
+        codon_string += d.getCharacter(i+1).getStringValue();
+        codon_string += d.getCharacter(i+2).getStringValue();
+        StringUtilities::replaceSubstring(codon_string, "U", "T");
         CodonState cs = CodonState( codon_string );
         
         trans_taxon_data->addCharacter( cs );

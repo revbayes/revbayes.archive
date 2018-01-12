@@ -153,7 +153,7 @@ double MultispeciesCoalescentMigration::computeLnProbability( void )
         TopologyNode *the_node = *it;
         if ( the_node->isTip() == true )
         {
-            const std::string &name = the_node->getName();
+//            const std::string &name = the_node->getName();
 //            species_names_2_nodes[name] = the_node;
         }
         else
@@ -176,7 +176,7 @@ double MultispeciesCoalescentMigration::computeLnProbability( void )
         TopologyNode *the_node = *it;
         if ( the_node->isTip() == true )
         {
-            const std::string &name = the_node->getName();
+            // const std::string &name = the_node->getName();
             current_individuals.insert( the_node );
             
             
@@ -197,7 +197,7 @@ double MultispeciesCoalescentMigration::computeLnProbability( void )
     }
 
     double ln_probability = 0.0;
-    double current_age = 0.0;
+    // double current_age = 0.0;
     std::multimap<double, TopologyNode * >::const_iterator it_species_ages      = species_ages_2_nodes.begin();
     std::multimap<double, TopologyNode * >::const_iterator it_individual_ages   = individual_ages_2_nodes.begin();
     double next_speciation_age = RbConstants::Double::inf;

@@ -134,6 +134,11 @@ const std::vector<DagNode*>& Proposal::getNodes( void ) const
 }
 
 
+std::vector<DagNode*> Proposal::identifyNodesToTouch(void)
+{
+
+    return nodes;
+}
 
 
 

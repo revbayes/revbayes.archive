@@ -54,7 +54,7 @@ void Mntr_JointConditionalCharacterMapping::constructInternalObject( void )
     const std::string& file_name      = static_cast<const RlString  &>( filename->getRevObject()       ).getValue();
     bool               is             = static_cast<const RlBoolean &>( include_simmap->getRevObject() ).getValue();
     const std::string& sep            = static_cast<const RlString  &>( separator->getRevObject()      ).getValue();
-    int                print_gen      = static_cast<const Natural   &>( printgen->getRevObject()       ).getValue();
+    int                print_gen      = (int)static_cast<const Natural   &>( printgen->getRevObject()       ).getValue();
     bool               app            = static_cast<const RlBoolean &>( append->getRevObject()         ).getValue();
     
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>*   cdbdp_tdn = static_cast<const RevLanguage::Tree&>( cdbdp->getRevObject() ).getDagNode();

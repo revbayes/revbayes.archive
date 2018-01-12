@@ -75,7 +75,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
     {
         found = true;
         
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        int index = (int)static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         
         bool tf = this->dag_node->getValue().getNode((size_t)index).isRoot();
         return new RevVariable( new RlBoolean( tf ) );

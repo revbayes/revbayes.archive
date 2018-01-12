@@ -174,7 +174,7 @@ void PomoState::setState(const std::string &symbol)
                 RandomNumberGenerator* rng = GLOBAL_RNG;
                 std::vector<double> sampled_values (4, 0.0);
                 for (int k = 0; k < virtualPopulationSize_; k++) {
-                    int r_int = size_t( floor(rng->uniform01() * sum) );
+                    int r_int = int( floor(rng->uniform01() * sum) );
                     if (r_int < vect[id1]) sampled_values[id1]++;
                     else sampled_values[id2]++;
                 }
@@ -410,7 +410,7 @@ std::string PomoState::getStringValue(void) const
     int stateMinus5 = int(index) - 5;
     int typeOfPomoState = stateMinus5 / stepSize;
     int typeOfFrequency = stateMinus5 % stepSize +1;
-    int freqi = typeOfFrequency*virtualPopulationSize_;
+    int freqi = (int)(typeOfFrequency*virtualPopulationSize_);
     int freqj = 100 - freqi;
     switch ( typeOfPomoState )
     {

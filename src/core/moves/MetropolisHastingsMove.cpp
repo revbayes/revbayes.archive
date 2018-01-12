@@ -242,16 +242,26 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     proposal->prepareProposal();
     double ln_hastings_ratio = proposal->doProposal();
     
+    
+    // Identify nodes that proposal touches
+    std::vector<DagNode*> touched_nodes = nodes; //proposal->identifyNodesToTouch();
+    
     // first we touch all the nodes
     // that will set the flags for recomputation
-    for (size_t i = 0; i < nodes.size(); ++i)
+    for (size_t i = 0; i < touched_nodes.size(); ++i)
     {
         
         // get the pointer to the current node
-        DagNode* the_node = nodes[i];
+        DagNode* the_node = touched_nodes[i];
+        
+//        // should this node be touched?
+//        std::vector<DagNode*>::iterator it = std::find( nodes_left_untouched.begin(), nodes_left_untouched.end(), the_node );
+//        bool touch_node = (it == nodes_left_untouched.end());
         
         // flag for recomputation
+//        if (touch_node) {
         the_node->touch();
+//        }
     }
     
     double ln_prior_ratio = 0.0;
@@ -259,10 +269,10 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
 
     
     // compute the probability of the current value for each node
-    for (size_t i = 0; i < nodes.size(); ++i)
+    for (size_t i = 0; i < touched_nodes.size(); ++i)
     {
         // get the pointer to the current node
-        DagNode* the_node = nodes[i];
+        DagNode* the_node = touched_nodes[i];
         
         if ( RbMath::isAComputableNumber(ln_prior_ratio) && RbMath::isAComputableNumber(ln_likelihood_ratio) && RbMath::isAComputableNumber(ln_hastings_ratio) )
         {
@@ -311,10 +321,10 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
         proposal->undoProposal();
             
         // call restore for each node
-        for (size_t i = 0; i < nodes.size(); ++i)
+        for (size_t i = 0; i < touched_nodes.size(); ++i)
         {
             // get the pointer to the current node
-            DagNode* the_node = nodes[i];
+            DagNode* the_node = touched_nodes[i];
             the_node->restore();
         }
 	}
@@ -331,10 +341,10 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
             num_accepted++;
         
             // call accept for each node
-            for (size_t i = 0; i < nodes.size(); ++i)
+            for (size_t i = 0; i < touched_nodes.size(); ++i)
             {
                 // get the pointer to the current node
-                DagNode* the_node = nodes[i];
+                DagNode* the_node = touched_nodes[i];
                 the_node->keep();
             }
         
@@ -347,10 +357,10 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
             proposal->undoProposal();
         
             // call restore for each node
-            for (size_t i = 0; i < nodes.size(); ++i)
+            for (size_t i = 0; i < touched_nodes.size(); ++i)
             {
                 // get the pointer to the current node
-                DagNode* the_node = nodes[i];
+                DagNode* the_node = touched_nodes[i];
                 the_node->restore();
             }
         }
@@ -365,10 +375,10 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
                 num_accepted++;
             
                 // call accept for each node
-                for (size_t i = 0; i < nodes.size(); ++i)
+                for (size_t i = 0; i < touched_nodes.size(); ++i)
                 {
                     // get the pointer to the current node
-                    DagNode* the_node = nodes[i];
+                    DagNode* the_node = touched_nodes[i];
                     the_node->keep();
                 }
             
@@ -381,10 +391,10 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
                 proposal->undoProposal();
             
                 // call restore for each node
-                for (size_t i = 0; i < nodes.size(); ++i)
+                for (size_t i = 0; i < touched_nodes.size(); ++i)
                 {
                     // get the pointer to the current node
-                    DagNode* the_node = nodes[i];
+                    DagNode* the_node = touched_nodes[i];
                     the_node->restore();
                 }
                 

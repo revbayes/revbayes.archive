@@ -65,7 +65,7 @@ namespace RevBayesCore {
         
     protected:
         
-        int                             burnin;
+        size_t                          burnin;
         std::string                     fileName;
         std::string                     parmName;
         std::vector<valueType>          values;                                     //!< the values of this trace

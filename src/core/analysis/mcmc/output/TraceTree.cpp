@@ -22,15 +22,16 @@ using namespace RevBayesCore;
  * Default AnnotationReport constructor
  */
 TraceTree::AnnotationReport::AnnotationReport() :
-    clade_probs             (true),
-    conditional_clade_ages  (false),
-    conditional_clade_probs (false),
-    conditional_tree_ages   (false),
-    MAP_parameters          (false),
-    node_ages               (true),
-    mean_node_ages          (true),
-    node_ages_HPD           (0.95),
-    sampled_ancestor_probs  (true)
+    clade_probs                   (true),
+    conditional_clade_ages        (false),
+    conditional_clade_probs       (false),
+    conditional_tree_ages         (false),
+    MAP_parameters                (false),
+    node_ages                     (true),
+    mean_node_ages                (true),
+    node_ages_HPD                 (0.95),
+    sampled_ancestor_probs        (true),
+    force_positive_branch_lengths (false)
 {}
 
 
@@ -674,7 +675,7 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
         }
         
         // annotate conditional clade probs and get node ages
-        std::vector<double> nodeAges;
+        std::vector<double> node_ages;
         
         if ( !n->isRoot() )
         {
@@ -682,7 +683,7 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
             Split parent_split = Split( parent_clade.getBitRepresentation(), parent_clade.getMrca(), rooted);
 
             std::map<Split, std::vector<double> >& condCladeAges = conditional_clade_ages[parent_split];
-            nodeAges = report.conditional_clade_ages ? condCladeAges[split] : clade_ages[split];
+            node_ages = report.conditional_clade_ages ? condCladeAges[split] : clade_ages[split];
             
             // annotate CCPs
             if ( !n->isTip() && report.conditional_clade_probs )
@@ -694,12 +695,12 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
         }
         else
         {
-            nodeAges = clade_ages[split];
+            node_ages = clade_ages[split];
         }
         
         if ( report.conditional_tree_ages )
         {
-            nodeAges = tree_clade_ages[newick][split];
+            node_ages = tree_clade_ages[newick][split];
         }
         
         // set the node ages/branch lengths
@@ -710,24 +711,24 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
             if ( report.mean_node_ages )
             {
                 // finally, we compute the mean conditional age
-                for (size_t i = 0; i<nodeAges.size(); ++i)
+                for (size_t i = 0; i<node_ages.size(); ++i)
                 {
-                    age += nodeAges[i];
+                    age += node_ages[i];
                 }
-                age /= nodeAges.size();
+                age /= node_ages.size();
             }
             else // use median
             {
                 
-                size_t idx = nodeAges.size() / 2;
-                std::sort( nodeAges.begin(), nodeAges.end() );
-                if (nodeAges.size() % 2 == 1)
+                size_t idx = node_ages.size() / 2;
+                std::sort( node_ages.begin(), node_ages.end() );
+                if (node_ages.size() % 2 == 1)
                 {
-                    age = nodeAges[idx];
+                    age = node_ages[idx];
                 }
                 else
                 {
-                    age = (nodeAges[idx-1] + nodeAges[idx]) / 2;
+                    age = (node_ages[idx-1] + node_ages[idx]) / 2;
                 }
                 
             }
@@ -746,44 +747,53 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
         // annotate the HPD node age intervals
         if ( report.node_ages_HPD )
         {
-            //nodeAges = cladeAges[c];
+            //node_ages = cladeAges[c];
             
-            std::sort(nodeAges.begin(), nodeAges.end());
+            std::sort(node_ages.begin(), node_ages.end());
             
-            size_t total_branch_lengths = nodeAges.size();
+            size_t total_branch_lengths = node_ages.size();
             double min_range = std::numeric_limits<double>::max();
             
             size_t interval_start = 0;
-            int interval_size = (int)(report.node_ages_HPD * (double)total_branch_lengths);
+            double lower = node_ages[(int)(0.5 * (double)total_branch_lengths)];
+            double upper = node_ages[(int)(0.5 * (double)total_branch_lengths)];
             
-            // find the smallest interval that contains x% of the samples
-            for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++)
+            int interval_size = (int)(report.node_ages_HPD * (double)total_branch_lengths);
+            // we need to make sure that we sampled more than one age
+            if ( interval_size > 1 )
             {
-                double temp_lower = nodeAges[j];
-                double temp_upper = nodeAges[j + interval_size - 1];
-                double temp_range = std::fabs(temp_upper - temp_lower);
-                if (temp_range < min_range)
+
+                // find the smallest interval that contains x% of the samples
+                for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++)
                 {
-                    min_range = temp_range;
-                    interval_start = j;
+                    double temp_lower = node_ages[j];
+                    double temp_upper = node_ages[j + interval_size - 1];
+                    double temp_range = std::fabs(temp_upper - temp_lower);
+                    if (temp_range < min_range)
+                    {
+                        min_range = temp_range;
+                        interval_start = j;
+                    }
+                
                 }
+                lower = node_ages[interval_start];
+                upper = node_ages[interval_start + interval_size - 1];
+
             }
-            double lower = nodeAges[interval_start];
-            double upper = nodeAges[interval_start + interval_size - 1];
             
             // make node age annotation
             std::string interval = "{" + StringUtilities::toString(lower)
             + "," + StringUtilities::toString(upper) + "}";
             
-            if ( clock )
+            if ( clock == true )
             {
-                if ( !n->isTip() || ( ( n->isFossil() || upper != lower) && !n->isSampledAncestor() ) )
+                if ( n->isTip() == false || ( ( n->isFossil() || upper != lower) && !n->isSampledAncestor() ) )
                 {
                     std::string label = "age_" + StringUtilities::toString( (int)(report.node_ages_HPD * 100) ) + "%_HPD";
                     n->addNodeParameter(label, interval);
                 }
             }
-            else if ( !n->isRoot() )
+            else if ( n->isRoot() == false )
             {
                 std::string label = "brlen_" + StringUtilities::toString( (int)(report.node_ages_HPD * 100) ) + "%_HPD";
                 n->addBranchParameter(label, interval);
@@ -792,10 +802,10 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
         
     }
     
-    /*if ( !report.tree_ages && clock )
-     {
-     enforceNonnegativeBranchLengths( tree.getRoot() );
-     }*/
+    if ( report.node_ages && clock && report.force_positive_branch_lengths )
+    {
+        enforceNonnegativeBranchLengths( tree.getRoot() );
+    }
     
     if ( report.MAP_parameters )
     {
@@ -992,11 +1002,12 @@ void TraceTree::enforceNonnegativeBranchLengths(TopologyNode& node) const
 {
     std::vector<TopologyNode*> children = node.getChildren();
     
+    double minimum_branch_length = 1e-6;
     for (size_t i = 0; i < children.size(); i++)
     {
         if (children[i]->getAge() > node.getAge())
         {
-            children[i]->setAge( node.getAge() );
+            children[i]->setAge( node.getAge() - minimum_branch_length );
         }
         enforceNonnegativeBranchLengths( *children[i] );
     }
@@ -1095,7 +1106,7 @@ TopologyNode* TraceTree::findParentNode(TopologyNode& n, const Split& tmp, std::
 int TraceTree::getBurnin( void ) const
 {
     
-    return burnin;
+    return (int)burnin;
 }
 
 

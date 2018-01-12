@@ -29,8 +29,8 @@ RevPtr<RevVariable> Func_stirling::execute()
 {
 
     std::string kind = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
-    int n = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
-    int k = static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
+    int n = (int)static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
+    int k = (int)static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
 	
 	if (kind == "lnFirst")
     {

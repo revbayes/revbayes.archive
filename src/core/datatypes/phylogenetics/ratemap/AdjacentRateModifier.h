@@ -2,6 +2,7 @@
 #define AdjacentRateModifier_H
 
 #include "CharacterHistoryRateModifier.h"
+#include "MatrixReal.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
 
@@ -27,8 +28,11 @@ namespace RevBayesCore
         
         double                              computeRateMultiplierUsingWidth(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0);
         double                              computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0);
+        virtual std::set<size_t>            getAffectedSites(CharacterEventDiscrete* newState) const;
+
         
-        void                                setContextMatrix(const RbVector<RbVector<double> >& c);
+        void                                setContextMatrix(const RbVector<RbVector<long> >& c);
+        void                                setContextMatrix(const MatrixReal& c);
         void                                setGainFactor(double f);
         void                                setLossFactor(double f);
         void                                setWidth(size_t w);
@@ -41,7 +45,7 @@ namespace RevBayesCore
        
         
     private:
-        void                                initializeContexts(RbVector<RbVector<double> > c);
+        void                                initializeContexts(RbVector<RbVector<long> > c);
         
         struct adjacency {
             size_t                          from;
@@ -50,11 +54,14 @@ namespace RevBayesCore
         };
         
         std::vector<std::vector<adjacency> > context_matrix;
-        size_t                               width;
-        double                               gain_factor;
-        double                               loss_factor;
+        size_t                              width;
+        double                              gain_factor;
+        double                              loss_factor;
+        std::vector<double>                 exp_gain_factors;
+        std::vector<double>                 exp_loss_factors;
+        std::vector<std::set<size_t> >      context_set;
         
-        std::string                          context_type;
+        std::string                         context_type;
     };
     
     std::ostream& operator<<(std::ostream& o, const AdjacentRateModifier& x);

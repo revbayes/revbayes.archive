@@ -78,9 +78,9 @@ void CladogeneticSpeciationRateMatrixFunction::update( void )
         }
         
         std::vector<unsigned> idx(3);
-        idx[0] = events[i][0];
-        idx[1] = events[i][1];
-        idx[2] = events[i][2];
+        idx[0] = (unsigned)events[i][0];
+        idx[1] = (unsigned)events[i][1];
+        idx[2] = (unsigned)events[i][2];
         event_map[ idx ] = sr[i];
     }
     

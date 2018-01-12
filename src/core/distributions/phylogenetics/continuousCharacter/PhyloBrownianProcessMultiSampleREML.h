@@ -33,7 +33,7 @@ namespace RevBayesCore {
         // virtual methods that may be overwritten, but then the derived class should call this methods
         double                                                              computeMeanForSpecies(const std::string &n, size_t i);
         double                                                              getNumberOfSamplesForSpecies(const std::string &n);
-        double                                                              getWithingSpeciesVariance(const std::string &n);
+        double                                                              getWithinSpeciesVariance(const std::string &n);
         virtual void                                                        keepSpecialization(DagNode* affecter);
         void                                                                recursiveComputeLnProbability( const TopologyNode &node, size_t node_index );
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);

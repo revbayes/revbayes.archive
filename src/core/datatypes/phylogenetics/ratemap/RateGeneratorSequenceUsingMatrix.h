@@ -27,6 +27,9 @@ namespace RevBayesCore {
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrixmatrix
 //        virtual void                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, size_t charIdx) const;
         virtual RateGeneratorSequenceUsingMatrix*         clone(void) const;
+        
+        virtual std::set<size_t>            getAffectedSites(CharacterEventDiscrete* to) const;
+        
         virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, unsigned* counts, double age=0.0, double rate=1.0) const;
         virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, double age=0.0, double rate=1.0) const;
        

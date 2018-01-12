@@ -79,42 +79,13 @@ double PhyloBrownianProcessMultiSampleREML::computeLnProbability( void )
     const TopologyNode &root = this->tau->getValue().getRoot();
     
     // we start with the root and then traverse down the tree
-    size_t rootIndex = root.getIndex();
+    size_t root_index = root.getIndex();
     
     // only necessary if the root is actually dirty
-    if ( this->dirty_nodes[rootIndex] )
+    if ( this->dirty_nodes[root_index] )
     {
         
-        
-        recursiveComputeLnProbability( root, rootIndex );
-        
-        // start by filling the likelihood vector for the children of the root
-        if ( root.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
-        {
-            
-            //            recursiveComputeLnProbability( root, rootIndex );
-            
-        }
-        else if ( root.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
-        {
-            //            const TopologyNode &left = root.getChild(0);
-            //            size_t left_index = left.getIndex();
-            //            recursiveComputeLnProbability( left, left_index );
-            //            const TopologyNode &right = root.getChild(1);
-            //            size_t right_index = right.getIndex();
-            //            recursiveComputeLnProbability( right, right_index );
-            //            const TopologyNode &middle = root.getChild(2);
-            //            size_t middleIndex = middle.getIndex();
-            //            recursiveComputeLnProbability( middle, middleIndex );
-            
-            //            computeRootLikelihood( rootIndex, left_index, right_index, middleIndex );
-            
-        }
-        else
-        {
-            throw RbException("The root node has an unexpected number of children. Only 2 (for rooted trees) or 3 (for unrooted trees) are allowed.");
-        }
-        
+        recursiveComputeLnProbability( root, root_index );
         
         // sum the partials up
         this->ln_prob = sumRootLikelihood();
@@ -177,12 +148,11 @@ double PhyloBrownianProcessMultiSampleREML::getNumberOfSamplesForSpecies(const s
         
     }
     
-    
     return num_samples;
 }
 
 
-double PhyloBrownianProcessMultiSampleREML::getWithingSpeciesVariance(const std::string &name)
+double PhyloBrownianProcessMultiSampleREML::getWithinSpeciesVariance(const std::string &name)
 {
     
     size_t index = this->tau->getValue().getTipIndex( name );
@@ -223,7 +193,7 @@ void PhyloBrownianProcessMultiSampleREML::recursiveComputeLnProbability( const T
         const std::string &name = this->tau->getValue().getNode( node_index ).getName();
         double num_samples = 0.0;
         
-        double var = getWithingSpeciesVariance(name);
+        double var = getWithinSpeciesVariance(name);
         
         double stdev = sqrt( var );
         
@@ -246,8 +216,7 @@ void PhyloBrownianProcessMultiSampleREML::recursiveComputeLnProbability( const T
                     double x = taxon.getCharacter( site_indices[i] );
                     
                     // get the site specific rate of evolution
-//                    double standDev = this->computeSiteRate(i) * stdev;
-                    double standDev = stdev;
+                    double standDev = this->computeSiteRate(i) * stdev;
                     
                     // compute the contrasts for this site and node
                     double contrast = mu_node[i] - x;
@@ -417,7 +386,7 @@ void PhyloBrownianProcessMultiSampleREML::redrawValue( void )
     {
         const std::string &species_name = tau->getValue().getNode(i).getName();
         const ContinuousTaxonData &species_data = taxon_data[i];
-        double species_sigma = sqrt( getWithingSpeciesVariance( species_name ) );
+        double species_sigma = sqrt( getWithinSpeciesVariance( species_name ) );
         
         for ( size_t j=0; j<taxa.size(); ++j )
         {
@@ -492,8 +461,8 @@ void PhyloBrownianProcessMultiSampleREML::resetValue( void )
                 double c = computeMeanForSpecies(name, site_indices[site]);
                 contrasts[0][(*it)->getIndex()][site] = c;
                 contrasts[1][(*it)->getIndex()][site] = c;
-                contrast_uncertainty[0][(*it)->getIndex()] = getWithingSpeciesVariance(name) / getNumberOfSamplesForSpecies(name);
-                contrast_uncertainty[1][(*it)->getIndex()] = getWithingSpeciesVariance(name) / getNumberOfSamplesForSpecies(name);
+                contrast_uncertainty[0][(*it)->getIndex()] = sqrt( getWithinSpeciesVariance(name) ) / getNumberOfSamplesForSpecies(name);
+                contrast_uncertainty[1][(*it)->getIndex()] = sqrt( getWithinSpeciesVariance(name) ) / getNumberOfSamplesForSpecies(name);
             }
         }
     }

@@ -77,7 +77,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     
     int n = 1;
     double b = initialSpeciation->getValue();
-    int k = capacity->getValue();
+    int k = (int)capacity->getValue();
     double lastTime = 0.0;
     double speciationRate, timeInterval;
     for (size_t i = 1; i < value->getNumberOfTips()-1; ++i)

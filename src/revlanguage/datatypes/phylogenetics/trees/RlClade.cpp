@@ -128,7 +128,7 @@ void Clade::constructInternalObject( void )
     if ( missing->getRevObject() != RevNullObject::getInstance() )
     {
         long n = static_cast<const Natural &>( missing->getRevObject() ).getValue();
-        c->setNumberMissingTaxa( n );
+        c->setNumberMissingTaxa( (int)n );
     }
 
     // set optional clade constraints if provided
@@ -163,7 +163,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Clade::executeMethod(std::string c
     else if (name == "getTaxonName" )
     {
         found = true;
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        int index = (int)static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         
         std::string t = this->dag_node->getValue().getTaxonName( index );
         return new RevVariable( new RlString( t ) );
@@ -171,7 +171,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Clade::executeMethod(std::string c
     else if (name == "getTaxo" )
     {
         found = true;
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        int index = (int)static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         
         RevBayesCore::Taxon t = this->dag_node->getValue().getTaxon( index );
         return new RevVariable( new Taxon( t ) );

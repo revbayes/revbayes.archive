@@ -87,8 +87,7 @@ namespace RevLanguage {
 #include <cmath>
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject() :
-    AbstractModelObject(),
+RevLanguage::ModelObject<rbType>::ModelObject() : AbstractModelObject(),
     dag_node( NULL )
 {
 }
@@ -96,8 +95,7 @@ RevLanguage::ModelObject<rbType>::ModelObject() :
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
-    AbstractModelObject(),
+RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) : AbstractModelObject(),
     dag_node( new ConstantNode<rbType>("",v) )
 {
     // increment the reference count to the value
@@ -108,8 +106,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) :
-    AbstractModelObject(),
+RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) : AbstractModelObject(),
     dag_node( v )
 {
     // increment the reference count to the value
