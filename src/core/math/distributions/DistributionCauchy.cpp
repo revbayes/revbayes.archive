@@ -14,10 +14,10 @@
  * $Id$
  */
 
-
 #include <cmath>
 
 #include "DistributionCauchy.h"
+#include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathFunctions.h"
@@ -26,50 +26,67 @@
 using namespace RevBayesCore;
 
 /*!
- * This function calculates the probability density 
- * for a Cauchy-distributed random variable.
+ * This function calculates the probability density
+ * for a Half-Cauchy-distributed random variable.
  *
- * \brief Geometric probability density.
- * \param n is the number of trials. 
- * \param p is the success probability. 
- * \param x is the number of successes. 
+ * \brief Cauchy probability density.
+ * \param location is the median value, also the mode
+ * \param scale determines the dispersion of the distribution, location +/- scale give 75% and 25% quantiles
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Cauchy::lnPdf(double location, double scale, double x) {
-
-    return pdf(location, scale, x, true);
+double RbStatistics::Cauchy::pdf(double x)
+{
+    return ( 1.0 / (RbConstants::PI * (1.0 + x * x)) );
 }
 
-/*!
- * This function calculates the probability density 
- * for a Cauchy-distributed random variable.
- *
- * \brief Geometric probability density.
- * \param n is the number of trials. 
- * \param p is the success probability. 
- * \param x is the number of successes. 
- * \return Returns the probability density.
- * \throws Does not throw an error.
- */
 double RbStatistics::Cauchy::pdf(double location, double scale, double x)
 {
-
-    return pdf(location, scale, x, false);
+    double y = (x - location)/scale;
+    return ( 1.0 / (RbConstants::PI * scale * (1.0 + y * y)) );
 }
 
-
-double RbStatistics::Cauchy::pdf(double location, double scale, double x, bool give_log)
+double RbStatistics::Cauchy::lnPdf(double x)
 {
-    
-    if (scale <= 0) 
-    {
-        std::ostringstream s;
-        s << "Cannot compute pdf of the Cauchy distribution because scale = " << scale << " is negativ.";
-        throw RbException(s.str());
-    }
-    
-    double y = (x - location) / scale;
-    return give_log ? - log(RbConstants::PI * scale * (1.0 + y * y)) : 1.0 / (RbConstants::PI * scale * (1.0 + y * y));
+    return ( -std::log(RbConstants::PI) - std::log(1.0 + x * x) );
 }
 
+double RbStatistics::Cauchy::lnPdf(double location, double scale, double x)
+{
+    double y = (x - location) / scale;
+    return ( -std::log(RbConstants::PI) - std::log(scale) - std::log(1.0 + y * y) );
+}
+
+double RbStatistics::Cauchy::cdf(double x)
+{
+    return ( 0.5 + 1.0 / RbConstants::PI * (atan(x)) );
+}
+
+double RbStatistics::Cauchy::cdf(double location, double scale, double x)
+{
+    double y = (x - location) / scale;
+    return ( 0.5 + 1.0 / RbConstants::PI * (atan(y)) );
+}
+
+double RbStatistics::Cauchy::quantile(double p)
+{
+    double q = tan(RbConstants::PI * (p - 0.5));
+    return ( q );
+}
+
+double RbStatistics::Cauchy::quantile(double location, double scale, double p)
+{
+    double q = location + scale * tan(RbConstants::PI * (p - 0.5));
+    return ( q );
+}
+
+
+double RbStatistics::Cauchy::rv(RandomNumberGenerator& rng) {
+    double C = tan(RbConstants::PI * (rng.uniform01() - 0.5));
+    return ( C );
+}
+
+double RbStatistics::Cauchy::rv(double location, double scale, RandomNumberGenerator& rng) {
+    double C = location + scale * tan(RbConstants::PI * (rng.uniform01() - 0.5));
+    return ( C );
+}

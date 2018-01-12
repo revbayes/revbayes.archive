@@ -1,8 +1,8 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
-#include "Dist_halfCauchy.h"
-#include "HalfCauchyDistribution.h"
+#include "Dist_Cauchy.h"
+#include "CauchyDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
 
@@ -14,7 +14,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-Dist_halfCauchy::Dist_halfCauchy() : ContinuousDistribution(){
+Dist_Cauchy::Dist_Cauchy() : ContinuousDistribution(){
     
 }
 
@@ -25,10 +25,10 @@ Dist_halfCauchy::Dist_halfCauchy() : ContinuousDistribution(){
  *
  * \return A new copy of the process.
  */
-Dist_halfCauchy* Dist_halfCauchy::clone( void ) const
+Dist_Cauchy* Dist_Cauchy::clone( void ) const
 {
     
-    return new Dist_halfCauchy(*this);
+    return new Dist_Cauchy(*this);
 }
 
 
@@ -42,13 +42,13 @@ Dist_halfCauchy* Dist_halfCauchy::clone( void ) const
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::HalfCauchyDistribution* Dist_halfCauchy::createDistribution( void ) const
+RevBayesCore::CauchyDistribution* Dist_Cauchy::createDistribution( void ) const
 {
 
     // get the parameters
     RevBayesCore::TypedDagNode<double>* l = static_cast<const Real &>( location->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( scale->getRevObject() ).getDagNode();
-    RevBayesCore::HalfCauchyDistribution*   d = new RevBayesCore::HalfCauchyDistribution(l, s);
+    RevBayesCore::CauchyDistribution*   d = new RevBayesCore::CauchyDistribution(l, s);
     
     return d;
 }
@@ -59,10 +59,10 @@ RevBayesCore::HalfCauchyDistribution* Dist_halfCauchy::createDistribution( void 
  *
  * \return The class' name.
  */
-const std::string& Dist_halfCauchy::getClassType(void)
+const std::string& Dist_Cauchy::getClassType(void)
 { 
     
-    static std::string rev_type = "Dist_halfCauchy";
+    static std::string rev_type = "Dist_Cauchy";
     
 	return rev_type; 
 }
@@ -73,7 +73,7 @@ const std::string& Dist_halfCauchy::getClassType(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Dist_halfCauchy::getClassTypeSpec(void)
+const TypeSpec& Dist_Cauchy::getClassTypeSpec(void)
 { 
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
@@ -87,11 +87,11 @@ const TypeSpec& Dist_halfCauchy::getClassTypeSpec(void)
  *
  * \return Rev aliases of constructor function.
  */
- std::vector<std::string> Dist_halfCauchy::getDistributionFunctionAliases( void ) const
+ std::vector<std::string> Dist_Cauchy::getDistributionFunctionAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    a_names.push_back( "cauchyPlus" );
+    a_names.push_back( "Lorentz" );
     
     return a_names;
 }
@@ -103,10 +103,10 @@ const TypeSpec& Dist_halfCauchy::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_halfCauchy::getDistributionFunctionName( void ) const
+std::string Dist_Cauchy::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "halfCauchy";
+    std::string d_name = "Cauchy";
     
     return d_name;
 }
@@ -115,7 +115,7 @@ std::string Dist_halfCauchy::getDistributionFunctionName( void ) const
 /**
  * Get the author(s) of this function so they can receive credit (and blame) for it.
  */
-std::vector<std::string> Dist_halfCauchy::getHelpAuthor(void) const
+std::vector<std::string> Dist_Cauchy::getHelpAuthor(void) const
 {
     // create a vector of authors for this function
     std::vector<std::string> authors;
@@ -128,11 +128,11 @@ std::vector<std::string> Dist_halfCauchy::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_halfCauchy::getHelpDescription(void) const
+std::vector<std::string> Dist_Cauchy::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "Half-Cauchy distribution with location equal to ‘location’ and scale equal to ‘scale’." );
+    descriptions.push_back( "Cauchy distribution with location equal to ‘location’ and scale equal to ‘scale’." );
     
     return descriptions;
 }
@@ -141,18 +141,18 @@ std::vector<std::string> Dist_halfCauchy::getHelpDescription(void) const
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_halfCauchy::getHelpDetails(void) const
+std::vector<std::string> Dist_Cauchy::getHelpDetails(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> details;
     
     std::string details_1 = "";
-    details_1 += "The half-Cauchy distribution has density:";
+    details_1 += "The Cauchy distribution has density:";
     
     details.push_back( details_1 );
     
     std::string details_2 = "";
-    details_2 += "f(x) = 2/(pi * sigma) * 1/(1 + x-(location/scale)^2)";
+    details_2 += "f(x) = 1/(pi * scale) * 1/(1 + x-(location/scale)^2)";
     
     details.push_back( details_2 );
     
@@ -165,16 +165,14 @@ std::vector<std::string> Dist_halfCauchy::getHelpDetails(void) const
  * These example should help the users to show how this function works but
  * are also used to test if this function still works.
  */
-std::string Dist_halfCauchy::getHelpExample(void) const
+std::string Dist_Cauchy::getHelpExample(void) const
 {
     // create an example as a single string variable.
     std::string example = "";
 
     example += "# we simulate some obversations\n";
-    example += "x <- rHalfCauchy(n=10,location=0,scale=1)\n";
-    example += "# let's see what the minimum is (you could do the max too). If this is not ‘location’, we're in trouble!\n";
-    example += "min(x)\n";
-    example += "# let's also see what the mean and the variance are.\n";
+    example += "x <- rCauchy(n=10,location=0,scale=1)\n";
+    example += "# let's see what the mean and the variance are.\n";
     example += "The mean will not converge with more samples, the Cauchy family has no moments.\n";
     example += "mean(x)\n";
     example += "var(x)\n";
@@ -188,7 +186,7 @@ std::string Dist_halfCauchy::getHelpExample(void) const
  * Get some references/citations for this function
  *
  */
-std::vector<RevBayesCore::RbHelpReference> Dist_halfCauchy::getHelpReferences(void) const
+std::vector<RevBayesCore::RbHelpReference> Dist_Cauchy::getHelpReferences(void) const
 {
     // create an entry for each reference
     std::vector<RevBayesCore::RbHelpReference> references;
@@ -201,7 +199,7 @@ std::vector<RevBayesCore::RbHelpReference> Dist_halfCauchy::getHelpReferences(vo
 /**
  * Get the names of similar and suggested other functions
  */
-/*std::vector<std::string> Dist_halfCauchy::getHelpSeeAlso(void) const
+/*std::vector<std::string> Dist_Cauchy::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
@@ -215,10 +213,10 @@ std::vector<RevBayesCore::RbHelpReference> Dist_halfCauchy::getHelpReferences(vo
 /**
  * Get the title of this help entry
  */
-std::string Dist_halfCauchy::getHelpTitle(void) const
+std::string Dist_Cauchy::getHelpTitle(void) const
 {
     // create a title variable
-    std::string title = "half-Cauchy Distribution";
+    std::string title = "Cauchy Distribution";
     
     return title;
 }
@@ -227,27 +225,27 @@ std::string Dist_halfCauchy::getHelpTitle(void) const
 /** 
  * Get the member rules used to create the constructor of this object.
  *
- * The member rules of the half-Cauchy distribution are:
+ * The member rules of the Cauchy distribution are:
  * (1) the mean of the distribution.
  * (2) the standard deviation.
  *
  * \return The member rules.
  */
-const MemberRules& Dist_halfCauchy::getParameterRules(void) const
+const MemberRules& Dist_Cauchy::getParameterRules(void) const
 {
     
-    static MemberRules distHalfCauchyMemberRules;
+    static MemberRules distCauchyMemberRules;
     static bool rules_set = false;
     
     if ( !rules_set ) 
     {
-        distHalfCauchyMemberRules.push_back( new ArgumentRule( "location", Real::getClassTypeSpec()   , "The location parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distHalfCauchyMemberRules.push_back( new ArgumentRule( "scale"  , RealPos::getClassTypeSpec(), "The scale parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distCauchyMemberRules.push_back( new ArgumentRule( "location", Real::getClassTypeSpec()   , "The location parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distCauchyMemberRules.push_back( new ArgumentRule( "scale"  , RealPos::getClassTypeSpec(), "The scale parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     
         rules_set = true;
     }
     
-    return distHalfCauchyMemberRules;
+    return distCauchyMemberRules;
 }
 
 
@@ -256,7 +254,7 @@ const MemberRules& Dist_halfCauchy::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Dist_halfCauchy::getTypeSpec( void ) const
+const TypeSpec& Dist_Cauchy::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -266,10 +264,10 @@ const TypeSpec& Dist_halfCauchy::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void Dist_halfCauchy::printValue(std::ostream& o) const
+void Dist_Cauchy::printValue(std::ostream& o) const
 {
     
-    o << " half-Cauchy(location=";
+    o << " Cauchy(location=";
     if ( location != NULL )
     {
         o << location->getName();
@@ -301,7 +299,7 @@ void Dist_halfCauchy::printValue(std::ostream& o) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_halfCauchy::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Dist_Cauchy::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "location" )
