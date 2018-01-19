@@ -2079,8 +2079,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     psi->setRoot(root, true);
     psi->setRooted(true);
 
-    delete value;
-    value = psi;
+    setValue(psi);
 }
 
 
