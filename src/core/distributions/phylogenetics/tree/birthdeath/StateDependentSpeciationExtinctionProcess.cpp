@@ -2,6 +2,7 @@
 #include "SSE_ODE.h"
 #include "Clade.h"
 #include "CladogeneticSpeciationRateMatrix.h"
+#include "DistributionExponential.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
 #include "DeterministicNode.h"
 #include "MatrixReal.h"
@@ -17,6 +18,7 @@
 #include <algorithm>
 #include <cmath>
 #include <boost/assign/list_of.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/numeric/odeint.hpp>
 
 
@@ -1673,12 +1675,413 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
 }
 
 
+std::vector<double> StateDependentSpeciationExtinctionProcess::calculateTotalSpeciationRatePerState( void ) 
+{
+    std::vector<double> total_rates = std::vector<double>(num_states, 0);
+    std::map<std::vector<unsigned>, double> eventMap;
+    std::vector<double> speciation_rates;
+    std::map<std::vector<unsigned>, double>::iterator it;
+    if ( use_cladogenetic_events == true )
+    {
+        // get cladogenesis event map (sparse speciation rate matrix)
+        eventMap = cladogenesis_matrix->getValue().getEventMap();
+        // iterate over each cladogenetic event possible
+        for (it = eventMap.begin(); it != eventMap.end(); it++)
+        {
+            const std::vector<unsigned>& states = it->first;
+            total_rates[states[0]] += it->second;
+        }
+    }
+    else
+    {
+        speciation_rates = lambda->getValue();
+        for (size_t i = 0; i < num_states; i++)
+        {
+            total_rates[i] += speciation_rates[i];    
+        }
+    }
+    return total_rates;
+}
+
+
+std::vector<double> StateDependentSpeciationExtinctionProcess::calculateTotalAnageneticRatePerState( void ) 
+{
+    std::vector<double> total_rates = std::vector<double>(num_states, 0);
+    const RateGenerator *rate_matrix = &getEventRateMatrix();
+    for (size_t i = 0; i < num_states; i++)
+    {
+        for (size_t j = 0; j < num_states; j++)
+        {
+            if (i != j)
+            {
+                total_rates[i] += rate_matrix->getRate(i, j, 0.0, getEventRate());
+            } 
+        }
+    }
+
+    return total_rates;
+}
+
+
 /**
  *
  */
 void StateDependentSpeciationExtinctionProcess::simulateTree( void )
 {
+    if ( use_origin == true )
+    {
+        // if originAge is set we start with one lineage
+        // if rootAge is set we start with two lineages and their speciation event
+        throw RbException("Simulations are currently only implemented when rootAge is set. You set the originAge.");
+    }
+
+    // a vector keeping track of the lineages currently surviving in each state
+    // as we simulate forward in time
+    std::vector< std::vector<size_t> > lineages_in_state = std::vector< std::vector<size_t> >(num_states, std::vector<size_t>());
+
+    // vectors keeping track of the total rate of all
+    // cladogenetic/anagenetic/extinction events for each state
+    std::vector<double> extinction_rates = mu->getValue();
+    std::vector<double> total_speciation_rates = calculateTotalSpeciationRatePerState();
+    std::vector<double> total_anagenetic_rates = calculateTotalAnageneticRatePerState();
+    std::vector<double> total_rate_for_state = std::vector<double>(num_states, 0);
+    for (size_t i = 0; i < num_states; i++)
+    {
+        total_rate_for_state[i] = extinction_rates[i] + total_speciation_rates[i] + total_anagenetic_rates[i];
+    }
+
+    // get the speciation rates, extinction rates, and Q matrix
+    std::map<std::vector<unsigned>, double> eventMap;
+    std::vector<double> speciation_rates;
+    std::map<std::vector<unsigned>, double>::iterator it;
+    if ( use_cladogenetic_events == true )
+    {
+        eventMap = cladogenesis_matrix->getValue().getEventMap();
+    }
+    else
+    {
+        speciation_rates = lambda->getValue();
+    }
+    const RateGenerator *rate_matrix = &getEventRateMatrix();
+
+    // a vector of all nodes in our simulated tree
+    std::vector<TopologyNode*> nodes;
+
+    // initialize the root node
+    TopologyNode* root = new TopologyNode(0);
+    double t = process_age->getValue();
+    root->setAge(t);
+    nodes.push_back(root);
+
+    // now draw a state for the root cladogenetic event
     
+    // get root frequencies
+    const RbVector<double> &freqs = getRootFrequencies();
+    
+    std::map<std::vector<unsigned>, double> sample_probs;
+    double sample_probs_sum = 0.0;
+    
+    // calculate probabilities for each state
+    if ( use_cladogenetic_events == true )
+    {
+        // iterate over each cladogenetic event possible
+        // and initialize probabilities for each clado event
+        for (it = eventMap.begin(); it != eventMap.end(); it++)
+        {
+            const std::vector<unsigned>& states = it->first;
+            double speciation_rate = it->second;
+            
+            // we need to sample from the ancestor, left, and right states jointly,
+            // so keep track of the probability of each clado event
+            double prob = freqs[states[0]] * speciation_rate;
+            sample_probs[ states ] = prob;
+            sample_probs_sum += prob;
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < num_states; i++)
+        {
+            std::vector<unsigned> states = boost::assign::list_of(i)(i)(i);
+            sample_probs[ states ] = speciation_rates[i] * freqs[i];
+            sample_probs_sum += speciation_rates[i] * freqs[i];
+        }
+    }
+    
+    // sample ancestor, left, and right character states from probs
+    size_t a = 0, l = 0, r = 0;
+    
+    if (sample_probs_sum == 0)
+    {
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        size_t u = rng->uniform01() * sample_probs.size();
+        size_t v = 0;
+        for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+        {
+            if (u < v)
+            {
+                const std::vector<unsigned>& states = it->first;
+                a = states[0];
+                l = states[1];
+                r = states[2];
+                break;
+            }
+            v++;
+        }
+    }
+    else
+    {
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        double u = rng->uniform01() * sample_probs_sum;
+        
+        for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+        {
+            u -= it->second;
+            if (u < 0.0)
+            {
+                const std::vector<unsigned>& states = it->first;
+                a = states[0];
+                l = states[1];
+                r = states[2];
+                break;
+            }
+        }
+    }
+
+    // make nodes for each daughter
+    TopologyNode* left = new TopologyNode(1);
+    left->setAge(t);
+    root->addChild(left);
+    left->setParent(root);
+    lineages_in_state[l].push_back(1);
+    nodes.push_back(left);
+
+    TopologyNode* right = new TopologyNode(2);
+    right->setAge(t);
+    root->addChild(right);
+    right->setParent(root);
+    lineages_in_state[r].push_back(2);
+    nodes.push_back(right);
+
+    // simulate moving forward in time
+    while (true) {
+
+        // sum over all rates for all states (multiplied by num lineages in each state)
+        double total_rate = 0;
+        for (size_t i = 0; i < num_states; i++)
+        {
+            total_rate += total_rate_for_state[i] * lineages_in_state[i].size();    
+        }
+
+        // draw the time to next event
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        double dt = RbStatistics::Exponential::rv( total_rate, *rng );
+        t = t - dt;
+      
+        if (t < 0)
+        {
+            t = 0;
+        }
+
+        // extend all surviving branches to the new time
+        for (size_t i = 0; i < num_states; i++)
+        {
+            for (size_t j = 0; j < lineages_in_state[i].size(); j++)
+            {
+                size_t idx = lineages_in_state[i][j];
+                nodes[idx]->setAge(t);
+            }
+        }
+        std::cout << root->computeNewick() << "\n\n\n";
+
+        // stop if we have reached the present
+        if (t == 0) 
+        {
+            for (size_t i = 0; i < nodes.size(); i++)
+            {
+                if (nodes[i]->getAge() == 0) 
+                {
+                    std::stringstream ss;
+                    ss << "s" << i;
+                    std::string name = ss.str();
+                    nodes[i]->setName(name);
+                }
+            }
+            break;
+        }
+
+        // determine the state for the event that occurred
+        size_t event_state = 0; 
+        double u = rng->uniform01() * total_rate;
+        for (size_t i = 0; i < num_states; i++)
+        {
+            u -= total_rate_for_state[i] * lineages_in_state[i].size();
+            if (u < 0)
+            {
+                event_state = i;
+                break;
+            }
+        }
+
+        // determine the type of event
+        std::string event_type = ""; 
+        u = rng->uniform01() * total_rate_for_state[event_state];
+        while (true) {
+            u = u - extinction_rates[event_state];
+            if (u < 0) 
+            {
+                event_type = "extinction";
+                break;
+            }
+            u = u - total_speciation_rates[event_state];
+            if (u < 0) 
+            {
+                event_type = "speciation";
+                break;
+            }
+            u = u - total_anagenetic_rates[event_state];
+            if (u < 0) 
+            {
+                event_type = "anagenetic";
+                break;
+            }
+        }
+
+        // determine which lineage gets the event
+        size_t event_index = 0;
+        u = rng->uniform01() * static_cast<double>(lineages_in_state[event_state].size());
+        event_index = floor(lineages_in_state[event_state][u]);
+
+        if (event_type == "extinction")
+        {
+            lineages_in_state[event_state].erase(std::remove(lineages_in_state[event_state].begin(), lineages_in_state[event_state].end(), event_index), lineages_in_state[event_state].end());
+            std::stringstream ss;
+            ss << "ex" << event_index;
+            std::string name = ss.str();
+            nodes[event_index]->setName(name);
+        }
+        
+        if (event_type == "anagenetic")
+        {
+            // remove this lineage from the current state
+            lineages_in_state[event_state].erase(std::remove(lineages_in_state[event_state].begin(), lineages_in_state[event_state].end(), event_index), lineages_in_state[event_state].end());
+
+            // draw a new state
+            size_t new_state = 0;
+            u = rng->uniform01() * total_anagenetic_rates[event_state];
+            for (size_t i = 0; i < this->num_states; i++)
+            {
+                if (i != event_state)
+                {
+                    u -= rate_matrix->getRate( event_state, i, 0, getEventRate() );
+                    if (u < 0.0)
+                    {
+                        new_state = i;
+                        break;
+                    }
+                }
+            } 
+            lineages_in_state[new_state].push_back(event_index);
+        }
+        
+        if (event_type == "speciation")
+        {
+            // gather the probabilities for each type of cladogenetic event
+            std::map<std::vector<unsigned>, double> sample_probs;
+            double sample_probs_sum = 0.0;
+            if ( use_cladogenetic_events == true )
+            {
+                // iterate over each cladogenetic event possible
+                for (it = eventMap.begin(); it != eventMap.end(); it++)
+                {
+                    const std::vector<unsigned>& states = it->first;
+                    double speciation_rate = it->second;
+                    if (states[0] == event_state) 
+                    {
+                        // we need to sample from the ancestor, left, and right states jointly,
+                        // so keep track of the probability of each clado event
+                        double prob = speciation_rate;
+                        sample_probs[ states ] = prob;
+                        sample_probs_sum += prob;
+                    }
+                }
+            }
+            else
+            {
+                std::vector<unsigned> states = boost::assign::list_of(event_state)(event_state)(event_state);
+                sample_probs[ states ] = speciation_rates[event_state];
+                sample_probs_sum += speciation_rates[event_state];
+            }
+            
+            // sample ancestor, left, and right character states from probs
+            size_t a = 0, l = 0, r = 0;
+            
+            if (sample_probs_sum == 0)
+            {
+                RandomNumberGenerator* rng = GLOBAL_RNG;
+                size_t u = rng->uniform01() * sample_probs.size();
+                size_t v = 0;
+                for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+                {
+                    if (u < v)
+                    {
+                        const std::vector<unsigned>& states = it->first;
+                        a = states[0];
+                        l = states[1];
+                        r = states[2];
+                        break;
+                    }
+                    v++;
+                }
+            }
+            else
+            {
+                RandomNumberGenerator* rng = GLOBAL_RNG;
+                double u = rng->uniform01() * sample_probs_sum;
+                
+                for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+                {
+                    u -= it->second;
+                    if (u < 0.0)
+                    {
+                        const std::vector<unsigned>& states = it->first;
+                        a = states[0];
+                        l = states[1];
+                        r = states[2];
+                        break;
+                    }
+                }
+            }
+            
+            // make nodes for each daughter
+            size_t index = nodes.size();
+            TopologyNode* left = new TopologyNode(index);
+            left->setAge(t);
+            nodes[event_index]->addChild(left);
+            left->setParent(nodes[event_index]);
+            lineages_in_state[l].push_back(index);
+            nodes.push_back(left);
+
+            index = nodes.size();
+            TopologyNode* right = new TopologyNode(index);
+            right->setAge(t);
+            nodes[event_index]->addChild(right);
+            right->setParent(nodes[event_index]);
+            lineages_in_state[r].push_back(index);
+            nodes.push_back(right);
+           
+            // remove the parent node from our vector of current lineages
+            lineages_in_state[event_state].erase(std::remove(lineages_in_state[event_state].begin(), lineages_in_state[event_state].end(), event_index), lineages_in_state[event_state].end());
+        }
+    }
+   
+    // make a tree object 
+    Tree *psi = new Tree();
+    psi->setRoot(root, true);
+    psi->setRooted(true);
+
+    delete value;
+    value = psi;
 }
 
 
