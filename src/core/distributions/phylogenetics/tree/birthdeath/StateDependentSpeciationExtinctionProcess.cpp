@@ -1892,7 +1892,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                 nodes[idx]->setAge(t);
             }
         }
-        std::cout << root->computeNewick() << "\n\n\n";
 
         // stop if we have reached the present
         if (t == 0) 
