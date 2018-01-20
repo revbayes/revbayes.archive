@@ -134,6 +134,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
         
         // increment the reference count to the value
         dag_node->incrementReferenceCount();
+    
     }
     
 }
@@ -182,6 +183,7 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
             
             // increment the reference count to the value
             dag_node->incrementReferenceCount();
+        
         }
     }
     
@@ -193,6 +195,18 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
 template <typename rbType>
 RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
+    
+    if ( name == "methods" )
+    {
+        found = true;
+        
+        // just print the method names (including inherited methods)
+        const MethodTable &m = getMethods();
+        m.printValue(std::cout, true);
+        
+        return NULL;
+    }
+    
     RevMemberObject * rmo = dynamic_cast<RevMemberObject *>( dag_node );
     
     if ( rmo != NULL )
