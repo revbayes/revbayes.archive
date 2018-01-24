@@ -88,7 +88,7 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
                 
             // Read a line
             std::string line;
-            getline( inFile, line );
+            myFileManager.safeGetline(inFile, line);
                 
             // skip empty lines
             //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];

@@ -217,7 +217,8 @@ TraceTree* Func_readAncestralStateTreeTrace::readBranchLengthTrees(const std::ve
             
             // Read a line
             std::string line;
-            getline( inFile, line );
+            RevBayesCore::RbFileManager reader = RevBayesCore::RbFileManager();
+            reader.safeGetline(inFile, line);
             
             // skip empty lines
             //line = StringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -309,7 +310,8 @@ TraceTree* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std
             
             // Read a line
             std::string line;
-            getline( inFile, line );
+            RevBayesCore::RbFileManager reader = RevBayesCore::RbFileManager();
+            reader.safeGetline(inFile, line);
             
             // skip empty lines
             //line = StringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
