@@ -420,7 +420,6 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
  */
 void Tree::fillNodesByPhylogeneticTraversal(TopologyNode* node)
 {
-
     // now call this function recursively for all your children
     for (size_t i=0; i<node->getNumberOfChildren(); i++)
     {
@@ -917,7 +916,7 @@ void Tree::initFromFile( const std::string &dir, const std::string &fn )
 
         // Read a line
         std::string line;
-        getline( inStream, line );
+        fm.safeGetline( inStream, line );
 
         // append
         s += line;

@@ -154,6 +154,7 @@
 #include "Dist_bimodalNorm.h"
 #include "Dist_binomial.h"
 #include "Dist_categorical.h"
+#include "Dist_Cauchy.h"
 #include "Dist_chisq.h"
 #include "Dist_cppNormal.h"
 #include "Dist_decomposedInverseWishart.h"
@@ -358,6 +359,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // categorical distribution
         AddDistribution< Natural                    >( new Dist_categorical() );
+        
+        // Cauchy distribution
+        AddContinuousDistribution< Real             >( new Dist_Cauchy() );
 
         // chi-square distribution
         AddContinuousDistribution< RealPos          >( new Dist_chisq() );
