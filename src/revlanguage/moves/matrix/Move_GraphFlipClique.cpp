@@ -1,17 +1,16 @@
 /*
- * File:   Move_GraphFlipChord.cpp
+ * File:   Move_GraphFlipClique.cpp
  * Author: nl
  *
  * Created on 13 juillet 2014, 18:13
  */
 
-#include "Move_GraphFlipChord.h"
-
+#include "Move_GraphFlipClique.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "MatrixReal.h"
-#include "GraphFlipChordProposal.h"
+#include "GraphFlipCliqueProposal.h"
 #include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Natural.h"
@@ -28,7 +27,7 @@
 
 using namespace RevLanguage;
 
-Move_GraphFlipChord::Move_GraphFlipChord() : Move()
+Move_GraphFlipClique::Move_GraphFlipClique() : Move()
 {
     
 }
@@ -39,23 +38,25 @@ Move_GraphFlipChord::Move_GraphFlipChord() : Move()
  *
  * \return A new copy of the process.
  */
-Move_GraphFlipChord* Move_GraphFlipChord::clone(void) const
+Move_GraphFlipClique* Move_GraphFlipClique::clone(void) const
 {
     
-    return new Move_GraphFlipChord(*this);
+    return new Move_GraphFlipClique(*this);
 }
 
 
-void Move_GraphFlipChord::constructInternalObject( void )
+void Move_GraphFlipClique::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
-    double l = static_cast<const Probability &>( prob->getRevObject() ).getValue();
+    double rs = static_cast<const RealPos&>( set_rate->getRevObject() ).getValue();
+    double ep = static_cast<const Probability &>( edge_prob->getRevObject() ).getValue();
+    double vp = static_cast<const Probability &>( vertex_prob->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
-    const RevBayesCore::RbVector<long> &e = static_cast<const ModelVector<Natural> &>( vertices->getRevObject() ).getValue();
+    const RevBayesCore::RbVector<long>& e = static_cast<const ModelVector<Natural> &>( vertices->getRevObject() ).getValue();
     
     
     RevBayesCore::Proposal *p = NULL;
@@ -64,7 +65,7 @@ void Move_GraphFlipChord::constructInternalObject( void )
     RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( tmp );
     
     bool symm = v->getRevObject().isType( MatrixRealSymmetric::getClassTypeSpec() );
-    p = new RevBayesCore::GraphFlipChordProposal( n, e, l, symm );
+    p = new RevBayesCore::GraphFlipCliqueProposal(n, e, rs, vp, ep, symm );
     
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
     
@@ -72,15 +73,15 @@ void Move_GraphFlipChord::constructInternalObject( void )
 
 
 /** Get class name of object */
-const std::string& Move_GraphFlipChord::getClassType(void) {
+const std::string& Move_GraphFlipClique::getClassType(void) {
     
-    static std::string revClassType = "Move_GraphFlipChord";
+    static std::string revClassType = "Move_GraphFlipClique";
     
     return revClassType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_GraphFlipChord::getClassTypeSpec(void)
+const TypeSpec& Move_GraphFlipClique::getClassTypeSpec(void)
 {
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -94,10 +95,10 @@ const TypeSpec& Move_GraphFlipChord::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_GraphFlipChord::getMoveName( void ) const
+std::string Move_GraphFlipClique::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "GraphFlipChord";
+    std::string c_name = "GraphFlipClique";
     
     return c_name;
 }
@@ -105,7 +106,7 @@ std::string Move_GraphFlipChord::getMoveName( void ) const
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_GraphFlipChord::getParameterRules(void) const
+const MemberRules& Move_GraphFlipClique::getParameterRules(void) const
 {
     
     static MemberRules move_member_rules;
@@ -116,9 +117,10 @@ const MemberRules& Move_GraphFlipChord::getParameterRules(void) const
         std::vector<TypeSpec> matTypes;
         matTypes.push_back( MatrixRealSymmetric::getClassTypeSpec() );
         move_member_rules.push_back( new ArgumentRule( "x"     , matTypes, "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        move_member_rules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec()   , "The probability of flipping each edge in edges.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
+        move_member_rules.push_back( new ArgumentRule( "r_set", RealPos::getClassTypeSpec(), "Rate that is equal to the expected number of vertex-sets to perturb (min 1).", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
+        move_member_rules.push_back( new ArgumentRule( "p_vertex", Probability::getClassTypeSpec(), "Probability of including a vertex in a vertex-set (min 2 vertices/set).", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(0.1) ) );
+        move_member_rules.push_back( new ArgumentRule( "p_edge", Probability::getClassTypeSpec(), "Probability of forcing edge to consensus value (0,1) in a vertex-set.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
         move_member_rules.push_back( new ArgumentRule( "vertices" , ModelVector<Natural>::getClassTypeSpec(), "A vector of vertices to target with this proposal. An empty vector is interpretted as the full list of vertices.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, new ModelVector<Natural>() ) );
-        
         move_member_rules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec() , "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
@@ -132,7 +134,7 @@ const MemberRules& Move_GraphFlipChord::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_GraphFlipChord::getTypeSpec( void ) const
+const TypeSpec& Move_GraphFlipClique::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -142,10 +144,10 @@ const TypeSpec& Move_GraphFlipChord::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_GraphFlipChord::printValue(std::ostream &o) const
+void Move_GraphFlipClique::printValue(std::ostream &o) const
 {
     
-    o << "Move_GraphFlipChord(";
+    o << "Move_GraphFlipClique(";
     if (v != NULL)
     {
         o << v->getName();
@@ -159,7 +161,7 @@ void Move_GraphFlipChord::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Move_GraphFlipChord::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_GraphFlipClique::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" )
     {
@@ -169,9 +171,17 @@ void Move_GraphFlipChord::setConstParameter(const std::string& name, const RevPt
     {
         vertices = var;
     }
-    else if ( name == "p" )
+    else if ( name == "r_set" )
     {
-        prob = var;
+        set_rate = var;
+    }
+    else if ( name == "p_vertex" )
+    {
+        vertex_prob = var;
+    }
+    else if ( name == "p_edge" )
+    {
+        edge_prob = var;
     }
     else if ( name == "weight" ) {
         weight = var;
