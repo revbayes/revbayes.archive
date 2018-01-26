@@ -294,8 +294,6 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
                 
             }
             
-            size_t index_nuc_from   = codon_from[position_of_change];
-            size_t index_nuc_to     = codon_to[position_of_change];
             m[i][j] = rate[rate_class] * codon_freqs[j];
             m[j][i] = rate[rate_class] * codon_freqs[i];
             

@@ -7,6 +7,65 @@
 
 using namespace RevBayesCore;
 
+
+std::string CodonState::CODONS [] = {
+    "AAA", "AAC", "AAG", "AAT",
+    "ACA", "ACC", "ACG", "ACT",
+    "AGA", "AGC", "AGG", "AGT",
+    "ATA", "ATC", "ATG", "ATT",
+    "CAA", "CAC", "CAG", "CAT",
+    "CCA", "CCC", "CCG", "CCT",
+    "CGA", "CGC", "CGG", "CGT",
+    "CTA", "CTC", "CTG", "CTT",
+    "GAA", "GAC", "GAG", "GAT",
+    "GCA", "GCC", "GCG", "GCT",
+    "GGA", "GGC", "GGG", "GGT",
+    "GTA", "GTC", "GTG", "GTT",
+    "TAC", "TAT",
+    "TCA", "TCC", "TCG", "TCT",
+    "TGC", "TGG", "TGT",
+    "TTA", "TTC", "TTG", "TTT",
+};
+
+size_t CodonState::CODON_TO_TRIPLET_INDICES [] = {
+    0,  1,  2,  3,
+     4,  5,  6,  7,
+     8,  9, 10, 11,
+    12, 13, 14, 15,
+    16, 17, 18, 19,
+    20, 21, 22, 23,
+    24, 25, 26, 27,
+    28, 29, 30, 31,
+    32, 33, 34, 35,
+    36, 37, 38, 39,
+    40, 41, 42, 43,
+    44, 45, 46, 47,
+        49,     51,
+    52, 53, 54, 55,
+        57, 58, 59,
+    60, 61, 62, 63
+};
+
+
+size_t CodonState::TRIPLET_TO_CODON_INDICES [] = {
+    0,  1,  2,  3,
+    4,  5,  6,  7,
+    8,  9, 10, 11,
+    12, 13, 14, 15,
+    16, 17, 18, 19,
+    20, 21, 22, 23,
+    24, 25, 26, 27,
+    28, 29, 30, 31,
+    32, 33, 34, 35,
+    36, 37, 38, 39,
+    40, 41, 42, 43,
+    44, 45, 46, 47,
+    65, 48, 65, 49,
+    50, 51, 52, 53,
+    65, 54, 55, 56,
+    57, 58, 59, 60
+};
+
 /** Default constructor */
 CodonState::CodonState(size_t n) : DiscreteCharacterState( 61 ),
     is_gap( false ),
@@ -16,7 +75,7 @@ CodonState::CodonState(size_t n) : DiscreteCharacterState( 61 ),
     state(61)
 {
     
-    setState("---");
+    setStateByIndex( n );
 }
 
 
@@ -418,9 +477,12 @@ std::vector<unsigned int> CodonState::getTripletStates( void ) const
     
     
     std::vector<unsigned int> codon_pos = std::vector<unsigned int>(3,0);
-    codon_pos[0] = getStateIndex() % 4;
-    codon_pos[1] = int(getStateIndex() / 4) % 4;
-    codon_pos[2] = int(getStateIndex() / 16) % 4;
+    
+    size_t codon_index = getStateIndex();
+    size_t triplet_index = CODON_TO_TRIPLET_INDICES[codon_index];
+    codon_pos[0] = triplet_index % 4;
+    codon_pos[1] = int(triplet_index / 4) % 4;
+    codon_pos[2] = int(triplet_index / 16) % 4;
     
     return codon_pos;
 }
@@ -540,9 +602,10 @@ void CodonState::setState(const std::string &s)
                             {
                                 
                                 ++num_observed_states;
-                                size_t current_state = i*16 + j*4 + k;
-                                state.set( current_state );
-                                index_single_state = current_state;
+                                size_t triplet_index = i*16 + j*4 + k;
+                                size_t codon_index = TRIPLET_TO_CODON_INDICES[triplet_index];
+                                state.set( codon_index );
+                                index_single_state = codon_index;
                                 
                             }
                             

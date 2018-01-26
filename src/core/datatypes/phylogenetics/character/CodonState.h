@@ -26,9 +26,8 @@ namespace RevBayesCore {
     class CodonState : public DiscreteCharacterState {
         
     public:
-        CodonState(size_t n=61);                                                            //!< Default constructor
+        CodonState(size_t n=0);                                                            //!< Default constructor
         CodonState(const std::string &symbol);                                              //!< Constructor with codon observation
-//        CodonState(size_t index);                                                           //!< Constructor with codon index
         
         CodonState*                     clone(void) const;                                  //!< Get a copy of this object
         
@@ -50,6 +49,10 @@ namespace RevBayesCore {
         void                            setGapState(bool tf);                               //!< set whether this is a gapped character
         void                            setMissingState(bool tf);                           //!< set whether this is a missing character
         
+        static std::string              CODONS[];
+        static size_t                   CODON_TO_TRIPLET_INDICES[];
+        static size_t                   TRIPLET_TO_CODON_INDICES[];
+
     private:
         
         bool                            is_gap;

@@ -64,10 +64,7 @@ namespace RevBayesCore {
         double                                                  kappa;
         double                                                  omega;
         std::vector<double>                                     nucleotide_freqs;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
-        
-        bool                                                    exclude_stop_codons;
-        size_t                                                  num_states;
-        
+                
     };
     
 }
