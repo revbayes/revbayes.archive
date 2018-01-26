@@ -34,15 +34,14 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_codonSynonymous
 {
     
     RevBayesCore::TypedDagNode< double >* om = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< double >* ka = static_cast<const RealPos &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::Simplex >* bf = static_cast<const Simplex &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::Simplex >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
-    if ( bf->getValue().size() != 4 )
+    if ( bf->getValue().size() != 61 )
     {
-        throw RbException("The Codon dN/dS rate matrix can only use 4 base fequencies.");
+        throw RbException("The Codon dN/dS rate matrix can only use 61 base (codon) fequencies.");
     }
     
-    RevBayesCore::CodonSynonymousNonsynonymousRateMatrixFunction* f = new RevBayesCore::CodonSynonymousNonsynonymousRateMatrixFunction( om, ka, bf );
+    RevBayesCore::CodonSynonymousNonsynonymousRateMatrixFunction* f = new RevBayesCore::CodonSynonymousNonsynonymousRateMatrixFunction( om, bf );
     
     return f;
 }
@@ -58,9 +57,8 @@ const ArgumentRules& Func_codonSynonymousNonsynonymousRateMatrix::getArgumentRul
     if ( !rules_set )
     {
         
-        argumentRules.push_back( new ArgumentRule( "omega"          , RealPos::getClassTypeSpec(), "The dN / dS rate ratio.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "kappa"          , RealPos::getClassTypeSpec(), "The transition-transversion rate ratio.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "baseFrequencies", Simplex::getClassTypeSpec(), "The stationary frequencies.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "omega"           , RealPos::getClassTypeSpec(), "The dN / dS rate ratio.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "codonFrequencies", Simplex::getClassTypeSpec(), "The stationary frequencies.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }

@@ -251,6 +251,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
 
                 } // end-for over all distination character
 
+                
                 // store the likelihood for this starting state
                 p_site_mixture[c1] = sum;
 
@@ -312,7 +313,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
                     sum += p_site_mixture_left[c2] * p_site_mixture_middle[c2] * p_site_mixture_right[c2] * tp_a[c2];
 
                 } // end-for over all distination character
-
+                
                 // store the likelihood for this starting state
                 p_site_mixture[c1] = sum;
 
