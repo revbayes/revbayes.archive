@@ -58,7 +58,7 @@ MarginalLikelihoodEstimator::MarginalLikelihoodEstimator(const std::string &fn, 
             
             // Read a line
             std::string line;
-            getline( inFile, line );
+            myFileManager.safeGetline( inFile, line );
             
             // skip empty lines
             if (line.length() == 0)

@@ -1086,7 +1086,8 @@ bool NclReader::isFastaFile(std::string& fn, std::string& dType)
     while (ch != EOF)
     {
 
-        std::getline(fStrm, word);
+        RevBayesCore::RbFileManager reader = RevBayesCore::RbFileManager();
+        reader.safeGetline(fStrm, word);
         
         // we know that the last character is an escape character
         if ( word.size() > 0 )

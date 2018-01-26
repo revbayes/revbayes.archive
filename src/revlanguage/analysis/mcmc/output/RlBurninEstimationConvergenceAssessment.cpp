@@ -427,7 +427,8 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
         
         // Read a line
         std::string line;
-        getline( inFile, line );
+        RevBayesCore::RbFileManager reader = RevBayesCore::RbFileManager();
+        reader.safeGetline(inFile, line);
         
         // skip empty lines
         //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
