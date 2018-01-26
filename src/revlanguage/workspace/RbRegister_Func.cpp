@@ -112,7 +112,7 @@
 #include "Func_chromosomes.h"
 #include "Func_chromosomesPloidy.h"
 #include "Func_codonSynonymousNonsynonymousRateMatrix.h"
-//#include "Func_codonSynonymousNonsynonymousHKYRateMatrix.h"
+#include "Func_codonSynonymousNonsynonymousHKYRateMatrix.h"
 #include "Func_covarionRateMatrix.h"
 #include "Func_covarion.h"
 #include "Func_cpRev.h"
