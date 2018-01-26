@@ -2,7 +2,7 @@
 #include "EigenSystem.h"
 #include "MatrixComplex.h"
 #include "MatrixReal.h"
-#include "RateMatrix_CodonSynonymousNonsynonymous.h"
+#include "RateMatrix_CodonSynonymousNonsynonymousHKY.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
@@ -14,9 +14,10 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous( void ) : TimeReversibleRateMatrix( 61 ),
-    codon_freqs(61,1.0/61),
-    num_states( 61 )
+RateMatrix_CodonSynonymousNonsynonymousHKY::RateMatrix_CodonSynonymousNonsynonymousHKY( void ) : TimeReversibleRateMatrix( 61 ),
+    kappa( 1.0 ),
+    omega( 1.0 ),
+    nucleotide_freqs(4,0.25)
 {
     
     eigen_system       = new EigenSystem(the_rate_matrix);
@@ -28,29 +29,29 @@ RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous
 
 
 /** Copy constructor */
-RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous(const RateMatrix_CodonSynonymousNonsynonymous& m) : TimeReversibleRateMatrix( m ),
-    codon_freqs( m.codon_freqs )
+RateMatrix_CodonSynonymousNonsynonymousHKY::RateMatrix_CodonSynonymousNonsynonymousHKY(const RateMatrix_CodonSynonymousNonsynonymousHKY& m) : TimeReversibleRateMatrix( m ),
+    omega( m.omega ),
+    kappa( m.kappa ),
+    nucleotide_freqs( m.nucleotide_freqs )
 {
     
     eigen_system        = new EigenSystem( *m.eigen_system );
     c_ijk               = m.c_ijk;
     cc_ijk              = m.cc_ijk;
     
-    num_states          = m.num_states;
-    
     eigen_system->setRateMatrixPtr(the_rate_matrix);
 }
 
 
 /** Destructor */
-RateMatrix_CodonSynonymousNonsynonymous::~RateMatrix_CodonSynonymousNonsynonymous(void)
+RateMatrix_CodonSynonymousNonsynonymousHKY::~RateMatrix_CodonSynonymousNonsynonymousHKY(void)
 {
     
     delete eigen_system;
 }
 
 
-RateMatrix_CodonSynonymousNonsynonymous& RateMatrix_CodonSynonymousNonsynonymous::operator=(const RateMatrix_CodonSynonymousNonsynonymous &r)
+RateMatrix_CodonSynonymousNonsynonymousHKY& RateMatrix_CodonSynonymousNonsynonymousHKY::operator=(const RateMatrix_CodonSynonymousNonsynonymousHKY &r)
 {
     
     if (this != &r)
@@ -62,9 +63,9 @@ RateMatrix_CodonSynonymousNonsynonymous& RateMatrix_CodonSynonymousNonsynonymous
         eigen_system        = new EigenSystem( *r.eigen_system );
         c_ijk               = r.c_ijk;
         cc_ijk              = r.cc_ijk;
-        codon_freqs         = r.codon_freqs;
-        
-        num_states          = r.num_states;
+        kappa               = r.kappa;
+        omega               = r.omega;
+        nucleotide_freqs    = r.nucleotide_freqs;
         
         eigen_system->setRateMatrixPtr(the_rate_matrix);
     }
@@ -73,10 +74,10 @@ RateMatrix_CodonSynonymousNonsynonymous& RateMatrix_CodonSynonymousNonsynonymous
 }
 
 
-RateMatrix_CodonSynonymousNonsynonymous& RateMatrix_CodonSynonymousNonsynonymous::assign(const Assignable &m)
+RateMatrix_CodonSynonymousNonsynonymousHKY& RateMatrix_CodonSynonymousNonsynonymousHKY::assign(const Assignable &m)
 {
     
-    const RateMatrix_CodonSynonymousNonsynonymous *rm = dynamic_cast<const RateMatrix_CodonSynonymousNonsynonymous*>(&m);
+    const RateMatrix_CodonSynonymousNonsynonymousHKY *rm = dynamic_cast<const RateMatrix_CodonSynonymousNonsynonymousHKY*>(&m);
     if ( rm != NULL )
     {
         return operator=(*rm);
@@ -91,7 +92,7 @@ RateMatrix_CodonSynonymousNonsynonymous& RateMatrix_CodonSynonymousNonsynonymous
 
 
 /** Do precalculations on eigenvectors */
-void RateMatrix_CodonSynonymousNonsynonymous::calculateCijk(void)
+void RateMatrix_CodonSynonymousNonsynonymousHKY::calculateCijk(void)
 {
     
     if ( eigen_system->isComplex() == false )
@@ -132,7 +133,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::calculateCijk(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_CodonSynonymousNonsynonymous::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateMatrix_CodonSynonymousNonsynonymousHKY::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     double t = rate * (startAge - endAge);
     if ( eigen_system->isComplex() == false )
@@ -146,55 +147,39 @@ void RateMatrix_CodonSynonymousNonsynonymous::calculateTransitionProbabilities(d
 }
 
 
-RateMatrix_CodonSynonymousNonsynonymous* RateMatrix_CodonSynonymousNonsynonymous::clone( void ) const
+RateMatrix_CodonSynonymousNonsynonymousHKY* RateMatrix_CodonSynonymousNonsynonymousHKY::clone( void ) const
 {
-    return new RateMatrix_CodonSynonymousNonsynonymous( *this );
+    return new RateMatrix_CodonSynonymousNonsynonymousHKY( *this );
 }
 
 /**
  *
- *		0: codon changes in more than one codon position (or stop codons)
- *		1: synonymous transition
- *		2: synonymous transversion
- *		3: non-synonymous transition
- *		4: non-synonymous transversion
+ *        0: codon changes in more than one codon position (or stop codons)
+ *        1: synonymous transition
+ *        2: synonymous transversion
+ *        3: non-synonymous transition
+ *        4: non-synonymous transversion
  */
-void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
+void RateMatrix_CodonSynonymousNonsynonymousHKY::computeOffDiagonal( void )
 {
     
     MatrixReal& m = *the_rate_matrix;
     
     std::vector<double> rate = std::vector<double>(5,0);
     rate[0] = 0.0;
-    rate[1] = 1;
-    rate[2] = omega;
-
+    rate[1] = kappa;
+    rate[2] = 1;
+    rate[3] = kappa*omega;
+    rate[4] = omega;
+    
     int rate_class = 0;
-    std::string codons [] = {
-        "AAA", "AAC", "AAG", "AAT",
-        "ACA", "ACC", "ACG", "ACT",
-        "AGA", "AGC", "AGG", "AGT",
-        "ATA", "ATC", "ATG", "ATT",
-        "CAA", "CAC", "CAG", "CAT",
-        "CCA", "CCC", "CCG", "CCT",
-        "CGA", "CGC", "CGG", "CGT",
-        "CTA", "CTC", "CTG", "CTT",
-        "GAA", "GAC", "GAG", "GAT",
-        "GCA", "GCC", "GCG", "GCT",
-        "GGA", "GGC", "GGG", "GGT",
-        "GTA", "GTC", "GTG", "GTT",
-        "TAC", "TAT",
-        "TCA", "TCC", "TCG", "TCT",
-        "TGC", "TGG", "TGT",
-        "TTA", "TTC", "TTG", "TTT",
-    };
     
     
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0; i<num_states; ++i)
     {
         
-        CodonState c1 = CodonState( codons[i] );
+        CodonState c1 = CodonState( CodonState::CODONS[i] );
         std::vector<unsigned int> codon_from = c1.getTripletStates();
         unsigned int codon_from_pos_1 = codon_from[0];
         unsigned int codon_from_pos_2 = codon_from[1];
@@ -206,8 +191,8 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
         {
             
             size_t position_of_change = 0;
-
-            CodonState c2 = CodonState( codons[j] );
+            
+            CodonState c2 = CodonState( CodonState::CODONS[j] );
             
             std::vector<unsigned int> codon_to = c2.getTripletStates();
             unsigned int codon_to_pos_1 = codon_to[0];
@@ -223,13 +208,13 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
                 position_of_change = 0;
                 
                 if ( (codon_from_pos_1 == 0 && codon_to_pos_1 == 2) || (codon_from_pos_1 == 2 && codon_to_pos_1 == 0) || // A <-> G
-                     (codon_from_pos_1 == 1 && codon_to_pos_1 == 3) || (codon_from_pos_1 == 3 && codon_to_pos_1 == 1) )  // C <-> T
+                    (codon_from_pos_1 == 1 && codon_to_pos_1 == 3) || (codon_from_pos_1 == 3 && codon_to_pos_1 == 1) )  // C <-> T
                 {
                     rate_class = 1; // Transition at position 1
                 }
                 else
                 {
-                    rate_class = 1; // Transversion at position 1
+                    rate_class = 2; // Transversion at position 1
                 }
             }
             
@@ -242,13 +227,13 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
                 if (rate_class == -1)
                 {
                     if ( (codon_from_pos_2 == 0 && codon_to_pos_2 == 2) || (codon_from_pos_2 == 2 && codon_to_pos_2 == 0) || // A <-> G
-                         (codon_from_pos_2 == 1 && codon_to_pos_2 == 3) || (codon_from_pos_2 == 3 && codon_to_pos_2 == 1) )  // C <-> T
+                        (codon_from_pos_2 == 1 && codon_to_pos_2 == 3) || (codon_from_pos_2 == 3 && codon_to_pos_2 == 1) )  // C <-> T
                     {
                         rate_class = 1; // Transition
                     }
                     else
                     {
-                        rate_class = 1; // Transversion
+                        rate_class = 2; // Transversion
                     }
                 }
                 else
@@ -267,13 +252,13 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
                 if (rate_class == -1)
                 {
                     if ( (codon_from_pos_3 == 0 && codon_to_pos_3 == 2) || (codon_from_pos_3 == 2 && codon_to_pos_3 == 0) || // A <-> G
-                         (codon_from_pos_3 == 1 && codon_to_pos_3 == 3) || (codon_from_pos_3 == 3 && codon_to_pos_3 == 1) )  // C <-> T
+                        (codon_from_pos_3 == 1 && codon_to_pos_3 == 3) || (codon_from_pos_3 == 3 && codon_to_pos_3 == 1) )  // C <-> T
                     {
                         rate_class = 1; // Transition
                     }
                     else
                     {
-                        rate_class = 1; // Transversion
+                        rate_class = 2; // Transversion
                     }
                     
                 }
@@ -289,14 +274,23 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
                 
                 if (aa_from != aa_to)
                 {
-                    rate_class += 1; // Is a non-synonymous change
+                    rate_class += 2; // Is a non-synonymous change
                 }
                 
             }
             
-            m[i][j] = rate[rate_class] * codon_freqs[j];
-            m[j][i] = rate[rate_class] * codon_freqs[i];
-            
+            size_t index_nuc_from   = codon_from[position_of_change];
+            size_t index_nuc_to     = codon_to[position_of_change];
+            if ( rate_class <= 0 )
+            {
+                m[i][j] = 0.0;
+                m[j][i] = 0.0;
+            }
+            else
+            {
+                m[i][j] = rate[rate_class] * nucleotide_freqs[index_nuc_to];
+                m[j][i] = rate[rate_class] * nucleotide_freqs[index_nuc_from];
+            }
         }
     }
     
@@ -307,7 +301,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
 
 
 /** Calculate the transition probabilities for the real case */
-void RateMatrix_CodonSynonymousNonsynonymous::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
+void RateMatrix_CodonSynonymousNonsynonymousHKY::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
 {
     
     // get a reference to the eigenvalues
@@ -333,7 +327,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsEigens(double t, Transition
                 sum += (*ptr++) * eigValExp[s];
             }
             
-            //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
+            //            P[i][j] = (sum < 0.0) ? 0.0 : sum;
             (*p) = (sum < 0.0) ? 0.0 : sum;
         }
     }
@@ -341,7 +335,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsEigens(double t, Transition
 
 
 /** Calculate the transition probabilities for the complex case */
-void RateMatrix_CodonSynonymousNonsynonymous::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const
+void RateMatrix_CodonSynonymousNonsynonymousHKY::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const
 {
     
     // get a reference to the eigenvalues
@@ -371,7 +365,18 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsComplexEigens(double t, Tra
 }
 
 
-void RateMatrix_CodonSynonymousNonsynonymous::setOmega(double o)
+void RateMatrix_CodonSynonymousNonsynonymousHKY::setKappa(double k)
+{
+    
+    kappa = k;
+    
+    // set flags
+    needs_update = true;
+    
+}
+
+
+void RateMatrix_CodonSynonymousNonsynonymousHKY::setOmega(double o)
 {
     
     omega = o;
@@ -382,9 +387,9 @@ void RateMatrix_CodonSynonymousNonsynonymous::setOmega(double o)
 }
 
 
-void RateMatrix_CodonSynonymousNonsynonymous::setCodonFrequencies( const std::vector<double> &f )
+void RateMatrix_CodonSynonymousNonsynonymousHKY::setNucleotideFrequencies( const std::vector<double> &f )
 {
-    codon_freqs = f;
+    nucleotide_freqs = f;
     
     // set flags
     needs_update = true;
@@ -392,7 +397,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::setCodonFrequencies( const std::ve
 
 
 /** Update the eigen system */
-void RateMatrix_CodonSynonymousNonsynonymous::updateEigenSystem(void)
+void RateMatrix_CodonSynonymousNonsynonymousHKY::updateEigenSystem(void)
 {
     
     eigen_system->update();
@@ -401,7 +406,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::updateEigenSystem(void)
 }
 
 
-void RateMatrix_CodonSynonymousNonsynonymous::update( void )
+void RateMatrix_CodonSynonymousNonsynonymousHKY::update( void )
 {
     
     if ( needs_update )
@@ -410,8 +415,34 @@ void RateMatrix_CodonSynonymousNonsynonymous::update( void )
         computeOffDiagonal();
         
         // we also need to update the stationary frequencies
-        this->stationary_freqs = codon_freqs;
+        //        this->stationary_freqs = this->calculateStationaryFrequencies();
+        this->stationary_freqs = std::vector<double>(num_states,0.0);
+        //        this->stationary_freqs = std::vector<double>(61,1.0/61.0);
+        size_t index_curr  = 0;
+        size_t index_total = 0;
+        double sum = 0.0;
+        for (size_t i=0; i<4; ++i)
+        {
+            for (size_t j=0; j<4; ++j)
+            {
+                for (size_t k=0; k<4; ++k)
+                {
+                    if ( index_total != 48 && index_total != 50 && index_total != 56 )
+                    {
+                        this->stationary_freqs[ index_curr ] = nucleotide_freqs[i] * nucleotide_freqs[j] * nucleotide_freqs[k];
+                        sum += this->stationary_freqs[ index_curr ];
+                        index_curr++;
+                    }
+                    index_total++;
+                }
+            }
+        }
         
+        // normalize frequencies
+        for (size_t i=0; i<num_states; ++i)
+        {
+            this->stationary_freqs[ i ] /= sum;
+        }
         
         // set the diagonal values
         setDiagonal();
@@ -426,5 +457,6 @@ void RateMatrix_CodonSynonymousNonsynonymous::update( void )
         needs_update = false;
     }
 }
+
 
 
