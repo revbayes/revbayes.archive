@@ -58,6 +58,9 @@
 #include "ModelVector.h"
 #include "WorkspaceVector.h"
 
+/* Container types (in folder "distributions/phylogenetics") */
+#include "Dist_bdp.h"
+
 /* Evolution types (in folder "datatypes/phylogenetics") */
 
 /* Character state types (in folder "datatypes/phylogenetics/character") */
@@ -136,6 +139,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
         AddWorkspaceVectorType<Tree,3>::addTypeToWorkspace( *this, new Tree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
+//        AddWorkspaceVectorType<Dist_bdp,3>::addTypeToWorkspace( *this, new Dist_bdp() );
 
         addTypeWithConstructor( new Clade() );
         addTypeWithConstructor( new Taxon() );
@@ -143,7 +147,9 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         
         //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
 //        addFunction( new Func_workspaceVector<AbstractModelObject>() );
-        
+
+//        addFunction( new Func_workspaceVector<Dist_bdp>() );
+        addFunction( new Func_workspaceVector<TypedDistribution<TimeTree> >() );
 		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
 
 //        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );

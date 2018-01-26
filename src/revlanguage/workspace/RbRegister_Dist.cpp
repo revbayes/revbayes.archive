@@ -93,6 +93,7 @@
 /* Distribution types (in folder "distributions") */
 
 #include "Dist_EmpiricalSample.h"
+#include "Dist_WeightedSample.h"
 
 /* Character evolution models (in folder "distributions/phylogenetics/character") */
 #include "Dist_phyloCTMC.h"
@@ -461,6 +462,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         /* Mixture distributions (in folder "distributions/mixture") */
         AddDistribution< ModelVector<TimeTree>      >( new Dist_EmpiricalSample<TimeTree>());
+        AddDistribution< ModelVector<TimeTree>      >( new Dist_WeightedSample<TimeTree>());
+        AddDistribution< ModelVector<AbstractHomologousDiscreteCharacterData>      >( new Dist_WeightedSample<AbstractHomologousDiscreteCharacterData>());
+
 
         
         // dirichlet process prior distribution
