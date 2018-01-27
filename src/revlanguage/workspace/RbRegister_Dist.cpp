@@ -93,6 +93,7 @@
 /* Distribution types (in folder "distributions") */
 
 #include "Dist_EmpiricalSample.h"
+#include "Dist_WeightedSample.h"
 
 /* Character evolution models (in folder "distributions/phylogenetics/character") */
 #include "Dist_phyloCTMC.h"
@@ -201,6 +202,7 @@
 
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
+#include "Dist_event.h"
 #include "Dist_mixture.h"
 #include "Dist_reversibleJumpMixtureConstant.h"
 #include "Dist_upp.h"
@@ -461,6 +463,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         /* Mixture distributions (in folder "distributions/mixture") */
         AddDistribution< ModelVector<TimeTree>      >( new Dist_EmpiricalSample<TimeTree>());
+        AddDistribution< ModelVector<TimeTree>      >( new Dist_WeightedSample<TimeTree>());
+        AddDistribution< ModelVector<AbstractHomologousDiscreteCharacterData>      >( new Dist_WeightedSample<AbstractHomologousDiscreteCharacterData>());
+
 
         
         // dirichlet process prior distribution
@@ -470,6 +475,13 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< ModelVector<Integer>       >( new Dist_dpp<Integer>()      );
 		AddDistribution< ModelVector<Probability>   >( new Dist_dpp<Probability>()  );
         AddDistribution< ModelVector<Simplex>       >( new Dist_dpp<Simplex>()      );
+        
+        // event distribution
+        AddDistribution< ModelVector<Real>          >( new Dist_event<Real>()         );
+        AddDistribution< ModelVector<RealPos>       >( new Dist_event<RealPos>()      );
+        AddDistribution< ModelVector<Natural>       >( new Dist_event<Natural>()      );
+        AddDistribution< ModelVector<Integer>       >( new Dist_event<Integer>()      );
+        AddDistribution< ModelVector<Probability>   >( new Dist_event<Probability>()  );
 		
         // uniform partitions prior
         AddDistribution< ModelVector<RealPos>       >( new Dist_upp<RealPos>() );

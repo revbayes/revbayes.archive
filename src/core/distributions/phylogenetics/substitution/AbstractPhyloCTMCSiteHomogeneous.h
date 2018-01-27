@@ -2301,7 +2301,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
             
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = -log(max);
             
-            
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
@@ -2366,7 +2365,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
             
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] - log(max);
             
-            
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
@@ -2430,7 +2428,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
             }
             
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[middle]][middle][site] - log(max);
-            
             
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
@@ -2715,7 +2712,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setPInv(const Typ
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RateGenerator > *rm) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RateGenerator > *rm)
+{
     
     // remove the old parameter first
     if ( homogeneous_rate_matrix != NULL )

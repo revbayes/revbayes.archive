@@ -1,5 +1,5 @@
-#ifndef GraphFlipChordProposal_H
-#define GraphFlipChordProposal_H
+#ifndef GraphFlipCliqueProposal_H
+#define GraphFlipCliqueProposal_H
 
 #include <set>
 #include <string>
@@ -25,14 +25,14 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class GraphFlipChordProposal : public Proposal {
+    class GraphFlipCliqueProposal : public Proposal {
         
     public:
-        GraphFlipChordProposal( StochasticNode<MatrixReal> *n, const RbVector<long>& ind, double l, bool s = false);                                                                      //!<  constructor
+        GraphFlipCliqueProposal( StochasticNode<MatrixReal> *n, const RbVector<long>& v, double l, double vp=0.1, double ep=1.0, bool s = false);                                                                      //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
-        GraphFlipChordProposal* clone(void) const;                                                                  //!< Clone object
+        GraphFlipCliqueProposal*                clone(void) const;                                                                  //!< Clone object
         double                                  doProposal(void);                                                                   //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                    printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
@@ -49,17 +49,27 @@ namespace RevBayesCore {
         StochasticNode<RbVector<RbVector<double> > >* array;
         StochasticNode<MatrixReal>*                   matrix;
         
-        double                                  sampling_probability;
-        //!< The two indices of the last modified element.
+        double                                  set_sample_rate;
+        double                                  edge_probability;
+        double                                  vertex_probability;
         RbVector<long>                          vertices;
         size_t                                  vertex_list_length;
         double                                  storedValue;                                                                       //!< The value we propose.
         bool                                    symmetric;
+        bool                                    undo_needed;
         
-        std::set<size_t>                        touched_edge_elements;
+        struct Edge {
+            Edge(size_t f, size_t t, double v) : from(f), to(t), value(v) {}
+            size_t from;
+            size_t to;
+            double value;
+        };
+        std::vector<Edge>                       stored_edge_elements;
+        
+        
+        
     };
     
 }
 
 #endif
-

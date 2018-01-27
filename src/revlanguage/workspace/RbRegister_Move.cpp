@@ -112,7 +112,7 @@
 
 /* Moves on random adjacency graphs */
 #include "Move_GraphFlipEdge.h"
-#include "Move_GraphFlipChord.h"
+#include "Move_GraphFlipClique.h"
 #include "Move_GraphShiftEdge.h"
 
 /* Moves on continuous character data (real valued matrices) */
@@ -266,7 +266,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 
         /* Moves of random adjacency graphs */
         addTypeWithConstructor( new Move_GraphFlipEdge() );
-        addTypeWithConstructor( new Move_GraphFlipChord() );
+        addTypeWithConstructor( new Move_GraphFlipClique() );
         addTypeWithConstructor( new Move_GraphShiftEdge() );
         
         /* Moves on continuous character data (matrices of real values) */
