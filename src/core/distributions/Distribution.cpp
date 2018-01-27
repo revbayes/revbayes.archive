@@ -111,6 +111,7 @@ void Distribution::addParameter(const DagNode *p)
 RevLanguage::RevPtr<RevLanguage::RevVariable> Distribution::executeProcedure(const std::string &n, const std::vector<DagNode *> args, bool &f)
 {
     // no function found
+    return NULL;
 }
 
 
