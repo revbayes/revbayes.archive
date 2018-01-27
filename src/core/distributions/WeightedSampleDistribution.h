@@ -36,7 +36,7 @@ namespace RevBayesCore {
         // public member functions
         WeightedSampleDistribution*                         clone(void) const;                                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
-        void                                                executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found);
+        RevLanguage::RevPtr<RevLanguage::RevVariable>       executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found);
         void                                                redrawValue(void);
         void                                                setValue(RbVector<valueType> *v, bool f=false);
         
@@ -350,7 +350,7 @@ double RevBayesCore::WeightedSampleDistribution<valueType>::computeLnProbability
 
 
 template <class valueType>
-void RevBayesCore::WeightedSampleDistribution<valueType>::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevBayesCore::WeightedSampleDistribution<valueType>::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
 {
     
     bool org_found = found;
@@ -363,7 +363,7 @@ void RevBayesCore::WeightedSampleDistribution<valueType>::executeProcedure(const
         }
         found |= f;
     }
-    
+    return NULL; 
 }
 
 
