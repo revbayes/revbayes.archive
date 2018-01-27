@@ -1,8 +1,10 @@
 #include "AbstractHomologousDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "SSE_ODE.h"
 #include "Clade.h"
 #include "CladogeneticSpeciationRateMatrix.h"
 #include "DistributionExponential.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
 #include "DeterministicNode.h"
 #include "MatrixReal.h"
@@ -550,7 +552,7 @@ void StateDependentSpeciationExtinctionProcess::fireTreeChangeEvent( const RevBa
 }
 
 
-const AbstractHomologousDiscreteCharacterData& StateDependentSpeciationExtinctionProcess::getCharacterData() const
+const RevBayesCore::AbstractHomologousDiscreteCharacterData& StateDependentSpeciationExtinctionProcess::getCharacterData() const
 {
     return static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
 }
@@ -1315,9 +1317,8 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
 }
 
 
-void StateDependentSpeciationExtinctionProcess::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
-{
-    
+RevLanguage::RevPtr<RevLanguage::RevVariable> StateDependentSpeciationExtinctionProcess::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
+{    
     if (name == "clampCharData")
     {
         found = true;
@@ -1325,8 +1326,16 @@ void StateDependentSpeciationExtinctionProcess::executeProcedure(const std::stri
         const AbstractHomologousDiscreteCharacterData& v = static_cast<const TypedDagNode<AbstractHomologousDiscreteCharacterData > *>( args[0] )->getValue();
         
         static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData( v.clone() );
+
+        return NULL;
     }
     
+    if (name == "getCharData") 
+    { 
+        found = true;
+        RevLanguage::AbstractHomologousDiscreteCharacterData *tip_states = new RevLanguage::AbstractHomologousDiscreteCharacterData( getCharacterData() );
+        return new RevLanguage::RevVariable( tip_states );
+    }
     return TypedDistribution<Tree>::executeProcedure( name, args, found );
 }
 
@@ -1738,6 +1747,10 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     // a vector keeping track of the lineages currently surviving in each state
     // as we simulate forward in time
     std::vector< std::vector<size_t> > lineages_in_state = std::vector< std::vector<size_t> >(num_states, std::vector<size_t>());
+    std::vector< std::vector<size_t> > extinct_lineages_in_state = std::vector< std::vector<size_t> >(num_states, std::vector<size_t>());
+
+    // CharacterData object to hold the tip states
+    HomologousDiscreteCharacterData<NaturalNumbersState> *tip_data = new HomologousDiscreteCharacterData<NaturalNumbersState>();
 
     // vectors keeping track of the total rate of all
     // cladogenetic/anagenetic/extinction events for each state
@@ -1771,6 +1784,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     TopologyNode* root = new TopologyNode(0);
     double t = process_age->getValue();
     root->setAge(t);
+    root->setNodeType(false, true, true);
     nodes.push_back(root);
 
     // now draw a state for the root cladogenetic event
@@ -1853,6 +1867,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     left->setAge(t);
     root->addChild(left);
     left->setParent(root);
+    left->setNodeType(true, false, false);
     lineages_in_state[l].push_back(1);
     nodes.push_back(left);
 
@@ -1860,6 +1875,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     right->setAge(t);
     root->addChild(right);
     right->setParent(root);
+    right->setNodeType(true, false, false);
     lineages_in_state[r].push_back(2);
     nodes.push_back(right);
 
@@ -1901,9 +1917,37 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                 if (nodes[i]->getAge() == 0) 
                 {
                     std::stringstream ss;
-                    ss << "s" << i;
+                    ss << "sp" << i;
                     std::string name = ss.str();
                     nodes[i]->setName(name);
+                    nodes[i]->setNodeType(true, false, false);
+                }
+            }
+
+            // set CharacterData object for each tip state
+            for (size_t i = 0; i < num_states; i++)
+            {
+                for (size_t j = 0; j < lineages_in_state[i].size(); j++)
+                {
+                    size_t this_node = lineages_in_state[i][j];
+                    if (nodes[this_node]->isTip() == true)
+                    {
+                        DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(nodes[this_node]->getName());
+                        NaturalNumbersState state = NaturalNumbersState(i, num_states);
+                        this_tip_data.addCharacter(state);
+                        tip_data->addTaxonData(this_tip_data);
+                    }
+                }
+                for (size_t j = 0; j < extinct_lineages_in_state[i].size(); j++)
+                {
+                    size_t this_node = extinct_lineages_in_state[i][j];
+                    if (nodes[this_node]->isTip() == true)
+                    {
+                        DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(nodes[this_node]->getName());
+                        NaturalNumbersState state = NaturalNumbersState(i, num_states);
+                        this_tip_data.addCharacter(state);
+                        tip_data->addTaxonData(this_tip_data);
+                    }
                 }
             }
             break;
@@ -1953,11 +1997,13 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
 
         if (event_type == "extinction")
         {
+            extinct_lineages_in_state[event_state].push_back(event_index);
             lineages_in_state[event_state].erase(std::remove(lineages_in_state[event_state].begin(), lineages_in_state[event_state].end(), event_index), lineages_in_state[event_state].end());
             std::stringstream ss;
             ss << "ex" << event_index;
             std::string name = ss.str();
             nodes[event_index]->setName(name);
+            nodes[event_index]->setNodeType(true, false, false);
         }
         
         if (event_type == "anagenetic")
@@ -2058,6 +2104,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             left->setAge(t);
             nodes[event_index]->addChild(left);
             left->setParent(nodes[event_index]);
+            left->setNodeType(true, false, false);
             lineages_in_state[l].push_back(index);
             nodes.push_back(left);
 
@@ -2066,10 +2113,12 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             right->setAge(t);
             nodes[event_index]->addChild(right);
             right->setParent(nodes[event_index]);
+            right->setNodeType(true, false, false);
             lineages_in_state[r].push_back(index);
             nodes.push_back(right);
            
             // remove the parent node from our vector of current lineages
+            nodes[event_state]->setNodeType(false, false, true);
             lineages_in_state[event_state].erase(std::remove(lineages_in_state[event_state].begin(), lineages_in_state[event_state].end(), event_index), lineages_in_state[event_state].end());
         }
     }
@@ -2080,6 +2129,8 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     psi->setRooted(true);
 
     setValue(psi);
+    static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
+    
 }
 
 

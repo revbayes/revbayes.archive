@@ -2,6 +2,7 @@
 #include "ArgumentRules.h"
 #include "Clade.h"
 #include "Dist_CharacterDependentBirthDeathProcess.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
@@ -153,19 +154,17 @@ std::vector<std::string> Dist_CharacterDependentBirthDeathProcess::getDistributi
 
 MethodTable Dist_CharacterDependentBirthDeathProcess::getDistributionMethods( void ) const
 {
-    
     MethodTable methods = TypedDistribution<TimeTree>::getDistributionMethods();
-    
     
     ArgumentRules* clampCharDataArgRules = new ArgumentRules();
     clampCharDataArgRules->push_back( new ArgumentRule( "value", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    //    methods.addFunction("clampAt", new DistributionMemberFunction<TimeTree,RealPos>(this, clampAtArgRules   ) );
     methods.addFunction( new MemberProcedure( "clampCharData", RlUtils::Void, clampCharDataArgRules ) );
+   
+    ArgumentRules* getCharDataArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getCharData", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), getCharDataArgRules ) ); 
 
-    
     return methods;
 }
-
 
 
 /* Return member rules */

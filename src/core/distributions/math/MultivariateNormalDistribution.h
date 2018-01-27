@@ -35,32 +35,32 @@ namespace RevBayesCore {
         
     public:
         MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *m, const TypedDagNode<MatrixReal>* cov, const TypedDagNode<MatrixReal>* prec, const TypedDagNode<double>* sc);
-        virtual                                            ~MultivariateNormalDistribution(void);                                                //!< Virtual destructor
+        virtual                                                         ~MultivariateNormalDistribution(void);                                                //!< Virtual destructor
         
         
         // public member functions
-        MultivariateNormalDistribution*                     clone(void) const;
+        MultivariateNormalDistribution*                                 clone(void) const;
         
-        MatrixReal                                          computeContrasts(void);
-        virtual void                                        executeProcedure(const std::string &n, const std::vector<DagNode*> args, bool &f);  //!< execute the procedure
-        void                                                clampAt(size_t i, double v);
-        double                                              computeLnProbability(void);
-        void                                                redrawValue(void);
+        MatrixReal                                                      computeContrasts(void);
+        virtual RevLanguage::RevPtr<RevLanguage::RevVariable>           executeProcedure(const std::string &n, const std::vector<DagNode*> args, bool &f);  //!< execute the procedure
+        void                                                            clampAt(size_t i, double v);
+        double                                                          computeLnProbability(void);
+        void                                                            redrawValue(void);
 
     protected:
         // Parameter management functions
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                    //!< Swap a parameter
+        void                                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);                    //!< Swap a parameter
         
     private:
         
         // members
-        const TypedDagNode< RbVector<double> >*             mean;
-        const TypedDagNode< MatrixReal >*                   covariance;
-        const TypedDagNode< MatrixReal >*                   precision;
-        const TypedDagNode< double >*                       scale;
+        const TypedDagNode< RbVector<double> >*                         mean;
+        const TypedDagNode< MatrixReal >*                               covariance;
+        const TypedDagNode< MatrixReal >*                               precision;
+        const TypedDagNode< double >*                                   scale;
 
-        std::vector<bool>                                   observed;
-        std::vector<double>                                 observations;
+        std::vector<bool>                                               observed;
+        std::vector<double>                                             observations;
         
     };
     

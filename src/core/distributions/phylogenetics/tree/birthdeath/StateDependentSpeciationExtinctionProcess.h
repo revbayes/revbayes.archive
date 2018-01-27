@@ -1,6 +1,7 @@
 #ifndef StateDependentSpeciationExtinctionProcess_H
 #define StateDependentSpeciationExtinctionProcess_H
 
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "TreeDiscreteCharacterData.h"
 #include "CladogeneticSpeciationRateMatrix.h"
 #include "RateMatrix.h"
@@ -11,6 +12,8 @@
 #include "Tree.h"
 #include "TreeChangeEventListener.h"
 #include "TypedDagNode.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
 
 
 #include <vector>
@@ -79,7 +82,7 @@ namespace RevBayesCore {
 
         // Parameter management functions. You need to override both if you have additional parameters
         virtual void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
-        void                                                            executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found);
+        RevLanguage::RevPtr<RevLanguage::RevVariable>                   executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found);
         
         // helper functions
         void                                                            buildRandomBinaryTree(std::vector<TopologyNode *> &tips);

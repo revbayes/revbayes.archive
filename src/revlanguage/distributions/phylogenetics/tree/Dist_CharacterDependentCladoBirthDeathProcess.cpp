@@ -120,6 +120,9 @@ MethodTable Dist_CharacterDependentCladoBirthDeathProcess::getDistributionMethod
     clampCharDataArgRules->push_back( new ArgumentRule( "value", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "clampCharData", RlUtils::Void, clampCharDataArgRules ) );
     
+    ArgumentRules* getCharDataArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getCharData", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), getCharDataArgRules ) );
+    
     return methods;
 }
 
