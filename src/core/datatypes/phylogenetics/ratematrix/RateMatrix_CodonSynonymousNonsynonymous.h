@@ -59,9 +59,7 @@ namespace RevBayesCore {
         std::vector<std::complex<double> >                      cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
         
         double                                                  omega;
-        std::vector<double>                                     codon_freqs;                                                                        //!< Vector of precalculated product of eigenvectors and their inverse
-
-        size_t                                                  num_states;
+        std::vector<double>                                     codon_freqs; 
         
     };
     

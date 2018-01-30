@@ -288,8 +288,8 @@ void RateMatrix_CodonSynonymousNonsynonymousHKY::computeOffDiagonal( void )
             }
             else
             {
-                m[i][j] = rate[rate_class] * nucleotide_freqs[index_nuc_to];
-                m[j][i] = rate[rate_class] * nucleotide_freqs[index_nuc_from];
+                m[i][j] = rate[rate_class] * nucleotide_freqs[codon_to[0]]   * nucleotide_freqs[codon_to[1]]   * nucleotide_freqs[codon_to[2]];
+                m[j][i] = rate[rate_class] * nucleotide_freqs[codon_from[0]] * nucleotide_freqs[codon_from[1]] * nucleotide_freqs[codon_from[2]];
             }
         }
     }

@@ -15,8 +15,7 @@ using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
 RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous( void ) : TimeReversibleRateMatrix( 61 ),
-    codon_freqs(61,1.0/61),
-    num_states( 61 )
+    codon_freqs(61,1.0/61)
 {
     
     eigen_system       = new EigenSystem(the_rate_matrix);
@@ -35,8 +34,6 @@ RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous
     eigen_system        = new EigenSystem( *m.eigen_system );
     c_ijk               = m.c_ijk;
     cc_ijk              = m.cc_ijk;
-    
-    num_states          = m.num_states;
     
     eigen_system->setRateMatrixPtr(the_rate_matrix);
 }
@@ -63,8 +60,6 @@ RateMatrix_CodonSynonymousNonsynonymous& RateMatrix_CodonSynonymousNonsynonymous
         c_ijk               = r.c_ijk;
         cc_ijk              = r.cc_ijk;
         codon_freqs         = r.codon_freqs;
-        
-        num_states          = r.num_states;
         
         eigen_system->setRateMatrixPtr(the_rate_matrix);
     }
@@ -166,35 +161,16 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
     
     std::vector<double> rate = std::vector<double>(5,0);
     rate[0] = 0.0;
-    rate[1] = 1;
+    rate[1] = 1.0;
     rate[2] = omega;
 
     int rate_class = 0;
-    std::string codons [] = {
-        "AAA", "AAC", "AAG", "AAT",
-        "ACA", "ACC", "ACG", "ACT",
-        "AGA", "AGC", "AGG", "AGT",
-        "ATA", "ATC", "ATG", "ATT",
-        "CAA", "CAC", "CAG", "CAT",
-        "CCA", "CCC", "CCG", "CCT",
-        "CGA", "CGC", "CGG", "CGT",
-        "CTA", "CTC", "CTG", "CTT",
-        "GAA", "GAC", "GAG", "GAT",
-        "GCA", "GCC", "GCG", "GCT",
-        "GGA", "GGC", "GGG", "GGT",
-        "GTA", "GTC", "GTG", "GTT",
-        "TAC", "TAT",
-        "TCA", "TCC", "TCG", "TCT",
-        "TGC", "TGG", "TGT",
-        "TTA", "TTC", "TTG", "TTT",
-    };
-    
     
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0; i<num_states; ++i)
     {
         
-        CodonState c1 = CodonState( codons[i] );
+        CodonState c1 = CodonState( CodonState::CODONS[i] );
         std::vector<unsigned int> codon_from = c1.getTripletStates();
         unsigned int codon_from_pos_1 = codon_from[0];
         unsigned int codon_from_pos_2 = codon_from[1];
@@ -204,10 +180,8 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
         
         for (size_t j=i+1; j<num_states; ++j)
         {
-            
-            size_t position_of_change = 0;
 
-            CodonState c2 = CodonState( codons[j] );
+            CodonState c2 = CodonState( CodonState::CODONS[j] );
             
             std::vector<unsigned int> codon_to = c2.getTripletStates();
             unsigned int codon_to_pos_1 = codon_to[0];
@@ -219,37 +193,15 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
             rate_class = -1;
             if (codon_from_pos_1 != codon_to_pos_1)
             {
-                // change at position 0
-                position_of_change = 0;
-                
-                if ( (codon_from_pos_1 == 0 && codon_to_pos_1 == 2) || (codon_from_pos_1 == 2 && codon_to_pos_1 == 0) || // A <-> G
-                     (codon_from_pos_1 == 1 && codon_to_pos_1 == 3) || (codon_from_pos_1 == 3 && codon_to_pos_1 == 1) )  // C <-> T
-                {
-                    rate_class = 1; // Transition at position 1
-                }
-                else
-                {
-                    rate_class = 1; // Transversion at position 1
-                }
+                rate_class = 1;
             }
             
             if (codon_from_pos_2 != codon_to_pos_2)
             {
                 
-                // change at position 1
-                position_of_change = 1;
-                
                 if (rate_class == -1)
                 {
-                    if ( (codon_from_pos_2 == 0 && codon_to_pos_2 == 2) || (codon_from_pos_2 == 2 && codon_to_pos_2 == 0) || // A <-> G
-                         (codon_from_pos_2 == 1 && codon_to_pos_2 == 3) || (codon_from_pos_2 == 3 && codon_to_pos_2 == 1) )  // C <-> T
-                    {
-                        rate_class = 1; // Transition
-                    }
-                    else
-                    {
-                        rate_class = 1; // Transversion
-                    }
+                    rate_class = 1;
                 }
                 else
                 {
@@ -261,20 +213,9 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
             if (codon_from_pos_3 != codon_to_pos_3)
             {
                 
-                // change at position 2
-                position_of_change = 2;
-                
                 if (rate_class == -1)
                 {
-                    if ( (codon_from_pos_3 == 0 && codon_to_pos_3 == 2) || (codon_from_pos_3 == 2 && codon_to_pos_3 == 0) || // A <-> G
-                         (codon_from_pos_3 == 1 && codon_to_pos_3 == 3) || (codon_from_pos_3 == 3 && codon_to_pos_3 == 1) )  // C <-> T
-                    {
-                        rate_class = 1; // Transition
-                    }
-                    else
-                    {
-                        rate_class = 1; // Transversion
-                    }
+                    rate_class = 1;
                     
                 }
                 else
@@ -284,18 +225,21 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
                 
             }
             
-            if (rate_class != 0)
+            if (rate_class > 0 && aa_from != aa_to)
             {
-                
-                if (aa_from != aa_to)
-                {
-                    rate_class += 1; // Is a non-synonymous change
-                }
-                
+                rate_class = 2; // Is a non-synonymous change
             }
             
-            m[i][j] = rate[rate_class] * codon_freqs[j];
-            m[j][i] = rate[rate_class] * codon_freqs[i];
+            if ( rate_class > 0 )
+            {
+                m[i][j] = rate[rate_class] * codon_freqs[j];
+                m[j][i] = rate[rate_class] * codon_freqs[i];
+            }
+            else
+            {
+                m[i][j] = 0.0;
+                m[j][i] = 0.0;
+            }
             
         }
     }
@@ -411,7 +355,6 @@ void RateMatrix_CodonSynonymousNonsynonymous::update( void )
         
         // we also need to update the stationary frequencies
         this->stationary_freqs = codon_freqs;
-        
         
         // set the diagonal values
         setDiagonal();

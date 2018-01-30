@@ -397,12 +397,12 @@ std::string CodonState::getStringValue(void) const
     
     if ( isMissingState() )
     {
-        return "?";
+        return "???";
     }
     
     if ( isGapState() )
     {
-        return "-";
+        return "---";
     }
     
     std::vector<unsigned int> codon_pos = getTripletStates();
@@ -480,9 +480,9 @@ std::vector<unsigned int> CodonState::getTripletStates( void ) const
     
     size_t codon_index = getStateIndex();
     size_t triplet_index = CODON_TO_TRIPLET_INDICES[codon_index];
-    codon_pos[0] = triplet_index % 4;
+    codon_pos[0] = int(triplet_index / 16) % 4;
     codon_pos[1] = int(triplet_index / 4) % 4;
-    codon_pos[2] = int(triplet_index / 16) % 4;
+    codon_pos[2] = triplet_index % 4;
     
     return codon_pos;
 }
@@ -629,8 +629,17 @@ void CodonState::addState(const std::string &symbol)
 {
     ++num_observed_states;
     
-    std::string labels = getStateLabels();
-    size_t pos = labels.find(symbol);
+    size_t pos = 0;
+    for (size_t i=0; i<61; ++i)
+    {
+        
+        if ( symbol == CodonState::CODONS[i] )
+        {
+            pos = i;
+            break;
+        }
+        
+    }
     
     state.set( pos );
     index_single_state = pos;
