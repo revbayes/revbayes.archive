@@ -107,8 +107,7 @@ chromotree ~ dnCDCladoBDP( rootAge            = psi.rootAge(),
                            delta              = 1.0,
                            pi                 = root_frequencies,
                            rho                = rho_bd,
-                           condition          = "time",
-                           taxa               = taxa )
+                           condition          = "time")
 
 
 # and clamp tree and the chromosome counts data

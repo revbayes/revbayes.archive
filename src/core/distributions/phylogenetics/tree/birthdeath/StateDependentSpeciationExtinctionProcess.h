@@ -40,7 +40,6 @@ namespace RevBayesCore {
                                                   const TypedDagNode<Simplex>* p,
                                                   const TypedDagNode<double> *rh,
                                                   const std::string &cdt,
-                                                  const std::vector<Taxon> &tn,
                                                   bool uo);
         
         // pure virtual member functions
@@ -65,6 +64,7 @@ namespace RevBayesCore {
         void                                                            drawStochasticCharacterMap(std::vector<std::string*>& character_histories);
         void                                                            recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories);
         void                                                            numericallyIntegrateProcess(state_type &likelihoods, double begin_age, double end_age, bool use_backward, bool extinction_only) const; //!< Wrapper function for the ODE time stepper function.
+        void                                                            resizeVectors(size_t num_nodes);
         
     protected:
         
@@ -98,7 +98,6 @@ namespace RevBayesCore {
         // members
         std::string                                                     condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
         double                                                          dt;                                                                                                 //!< The size of the time slices used by the ODE for numerical integration.
-        std::vector<Taxon>                                              taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
         std::vector<bool>                                               active_likelihood;
         mutable std::vector<bool>                                       changed_nodes;
         mutable std::vector<bool>                                       dirty_nodes;

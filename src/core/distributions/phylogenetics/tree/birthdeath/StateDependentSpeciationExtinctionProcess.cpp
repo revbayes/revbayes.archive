@@ -40,17 +40,15 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    const TypedDagNode< Simplex >* p,
                                                                                    const TypedDagNode<double> *rh,
                                                                                    const std::string &cdt,
-                                                                                   const std::vector<Taxon> &tn,
                                                                                    bool uo) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     condition( cdt ),
-    taxa( tn ),
-    active_likelihood( std::vector<bool>(2*tn.size()-1, 0) ),
-    changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
-    dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
-    node_partial_likelihoods( std::vector<std::vector<std::vector<double> > >(2*tn.size()-1, std::vector<std::vector<double> >(2,std::vector<double>(2*ext->getValue().size(),0))) ),
+    active_likelihood( std::vector<bool>(5, 0) ),
+    changed_nodes( std::vector<bool>(5, false) ),
+    dirty_nodes( std::vector<bool>(5, true) ),
+    node_partial_likelihoods( std::vector<std::vector<std::vector<double> > >(5, std::vector<std::vector<double> >(2,std::vector<double>(2*ext->getValue().size(),0))) ),
     extinction_probabilities( std::vector<std::vector<double> >( 500.0, std::vector<double>( ext->getValue().size(), 0) ) ),
     num_states( ext->getValue().size() ),
-    scaling_factors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
+    scaling_factors( std::vector<std::vector<double> >(5, std::vector<double>(2,0.0) ) ),
     use_cladogenetic_events( false ),
     use_origin( uo ),
     sample_character_history( false ),
@@ -197,11 +195,7 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
 
     if ( value->getNumberOfNodes() != dirty_nodes.size() )
     {
-        dirty_nodes = std::vector<bool>(value->getNumberOfNodes(), true);
-        changed_nodes = std::vector<bool>(value->getNumberOfNodes(), false);
-        active_likelihood = std::vector<bool>(value->getNumberOfNodes(), false);
-        node_partial_likelihoods = std::vector<std::vector<std::vector<double> > >(value->getNumberOfNodes(), std::vector<std::vector<double> >(2,std::vector<double>(2*mu->getValue().size(),0)));
-        scaling_factors = std::vector<std::vector<double> >(value->getNumberOfNodes(), std::vector<double>(2,0.0) );
+        resizeVectors(value->getNumberOfNodes());
     }
     
     // variable declarations and initialization
@@ -545,7 +539,6 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
 
 void StateDependentSpeciationExtinctionProcess::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n, const unsigned& m )
 {
-
     // call a recursive flagging of all node above (closer to the root) and including this node
     recursivelyFlagNodeDirty( n );
 
@@ -1680,7 +1673,6 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
         }
         
     }
-    
 }
 
 
@@ -2128,6 +2120,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     psi->setRoot(root, true);
     psi->setRooted(true);
 
+    resizeVectors(psi->getNumberOfNodes());
     setValue(psi);
     static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
     
@@ -2266,4 +2259,17 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
         likelihoods[i] = ( likelihoods[i] < 0.0 ? 0.0 : likelihoods[i] );
         likelihoods[i] = ( likelihoods[i] > 1.0 ? 1.0 : likelihoods[i] );
     }
+}
+
+
+/**
+ * Resize various vectors depending on the current number of nodes.
+ */
+void StateDependentSpeciationExtinctionProcess::resizeVectors(size_t num_nodes)
+{
+    active_likelihood = std::vector<bool>(num_nodes, false);
+    changed_nodes = std::vector<bool>(num_nodes, false);
+    dirty_nodes = std::vector<bool>(num_nodes, true);
+    node_partial_likelihoods = std::vector<std::vector<std::vector<double> > >(num_nodes, std::vector<std::vector<double> >(2,std::vector<double>(2*num_states,0)));
+    scaling_factors = std::vector<std::vector<double> >(num_nodes, std::vector<double>(2,0.0) );
 }

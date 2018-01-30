@@ -53,14 +53,12 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentClad
     RevBayesCore::TypedDagNode<double>*  r                              = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* rf               = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* rh                              = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
-    std::vector<RevBayesCore::Taxon> t                                  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     const std::string& cond                                             = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     
     // the start condition
     bool uo = ( start_condition == "originAge" ? true : false );
 
-    //RevBayesCore::CharacterDependentCladoBirthDeathProcess* d = new RevBayesCore::CharacterDependentCladoBirthDeathProcess( ra, ex, q, r, rf, rh, cond, t );
-    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, rf, rh, cond, t, uo );
+    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, rf, rh, cond, uo );
     
     // set the cladogenetic speciation rate event map
     RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticSpeciationRateMatrix>* cp = static_cast<const CladogeneticSpeciationRateMatrix &>( cladoEvents->getRevObject() ).getDagNode();
@@ -153,7 +151,6 @@ const MemberRules& Dist_CharacterDependentCladoBirthDeathProcess::getParameterRu
         optionsCondition.push_back( "time" );
         //optionsCondition.push_back( "survival" );
         memberRules.push_back( new OptionRule( "condition",           new RlString("time"), optionsCondition,   "The condition of the birth-death process." ) );
-        memberRules.push_back( new ArgumentRule( "taxa",              ModelVector<Taxon>::getClassTypeSpec(),   "The taxa used for simulation.",                            ArgumentRule::BY_VALUE                , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "nTimeSlices",       RealPos::getClassTypeSpec(),              "The number of time slices for the numeric ODE.",           ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RealPos(500.0) ) );
         
         rules_set = true;
@@ -209,11 +206,11 @@ void Dist_CharacterDependentCladoBirthDeathProcess::setConstParameter(const std:
     {
         condition = var;
     }
-    else if ( name == "taxa" )
-    {
-        taxa = var;
-    }
-    else if ( name == "nTimeSlices" )
+//    else if ( name == "taxa" )
+ //   {
+//        taxa = var;
+//    }
+   else if ( name == "nTimeSlices" )
     {
         num_time_slices = var;
     }
