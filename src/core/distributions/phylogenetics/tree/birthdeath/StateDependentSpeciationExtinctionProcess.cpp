@@ -40,7 +40,8 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    const TypedDagNode< Simplex >* p,
                                                                                    const TypedDagNode<double> *rh,
                                                                                    const std::string &cdt,
-                                                                                   bool uo) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
+                                                                                   bool uo,
+                                                                                   size_t max_lineages) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     condition( cdt ),
     active_likelihood( std::vector<bool>(5, 0) ),
     changed_nodes( std::vector<bool>(5, false) ),
@@ -62,8 +63,8 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     rate( r ),
     rho( rh ),
     Q_default( ext->getValue().size() ),
+    max_num_lineages( max_lineages ),
     NUM_TIME_SLICES( 500.0 )
-
 {
     addParameter( mu );
     addParameter( pi );
@@ -1892,21 +1893,23 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
         }
 
         // extend all surviving branches to the new time
+        size_t num_lineages = 0;
         for (size_t i = 0; i < num_states; i++)
         {
             for (size_t j = 0; j < lineages_in_state[i].size(); j++)
             {
                 size_t idx = lineages_in_state[i][j];
                 nodes[idx]->setAge(t);
+                num_lineages++;
             }
         }
 
-        // stop if we have reached the present
-        if (t == 0) 
+        // stop if we have reached the present or exceeded max num lineages
+        if (t == 0 || num_lineages >= max_num_lineages) 
         {
             for (size_t i = 0; i < nodes.size(); i++)
             {
-                if (nodes[i]->getAge() == 0) 
+                if (nodes[i]->getAge() == t) 
                 {
                     std::stringstream ss;
                     ss << "sp" << i;
@@ -2110,7 +2113,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             nodes.push_back(right);
            
             // remove the parent node from our vector of current lineages
-            nodes[event_state]->setNodeType(false, false, true);
+            nodes[event_index]->setNodeType(false, false, true);
             lineages_in_state[event_state].erase(std::remove(lineages_in_state[event_state].begin(), lineages_in_state[event_state].end(), event_index), lineages_in_state[event_state].end());
         }
     }

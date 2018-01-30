@@ -40,7 +40,8 @@ namespace RevBayesCore {
                                                   const TypedDagNode<Simplex>* p,
                                                   const TypedDagNode<double> *rh,
                                                   const std::string &cdt,
-                                                  bool uo);
+                                                  bool uo,
+                                                  size_t max_lineages);
         
         // pure virtual member functions
         virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
@@ -122,6 +123,7 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                                     rho;                                                                                                //!< Sampling probability of each species.
         
         RateMatrix_JC                                                   Q_default;
+        size_t                                                          max_num_lineages;
         double                                                          NUM_TIME_SLICES;
     };
     
