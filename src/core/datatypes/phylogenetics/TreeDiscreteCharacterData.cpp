@@ -1,3 +1,4 @@
+#include "DelimitedCharacterDataWriter.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "NclReader.h"
 #include "NexusWriter.h"
@@ -110,10 +111,15 @@ void TreeDiscreteCharacterData::writeToFile(const std::string &dir, const std::s
     nw.openStream(false);
     
     nw.writeNexusBlock( *this );
-    nw.writeNexusBlock( *character_data );
     
     nw.closeStream();
-    
+   
+    // many SSE models use NaturalNumber states, which are incompatible
+    // with the NEXUS format, so write the tips states to a separate
+    // tab-delimited file
+    fm = RbFileManager(dir, fn + ".tsv");
+    RevBayesCore::DelimitedCharacterDataWriter writer; 
+    writer.writeData(fm.getFullFileName(), *character_data, "\t"[0]);
 }
 
 
