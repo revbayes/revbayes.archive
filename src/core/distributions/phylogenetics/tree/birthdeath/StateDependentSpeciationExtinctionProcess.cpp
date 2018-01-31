@@ -41,7 +41,8 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    const TypedDagNode<double> *rh,
                                                                                    const std::string &cdt,
                                                                                    bool uo,
-                                                                                   size_t max_lineages) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
+                                                                                   size_t max_lineages,
+                                                                                   bool prune) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     condition( cdt ),
     active_likelihood( std::vector<bool>(5, 0) ),
     changed_nodes( std::vector<bool>(5, false) ),
@@ -64,6 +65,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     rho( rh ),
     Q_default( ext->getValue().size() ),
     max_num_lineages( max_lineages ),
+    prune_extinct_lineages( prune ),
     NUM_TIME_SLICES( 500.0 )
 {
     addParameter( mu );
@@ -1933,15 +1935,18 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                         tip_data->addTaxonData(this_tip_data);
                     }
                 }
-                for (size_t j = 0; j < extinct_lineages_in_state[i].size(); j++)
+                if (prune_extinct_lineages == false)
                 {
-                    size_t this_node = extinct_lineages_in_state[i][j];
-                    if (nodes[this_node]->isTip() == true)
+                    for (size_t j = 0; j < extinct_lineages_in_state[i].size(); j++)
                     {
-                        DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(nodes[this_node]->getName());
-                        NaturalNumbersState state = NaturalNumbersState(i, num_states);
-                        this_tip_data.addCharacter(state);
-                        tip_data->addTaxonData(this_tip_data);
+                        size_t this_node = extinct_lineages_in_state[i][j];
+                        if (nodes[this_node]->isTip() == true)
+                        {
+                            DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(nodes[this_node]->getName());
+                            NaturalNumbersState state = NaturalNumbersState(i, num_states);
+                            this_tip_data.addCharacter(state);
+                            tip_data->addTaxonData(this_tip_data);
+                        }
                     }
                 }
             }
@@ -2122,7 +2127,21 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     Tree *psi = new Tree();
     psi->setRoot(root, true);
     psi->setRooted(true);
-
+    
+    if (prune_extinct_lineages == true)
+    {
+        for (size_t i = 0; i < num_states; i++)
+        {
+            for (size_t j = 0; j < extinct_lineages_in_state[i].size(); j++)
+            {
+                size_t this_node = extinct_lineages_in_state[i][j];
+                if (nodes[this_node]->isTip() == true)
+                {
+                    psi->dropTipNodeWithName( nodes[this_node]->getName() );
+                }
+            }
+        }
+    }
     resizeVectors(psi->getNumberOfNodes());
     setValue(psi);
     static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);

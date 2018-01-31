@@ -51,6 +51,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                                   condition;                                                                              //!< The condition of the process (none/survival/#Taxa)
         RevPtr<const RevVariable>                                   num_time_slices;
         RevPtr<const RevVariable>                                   max_lineages;
+        RevPtr<const RevVariable>                                   prune_extinct_lineages;
         std::string                                                 start_condition;                                                                     //!< The start condition of the process (rootAge/originAge)
 
     };

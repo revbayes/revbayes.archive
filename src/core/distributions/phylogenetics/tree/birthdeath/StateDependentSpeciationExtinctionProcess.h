@@ -41,7 +41,8 @@ namespace RevBayesCore {
                                                   const TypedDagNode<double> *rh,
                                                   const std::string &cdt,
                                                   bool uo,
-                                                  size_t max_lineages);
+                                                  size_t max_lineages,
+                                                  bool prune);
         
         // pure virtual member functions
         virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
@@ -124,6 +125,7 @@ namespace RevBayesCore {
         
         RateMatrix_JC                                                   Q_default;
         size_t                                                          max_num_lineages;
+        bool                                                            prune_extinct_lineages;
         double                                                          NUM_TIME_SLICES;
     };
     
