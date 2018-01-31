@@ -216,21 +216,25 @@ void Tree::dropTipNodeWithName( const std::string &n )
 {
     // get the index of this name
     size_t index = getTipIndex( n );
-
     TopologyNode &node          = getTipNode( index );
     TopologyNode &parent        = node.getParent();
-    TopologyNode &grand_parent  = parent.getParent();
-    TopologyNode *sibling       = &parent.getChild( 0 );
-    if ( sibling == &node )
+    if (parent.isRoot() == false)
     {
-        sibling = &parent.getChild( 1 );
+        TopologyNode &grand_parent  = parent.getParent();
+        TopologyNode *sibling       = &parent.getChild( 0 );
+        if ( sibling == &node )
+        {
+            sibling = &parent.getChild( 1 );
+        }
+        grand_parent.removeChild( &parent );
+        parent.removeChild( sibling );
+        grand_parent.addChild( sibling );
+        sibling->setParent( &grand_parent );
     }
-
-    grand_parent.removeChild( &parent );
-    parent.removeChild( sibling );
-    grand_parent.addChild( sibling );
-    sibling->setParent( &grand_parent );
-
+    else
+    {
+        root->removeChild(&node);
+    }
 
     bool resetIndex = true;
 
