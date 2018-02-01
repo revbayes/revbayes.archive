@@ -104,22 +104,26 @@ void TreeDiscreteCharacterData::setCharacterData( AbstractHomologousDiscreteChar
 
 void TreeDiscreteCharacterData::writeToFile(const std::string &dir, const std::string &fn) const
 {
-    RbFileManager fm = RbFileManager(dir, fn + ".nex");
-    fm.createDirectoryForFile();
-    
-    NexusWriter nw( fm.getFullFileName() );
-    nw.openStream(false);
-    
-    nw.writeNexusBlock( *this );
-    
-    nw.closeStream();
-   
-    // many SSE models use NaturalNumber states, which are incompatible
-    // with the NEXUS format, so write the tips states to a separate
-    // tab-delimited file
-    fm = RbFileManager(dir, fn + ".tsv");
-    RevBayesCore::DelimitedCharacterDataWriter writer; 
-    writer.writeData(fm.getFullFileName(), *character_data, "\t"[0]);
+    // do not write a file if the tree is invalid
+    if (this->getNumberOfTips() > 1)
+    {
+        RbFileManager fm = RbFileManager(dir, fn + ".nex");
+        fm.createDirectoryForFile();
+        
+        NexusWriter nw( fm.getFullFileName() );
+        nw.openStream(false);
+        
+        nw.writeNexusBlock( *this );
+        
+        nw.closeStream();
+       
+        // many SSE models use NaturalNumber states, which are incompatible
+        // with the NEXUS format, so write the tips states to a separate
+        // tab-delimited file
+        fm = RbFileManager(dir, fn + ".tsv");
+        RevBayesCore::DelimitedCharacterDataWriter writer; 
+        writer.writeData(fm.getFullFileName(), *character_data, "\t"[0]);
+    }
 }
 
 
