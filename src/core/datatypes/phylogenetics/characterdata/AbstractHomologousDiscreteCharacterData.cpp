@@ -1,4 +1,5 @@
 #include "AbstractHomologousDiscreteCharacterData.h"
+#include "DelimitedCharacterDataWriter.h"
 #include "NexusWriter.h"
 #include "RbFileManager.h"
 
@@ -8,16 +9,26 @@ using namespace RevBayesCore;
 
 void AbstractHomologousDiscreteCharacterData::writeToFile(const std::string &dir, const std::string &fn) const
 {
-    RbFileManager fm = RbFileManager(dir, fn + ".nex");
-    fm.createDirectoryForFile();
-    
-    NexusWriter nw( fm.getFullFileName() );
-    nw.openStream(false);
-    
-    nw.writeNexusBlock( *this );
-    
-    nw.closeStream();
-    
+    if (this->getDataType() == "NaturalNumbers")
+    {
+        // NEXUS does not support NaturalNumbers so write tab delimited file
+        RbFileManager fm = RbFileManager(dir, fn + ".tsv");
+        RevBayesCore::DelimitedCharacterDataWriter writer; 
+        writer.writeData(fm.getFullFileName(), *this, "\t"[0]);
+    }
+    else
+    {
+        // otherwise write NEXUS file
+        RbFileManager fm = RbFileManager(dir, fn + ".nex");
+        fm.createDirectoryForFile();
+        
+        NexusWriter nw( fm.getFullFileName() );
+        nw.openStream(false);
+        
+        nw.writeNexusBlock( *this );
+        
+        nw.closeStream();
+    } 
 }
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractHomologousDiscreteCharacterData& x) {

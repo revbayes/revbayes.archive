@@ -1403,21 +1403,23 @@ void Tree::setTaxonIndices(const TaxonMap &tm)
 // Write this object into a file in its default format.
 void Tree::writeToFile( const std::string &dir, const std::string &fn ) const
 {
+    // do not write a file if the tree is invalid
+    if (this->getNumberOfTips() > 1)
+    {
+        RbFileManager fm = RbFileManager(dir, fn + ".newick");
+        fm.createDirectoryForFile();
 
-    RbFileManager fm = RbFileManager(dir, fn + ".newick");
-    fm.createDirectoryForFile();
+        // open the stream to the file
+        std::fstream outStream;
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
 
-    // open the stream to the file
-    std::fstream outStream;
-    outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
+        // write the value of the node
+        outStream << getNewickRepresentation();
+        outStream << std::endl;
 
-    // write the value of the node
-    outStream << getNewickRepresentation();
-    outStream << std::endl;
-
-    // close the stream
-    outStream.close();
-
+        // close the stream
+        outStream.close();
+    }
 }
 
 
