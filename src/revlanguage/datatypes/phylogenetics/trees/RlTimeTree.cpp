@@ -184,5 +184,8 @@ void TimeTree::initMethods( void )
 
     ArgumentRules* collessArgRules = new ArgumentRules();
     methods.addFunction( new MemberFunction<TimeTree, Natural>( "colless", this, collessArgRules ) );
+    
+    ArgumentRules* gArgRules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<TimeTree, Real>( "gammaStatistic", this, gArgRules ) );
 
 }

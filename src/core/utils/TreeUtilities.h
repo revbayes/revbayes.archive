@@ -55,6 +55,7 @@ namespace RevBayesCore {
         double                  getAgeOfMRCARecursive(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) ;
         double                  getAgeOfMRCA(const Tree &t, std::string first, std::string second) ;
         int                     getCollessMetric(const TopologyNode&, int& size);
+        double                  getGammaStatistic(const Tree &t);
 
 
 
