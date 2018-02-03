@@ -217,11 +217,18 @@ void Tree::dropTipNodeWithName( const std::string &n )
     // get the index of this name
     size_t index = getTipIndex( n );
     TopologyNode &node          = getTipNode( index );
+    if (node.isRoot() == true && nodes.size() == 1)
+    {
+        // there is nothing left to prune
+        node.setName("");
+        node.setNodeType(false, true, false);
+        return;
+    }
     TopologyNode &parent        = node.getParent();
+    TopologyNode &grand_parent  = parent.getParent();
     if (parent.isRoot() == false)
     {
-        TopologyNode &grand_parent  = parent.getParent();
-        TopologyNode *sibling       = &parent.getChild( 0 );
+        TopologyNode *sibling = &parent.getChild( 0 );
         if ( sibling == &node )
         {
             sibling = &parent.getChild( 1 );
@@ -233,7 +240,21 @@ void Tree::dropTipNodeWithName( const std::string &n )
     }
     else
     {
-        root->removeChild(&node);
+        if (root->getNumberOfChildren() > 1)
+        {
+            TopologyNode *sibling = &root->getChild( 0 );
+            if ( sibling == &node )
+            {
+                sibling = &root->getChild( 1 );
+            }
+            root->removeChild(&node);
+            sibling->setParent(NULL);
+            root = sibling;
+        }
+        else
+        {
+            root->removeChild(&node);
+        }
     }
 
     bool resetIndex = true;
@@ -242,7 +263,6 @@ void Tree::dropTipNodeWithName( const std::string &n )
 
     // bootstrap all nodes from the root and add the in a pre-order traversal
     fillNodesByPhylogeneticTraversal(root);
-
     if ( resetIndex == true )
     {
         for (unsigned int i = 0; i < nodes.size(); ++i)
@@ -294,6 +314,10 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     else if ( n == "treeLength" )
     {
         rv = getTreeLength();
+    }
+    else if (n == "gammaStatistic")
+    {
+        rv = RevBayesCore::TreeUtilities::getGammaStatistic( *this );
     }
     else
     {
