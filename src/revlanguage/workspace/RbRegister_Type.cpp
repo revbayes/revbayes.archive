@@ -62,6 +62,7 @@
 #include "Dist_bdp.h"
 
 /* Evolution types (in folder "datatypes/phylogenetics") */
+#include "RlDistanceMatrix.h"
 
 /* Character state types (in folder "datatypes/phylogenetics/character") */
 #include "RlAminoAcidState.h"
@@ -130,6 +131,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
         AddWorkspaceVectorType<CladogeneticProbabilityMatrix,3>::addTypeToWorkspace( *this, new CladogeneticProbabilityMatrix() );
         AddWorkspaceVectorType<CladogeneticSpeciationRateMatrix,3>::addTypeToWorkspace( *this, new CladogeneticSpeciationRateMatrix() );
+        AddWorkspaceVectorType<DistanceMatrix,3>::addTypeToWorkspace( *this, new DistanceMatrix() );
         AddWorkspaceVectorType<MatrixReal,3>::addTypeToWorkspace( *this, new MatrixReal() );
         AddWorkspaceVectorType<MatrixRealPos,3>::addTypeToWorkspace( *this, new MatrixRealPos() );
         AddWorkspaceVectorType<MatrixRealSymmetric,3>::addTypeToWorkspace( *this, new MatrixRealSymmetric() );
