@@ -54,7 +54,7 @@ namespace RevBayesCore {
 
         // virtual basic utility functions
         virtual Tree*                                       clone(void) const;                                                                                  //!< Clone object
-        void                                                initFromFile( const std::string &dir, const std::string &fn );          //!< Read and resurrect this object from a file in its default format.
+        void                                                initFromFile( const std::string &dir, const std::string &fn );                                      //!< Read and resurrect this object from a file in its default format.
         void                                                initFromString(const std::string &s);                                                               //!< Serialize the object from a string
         void                                                writeToFile( const std::string &dir, const std::string &fn ) const;                                 //!< Write this object into a file in its default format.
 
@@ -66,10 +66,10 @@ namespace RevBayesCore {
         void                                                clearBranchParameters(void);
 		void                                                clearNodeParameters(void);
 
-        void                                                collapseNegativeBranchLengths(double length);                                                                //!< Don't allow parents to be younger than their children (TimeTrees only)
+        void                                                collapseNegativeBranchLengths(double length);                                                       //!< Don't allow parents to be younger than their children (TimeTrees only)
         void                                                dropTipNodeWithName(const std::string &n);                                                          //!< Get a pointer to tip node i
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
-        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;        //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;       //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Boolean &rv) const;    //!< Map the member methods to internal function calls
         std::vector<Taxon>                                  getFossilTaxa() const;                                                                              //!< Get all the taxa in the tree
         std::string                                         getNewickRepresentation() const;                                                                    //!< Get the newick representation of this Tree
@@ -93,7 +93,7 @@ namespace RevBayesCore {
         std::vector<std::string>                            getSpeciesNames() const;                                                                            //!< Get all the species represented in the tree
         std::vector<Taxon>                                  getTaxa() const;                                                                                    //!< Get all the taxa in the tree
 
-        const std::map<std::string, size_t>&                getTaxonBitSetMap(void) const;                                                                                //!< Returns a map that holds the BitSet index for each taxon
+        const std::map<std::string, size_t>&                getTaxonBitSetMap(void) const;                                                                      //!< Returns a map that holds the BitSet index for each taxon
         size_t                                              getTipIndex(const std::string &name) const;
         std::vector<std::string>                            getTipNames() const;
         TopologyNode&                                       getTipNode(size_t indx);                                                                            //!< Get a pointer to tip node i
@@ -112,17 +112,19 @@ namespace RevBayesCore {
         bool                                                isNegativeConstraint(void) const;                                                                   //!< Is this tree used as a negative constraint?
         bool                                                isRooted(void) const;                                                                               //!< Is the Tree rooted
         bool                                                isUltrametric(void) const;                                                                          //!< Is this tree ultrametric?
-        void                                                makeInternalNodesBifurcating(bool reindex);                                                                 //!< Make all the internal nodes bifurcating.
+        void                                                makeInternalNodesBifurcating(bool reindex);                                                         //!< Make all the internal nodes bifurcating.
         void                                                orderNodesByIndex();
         void                                                pruneTaxa(const RbBitSet&);
-        void                                                reroot(const Clade &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
-        void                                                reroot(const std::string &outgroup, bool reindex);                                                                //!< Re-root the tree with the given outgroup
+        void                                                reroot(const Clade &outgroup, bool reindex);                                                        //!< Re-root the tree with the given outgroup
+        void                                                reroot(const std::string &outgroup, bool reindex);                                                  //!< Re-root the tree with the given outgroup
         void                                                reroot(TopologyNode &n, bool reindex);
         void                                                renameNodeParameter(const std::string &old_name, const std::string &new_name);
         void                                                setNegativeConstraint(bool);
         void                                                setRoot(TopologyNode* r, bool reindex);                                                             //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
         void                                                setTaxonIndices(const TaxonMap &tm);                                                                //!< Set the indices of the taxa from the taxon map
+        void                                                setTaxonName(const std::string& currentName, const std::string& newName);                           //!< Change the name of a taxon
+        void                                                setTaxonObject(const std::string& currentName, const Taxon &newName);                           //!< Change the name of a taxon
         TopologyNode&                                       reverseParentChild(TopologyNode &n);                                                                //!< Reverse the parent child relationship.
 
     protected:

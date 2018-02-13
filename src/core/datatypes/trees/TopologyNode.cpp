@@ -1196,8 +1196,8 @@ size_t TopologyNode::getNumberOfChildren( void ) const
  * This either returns 1 if this is a tip node (or 0 if we do not count tipes)
  * or computes recursively the number of nodes in both children plus one for this node.
  *
- * \param[in]   tips       Shall we count tips?
- * \return                 Subtree size.
+ * \param[in]   countTips   Shall we count tips?
+ * \return                  Subtree size.
  */
 size_t TopologyNode::getNumberOfNodesInSubtree( bool countTips ) const
 {
@@ -1299,7 +1299,13 @@ void TopologyNode::getTaxa(std::vector<Taxon> &taxa, RbBitSet &bitset) const
 }
 
 
-const Taxon& TopologyNode::getTaxon() const
+const Taxon& TopologyNode::getTaxon( void ) const
+{
+    return taxon;
+}
+
+
+Taxon& TopologyNode::getTaxon( void )
 {
     return taxon;
 }

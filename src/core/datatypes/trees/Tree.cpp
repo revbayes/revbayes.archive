@@ -1396,6 +1396,43 @@ void Tree::setTaxonIndices(const TaxonMap &tm)
 }
 
 
+/**
+ * Change the name of a taxon
+ *
+ * \param[in] currentName    self explanatory.
+ * \param[in] newName        self explanatory.
+ */
+void Tree::setTaxonName(const std::string& current_name, const std::string& newName)
+{
+    
+    TopologyNode& node = getTipNodeWithName( current_name );
+    Taxon& t = node.getTaxon();
+    t.setName( newName );
+    taxon_bitset_map.erase( current_name );
+    taxon_bitset_map.insert( std::pair<std::string, size_t>( newName, node.getIndex() ) );
+}
+
+
+/**
+ * Change the name of a taxon
+ *
+ * \param[in] current_name   self explanatory.
+ * \param[in] new_taxon      self explanatory.
+ */
+void Tree::setTaxonObject(const std::string& current_name, const Taxon& new_taxon)
+{
+    
+    const std::string &new_name = new_taxon.getName();
+    
+    TopologyNode& node = getTipNodeWithName( current_name );
+    node.setTaxon( new_taxon );
+    
+    taxon_bitset_map.erase( current_name );
+    taxon_bitset_map.insert( std::pair<std::string, size_t>( new_name, node.getIndex() ) );
+    
+}
+
+
 // Write this object into a file in its default format.
 void Tree::writeToFile( const std::string &dir, const std::string &fn ) const
 {
