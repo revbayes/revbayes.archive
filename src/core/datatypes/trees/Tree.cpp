@@ -216,21 +216,46 @@ void Tree::dropTipNodeWithName( const std::string &n )
 {
     // get the index of this name
     size_t index = getTipIndex( n );
-
     TopologyNode &node          = getTipNode( index );
+    if (node.isRoot() == true && nodes.size() == 1)
+    {
+        // there is nothing left to prune
+        node.setName("");
+        node.setNodeType(false, true, false);
+        return;
+    }
     TopologyNode &parent        = node.getParent();
     TopologyNode &grand_parent  = parent.getParent();
-    TopologyNode *sibling       = &parent.getChild( 0 );
-    if ( sibling == &node )
+    if (parent.isRoot() == false)
     {
-        sibling = &parent.getChild( 1 );
+        TopologyNode *sibling = &parent.getChild( 0 );
+        if ( sibling == &node )
+        {
+            sibling = &parent.getChild( 1 );
+        }
+        grand_parent.removeChild( &parent );
+        parent.removeChild( sibling );
+        grand_parent.addChild( sibling );
+        sibling->setParent( &grand_parent );
     }
-
-    grand_parent.removeChild( &parent );
-    parent.removeChild( sibling );
-    grand_parent.addChild( sibling );
-    sibling->setParent( &grand_parent );
-
+    else
+    {
+        if (root->getNumberOfChildren() > 1)
+        {
+            TopologyNode *sibling = &root->getChild( 0 );
+            if ( sibling == &node )
+            {
+                sibling = &root->getChild( 1 );
+            }
+            root->removeChild(&node);
+            sibling->setParent(NULL);
+            root = sibling;
+        }
+        else
+        {
+            root->removeChild(&node);
+        }
+    }
 
     bool resetIndex = true;
 
@@ -238,7 +263,6 @@ void Tree::dropTipNodeWithName( const std::string &n )
 
     // bootstrap all nodes from the root and add the in a pre-order traversal
     fillNodesByPhylogeneticTraversal(root);
-
     if ( resetIndex == true )
     {
         for (unsigned int i = 0; i < nodes.size(); ++i)
@@ -290,6 +314,10 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     else if ( n == "treeLength" )
     {
         rv = getTreeLength();
+    }
+    else if (n == "gammaStatistic")
+    {
+        rv = RevBayesCore::TreeUtilities::getGammaStatistic( *this );
     }
     else
     {
@@ -1436,21 +1464,23 @@ void Tree::setTaxonObject(const std::string& current_name, const Taxon& new_taxo
 // Write this object into a file in its default format.
 void Tree::writeToFile( const std::string &dir, const std::string &fn ) const
 {
+    // do not write a file if the tree is invalid
+    if (this->getNumberOfTips() > 1)
+    {
+        RbFileManager fm = RbFileManager(dir, fn + ".newick");
+        fm.createDirectoryForFile();
 
-    RbFileManager fm = RbFileManager(dir, fn + ".newick");
-    fm.createDirectoryForFile();
+        // open the stream to the file
+        std::fstream outStream;
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
 
-    // open the stream to the file
-    std::fstream outStream;
-    outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
+        // write the value of the node
+        outStream << getNewickRepresentation();
+        outStream << std::endl;
 
-    // write the value of the node
-    outStream << getNewickRepresentation();
-    outStream << std::endl;
-
-    // close the stream
-    outStream.close();
-
+        // close the stream
+        outStream.close();
+    }
 }
 
 

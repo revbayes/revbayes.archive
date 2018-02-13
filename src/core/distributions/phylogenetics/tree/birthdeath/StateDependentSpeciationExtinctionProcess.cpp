@@ -40,17 +40,17 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    const TypedDagNode< Simplex >* p,
                                                                                    const TypedDagNode<double> *rh,
                                                                                    const std::string &cdt,
-                                                                                   const std::vector<Taxon> &tn,
-                                                                                   bool uo) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
+                                                                                   bool uo,
+                                                                                   size_t max_lineages,
+                                                                                   bool prune) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     condition( cdt ),
-    taxa( tn ),
-    active_likelihood( std::vector<bool>(2*tn.size()-1, 0) ),
-    changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
-    dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
-    node_partial_likelihoods( std::vector<std::vector<std::vector<double> > >(2*tn.size()-1, std::vector<std::vector<double> >(2,std::vector<double>(2*ext->getValue().size(),0))) ),
+    active_likelihood( std::vector<bool>(5, 0) ),
+    changed_nodes( std::vector<bool>(5, false) ),
+    dirty_nodes( std::vector<bool>(5, true) ),
+    node_partial_likelihoods( std::vector<std::vector<std::vector<double> > >(5, std::vector<std::vector<double> >(2,std::vector<double>(2*ext->getValue().size(),0))) ),
     extinction_probabilities( std::vector<std::vector<double> >( 500.0, std::vector<double>( ext->getValue().size(), 0) ) ),
     num_states( ext->getValue().size() ),
-    scaling_factors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
+    scaling_factors( std::vector<std::vector<double> >(5, std::vector<double>(2,0.0) ) ),
     use_cladogenetic_events( false ),
     use_origin( uo ),
     sample_character_history( false ),
@@ -64,8 +64,9 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     rate( r ),
     rho( rh ),
     Q_default( ext->getValue().size() ),
+    max_num_lineages( max_lineages ),
+    prune_extinct_lineages( prune ),
     NUM_TIME_SLICES( 500.0 )
-
 {
     addParameter( mu );
     addParameter( pi );
@@ -197,11 +198,7 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
 
     if ( value->getNumberOfNodes() != dirty_nodes.size() )
     {
-        dirty_nodes = std::vector<bool>(value->getNumberOfNodes(), true);
-        changed_nodes = std::vector<bool>(value->getNumberOfNodes(), false);
-        active_likelihood = std::vector<bool>(value->getNumberOfNodes(), false);
-        node_partial_likelihoods = std::vector<std::vector<std::vector<double> > >(value->getNumberOfNodes(), std::vector<std::vector<double> >(2,std::vector<double>(2*mu->getValue().size(),0)));
-        scaling_factors = std::vector<std::vector<double> >(value->getNumberOfNodes(), std::vector<double>(2,0.0) );
+        resizeVectors(value->getNumberOfNodes());
     }
     
     // variable declarations and initialization
@@ -545,7 +542,6 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
 
 void StateDependentSpeciationExtinctionProcess::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n, const unsigned& m )
 {
-
     // call a recursive flagging of all node above (closer to the root) and including this node
     recursivelyFlagNodeDirty( n );
 
@@ -1680,7 +1676,6 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
         }
         
     }
-    
 }
 
 
@@ -1900,21 +1895,23 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
         }
 
         // extend all surviving branches to the new time
+        size_t num_lineages = 0;
         for (size_t i = 0; i < num_states; i++)
         {
             for (size_t j = 0; j < lineages_in_state[i].size(); j++)
             {
                 size_t idx = lineages_in_state[i][j];
                 nodes[idx]->setAge(t);
+                num_lineages++;
             }
         }
 
-        // stop if we have reached the present
-        if (t == 0) 
+        // stop if we have reached the present or exceeded max num lineages
+        if (t == 0 || num_lineages >= max_num_lineages) 
         {
             for (size_t i = 0; i < nodes.size(); i++)
             {
-                if (nodes[i]->getAge() == 0) 
+                if (nodes[i]->getAge() == t) 
                 {
                     std::stringstream ss;
                     ss << "sp" << i;
@@ -1938,15 +1935,18 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                         tip_data->addTaxonData(this_tip_data);
                     }
                 }
-                for (size_t j = 0; j < extinct_lineages_in_state[i].size(); j++)
+                if (prune_extinct_lineages == false)
                 {
-                    size_t this_node = extinct_lineages_in_state[i][j];
-                    if (nodes[this_node]->isTip() == true)
+                    for (size_t j = 0; j < extinct_lineages_in_state[i].size(); j++)
                     {
-                        DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(nodes[this_node]->getName());
-                        NaturalNumbersState state = NaturalNumbersState(i, num_states);
-                        this_tip_data.addCharacter(state);
-                        tip_data->addTaxonData(this_tip_data);
+                        size_t this_node = extinct_lineages_in_state[i][j];
+                        if (nodes[this_node]->isTip() == true)
+                        {
+                            DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(nodes[this_node]->getName());
+                            NaturalNumbersState state = NaturalNumbersState(i, num_states);
+                            this_tip_data.addCharacter(state);
+                            tip_data->addTaxonData(this_tip_data);
+                        }
                     }
                 }
             }
@@ -2118,7 +2118,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             nodes.push_back(right);
            
             // remove the parent node from our vector of current lineages
-            nodes[event_state]->setNodeType(false, false, true);
+            nodes[event_index]->setNodeType(false, false, true);
             lineages_in_state[event_state].erase(std::remove(lineages_in_state[event_state].begin(), lineages_in_state[event_state].end(), event_index), lineages_in_state[event_state].end());
         }
     }
@@ -2127,7 +2127,22 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     Tree *psi = new Tree();
     psi->setRoot(root, true);
     psi->setRooted(true);
-
+    
+    if (prune_extinct_lineages == true)
+    {
+        for (size_t i = 0; i < num_states; i++)
+        {
+            for (size_t j = 0; j < extinct_lineages_in_state[i].size(); j++)
+            {
+                size_t this_node = extinct_lineages_in_state[i][j];
+                if (nodes[this_node]->isTip() == true)
+                {
+                    psi->dropTipNodeWithName( nodes[this_node]->getName() );
+                }
+            }
+        }
+    }
+    resizeVectors(psi->getNumberOfNodes());
     setValue(psi);
     static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
     
@@ -2266,4 +2281,17 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
         likelihoods[i] = ( likelihoods[i] < 0.0 ? 0.0 : likelihoods[i] );
         likelihoods[i] = ( likelihoods[i] > 1.0 ? 1.0 : likelihoods[i] );
     }
+}
+
+
+/**
+ * Resize various vectors depending on the current number of nodes.
+ */
+void StateDependentSpeciationExtinctionProcess::resizeVectors(size_t num_nodes)
+{
+    active_likelihood = std::vector<bool>(num_nodes, false);
+    changed_nodes = std::vector<bool>(num_nodes, false);
+    dirty_nodes = std::vector<bool>(num_nodes, true);
+    node_partial_likelihoods = std::vector<std::vector<std::vector<double> > >(num_nodes, std::vector<std::vector<double> >(2,std::vector<double>(2*num_states,0)));
+    scaling_factors = std::vector<std::vector<double> >(num_nodes, std::vector<double>(2,0.0) );
 }
