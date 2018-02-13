@@ -67,6 +67,7 @@ namespace RevBayesCore {
 		void                                                clearNodeParameters(void);
 
         void                                                collapseNegativeBranchLengths(double length);                                                       //!< Don't allow parents to be younger than their children (TimeTrees only)
+        void                                                dropTipNode(size_t i);                                                          //!< Get a pointer to tip node i
         void                                                dropTipNodeWithName(const std::string &n);                                                          //!< Get a pointer to tip node i
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;       //!< Map the member methods to internal function calls
@@ -118,6 +119,7 @@ namespace RevBayesCore {
         void                                                reroot(const Clade &outgroup, bool reindex);                                                        //!< Re-root the tree with the given outgroup
         void                                                reroot(const std::string &outgroup, bool reindex);                                                  //!< Re-root the tree with the given outgroup
         void                                                reroot(TopologyNode &n, bool reindex);
+        void                                                removeDuplicateTaxa(void);
         void                                                renameNodeParameter(const std::string &old_name, const std::string &new_name);
         void                                                setNegativeConstraint(bool);
         void                                                setRoot(TopologyNode* r, bool reindex);                                                             //!< Set the root and bootstrap the Tree from it

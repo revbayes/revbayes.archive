@@ -127,14 +127,23 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         const std::string& n = this->dag_node->getValue().getNode((size_t)index).getName();
         return new RevVariable( new RlString( n ) );
     }
-    else if (name == "rescale")
+    else if (name == "removeDuplicateTaxa")
     {
         found = true;
 
+        RevBayesCore::Tree &tree = dag_node->getValue();
+        tree.removeDuplicateTaxa();
+        
+        return NULL;
+    }
+    else if (name == "rescale")
+    {
+        found = true;
+        
         double f = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
         RevBayesCore::Tree &tree = dag_node->getValue();
         RevBayesCore::TreeUtilities::rescaleTree(&tree, &tree.getRoot(), f);
-
+        
         return NULL;
     }
     else if (name == "offset")
@@ -269,6 +278,11 @@ void Tree::initMethods( void )
     ArgumentRules* rescaleArgRules = new ArgumentRules();
     rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "The scaling factor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "rescale", RlUtils::Void, rescaleArgRules ) );
+    
+    
+    ArgumentRules* remove_duplicate_taxa_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "removeDuplicateTaxa", RlUtils::Void, remove_duplicate_taxa_arg_rules ) );
+    
 
     ArgumentRules* offsetArgRules = new ArgumentRules();
     offsetArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "The offset factor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
