@@ -36,6 +36,7 @@ namespace RevBayesCore {
         ChromosomesCladogenicBirthDeathFunction*                    clone(void) const;
         std::map< std::vector<unsigned>, double >                   getEventMap(double t=0.0);
         const std::map< std::vector<unsigned>, double >&            getEventMap(double t=0.0) const;
+        void                                                        setRateMultipliers(const TypedDagNode< RbVector< double > >* rm);
         void                                                        update(void);
         
     protected:
@@ -49,11 +50,13 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< RbVector<double> >*                     speciationRates;
+        const TypedDagNode< RbVector<double> >*                     hiddenRateMultipliers;
         unsigned                                                    maxChromo;
         unsigned                                                    numEventTypes;
         std::map< std::vector<unsigned>, std::vector<unsigned> >    eventMapTypes;
         std::map< std::vector<unsigned>, double >                   eventMap;
         std::vector< std::vector<unsigned> >                        eventMapCounts;
+        bool                                                        use_hidden_rate;
         
     };
     

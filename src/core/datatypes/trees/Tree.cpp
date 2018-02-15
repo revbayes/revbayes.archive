@@ -216,29 +216,66 @@ void Tree::dropTipNodeWithName( const std::string &n )
 {
     // get the index of this name
     size_t index = getTipIndex( n );
+    dropTipNode( index );
+}
 
+
+
+/**
+ * Drop the tip node with the given name.
+ * The name should correspond to the taxon name, not the species name.
+ * This will throw an error if the name doesn't exist.
+ */
+void Tree::dropTipNode( size_t index )
+{
+    // get the index of this name
     TopologyNode &node          = getTipNode( index );
+    if (node.isRoot() == true && nodes.size() == 1)
+    {
+        // there is nothing left to prune
+        node.setName("");
+        node.setNodeType(false, true, false);
+        return;
+    }
     TopologyNode &parent        = node.getParent();
     TopologyNode &grand_parent  = parent.getParent();
-    TopologyNode *sibling       = &parent.getChild( 0 );
-    if ( sibling == &node )
+    if (parent.isRoot() == false)
     {
-        sibling = &parent.getChild( 1 );
+        TopologyNode *sibling = &parent.getChild( 0 );
+        if ( sibling == &node )
+        {
+            sibling = &parent.getChild( 1 );
+        }
+        grand_parent.removeChild( &parent );
+        parent.removeChild( sibling );
+        grand_parent.addChild( sibling );
+        sibling->setParent( &grand_parent );
     }
-
-    grand_parent.removeChild( &parent );
-    parent.removeChild( sibling );
-    grand_parent.addChild( sibling );
-    sibling->setParent( &grand_parent );
-
-
+    else
+    {
+        if (root->getNumberOfChildren() > 1)
+        {
+            TopologyNode *sibling = &root->getChild( 0 );
+            if ( sibling == &node )
+            {
+                sibling = &root->getChild( 1 );
+            }
+            root->removeChild(&node);
+            sibling->setParent(NULL);
+            root = sibling;
+        }
+        else
+        {
+            root->removeChild(&node);
+        }
+    }
+    
     bool resetIndex = true;
-
+    
     nodes.clear();
-
+    
     // bootstrap all nodes from the root and add the in a pre-order traversal
     fillNodesByPhylogeneticTraversal(root);
-
     if ( resetIndex == true )
     {
         for (unsigned int i = 0; i < nodes.size(); ++i)
@@ -250,9 +287,9 @@ void Tree::dropTipNodeWithName( const std::string &n )
     {
         orderNodesByIndex();
     }
-
+    
     num_nodes = nodes.size();
-
+    
     // count the number of tips
     num_tips = 0;
     for (size_t i = 0; i < num_nodes; ++i)
@@ -265,7 +302,7 @@ void Tree::dropTipNodeWithName( const std::string &n )
         }
         num_tips += ( nodes[i]->isTip() ? 1 : 0);
     }
-
+    
 }
 
 
@@ -290,6 +327,10 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     else if ( n == "treeLength" )
     {
         rv = getTreeLength();
+    }
+    else if (n == "gammaStatistic")
+    {
+        rv = RevBayesCore::TreeUtilities::getGammaStatistic( *this );
     }
     else
     {
@@ -420,7 +461,6 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
  */
 void Tree::fillNodesByPhylogeneticTraversal(TopologyNode* node)
 {
-
     // now call this function recursively for all your children
     for (size_t i=0; i<node->getNumberOfChildren(); i++)
     {
@@ -917,7 +957,7 @@ void Tree::initFromFile( const std::string &dir, const std::string &fn )
 
         // Read a line
         std::string line;
-        getline( inStream, line );
+        fm.safeGetline( inStream, line );
 
         // append
         s += line;
@@ -1190,6 +1230,40 @@ bool Tree::recursivelyPruneTaxa( TopologyNode* n, const RbBitSet& prune_map )
 }
 
 
+void Tree::removeDuplicateTaxa( void )
+{
+    
+    bool removed_replicate = true;
+    while ( removed_replicate == true )
+    {
+        removed_replicate = false;
+        for ( size_t i=0; i<(num_tips-1); ++i )
+        {
+            const std::string &name_a = nodes[ i ]->getName();
+            for ( size_t j=i+1; j<num_tips; ++j )
+            {
+                const std::string &name_b = nodes[ j ]->getName();
+                if ( name_a == name_b )
+                {
+                    removed_replicate = true;
+                    dropTipNode( j );
+                    break;
+                }
+                
+            }
+
+            if ( removed_replicate == true )
+            {
+                break;
+            }
+            
+        }
+
+    }
+    
+}
+
+
 void Tree::renameNodeParameter(const std::string &old_name, const std::string &new_name)
 {
     getRoot().renameNodeParameter(old_name, new_name);
@@ -1397,24 +1471,63 @@ void Tree::setTaxonIndices(const TaxonMap &tm)
 }
 
 
+/**
+ * Change the name of a taxon
+ *
+ * \param[in] currentName    self explanatory.
+ * \param[in] newName        self explanatory.
+ */
+void Tree::setTaxonName(const std::string& current_name, const std::string& newName)
+{
+    
+    TopologyNode& node = getTipNodeWithName( current_name );
+    Taxon& t = node.getTaxon();
+    t.setName( newName );
+    taxon_bitset_map.erase( current_name );
+    taxon_bitset_map.insert( std::pair<std::string, size_t>( newName, node.getIndex() ) );
+}
+
+
+/**
+ * Change the name of a taxon
+ *
+ * \param[in] current_name   self explanatory.
+ * \param[in] new_taxon      self explanatory.
+ */
+void Tree::setTaxonObject(const std::string& current_name, const Taxon& new_taxon)
+{
+    
+    const std::string &new_name = new_taxon.getName();
+    
+    TopologyNode& node = getTipNodeWithName( current_name );
+    node.setTaxon( new_taxon );
+    
+    taxon_bitset_map.erase( current_name );
+    taxon_bitset_map.insert( std::pair<std::string, size_t>( new_name, node.getIndex() ) );
+    
+}
+
+
 // Write this object into a file in its default format.
 void Tree::writeToFile( const std::string &dir, const std::string &fn ) const
 {
+    // do not write a file if the tree is invalid
+    if (this->getNumberOfTips() > 1)
+    {
+        RbFileManager fm = RbFileManager(dir, fn + ".newick");
+        fm.createDirectoryForFile();
 
-    RbFileManager fm = RbFileManager(dir, fn + ".newick");
-    fm.createDirectoryForFile();
+        // open the stream to the file
+        std::fstream outStream;
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
 
-    // open the stream to the file
-    std::fstream outStream;
-    outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
+        // write the value of the node
+        outStream << getNewickRepresentation();
+        outStream << std::endl;
 
-    // write the value of the node
-    outStream << getNewickRepresentation();
-    outStream << std::endl;
-
-    // close the stream
-    outStream.close();
-
+        // close the stream
+        outStream.close();
+    }
 }
 
 

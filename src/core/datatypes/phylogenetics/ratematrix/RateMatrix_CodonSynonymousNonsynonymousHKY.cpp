@@ -2,7 +2,7 @@
 #include "EigenSystem.h"
 #include "MatrixComplex.h"
 #include "MatrixReal.h"
-#include "RateMatrix_Senca.h"
+#include "RateMatrix_CodonSynonymousNonsynonymousHKY.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
@@ -14,10 +14,13 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_Senca::RateMatrix_Senca(size_t n) : TimeReversibleRateMatrix( n )
+RateMatrix_CodonSynonymousNonsynonymousHKY::RateMatrix_CodonSynonymousNonsynonymousHKY( void ) : TimeReversibleRateMatrix( 61 ),
+    kappa( 1.0 ),
+    omega( 1.0 ),
+    nucleotide_freqs(4,0.25)
 {
     
-    theEigenSystem       = new EigenSystem(the_rate_matrix);
+    eigen_system       = new EigenSystem(the_rate_matrix);
     c_ijk.resize(num_states * num_states * num_states);
     cc_ijk.resize(num_states * num_states * num_states);
     
@@ -26,49 +29,55 @@ RateMatrix_Senca::RateMatrix_Senca(size_t n) : TimeReversibleRateMatrix( n )
 
 
 /** Copy constructor */
-RateMatrix_Senca::RateMatrix_Senca(const RateMatrix_Senca& m) : TimeReversibleRateMatrix( m )
+RateMatrix_CodonSynonymousNonsynonymousHKY::RateMatrix_CodonSynonymousNonsynonymousHKY(const RateMatrix_CodonSynonymousNonsynonymousHKY& m) : TimeReversibleRateMatrix( m ),
+    omega( m.omega ),
+    kappa( m.kappa ),
+    nucleotide_freqs( m.nucleotide_freqs )
 {
     
-    theEigenSystem       = new EigenSystem( *m.theEigenSystem );
-    c_ijk                = m.c_ijk;
-    cc_ijk               = m.cc_ijk;
+    eigen_system        = new EigenSystem( *m.eigen_system );
+    c_ijk               = m.c_ijk;
+    cc_ijk              = m.cc_ijk;
     
-    theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+    eigen_system->setRateMatrixPtr(the_rate_matrix);
 }
 
 
 /** Destructor */
-RateMatrix_Senca::~RateMatrix_Senca(void)
+RateMatrix_CodonSynonymousNonsynonymousHKY::~RateMatrix_CodonSynonymousNonsynonymousHKY(void)
 {
     
-    delete theEigenSystem;
+    delete eigen_system;
 }
 
 
-RateMatrix_Senca& RateMatrix_Senca::operator=(const RateMatrix_Senca &r)
+RateMatrix_CodonSynonymousNonsynonymousHKY& RateMatrix_CodonSynonymousNonsynonymousHKY::operator=(const RateMatrix_CodonSynonymousNonsynonymousHKY &r)
 {
     
     if (this != &r)
     {
         TimeReversibleRateMatrix::operator=( r );
         
-        delete theEigenSystem;
+        delete eigen_system;
         
-        theEigenSystem       = new EigenSystem( *r.theEigenSystem );
-        c_ijk                = r.c_ijk;
-        cc_ijk               = r.cc_ijk;
+        eigen_system        = new EigenSystem( *r.eigen_system );
+        c_ijk               = r.c_ijk;
+        cc_ijk              = r.cc_ijk;
+        kappa               = r.kappa;
+        omega               = r.omega;
+        nucleotide_freqs    = r.nucleotide_freqs;
         
-        theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+        eigen_system->setRateMatrixPtr(the_rate_matrix);
     }
     
     return *this;
 }
 
 
-RateMatrix_Senca& RateMatrix_Senca::assign(const Assignable &m)
+RateMatrix_CodonSynonymousNonsynonymousHKY& RateMatrix_CodonSynonymousNonsynonymousHKY::assign(const Assignable &m)
 {
     
-    const RateMatrix_Senca *rm = dynamic_cast<const RateMatrix_Senca*>(&m);
+    const RateMatrix_CodonSynonymousNonsynonymousHKY *rm = dynamic_cast<const RateMatrix_CodonSynonymousNonsynonymousHKY*>(&m);
     if ( rm != NULL )
     {
         return operator=(*rm);
@@ -83,14 +92,14 @@ RateMatrix_Senca& RateMatrix_Senca::assign(const Assignable &m)
 
 
 /** Do precalculations on eigenvectors */
-void RateMatrix_Senca::calculateCijk(void)
+void RateMatrix_CodonSynonymousNonsynonymousHKY::calculateCijk(void)
 {
     
-    if ( theEigenSystem->isComplex() == false )
+    if ( eigen_system->isComplex() == false )
     {
         // real case
-        const MatrixReal& ev  = theEigenSystem->getEigenvectors();
-        const MatrixReal& iev = theEigenSystem->getInverseEigenvectors();
+        const MatrixReal& ev  = eigen_system->getEigenvectors();
+        const MatrixReal& iev = eigen_system->getInverseEigenvectors();
         double* pc = &c_ijk[0];
         for (size_t i=0; i<num_states; i++)
         {
@@ -106,8 +115,8 @@ void RateMatrix_Senca::calculateCijk(void)
     else
     {
         // complex case
-        const MatrixComplex& cev  = theEigenSystem->getComplexEigenvectors();
-        const MatrixComplex& ciev = theEigenSystem->getComplexInverseEigenvectors();
+        const MatrixComplex& cev  = eigen_system->getComplexEigenvectors();
+        const MatrixComplex& ciev = eigen_system->getComplexInverseEigenvectors();
         std::complex<double>* pc = &cc_ijk[0];
         for (size_t i=0; i<num_states; i++)
         {
@@ -117,21 +126,17 @@ void RateMatrix_Senca::calculateCijk(void)
                 {
                     *(pc++) = cev[i][k] * ciev[k][j];
                 }
-                
             }
-            
         }
-        
     }
-    
 }
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Senca::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateMatrix_CodonSynonymousNonsynonymousHKY::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     double t = rate * (startAge - endAge);
-    if ( theEigenSystem->isComplex() == false )
+    if ( eigen_system->isComplex() == false )
     {
         tiProbsEigens(t, P);
     }
@@ -142,55 +147,10 @@ void RateMatrix_Senca::calculateTransitionProbabilities(double startAge, double 
 }
 
 
-RateMatrix_Senca* RateMatrix_Senca::clone( void ) const
+RateMatrix_CodonSynonymousNonsynonymousHKY* RateMatrix_CodonSynonymousNonsynonymousHKY::clone( void ) const
 {
-    return new RateMatrix_Senca( *this );
+    return new RateMatrix_CodonSynonymousNonsynonymousHKY( *this );
 }
-
-
-double RateMatrix_Senca::computePreferenceRatio(const CodonState &from, const CodonState &to) const
-{
-    
-    AminoAcidState aa_from = from.getAminoAcidState();
-    AminoAcidState aa_to   = to.getAminoAcidState();
-    
-    // get the frequencies of the amino acids
-//    double aa_freq_from = aa_freqs[aa_from.getState()];
-//    double aa_freq_to   = aa_freqs[aa_to.getState()];
-    
-    // we need to get the frequency of the codon within that amino acid
-//    double codon_freq_from = codon_freqs[aa_from.getState()][  ];
-//    double codon_freq_to   = codon_freqs[aa_to.getState()][];
-    
-    // or
-    double codon_freq_from = codon_freqs[from.getStateIndex()];
-    double codon_freq_to   = codon_freqs[to.getStateIndex()];
-    
-    double x = codon_freq_from;
-    double y = codon_freq_to;
-    
-    double mu = 0.0;
-    if ( x == y )
-    {
-        mu = 1.0;
-    }
-    else if ( x == 0.0 )
-    {
-        mu = 100.0;
-    }
-    else if ( y == 0 )
-    {
-        mu = 0.0;
-    }
-    else
-    {
-        mu = -( log(x/y) / (1.0-(x/y)) );
-    }
-    
-    return mu;
-    
-}
-
 
 /**
  *
@@ -200,24 +160,26 @@ double RateMatrix_Senca::computePreferenceRatio(const CodonState &from, const Co
  *        3: non-synonymous transition
  *        4: non-synonymous transversion
  */
-void RateMatrix_Senca::computeOffDiagonal( void )
+void RateMatrix_CodonSynonymousNonsynonymousHKY::computeOffDiagonal( void )
 {
     
     MatrixReal& m = *the_rate_matrix;
     
     std::vector<double> rate = std::vector<double>(5,0);
-    rate[0] = 0;
+    rate[0] = 0.0;
     rate[1] = kappa;
     rate[2] = 1;
     rate[3] = kappa*omega;
     rate[4] = omega;
     
-    size_t rateClass = 0;
+    int rate_class = 0;
+    
     
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0; i<num_states; ++i)
     {
-        CodonState c1 = CodonState(i);
+        
+        CodonState c1 = CodonState( CodonState::CODONS[i] );
         std::vector<unsigned int> codon_from = c1.getTripletStates();
         unsigned int codon_from_pos_1 = codon_from[0];
         unsigned int codon_from_pos_2 = codon_from[1];
@@ -225,9 +187,12 @@ void RateMatrix_Senca::computeOffDiagonal( void )
         
         AminoAcidState aa_from = c1.getAminoAcidState();
         
-        for (size_t j=i+1; j<num_states; j++)
+        for (size_t j=i+1; j<num_states; ++j)
         {
-            CodonState c2 = CodonState(j);
+            
+            size_t position_of_change = 0;
+            
+            CodonState c2 = CodonState( CodonState::CODONS[j] );
             
             std::vector<unsigned int> codon_to = c2.getTripletStates();
             unsigned int codon_to_pos_1 = codon_to[0];
@@ -236,38 +201,44 @@ void RateMatrix_Senca::computeOffDiagonal( void )
             
             AminoAcidState aa_to = c2.getAminoAcidState();
             
-            rateClass = 0;
+            rate_class = -1;
             if (codon_from_pos_1 != codon_to_pos_1)
             {
+                // change at position 0
+                position_of_change = 0;
+                
                 if ( (codon_from_pos_1 == 0 && codon_to_pos_1 == 2) || (codon_from_pos_1 == 2 && codon_to_pos_1 == 0) || // A <-> G
                     (codon_from_pos_1 == 1 && codon_to_pos_1 == 3) || (codon_from_pos_1 == 3 && codon_to_pos_1 == 1) )  // C <-> T
                 {
-                    rateClass = 1; // Transition at position 1
+                    rate_class = 1; // Transition at position 1
                 }
                 else
                 {
-                    rateClass = 2; // Transversion at position 1
+                    rate_class = 2; // Transversion at position 1
                 }
             }
             
             if (codon_from_pos_2 != codon_to_pos_2)
             {
                 
-                if (rateClass == -1)
+                // change at position 1
+                position_of_change = 1;
+                
+                if (rate_class == -1)
                 {
                     if ( (codon_from_pos_2 == 0 && codon_to_pos_2 == 2) || (codon_from_pos_2 == 2 && codon_to_pos_2 == 0) || // A <-> G
                         (codon_from_pos_2 == 1 && codon_to_pos_2 == 3) || (codon_from_pos_2 == 3 && codon_to_pos_2 == 1) )  // C <-> T
                     {
-                        rateClass = 1; // Transition
+                        rate_class = 1; // Transition
                     }
                     else
                     {
-                        rateClass = 2; // Transversion
+                        rate_class = 2; // Transversion
                     }
                 }
                 else
                 {
-                    rateClass = 0; // Codon changes at more than one position
+                    rate_class = 0; // Codon changes at more than one position
                 }
                 
             }
@@ -275,42 +246,51 @@ void RateMatrix_Senca::computeOffDiagonal( void )
             if (codon_from_pos_3 != codon_to_pos_3)
             {
                 
-                if (rateClass == -1)
+                // change at position 2
+                position_of_change = 2;
+                
+                if (rate_class == -1)
                 {
                     if ( (codon_from_pos_3 == 0 && codon_to_pos_3 == 2) || (codon_from_pos_3 == 2 && codon_to_pos_3 == 0) || // A <-> G
                         (codon_from_pos_3 == 1 && codon_to_pos_3 == 3) || (codon_from_pos_3 == 3 && codon_to_pos_3 == 1) )  // C <-> T
                     {
-                        rateClass = 1; // Transition
+                        rate_class = 1; // Transition
                     }
                     else
                     {
-                        rateClass = 2; // Transversion
+                        rate_class = 2; // Transversion
                     }
                     
                 }
                 else
                 {
-                    rateClass = 0; // Codon changes at more than one position
+                    rate_class = 0; // Codon changes at more than one position
                 }
                 
             }
             
-            if (rateClass != 0)
+            if (rate_class != 0)
             {
                 
                 if (aa_from != aa_to)
                 {
-                    rateClass += 2; // Is a non-synonymous change
+                    rate_class += 2; // Is a non-synonymous change
                 }
                 
             }
             
-            double f = computePreferenceRatio( c1, c2 );
-//            m[i][j] = rate[rateClass] * stationary_freqs[j] * f;
-//            m[j][i] = rate[rateClass] * stationary_freqs[i] * f;
-            m[i][j] = rate[rateClass] * f;
-            m[j][i] = rate[rateClass] * f;
-            
+            size_t index_nuc_from   = codon_from[position_of_change];
+            size_t index_nuc_to     = codon_to[position_of_change];
+            if ( rate_class <= 0 )
+            {
+                m[i][j] = 0.0;
+                m[j][i] = 0.0;
+            }
+            else
+            {
+                m[i][j] = rate[rate_class] * nucleotide_freqs[codon_to[0]]   * nucleotide_freqs[codon_to[1]]   * nucleotide_freqs[codon_to[2]];
+                m[j][i] = rate[rate_class] * nucleotide_freqs[codon_from[0]] * nucleotide_freqs[codon_from[1]] * nucleotide_freqs[codon_from[2]];
+            }
         }
     }
     
@@ -319,20 +299,13 @@ void RateMatrix_Senca::computeOffDiagonal( void )
 }
 
 
-void RateMatrix_Senca::computeStateFrequencies( void )
-{
-    
-    throw RbException("Missing implementation in RateMatrix_senca::computeStateFrequencies.");
-    
-}
-
 
 /** Calculate the transition probabilities for the real case */
-void RateMatrix_Senca::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
+void RateMatrix_CodonSynonymousNonsynonymousHKY::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
 {
     
     // get a reference to the eigenvalues
-    const std::vector<double>& eigenValue = theEigenSystem->getRealEigenvalues();
+    const std::vector<double>& eigenValue = eigen_system->getRealEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
     std::vector<double> eigValExp(num_states);
@@ -362,11 +335,12 @@ void RateMatrix_Senca::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
 
 
 /** Calculate the transition probabilities for the complex case */
-void RateMatrix_Senca::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_CodonSynonymousNonsynonymousHKY::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const
+{
     
     // get a reference to the eigenvalues
-    const std::vector<double>& eigenValueReal = theEigenSystem->getRealEigenvalues();
-    const std::vector<double>& eigenValueComp = theEigenSystem->getImagEigenvalues();
+    const std::vector<double>& eigenValueReal = eigen_system->getRealEigenvalues();
+    const std::vector<double>& eigenValueComp = eigen_system->getImagEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
     std::vector<std::complex<double> > ceigValExp(num_states);
@@ -391,32 +365,90 @@ void RateMatrix_Senca::tiProbsComplexEigens(double t, TransitionProbabilityMatri
 }
 
 
-/** Update the eigen system */
-void RateMatrix_Senca::updateEigenSystem(void)
+void RateMatrix_CodonSynonymousNonsynonymousHKY::setKappa(double k)
 {
     
-    theEigenSystem->update();
+    kappa = k;
+    
+    // set flags
+    needs_update = true;
+    
+}
+
+
+void RateMatrix_CodonSynonymousNonsynonymousHKY::setOmega(double o)
+{
+    
+    omega = o;
+    
+    // set flags
+    needs_update = true;
+    
+}
+
+
+void RateMatrix_CodonSynonymousNonsynonymousHKY::setNucleotideFrequencies( const std::vector<double> &f )
+{
+    nucleotide_freqs = f;
+    
+    // set flags
+    needs_update = true;
+}
+
+
+/** Update the eigen system */
+void RateMatrix_CodonSynonymousNonsynonymousHKY::updateEigenSystem(void)
+{
+    
+    eigen_system->update();
     calculateCijk();
     
 }
 
 
-void RateMatrix_Senca::update( void )
+void RateMatrix_CodonSynonymousNonsynonymousHKY::update( void )
 {
     
     if ( needs_update )
     {
-        // recompute the state frequencies
-        computeStateFrequencies();
-        
         // compute the off-diagonal values
         computeOffDiagonal();
+        
+        // we also need to update the stationary frequencies
+        //        this->stationary_freqs = this->calculateStationaryFrequencies();
+        this->stationary_freqs = std::vector<double>(num_states,0.0);
+        //        this->stationary_freqs = std::vector<double>(61,1.0/61.0);
+        size_t index_curr  = 0;
+        size_t index_total = 0;
+        double sum = 0.0;
+        for (size_t i=0; i<4; ++i)
+        {
+            for (size_t j=0; j<4; ++j)
+            {
+                for (size_t k=0; k<4; ++k)
+                {
+                    if ( index_total != 48 && index_total != 50 && index_total != 56 )
+                    {
+                        this->stationary_freqs[ index_curr ] = nucleotide_freqs[i] * nucleotide_freqs[j] * nucleotide_freqs[k];
+                        sum += this->stationary_freqs[ index_curr ];
+                        index_curr++;
+                    }
+                    index_total++;
+                }
+            }
+        }
+        
+        // normalize frequencies
+        for (size_t i=0; i<num_states; ++i)
+        {
+            this->stationary_freqs[ i ] /= sum;
+        }
         
         // set the diagonal values
         setDiagonal();
         
         // rescale
-        rescaleToAverageRate( 1.0 );
+        rescaleToAverageRate( 3.0 );
         
         // now update the eigensystem
         updateEigenSystem();

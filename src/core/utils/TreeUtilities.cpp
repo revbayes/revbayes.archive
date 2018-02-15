@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <limits>
 
 using namespace RevBayesCore;
 
@@ -568,4 +569,62 @@ int RevBayesCore::TreeUtilities::getCollessMetric(const TopologyNode & node, int
     }
 
     return left_metric + right_metric + metric;
+}
+
+
+/* 
+ * Gamma-statistic from Pybus & Harvey (2000) equation 1
+ */
+double RevBayesCore::TreeUtilities::getGammaStatistic(const Tree &t)
+{
+    std::vector<TopologyNode*> nodes = t.getNodes();
+
+    std::vector<double> ages;
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        ages.push_back(nodes[i]->getAge());
+    }
+
+    // calculate internode distances
+    std::sort(ages.begin(), ages.end());
+    std::vector<double> distances;
+    for (size_t i = (ages.size() - 1); i > 0; i--)
+    {
+        distances.push_back(ages[i] - ages[i - 1]);
+        if (ages[i - 1] == 0)
+        {
+            break;
+        }
+    }
+    
+    double n = t.getNumberOfTips();
+    if (n < 3)
+    {
+        //return NaN;
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+
+    double T = 0;
+    for (int j = 2; j <= n; j++)
+    {
+        T = T + (j * distances[j - 2]); 
+    }
+
+    double a = 1 / ( n - 2 );
+    double b = 0;
+    for (int i = 2; i <= (n - 1); i++)
+    {
+        double temp = 0;
+        for (int k = 2; k <= i; k++)
+        {
+            temp = temp + (k * distances[k - 2]);
+        }
+        b = b + temp; 
+    }
+    double num = (a * b) - (T / 2);
+    
+    double den = T * sqrt( (1 / (12 * (n - 2))) );
+
+
+    return num/den;
 }

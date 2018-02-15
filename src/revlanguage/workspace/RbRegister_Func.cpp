@@ -112,6 +112,7 @@
 #include "Func_chromosomes.h"
 #include "Func_chromosomesPloidy.h"
 #include "Func_codonSynonymousNonsynonymousRateMatrix.h"
+#include "Func_codonSynonymousNonsynonymousHKYRateMatrix.h"
 #include "Func_covarionRateMatrix.h"
 #include "Func_covarion.h"
 #include "Func_cpRev.h"
@@ -281,41 +282,42 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         ///////////////////////////////////////////
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
-        addFunction( new Func_blosum62()                                );
-        addFunction( new Func_chromosomes()                             );
-        addFunction( new Func_chromosomesPloidy()                       );
-        addFunction( new Func_codonSynonymousNonsynonymousRateMatrix()  );
-        addFunction( new Func_covarionRateMatrix()                      );
-        addFunction( new Func_covarion()                                );
-        addFunction( new Func_cpRev()                                   );
-        addFunction( new Func_dayhoff()                                 );
-        addFunction( new Func_DECRateMatrix()                           );
-        addFunction( new Func_epoch()                                   );
-        addFunction( new Func_f81()                                     );
-        addFunction( new Func_FreeBinary()                              );
-        addFunction( new Func_FreeK()                                   );
-        addFunction( new Func_freeSymmetricRateMatrix()                 );
-        addFunction( new Func_gtr()                                     );
-        addFunction( new Func_hky()                                     );
-        addFunction( new Func_hiddenStateRateMatrix()                   );
-        addFunction( new Func_InfiniteSitesRateMatrix()                 );
-        addFunction( new Func_jc()                                      );
-        addFunction( new Func_jones()                                   );
-        addFunction( new Func_k80()                                     );
-        addFunction( new Func_Kimura81()                                );
-        addFunction( new Func_lg()                                      );
-        addFunction( new Func_mtMam()                                   );
-        addFunction( new Func_mtRev()                                   );
-        addFunction( new Func_orderedRateMatrix()                       );
-        addFunction( new Func_pomo()                                    );
-        addFunction( new Func_reversiblePomo()                          );
-        addFunction( new Func_rtRev()                                   );
-        addFunction( new Func_t92()                                     );
-        addFunction( new Func_TamuraNei()                               );
-        addFunction( new Func_TIM()                                     );
-        addFunction( new Func_TVM()                                     );
-        addFunction( new Func_vt()                                      );
-        addFunction( new Func_wag()                                     );
+        addFunction( new Func_blosum62()                                    );
+        addFunction( new Func_chromosomes()                                 );
+        addFunction( new Func_chromosomesPloidy()                           );
+        addFunction( new Func_codonSynonymousNonsynonymousRateMatrix()      );
+        addFunction( new Func_codonSynonymousNonsynonymousHKYRateMatrix()   );
+        addFunction( new Func_covarionRateMatrix()                          );
+        addFunction( new Func_covarion()                                    );
+        addFunction( new Func_cpRev()                                       );
+        addFunction( new Func_dayhoff()                                     );
+        addFunction( new Func_DECRateMatrix()                               );
+        addFunction( new Func_epoch()                                       );
+        addFunction( new Func_f81()                                         );
+        addFunction( new Func_FreeBinary()                                  );
+        addFunction( new Func_FreeK()                                       );
+        addFunction( new Func_freeSymmetricRateMatrix()                     );
+        addFunction( new Func_gtr()                                         );
+        addFunction( new Func_hky()                                         );
+        addFunction( new Func_hiddenStateRateMatrix()                       );
+        addFunction( new Func_InfiniteSitesRateMatrix()                     );
+        addFunction( new Func_jc()                                          );
+        addFunction( new Func_jones()                                       );
+        addFunction( new Func_k80()                                         );
+        addFunction( new Func_Kimura81()                                    );
+        addFunction( new Func_lg()                                          );
+        addFunction( new Func_mtMam()                                       );
+        addFunction( new Func_mtRev()                                       );
+        addFunction( new Func_orderedRateMatrix()                           );
+        addFunction( new Func_pomo()                                        );
+        addFunction( new Func_reversiblePomo()                              );
+        addFunction( new Func_rtRev()                                       );
+        addFunction( new Func_t92()                                         );
+        addFunction( new Func_TamuraNei()                                   );
+        addFunction( new Func_TIM()                                         );
+        addFunction( new Func_TVM()                                         );
+        addFunction( new Func_vt()                                          );
+        addFunction( new Func_wag()                                         );
 
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
         addFunction( new Func_adjacentRateModifier() );

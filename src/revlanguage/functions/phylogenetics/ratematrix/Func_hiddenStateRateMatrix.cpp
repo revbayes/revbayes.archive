@@ -46,6 +46,11 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_hiddenStateRate
         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
         f->setObservedTransitionRates( tr );
     }
+    else if ( this->args[0].getVariable()->getRevObject().isType( RateGenerator::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode< RevBayesCore::RateGenerator >* tr = static_cast<const RateGenerator &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+        f->setObservedTransitionRates( tr );
+    }
     else
     {
         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* tr = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -56,6 +61,11 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_hiddenStateRate
     if ( this->args[1].getVariable()->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const ModelVector<Real> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+        f->setHiddenTransitionRates( tr );
+    }
+    else if ( this->args[1].getVariable()->getRevObject().isType( RateGenerator::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode< RevBayesCore::RateGenerator >* tr = static_cast<const RateGenerator &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
         f->setHiddenTransitionRates( tr );
     }
     else
@@ -80,6 +90,7 @@ const ArgumentRules& Func_hiddenStateRateMatrix::getArgumentRules( void ) const
         std::vector<TypeSpec> transition_rate_types;
         transition_rate_types.push_back( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() );
         transition_rate_types.push_back( ModelVector<RealPos>::getClassTypeSpec() );
+        transition_rate_types.push_back( RateGenerator::getClassTypeSpec() );
         argumentRules.push_back( new ArgumentRule( "observered_transition_rates", transition_rate_types,         "Transition rates between observed states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "hidden_transition_rates",     transition_rate_types,         "Transition rates between hidden states.",   ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "rescaled",                    RlBoolean::getClassTypeSpec(), "Should the matrix be normalized?",          ArgumentRule::BY_VALUE,              ArgumentRule::ANY, new RlBoolean(true) ) );

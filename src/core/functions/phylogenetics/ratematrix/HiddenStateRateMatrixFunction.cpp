@@ -12,8 +12,10 @@ HiddenStateRateMatrixFunction::HiddenStateRateMatrixFunction(bool r) : TypedFunc
     num_hidden_states( 0 ),
     observed_transition_rates( NULL ),
     observed_transition_rates_flat( NULL ),
+    observed_rate_generator( NULL ),
     hidden_transition_rates( NULL ),
-    hidden_transition_rates_flat( NULL )
+    hidden_transition_rates_flat( NULL ),
+    hidden_rate_generator( NULL )
 {
 
 }
@@ -37,8 +39,8 @@ void HiddenStateRateMatrixFunction::setObservedTransitionRates(const TypedDagNod
     num_observed_states = ceil( sqrt( tr->getValue().size() ) );
     addParameter( observed_transition_rates_flat );
     
-    if ( ( observed_transition_rates_flat != NULL || observed_transition_rates != NULL ) &&
-         ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL ) )
+    if ( ( observed_transition_rates_flat != NULL || observed_transition_rates != NULL || observed_rate_generator != NULL ) &&
+         ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL || hidden_rate_generator != NULL ) )
     {
         size_t num_states = num_observed_states * num_hidden_states;
         value = new RateMatrix_FreeK( num_states, rescale );
@@ -53,8 +55,24 @@ void HiddenStateRateMatrixFunction::setObservedTransitionRates(const TypedDagNod
     num_observed_states = tr->getValue().size();
     addParameter( observed_transition_rates );
     
-    if ( ( observed_transition_rates_flat != NULL || observed_transition_rates != NULL ) &&
-        ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL ) )
+    if ( ( observed_transition_rates_flat != NULL || observed_transition_rates != NULL || observed_rate_generator != NULL ) &&
+         ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL || hidden_rate_generator != NULL ) )
+    {
+        size_t num_states = num_observed_states * num_hidden_states;
+        value = new RateMatrix_FreeK( num_states, rescale );
+        update();
+    }
+}
+
+
+void HiddenStateRateMatrixFunction::setObservedTransitionRates(const TypedDagNode< RateGenerator > *tr)
+{
+    observed_rate_generator = tr;
+    num_observed_states = observed_rate_generator->getValue().getNumberOfStates();
+    addParameter( observed_rate_generator );
+    
+    if ( ( observed_transition_rates_flat != NULL || observed_transition_rates != NULL || observed_rate_generator != NULL ) &&
+         ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL || hidden_rate_generator != NULL ) )
     {
         size_t num_states = num_observed_states * num_hidden_states;
         value = new RateMatrix_FreeK( num_states, rescale );
@@ -69,8 +87,8 @@ void HiddenStateRateMatrixFunction::setHiddenTransitionRates(const TypedDagNode<
     num_hidden_states = ceil( sqrt( tr->getValue().size() ) );
     addParameter( hidden_transition_rates_flat );
     
-    if ( ( observed_transition_rates_flat != NULL || observed_transition_rates != NULL ) &&
-        ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL ) )
+    if ( ( observed_transition_rates_flat != NULL || observed_transition_rates != NULL || observed_rate_generator != NULL ) &&
+         ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL || hidden_rate_generator != NULL ) )
     {
         size_t num_states = num_observed_states * num_hidden_states;
         value = new RateMatrix_FreeK( num_states, rescale );
@@ -85,8 +103,24 @@ void HiddenStateRateMatrixFunction::setHiddenTransitionRates(const TypedDagNode<
     num_hidden_states = tr->getValue().size();
     addParameter( hidden_transition_rates );
     
-    if ( ( observed_transition_rates_flat != NULL || observed_transition_rates != NULL ) &&
-        ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL ) )
+    if ( ( observed_transition_rates_flat != NULL || observed_transition_rates != NULL || observed_rate_generator != NULL ) &&
+         ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL || hidden_rate_generator != NULL ) )
+    {
+        size_t num_states = num_observed_states * num_hidden_states;
+        value = new RateMatrix_FreeK( num_states, rescale );
+        update();
+    }
+}
+
+
+void HiddenStateRateMatrixFunction::setHiddenTransitionRates(const TypedDagNode< RateGenerator > *tr)
+{
+    hidden_rate_generator = tr;
+    num_hidden_states = hidden_rate_generator->getValue().getNumberOfStates();
+    addParameter( hidden_rate_generator );
+    
+    if ( ( observed_transition_rates_flat != NULL || observed_transition_rates != NULL || observed_rate_generator != NULL ) &&
+         ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL || hidden_rate_generator != NULL ) )
     {
         size_t num_states = num_observed_states * num_hidden_states;
         value = new RateMatrix_FreeK( num_states, rescale );
@@ -100,7 +134,7 @@ void HiddenStateRateMatrixFunction::update( void )
     
     // get the 2-d matrix of observed state transition rates
     RbVector< RbVector<double> > observed_rate_matrix( num_observed_states, RbVector<double>( num_observed_states, 0.0 ) );
-    if (observed_transition_rates == NULL && observed_transition_rates_flat != NULL)
+    if (observed_transition_rates == NULL && observed_transition_rates_flat != NULL && observed_rate_generator == NULL)
     {
         std::vector<double> observed_rates_flat = observed_transition_rates_flat->getValue();
         size_t k = 0;
@@ -116,14 +150,14 @@ void HiddenStateRateMatrixFunction::update( void )
             }
         }
     }
-    else if (observed_transition_rates != NULL && observed_transition_rates_flat == NULL)
+    else if (observed_transition_rates != NULL && observed_transition_rates_flat == NULL && observed_rate_generator == NULL)
     {
         observed_rate_matrix = observed_transition_rates->getValue();
     }
     
     // get the 2-d matrix of hidden state transition rates
     RbVector< RbVector<double> > hidden_rate_matrix( num_hidden_states, RbVector<double>( num_hidden_states, 0.0 ) );
-    if (hidden_transition_rates == NULL && hidden_transition_rates_flat != NULL)
+    if (hidden_transition_rates == NULL && hidden_transition_rates_flat != NULL && hidden_rate_generator == NULL)
     {
         std::vector<double> hidden_rates_flat = hidden_transition_rates_flat->getValue();
         size_t k = 0;
@@ -139,7 +173,7 @@ void HiddenStateRateMatrixFunction::update( void )
             }
         }
     }
-    else if (hidden_transition_rates != NULL && hidden_transition_rates_flat == NULL)
+    else if (hidden_transition_rates != NULL && hidden_transition_rates_flat == NULL && hidden_rate_generator == NULL)
     {
         hidden_rate_matrix = hidden_transition_rates->getValue();
     }
@@ -161,11 +195,25 @@ void HiddenStateRateMatrixFunction::update( void )
             
                     if (initial_hidden_state == final_hidden_state)
                     {
-                        rate_matrix[i][j] = observed_rate_matrix[initial_observed_state][final_observed_state];
+                        if (observed_rate_generator != NULL) 
+                        {
+                            rate_matrix[i][j] = observed_rate_generator->getValue().getRate(initial_observed_state, final_observed_state, 0.0, 1.0);
+                        }
+                        else
+                        {
+                            rate_matrix[i][j] = observed_rate_matrix[initial_observed_state][final_observed_state];
+                        }
                     }
                     else if (initial_observed_state == final_observed_state)
                     {
-                        rate_matrix[i][j] = hidden_rate_matrix[initial_hidden_state][final_hidden_state];
+                        if (hidden_rate_generator != NULL) 
+                        {
+                            rate_matrix[i][j] = hidden_rate_generator->getValue().getRate(initial_observed_state, final_observed_state, 0.0, 1.0);
+                        }
+                        else
+                        {
+                            rate_matrix[i][j] = hidden_rate_matrix[initial_hidden_state][final_hidden_state];
+                        }
                     }
                 }
             }
@@ -210,6 +258,14 @@ void HiddenStateRateMatrixFunction::swapParameterInternal(const DagNode *oldP, c
     else if (oldP == hidden_transition_rates_flat)
     {
         hidden_transition_rates_flat = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    else if (oldP == observed_rate_generator)
+    {
+        observed_rate_generator = static_cast<const TypedDagNode< RateGenerator >* >( newP );
+    }
+    else if (oldP == hidden_rate_generator)
+    {
+        hidden_rate_generator = static_cast<const TypedDagNode< RateGenerator >* >( newP );
     }
     
 }

@@ -2,6 +2,7 @@
 #include "NewickConverter.h"
 #include "NewickTreeReader.h"
 #include "RbException.h"
+#include "RbFileManager.h"
 
 #include <fstream>
 
@@ -41,7 +42,8 @@ std::vector<Tree*>* NewickTreeReader::readBranchLengthTrees(std::string const &f
         
         // Read a line
         std::string line;
-        getline( inFile, line );
+        RbFileManager reader = RbFileManager();
+        reader.safeGetline( inFile, line );
         
         // skip empty lines
         if (line.length() == 0) 

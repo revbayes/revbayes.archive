@@ -1,5 +1,5 @@
-#ifndef EmpiricalSampleDistribution_H
-#define EmpiricalSampleDistribution_H
+#ifndef WeightedSampleDistribution_H
+#define WeightedSampleDistribution_H
 
 #include "MemberObject.h"
 #include "Parallelizable.h"
@@ -11,7 +11,7 @@ namespace RevBayesCore {
     
     
     /**
-     * This class implements a generic empirical-sample distribution.
+     * This class implements a generic weighted-sample distribution.
      *
      * This distribution represents a wrapper distribution for basically any other distribution.
      * This distribution should be used when the "observed" value is not known exactly but instead
@@ -23,18 +23,18 @@ namespace RevBayesCore {
      * @since 2014-11-18, version 1.0
      */
     template <class valueType>
-    class EmpiricalSampleDistribution : public TypedDistribution< RbVector<valueType> > {
+    class WeightedSampleDistribution : public TypedDistribution< RbVector<valueType> > {
         
     public:
         // constructor(s)
-        EmpiricalSampleDistribution(TypedDistribution<valueType> *g);
-        EmpiricalSampleDistribution(const EmpiricalSampleDistribution &d);
-        virtual                                            ~EmpiricalSampleDistribution(void);
-
-        EmpiricalSampleDistribution&                        operator=(const EmpiricalSampleDistribution &d);
-
+        WeightedSampleDistribution(TypedDistribution<valueType> *g, std::vector<TypedDistribution<valueType>* > g_vector, size_t ns);
+        WeightedSampleDistribution(const WeightedSampleDistribution &d);
+        virtual                                            ~WeightedSampleDistribution(void);
+        
+        WeightedSampleDistribution&                         operator=(const WeightedSampleDistribution &d);
+        
         // public member functions
-        EmpiricalSampleDistribution*                        clone(void) const;                                                                      //!< Create an independent clone
+        WeightedSampleDistribution*                         clone(void) const;                                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
         RevLanguage::RevPtr<RevLanguage::RevVariable>       executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found);
         void                                                redrawValue(void);
@@ -51,13 +51,16 @@ namespace RevBayesCore {
         
         // private members
         TypedDistribution<valueType>*                       base_distribution;
+//        std::vector< TypedDistribution<valueType>* >        base_distribution_vector;
         std::vector< TypedDistribution<valueType>* >        base_distribution_instances;
-
+        
+        bool                                                use_base_distribution_iid;
+        
         size_t                                              num_samples;
         size_t                                              sample_block_start;
         size_t                                              sample_block_end;
         size_t                                              sample_block_size;
-
+        
         
 #ifdef RB_MPI
         std::vector<size_t>                                 pid_per_sample;
@@ -79,38 +82,60 @@ namespace RevBayesCore {
 #endif
 
 template <class valueType>
-RevBayesCore::EmpiricalSampleDistribution<valueType>::EmpiricalSampleDistribution(TypedDistribution<valueType> *g) : TypedDistribution< RbVector<valueType> >( new RbVector<valueType>() ),
-    base_distribution( g ),
-    base_distribution_instances(),
-    num_samples( 0 ),
-    sample_block_start( 0 ),
-    sample_block_end( num_samples ),
-    sample_block_size( num_samples )
+RevBayesCore::WeightedSampleDistribution<valueType>::WeightedSampleDistribution(TypedDistribution<valueType> *g, std::vector<TypedDistribution<valueType>* > g_vector, size_t ns) : TypedDistribution< RbVector<valueType> >( new RbVector<valueType>() ),
+base_distribution( g ),
+base_distribution_instances( g_vector ),
+use_base_distribution_iid(true),
+num_samples( ns ),
+sample_block_start( 0 ),
+sample_block_end( num_samples ),
+sample_block_size( num_samples )
 {
-
-    // add the parameters of the distribution
-    const std::vector<const DagNode*>& pars = base_distribution->getParameters();
-    for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
+    if (g_vector.size() > 0)
     {
-        const DagNode *the_node = *it;
-        this->addParameter( the_node );
+        use_base_distribution_iid = false;
+        base_distribution = NULL;
+    }
+    
+    if (use_base_distribution_iid)
+    {
+        // add the parameters of the base distribution
+        const std::vector<const DagNode*>& pars = base_distribution->getParameters();
+        for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
+        {
+            const DagNode *the_node = *it;
+            this->addParameter( the_node );
+        }
+    }
+    else
+    {
+        // add the parameters for each base distribution
+        for (size_t i = 0; i < num_samples; i++) {
+            const std::vector<const DagNode*>& pars = base_distribution_instances[i]->getParameters();
+            for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
+            {
+                const DagNode *the_node = *it;
+                this->addParameter( the_node );
+            }
+        }
     }
     
     delete this->value;
     
     RbVector<valueType>* new_value = simulate();
     this->setValue( new_value );
-
+    
 }
 
 template <class valueType>
-RevBayesCore::EmpiricalSampleDistribution<valueType>::EmpiricalSampleDistribution( const EmpiricalSampleDistribution &d ) : TypedDistribution< RbVector<valueType> >( new RbVector<valueType>( d.getValue() ) ),
-    base_distribution( d.base_distribution->clone() ),
-    base_distribution_instances(),
-    num_samples( d.num_samples ),
-    sample_block_start( d.sample_block_start ),
-    sample_block_end( d.sample_block_end ),
-    sample_block_size( d.sample_block_size )
+RevBayesCore::WeightedSampleDistribution<valueType>::WeightedSampleDistribution( const WeightedSampleDistribution &d ) : TypedDistribution< RbVector<valueType> >( new RbVector<valueType>( d.getValue() ) ),
+base_distribution( d.base_distribution->clone() ),
+base_distribution_instances( ),
+use_base_distribution_iid(d.use_base_distribution_iid),
+num_samples( d.num_samples ),
+sample_block_start( d.sample_block_start ),
+sample_block_end( d.sample_block_end ),
+sample_block_size( d.sample_block_size )
 {
     
 #ifdef RB_MPI
@@ -135,10 +160,12 @@ RevBayesCore::EmpiricalSampleDistribution<valueType>::EmpiricalSampleDistributio
 
 
 template <class valueType>
-RevBayesCore::EmpiricalSampleDistribution<valueType>::~EmpiricalSampleDistribution( void )
+RevBayesCore::WeightedSampleDistribution<valueType>::~WeightedSampleDistribution( void )
 {
-    
-    delete base_distribution;
+    if (base_distribution != NULL)
+    {
+        delete base_distribution;
+    }
     for (size_t i = 0; i < num_samples; ++i)
     {
         delete base_distribution_instances[i];
@@ -148,7 +175,7 @@ RevBayesCore::EmpiricalSampleDistribution<valueType>::~EmpiricalSampleDistributi
 
 
 template <class valueType>
-RevBayesCore::EmpiricalSampleDistribution<valueType>& RevBayesCore::EmpiricalSampleDistribution<valueType>::operator=(const EmpiricalSampleDistribution &d)
+RevBayesCore::WeightedSampleDistribution<valueType>& RevBayesCore::WeightedSampleDistribution<valueType>::operator=(const WeightedSampleDistribution &d)
 {
     
     if ( this != &d )
@@ -162,10 +189,9 @@ RevBayesCore::EmpiricalSampleDistribution<valueType>& RevBayesCore::EmpiricalSam
             delete base_distribution_instances[i];
         }
         base_distribution_instances.clear();
+        use_base_distribution_iid = d.use_base_distribution_iid;
         
-        base_distribution   = d.base_distribution->clone();
         num_samples         = d.num_samples;
-        
         sample_block_start  = d.sample_block_start;
         sample_block_end    = d.sample_block_end;
         sample_block_size   = d.sample_block_size;
@@ -173,20 +199,38 @@ RevBayesCore::EmpiricalSampleDistribution<valueType>& RevBayesCore::EmpiricalSam
 #ifdef RB_MPI
         pid_per_sample = d.pid_per_sample;
 #endif
-        
-        // add the parameters of the distribution
-        const std::vector<const DagNode*>& pars = base_distribution->getParameters();
-        for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
-        {
-            this->addParameter( *it );
+
+        if (use_base_distribution_iid) {
+            base_distribution   = d.base_distribution->clone();
         }
         
+        // populate the base distribution instances
         base_distribution_instances = std::vector< TypedDistribution<valueType>* >( num_samples, NULL );
         for (size_t i = sample_block_start; i < sample_block_end; ++i)
         {
             base_distribution_instances[i] = d.base_distribution_instances[i]->clone();
         }
-    
+        
+        if (use_base_distribution_iid)
+        {
+            // add the parameters of the base distribution
+            const std::vector<const DagNode*>& pars = base_distribution->getParameters();
+            for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
+            {
+                this->addParameter( *it );
+            }
+        }
+        else
+        {
+            // add the parameters for each base distribution
+            for (size_t i = 0; i < num_samples; i++) {
+                const std::vector<const DagNode*>& pars = base_distribution_instances[i]->getParameters();
+                for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
+                {
+                    this->addParameter( *it );
+                }
+            }
+        }        
     }
     
     return *this;
@@ -194,16 +238,16 @@ RevBayesCore::EmpiricalSampleDistribution<valueType>& RevBayesCore::EmpiricalSam
 
 
 template <class valueType>
-RevBayesCore::EmpiricalSampleDistribution<valueType>* RevBayesCore::EmpiricalSampleDistribution<valueType>::clone( void ) const
+RevBayesCore::WeightedSampleDistribution<valueType>* RevBayesCore::WeightedSampleDistribution<valueType>::clone( void ) const
 {
     
-    return new EmpiricalSampleDistribution<valueType>( *this );
+    return new WeightedSampleDistribution<valueType>( *this );
 }
 
 
 
 template <class valueType>
-double RevBayesCore::EmpiricalSampleDistribution<valueType>::computeLnProbability( void )
+double RevBayesCore::WeightedSampleDistribution<valueType>::computeLnProbability( void )
 {
     
     double ln_prob = 0;
@@ -226,7 +270,7 @@ double RevBayesCore::EmpiricalSampleDistribution<valueType>::computeLnProbabilit
 #ifdef RB_MPI
     for (size_t i = 0; i < num_samples; ++i)
     {
-
+        
         if ( this->pid == pid_per_sample[i] )
         {
             
@@ -248,7 +292,7 @@ double RevBayesCore::EmpiricalSampleDistribution<valueType>::computeLnProbabilit
     }
 #endif
     
-
+    
     double max = 0;
     // add the ln-probs for each sample
     for (size_t i = 0; i < num_samples; ++i)
@@ -268,13 +312,13 @@ double RevBayesCore::EmpiricalSampleDistribution<valueType>::computeLnProbabilit
 #endif
         
     }
-
+    
     
 #ifdef RB_MPI
     if ( this->process_active == true )
     {
 #endif
-
+        
         // now normalize
         for (size_t i = 0; i < num_samples; ++i)
         {
@@ -306,7 +350,7 @@ double RevBayesCore::EmpiricalSampleDistribution<valueType>::computeLnProbabilit
 
 
 template <class valueType>
-RevLanguage::RevPtr<RevLanguage::RevVariable> RevBayesCore::EmpiricalSampleDistribution<valueType>::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevBayesCore::WeightedSampleDistribution<valueType>::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
 {
     
     bool org_found = found;
@@ -319,20 +363,19 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevBayesCore::EmpiricalSampleDistr
         }
         found |= f;
     }
-    return NULL;
-    
+    return NULL; 
 }
 
 
 template <class valueType>
-RevBayesCore::RbVector<valueType>* RevBayesCore::EmpiricalSampleDistribution<valueType>::simulate()
+RevBayesCore::RbVector<valueType>* RevBayesCore::WeightedSampleDistribution<valueType>::simulate()
 {
     
     RbVector<valueType> *values = new RbVector<valueType>( num_samples );
     for (size_t i = 0; i < num_samples; ++i)
     {
-        base_distribution->redrawValue();
-        (*values)[i] = base_distribution->getValue();
+        base_distribution_instances[i]->redrawValue();
+        (*values)[i] = base_distribution_instances[i]->getValue();
     }
     
     return values;
@@ -340,7 +383,7 @@ RevBayesCore::RbVector<valueType>* RevBayesCore::EmpiricalSampleDistribution<val
 
 
 template <class valueType>
-void RevBayesCore::EmpiricalSampleDistribution<valueType>::redrawValue( void )
+void RevBayesCore::WeightedSampleDistribution<valueType>::redrawValue( void )
 {
     
     delete this->value;
@@ -351,10 +394,14 @@ void RevBayesCore::EmpiricalSampleDistribution<valueType>::redrawValue( void )
 
 /** Swap a parameter of the distribution */
 template <class valueType>
-void RevBayesCore::EmpiricalSampleDistribution<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void RevBayesCore::WeightedSampleDistribution<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    base_distribution->swapParameter(oldP,newP);
+    if (use_base_distribution_iid)
+    {
+        base_distribution->swapParameter(oldP,newP);
+    }
+    
     for (size_t i = 0; i < num_samples; ++i)
     {
         if ( base_distribution_instances[i] != NULL )
@@ -368,15 +415,11 @@ void RevBayesCore::EmpiricalSampleDistribution<valueType>::swapParameterInternal
 
 
 template <class valueType>
-void RevBayesCore::EmpiricalSampleDistribution<valueType>::setValue(RbVector<valueType> *v, bool force)
+void RevBayesCore::WeightedSampleDistribution<valueType>::setValue(RbVector<valueType> *v, bool force)
 {
     
     // free the old distributions
-    for (size_t i = 0; i < num_samples; ++i)
-    {
-        delete base_distribution_instances[i];
-    }
-
+    
     num_samples = v->size();
     
     // compute which block of the data this process needs to compute
@@ -388,12 +431,29 @@ void RevBayesCore::EmpiricalSampleDistribution<valueType>::setValue(RbVector<val
 #endif
     sample_block_size  = sample_block_end - sample_block_start;
     
-    base_distribution_instances = std::vector< TypedDistribution<valueType>* >( num_samples, NULL );
-    for (size_t i = sample_block_start; i < sample_block_end; ++i)
+    if (use_base_distribution_iid)
     {
-        TypedDistribution<valueType> *base_distribution_clone = base_distribution->clone();
-        base_distribution_instances[i] = base_distribution_clone;
-        base_distribution_clone->setValue( (*v)[i].clone() );
+        for (size_t i = 0; i < num_samples; ++i)
+        {
+            delete base_distribution_instances[i];
+        }
+
+        base_distribution_instances = std::vector< TypedDistribution<valueType>* >( num_samples, NULL );
+        for (size_t i = sample_block_start; i < sample_block_end; ++i)
+        {
+            TypedDistribution<valueType> *base_distribution_clone = base_distribution->clone();
+            base_distribution_instances[i] = base_distribution_clone;
+            base_distribution_clone->setValue( (*v)[i].clone() );
+        }
+    }
+    else
+    {
+        for (size_t i = sample_block_start; i < sample_block_end; ++i)
+        {
+//            TypedDistribution<valueType> *base_distribution_clone = base_distribution->clone();
+//            base_distribution_instances[i] = base_distribution_clone;
+            base_distribution_instances[i]->setValue( (*v)[i].clone() );
+        }
     }
     
 #ifdef RB_MPI

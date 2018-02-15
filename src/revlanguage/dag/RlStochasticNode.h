@@ -150,10 +150,10 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::StochasticNode<valueT
         }
     }
     
-    this->distribution->executeProcedure(name, dist_args, found);
+    RevPtr<RevVariable> ret_proc_val = this->distribution->executeProcedure(name, dist_args, found);
     if ( found == true )
     {
-        return NULL;
+        return ret_proc_val;
     }
 
     

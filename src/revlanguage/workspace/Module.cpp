@@ -17,7 +17,7 @@ Module::Module(const std::string &fn)
         
         // Read a line
         std::string line;
-        getline( readStream, line );
+        fm.safeGetline(readStream, line);
         
         commandLines.push_back( line );
         

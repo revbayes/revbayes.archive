@@ -4,6 +4,8 @@
 #include "Cloneable.h"
 #include "Parallelizable.h"
 #include "RbOrderedSet.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
 
 #include <iostream>
 #include <set>
@@ -37,49 +39,49 @@ namespace RevBayesCore {
         
     public:
         // destructor
-        virtual                                ~Distribution(void);
+        virtual                                                 ~Distribution(void);
         
         // public methods
-        virtual void                            bootstrap(void);                                                              //!< Draw a new random value from the distribution
-        virtual void                            executeProcedure(const std::string &n, const std::vector<DagNode*> args, bool &f);  //!< execute the procedure
-        virtual void                            getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                  //!< get affected nodes
-        const std::vector<const DagNode*>&      getParameters(void) const;                                                          //!< get the parameters of the function
-        void                                    keep(DagNode* affecter);
-        virtual void                            reInitialized( void );                                                              //!< The model was re-initialized
-        void                                    restore(DagNode *restorer);
-        virtual void                            setMcmcMode(bool tf);                                                               //!< Change the likelihood computation to or from MCMC mode.
-        void                                    swapParameter(const DagNode *oldP, const DagNode *newP);                            //!< Exchange the parameter
-        void                                    touch(DagNode *toucher, bool touchAll);
+        virtual void                                            bootstrap(void);                                                              //!< Draw a new random value from the distribution
+        virtual RevLanguage::RevPtr<RevLanguage::RevVariable>   executeProcedure(const std::string &n, const std::vector<DagNode*> args, bool &f);  //!< execute the procedure
+        virtual void                                            getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                  //!< get affected nodes
+        const std::vector<const DagNode*>&                      getParameters(void) const;                                                          //!< get the parameters of the function
+        void                                                    keep(DagNode* affecter);
+        virtual void                                            reInitialized( void );                                                              //!< The model was re-initialized
+        void                                                    restore(DagNode *restorer);
+        virtual void                                            setMcmcMode(bool tf);                                                               //!< Change the likelihood computation to or from MCMC mode.
+        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);                            //!< Exchange the parameter
+        void                                                    touch(DagNode *toucher, bool touchAll);
         
         // pure virtual public methods
-        virtual Distribution*                   clone(void) const = 0;                                                              //!< Clone the distribution
-        virtual double                          computeLnProbability(void) = 0;                                                     //!< Compute the ln probability
-        virtual void                            redrawValue(void) = 0;                                                              //!< Draw a new random value from the distribution
+        virtual Distribution*                                   clone(void) const = 0;                                                              //!< Clone the distribution
+        virtual double                                          computeLnProbability(void) = 0;                                                     //!< Compute the ln probability
+        virtual void                                            redrawValue(void) = 0;                                                              //!< Draw a new random value from the distribution
         
     protected:
         Distribution(void);                                                                                                         //!< Default constructor
         Distribution(const Distribution &f);                                                                                        //!< Copy constructor
-        Distribution&                           operator=(const Distribution &f);                                                   //!< Assignment operator
+        Distribution&                                           operator=(const Distribution &f);                                                   //!< Assignment operator
         
         // keep specialization for derived classes
-        virtual void                            keepSpecialization(DagNode* affecter);
-        virtual void                            restoreSpecialization(DagNode *restorer);
-        virtual void                            touchSpecialization(DagNode *toucher, bool touchAll);
+        virtual void                                            keepSpecialization(DagNode* affecter);
+        virtual void                                            restoreSpecialization(DagNode *restorer);
+        virtual void                                            touchSpecialization(DagNode *toucher, bool touchAll);
         
         // swap parameter methods for internal use of derived classes
-        void                                    addParameter(const DagNode* p);                                                     //!< add a parameter to the function
-        void                                    removeParameter(const DagNode* p);                                                  //!< remove a parameter from the function
-        virtual void                            swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;                //!< Exchange the parameter
+        void                                                    addParameter(const DagNode* p);                                                     //!< add a parameter to the function
+        void                                                    removeParameter(const DagNode* p);                                                  //!< remove a parameter from the function
+        virtual void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;                //!< Exchange the parameter
 
         
     private:
         
-        std::vector<const DagNode*>             parameters;
+        std::vector<const DagNode*>                             parameters;
         
     };
     
     // Global functions using the class
-    std::ostream&                               operator<<(std::ostream& o, const Distribution& x);                                 //!< Overloaded output operator
+    std::ostream&                                               operator<<(std::ostream& o, const Distribution& x);                                 //!< Overloaded output operator
     
 }
 

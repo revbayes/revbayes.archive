@@ -126,6 +126,7 @@ part_rate := part_rate_mult * n_data_subsets
 for (i in 1:n_data_subsets) {
     phyloSeq[i] ~ dnPhyloCTMC(tree=psi, Q=Q[i], branchRates=part_rate[i], siteRates=gamma_rates[i], pInv=pinvar[i], type="DNA")
     phyloSeq[i].clamp(data[i])
+
 }
 
 

@@ -1,6 +1,8 @@
 #include "DagNode.h"
 #include "Distribution.h"
 #include "RbException.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
 
 #include <algorithm>
 
@@ -106,9 +108,10 @@ void Distribution::addParameter(const DagNode *p)
 
 
 
-void Distribution::executeProcedure(const std::string &n, const std::vector<DagNode *> args, bool &f)
+RevLanguage::RevPtr<RevLanguage::RevVariable> Distribution::executeProcedure(const std::string &n, const std::vector<DagNode *> args, bool &f)
 {
     // no function found
+    return NULL;
 }
 
 

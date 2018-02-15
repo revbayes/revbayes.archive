@@ -337,7 +337,7 @@ void PowerPosteriorAnalysis::summarizeStones( void )
         {
             bool header = true;
             std::string line = "";
-            while ( std::getline (inStream,line) )
+            while ( std::getline(inStream,line) )
             {
                 // we need to skip the header line
                 if ( header == true )

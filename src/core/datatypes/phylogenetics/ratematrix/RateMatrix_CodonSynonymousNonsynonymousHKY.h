@@ -1,5 +1,5 @@
-#ifndef RateMatrix_CodonSynonymousNonsynonymous_H
-#define RateMatrix_CodonSynonymousNonsynonymous_H
+#ifndef RateMatrix_CodonSynonymousNonsynonymousHKY_H
+#define RateMatrix_CodonSynonymousNonsynonymousHKY_H
 
 #include "TimeReversibleRateMatrix.h"
 #include <complex>
@@ -17,33 +17,36 @@ namespace RevBayesCore {
      * @brief Codon rate matrix class with different rates for synonymous and non-synonymous substitutions.
      *
      * This class implements the codon rate matrix with different dN/ dS rates.
-     * The only parameter is the stationary codon frequencies.
+     * The JC has no parameter but can be applied to any number of states.
      * The resulting rate matrix is computed by:
      *
-     *		0: codon changes in more than one codon position (or stop codons)
-     *		1: synonymous substitution * pi(target)
-     *		2: non-synonymous substitution * pi(target)
+     *        0: codon changes in more than one codon position (or stop codons)
+     *        1: synonymous transition
+     *        2: synonymous transversion
+     *        3: non-synonymous transition
+     *        4: non-synonymous transversion
      *
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2015-07-15, version 1.0
      */
-    class RateMatrix_CodonSynonymousNonsynonymous : public TimeReversibleRateMatrix {
+    class RateMatrix_CodonSynonymousNonsynonymousHKY : public TimeReversibleRateMatrix {
         
     public:
-        RateMatrix_CodonSynonymousNonsynonymous(void);                                                                                               //!< Construct rate matrix with n states
-        RateMatrix_CodonSynonymousNonsynonymous(const RateMatrix_CodonSynonymousNonsynonymous& m);                                                                                //!< Copy constructor
-        virtual                             ~RateMatrix_CodonSynonymousNonsynonymous(void);                                                              //!< Destructor
+        RateMatrix_CodonSynonymousNonsynonymousHKY(void);                                                                                               //!< Construct rate matrix with n states
+        RateMatrix_CodonSynonymousNonsynonymousHKY(const RateMatrix_CodonSynonymousNonsynonymousHKY& m);                                                                                //!< Copy constructor
+        virtual                             ~RateMatrix_CodonSynonymousNonsynonymousHKY(void);                                                              //!< Destructor
         
         // overloaded operators
-        RateMatrix_CodonSynonymousNonsynonymous&                operator=(const RateMatrix_CodonSynonymousNonsynonymous& r);
+        RateMatrix_CodonSynonymousNonsynonymousHKY&             operator=(const RateMatrix_CodonSynonymousNonsynonymousHKY& r);
         
         // RateMatrix functions
-        virtual RateMatrix_CodonSynonymousNonsynonymous&        assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
+        virtual RateMatrix_CodonSynonymousNonsynonymousHKY&     assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
         void                                                    calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
-        RateMatrix_CodonSynonymousNonsynonymous*                clone(void) const;
-        void                                                    setCodonFrequencies(const std::vector<double> &f);                                 //!< Set the nucleotide frequencies
+        RateMatrix_CodonSynonymousNonsynonymousHKY*             clone(void) const;
+        void                                                    setNucleotideFrequencies(const std::vector<double> &f);                             //!< Set the nucleotide frequencies
+        void                                                    setKappa(double k);
         void                                                    setOmega(double o);
         void                                                    update(void);
         
@@ -58,12 +61,14 @@ namespace RevBayesCore {
         std::vector<double>                                     c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >                      cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
         
+        double                                                  kappa;
         double                                                  omega;
-        std::vector<double>                                     codon_freqs; 
-        
+        std::vector<double>                                     nucleotide_freqs;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
+                
     };
     
 }
 
 #endif
+
 
