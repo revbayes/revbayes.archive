@@ -52,12 +52,13 @@
 #include "RlMove.h"
 
 /* Moves on real values */
+#include "Move_HSRFHyperpriorsGibbs.h"
 #include "Move_SliceSampling.h"
 #include "Move_Scale.h"
 #include "Move_ScaleBactrian.h"
+#include "Move_ScaleBactrianCauchy.h"
 #include "Move_Slide.h"
 #include "Move_SlideBactrian.h"
-
 
 /* Moves on probability values */
 #include "Move_BetaProbability.h"
@@ -83,9 +84,11 @@
 /* Moves on vectors */
 #include "Move_ElementScale.h"
 #include "Move_ElementSlide.h"
+#include "Move_GMRFHyperpriorGibbs.h"
 #include "Move_ShrinkExpand.h"
 #include "Move_SingleElementScale.h"
 #include "Move_SingleElementSlide.h"
+#include "Move_EllipticalSliceSamplingSimple.h"
 #include "Move_SynchronizedVectorFixedSingleElementSlide.h"
 #include "Move_VectorBinarySwitch.h"
 #include "Move_VectorSingleElementScale.h"
@@ -201,10 +204,11 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on real values */
         addTypeWithConstructor( new Move_Scale() );
         addTypeWithConstructor( new Move_ScaleBactrian() );
+        addTypeWithConstructor( new Move_ScaleBactrianCauchy() );
         addTypeWithConstructor( new Move_Slide() );
         addTypeWithConstructor( new Move_SlideBactrian() );
         addTypeWithConstructor( new Move_SliceSampling() );
-        
+        addTypeWithConstructor( new Move_GMRFHyperpriorGibbs() );
         /* Moves on probability */
         addTypeWithConstructor( new Move_BetaProbability() );
 
@@ -229,6 +233,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ElementSwapSimplex() );
 
         /* Moves on vectors */
+        addTypeWithConstructor( new Move_HSRFHyperpriorsGibbs() );
         addTypeWithConstructor( new Move_SingleElementSlide() );
         addTypeWithConstructor( new Move_SingleElementScale() );
         addTypeWithConstructor( new Move_ShrinkExpand() );
@@ -241,6 +246,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_VectorSingleElementScale() );
         addTypeWithConstructor( new Move_VectorSingleElementSlide() );
         addTypeWithConstructor( new Move_VectorFixedSingleElementSlide() );
+        addTypeWithConstructor( new Move_EllipticalSliceSamplingSimple() );
         addTypeWithConstructor( new Move_SynchronizedVectorFixedSingleElementSlide() );
 
         /* Moves on matrices of real values */
