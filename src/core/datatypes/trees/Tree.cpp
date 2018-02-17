@@ -216,6 +216,19 @@ void Tree::dropTipNodeWithName( const std::string &n )
 {
     // get the index of this name
     size_t index = getTipIndex( n );
+    dropTipNode( index );
+}
+
+
+
+/**
+ * Drop the tip node with the given name.
+ * The name should correspond to the taxon name, not the species name.
+ * This will throw an error if the name doesn't exist.
+ */
+void Tree::dropTipNode( size_t index )
+{
+    // get the index of this name
     TopologyNode &node          = getTipNode( index );
     if (node.isRoot() == true && nodes.size() == 1)
     {
@@ -256,11 +269,11 @@ void Tree::dropTipNodeWithName( const std::string &n )
             root->removeChild(&node);
         }
     }
-
+    
     bool resetIndex = true;
-
+    
     nodes.clear();
-
+    
     // bootstrap all nodes from the root and add the in a pre-order traversal
     fillNodesByPhylogeneticTraversal(root);
     if ( resetIndex == true )
@@ -274,9 +287,9 @@ void Tree::dropTipNodeWithName( const std::string &n )
     {
         orderNodesByIndex();
     }
-
+    
     num_nodes = nodes.size();
-
+    
     // count the number of tips
     num_tips = 0;
     for (size_t i = 0; i < num_nodes; ++i)
@@ -289,7 +302,7 @@ void Tree::dropTipNodeWithName( const std::string &n )
         }
         num_tips += ( nodes[i]->isTip() ? 1 : 0);
     }
-
+    
 }
 
 
@@ -1217,6 +1230,40 @@ bool Tree::recursivelyPruneTaxa( TopologyNode* n, const RbBitSet& prune_map )
 }
 
 
+void Tree::removeDuplicateTaxa( void )
+{
+    
+    bool removed_replicate = true;
+    while ( removed_replicate == true )
+    {
+        removed_replicate = false;
+        for ( size_t i=0; i<(num_tips-1); ++i )
+        {
+            const std::string &name_a = nodes[ i ]->getName();
+            for ( size_t j=i+1; j<num_tips; ++j )
+            {
+                const std::string &name_b = nodes[ j ]->getName();
+                if ( name_a == name_b )
+                {
+                    removed_replicate = true;
+                    dropTipNode( j );
+                    break;
+                }
+                
+            }
+
+            if ( removed_replicate == true )
+            {
+                break;
+            }
+            
+        }
+
+    }
+    
+}
+
+
 void Tree::renameNodeParameter(const std::string &old_name, const std::string &new_name)
 {
     getRoot().renameNodeParameter(old_name, new_name);
@@ -1421,6 +1468,43 @@ void Tree::setTaxonIndices(const TaxonMap &tm)
     }
 
 
+}
+
+
+/**
+ * Change the name of a taxon
+ *
+ * \param[in] currentName    self explanatory.
+ * \param[in] newName        self explanatory.
+ */
+void Tree::setTaxonName(const std::string& current_name, const std::string& newName)
+{
+    
+    TopologyNode& node = getTipNodeWithName( current_name );
+    Taxon& t = node.getTaxon();
+    t.setName( newName );
+    taxon_bitset_map.erase( current_name );
+    taxon_bitset_map.insert( std::pair<std::string, size_t>( newName, node.getIndex() ) );
+}
+
+
+/**
+ * Change the name of a taxon
+ *
+ * \param[in] current_name   self explanatory.
+ * \param[in] new_taxon      self explanatory.
+ */
+void Tree::setTaxonObject(const std::string& current_name, const Taxon& new_taxon)
+{
+    
+    const std::string &new_name = new_taxon.getName();
+    
+    TopologyNode& node = getTipNodeWithName( current_name );
+    node.setTaxon( new_taxon );
+    
+    taxon_bitset_map.erase( current_name );
+    taxon_bitset_map.insert( std::pair<std::string, size_t>( new_name, node.getIndex() ) );
+    
 }
 
 
