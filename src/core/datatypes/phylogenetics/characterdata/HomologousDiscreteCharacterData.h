@@ -1316,7 +1316,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromFile(const
 /**
  * Initialize this object from a file
  *
- * \param[in]   idx    The site at which we want to know if it is constant?
+ * \param[in]   s    The string value.
  */
 template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromString(const std::string &s)

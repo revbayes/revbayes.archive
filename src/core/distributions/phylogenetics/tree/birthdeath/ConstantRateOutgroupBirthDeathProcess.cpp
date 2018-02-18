@@ -28,10 +28,9 @@ using namespace RevBayesCore;
  * \param[in]    ra				Age or the root (=time of the process).
  * \param[in]    s              Speciation rate.
  * \param[in]    e              Extinction rate.
- * \param[in]    r              Sampling probability at present time.
+ * \param[in]    ri             Sampling probability at present time.
  * \param[in]    cdt            Condition of the process (none/survival/#Taxa).
  * \param[in]    tn             Taxa.
- * \param[in]    c              Clades conditioned to be present.
  */
 ConstantRateOutgroupBirthDeathProcess::ConstantRateOutgroupBirthDeathProcess(    const TypedDagNode<double> *ra,
                                                                                  const TypedDagNode<double> *s,

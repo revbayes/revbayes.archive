@@ -31,7 +31,8 @@ using namespace RevBayesCore;
  * \return Returns the cumulative probability.
  * \throws Does not throw an error.
  */
-double RbStatistics::Exponential::cdf(double lambda, double x) {
+double RbStatistics::Exponential::cdf(double lambda, double x)
+{
     
 	return 1.0 - exp(-lambda * x);
 }
@@ -47,7 +48,8 @@ double RbStatistics::Exponential::cdf(double lambda, double x) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Exponential::pdf(double lambda, double x) {
+double RbStatistics::Exponential::pdf(double lambda, double x)
+{
     
 	return lambda * exp(-lambda * x);
 }
@@ -62,7 +64,8 @@ double RbStatistics::Exponential::pdf(double lambda, double x) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Exponential::lnPdf(double lambda, double x) {
+double RbStatistics::Exponential::lnPdf(double lambda, double x)
+{
     
 	return (std::log(lambda) - lambda * x);
 }
@@ -77,7 +80,8 @@ double RbStatistics::Exponential::lnPdf(double lambda, double x) {
  * \return Returns the quantile.
  * \throws Does not throw an error.
  */
-double RbStatistics::Exponential::quantile(double lambda, double p) {
+double RbStatistics::Exponential::quantile(double lambda, double p)
+{
     
 	return -(1.0 / lambda) * std::log(1.0 - p);
 }
@@ -86,12 +90,13 @@ double RbStatistics::Exponential::quantile(double lambda, double p) {
  * This function generates an exponentially distributed random variable.
  *
  * \brief Exponential random variable.
- * \param The rate parameter of the exponential distribution. 
- * \param rng is a pointer to a random number object. 
+ * \param lambda    The rate parameter of the exponential distribution.
+ * \param rng       A pointer to a random number object.
  * \return Returns an exponential random variable.
  * \throws Does not throw an error.
  */
-double RbStatistics::Exponential::rv(double lambda, RandomNumberGenerator& rng) {
+double RbStatistics::Exponential::rv(double lambda, RandomNumberGenerator& rng)
+{
     
 	double u = rng.uniform01();
 	return -(1.0/lambda) * std::log(u);
