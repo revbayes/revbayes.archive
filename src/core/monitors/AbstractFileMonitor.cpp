@@ -121,7 +121,7 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps, MonteCarloAnalysisOp
         combined_output_stream.close();
         combined_output_stream.open( filename.c_str(), std::fstream::in | std::fstream::out);
         
-        if ( tc == MonteCarloAnalysisOptions::TraceCombinationTypes::SEQUENTIAL )
+        if ( tc == MonteCarloAnalysisOptions::SEQUENTIAL )
         {
             for (size_t i=0; i<n_reps; ++i)
             {
@@ -217,7 +217,7 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps, MonteCarloAnalysisOp
             }
 
         }
-        else if ( tc == MonteCarloAnalysisOptions::TraceCombinationTypes::MIXED )
+        else if ( tc == MonteCarloAnalysisOptions::MIXED )
         {
             
             std::vector< RbFileManager > input_fm;
