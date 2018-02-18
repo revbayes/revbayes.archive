@@ -42,9 +42,11 @@ namespace RevBayesCore {
         // functions you should not override
         void                                                    addNode(DagNode* p);                                                //!< add a node to the proposal
         void                                                    autoTune(void);                                                     //!< Automatic tuning of the move.
-        void                                                    decrementTriedCounter(void);                        //!< Get update weight of InferenceMove
-        virtual size_t                                          getNumberAccepted(void) const;                                      //!< Get update weight of InferenceMove
-        size_t                                                  getNumberTried(void) const;                                         //!< Get the number of tries for this move since the last reset
+        void                                                    decrementTriedCounter(void);                                        //!< Get update weight of InferenceMove
+        virtual size_t                                          getNumberAcceptedCurrentPeriod(void) const;                         //!< Get update weight of InferenceMove
+        virtual size_t                                          getNumberAcceptedTotal(void) const;                                 //!< Get update weight of InferenceMove
+        size_t                                                  getNumberTriedCurrentPeriod(void) const;                            //!< Get the number of tries for this move since the last reset
+        size_t                                                  getNumberTriedTotal(void) const;                                    //!< Get the number of tries for this move since the last reset
         double                                                  getUpdateWeight(void) const;                                        //!< Get update weight of move
         bool                                                    isActive(unsigned long gen) const;                                  //!< Is the move active at the generation 'gen'?
         void                                                    performMcmcStep(double lHeat, double pHeat);                        //!< Perform the move.
@@ -62,7 +64,7 @@ namespace RevBayesCore {
         
         // pure virtual protected methods
         virtual void                                            performMcmcMove(double lHeat, double pHeat) = 0;                    //!< Perform the move.
-        virtual void                                            performHillClimbingMove(double lHeat, double pHeat);            //!< Perform the move.
+        virtual void                                            performHillClimbingMove(double lHeat, double pHeat);                //!< Perform the move.
         virtual void                                            swapNodeInternal(DagNode *oldN, DagNode *newN) = 0;                 //!< Swap the pointers to the variable on which the move works on.
         virtual void                                            tune(void) = 0;                                                     //!< Specific tuning of the move
         
@@ -74,8 +76,9 @@ namespace RevBayesCore {
         RbOrderedSet<DagNode*>                                  affected_nodes;                                                      //!< The affected nodes by this move.
         double                                                  weight;
         bool                                                    auto_tuning;
-        unsigned int                                            num_tried;                                                           //!< Number of times tried
-                
+        unsigned int                                            num_tried_current_period;                                            //!< Number of times tried
+        unsigned int                                            num_tried_total;                                                     //!< Number of times tried
+
     };
     
 }

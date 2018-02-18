@@ -17,7 +17,9 @@ AbstractMove::AbstractMove( double w, bool t ) :
     nodes(  ),
     affected_nodes(  ),
     weight( w ),
-    auto_tuning( t )
+    auto_tuning( t ),
+    num_tried_current_period( 0 ),
+    num_tried_total( 0 )
 {
     
 }
@@ -35,7 +37,9 @@ AbstractMove::AbstractMove( const std::vector<DagNode*> &n, double w, bool t ) :
     nodes( n ),
     affected_nodes( ),
     weight( w ),
-    auto_tuning( t )
+    auto_tuning( t ),
+    num_tried_current_period( 0 ),
+    num_tried_total( 0 )
 {
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
@@ -78,7 +82,9 @@ AbstractMove::AbstractMove( const AbstractMove &m ) : Move( m ),
     nodes( m.nodes ),
     affected_nodes( m.affected_nodes ),
     weight( m.weight ),
-    auto_tuning( m.auto_tuning  )
+    auto_tuning( m.auto_tuning  ),
+    num_tried_current_period( m.num_tried_current_period ),
+    num_tried_total( m.num_tried_total )
 {
     
     
@@ -152,9 +158,10 @@ AbstractMove& AbstractMove::operator=(const RevBayesCore::AbstractMove &m)
             
         }
         
-        affected_nodes  = m.affected_nodes;
-        nodes           = m.nodes;
-        
+        affected_nodes              = m.affected_nodes;
+        nodes                       = m.nodes;
+        num_tried_current_period    = m.num_tried_current_period;
+        num_tried_total             = m.num_tried_total;
         
         for (size_t i = 0; i < nodes.size(); ++i)
         {
@@ -232,7 +239,8 @@ void AbstractMove::autoTune( void )
 void AbstractMove::decrementTriedCounter( void )
 {
     // decrement the tries counter
-    --num_tried;
+    --num_tried_current_period;
+    --num_tried_total;
     
 }
 
@@ -264,22 +272,44 @@ const std::vector<DagNode*>& AbstractMove::getDagNodes( void ) const
 /**
  * Get the number of how often the move has been used.
  *
- * \return    The update weight.
+ * \return    The number of tries.
  */
-size_t AbstractMove::getNumberTried( void ) const
+size_t AbstractMove::getNumberTriedCurrentPeriod( void ) const
 {
-    return num_tried;
+    return num_tried_current_period;
 }
 
 
 /**
  * Get the number of how often the move has been used.
  *
- * \return    The update weight.
+ * \return    The number of tries.
  */
-size_t AbstractMove::getNumberAccepted( void ) const
+size_t AbstractMove::getNumberTriedTotal( void ) const
 {
-    return num_tried;
+    return num_tried_total;
+}
+
+
+/**
+ * Get the number of how often the move has been used.
+ *
+ * \return    The number of accepted moves.
+ */
+size_t AbstractMove::getNumberAcceptedCurrentPeriod( void ) const
+{
+    return num_tried_current_period;
+}
+
+
+/**
+ * Get the number of how often the move has been used.
+ *
+ * \return    The number of accepted moves.
+ */
+size_t AbstractMove::getNumberAcceptedTotal( void ) const
+{
+    return num_tried_total;
 }
 
 
@@ -323,7 +353,8 @@ void AbstractMove::performHillClimbingMove(double lHeat, double pHeat)
 void AbstractMove::performHillClimbingStep( double lHeat, double pHeat )
 {
     // increment the tries counter
-    ++num_tried;
+    ++num_tried_current_period;
+    ++num_tried_total;
     
     // delegate to derived class
     performHillClimbingMove(lHeat, pHeat);
@@ -339,7 +370,8 @@ void AbstractMove::performHillClimbingStep( double lHeat, double pHeat )
 void AbstractMove::performMcmcStep( double lHeat, double pHeat )
 {
     // increment the tries counter
-    ++num_tried;
+    ++num_tried_current_period;
+    ++num_tried_total;
     
     // delegate to derived class
     performMcmcMove(lHeat, pHeat);
@@ -384,7 +416,7 @@ void AbstractMove::removeNode( RevBayesCore::DagNode *n )
  */
 void AbstractMove::resetCounters( void )
 {
-    num_tried = 0;
+    num_tried_current_period = 0;
     
     // delegate call
     resetMoveCounters();

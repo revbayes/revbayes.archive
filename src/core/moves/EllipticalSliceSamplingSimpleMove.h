@@ -30,7 +30,7 @@ namespace RevBayesCore {
         virtual                                                 ~EllipticalSliceSamplingSimpleMove(void);                           //!< Destructor
 
         // public methods
-        virtual EllipticalSliceSamplingSimpleMove*                              clone(void) const;
+        virtual EllipticalSliceSamplingSimpleMove*              clone(void) const;
         const std::string&                                      getMoveName(void) const;                            //!< Get the name of the move for summary printing
         void                                                    printSummary(std::ostream &o) const;                //!< Print the move summary
         void                                                    tune(void);                                         //!< Specific tuning of the move
@@ -45,7 +45,7 @@ namespace RevBayesCore {
 
         // parameters
         std::vector< StochasticNode<double> *>                  variables;                                          //!< The (Multivariate-Normally-distributed) variables the Proposal is working on
-        std::vector< StochasticNode<double> *>                    sd;                                                 //!< Vector of standard deviations for the above MVN distribution
+        std::vector< StochasticNode<double> *>                  sd;                                                 //!< Vector of standard deviations for the above MVN distribution
         double                                                  window;                                             //!< Window width for slice sampling
         double                                                  total_movement;                                     //!< total distance moved under auto-tuning
         int                                                     numPr;                                              //!< Number of probability evaluations

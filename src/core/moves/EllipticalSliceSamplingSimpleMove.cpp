@@ -448,24 +448,24 @@ void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o) const
     
     // print the number of tries
     int t_length = 9;
-    if (num_tried > 0) t_length -= (int)log10(num_tried);
+    if (num_tried_total > 0) t_length -= (int)log10(num_tried_total);
     for (int i = 0; i < t_length; ++i) {
         o << " ";
     }
-    o << num_tried;
+    o << num_tried_total;
     o << " ";
     
     // print the average distance moved
     o<<"\n";
-    if (num_tried > 0)
+    if (num_tried_total > 0)
     {
-      o<<"  Ave. ||x2-x1|| = "<<total_movement/num_tried<<std::endl;
+      o<<"  Ave. ||x2-x1|| = "<<total_movement/num_tried_total<<std::endl;
     }
 
     // print the average distance moved
-    if (num_tried > 0)
+    if (num_tried_total > 0)
     {
-      o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried<<std::endl;
+      o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried_total<<std::endl;
     }
 
     //    proposal->printParameterSummary( o );
@@ -486,7 +486,7 @@ void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o) const
 void EllipticalSliceSamplingSimpleMove::resetMoveCounters( void )
 {
     total_movement = 0.0;
-    num_tried = 0;
+    num_tried_current_period = 0;
     numPr = 0;
 }
 
@@ -519,7 +519,7 @@ void EllipticalSliceSamplingSimpleMove::swapNodeInternal(DagNode *oldN, DagNode 
 void EllipticalSliceSamplingSimpleMove::tune( void ) 
 {
 
-    if (numPr/num_tried > 9)
+    if (numPr/num_tried_current_period > 9)
     {
         window *= 0.9;
     }
