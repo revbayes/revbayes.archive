@@ -23,7 +23,8 @@ using namespace RevBayesCore;
  * \param[in]    t   If auto tuning should be used.
  */
 MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) : AbstractMove(p->getNodes(), w, t),
-    num_accepted( 0 ),
+    num_accepted_current_period( 0 ),
+    num_accepted_total( 0 ),
     proposal( p )
 {
     
@@ -40,7 +41,8 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
  *
  */
 MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) : AbstractMove(m),
-    num_accepted( m.num_accepted ),
+    num_accepted_current_period( m.num_accepted_current_period ),
+    num_accepted_total( m.num_accepted_current_period ),
     proposal( m.proposal->clone() )
 {
     
@@ -74,8 +76,9 @@ MetropolisHastingsMove& MetropolisHastingsMove::operator=(const RevBayesCore::Me
         // free memory
         delete proposal;
         
-        num_accepted    = m.num_accepted;
-        proposal        = m.proposal->clone();
+        num_accepted_current_period     = m.num_accepted_current_period;
+        num_accepted_total              = m.num_accepted_total;
+        proposal                        = m.proposal->clone();
         
         proposal->setMove( this );
         
@@ -113,10 +116,20 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 /**
  * How often was the move accepted
  */
-size_t MetropolisHastingsMove::getNumberAccepted( void ) const
+size_t MetropolisHastingsMove::getNumberAcceptedCurrentPeriod( void ) const
 {
     
-    return num_accepted;
+    return num_accepted_current_period;
+}
+
+
+/**
+ * How often was the move accepted
+ */
+size_t MetropolisHastingsMove::getNumberAcceptedTotal( void ) const
+{
+    
+    return num_accepted_total;
 }
 
 
@@ -215,7 +228,8 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
     else
     {
         
-        num_accepted++;
+        num_accepted_total++;
+        num_accepted_current_period++;
             
         // call accept for each node
         for (size_t i = 0; i < nodes.size(); ++i)
@@ -338,7 +352,8 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
         {
 
             
-            num_accepted++;
+            num_accepted_total++;
+            num_accepted_current_period++;
         
             // call accept for each node
             for (size_t i = 0; i < touched_nodes.size(); ++i)
@@ -372,7 +387,8 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
             if (u < r)
             {
                 
-                num_accepted++;
+                num_accepted_total++;
+                num_accepted_current_period++;
             
                 // call accept for each node
                 for (size_t i = 0; i < touched_nodes.size(); ++i)
@@ -455,28 +471,28 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     
     // print the number of tries
     int t_length = 9;
-    if (num_tried > 0) t_length -= (int)log10(num_tried);
+    if (num_tried_total > 0) t_length -= (int)log10(num_tried_total);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << num_tried;
+    o << num_tried_total;
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
-    if (num_accepted > 0) a_length -= (int)log10(num_accepted);
+    if (num_accepted_total > 0) a_length -= (int)log10(num_accepted_total);
     
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << num_accepted;
+    o << num_accepted_total;
     o << " ";
     
     // print the acceptance ratio
-    double ratio = num_accepted / (double)num_tried;
-    if (num_tried == 0) ratio = 0;
+    double ratio = num_accepted_total / (double)num_tried_total;
+    if (num_tried_total == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)
@@ -502,7 +518,7 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
  */
 void MetropolisHastingsMove::resetMoveCounters( void )
 {
-    num_accepted = 0;
+    num_accepted_current_period = 0;
 }
 
 
@@ -527,9 +543,9 @@ void MetropolisHastingsMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void MetropolisHastingsMove::tune( void )
 {
     
-    if ( num_tried > 2 )
+    if ( num_tried_current_period > 2 )
     {
-        double rate = num_accepted / double(num_tried);
+        double rate = num_accepted_current_period / double(num_tried_current_period);
     
         proposal->tune( rate );
     }

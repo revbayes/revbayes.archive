@@ -1,11 +1,3 @@
-//
-//  RateMatrix_FreeK.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/4/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "DistributionPoisson.h"
 #include "EigenSystem.h"
 #include "MatrixComplex.h"
@@ -27,11 +19,7 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ),
     rescale(true),
-    useScalingAndSquaring(true),
-    useScalingAndSquaringPade(false),
-    useScalingAndSquaringTaylor(false),
-    useUniformization(false),
-    useEigen(false)
+    my_method( EIGEN )
 {
     
     theEigenSystem       = new EigenSystem(the_rate_matrix);
@@ -46,11 +34,7 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ),
 
 RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r) : GeneralRateMatrix( n ),
     rescale(r),
-    useScalingAndSquaring(true),
-    useScalingAndSquaringPade(false),
-    useScalingAndSquaringTaylor(false),
-    useUniformization(false),
-    useEigen(false)
+    my_method( EIGEN )
 {
     
     theEigenSystem       = new EigenSystem(the_rate_matrix);
@@ -65,33 +49,29 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r) : GeneralRateMatrix( n ),
 
 RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r, std::string method) : GeneralRateMatrix( n ),
     rescale(r),
-    useScalingAndSquaring(false),
-    useScalingAndSquaringPade(false),
-    useScalingAndSquaringTaylor(false),
-    useUniformization(false),
-    useEigen(false)
+    my_method( EIGEN )
 {
     
     // determine the type of matrix exponentiation
     if (method == "scalingAndSquaring")
     {
-        useScalingAndSquaring = true;
+        my_method = SCALING_AND_SQUARING;
     }
     else if (method == "scalingAndSquaringPade")
     {
-        useScalingAndSquaringPade = true;
+        my_method = SCALING_AND_SQUARING_PADE;
     }
     else if (method == "scalingAndSquaringTaylor")
     {
-        useScalingAndSquaringTaylor = true;
+        my_method = SCALING_AND_SQUARING_TAYLOR;
     }
     else if (method == "uniformization")
     {
-        useUniformization = true;
+        my_method = UNIFORMIZATION;
     }
     else if (method == "eigen")
     {
-        useEigen = true;
+        my_method = EIGEN;
     }
     
     // create the eigen system so the destructor has something to delete
@@ -111,11 +91,7 @@ RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatri
 {
     
     rescale               = m.rescale;
-    useScalingAndSquaring = m.useScalingAndSquaring;
-    useScalingAndSquaringPade = m.useScalingAndSquaringPade;
-    useScalingAndSquaringTaylor = m.useScalingAndSquaringTaylor;
-    useUniformization     = m.useUniformization;
-    useEigen              = m.useEigen;
+    my_method             = m.my_method;
     
     matrixProducts        = new std::vector<MatrixReal>();
     
@@ -215,19 +191,19 @@ void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double 
     // The eigensystem code was returning NaN likelihood values when transition rates
     // were close to 0.0, so now we use the scaling and squaring method.
     double t = rate * (startAge - endAge);
-    if (useScalingAndSquaring == true)
+    if (my_method == SCALING_AND_SQUARING)
     {
         exponentiateMatrixByScalingAndSquaring(t, P);
     }
-    else if (useScalingAndSquaringPade == true || useScalingAndSquaringTaylor == true)
+    else if (my_method == SCALING_AND_SQUARING_PADE || my_method == SCALING_AND_SQUARING_TAYLOR)
     {
         tiProbsScalingAndSquaring(t, P);
     }
-    else if (useUniformization == true)
+    else if (my_method == UNIFORMIZATION)
     {
         tiProbsUniformization(t, P);
     }
-    else if (useEigen == true)
+    else if (my_method == EIGEN)
     {
         if ( theEigenSystem->isComplex() == false )
         {
@@ -607,7 +583,7 @@ void RateMatrix_FreeK::tiProbsScalingAndSquaring(double t, TransitionProbability
     MatrixReal result(num_states);
     double tol = RbSettings::userSettings().getTolerance();
     
-    if (useScalingAndSquaringPade == true)
+    if (my_method == SCALING_AND_SQUARING_PADE)
     {
         // the value of truncation computed by findPadeQValue is 5 under RevBayes default tolerance (1e-9)
         // which seems a bit too generous comparing with the value given in Table 1 of Moler and Van Loan, 2003
@@ -622,7 +598,7 @@ void RateMatrix_FreeK::tiProbsScalingAndSquaring(double t, TransitionProbability
         }
         RbMath::expMatrixPade(m, result, truncation);
     }
-    else if (useScalingAndSquaringTaylor == true)
+    else if (my_method == SCALING_AND_SQUARING_TAYLOR)
     {
         expMatrixTaylor(m, result, tol);
     }
@@ -760,12 +736,12 @@ void RateMatrix_FreeK::update( void )
         }
 
         // update the uniformization system if necessary
-        if (useUniformization == true)
+        if (my_method == UNIFORMIZATION)
         {
             updateUniformization();
         }
         // update the eigensystem if necessary
-        if (useEigen == true)
+        if (my_method == EIGEN)
         {
             updateEigenSystem();
         }

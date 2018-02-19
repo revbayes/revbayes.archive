@@ -190,7 +190,7 @@ void Monitor::closeStream( void )
  * Combine output for the monitor.
  * Overwrite this method for specialized behavior.
  */
-void Monitor::combineReplicates( size_t n_reps )
+void Monitor::combineReplicates( size_t n_reps, MonteCarloAnalysisOptions::TraceCombinationTypes ct )
 {
     // dummy implementation
 }

@@ -29,35 +29,35 @@ namespace RevBayesCore {
     public:
         Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT="random", size_t nc=4, size_t si=100, double dt=0.1, size_t ntries=1000);
         Mcmcmc(const Mcmcmc &m);
-        virtual                                ~Mcmcmc(void);                                       //!< Virtual destructor
+        virtual                                ~Mcmcmc(void);                                                                   //!< Virtual destructor
         
         // public methods
         void                                    addFileMonitorExtension(const std::string &s, bool dir);
         void                                    addMonitor(const Monitor &m);
-        void                                    disableScreenMonitor(bool all, size_t rep);         //!< Disable/remove all screen monitors
+        void                                    disableScreenMonitor(bool all, size_t rep);                                     //!< Disable/remove all screen monitors
         Mcmcmc*                                 clone(void) const;
-        void                                    finishMonitors(size_t n);                           //!< Finish the monitors
+        void                                    finishMonitors(size_t n, MonteCarloAnalysisOptions::TraceCombinationTypes ct);  //!< Finish the monitors
         const Model&                            getModel(void) const;
         double                                  getModelLnProbability(bool likelihood_only);
         RbVector<Monitor>&                      getMonitors( void );
-        std::string                             getStrategyDescription(void) const;                 //!< Get the discription of the strategy used for this sampler.
-        void                                    initializeSampler(bool priorOnly=false);            //!< Initialize objects for mcmc sampling
+        std::string                             getStrategyDescription(void) const;                                             //!< Get the discription of the strategy used for this sampler.
+        void                                    initializeSampler(bool priorOnly=false);                                        //!< Initialize objects for mcmc sampling
         void                                    monitor(unsigned long g);
         void                                    nextCycle(bool advanceCycle);
         void                                    printOperatorSummary(void) const;
-        void                                    redrawStartingValues(void);                         //!< Redraw the starting values.
+        void                                    redrawStartingValues(void);                                                     //!< Redraw the starting values.
         void                                    removeMonitors(void);
-        void                                    reset(void);                                        //!< Reset the sampler for a new run.
-        void                                    setLikelihoodHeat(double h);                        //!< Set the heat of the likelihood function.
+        void                                    reset(void);                                                                    //!< Reset the sampler for a new run.
+        void                                    setLikelihoodHeat(double h);                                                    //!< Set the heat of the likelihood function.
         void                                    setModel(Model *m, bool redraw);
-        void                                    setNumberOfProcesses(size_t i);                     //!< Set the number of processes for this replication.
-        void                                    startMonitors(size_t numCycles, bool reopen);       //!< Start the monitors
-        void                                    tune(void);                                         //!< Tune the sampler and its moves.
-        void                                    writeMonitorHeaders(void);                          //!< Write the headers of the monitors.
+        void                                    setNumberOfProcesses(size_t i);                                                 //!< Set the number of processes for this replication.
+        void                                    startMonitors(size_t numCycles, bool reopen);                                   //!< Start the monitors
+        void                                    tune(void);                                                                     //!< Tune the sampler and its moves.
+        void                                    writeMonitorHeaders(void);                                                      //!< Write the headers of the monitors.
 
         
     protected:
-        void                                    setActivePIDSpecialized(size_t i, size_t n);                  //!< Set the number of processes for this class.
+        void                                    setActivePIDSpecialized(size_t i, size_t n);                                    //!< Set the number of processes for this class.
 
         
     private:
@@ -68,7 +68,7 @@ namespace RevBayesCore {
         void                                    synchronizeValues(bool likelihood_only);
         void                                    synchronizeHeats(void);
         void                                    updateChainState(size_t j);
-        double                                  computeBeta(double d, size_t i);                    // incremental temperature schedule
+        double                                  computeBeta(double d, size_t i);                                                // incremental temperature schedule
         
         size_t                                  num_chains;
         std::vector<size_t>                     heat_ranks;
@@ -87,8 +87,8 @@ namespace RevBayesCore {
         Mcmc*                                   base_chain;
         
         unsigned long                           generation;
-        unsigned long                           numAttemptedSwaps;
-        unsigned long                           numAcceptedSwaps;
+        unsigned long                           num_attempted_swaps;
+        unsigned long                           num_accepted_swaps;
     };
     
 }

@@ -196,7 +196,7 @@ Mcmc* Mcmc::clone( void ) const
 /**
  * Finish the monitors which will close the output streams.
  */
-void Mcmc::finishMonitors( size_t n_reps )
+void Mcmc::finishMonitors( size_t n_reps, MonteCarloAnalysisOptions::TraceCombinationTypes tc )
 {
     
     // iterate over all monitors
@@ -211,7 +211,7 @@ void Mcmc::finishMonitors( size_t n_reps )
             // combine results if we used more than one replicate
             if ( n_reps > 1 )
             {
-                monitors[i].combineReplicates( n_reps );
+                monitors[i].combineReplicates( n_reps, tc );
             }
             
         }

@@ -93,11 +93,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
     const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *sp = NULL;
 
-    bool siteMatrices = false;
+    bool use_site_matrices = false;
 
     if ( site_matrices->getRevObject().isType( Simplex::getClassTypeSpec() ) )
     {
-        siteMatrices = true;
+        use_site_matrices = true;
 
         sp = static_cast<const Simplex &>( site_matrices->getRevObject() ).getDagNode();
 
@@ -117,7 +117,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
     else if ( site_matrices->getRevObject().isType( RlBoolean::getClassTypeSpec() ) )
     {
-        siteMatrices = static_cast<const RlBoolean &>( site_matrices->getRevObject() ).getDagNode()->getValue();
+        use_site_matrices = static_cast<const RlBoolean &>( site_matrices->getRevObject() ).getDagNode()->getValue();
     }
 
     if ( !(dt == "Binary" || dt == "Restriction" || dt == "Standard") && code != "all")
@@ -154,13 +154,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices, sp);
+        dist->setUseSiteMatrices(use_site_matrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
-            if (siteMatrices == false)
+            if (use_site_matrices == false)
             {
                 // sanity check
                 if ( (nNodes-1) != rm->getValue().size())
@@ -223,14 +223,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices, sp);
+        dist->setUseSiteMatrices(use_site_matrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            if (siteMatrices == false)
+            if (use_site_matrices == false)
             {
                 // sanity check
                 if ( (nNodes-1) != rm->getValue().size())
@@ -294,14 +294,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices, sp);
+        dist->setUseSiteMatrices(use_site_matrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            if (siteMatrices == false)
+            if (use_site_matrices == false)
             {
                 // sanity check
                 if ( (nNodes-1) != rm->getValue().size())
@@ -364,14 +364,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices, sp);
+        dist->setUseSiteMatrices(use_site_matrices, sp);
         
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
             
-            if (siteMatrices == false)
+            if (use_site_matrices == false)
             {
                 // sanity check
                 if ( (nNodes-1) != rm->getValue().size())
@@ -449,14 +449,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices, sp);
+        dist->setUseSiteMatrices(use_site_matrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            if (siteMatrices == false)
+            if (use_site_matrices == false)
             {
                 // sanity check
                 if ( (nNodes-1) != rm->getValue().size())
@@ -561,14 +561,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices, sp);
+        dist->setUseSiteMatrices(use_site_matrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            if (siteMatrices == false)
+            if (use_site_matrices == false)
             {
                 // sanity check
                 if ( (nNodes-1) != rm->getValue().size())
@@ -645,14 +645,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices, sp);
+        dist->setUseSiteMatrices(use_site_matrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            if (siteMatrices == false)
+            if (use_site_matrices == false)
             {
                 // sanity check
                 if ( (nNodes-1) != rm->getValue().size())
@@ -790,14 +790,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        dist->setUseSiteMatrices(siteMatrices, sp);
+        dist->setUseSiteMatrices(use_site_matrices, sp);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            if (siteMatrices == false)
+            if (use_site_matrices == false)
             {
                 // sanity check
                 if ( (nNodes-1) != rm->getValue().size())

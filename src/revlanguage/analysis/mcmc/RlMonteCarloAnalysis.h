@@ -51,6 +51,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   monitors;
         RevPtr<const RevVariable>                   moveschedule;
         RevPtr<const RevVariable>                   num_init_attempts;
+        RevPtr<const RevVariable>                   combine_traces;
         RevPtr<const RevVariable>                   num_runs;
 
         
