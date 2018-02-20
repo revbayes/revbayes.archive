@@ -307,7 +307,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     outStream.close();
     
     // Monitor
-    sampler->finishMonitors( 1 );
+    sampler->finishMonitors( 1, MonteCarloAnalysisOptions::NONE );
     
 }
 

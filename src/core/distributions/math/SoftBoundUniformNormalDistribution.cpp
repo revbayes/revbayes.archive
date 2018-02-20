@@ -16,7 +16,6 @@ using namespace RevBayesCore;
  *
  * \param[in]   mi    The min of the uniform distribution.
  * \param[in]   ma    The max of the uniform distribution.
- * \param[in]   mu    The mean of the normal distribution.
  * \param[in]   sd    The standard deviation of the normal distribution.
  * \param[in]   p     The probability that the realization came from the uniform distribution.
  */

@@ -1,5 +1,5 @@
-#ifndef __rb_mlandis__RateMatrix_FreeK__
-#define __rb_mlandis__RateMatrix_FreeK__
+#ifndef RateMatrix_FreeK_H
+#define RateMatrix_FreeK_H
 
 #include "GeneralRateMatrix.h"
 
@@ -34,6 +34,9 @@ namespace RevBayesCore {
     class RateMatrix_FreeK : public GeneralRateMatrix {
         
     public:
+        
+        enum METHOD { SCALING_AND_SQUARING, SCALING_AND_SQUARING_PADE, SCALING_AND_SQUARING_TAYLOR, UNIFORMIZATION, EIGEN };
+        
         RateMatrix_FreeK(size_t k);                                                                                               //!< Construct rate matrix with n states
         RateMatrix_FreeK(size_t k, bool r);
         RateMatrix_FreeK(size_t k, bool r, std::string method);
@@ -63,11 +66,6 @@ namespace RevBayesCore {
         void                                checkMatrixDiff(MatrixReal x, double tolerance, bool& diff) const;
         
         bool                                rescale;
-        bool                                useScalingAndSquaring;
-        bool                                useScalingAndSquaringPade;
-        bool                                useScalingAndSquaringTaylor;
-        bool                                useUniformization;
-        bool                                useEigen;
         
         void                                exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
         inline void                         multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
@@ -82,8 +80,10 @@ namespace RevBayesCore {
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >  cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
 
+        METHOD                              my_method;
+        
     };
     
 }
 
-#endif /* defined(__rb_mlandis__RateMatrix_FreeK__) */
+#endif

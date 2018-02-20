@@ -1474,8 +1474,8 @@ void Tree::setTaxonIndices(const TaxonMap &tm)
 /**
  * Change the name of a taxon
  *
- * \param[in] currentName    self explanatory.
- * \param[in] newName        self explanatory.
+ * \param[in] current_name    self explanatory.
+ * \param[in] newName         self explanatory.
  */
 void Tree::setTaxonName(const std::string& current_name, const std::string& newName)
 {

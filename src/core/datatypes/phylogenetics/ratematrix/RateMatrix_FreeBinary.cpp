@@ -1,11 +1,3 @@
-//
-//  RateMatrix_FreeBinary.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/4/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "RateMatrix_FreeBinary.h"
 #include "MatrixReal.h"
 #include "RbException.h"
@@ -17,7 +9,8 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_FreeBinary::RateMatrix_FreeBinary(bool rescale) : GeneralRateMatrix( 2 , rescale) {
+RateMatrix_FreeBinary::RateMatrix_FreeBinary(bool rescale) : GeneralRateMatrix( 2 , rescale)
+{
 
     update();
 }
@@ -34,7 +27,8 @@ double RateMatrix_FreeBinary::averageRate(void) const
 }
 
 /** Calculate the transition probabilities */
-void RateMatrix_FreeBinary::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+void RateMatrix_FreeBinary::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+{
 
 //    double expPart = exp( - (transition_rates[0] + transition_rates[1]) * t);
     double t = rate * (startAge - endAge);
@@ -50,7 +44,8 @@ void RateMatrix_FreeBinary::calculateTransitionProbabilities(double startAge, do
 }
 
 
-RateMatrix_FreeBinary* RateMatrix_FreeBinary::clone( void ) const {
+RateMatrix_FreeBinary* RateMatrix_FreeBinary::clone( void ) const
+{
     return new RateMatrix_FreeBinary( *this );
 }
 
@@ -82,7 +77,8 @@ std::vector<double> RateMatrix_FreeBinary::getStationaryFrequencies( void ) cons
 }
 
 
-void RateMatrix_FreeBinary::update( void ) {
+void RateMatrix_FreeBinary::update( void )
+{
 
     if ( needs_update )
     {

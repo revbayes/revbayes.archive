@@ -256,10 +256,10 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
 
 /**
  * Print out function signatures
- * @param buf
- * @param len
- * @param c
- * @return 
+ * @param buf The buffer into which we print
+ * @param len The length
+ * @param c The character
+ * @return  Returns the status
  */
 int printFunctionParameters(const char *buf, size_t len, char c)
 {

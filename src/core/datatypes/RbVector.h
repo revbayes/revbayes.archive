@@ -182,7 +182,6 @@ RevBayesCore::RbVector<valueType>* RevBayesCore::RbVector<valueType>::clone(void
 
 /**
  * Find and return the index of pivot element.
- * @param a - The array.
  * @param first - The start of the sequence.
  * @param last - The end of the sequence.
  * @return - the pivot element

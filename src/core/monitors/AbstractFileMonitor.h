@@ -19,7 +19,7 @@
 #define AbstractFileMonitor_H
 
 #include "Monitor.h"
-
+#include "MonteCarloAnalysisOptions.h"
 
 #include <fstream>
 #include <iostream>
@@ -43,23 +43,23 @@ namespace RevBayesCore {
         
         // Monitor functions
         void                                addFileExtension(const std::string &s, bool dir);
-        void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
-        void                                printHeader(void);                                                  //!< Print header
+        void                                monitor(unsigned long gen);                                                             //!< Monitor at generation gen
+        void                                printHeader(void);                                                                      //!< Print header
         
         // FileMonitor functions
-        void                                closeStream(void);                                                  //!< Close stream after finish writing
-        void                                combineReplicates(size_t n);                                        //!< Combine results after finish writing
+        void                                closeStream(void);                                                                      //!< Close stream after finish writing
+        void                                combineReplicates(size_t n, MonteCarloAnalysisOptions::TraceCombinationTypes tc);       //!< Combine results after finish writing
         bool                                isFileMonitor( void ) const;
-        void                                openStream(bool reopen);                                            //!< Open the stream for writing
-        void                                setAppend(bool tf);                                                 //!< Set if the monitor should append to an existing file
-        void                                setPrintLikelihood(bool tf);                                        //!< Set flag whether to print the likelihood
-        void                                setPrintPosterior(bool tf);                                         //!< Set flag whether to print the posterior probability
-        void                                setPrintPrior(bool tf);                                             //!< Set flag whether to print the prior probability
-        void                                setPrintVersion(bool tf);                                           //!< Set flag whether to print the version
+        void                                openStream(bool reopen);                                                                //!< Open the stream for writing
+        void                                setAppend(bool tf);                                                                     //!< Set if the monitor should append to an existing file
+        void                                setPrintLikelihood(bool tf);                                                            //!< Set flag whether to print the likelihood
+        void                                setPrintPosterior(bool tf);                                                             //!< Set flag whether to print the posterior probability
+        void                                setPrintPrior(bool tf);                                                                 //!< Set flag whether to print the prior probability
+        void                                setPrintVersion(bool tf);                                                               //!< Set flag whether to print the version
 
         // functions you may want to overwrite
-        virtual void                        monitorVariables(unsigned long gen);                                //!< Monitor at generation gen
-        virtual void                        printFileHeader(void);                                              //!< Print header
+        virtual void                        monitorVariables(unsigned long gen);                                                    //!< Monitor at generation gen
+        virtual void                        printFileHeader(void);                                                                  //!< Print header
     
     protected:
         std::fstream                        out_stream;

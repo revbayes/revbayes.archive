@@ -48,7 +48,7 @@ void Move_VectorBinarySwitch::constructInternalObject( void )
     
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<long> >* tmp = static_cast<const ModelVector<Natural> &>( x->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::RbVector<long> > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<long> > *>( tmp );
+//    RevBayesCore::StochasticNode<RevBayesCore::RbVector<long> > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<long> > *>( tmp );
     
     std::vector<const RevBayesCore::DagNode*> dag_nodes = tmp->getParents();
     std::vector< RevBayesCore::StochasticNode<long>* > stoch_nodes;

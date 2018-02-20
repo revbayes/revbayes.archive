@@ -21,6 +21,8 @@ namespace RevBayesCore {
         // Basic utility functions
         RateAgeBetaShift*                       clone(void) const;                                                                  //!< Clone object
         const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+//        size_t                                  getNumberAcceptedCurrentPeriod(void) const;                         //!< Get update weight of InferenceMove
+//        size_t                                  getNumberAcceptedTotal(void) const;                                 //!< Get update weight of InferenceMove
         void                                    printSummary(std::ostream &o) const;                                                //!< Print the move summary
         
     protected:
@@ -43,7 +45,10 @@ namespace RevBayesCore {
         std::vector<double>                     storedRates;
         
         size_t                                  numAccepted;
-        
+
+//        size_t                                  num_accepted_current_period;
+//        size_t                                  num_accepted_total;
+
     };
     
 }
