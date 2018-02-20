@@ -124,17 +124,14 @@ public:
     // 2. then we recompute the probability for all the affected nodes
     for (RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
     {
-//        std::cout << "slice_sample::operator()() (*it)->getName() " << (*it)->getName() << std::endl;
-//        std::cout << "slice_sample::operator()() (*it)->isClamped() " << (*it)->isClamped() << std::endl;
         if ( (*it)->isClamped() )
             lnLikelihood += (*it)->getLnProbability();
         else
             lnPrior += (*it)->getLnProbability();
     }
-//      std::cout << "slice_sample::operator()() computed likelihood" << std::endl;
+
     // 3. exponentiate with the chain heat
     double lnPosterior = pHeat * (lHeat * lnLikelihood + lnPrior);
-//      std::cout << "slice_sample::operator()() computed posterior" << std::endl;
 
     return lnPosterior;
   }
@@ -142,40 +139,27 @@ public:
     
   double operator()(std::vector<double> x)
   {
-//      std::cout << "Hello from slice_sample::operator()(std::vector<double> x)" << std::endl;
 
       ++num_evals;
     
       for (size_t i=0; i<variables.size(); ++i)
       {
-//          std::cout << "slice_sample::operator()(std::vector<double> x) in first loop" << std::endl;
-//          std::cout << "slice_sample::operator()(std::vector<double> x) variables[i] contains " << variables[i] << std::endl;
-//          std::cout << "slice_sample::operator()(std::vector<double> x) variables[i]->getValue contains " << variables[i]->getValue() << std::endl;
-//          variables[i]->setValue(&x[i]);
-//          std::cout << "slice_sample::operator()(std::vector<double> x) variables[i]->setValue(&x[i]);" << std::endl;
           variables[i]->getValue() = x[i];
           
           // first we touch all the nodes
           // that will set the flags for recomputation
           variables[i]->touch();
-//          std::cout << "slice_sample::operator()(std::vector<double> x) variables[i]->getValue() = x[i];" << std::endl;
           
 //          assert( not variables[i]->isClamped() );
-//          std::cout << "slice_sample::operator()(std::vector<double> x) assert( not variables[i]->isClamped() );" << std::endl;
       }
-//      std::cout << "slice_sample::operator()(std::vector<double> x) checked clamps and touched nodes" << std::endl;
-
       
       double Pr_ = (*this)();
-    
-//      std::cout << "And we're back! slice_sample::operator()(std::vector<double> x) computed \"likelihood\" " << std::endl;
       
     // call accept for each node  --  automatically includes affected nodes
       for (size_t i=0; i<variables.size(); ++i)
       {
         variables[i]->keep();
       }
-//      std::cout << "slice_sample::operator()(std::vector<double> x) kept nodes" << std::endl;
 
     return Pr_;
   }
@@ -205,100 +189,9 @@ public:
   }
 };
 
-//std::pair<double,double> 
-//find_initial_slice_boundaries(slice_function& g,double logy, double w,int m)
-//{
-////    assert(g.in_range(x0));
-//
-//    double u = unif()*RbConstants::TwoPI;
-//    double L = u - RbConstants::TwoPI;
-//    double R = u;
-//
-//  return std::pair<double,double>(L,R);
-//}
-//
-//double draw_nu()
-//{
-//    
-//    return(nu);
-//}
-
-//double search_interval(std::vector<double> x0, std::vector<double> nu, double& L, double& R, slice_function& g,double logy)
-//{
-//    //  assert(g(x0) > g(L) and g(x0) > g(R));
-//    assert(g(x0) >= logy);
-//    assert(L < R);
-//
-//    for (int i=0;i<200;i++)
-//    {
-//      double theta = L + unif()*(R-L);
-//        std::vector<double> x1;
-//        for (i = 0; i < x0.size(); i++)
-//        {
-//            x1[i] = x0 * std::cos(theta) + nu * std::sin(theta);
-//        }
-//        
-//
-//      if (gx1 >= logy) return x1;
-//
-//      if (x > 0.0)
-//          R = theta;
-//      else
-//          L = theta;
-//    }
-//
-//    std::abort();
-//
-//    return x0;
-//}
-
-//double slice_sample(double x0, slice_function& g,double w, int m)
-//{
-//  assert(g.in_range(x0));
-//
-//  double gx0 = g();
-////#ifndef NDEBUG
-////  volatile double diff = gx0 - g(x0);
-////  assert(std::abs(diff) < 1.0e-9);
-////#endif
-//
-//  // Determine the slice level, in log terms.
-//
-//  double logy = gx0 + log(unif());
-//
-//  // Find the initial interval to sample from.
-//
-//  std::pair<double,double> interval = find_initial_slice_boundaries(x0,g,logy,w,m);
-//  double L = interval.first;
-//  double R = interval.second;
-//
-//  // Sample from the interval, shrinking it on each rejection
-//
-//  return search_interval(x0,L,R,g,logy);
-//}
-
-
-//void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pHeat )
-//{
-//    slice_function g(variables, lHeat, pHeat);
-//
-//    double x2 = slice_sample(g, window, 100);
-//
-//    total_movement += std::abs(x2 - x1);
-//
-//    numPr += g.get_num_evals();
-//
-////  if (auto_tuning and num_tried > 3)
-////  {
-////    double predicted_window = 4.0*total_movement/num_tried;
-////    window = 0.95*window + 0.05*predicted_window;
-////  }
-//    
-//}
 
 void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pHeat )
 {
-//    std::cout << "Calling EllipticalSliceSamplingSimpleMove::performMcmcMove" << std::endl;
 
     slice_function lnL(variables, lHeat, pHeat);
 
@@ -317,53 +210,38 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
         nu[i] = sd->getValue() * RbStatistics::Normal::rv(*GLOBAL_RNG);
         
     }
-//    std::cout << "Chose ellipse" << std::endl;
-//    std::cout << "nu[0] " << nu[0] << std::endl;
-//    std::cout << "nu[98] " << nu[98] << std::endl;
 
     // Log-likelihood threshold (Murray step 2)
     double L_f = lnL();
     
     double logy = L_f + log(unif());
     
-//    std::cout << "Starting \"likelihood\" = " << L_f << "; threshold = " << logy << std::endl;
-
     // Find initial boundaries and draw first value (Murray step 3)
-    double theta = unif()*RbConstants::TwoPI;
-    double L = theta - RbConstants::TwoPI;
+    double theta = unif()*window;
+    double L = theta - window;
     double R = theta;
     
     double sin_theta = std::sin(theta);
     double cos_theta = std::cos(theta);
 
-//    std::cout << "Computed windows" << std::endl;
     
     // Run slice loop (Murray steps 4-10, with automatic termination after 200 steps)
     std::vector<double> f_prime = std::vector<double>(variables.size(),0.0);
     for (size_t i=0;i<200;++i)
     {
-//        std::cout << "Slicing, theta = " << theta << std::endl;
 
         // step 4
         for (size_t j = 0; j < f.size(); j++)
         {
             f_prime[j] = f[j] * cos_theta + nu[j] * sin_theta;
         }
-//        std::cout << "f[0] " << f[0] << std::endl;
-//        std::cout << "f[98] " << f[98] << std::endl;
-        
-//        std::cout << "f_prime[0] " << f_prime[0] << std::endl;
-//        std::cout << "f_prime[98] " << f_prime[98] << std::endl;
-//        std::cout << "f\' computed" << std::endl;
 
         // step 5 (step 6 is return value)
         double L_f_prime = lnL(f_prime);
         
-//        std::cout << "\"likelihood\" of f\' = " << L_f_prime << std::endl;
 
         if (L_f_prime > logy)
         {
-//            std::cout << "Found acceptable slice" << std::endl;
             break;
         }
         
@@ -385,14 +263,16 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
         std::abort();
     }
     
-    double new_movement = 0.0;
+    // The total distance between <x1> and <x2> is relatively costly to compute, and has no immediately interpretable use for tuning
+//    double new_movement = 0.0;
+//    
+//    for (size_t i = 0; i < f.size(); ++i)
+//    {
+//        new_movement += std::pow((f_prime[i] - f[i]),2.0);
+//    }
+//    total_movement += std::sqrt(new_movement);
     
-    for (size_t i = 0; i < f.size(); ++i)
-    {
-        new_movement += std::pow((f_prime[i] - f[i]),2.0);
-    }
-    total_movement += std::sqrt(new_movement);
-    
+    total_movement += std::abs(theta);
     numPr += lnL.get_num_evals();
     
 //    if (auto_tuning and (num_tried > 3) and (numPr/num_tried > 9) )
@@ -459,7 +339,8 @@ void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o) const
     o<<"\n";
     if (num_tried > 0)
     {
-      o<<"  Ave. ||x2-x1|| = "<<total_movement/num_tried<<std::endl;
+//      o<<"  Ave. ||x2-x1|| = "<<total_movement/num_tried<<std::endl;
+        o<<"  Ave. abs(angle(x1,x2)) = "<<total_movement/num_tried<<std::endl;
     }
 
     // print the average distance moved
