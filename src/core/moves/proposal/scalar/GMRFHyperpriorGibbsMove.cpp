@@ -73,6 +73,14 @@ GMRFHyperpriorGibbsMove::GMRFHyperpriorGibbsMove( StochasticNode<double> *g, std
             throw(RbException("GMRFHyperpriorGibbsMove move only works when children are Normal(0,sigma) Distributions"));
         }
         
+        const TypedDagNode<double>* sd = dist->getStDev();
+
+        // Make sure that the normal distributions have the correct stdevs for this sampler to be appropriate
+        // Somewhere there is a very slight deviance being introduced, hence the addition of rounding in this comparison
+        if (std::round(100000 * sd->getValue()) != std::round(100000 * zeta * global_scale->getValue())) {
+            throw(RbException("GMRFHyperpriorGibbsMove move only works when children are Normal(0,global_scale*zeta) Distributions"));
+        }
+
         addNode( normals[i] );
     }
 
