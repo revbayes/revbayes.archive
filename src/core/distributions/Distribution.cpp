@@ -235,6 +235,12 @@ void Distribution::swapParameter(const DagNode *oldP, const DagNode *newP)
     else
     {
         
+        std::cerr << "Could not find the distribution parameter to be swapped: " << oldP->getName() << "("<< oldP << ") to " << newP->getName() << "("<< newP <<")" << std::endl;
+        for (size_t i=0; i<parameters.size(); ++i)
+        {
+            std::cerr << "Parameter["<< i <<"]:\t\t" << parameters[i]->getName() << "(" << parameters[i] << ")" << std::endl;
+        }
+        
         throw RbException("Could not find the distribution parameter to be swapped: " + oldP->getName() + " to " + newP->getName()) ;
     
     }

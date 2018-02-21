@@ -27,37 +27,43 @@ namespace RevBayesCore {
     public:
         // constructor(s)
         ReversibleJumpMixtureConstantDistribution(const TypedDagNode< mixtureType > *cv, TypedDistribution< mixtureType > *dv, const TypedDagNode<double> *p);
+        ReversibleJumpMixtureConstantDistribution(const ReversibleJumpMixtureConstantDistribution<mixtureType> &d);
+
+        virtual                                            ~ReversibleJumpMixtureConstantDistribution();
+        
+        ReversibleJumpMixtureConstantDistribution<mixtureType>&     operator=(const ReversibleJumpMixtureConstantDistribution<mixtureType> &d);
+
         
         // public member functions
-        ReversibleJumpMixtureConstantDistribution*          clone(void) const;                                                                              //!< Create an independent clone
-        double                                              computeLnProbability(void);
-        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;    //!< Map the member methods to internal function calls
-        const TypedDistribution<mixtureType>&               getBaseDistribution(void) const;
-        TypedDistribution<mixtureType>&                     getBaseDistribution(void);
-        const mixtureType&                                  getConstantValue(void) const;
-        size_t                                              getCurrentIndex(void) const;
-        size_t                                              getNumberOfCategories(void) const;
-        void                                                redrawValue(void);
-        void                                                redrawValueByIndex(int i);
-        void                                                setCurrentIndex(size_t i);
-        void                                                setValue(mixtureType *v, bool f=false);
+        ReversibleJumpMixtureConstantDistribution*                  clone(void) const;                                                                              //!< Create an independent clone
+        double                                                      computeLnProbability(void);
+        void                                                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;    //!< Map the member methods to internal function calls
+        const TypedDistribution<mixtureType>&                       getBaseDistribution(void) const;
+        TypedDistribution<mixtureType>&                             getBaseDistribution(void);
+        const mixtureType&                                          getConstantValue(void) const;
+        size_t                                                      getCurrentIndex(void) const;
+        size_t                                                      getNumberOfCategories(void) const;
+        void                                                        redrawValue(void);
+        void                                                        redrawValueByIndex(int i);
+        void                                                        setCurrentIndex(size_t i);
+        void                                                        setValue(mixtureType *v, bool f=false);
         
     
     protected:
         // Parameter management functions
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
         
     private:
         // helper methods
-        mixtureType*                                        simulate();
+        mixtureType*                                                simulate();
         
         // private members
-        const TypedDagNode< mixtureType >*                  constValue;
-        TypedDistribution<mixtureType>*						baseDistribution;
-        const TypedDagNode< double >*                       probability;
+        const TypedDagNode< mixtureType >*                          constValue;
+        TypedDistribution<mixtureType>*						        baseDistribution;
+        const TypedDagNode< double >*                               probability;
         
-        size_t                                              index;
+        size_t                                                      index;
     };
     
 }
@@ -91,6 +97,63 @@ RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::Reversible
     this->value = simulate();
 }
 
+
+template <class mixtureType>
+RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::ReversibleJumpMixtureConstantDistribution(const ReversibleJumpMixtureConstantDistribution<mixtureType> &d) : TypedDistribution<mixtureType>( d ),
+    constValue( d.constValue ),
+    baseDistribution( d.baseDistribution->clone() ),
+    probability( d.probability ),
+    index( d.index )
+{
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    this->addParameter( constValue );
+    this->addParameter( probability );
+    
+    // add the parameters of the distribution
+    const std::vector<const DagNode*>& pars = baseDistribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
+    {
+        this->addParameter( *it );
+    }
+    
+    delete this->value;
+    
+    this->value = simulate();
+    
+}
+
+
+
+template <class mixtureType>
+RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>& RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::operator=(const RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType> &d)
+{
+    
+    if ( this != &d )
+    {
+        TypedDistribution<mixtureType>::operator=( d );
+        
+        delete baseDistribution;
+        
+        constValue          = d.constValue;
+        baseDistribution    = d.baseDistribution->clone();
+        probability         = d.probability;
+        index               = d.index;
+        
+    }
+    
+    return *this;
+}
+
+template <class mixtureType>
+RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::~ReversibleJumpMixtureConstantDistribution( void )
+{
+
+    delete baseDistribution;
+    
+}
 
 
 template <class mixtureType>
