@@ -80,7 +80,7 @@ HSRFHyperpriorsGibbsMove::HSRFHyperpriorsGibbsMove( StochasticNode<double> *g, s
         {
             throw(RbException("HSRFHyperpriorsGibbsMove requires all local scales have Half-Cauchy(0,1) Distribution"));
         }
-
+        
         addNode( local_scales[i] );
     }
     
@@ -98,6 +98,16 @@ HSRFHyperpriorsGibbsMove::HSRFHyperpriorsGibbsMove( StochasticNode<double> *g, s
         if (dist->getMean()->getValue() != 0.0)
         {
             throw(RbException("HSRFHyperpriorsGibbsMove move only works when children are Normal(0,sigma) Distributions"));
+        }
+        
+        const TypedDagNode<double>* sd = dist->getStDev();
+        
+        // Make sure that the normal distributions have the correct stdevs for this sampler to be appropriate
+        // Somewhere there is a very slight deviance being introduced, hence the addition of rounding in this comparison
+        if (std::round(100000 * sd->getValue()) != std::round(100000 * zeta * global_scale->getValue() * local_scales[i]->getValue()) ) {
+            std::cout << "zeta, global_scale, and local_scale[i] are " << zeta << "," << global_scale->getValue() << "," << local_scales[i]->getValue()<< std::endl;
+            std::cout << "sd is " << sd->getValue() << std::endl;
+            throw(RbException("HSRFHyperpriorsGibbsMove move only works when children are Normal(0,local_scale*global_scale*zeta) Distributions"));
         }
         
         addNode( normals[i] );

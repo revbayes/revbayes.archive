@@ -130,7 +130,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     
     if ( incomplete_clades.size() > 0 )
     {
-        ln_prob_times += RbMath::lnFactorial(total_species);
+        ln_prob_times += RbMath::lnFactorial(total_species) - RbMath::lnFactorial( int(num_taxa) );
     }
     
     return ln_prob_times;
