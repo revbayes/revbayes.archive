@@ -104,7 +104,7 @@ HSRFHyperpriorsGibbsMove::HSRFHyperpriorsGibbsMove( StochasticNode<double> *g, s
         
         // Make sure that the normal distributions have the correct stdevs for this sampler to be appropriate
         // Somewhere there is a very slight deviance being introduced, hence the addition of rounding in this comparison
-        if (std::round(100000 * sd->getValue()) != std::round(100000 * zeta * global_scale->getValue() * local_scales[i]->getValue()) ) {
+        if (round(100000 * sd->getValue()) != round(100000 * zeta * global_scale->getValue() * local_scales[i]->getValue()) ) {
             std::cout << "zeta, global_scale, and local_scale[i] are " << zeta << "," << global_scale->getValue() << "," << local_scales[i]->getValue()<< std::endl;
             std::cout << "sd is " << sd->getValue() << std::endl;
             throw(RbException("HSRFHyperpriorsGibbsMove move only works when children are Normal(0,local_scale*global_scale*zeta) Distributions"));
