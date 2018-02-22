@@ -1676,6 +1676,7 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
         }
         
     }
+    resizeVectors(value->getNumberOfNodes());
 }
 
 
