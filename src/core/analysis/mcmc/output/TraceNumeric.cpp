@@ -110,9 +110,10 @@ double TraceNumeric::getMean(long inbegin, long inend) const
  * @param end       end index for analysis
  *
  */
-double TraceNumeric::getESS(long inbegin, long inend) const {
+double TraceNumeric::getESS(long begin, long end) const
+{
 
-    update(inbegin, inend);
+    update(begin, end);
     
     return essw;
 }
@@ -136,9 +137,10 @@ double TraceNumeric::getESS() const
  * @param end       end index for analysis
  *
  */
-double TraceNumeric::getSEM(long inbegin, long inend) const {
+double TraceNumeric::getSEM(long begin, long end) const
+{
 
-    update(inbegin, inend);
+    update(begin, end);
 
     return semw;
 }

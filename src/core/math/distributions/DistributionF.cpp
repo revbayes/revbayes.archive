@@ -34,7 +34,7 @@ using namespace RevBayesCore;
  * for a F distributed random variable.
  *
  * \brief F probability density.
- * \param v is the degrees of freedom parameter of the F. 
+ * \param m is the degrees of freedom parameter of the F.
  * \param x is the F random variable. 
  * \return Returns the probability density.
  * \throws Does not throw an error.
@@ -49,7 +49,7 @@ double RbStatistics::F::pdf(double m, double n, double x) {
  * for a F distributed random variable.
  *
  * \brief Natural log of F probability density.
- * \param v is the degrees of freedom parameter of the F. 
+ * \param m is the degrees of freedom parameter of the F.
  * \param x is the F random variable. 
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
@@ -64,9 +64,9 @@ double RbStatistics::F::lnPdf(double m, double n, double x) {
  * for a F distributed random variable.
  *
  * \brief F probability density.
- * \param v is the degrees of freedom parameter of the F. 
+ * \param m is the degrees of freedom parameter of the F.
  * \param x is the F random variable. 
- * \param isLog gives if it should return the pdf in log scale.
+ * \param give_log gives if it should return the pdf in log scale.
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
@@ -176,8 +176,8 @@ double RbStatistics::F::cdf(double df1, double df2, double x) {
  * degrees of freedom.
  *
  * \brief Quantile of a F distribution.
- * \param v is the degrees of freedom of the F. 
- * \param prob is the probability up to the quantile. 
+ * \param df1 is the degrees of freedom of the F.
+ * \param p is the probability up to the quantile. 
  * \return Returns quantile value (or -1 if in error). 
  * \throws Does not throw an error.
  */

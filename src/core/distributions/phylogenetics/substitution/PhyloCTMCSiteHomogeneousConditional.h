@@ -876,7 +876,8 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
                 prob = RbConstants::Double::nan;
             }
 
-//            perMaskCorrections[mask] += prob;
+//            perMaskCorrections[mask] += prob * 0.25;
+//            perMaskMixtureCorrections[mask*this->num_site_mixtures + mixture] = (1.0 - prob) * 0.25;
             perMaskCorrections[mask] += prob * mixtureProbs[mixture];
             perMaskMixtureCorrections[mask*this->num_site_mixtures + mixture] = (1.0 - prob) * mixtureProbs[mixture];
         

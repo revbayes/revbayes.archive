@@ -2899,10 +2899,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseMarginalLik
 }
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrices(bool use_sm, const TypedDagNode< Simplex > *s)
 {
     
-    if ( sm == false && s != NULL)
+    if ( use_sm == false && s != NULL)
     {
         throw(RbException("Provided site matrix probs but not using site matrix mixture."));
     }
@@ -2914,7 +2914,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrice
         site_matrix_probs = NULL;
     }
     
-    if ( sm )
+    if ( use_sm == true )
     {
         // set the value
         site_matrix_probs = s;
@@ -2923,7 +2923,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrice
     // add the new parameter
     this->addParameter( site_matrix_probs );
     
-    this->branch_heterogeneous_substitution_matrices = !sm;
+    this->branch_heterogeneous_substitution_matrices = !use_sm;
     
     this->resizeLikelihoodVectors();
     

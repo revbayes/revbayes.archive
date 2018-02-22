@@ -240,12 +240,12 @@ void CorrelationMatrixReparameterizationMove::printSummary(std::ostream &o) cons
     
     // print the number of tries
     int t_length = 9;
-    if (num_tried > 0) t_length -= (int)log10(num_tried);
+    if (num_tried_total > 0) t_length -= (int)log10(num_tried_total);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << num_tried;
+    o << num_tried_total;
     o << " ";
     
     // print the number of accepted
@@ -260,8 +260,8 @@ void CorrelationMatrixReparameterizationMove::printSummary(std::ostream &o) cons
     o << " ";
     
     // print the acceptance ratio
-    double ratio = numAccepted / (double)num_tried;
-    if (num_tried == 0) ratio = 0;
+    double ratio = numAccepted / (double)num_tried_total;
+    if (num_tried_total == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)
