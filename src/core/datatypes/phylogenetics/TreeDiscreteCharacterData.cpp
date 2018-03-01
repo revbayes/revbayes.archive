@@ -97,7 +97,6 @@ void TreeDiscreteCharacterData::initFromString(const std::string &s)
 
 void TreeDiscreteCharacterData::setCharacterData( AbstractHomologousDiscreteCharacterData *d )
 {
-    
     character_data = d;
 }
 
