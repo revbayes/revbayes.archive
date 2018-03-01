@@ -1659,7 +1659,7 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
     // delegate to super class
     //    TypedDistribution<Tree>::setValue(v, f);
     static_cast<TreeDiscreteCharacterData *>(this->value)->setTree( *v );
-    delete v;
+//    delete v;
     
     value->getTreeChangeEventHandler().addListener( this );
     
