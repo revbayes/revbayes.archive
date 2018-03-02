@@ -16,6 +16,7 @@
  */
 
 #include "StringUtilities.h"
+#include "RbVector.h"
 
 #include <sstream>
 #include <fstream>
@@ -784,6 +785,26 @@ std::string RevBayesCore::operator+( const std::string& A, long B )
 
 /** Global operator for appending double to std::string */
 std::string RevBayesCore::operator+( const std::string& A, size_t B )
+{
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( const std::string& A, const RbVector<double> &B )
+{
+    RbVector<double> C = B;
+    std::stringstream o;
+    o << A << C;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( const std::string& A, const RbVector<long> &B )
 {
     
     std::stringstream o;

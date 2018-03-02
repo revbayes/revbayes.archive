@@ -46,7 +46,7 @@ void MatrixReader::readData( size_t lines_to_skip )
     // bool firstLine = true;
     std::string read_line = "";
     size_t lines_skipped = 0;
-    while (std::getline(readStream,read_line))
+    while (f.safeGetline(readStream,read_line))
     {
         ++lines_skipped;
         if ( lines_skipped <= lines_to_skip)

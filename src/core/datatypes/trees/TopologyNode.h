@@ -117,6 +117,7 @@ namespace RevBayesCore {
         void                                        getTaxa(std::vector<Taxon> &taxa) const;                                            //!< Fill the vector of taxa
         void                                        getTaxa(RbBitSet &taxa) const;                                                      //!< Fill the taxon bitset
         void                                        getTaxa(std::vector<Taxon> &taxa, RbBitSet &bitset) const;                          //!< Fill the vector of taxa and the taxon bitset
+        Taxon&                                      getTaxon();                                                                         //!< Get the taxon for this node
         const Taxon&                                getTaxon() const;                                                                   //!< Get the taxon for this node
         double                                      getTmrca(const Clade &c) const;
         double                                      getTmrca(const TopologyNode &n) const;

@@ -4,6 +4,7 @@
 #include "AbstractFileMonitor.h"
 #include "DagNode.h"
 #include "MonteCarloAnalysis.h"
+#include "MonteCarloSampler.h"
 #include "RlUserInterface.h"
 
 #include <algorithm>
@@ -18,19 +19,22 @@ using namespace RevBayesCore;
  *
  * \param[in]    m    The monte carlo sampler.
  */
-MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneable(), Parallelizable(),
-replicates( r ),
-runs(r,NULL)
+MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r, MonteCarloAnalysisOptions::TraceCombinationTypes tc) : Cloneable(), Parallelizable(),
+    replicates( r ),
+    runs(r,NULL),
+    trace_combination( tc )
 {
     
     runs[0] = m;
     resetReplicates();
+    
 }
 
 
 MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &a) : Cloneable(), Parallelizable(a),
-replicates( a.replicates ),
-runs(a.replicates,NULL)
+    replicates( a.replicates ),
+    runs(a.replicates,NULL),
+    trace_combination( a.trace_combination )
 {
     
     // create replicate Monte Carlo samplers
@@ -84,7 +88,8 @@ MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &a)
         }
         runs = std::vector<MonteCarloSampler*>(a.replicates,NULL);
         
-        replicates      = a.replicates;
+        replicates          = a.replicates;
+        trace_combination   = a.trace_combination;
         
         // create replicate Monte Carlo samplers
         for (size_t i=0; i < replicates; ++i)
@@ -636,7 +641,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
         if ( runs[i] != NULL )
         {
-            runs[i]->finishMonitors( replicates );
+            runs[i]->finishMonitors( replicates, trace_combination );
         }
         
     }

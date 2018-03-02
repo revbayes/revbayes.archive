@@ -31,7 +31,7 @@ using namespace RevBayesCore;
  * for a chi-square distributed random variable.
  *
  * \brief Chi-square probability density.
- * \param v is the degrees of freedom parameter of the chi-square. 
+ * \param df is the degrees of freedom parameter of the chi-square.
  * \param x is the chi-square random variable. 
  * \return Returns the probability density.
  * \throws Does not throw an error.
@@ -77,7 +77,7 @@ double RbStatistics::ChiSquare::lnPdf(double df, double x)
  * for a chi-square distributed random variable.
  *
  * \brief Chi-square cumulative probability.
- * \param v is the degrees of freedom parameter of the chi-square. 
+ * \param df is the degrees of freedom parameter of the chi-square. 
  * \param x is the chi-square random variable. 
  * \return Returns the cumulative probability.
  * \throws Does not throw an error.
@@ -95,7 +95,7 @@ double RbStatistics::ChiSquare::cdf(double df, double x)
  * degrees of freedom.
  *
  * \brief Quantile of a chi square distribution.
- * \param v is the degrees of freedom of the chi square. 
+ * \param df is the degrees of freedom of the chi square.
  * \param prob is the probability up to the quantile. 
  * \return Returns quantile value (or -1 if in error). 
  * \throws Does not throw an error.

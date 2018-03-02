@@ -20,6 +20,8 @@ namespace RevBayesCore {
         double                                              getMin(void) const;
         double                                              quantile(double p) const;                                                       //!< Qu
         void                                                redrawValue(void);
+        const TypedDagNode<double>*                         getLocation() const {return location;}
+        const TypedDagNode<double>*                         getScale() const {return scale;}
         
     protected:
         // Parameter management functions

@@ -424,8 +424,8 @@ MatrixReal MatrixReal::getTranspose( void )
 RbVector<double> MatrixReal::getUpperTriangle( void ) const
 {
     
-    if ( isDiagonal() == false ) {
-        throw RbException("MatrixReal: Can only get the diagonal elements of a diagonal matrix.");
+    if ( !isSquareMatrix() ) {
+        throw RbException("MatrixReal: Can only get the upper triangle elements of a square matrix.");
     }
     
     RbVector<double> upper_triangle_elements(n_rows * (n_rows - 1) / 2, 0.0);
@@ -489,6 +489,22 @@ bool MatrixReal::isSquareMatrix( void ) const
     return n_rows == n_cols;
 }
 
+bool MatrixReal::isSymmetric( void ) const
+{
+    bool symm = true;
+    for (int i = 0; i < n_rows; ++i)
+    {
+        for (int j = i + 1; j < n_cols; ++j)
+        {
+            if (elements[i][j] != elements[j][i])
+            {
+                return false;
+            }
+        }
+    }
+    
+    return symm;
+}
 
 void MatrixReal::resize(size_t r, size_t c)
 {

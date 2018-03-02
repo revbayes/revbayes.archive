@@ -112,7 +112,7 @@ double MultivariateNormalDistribution::computeLnProbability( void )
 }
 
 
-void MultivariateNormalDistribution::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> MultivariateNormalDistribution::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
 {
     
     if (name == "clampAt")
@@ -123,7 +123,8 @@ void MultivariateNormalDistribution::executeProcedure(const std::string &name, c
         double v     = static_cast<const TypedDagNode<double>*>( args[1] )->getValue();
         
         clampAt(index, v);
-        
+
+        return NULL;
     }
     
     return TypedDistribution<RbVector<double> >::executeProcedure( name, args, found );

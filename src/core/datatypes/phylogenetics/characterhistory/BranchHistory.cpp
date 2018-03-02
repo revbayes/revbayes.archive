@@ -334,11 +334,22 @@ void BranchHistory::setHistory(const std::multiset<CharacterEvent*,CharacterEven
 }
 
 
-void BranchHistory::print(void) const
+void BranchHistory::print(const TopologyNode* nd) const
 {
+    
     std::set<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     std::vector<CharacterEvent*>::iterator it_v;
 
+    double start_age=0.0;
+    double end_age=0.0;
+    if (nd != NULL) {
+        end_age = nd->getAge();
+        if (!nd->isRoot()) {
+            start_age = nd->getParent().getAge();
+        } else {
+            start_age = 1e6;
+        }
+    }
 //    std::cout << parentCharacters.size() << "\n";
 //    for (size_t i = 0; i < parentCharacters.size(); i++)
 //        std::cout << parentCharacters[i] << " ";
@@ -354,8 +365,10 @@ void BranchHistory::print(void) const
         else std::cout << " ";
     }
     std::cout << "\n";
-    std::cout << "                     start : ";
-    for (it_v = parent_characters.begin(); it_v != parent_characters.end(); it_v++)
+    std::cout << "end           ";
+    std::cout << std::setw(12) << std::setprecision(6) << end_age << " : ";
+//    std::cout << "                       end : ";
+    for (it_v = child_characters.begin(); it_v != child_characters.end(); it_v++)
     {
 //        std::cout << (*it_v)->getState();
         std::cout << (*it_v)->getStateStr();
@@ -384,8 +397,10 @@ void BranchHistory::print(void) const
         std::cout << "\n";
 
     }
-    std::cout << "                       end : ";
-    for (it_v = child_characters.begin(); it_v != child_characters.end(); it_v++)
+//    std::cout << "                     start : ";
+    std::cout << "start         ";
+    std::cout << std::setw(12) << std::setprecision(6) << start_age << " : ";
+    for (it_v = parent_characters.begin(); it_v != parent_characters.end(); it_v++)
     {
 //        std::cout << (*it_v)->getState();
         std::cout << (*it_v)->getStateStr();

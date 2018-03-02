@@ -26,7 +26,7 @@ namespace RevBayesCore {
     class PhyloCTMCClado : public AbstractPhyloCTMCSiteHomogeneous<charType> {
 
     public:
-        PhyloCTMCClado(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal);
+        PhyloCTMCClado(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal, bool gapmatch);
         PhyloCTMCClado(const PhyloCTMCClado &n);
         virtual                                            ~PhyloCTMCClado(void);                                                                   //!< Virtual destructor
 
@@ -84,6 +84,7 @@ namespace RevBayesCore {
         bool useSampledCladogenesis;
         bool branchHeterogeneousCladogenesis;
         bool store_internal_nodes;
+        bool gap_match_clamped;
     };
 
 }
@@ -107,7 +108,7 @@ namespace RevBayesCore {
 #include <vector>
 
 template<class charType>
-RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb ),
+RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal, bool gapmatch) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb ),
 
     cladoPartialLikelihoods(NULL),
     cladoMarginalLikelihoods(NULL),
@@ -115,7 +116,8 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
     useObservedCladogenesis(false),
     useSampledCladogenesis(false),
     branchHeterogeneousCladogenesis(false),
-    store_internal_nodes(internal)
+    store_internal_nodes(internal),
+    gap_match_clamped(gapmatch)
 {
     unsigned numReducedChar = (unsigned)( log( nChars ) / log( 2 ) );
     std::vector<std::string> et;
@@ -165,6 +167,7 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const PhyloCTMCClado &n) 
     useObservedCladogenesis(n.useObservedCladogenesis),
     useSampledCladogenesis(n.useSampledCladogenesis),
     store_internal_nodes(n.store_internal_nodes),
+    gap_match_clamped(n.gap_match_clamped),
     branchHeterogeneousCladogenesis(n.branchHeterogeneousCladogenesis)
 {
     // initialize with default parameters
@@ -1590,8 +1593,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
             double dt = 0.0;
             double event_age = startAge;
             bool first_event = true;
-            std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
-            for (it = events.begin(); it != events.end(); it++)
+            std::multiset<CharacterEvent*,CharacterEventCompare>::reverse_iterator it;
+            for (it = events.rbegin(); it != events.rend(); it++)
             {
                 t += dt;
                 dt = (*it)->getAge() - t;
@@ -1634,7 +1637,8 @@ template<class charType>
 void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
 {
     
-    bool do_mask = this->dag_node != NULL && this->dag_node->isClamped();
+    bool do_mask = this->dag_node != NULL && this->dag_node->isClamped() && gap_match_clamped;
+
     std::vector<std::vector<bool> > mask = std::vector<std::vector<bool> >(this->tau->getValue().getNumberOfTips(), std::vector<bool>());
     // we cannot use the stored gap matrix because it uses the pattern compression
     // therefore we create our own mask

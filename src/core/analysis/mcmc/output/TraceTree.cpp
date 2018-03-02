@@ -1030,10 +1030,12 @@ long TraceTree::splitFrequency(const Split &n) const
 
 TopologyNode* TraceTree::findParentNode(TopologyNode& n, const Split& tmp, std::vector<TopologyNode*>& children, RbBitSet& child_b ) const
 {
-    RbBitSet node;
+    size_t num_taxa = child_b.size();
+    
+    RbBitSet node( num_taxa );
     n.getTaxa(node);
     
-    RbBitSet clade  = tmp.first;
+    RbBitSet clade = tmp.first;
     
     RbBitSet mask  = node | clade;
     
@@ -1066,7 +1068,7 @@ TopologyNode* TraceTree::findParentNode(TopologyNode& n, const Split& tmp, std::
         std::vector<TopologyNode*> new_children;
         
         // keep track of which taxa we found in the children
-        RbBitSet child_mask(clade.size());
+        RbBitSet child_mask( num_taxa );
         
         for (size_t i = 0; i < x.size(); i++)
         {
@@ -1381,7 +1383,7 @@ Tree* TraceTree::mrTree(AnnotationReport report, double cutoff, bool verbose)
         
         //find parent node
         std::vector<TopologyNode*> children;
-        RbBitSet tmp;
+        RbBitSet tmp(tipNames.size());
         TopologyNode* parentNode = findParentNode(*root, clade, children, tmp );
         
         if (parentNode != NULL )

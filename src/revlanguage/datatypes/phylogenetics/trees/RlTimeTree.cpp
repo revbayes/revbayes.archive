@@ -80,6 +80,18 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         bool tf = this->dag_node->getValue().getNode((size_t)index).isRoot();
         return new RevVariable( new RlBoolean( tf ) );
     }
+    else if (name == "dropFossils")
+    {
+        found = true;
+
+        std::vector<RevBayesCore::Taxon> t = this->dag_node->getValue().getFossilTaxa();
+        for (size_t i = 0; i < t.size(); i++)
+        {
+            std::string taxon_name = t[i].getName();
+            this->dag_node->getValue().dropTipNodeWithName( taxon_name );
+        }
+        return NULL;
+    }
     else if (name == "getFossils")
     {
         found = true;
@@ -149,6 +161,9 @@ void TimeTree::initMethods( void )
     isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "isRoot", RlBoolean::getClassTypeSpec(), isRootArgRules ) );
 
+    ArgumentRules* dropFossilsArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "dropFossils", RlUtils::Void, dropFossilsArgRules ) );
+
     ArgumentRules* getFossilsArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "getFossils", ModelVector<Taxon>::getClassTypeSpec(), getFossilsArgRules ) );
 
@@ -169,5 +184,8 @@ void TimeTree::initMethods( void )
 
     ArgumentRules* collessArgRules = new ArgumentRules();
     methods.addFunction( new MemberFunction<TimeTree, Natural>( "colless", this, collessArgRules ) );
+    
+    ArgumentRules* gArgRules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<TimeTree, Real>( "gammaStatistic", this, gArgRules ) );
 
 }

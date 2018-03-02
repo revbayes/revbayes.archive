@@ -117,9 +117,15 @@ namespace RevBayesCore {
         o << s;
     }
     
+    
+    template <class valueType>
+    std::ostream&                                       operator<<(std::ostream& o, const RbVector<valueType>& x);
+    
 }
 
 
+template <class valueType>
+std::ostream&                                       operator<<(std::ostream& o, const RevBayesCore::RbVector<valueType>& x);
 
 #include "Cloner.h"
 #include "IsAbstract.h"
@@ -168,14 +174,14 @@ RevBayesCore::RbVector<valueType>::~RbVector( void )
 
 
 template <class valueType>
-RevBayesCore::RbVector<valueType>* RevBayesCore::RbVector<valueType>::clone(void) const {
+RevBayesCore::RbVector<valueType>* RevBayesCore::RbVector<valueType>::clone(void) const
+{
     
     return new RbVector<valueType>( *this );
 }
 
 /**
  * Find and return the index of pivot element.
- * @param a - The array.
  * @param first - The start of the sequence.
  * @param last - The end of the sequence.
  * @return - the pivot element
@@ -274,6 +280,43 @@ void RevBayesCore::RbVector<valueType>::swap( valueType& a, valueType& b)
     delete temp;
 }
 
+
+template <class valueType>
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const RbVector<valueType>& x)
+{
+    
+    o << "[";
+    for ( size_t i = 0; i < x.size(); ++i )
+    {
+        if ( i > 0 )
+        {
+            o << ",";
+        }
+        o << " " << x[i];
+    }
+    o << "]";
+    
+    return o;
+}
+
+
+template <class valueType>
+std::ostream& operator<<(std::ostream& o, const RevBayesCore::RbVector<valueType>& x)
+{
+    
+    o << "[";
+    for ( size_t i = 0; i < x.size(); ++i )
+    {
+        if ( i > 0 )
+        {
+            o << ",";
+        }
+        o << " " << x[i];
+    }
+    o << "]";
+    
+    return o;
+}
 
 #endif
 

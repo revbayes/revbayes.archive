@@ -75,7 +75,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false, bool internal = false );
+        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false, bool internal = false, bool gapmatch = true );
         AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n);                                                                                          //!< Copy constructor
         virtual                                                            ~AbstractPhyloCTMCSiteHomogeneous(void);                                                              //!< Virtual destructor
         
@@ -232,6 +232,7 @@ namespace RevBayesCore {
         size_t                                                              pattern_block_size;
         
         bool                                                                store_internal_nodes;
+        bool                                                                gap_match_clamped;
         
         charType                                                            template_state;                                 //!< Template state used for ancestral state estimation. This makes sure that the state labels are preserved.
         
@@ -270,7 +271,7 @@ namespace RevBayesCore {
 
 
 template<class charType>
-RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb, bool internal, bool wd) :
+RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool internal, bool gapmatch, bool wd) :
 TypedDistribution< AbstractHomologousDiscreteCharacterData >(  NULL ),
 lnProb( 0.0 ),
 storedLnProb( 0.0 ),
@@ -311,6 +312,7 @@ pattern_block_start( 0 ),
 pattern_block_end( num_patterns ),
 pattern_block_size( num_patterns ),
 store_internal_nodes( internal ),
+gap_match_clamped( gapmatch ),
 template_state()
 {
     
@@ -401,6 +403,7 @@ pattern_block_start( n.pattern_block_start ),
 pattern_block_end( n.pattern_block_end ),
 pattern_block_size( n.pattern_block_size ),
 store_internal_nodes( n.store_internal_nodes ),
+gap_match_clamped( n.gap_match_clamped ),
 template_state( n.template_state )
 {
     
@@ -704,6 +707,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 {
                     // we use the index of the state
                     char_matrix[node_index][patternIndex] = c.getStateIndex();
+                    if ( c.getStateIndex() >= this->num_chars )
+                        throw RbException("Problem with state index in PhyloCTMC!");
                 }
                 else
                 {
@@ -1966,7 +1971,7 @@ template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void )
 {
     
-    bool do_mask = this->dag_node != NULL && this->dag_node->isClamped();
+    bool do_mask = this->dag_node != NULL && this->dag_node->isClamped() && gap_match_clamped;
     std::vector<std::vector<bool> > mask_gap        = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
     std::vector<std::vector<bool> > mask_missing    = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
     // we cannot use the stored gap matrix because it uses the pattern compression
@@ -2296,7 +2301,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
             
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = -log(max);
             
-            
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
@@ -2361,7 +2365,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
             
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] - log(max);
             
-            
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
@@ -2425,7 +2428,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
             }
             
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[middle]][middle][site] - log(max);
-            
             
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
@@ -2710,7 +2712,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setPInv(const Typ
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RateGenerator > *rm) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RateGenerator > *rm)
+{
     
     // remove the old parameter first
     if ( homogeneous_rate_matrix != NULL )
@@ -2750,7 +2753,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(con
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm)
+{
     
     // remove the old parameter first
     if ( homogeneous_rate_matrix != NULL )
@@ -2895,10 +2899,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseMarginalLik
 }
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrices(bool use_sm, const TypedDagNode< Simplex > *s)
 {
     
-    if ( sm == false && s != NULL)
+    if ( use_sm == false && s != NULL)
     {
         throw(RbException("Provided site matrix probs but not using site matrix mixture."));
     }
@@ -2910,7 +2914,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrice
         site_matrix_probs = NULL;
     }
     
-    if ( sm )
+    if ( use_sm == true )
     {
         // set the value
         site_matrix_probs = s;
@@ -2919,7 +2923,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrice
     // add the new parameter
     this->addParameter( site_matrix_probs );
     
-    this->branch_heterogeneous_substitution_matrices = !sm;
+    this->branch_heterogeneous_substitution_matrices = !use_sm;
     
     this->resizeLikelihoodVectors();
     

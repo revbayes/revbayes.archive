@@ -106,7 +106,7 @@ void AbstractFileMonitor::closeStream()
  * Combine output for the monitor.
  * Overwrite this method for specialized behavior.
  */
-void AbstractFileMonitor::combineReplicates( size_t n_reps )
+void AbstractFileMonitor::combineReplicates( size_t n_reps, MonteCarloAnalysisOptions::TraceCombinationTypes tc )
 {
     
     if ( enabled == true )
@@ -121,62 +121,214 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps )
         combined_output_stream.close();
         combined_output_stream.open( filename.c_str(), std::fstream::in | std::fstream::out);
         
-        for (size_t i=0; i<n_reps; ++i)
+        if ( tc == MonteCarloAnalysisOptions::SEQUENTIAL )
         {
-            std::stringstream ss;
-            ss << "_run_" << (i+1);
-            std::string s = ss.str();
-            RbFileManager fm = RbFileManager(filename);
-            std::string current_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + s + "." + fm.getFileExtension();
-            
-            RbFileManager current_fm = RbFileManager(current_file_name);
-            std::ifstream current_input_stream;
-            
-            if ( current_fm.openFile(current_input_stream) == false )
+            for (size_t i=0; i<n_reps; ++i)
             {
-                throw RbException( "Could not open file '" + current_file_name + "'." );
-            }
+                std::stringstream ss;
+                ss << "_run_" << (i+1);
+                std::string s = ss.str();
+                RbFileManager fm = RbFileManager(filename);
+                std::string current_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + s + "." + fm.getFileExtension();
             
-            std::string read_line = "";
-            size_t lines_skipped = 0;
-            size_t lines_to_skip = ( write_version == true ? 3 : 1 );
-            while (std::getline(current_input_stream,read_line))
-            {
-                ++lines_skipped;
-                if ( lines_skipped <= lines_to_skip)
+                RbFileManager current_fm = RbFileManager(current_file_name);
+                std::ifstream current_input_stream;
+            
+                if ( current_fm.openFile(current_input_stream) == false )
                 {
-                    if ( i == 0 )
-                    {
-                        // write output
-                        combined_output_stream << read_line;
-
-                        // add a new line
-                        combined_output_stream << std::endl;
-                    }
-                    continue;
+                    throw RbException( "Could not open file '" + current_file_name + "'." );
                 }
-                
-                std::vector<std::string> fields;
-                StringUtilities::stringSplit(read_line, separator, fields);
-                
-                // add the current sample number
-                combined_output_stream << sample_number;
-                ++sample_number;
-                for (size_t j=1; j<fields.size(); ++j)
+            
+                std::string read_line = "";
+                size_t lines_skipped = 0;
+                size_t lines_to_skip = ( write_version == true ? 3 : 1 );
+                while (std::getline(current_input_stream,read_line))
                 {
+                    ++lines_skipped;
+                    if ( lines_skipped < lines_to_skip)
+                    {
+                        if ( i == 0 )
+                        {
+                            // write output
+                            combined_output_stream << read_line;
+                            
+                            // add a new line
+                            combined_output_stream << std::endl;
+                        }
+                        continue;
+                    }
+                    else if ( lines_skipped == lines_to_skip )
+                    {
+                        
+                        if ( i == 0 )
+                        {
+                            std::vector<std::string> fields;
+                            StringUtilities::stringSplit(read_line, separator, fields);
+                        
+                            // write output
+                            combined_output_stream << fields[0];
+                        
+                            // add a separator before every new element
+                            combined_output_stream << separator;
+                            combined_output_stream << "Replicate_ID";
+                        
+                            for (size_t j=1; j<fields.size(); ++j)
+                            {
+                                // add a separator before every new element
+                                combined_output_stream << separator;
+                            
+                                // write output
+                                combined_output_stream << fields[j];
+                            }
+                        
+                            // add a new line
+                            combined_output_stream << std::endl;
+                        }
+                        continue;
+                        
+                    }
+                
+                    std::vector<std::string> fields;
+                    StringUtilities::stringSplit(read_line, separator, fields);
+                
+                    // add the current sample number
+                    combined_output_stream << sample_number;
+                    
                     // add a separator before every new element
                     combined_output_stream << separator;
+                    combined_output_stream << i;
+                    
+                    ++sample_number;
+                    for (size_t j=1; j<fields.size(); ++j)
+                    {
+                        // add a separator before every new element
+                        combined_output_stream << separator;
 
-                    // write output
-                    combined_output_stream << fields[j];
-                }
-                // add a new line
-                combined_output_stream << std::endl;
+                        // write output
+                        combined_output_stream << fields[j];
+                    }
+                    // add a new line
+                    combined_output_stream << std::endl;
                 
-            };
+                }
             
-            fm.closeFile( current_input_stream );
+                fm.closeFile( current_input_stream );
+                
+            }
 
+        }
+        else if ( tc == MonteCarloAnalysisOptions::MIXED )
+        {
+            
+            std::vector< RbFileManager > input_fm;
+            std::vector< std::ifstream* > input_streams;
+
+            for (size_t i=0; i<n_reps; ++i)
+            {
+                std::stringstream ss;
+                ss << "_run_" << (i+1);
+                std::string s = ss.str();
+                RbFileManager fm = RbFileManager(filename);
+                std::string current_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + s + "." + fm.getFileExtension();
+                
+                RbFileManager current_fm = RbFileManager(current_file_name);
+                std::ifstream * current_input_stream = new std::ifstream();
+                
+                if ( current_fm.openFile(*current_input_stream) == false )
+                {
+                    throw RbException( "Could not open file '" + current_file_name + "'." );
+                }
+                
+                input_fm.push_back( fm );
+                input_streams.push_back( current_input_stream );
+            }
+                
+            std::vector<std::string> read_lines(n_reps,"");
+            size_t lines_skipped = 0;
+            size_t lines_to_skip = ( write_version == true ? 3 : 1 );
+            while ( std::getline(*input_streams[0],read_lines[0]) )
+            {
+                for (size_t i=1; i<n_reps; ++i)
+                {
+                    if ( !(std::getline(*input_streams[1],read_lines[1])) )
+                    {
+                        throw RbException("Cannot merge output trace files with unequal number of lines.");
+                    }
+                }
+                
+                ++lines_skipped;
+                if ( lines_skipped < lines_to_skip)
+                {
+                    // write output
+                    combined_output_stream << read_lines[0];
+                            
+                    // add a new line
+                    combined_output_stream << std::endl;
+                    continue;
+                }
+                else if ( lines_skipped == lines_to_skip )
+                {
+                    std::vector<std::string> fields;
+                    StringUtilities::stringSplit(read_lines[0], separator, fields);
+                    
+                    // write output
+                    combined_output_stream << fields[0];
+                    
+                    // add a separator before every new element
+                    combined_output_stream << separator;
+                    combined_output_stream << "Replicate_ID";
+                    
+                    for (size_t j=1; j<fields.size(); ++j)
+                    {
+                        // add a separator before every new element
+                        combined_output_stream << separator;
+                        
+                        // write output
+                        combined_output_stream << fields[j];
+                    }
+                    
+                    // add a new line
+                    combined_output_stream << std::endl;
+                    continue;
+                    
+                }
+                
+                
+                for (size_t i=0; i<n_reps; ++i)
+                {
+                    std::vector<std::string> fields;
+                    StringUtilities::stringSplit(read_lines[i], separator, fields);
+                    
+                    // add the current sample number
+                    combined_output_stream << sample_number;
+                    
+                    // add a separator before every new element
+                    combined_output_stream << separator;
+                    combined_output_stream << i;
+                    
+                    ++sample_number;
+                    for (size_t j=1; j<fields.size(); ++j)
+                    {
+                        // add a separator before every new element
+                        combined_output_stream << separator;
+                        
+                        // write output
+                        combined_output_stream << fields[j];
+                    }
+                    
+                    // add a new line
+                    combined_output_stream << std::endl;
+                    
+                }
+                
+            }
+            
+            for (size_t i=0; i<n_reps; ++i)
+            {
+                input_fm[i].closeFile( *input_streams[i] );
+                delete input_streams[i];
+            }
+            
         }
         
         combined_output_stream.close();

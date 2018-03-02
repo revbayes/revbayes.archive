@@ -91,6 +91,8 @@
 #include "Func_mrcaIndex.h"
 #include "Func_nodeAgeByID.h"
 #include "Func_phyloDiversity.h"
+#include "Func_PhylogeneticIndependentContrasts.h"
+#include "Func_PhylogeneticIndependentContrastsMultiSample.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
 #include "Func_readPomoCountFile.h"
@@ -110,6 +112,7 @@
 #include "Func_chromosomes.h"
 #include "Func_chromosomesPloidy.h"
 #include "Func_codonSynonymousNonsynonymousRateMatrix.h"
+#include "Func_codonSynonymousNonsynonymousHKYRateMatrix.h"
 #include "Func_covarionRateMatrix.h"
 #include "Func_covarion.h"
 #include "Func_cpRev.h"
@@ -174,7 +177,6 @@
 
 
 /* Input/output functions (in folder "functions/io") */
-#include "Func_phyloDiversity.h"
 #include "Func_ancestralStateTree.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
@@ -280,41 +282,42 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         ///////////////////////////////////////////
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
-        addFunction( new Func_blosum62()                                );
-        addFunction( new Func_chromosomes()                             );
-        addFunction( new Func_chromosomesPloidy()                       );
-        addFunction( new Func_codonSynonymousNonsynonymousRateMatrix()  );
-        addFunction( new Func_covarionRateMatrix()                      );
-        addFunction( new Func_covarion()                                );
-        addFunction( new Func_cpRev()                                   );
-        addFunction( new Func_dayhoff()                                 );
-        addFunction( new Func_DECRateMatrix()                           );
-        addFunction( new Func_epoch()                                   );
-        addFunction( new Func_f81()                                     );
-        addFunction( new Func_FreeBinary()                              );
-        addFunction( new Func_FreeK()                                   );
-        addFunction( new Func_freeSymmetricRateMatrix()                 );
-        addFunction( new Func_gtr()                                     );
-        addFunction( new Func_hky()                                     );
-        addFunction( new Func_hiddenStateRateMatrix()                   );
-        addFunction( new Func_InfiniteSitesRateMatrix()                 );
-        addFunction( new Func_jc()                                      );
-        addFunction( new Func_jones()                                   );
-        addFunction( new Func_k80()                                     );
-        addFunction( new Func_Kimura81()                                );
-        addFunction( new Func_lg()                                      );
-        addFunction( new Func_mtMam()                                   );
-        addFunction( new Func_mtRev()                                   );
-        addFunction( new Func_orderedRateMatrix()                       );
-        addFunction( new Func_pomo()                                    );
-        addFunction( new Func_reversiblePomo()                          );
-        addFunction( new Func_rtRev()                                   );
-        addFunction( new Func_t92()                                     );
-        addFunction( new Func_TamuraNei()                               );
-        addFunction( new Func_TIM()                                     );
-        addFunction( new Func_TVM()                                     );
-        addFunction( new Func_vt()                                      );
-        addFunction( new Func_wag()                                     );
+        addFunction( new Func_blosum62()                                    );
+        addFunction( new Func_chromosomes()                                 );
+        addFunction( new Func_chromosomesPloidy()                           );
+        addFunction( new Func_codonSynonymousNonsynonymousRateMatrix()      );
+        addFunction( new Func_codonSynonymousNonsynonymousHKYRateMatrix()   );
+        addFunction( new Func_covarionRateMatrix()                          );
+        addFunction( new Func_covarion()                                    );
+        addFunction( new Func_cpRev()                                       );
+        addFunction( new Func_dayhoff()                                     );
+        addFunction( new Func_DECRateMatrix()                               );
+        addFunction( new Func_epoch()                                       );
+        addFunction( new Func_f81()                                         );
+        addFunction( new Func_FreeBinary()                                  );
+        addFunction( new Func_FreeK()                                       );
+        addFunction( new Func_freeSymmetricRateMatrix()                     );
+        addFunction( new Func_gtr()                                         );
+        addFunction( new Func_hky()                                         );
+        addFunction( new Func_hiddenStateRateMatrix()                       );
+        addFunction( new Func_InfiniteSitesRateMatrix()                     );
+        addFunction( new Func_jc()                                          );
+        addFunction( new Func_jones()                                       );
+        addFunction( new Func_k80()                                         );
+        addFunction( new Func_Kimura81()                                    );
+        addFunction( new Func_lg()                                          );
+        addFunction( new Func_mtMam()                                       );
+        addFunction( new Func_mtRev()                                       );
+        addFunction( new Func_orderedRateMatrix()                           );
+        addFunction( new Func_pomo()                                        );
+        addFunction( new Func_reversiblePomo()                              );
+        addFunction( new Func_rtRev()                                       );
+        addFunction( new Func_t92()                                         );
+        addFunction( new Func_TamuraNei()                                   );
+        addFunction( new Func_TIM()                                         );
+        addFunction( new Func_TVM()                                         );
+        addFunction( new Func_vt()                                          );
+        addFunction( new Func_wag()                                         );
 
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
         addFunction( new Func_adjacentRateModifier() );
@@ -338,31 +341,32 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
-        addFunction( new Func_branchScoreDistance()         );
-        addFunction( new Func_checkNodeOrderConstraints()   );
-//        addFunction( new Func_clade()                    );
-        addFunction( new Func_computeWeightedNodeOrderConstraintsScore());
-        addFunction( new Func_concatenate()                 );
-        addFunction( new Func_concatenateFromVector()       );
-        addFunction( new Func_constructRootedTripletDistribution()            );
-        addFunction( new Func_formatDiscreteCharacterData() );
-        addFunction( new Func_extantTree()                  );
-        addFunction( new Func_maximumTree()                 );
-        addFunction( new Func_mrcaIndex()                   );
-        addFunction( new Func_nodeAgeByID()                 );
-        addFunction( new Func_phyloDiversity() );
-        addFunction( new Func_pomoStateConverter()          );
-        addFunction( new Func_pomoRootFrequencies()         );
-        addFunction( new Func_pruneTree()                   );
-        addFunction( new Func_readPomoCountFile()           );
-        addFunction( new Func_simTree()                     );
-        addFunction( new Func_simCompleteTree()             );
-        addFunction( new Func_stitchTree()                  );
-        addFunction( new Func_symmetricDifference()         );
-        addFunction( new Func_tmrca()                       );
-        addFunction( new Func_treePairwiseDistances()       );
-        addFunction( new Func_treeAssembly()                );
-        addFunction( new Func_treeScale()                   );
+        addFunction( new Func_branchScoreDistance()                             );
+        addFunction( new Func_checkNodeOrderConstraints()                       );
+        addFunction( new Func_computeWeightedNodeOrderConstraintsScore()        );
+        addFunction( new Func_concatenate()                                     );
+        addFunction( new Func_concatenateFromVector()                           );
+        addFunction( new Func_constructRootedTripletDistribution()              );
+        addFunction( new Func_formatDiscreteCharacterData()                     );
+        addFunction( new Func_extantTree()                                      );
+        addFunction( new Func_maximumTree()                                     );
+        addFunction( new Func_mrcaIndex()                                       );
+        addFunction( new Func_nodeAgeByID()                                     );
+        addFunction( new Func_phyloDiversity()                                  );
+        addFunction( new Func_PhylogeneticIndependentContrasts()                );
+        addFunction( new Func_PhylogeneticIndependentContrastsMultiSample()     );
+        addFunction( new Func_pomoStateConverter()                              );
+        addFunction( new Func_pomoRootFrequencies()                             );
+        addFunction( new Func_pruneTree()                                       );
+        addFunction( new Func_readPomoCountFile()                               );
+        addFunction( new Func_simTree()                                         );
+        addFunction( new Func_simCompleteTree()                                 );
+        addFunction( new Func_stitchTree()                                      );
+        addFunction( new Func_symmetricDifference()                             );
+        addFunction( new Func_tmrca()                                           );
+        addFunction( new Func_treePairwiseDistances()                           );
+        addFunction( new Func_treeAssembly()                                    );
+        addFunction( new Func_treeScale()                                       );
 
         /* Population genetics functions (in folder "functions/popgen") */
         addFunction( new Func_PattersonsD()      );

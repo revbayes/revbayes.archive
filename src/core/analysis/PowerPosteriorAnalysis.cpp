@@ -307,7 +307,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     outStream.close();
     
     // Monitor
-    sampler->finishMonitors( 1 );
+    sampler->finishMonitors( 1, MonteCarloAnalysisOptions::NONE );
     
 }
 
@@ -337,7 +337,7 @@ void PowerPosteriorAnalysis::summarizeStones( void )
         {
             bool header = true;
             std::string line = "";
-            while ( std::getline (inStream,line) )
+            while ( std::getline(inStream,line) )
             {
                 // we need to skip the header line
                 if ( header == true )

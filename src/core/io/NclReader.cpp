@@ -17,6 +17,9 @@
 #include "TreeUtilities.h"
 #include "RlUserInterface.h"
 
+#include <algorithm>
+#include <string>
+
 using namespace RevBayesCore;
 
 
@@ -941,7 +944,8 @@ std::string NclReader::intuitDataType(std::string& s)
     // loop over the string (s) that contains the raw data we look at the state and try to determine if the
     // state rules out certain data types
     StringUtilities::toLower( s );
-
+    s.erase( std::remove_if( s.begin(), s.end(), ::isspace ), s.end() );
+    
     for (size_t i=0; i<s.size(); i++)
     {
         char c = s[i];
@@ -1055,6 +1059,10 @@ std::string NclReader::intuitDataType(std::string& s)
         else
             return "protein";
     }
+    else if ( notDna == false )
+    {
+        return "dna";
+    }
     //    std::cout << "HEHEHEE: "<< (double)nucCount / (s.size()-nMissing)  << " "<<nucCount << " " << s.size() << " " << nMissing <<std::endl;
     //std::cout << notDna << " " << notRna <<" "<< notAa << " " << notStd << std::endl;
     return "";
@@ -1078,7 +1086,8 @@ bool NclReader::isFastaFile(std::string& fn, std::string& dType)
     while (ch != EOF)
     {
 
-        std::getline(fStrm, word);
+        RevBayesCore::RbFileManager reader = RevBayesCore::RbFileManager();
+        reader.safeGetline(fStrm, word);
         
         // we know that the last character is an escape character
         if ( word.size() > 0 )
