@@ -47,7 +47,8 @@ namespace RevLanguage {
 
         RevPtr<const RevVariable>                       lambda;                                                                                 //!< The speciation rate
         RevPtr<const RevVariable>                       mu;                                                                                     //!< The extinction rate
-        
+        RevPtr<const RevVariable>                       rho;                                                                                    //!< The taxon sampling fraction
+
     };
     
 }

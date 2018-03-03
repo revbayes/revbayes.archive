@@ -33,7 +33,7 @@ RevBayesCore::ChisqDistribution* Dist_chisq::createDistribution( void ) const
 {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<int>*    df = static_cast<const Natural     &>( degrees->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<long>*    df = static_cast<const Natural     &>( degrees->getRevObject() ).getDagNode();
     RevBayesCore::ChisqDistribution* d  = new RevBayesCore::ChisqDistribution( df );
     
     return d;

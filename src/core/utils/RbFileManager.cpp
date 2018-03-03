@@ -312,7 +312,7 @@ std::string RbFileManager::getFullFilePath( void ) const
     
     // check if filePath is relative or absolute
     // add current working path only if relative
-    if( filePath.size() > 0 && pathSeparator[0] != filePath[0] )
+    if ( filePath.size() > 0 && pathSeparator[0] != filePath[0] )
     {
         
         fullFilePath = RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
@@ -367,6 +367,44 @@ const std::string& RbFileManager::getPathSeparator( void ) const
     return pathSeparator;
 }
 
+
+// function to safely handle cross-platform line endings when reading files
+// modified from:
+// https://stackoverflow.com/questions/6089231/getting-std-ifstream-to-handle-lf-cr-and-crlf
+std::istream& RbFileManager::safeGetline(std::istream& is, std::string& t)
+{
+    t.clear();
+
+    // The characters in the stream are read one-by-one using a std::streambuf.
+    // That is faster than reading them one-by-one using the std::istream.
+    // Code that uses streambuf this way must be guarded by a sentry object.
+    // The sentry object performs various tasks,
+    // such as thread synchronization and updating the stream state.
+
+    std::istream::sentry se(is, true);
+    std::streambuf* sb = is.rdbuf();
+
+    for(;;) {
+        int c = sb->sbumpc();
+        switch (c) {
+        case '\n':
+            return is;
+        case '\r':
+            if(sb->sgetc() == '\n')
+                sb->sbumpc();
+            return is;
+        case EOF:
+            // Also handle the case when the last line has no line ending
+            if(t.empty())
+                is.setstate(std::ios::eofbit);
+            return is;
+        default:
+            t += (char)c;
+        }
+    }
+}
+
+
 std::string RbFileManager::getStringByDeletingLastPathComponent(const std::string& s)
 {
     
@@ -417,11 +455,11 @@ bool RbFileManager::isDirectoryPresent(const std::string &mp) const
     
     struct stat info;
     
-    if( stat( mp.c_str(), &info ) != 0)
+    if ( stat( mp.c_str(), &info ) != 0)
     {
         return false;
     }
-    else if(info.st_mode & S_IFDIR)
+    else if (info.st_mode & S_IFDIR)
     {
         return true;
     }

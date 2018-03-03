@@ -115,7 +115,7 @@ void RevBayesCore::DPPTableValueUpdate<valueType>::performGibbsMove( void )
     
     TypedDistribution<valueType>* g0 = dist.getBaseDistribution();
     
-    for(int i=0; i<numTables; i++)
+    for (int i=0; i<numTables; i++)
     {
         
         // get old lnL
@@ -126,9 +126,9 @@ void RevBayesCore::DPPTableValueUpdate<valueType>::performGibbsMove( void )
 //        tableVals[i] = newValue;
         
         // Assign new value to elements
-        for(int j=0; j<numElements; j++)
+        for (int j=0; j<numElements; j++)
         {
-            if( allocVec[j] == i )
+            if ( allocVec[j] == i )
             {
                 elementVals[j] = tableVals[i];
             }
@@ -151,9 +151,9 @@ void RevBayesCore::DPPTableValueUpdate<valueType>::performGibbsMove( void )
         }
         else // reject
         {
-            for(int j=0; j<numElements; j++)
+            for (int j=0; j<numElements; j++)
             {
-                if(allocVec[j] == i)
+                if (allocVec[j] == i)
                 {
                     elementVals[j] = storedValue;
                 }
@@ -214,7 +214,7 @@ int RevBayesCore::DPPTableValueUpdate<valueType>::findTableIDForVal(std::vector<
     
     for (size_t j=0; j<tvs.size(); j++)
     {
-        if(tvs[j] == val)
+        if (tvs[j] == val)
         {
             // this is an existing table
             return int(j);

@@ -11,6 +11,7 @@
 #include "OptionRule.h"
 #include "ConstantNode.h"
 #include "Func_characterMapTree.h"
+#include "JointAncestralStateTrace.h"
 #include "ModelVector.h"
 #include "NexusWriter.h"
 #include "Probability.h"
@@ -23,9 +24,6 @@
 #include "RlAncestralStateTrace.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TreeSummary.h"
-#include "TraceTree.h"
-#include "AncestralStateTrace.h"
 #include "WorkspaceVector.h"
 
 #include <map>
@@ -67,14 +65,10 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
     const TraceTree& tt = static_cast<const TraceTree&>( args[2].getVariable()->getRevObject() );
     
     // make a new tree summary object
-    RevBayesCore::TreeSummary summary;
+    RevBayesCore::TraceTree tree_trace;
     if (args[2].getVariable()->getRevObject() != RevNullObject::getInstance())
     {
-        summary = tt.getValue();
-    }
-    else
-    {
-        summary = RevBayesCore::TreeSummary();
+        tree_trace = tt.getValue();
     }
     
     // get the filename for the tree with MAP character history
@@ -87,7 +81,7 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
     RevObject& b = args[5].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
-        burnin = static_cast<const Integer &>(b).getValue();
+        burnin = (int)static_cast<const Integer &>(b).getValue();
     }
     else
     {
@@ -106,13 +100,14 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
         throw RbException("Joint ancestral state summaries are not yet implemented. Coming soon!");
     }
     
-    int num_time_slices = static_cast<const Integer &>(args[7].getVariable()->getRevObject()).getValue();
+    int num_time_slices = (int)static_cast<const Integer &>(args[7].getVariable()->getRevObject()).getValue();
     
     bool verbose = static_cast<const RlBoolean &>(args[8].getVariable()->getRevObject()).getValue();
     
     // get the tree with ancestral states
-    RevBayesCore::Tree* tree;
-    tree = summary.characterMapTree(it->getValue(), ancestralstate_traces, burnin, num_time_slices, conditional, false, verbose);
+    RevBayesCore::JointAncestralStateTrace joint_trace(ancestralstate_traces, tree_trace);
+    joint_trace.setBurnin(burnin);
+    RevBayesCore::Tree* tree = joint_trace.characterMapTree(it->getValue(), num_time_slices, conditional, false, verbose);
     
     // write the SIMMAP newick strings
     std::ofstream out_stream;
@@ -149,20 +144,24 @@ const ArgumentRules& Func_characterMapTree::getArgumentRules( void ) const
     if (!rules_set)
     {
         
+
         argumentRules.push_back( new ArgumentRule( "tree",                         Tree::getClassTypeSpec(),                                 "The input tree to summarize the character history over.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "ancestral_state_trace_vector", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), "A vector of ancestral state traces.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "tree_trace",                   TraceTree::getClassTypeSpec(),                            "A trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "character_file",               RlString::getClassTypeSpec(),                             "The name of the file to store the tree annotated with the MAP character history.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "posterior_file",               RlString::getClassTypeSpec(),                             "The name of the file to store the tree annotated with the posterior probabilities for the MAP character history.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+
 		std::vector<TypeSpec> burnin_types;
         burnin_types.push_back( Probability::getClassTypeSpec() );
         burnin_types.push_back( Integer::getClassTypeSpec() );
         argumentRules.push_back( new ArgumentRule( "burnin"   , burnin_types  , "The fraction/number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
+   
         std::vector<std::string> reconstruction;
         reconstruction.push_back( "conditional" );
         reconstruction.push_back( "joint" );
         reconstruction.push_back( "marginal" );
         argumentRules.push_back( new OptionRule( "reconstruction", new RlString("marginal"), reconstruction, "'joint' and 'conditional' should only be used to summarize character maps sampled from the joint distribution. 'marginal' can be used for character maps sampled from the joint or marginal distribution." ) );
+
         argumentRules.push_back( new ArgumentRule( "num_time_slices",              Integer::getClassTypeSpec(),                              "The number of time slices to discretize the character history. Should be the same as used for the numeric ODE.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(500) ) );
         argumentRules.push_back( new ArgumentRule( "verbose",                      RlBoolean::getClassTypeSpec(),                            "Printing verbose output", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
@@ -219,6 +218,7 @@ const TypeSpec& Func_characterMapTree::getTypeSpec( void ) const
 const TypeSpec& Func_characterMapTree::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = Tree::getClassTypeSpec();
+    return return_typeSpec;
 }
+

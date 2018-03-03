@@ -84,9 +84,9 @@ std::string Func_wag::getFunctionName( void ) const
 const TypeSpec& Func_wag::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
+    static TypeSpec return_typeSpec = RateGenerator::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 
 

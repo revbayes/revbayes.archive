@@ -10,10 +10,9 @@
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RbOptions.h"
-#include "SequenctialMoveSchedule.h"
-
 #include <cmath>
 #include <typeinfo>
+#include "SequentialMoveSchedule.h"
 
 
 #ifdef RB_MPI
@@ -175,6 +174,11 @@ void PowerPosteriorAnalysis::runAll(size_t gen)
 
 //    initMPI();
     
+    if( gen < sampleFreq )
+    {
+        throw(RbException("Trying to run power posterior analysis for fewer generations than sampleFreq, no samples will be stored"));
+    }
+
     // disable the screen monitor(s) if any
     sampler->disableScreenMonitor(true, 0);
     
@@ -220,7 +224,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     
     // create the directory if necessary
     RbFileManager fm = RbFileManager(filename);
-    if(fm.getFileName() == "")
+    if (fm.getFileName() == "")
     {
         throw(RbException("Please provide a filename with an extension"));
     }
@@ -303,7 +307,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     outStream.close();
     
     // Monitor
-    sampler->finishMonitors( 1 );
+    sampler->finishMonitors( 1, MonteCarloAnalysisOptions::NONE );
     
 }
 
@@ -333,7 +337,7 @@ void PowerPosteriorAnalysis::summarizeStones( void )
         {
             bool header = true;
             std::string line = "";
-            while ( std::getline (inStream,line) )
+            while ( std::getline(inStream,line) )
             {
                 // we need to skip the header line
                 if ( header == true )

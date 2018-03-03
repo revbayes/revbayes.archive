@@ -43,7 +43,6 @@ namespace RevBayesCore {
         
     private:
         // parameters
-        
         Simplex                                 storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
         //        double                              proposedValue;                                                                      //!< The value we propose.
     };

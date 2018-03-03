@@ -36,7 +36,7 @@
 
 
 
-RevBayesCore::DPPGibbsConcentrationMove::DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<int>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w) : AbstractGibbsMove( w ),
+RevBayesCore::DPPGibbsConcentrationMove::DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<long>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w) : AbstractGibbsMove( w ),
     variable( n ),
     numCats(v),
     gammaShape(gS),
@@ -80,7 +80,7 @@ void RevBayesCore::DPPGibbsConcentrationMove::performGibbsMove( void )
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 	double& cpv = variable->getValue();
 	
-	int k = numCats->getValue();
+	long k = numCats->getValue();
 	int nV = numElem;
 	
 	// This move is a fully conditional Gibbs move, with a Gamma distribution
@@ -102,7 +102,7 @@ void RevBayesCore::DPPGibbsConcentrationMove::performGibbsMove( void )
 	double u = rng->uniform01();
 	double x = ( sh + (double)k - 1.0 ) / ( (double)nV * (rt - log(eta)) );
 	double newAlpha;
-	if((u / (1.0 - u)) < x)
+	if ((u / (1.0 - u)) < x)
 		newAlpha = RbStatistics::Gamma::rv(sh + k, rt - log(eta), *GLOBAL_RNG);
 	else
 		newAlpha = RbStatistics::Gamma::rv(sh + k - 1.0, rt - log(eta), *GLOBAL_RNG);
@@ -122,7 +122,7 @@ void RevBayesCore::DPPGibbsConcentrationMove::swapNodeInternal(DagNode *oldN, Da
     
     if (oldN == numCats)
     {
-        numCats = static_cast<DeterministicNode<int>* >(newN);
+        numCats = static_cast<DeterministicNode<long>* >(newN);
     }
 	
     if (oldN == gammaShape)

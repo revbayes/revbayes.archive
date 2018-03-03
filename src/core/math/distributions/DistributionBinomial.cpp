@@ -40,7 +40,7 @@ using namespace RevBayesCore;
 double RbStatistics::Binomial::cdf(double n, double p, double x)
 {
 
-    if( RbMath::isInt(n) == false )
+    if ( RbMath::isInt(n) == false )
     {
         std::ostringstream s;
         s << "Cannot compute cdf of the binomial distribution because n = " << n << " is not an interger";
@@ -48,7 +48,7 @@ double RbStatistics::Binomial::cdf(double n, double p, double x)
     }
     n = int(n);
     /* PR#8560: n=0 is a valid value */
-    if(n < 0 || p < 0 || p > 1) 
+    if (n < 0 || p < 0 || p > 1) 
     {
         std::ostringstream s;
         s << "Cannot compute cdf of the binomial distribution for n = " << n << " and p = " << p;
@@ -137,7 +137,7 @@ double RbStatistics::Binomial::pdf(double n, double p, double q, double x, bool 
     
     if (x == 0) 
         {
-        if(n == 0) 
+        if (n == 0) 
             return ( asLog ? 0.0 : 1.0);
         lc = (p < 0.1) ? -RbMath::binomialDeviance(n,n*q) - n*p : n*log(q);
         return( (asLog ? lc : exp(lc)) );
@@ -165,13 +165,13 @@ double RbStatistics::Binomial::pdf(double n, double p, double q, double x, bool 
 
 double RbStatistics::Binomial::do_search(double y, double *z, double p, double n, double pr, double incr)
 {
-    if(*z >= p)
+    if (*z >= p)
     {
         /* search to the left */
-        for(;;)
+        for (;;)
         {
             double newz;
-            if(y == 0 ||
+            if (y == 0 ||
                (newz = RbStatistics::Binomial::cdf(n, pr, y - incr)) < p)
                 return y;
             y = RbMath::Helper::fmax2(0, y - incr);
@@ -179,10 +179,10 @@ double RbStatistics::Binomial::do_search(double y, double *z, double p, double n
         }
     }
     else {		/* search to the right */
-        for(;;)
+        for (;;)
         {
             y = RbMath::Helper::fmin2(y + incr, n);
-            if(y == n || ( (*z = RbStatistics::Binomial::cdf(n, pr, y)) >= p) )
+            if (y == n || ( (*z = RbStatistics::Binomial::cdf(n, pr, y)) >= p) )
                 return y;
         }
     }
@@ -216,18 +216,18 @@ double RbStatistics::Binomial::quantile(double quantile_prob, double n, double p
     
     double q, mu, sigma, gamma, z, y;
     
-    if( RbMath::isFinite(n) == false || RbMath::isFinite(p) == false || RbMath::isFinite(quantile_prob) == false)
+    if ( RbMath::isFinite(n) == false || RbMath::isFinite(p) == false || RbMath::isFinite(quantile_prob) == false)
     {
-        throw RbException("Nan produced in qBinom");
+        throw RbException("NaN produced in qbinom");
     }
     
-    if(n != floor(n + 0.5))
+    if (n != floor(n + 0.5))
     {
-        throw RbException("Nan produced in qBinom");
+        throw RbException("NaN produced in qbinom");
     }
     if (p < 0 || p > 1 || n < 0)
     {
-        throw RbException("Nan produced in qBinom");
+        throw RbException("NaN produced in qbinom");
     }
 
 //    R_Q_P01_boundaries(p, 0, n);
@@ -257,7 +257,7 @@ double RbStatistics::Binomial::quantile(double quantile_prob, double n, double p
     z = RbStatistics::Normal::quantile(quantile_prob, 0.0, 1.0);
     y = floor(mu + sigma * (z + gamma * (z*z - 1) / 6) + 0.5);
 
-    if(y > n)
+    if (y > n)
     {
         /* way off */
         y = n;
@@ -268,7 +268,7 @@ double RbStatistics::Binomial::quantile(double quantile_prob, double n, double p
     /* fuzz to ensure left continuity: */
     quantile_prob *= 1 - 64*DBL_EPSILON;
 
-    if(n < 1e5)
+    if (n < 1e5)
     {
         return do_search(y, &z, quantile_prob, n, p, 1);
     }
@@ -319,7 +319,7 @@ double RbStatistics::Binomial::quantile(double quantile_prob, double n, double p
 #include <limits.h>
 #include "RandomNumberGenerator.h"
 
-#define repeat for(;;)
+#define repeat for (;;)
 
 int RbStatistics::Binomial::rv(double nin, double pp, RevBayesCore::RandomNumberGenerator &rng)
 {
@@ -336,12 +336,12 @@ int RbStatistics::Binomial::rv(double nin, double pp, RevBayesCore::RandomNumber
     double p, q, np, g, r, al, alv, amaxp, ffm, ynorm;
     int i,ix,k, n;
     
-    if (!RbMath::isFinite(nin)) throw RbException("Infinite value in rBinom");
+    if (!RbMath::isFinite(nin)) throw RbException("NaN produced in rbinom");
     r = floor(nin + 0.5);
-    if (r != nin) throw RbException("NaN produced in rBinom");
+    if (r != nin) throw RbException("NaN produced in rbinom");
     if (!RbMath::isFinite(pp) ||
         /* n=0, p=0, p=1 are not errors <TSL>*/
-        r < 0 || pp < 0. || pp > 1.)  throw RbException("NaN produced in rBinom");
+        r < 0 || pp < 0. || pp > 1.)  throw RbException("NaN produced in rbinom");
     
     if (r == 0 || pp == 0.) return 0;
     if (pp == 1.) return int(r);

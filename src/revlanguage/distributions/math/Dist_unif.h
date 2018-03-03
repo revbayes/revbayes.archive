@@ -25,7 +25,7 @@ namespace RevLanguage {
     class Dist_unif :  public ContinuousDistribution {
     
     public:
-        Dist_unif( void );
+        Dist_unif ( void );
         virtual ~Dist_unif();
     
         // Basic utility functions

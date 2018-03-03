@@ -58,7 +58,7 @@ void DecomposedVarianceCovarianceFunction::update(void) {
         for (int j=0; j<dim; j++)
             {
             double sum = 0.0;
-            for(int k=0; k<dim; k++)
+            for (int k=0; k<dim; k++)
                 sum += S[i][k] * R[k][j];
             temp[i][j] = sum;
             }
@@ -70,7 +70,7 @@ void DecomposedVarianceCovarianceFunction::update(void) {
         for (int j=0; j<dim; j++)
             {
             double sum = 0.0;
-            for(int k=0; k<dim; k++)
+            for (int k=0; k<dim; k++)
                 sum += temp[i][k] * S[k][j];
             (*value)[i][j] = sum;
             }

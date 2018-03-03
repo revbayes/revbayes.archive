@@ -2268,6 +2268,9 @@
 
 - (void)scaleFactorChanged:(NSNotification*)notification {
 
+    //NSLog(@"self                  = %@", self);
+    //NSLog(@"myScrollView          = %@", myScrollView);
+    //NSLog(@"[notification object] = %@", [notification object]);
     if ( myScrollView != [notification object] )
         return;
 

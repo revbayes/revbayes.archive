@@ -25,7 +25,7 @@ namespace RevBayesCore {
         double                              averageRate(void) const;                                                                    //!< Calculate the average rate
         void                                computeOffDiagonal(void);
         const std::vector<double>&          getExchangeabilityRates(void) const;
-        std::vector<double>                 getStationaryFrequencies(void) const;                                                       //!< Return the stationary frequencies
+        virtual std::vector<double>         getStationaryFrequencies(void) const;                                                       //!< Return the stationary frequencies
         bool                                isTimeReversible(void);                                                                     //!< Return whether the rate matrix is time reversible
         void                                setExchangeabilityRates(const std::vector<double> &er);
         void                                setStationaryFrequencies(const std::vector<double>& f);                                     //!< Directly set the stationary frequencies

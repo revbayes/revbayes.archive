@@ -24,7 +24,7 @@ namespace RevBayesCore {
     public:
         
         //CladogeneticSpeciationRateMatrixFunction( const TypedDagNode< RbVector< double > >* sr, unsigned mc );
-        CladogeneticSpeciationRateMatrixFunction( const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<int> > >* events, const TypedDagNode<RevBayesCore::RbVector<double> >* spec_rates, int n_states );
+        CladogeneticSpeciationRateMatrixFunction( const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* events, const TypedDagNode<RevBayesCore::RbVector<double> >* spec_rates, int n_states );
         virtual                                                                         ~CladogeneticSpeciationRateMatrixFunction(void);
         
         // public member functions
@@ -43,7 +43,7 @@ namespace RevBayesCore {
         void                                                                            updateSpeciationRates(void);
         
         // members
-        const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<int> > >*     cladogenetic_events;
+        const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >*     cladogenetic_events;
         std::map< std::vector<unsigned>, double >                                       event_map;
         unsigned                                                                        num_states;
         const TypedDagNode< RbVector<double> >*                                         speciation_rates;

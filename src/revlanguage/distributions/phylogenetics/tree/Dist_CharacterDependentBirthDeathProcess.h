@@ -23,6 +23,7 @@ namespace RevLanguage {
         Dist_CharacterDependentBirthDeathProcess*                   clone(void) const;                                                                      //!< Clone the object
         static const std::string&                                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::vector<std::string>                                    getDistributionFunctionAliases(void) const;
         std::string                                                 getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
         virtual MethodTable                                         getDistributionMethods( void ) const;                                                                       //!< Get the member methods
         const TypeSpec&                                             getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
@@ -39,16 +40,19 @@ namespace RevLanguage {
         
     private:
         
-        RevPtr<const RevVariable>                                   root_age;
+        RevPtr<const RevVariable>                                   start_age;
         RevPtr<const RevVariable>                                   root_frequencies;
         RevPtr<const RevVariable>                                   speciation_rates;
         RevPtr<const RevVariable>                                   extinction_rates;
+        RevPtr<const RevVariable>                                   psi;
         RevPtr<const RevVariable>                                   event_rate_matrix;
         RevPtr<const RevVariable>                                   event_rate;
         RevPtr<const RevVariable>                                   rho;
         RevPtr<const RevVariable>                                   condition;                                                                              //!< The condition of the process (none/survival/#Taxa)
-        RevPtr<const RevVariable>                                   taxa;
         RevPtr<const RevVariable>                                   num_time_slices;
+        RevPtr<const RevVariable>                                   max_lineages;
+        RevPtr<const RevVariable>                                   prune_extinct_lineages;
+        std::string                                                 start_condition;                                                                     //!< The start condition of the process (rootAge/originAge)
 
     };
     

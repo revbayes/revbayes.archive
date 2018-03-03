@@ -1,4 +1,5 @@
 #include "CharacterEvent.h"
+#include "CharacterEventType.h"
 #include <iostream>
 #include <sstream>
 
@@ -10,77 +11,73 @@ CharacterEvent::CharacterEvent(void)
     
 }
 
-CharacterEvent::CharacterEvent(size_t i, size_t s, double t) :
-    character_index(i),
-    state(s),
-    time(t)
+CharacterEvent::CharacterEvent(size_t ch_ind, double a, size_t t) :
+    site_index(ch_ind),
+    age(a),
+    event_type(t)
 {
     
 }
 
 CharacterEvent::CharacterEvent(const CharacterEvent& c) :
-    character_index(c.character_index),
-    state(c.state),
-    time(c.time)
+    site_index(c.site_index),
+    age(c.age),
+    event_type(c.event_type)
 {
     
 }
 
 CharacterEvent::~CharacterEvent(void)
 {
-
-}
-
-CharacterEvent* CharacterEvent::clone( void ) const
-{
-    return new CharacterEvent( *this );
+    
 }
 
 bool CharacterEvent::operator<(const CharacterEvent& rhs) const
 {
-    return time < rhs.time;
+    return age < rhs.age;
 }
 
-double CharacterEvent::getTime(void) const
+bool CharacterEvent::operator>(const CharacterEvent& rhs) const
 {
-    return time;
+    return age > rhs.age;
 }
 
-size_t CharacterEvent::getCharacterIndex(void) const
+double CharacterEvent::getAge(void) const
 {
-    return character_index;
+    return age;
 }
 
-size_t CharacterEvent::getState(void) const
+size_t CharacterEvent::getEventType(void) const
 {
-    return state;
+    return event_type;
 }
 
-std::string CharacterEvent::getStateStr(void) const
+size_t CharacterEvent::getSiteIndex(void) const
 {
-    std::stringstream ss;
-    // want to do this based on DiscreteDataType...
-//    ss << (char)(70+state);
-    ss << state;
-    return ss.str();
+    return site_index;
 }
 
-void CharacterEvent::setCharacterIndex(size_t i)
+
+void CharacterEvent::setAge(double a)
 {
-    character_index = i;
+    age = a;
 }
 
-void CharacterEvent::setState(size_t s)
+
+void CharacterEvent::setEventType(size_t t)
 {
-    state = s;
+    event_type = t;
 }
 
-void CharacterEvent::setTime(double t)
+
+void CharacterEvent::setSiteIndex(size_t i)
 {
-    time = t;
+    site_index = i;
 }
+
 
 void CharacterEvent::print(void) const
 {
-    std::cout << character_index << " " << state << " " << time << "\n";
+    std::cout << site_index << " " << getStateStr() << " " << age << "\n";
 }
+

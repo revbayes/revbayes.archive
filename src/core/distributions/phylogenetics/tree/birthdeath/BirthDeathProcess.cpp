@@ -38,9 +38,6 @@ BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *ra, const Typed
 {
     
     addParameter( rho );
-    
-    log_p_survival = std::vector<double>(tn.size()-2,0.0);
-    rate_integral  = std::vector<double>(tn.size()-2,0.0);
 }
 
 
@@ -75,6 +72,8 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     // we started at the root thus we square the survival prob
     ln_prob_times *= 2.0;
     
+    size_t num_taxa = value->getNumberOfTips();
+
     for (size_t i = 1; i < num_taxa-1; ++i)
     {
         if ( RbMath::isFinite(ln_prob_times) == false )
@@ -103,6 +102,8 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         ln_prob_times += (m-num_taxa) * log(F_t) + log(RbMath::choose(m,num_taxa));
     }
     
+    int total_species = int(num_taxa);
+    
     // now iterate over the vector of missing species per interval
     for (size_t i=0; i<incomplete_clades.size(); ++i)
     {
@@ -122,8 +123,14 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         
         // multiply the probability for the missing species
         // lnl = lnl + sum( m * log_F_t ) #+ lchoose(m-k,nTaxa-k)
-        ln_prob_times += m * log_F_t; // + log(RbMath::choose(m,num_taxa));
+        ln_prob_times += m * log_F_t - RbMath::lnFactorial(m); // log(RbMath::choose(m,num_taxa));
 
+        total_species += m;
+    }
+    
+    if ( incomplete_clades.size() > 0 )
+    {
+        ln_prob_times += RbMath::lnFactorial(total_species) - RbMath::lnFactorial( int(num_taxa) );
     }
     
     return ln_prob_times;
@@ -138,6 +145,8 @@ double BirthDeathProcess::lnP1(double end, double r) const
     prepareSurvivalProbability(end,r);
     prepareRateIntegral(end);
     
+    size_t num_taxa = value->getNumberOfTips();
+
     for (size_t i = 0; i < num_taxa-2; ++i)
     {
         // get the survival probability
@@ -156,7 +165,10 @@ double BirthDeathProcess::lnP1(double end, double r) const
 
 void BirthDeathProcess::prepareRateIntegral(double end) const
 {
+    size_t num_taxa = value->getNumberOfTips();
     
+    rate_integral  = std::vector<double>(num_taxa-2,0.0);
+
     for (size_t i = 1; i < num_taxa-1; ++i)
     {
         double t = divergence_times[i];
@@ -167,7 +179,10 @@ void BirthDeathProcess::prepareRateIntegral(double end) const
 
 void BirthDeathProcess::prepareSurvivalProbability(double end, double r) const
 {
+    size_t num_taxa = value->getNumberOfTips();
     
+    log_p_survival = std::vector<double>(num_taxa-2,0.0);
+
     for (size_t i = 1; i < num_taxa-1; ++i)
     {
         double t = divergence_times[i];
@@ -294,24 +309,6 @@ void BirthDeathProcess::restoreSpecialization(DagNode *affecter)
         }
         
     }
-    
-}
-
-
-
-double BirthDeathProcess::simulateDivergenceTime(double origin, double present) const
-{
-    
-//    if ( sampling_strategy == "uniform" )
-//    {
-        return simulateDivergenceTime( origin, present, rho->getValue() );
-//    }
-//    else
-//    {
-//        std::vector<double>* all = simulateDivergenceTime( round(n/rho->getValue()), origin, 1.0 );
-//        all->resize(n);
-//        return all;
-//    }
     
 }
 

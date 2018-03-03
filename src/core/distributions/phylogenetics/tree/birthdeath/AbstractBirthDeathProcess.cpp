@@ -22,13 +22,12 @@ using namespace RevBayesCore;
  * The constructor connects the parameters of the birth-death process (DAG structure)
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  *
- * \param[in]    o         Origin or time of the process.
+ * \param[in]    ra        Origin or time of the process.
  * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
- * \param[in]    nTaxa     Number of taxa (used for initialization during simulation).
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *ra, const std::string &cdt, const std::vector<Taxon> &tn) : AbstractRootedTreeDistribution( ra, tn ),
+AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *ra, const std::string &cdt, const std::vector<Taxon> &tn, bool uo ) : AbstractRootedTreeDistribution( ra, tn, uo ),
     condition( cdt )
 {
     
@@ -69,13 +68,23 @@ double AbstractBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) co
     }
     else if ( condition == "nTaxa" )
     {
-        lnProbTimes = -lnProbNumTaxa( num_taxa, 0, present_time, true );
+        lnProbTimes = -lnProbNumTaxa( value->getNumberOfTips(), 0, present_time, true );
     }
     
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeLnProbabilityTimes();
     
     return lnProbTimes;
+}
+
+
+double AbstractBirthDeathProcess::lnProbTreeShape(void) const
+{
+    // the birth death density is derived for a (ranked) unlabeled oriented tree
+    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n-1} / n!
+    // see Gernhard 2008
+
+    return (value->getNumberOfTips() - 1) * RbConstants::LN2 - RbMath::lnFactorial( (int)value->getNumberOfTips() );
 }
 
 
@@ -89,10 +98,10 @@ void AbstractBirthDeathProcess::prepareProbComputation( void ) const
 }
 
 
-std::vector<double>* AbstractBirthDeathProcess::simulateDivergenceTimes(size_t n, double origin, double end, double present) const
+std::vector<double> AbstractBirthDeathProcess::simulateDivergenceTimes(size_t n, double origin, double end, double present) const
 {
 
-    std::vector<double>* times = new std::vector<double>(n, 0.0);
+    std::vector<double> times(n, 0.0);
     
     for (size_t i = 0; i < n; ++i)
     {
@@ -102,11 +111,11 @@ std::vector<double>* AbstractBirthDeathProcess::simulateDivergenceTimes(size_t n
             t = simulateDivergenceTime(origin, present);
         } while ( t > end );
         
-        (*times)[i] = t;
+        times[i] = t;
     }
     
     // finally sort the times
-    std::sort(times->begin(), times->end());
+    std::sort(times.begin(), times.end());
     
     return times;
 }

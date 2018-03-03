@@ -1,17 +1,12 @@
-//
-//  RateMatrix_FreeK.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/4/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
+#include "DistributionPoisson.h"
 #include "EigenSystem.h"
 #include "MatrixComplex.h"
 #include "MatrixReal.h"
 #include "RateMatrix_FreeK.h"
 #include "RbException.h"
+#include "RbMathLogic.h"
 #include "RbMathMatrix.h"
+#include "RbSettings.h"
 #include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
@@ -23,37 +18,86 @@ using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
 RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ),
-    rescale(true)
+    rescale(true),
+    my_method( EIGEN )
 {
     
     theEigenSystem       = new EigenSystem(the_rate_matrix);
     c_ijk.resize(num_states * num_states * num_states);
     cc_ijk.resize(num_states * num_states * num_states);
+    
+    matrixProducts = new std::vector<MatrixReal>();
     
     update();
 }
 
 
 RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r) : GeneralRateMatrix( n ),
-    rescale(r)
+    rescale(r),
+    my_method( EIGEN )
 {
     
     theEigenSystem       = new EigenSystem(the_rate_matrix);
     c_ijk.resize(num_states * num_states * num_states);
     cc_ijk.resize(num_states * num_states * num_states);
     
+    matrixProducts = new std::vector<MatrixReal>();
+    
+    update();
+}
+
+
+RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r, std::string method) : GeneralRateMatrix( n ),
+    rescale(r),
+    my_method( EIGEN )
+{
+    
+    // determine the type of matrix exponentiation
+    if (method == "scalingAndSquaring")
+    {
+        my_method = SCALING_AND_SQUARING;
+    }
+    else if (method == "scalingAndSquaringPade")
+    {
+        my_method = SCALING_AND_SQUARING_PADE;
+    }
+    else if (method == "scalingAndSquaringTaylor")
+    {
+        my_method = SCALING_AND_SQUARING_TAYLOR;
+    }
+    else if (method == "uniformization")
+    {
+        my_method = UNIFORMIZATION;
+    }
+    else if (method == "eigen")
+    {
+        my_method = EIGEN;
+    }
+    
+    // create the eigen system so the destructor has something to delete
+    theEigenSystem       = new EigenSystem(the_rate_matrix);
+    c_ijk.resize(num_states * num_states * num_states);
+    cc_ijk.resize(num_states * num_states * num_states);
+    
+    matrixProducts = new std::vector<MatrixReal>();
+    
     update();
 }
 
 
 /** Copy constructor */
-RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m )
+RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m ),
+    singleStepMatrix(num_states)
 {
     
-    rescale              = m.rescale;
-    theEigenSystem       = new EigenSystem( *m.theEigenSystem );
-    c_ijk                = m.c_ijk;
-    cc_ijk               = m.cc_ijk;
+    rescale               = m.rescale;
+    my_method             = m.my_method;
+    
+    matrixProducts        = new std::vector<MatrixReal>();
+    
+    theEigenSystem        = new EigenSystem( *m.theEigenSystem );
+    c_ijk                 = m.c_ijk;
+    cc_ijk                = m.cc_ijk;
 
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 }
@@ -64,6 +108,7 @@ RateMatrix_FreeK::~RateMatrix_FreeK(void)
 {
     
     delete theEigenSystem;
+    delete matrixProducts;
 }
 
 
@@ -87,37 +132,6 @@ RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
     return *this;
 }
 
-
-void RateMatrix_FreeK::fillRateMatrix( void )
-{
-    
-    MatrixReal& m = *the_rate_matrix;
-    
-    // fill the rate matrix
-    for (size_t i=0, k=0; i<num_states; i++)
-    {
-        double sum = 0.0;
-        
-        // off-diagonal
-        for (size_t j=0; j<num_states; j++)
-        {
-            if (i==j)
-            {
-                continue;
-            }
-            double r = transition_rates[k];
-            sum += r;
-            m[i][j] = r;
-            k++;
-        }
-        
-        // diagonal
-        m[i][i] = -sum;
-    }
-
-    // set flags
-    needs_update = true;
-}
 
 /** Do precalculations on eigenvectors */
 void RateMatrix_FreeK::calculateCijk(void)
@@ -177,20 +191,197 @@ void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double 
     // The eigensystem code was returning NaN likelihood values when transition rates
     // were close to 0.0, so now we use the scaling and squaring method.
     double t = rate * (startAge - endAge);
-    exponentiateMatrixByScalingAndSquaring(t, P);
+    if (my_method == SCALING_AND_SQUARING)
+    {
+        exponentiateMatrixByScalingAndSquaring(t, P);
+    }
+    else if (my_method == SCALING_AND_SQUARING_PADE || my_method == SCALING_AND_SQUARING_TAYLOR)
+    {
+        tiProbsScalingAndSquaring(t, P);
+    }
+    else if (my_method == UNIFORMIZATION)
+    {
+        tiProbsUniformization(t, P);
+    }
+    else if (my_method == EIGEN)
+    {
+        if ( theEigenSystem->isComplex() == false )
+        {
+            tiProbsEigens(t, P);
+        }
+        else
+        {
+            tiProbsComplexEigens(t, P);
+        }
+    }
     
-    //    double t = rate * (startAge - endAge);
-    //	if ( theEigenSystem->isComplex() == false )
-    //    {
-    //		tiProbsEigens(t, P);
-    //    }
-    //	else
-    //    {
-    //		tiProbsComplexEigens(t, P);
-    //    }
-
 }
 
+
+void RateMatrix_FreeK::checkMatrixIrreducible(double tolerance, TransitionProbabilityMatrix &P)const
+{
+    // check if the Q matrix is irreducible by checking if there is any element in the P matrix
+    // that is smaller than some prior specified tolerance
+    // and if that's the case, fill in the P matrix with all zeros
+    // so that the current proposal will certainly get rejected
+    // here we assume that all the states in the Q matrix exist in the observed data
+    bool irreducible = true;
+    
+    for (size_t i=0; i<num_states-1; ++i)
+    {
+        for (size_t j=i+1; j<num_states; ++j)
+        {
+            if (P[i][j] < tolerance && P[j][i] < tolerance)
+            {
+                irreducible = false;
+            }
+        }
+    }
+    
+    if (irreducible == false)
+    {
+        for (size_t i=0; i<num_states; ++i)
+        {
+            P[i][i] = 1.0;
+            for (size_t j=i+1; j<num_states; ++j)
+            {
+                P[i][j] = 0.0;
+                P[j][i] = 0.0;
+            }
+        }
+    }
+}
+
+
+void RateMatrix_FreeK::checkMatrixDiff(MatrixReal x, double tolerance, bool& diff) const
+{
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        for (size_t j = 0; j < num_states; ++j)
+        {
+            diff = (std::abs(x[i][j]) < tolerance) ? true : false;
+            if (diff == false)
+            {
+                return;
+            }
+        }
+    }
+}
+
+
+RateMatrix_FreeK* RateMatrix_FreeK::clone( void ) const
+{
+    return new RateMatrix_FreeK( *this );
+}
+
+
+void RateMatrix_FreeK::expandUniformization(int truncation, double tolerance) const
+{
+
+    int n = (int)matrixProducts->size();
+    int d = truncation - n;
+    int i = 0;
+    
+    for (; i < d; ++i)
+    {
+        // add terms of the power series to matrix products until the difference between the last two terms is smaller than the tolerance
+        MatrixReal diffMatrix = matrixProducts->at(n - 1 + i) - matrixProducts->at(n - 2 + i);
+        
+        bool diff = true;
+        checkMatrixDiff(diffMatrix, tolerance, diff);
+        if (diff == true)
+        {
+            break;
+        }
+
+        MatrixReal m = singleStepMatrix * matrixProducts->at(n - 1 + i);
+        matrixProducts->push_back(m);
+    }
+    
+    // if the current size of the matrix products is still smaller than the truncation, fill all the remaining terms with the same converged matrix
+    MatrixReal m = matrixProducts->at(n - 1 + i);
+    for (int j = i; j < d; ++j)
+    {
+        matrixProducts->push_back(m);
+    }
+    
+}
+
+
+void RateMatrix_FreeK::expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tolerance) const
+{
+    // here use the global tolerance to determine the truncation order for Taylor series
+    // alternatively, it can be determined according to Table 1 in Moler and Van Loan, 2003
+    
+    // here we dynamically determine the scaling parameter according to the norm of Q*t
+    // first compute the norm of Q*t
+    double normA = 0.0;
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        double x = std::abs(A[i][i]);
+        if (x > normA)
+            normA = x;
+    }
+    normA *= 2.0;
+    
+    // check if the Q matrix is irreducible
+    // if that is not the case, directly exit the current function
+    // as otherwise the following taylor series or repeated squaring loops may not be finite
+    // here we assume that all the states in the Q matrix exist in the observed data
+    if (RbMath::isNan(normA) || normA == 0.0)
+    {
+        return;
+    }
+    
+    // then use the norm to determine the appropriate scaling parameter s
+    // here plus 4 is a decision made under the guidance of Table 1 in Moler and Van Loan, 2003 and my experiments
+    // the original implementation in R expm package for Pade approximation was s = max(0, [log2(norm)]+1), which seems not enough for Taylor series
+    // and it turns out the intermediate norm values are those that tends to be the most problematic ones under the formula
+    // but they actually would be the most common ones for the usage in phylogenetics (branch length around 0.1)
+    // so I decide to jack it up by 11 here, which results in a transition probability matrix
+    // whose sum differ from the ones computed under the eigen method by about 1e-9 under 0.1 branch length
+    // if that turns out to be still insufficient, a larger number should be considered
+    // Jiansi Gao 09/07/2017
+    int e = ceil(log2(normA)) + 12;
+    int s = (e < 0) ? 0 : e;
+    
+    // scale the matrix by 2^s
+    double scale = pow(2, s);
+    A *= 1.0/scale;
+    
+    // the first term of the taylor series is the identity matrix
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        F[i][i] = 1.0;
+    }
+    
+    // add remaining terms of taylor series until a given term is smaller than the tolerance
+    int it = 1;
+    int fact = 1;
+    while (true)
+    {
+        MatrixReal m = A * (1.0/fact);
+        F += m;
+        
+        bool diff = true;
+        checkMatrixDiff(m, tolerance, diff);
+        if (diff == true)
+        {
+            break;
+        }
+        
+        ++it;
+        fact *= it;
+        A *= A;
+    }
+    
+    //now repeated squaring result s times
+    for (size_t i = 0; i < s; i++)
+    {
+        F *= F;
+    }
+    
+}
 
 
 void RateMatrix_FreeK::exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const {
@@ -251,8 +442,39 @@ void RateMatrix_FreeK::exponentiateMatrixByScalingAndSquaring(double t,  Transit
         p = r;
     }
 }
-    
 
+
+void RateMatrix_FreeK::fillRateMatrix( void )
+{
+    
+    MatrixReal& m = *the_rate_matrix;
+    
+    // fill the rate matrix
+    for (size_t i=0, k=0; i<num_states; i++)
+    {
+        double sum = 0.0;
+        
+        // off-diagonal
+        for (size_t j=0; j<num_states; j++)
+        {
+            if (i==j)
+            {
+                continue;
+            }
+            double r = transition_rates[k];
+            sum += r;
+            m[i][j] = r;
+            k++;
+        }
+        
+        // diagonal
+        m[i][i] = -sum;
+    }
+    
+    // set flags
+    needs_update = true;
+}
+    
 
 inline void RateMatrix_FreeK::multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const {
     
@@ -269,14 +491,6 @@ inline void RateMatrix_FreeK::multiplyMatrices(TransitionProbabilityMatrix& p,  
         }
     }
 }
-
-
-
-RateMatrix_FreeK* RateMatrix_FreeK::clone( void ) const
-{
-    return new RateMatrix_FreeK( *this );
-}
-
 
 
 /** Calculate the transition probabilities for the real case */
@@ -301,17 +515,20 @@ void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
 		for (size_t j=0; j<num_states; j++, ++p)
         {
 			double sum = 0.0;
-			for(size_t s=0; s<num_states; s++)
+			for (size_t s=0; s<num_states; s++)
             {
 				sum += (*ptr++) * eigValExp[s];
             }
             
             //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
-			(*p) = (sum < 0.0) ? 0.0 : sum;
+            (*p) = (sum < 0.0) ? 0.0 : sum;
         }
         
     }
     
+    double tol = RbSettings::userSettings().getTolerance();
+    checkMatrixIrreducible(tol, P);
+
 }
 
 
@@ -338,15 +555,115 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
 		for (size_t j=0; j<num_states; j++)
         {
 			std::complex<double> sum = std::complex<double>(0.0, 0.0);
-			for(size_t s=0; s<num_states; s++)
+			for (size_t s=0; s<num_states; s++)
             {
 				sum += (*ptr++) * ceigValExp[s];
             }
-            
+
             P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
         }
-        
     }
+    
+    double tol = RbSettings::userSettings().getTolerance();
+    checkMatrixIrreducible(tol, P);
+    
+}
+
+
+/** Calculate the transition probabilities with scaling and squaring */
+void RateMatrix_FreeK::tiProbsScalingAndSquaring(double t, TransitionProbabilityMatrix& P) const
+{
+    // Moler, C., & Van Loan, C. 2003. Nineteen dubious ways to compute the exponential of a
+    // matrix, twenty-five years later. SIAM review, 45(1), 3-49.
+    // Higham, N. 2009. The Scaling and Squaring Method for the Matrix Exponential Revisited.
+    // SIAM review, 51(4), 747-764.
+
+    MatrixReal m = *the_rate_matrix;
+    m *= t;
+    MatrixReal result(num_states);
+    double tol = RbSettings::userSettings().getTolerance();
+    
+    if (my_method == SCALING_AND_SQUARING_PADE)
+    {
+        // the value of truncation computed by findPadeQValue is 5 under RevBayes default tolerance (1e-9)
+        // which seems a bit too generous comparing with the value given in Table 1 of Moler and Van Loan, 2003
+        // here we use max(4, findPadeQValue(tol)) as the truncation
+        // since findPadeQValue will return 4 if the tolerance is 1e-8 and 4 is also recommended in Table 1
+        // if that turns out to be insufficient or if a higher accuracy is desired, a larger number should be considered
+        // Jiansi Gao 09/07/2017
+        int truncation = RbMath::findPadeQValue(tol);
+        if (truncation > 4)
+        {
+            truncation = 4;
+        }
+        RbMath::expMatrixPade(m, result, truncation);
+    }
+    else if (my_method == SCALING_AND_SQUARING_TAYLOR)
+    {
+        expMatrixTaylor(m, result, tol);
+    }
+    
+    // fill in P from result
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        for (size_t j = 0; j < num_states; ++j)
+        {
+            P[i][j] = (result[i][j] < 0.0) ? 0.0 : result[i][j];
+        }
+    }
+    
+    checkMatrixIrreducible(tol, P);
+
+}
+
+
+/** Calculate the transition probabilities with uniformization */
+void RateMatrix_FreeK::tiProbsUniformization(double t, TransitionProbabilityMatrix& P) const
+{
+    
+    // compute the appropriate truncation given t
+    // the formula is taken from Tataru and Hobolth, 2011, BMC Bioinformatics
+    // which seems to be pretty generous in most cases, so it should be sufficient for now
+    // if not, a larger number should be considered
+    // Jiansi Gao 09/07/2017
+    MatrixReal result(num_states);
+    double tol = RbSettings::userSettings().getTolerance();
+    
+    // check if the Q matrix is irreducible
+    // if that is not the case, directly fill in the P matrix with all zeros
+    // as otherwise the following loop which expands the power series of the uniformized matrix may not be finite
+    // here we assume that all the states in the Q matrix exist in the observed data
+    if ((RbMath::isNan(maxRate) || maxRate >= 0.0) == false)
+    {
+        double lambda = -maxRate * t;
+        int truncation = std::ceil(4 + 6 * sqrt(lambda) + lambda);
+        
+        // update the matrix poisson products sum vector if necessary
+        expandUniformization(truncation, tol);
+        
+        // compute the transition probability by weighted average
+        for (size_t i = 0; i < truncation; ++i)
+        {
+            
+            // compute the poisson probability
+            double p = RbStatistics::Poisson::pdf(lambda, (int)i);
+            
+            // add the weighted terms of taylor series until a given term is smaller than the tolerance
+            result += matrixProducts->at(i) * p;
+            
+        }
+    }
+    
+    // fill in P from result
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        for (size_t j = 0; j < num_states; ++j)
+        {
+            P[i][j] = (result[i][j] < 0.0) ? 0.0 : result[i][j];
+        }
+    }
+    
+    checkMatrixIrreducible(tol, P);
     
 }
 
@@ -358,6 +675,49 @@ void RateMatrix_FreeK::updateEigenSystem(void)
     theEigenSystem->update();
     calculateCijk();
     
+}
+
+
+void RateMatrix_FreeK::updateUniformization(void)
+{
+    
+    // we need to fill in the single-step transition probability matrix
+    
+    // find the diagonial element of the matrix with the maximal value
+    MatrixReal m = *the_rate_matrix;
+    maxRate = m[0][0];
+    for (size_t i = 1; i < num_states; ++i)
+    {
+        if (m[i][i] < maxRate )
+        {
+            maxRate = m[i][i];
+        }
+    }
+    
+    // for the given max rate, fill in the single-step transition probability matrix
+    singleStepMatrix = MatrixReal(num_states);
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        singleStepMatrix[i][i] = 1 - m[i][i] / maxRate;
+        for (size_t j = i + 1; j < num_states; ++j)
+        {
+            singleStepMatrix[i][j] = -m[i][j] / maxRate;
+            singleStepMatrix[j][i] = -m[j][i] / maxRate;
+        }
+    }
+    
+    // finally, clear the vector of matrix products
+    matrixProducts->clear();
+    
+    // add the identity matrix (the first one) and the singleStepMatrix (the second one)
+    MatrixReal identity_matrix(num_states);
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        identity_matrix[i][i] = 1.0;
+    }
+    matrixProducts->push_back(identity_matrix);
+    matrixProducts->push_back(singleStepMatrix);
+
 }
 
 
@@ -375,8 +735,16 @@ void RateMatrix_FreeK::update( void )
             rescaleToAverageRate( 1.0 );
         }
 
-        // now update the eigensystem
-//        updateEigenSystem();
+        // update the uniformization system if necessary
+        if (my_method == UNIFORMIZATION)
+        {
+            updateUniformization();
+        }
+        // update the eigensystem if necessary
+        if (my_method == EIGEN)
+        {
+            updateEigenSystem();
+        }
         
         // clean flags
         needs_update = false;

@@ -3,44 +3,52 @@
 
 #include <stdlib.h>
 #include <vector>
+
 #include "Cloneable.h"
-//#include "DiscreteCharacterState.h"
+#include "CharacterEventType.h"
 
 namespace RevBayesCore {
-
+    
     class CharacterEvent : public Cloneable
     {
-
-    public:
         
-        CharacterEvent(void);
-        CharacterEvent(size_t i, size_t s, double t);
-        CharacterEvent(const CharacterEvent& c);
+    public:
         ~CharacterEvent(void);
         
-        CharacterEvent*                     clone(void) const;
-        double                              getTime(void) const;
-        size_t                              getCharacterIndex(void) const;
-        size_t                              getState(void) const;
-        std::string                         getStateStr(void) const;
-        void                                setCharacterIndex(size_t i);
-        void                                setState(size_t s);
-        void                                setTime(double t);
+        // pure virtual methods
+        virtual CharacterEvent*             clone(void) const = 0;
+        virtual std::string                 getStateStr(void) const = 0;
+
+        
+        // public methods implemented for derived classes
+        
+        // getters
+        double                              getAge(void) const;
+        size_t                              getEventType(void) const;
+        size_t                              getSiteIndex(void) const;
+        
+        // setters
+        void                                setAge(double a);
+        void                                setEventType(size_t t);
+        void                                setSiteIndex(size_t i);
         void                                print(void) const ;
         
         bool                                operator<(const CharacterEvent& lhs) const;
+        bool                                operator>(const CharacterEvent& lhs) const;
         
     protected:
-        
-        
-    private:
-        size_t                              character_index;                                        // from 0 to N character ("sites")
-        size_t                              state;                                                  // from statespace -- possibly make a set of state/positions...
-        double                              time;                                                   // from 0 to 1
-      
+        CharacterEvent(void);
+        CharacterEvent(size_t ch_ind, double a, size_t t=CharacterEventType::UNDEFINED);
+        CharacterEvent(const CharacterEvent& c);
 
+        size_t                              site_index;                                        // from 0 to N character ("sites")
+        double                              age;                                               // from 0 to 1
+        size_t                              event_type;
+        
+        
     };
 }
 
 
 #endif
+

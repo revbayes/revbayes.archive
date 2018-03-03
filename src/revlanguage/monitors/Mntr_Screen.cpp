@@ -39,7 +39,7 @@ void Mntr_Screen::constructInternalObject( void )
     delete value;
     
     // now allocate space for a new Mntr_Screen object
-    int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
+    int g = (int)static_cast<const Natural &>( printgen->getRevObject() ).getValue();
 
     vars.erase( unique( vars.begin(), vars.end() ), vars.end() );
     sort( vars.begin(), vars.end(), compareVarNames );

@@ -3,7 +3,9 @@
 
 using namespace RevBayesCore;
 
-CeilFunction::CeilFunction(const TypedDagNode<double> *x) : TypedFunction<int>( new int(0) ), a( x ) {
+CeilFunction::CeilFunction(const TypedDagNode<double> *x) : TypedFunction<long>( new long(0) ),
+    a( x )
+{
     addParameter( x );
     
 }
@@ -16,7 +18,8 @@ CeilFunction* CeilFunction::clone( void ) const {
 }
 
 
-void CeilFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void CeilFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
 
     if (oldP == a) 
     {
@@ -25,7 +28,8 @@ void CeilFunction::swapParameterInternal(const DagNode *oldP, const DagNode *new
     
 }
 
-void CeilFunction::update( void ) {
+void CeilFunction::update( void )
+{
     *value = int( ceil( a->getValue() ) );
 }
 

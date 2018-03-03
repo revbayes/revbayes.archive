@@ -47,8 +47,8 @@ namespace StringUtilities {
     
     /**
      * Generic to_string function
-     * @param value
-     * @return
+     * @param value The value that we transform into a string
+     * @return The input value as a string.
      */
     template <typename T>
     std::string to_string(T value) {
@@ -64,29 +64,43 @@ namespace RevLanguage {
 
     std::string                     operator+(const std::string& A, double B);
     std::string                     operator+(const std::string& A, int B);
+    std::string                     operator+(const std::string& A, long B);
     std::string                     operator+(const std::string& A, size_t B);
     std::string                     operator+(double A, const std::string& B);
     std::string                     operator+(int A, const std::string& B);
+    std::string                     operator+(long A, const std::string& B);
     std::string                     operator+(size_t A, const std::string& B);
 
 }
 
 namespace RevBayesCore {
     
+    template <class valueType>
+    class RbVector;
+    
     std::string                     operator+(const std::string& A, double B);
     std::string                     operator+(const std::string& A, int B);
+    std::string                     operator+(const std::string& A, long B);
     std::string                     operator+(const std::string& A, size_t B);
+    std::string                     operator+(const std::string& A, const RbVector<double> &B);
+    std::string                     operator+(const std::string& A, const RbVector<long> &B);
     std::string                     operator+(double A, const std::string& B);
     std::string                     operator+(int A, const std::string& B);
+    std::string                     operator+(long A, const std::string& B);
     std::string                     operator+(size_t A, const std::string& B);
     
 }
 
+
 std::string                     operator+(const std::string& A, double B);
 std::string                     operator+(const std::string& A, int B);
+std::string                     operator+(const std::string& A, long B);
 std::string                     operator+(const std::string& A, size_t B);
+//std::string                     operator+(const std::string& A, const RevBayesCore::RbVector<double> &B);
+//std::string                     operator+(const std::string& A, const RevBayesCore::RbVector<long> &B);
 std::string                     operator+(double A, const std::string& B);
 std::string                     operator+(int A, const std::string& B);
+std::string                     operator+(long A, const std::string& B);
 std::string                     operator+(size_t A, const std::string& B);
 
 

@@ -192,7 +192,7 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
         Container *theConvertedContainer = dynamic_cast<Container*>( emptyContainer );
         
         // test if the cast succeeded
-        if (theConvertedContainer == NULL)
+        if ( theConvertedContainer == NULL )
         {
             throw RbException("Could not convert a container of type " + this->getClassType() + " to a container of type " + type.getType() );
         }
@@ -201,7 +201,7 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
         {
             
             rlType orgElement = rlType( *i );
-            if ( orgElement.isType( *type.getElementTypeSpec() ) )
+            if ( type.getElementTypeSpec() != NULL  && orgElement.isType( *type.getElementTypeSpec() ) == true )
             {
                 theConvertedContainer->push_back( orgElement );
             }
@@ -265,7 +265,6 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
 template <typename rlType>
 RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
 {
-    
     
     if ( name == "append" )
     {
@@ -352,7 +351,7 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
     {
         found = true;
         
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        long index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         return RevPtr<RevVariable>( new RevVariable( getElement( index ) ) );
     }
     
@@ -450,24 +449,32 @@ void ModelVector<rlType>::initMethods( void )
 template <typename rlType>
 double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
-    
+
     if ( once == true && type.getParentType() == getClassTypeSpec().getParentType() )
     {
         // We want to convert to another model vector
+        if ( getClassType() == "RealPos[]" && type.getType() == "Real[]" )
+        {
+            return this->getValue().size() * 0.2;
+        }
+        if ( getClassType() == "Natural[]" && type.getType() == "Integer[]" )
+        {
+            return this->getValue().size() * 0.2;
+        }
 
-        // Simply check whether our elements can convert to the desired element type
+        // Simply check whether our elements can be converted to the desired element type
         typename RevBayesCore::RbConstIterator<elementType> i;
         double penalty = 0.0;
         for ( i = this->getValue().begin(); i != this->getValue().end(); ++i )
         {
-            const elementType& orgInternalElement = *i;
-            rlType orgElement = rlType( orgInternalElement );
+            const elementType& org_internal_element = *i;
+            rlType org_element = rlType( org_internal_element );
 
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( type.getElementTypeSpec() != NULL && orgElement.getTypeSpec() != *type.getElementTypeSpec() )
+            if ( type.getElementTypeSpec() != NULL && org_element.getTypeSpec() != *type.getElementTypeSpec() )
             {
             
-                double element_penalty = orgElement.isConvertibleTo( *type.getElementTypeSpec(), once );
+                double element_penalty = org_element.isConvertibleTo( *type.getElementTypeSpec(), once );
                 if ( element_penalty == -1 )
                 {
                     // we cannot convert this element

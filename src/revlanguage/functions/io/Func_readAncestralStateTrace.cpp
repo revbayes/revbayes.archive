@@ -21,7 +21,6 @@
 #include "RlAncestralStateTrace.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "AncestralStateTrace.h"
 #include "TreeUtilities.h"
 #include "WorkspaceVector.h"
 
@@ -152,8 +151,8 @@ const TypeSpec& Func_readAncestralStateTrace::getTypeSpec( void ) const
 const TypeSpec& Func_readAncestralStateTrace::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = WorkspaceVector<AncestralStateTrace>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = WorkspaceVector<AncestralStateTrace>::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 
@@ -182,7 +181,8 @@ std::vector<RevBayesCore::AncestralStateTrace> Func_readAncestralStateTrace::rea
 		
 		// Read a line
 		std::string line;
-		getline( inFile, line );
+        RevBayesCore::RbFileManager reader = RevBayesCore::RbFileManager();
+        reader.safeGetline(inFile, line);
 		
 		// skip empty lines
 		if (line.length() == 0)

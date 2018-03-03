@@ -30,7 +30,7 @@
 
 namespace RevBayesCore {
     
-    class MrcaIndexStatistic : public TypedFunction<int> {
+    class MrcaIndexStatistic : public TypedFunction<long> {
         
     public:
         MrcaIndexStatistic(const TypedDagNode<Tree> *t, const Clade &c);                                                                                   //!< Default constructor
@@ -50,7 +50,7 @@ namespace RevBayesCore {
         const TypedDagNode<Tree>*                   tree;
         Clade                                       clade;
         bool                                        initialized;
-        size_t                                      index;
+        int                                         index;
         size_t                                      taxa_count;
     };
     

@@ -64,14 +64,14 @@ void Move_SynchronizedVectorFixedSingleElementSlide::constructInternalObject( vo
     
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    std::vector<int> e;
+    std::vector<long> e;
     if ( which_element->getRevObject().isType( ModelVector<Natural>::getClassTypeSpec() ) )
     {
         e = static_cast<const ModelVector<Natural> &>( which_element->getRevObject() ).getValue();
     }
     else
     {
-        int index = static_cast<const Natural &>( which_element->getRevObject() ).getValue();
+        int index = (int)static_cast<const Natural &>( which_element->getRevObject() ).getValue();
         e.push_back( index );
     }
     

@@ -1,12 +1,5 @@
-//
-//  CharacterHistoryNodeMonitor.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 10/16/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
 #include "CharacterHistoryNodeMonitor.h"
+#include "CharacterEventDiscrete.h"
 #include "DagNode.h"
 #include "Model.h"
 #include "Monitor.h"
@@ -68,7 +61,7 @@ std::string CharacterHistoryNodeMonitor::buildExtendedNewick( void )
 std::string CharacterHistoryNodeMonitor::buildCharacterHistoryString(TopologyNode* n, std::string brEnd)
 {
     
-    BranchHistory bh = branchHistories[n->getIndex()]->getValue();
+    const BranchHistory &bh = branchHistories[n->getIndex()]->getValue();
     std::vector<CharacterEvent*> characters;
     if (brEnd=="child")
         characters = bh.getChildCharacters();
@@ -80,7 +73,7 @@ std::string CharacterHistoryNodeMonitor::buildCharacterHistoryString(TopologyNod
     {
         if (i != 0)
             ss << ",";
-        ss << characters[i]->getState();
+        ss << static_cast<CharacterEventDiscrete*>(characters[i])->getState();
     }
     
     return ss.str();

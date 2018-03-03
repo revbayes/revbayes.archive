@@ -46,7 +46,7 @@ namespace RevBayesCore {
 
     protected:
                                         CharacterState(void);                               //!< Default constructor
-            
+        
     };
 
     // Global functions using the class

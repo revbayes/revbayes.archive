@@ -86,7 +86,7 @@ double CollapseExpandFossilBranchProposal::doProposal( void )
     Tree &t = tau->getValue();
     
     std::vector<TopologyNode*> fossils;
-    for (size_t i = 0; i < t.getNumberOfNodes(); ++i)
+    for (size_t i = 0; i < t.getNumberOfTips(); ++i)
     {
         TopologyNode* node = &t.getNode(i);
 

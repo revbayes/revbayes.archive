@@ -169,7 +169,7 @@ double RbStatistics::StudentT::quantile(double v, double p)
     
     if (v > 4e5)
     {
-        if(!RbMath::isFinite(v)) /* df1 == df2 == Inf : */
+        if (!RbMath::isFinite(v)) /* df1 == df2 == Inf : */
             return RbStatistics::Normal::quantile(p);
         return RbStatistics::Normal::quantile(p);
     }

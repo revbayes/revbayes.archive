@@ -87,10 +87,10 @@ void FunctionTable::addFunction( Function *func )
     testFunctionValidity( name, func );
     
     std::pair<std::multimap<std::string, Function *>::iterator,
-              std::multimap<std::string, Function *>::iterator> retVal;
+              std::multimap<std::string, Function *>::iterator> ret_val;
 
-    retVal = equal_range(name);
-    for (std::multimap<std::string, Function *>::iterator i=retVal.first; i!=retVal.second; i++) 
+    ret_val = equal_range(name);
+    for (std::multimap<std::string, Function *>::iterator i=ret_val.first; i!=ret_val.second; i++)
     {
         if ( isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules()) == false )
         {
@@ -154,10 +154,10 @@ void FunctionTable::eraseFunction(const std::string& name)
 {
 
     std::pair<std::multimap<std::string, Function *>::iterator,
-              std::multimap<std::string, Function *>::iterator> retVal;
+              std::multimap<std::string, Function *>::iterator> ret_val;
 
-    retVal = equal_range(name);
-    erase(retVal.first, retVal.second);
+    ret_val = equal_range(name);
+    erase(ret_val.first, ret_val.second);
     
 }
 
@@ -165,10 +165,10 @@ void FunctionTable::eraseFunction(const std::string& name)
 ///** Execute function and get its variable value (evaluate once) */
 //RevPtr<RevVariable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 //
-//    const Function&   theFunction = findFunction(name, args, true);
-//    RevPtr<RevVariable>  theValue    = theFunction.execute();
+//    const Function&   the_function = findFunction(name, args, true);
+//    RevPtr<RevVariable>  theValue    = the_function.execute();
 //
-//    theFunction.clear();
+//    the_function.clear();
 //
 //    return theValue;
 //}
@@ -238,7 +238,7 @@ bool FunctionTable::existsFunctionInFrame( std::string const &name, const Argume
 std::vector<Function *> FunctionTable::findFunctions(const std::string& name) const
 {
 
-    std::vector<Function *>  theFunctions;
+    std::vector<Function *>  the_functions;
 
     size_t hits = count(name);
     if (hits == 0)
@@ -249,22 +249,22 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
         }
         else
         {
-            return theFunctions;
+            return the_functions;
         }
         
     }
 
     std::pair<std::multimap<std::string, Function *>::const_iterator,
-              std::multimap<std::string, Function *>::const_iterator> retVal;
-    retVal = equal_range( name );
+              std::multimap<std::string, Function *>::const_iterator> ret_val;
+    ret_val = equal_range( name );
 
     std::multimap<std::string, Function *>::const_iterator it;
-    for ( it=retVal.first; it!=retVal.second; it++ )
+    for ( it=ret_val.first; it!=ret_val.second; it++ )
     {
-        theFunctions.push_back( (*it).second->clone() );
+        the_functions.push_back( (*it).second->clone() );
     }
     
-    return theFunctions;
+    return the_functions;
 }
 
 
@@ -273,7 +273,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
 {
     
     std::pair<std::multimap<std::string, Function *>::const_iterator,
-              std::multimap<std::string, Function *>::const_iterator> retVal;
+              std::multimap<std::string, Function *>::const_iterator> ret_val;
     
     size_t hits = count(name);
     if (hits == 0)
@@ -291,22 +291,27 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
         }
         
     }
-    retVal = equal_range(name);
+    ret_val = equal_range(name);
     if (hits == 1)
     {
-        if (retVal.first->second->checkArguments(args,NULL,once) == false)
+        if (ret_val.first->second->checkArguments(args,NULL,once) == false)
         {
             std::ostringstream msg;
 
-            msg << "Argument or label mismatch for function call '" << name << "' with arguments (";
+            // get whitespace offset from function name (+2 for " (")
+            std::string whitespace(name.size() + 2, ' ');
+            
+            msg << "Argument or label mismatch for function call.\n";
+            msg << "Provided call:\n";
+            msg << name << " (";
 
             // print the passed arguments
             for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) 
             {
-                // add a comma before the every argument except the first
+                // add a comma and whitespace before the every argument except the first
                 if (it != args.begin()) 
                 {
-                    msg << ",";
+                    msg << ",\n" << whitespace;
                 }
                 
                 // create the default type of the passed-in argument
@@ -316,85 +321,85 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 {
                     type = it->getVariable()->getRevObject().getType();
                 }
-                msg << " " << type;
+                msg << type;
                 
                 // create the default DAG type of the passed-in argument
-                std::string dagtype = "";
+                std::string dag_type = "";
                 // get the type if the variable wasn't NULL
                 if (it->getVariable() != NULL && it->getVariable()->getRevObject().isModelObject() == true && it->getVariable()->getRevObject().getDagNode() != NULL )
                 {
                     if ( it->getVariable()->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC )
                     {
-                        dagtype = "<deterministic>";
+                        dag_type = "<deterministic>";
                     }
                     else if ( it->getVariable()->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::STOCHASTIC )
                     {
-                        dagtype = "<stochastic>";
+                        dag_type = "<stochastic>";
                     }
                     else if ( it->getVariable()->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::CONSTANT )
                     {
-                        dagtype = "<constant>";
+                        dag_type = "<constant>";
                     }
                     else
                     {
-                        dagtype = "<?>";
+                        dag_type = "<?>";
                     }
                 }
-                msg << dagtype;
+                msg << dag_type;
                 
                 if ( it->getLabel() != "" )
                 {
                     msg << " '" << it->getLabel() << "'";
                 }
             }
-            msg << " )." << std::endl;
+            msg << " )\n" << std::endl;
             msg << "Correct usage is:" << std::endl;
-            retVal.first->second->printValue( msg, true );
+            ret_val.first->second->printValue( msg, true );
             msg << std::endl;
             throw RbException( msg.str() );
         }
-        return *retVal.first->second;
+        return *ret_val.first->second;
     }
     else 
     {
-        std::vector<double>* matchScore = new std::vector<double>();
-        std::vector<double> bestScore;
-        Function* bestMatch = NULL;
+        std::vector<double>* match_score = new std::vector<double>();
+        std::vector<double> best_score;
+        Function* best_match = NULL;
 
         bool ambiguous = false;
         std::multimap<std::string, Function *>::const_iterator it;
-        for (it=retVal.first; it!=retVal.second; it++) 
+        for (it=ret_val.first; it!=ret_val.second; it++)
         {
-            matchScore->clear();
-            if ( (*it).second->checkArguments(args, matchScore, once) == true )
+            match_score->clear();
+            if ( (*it).second->checkArguments(args, match_score, once) == true )
             {
-                std::sort(matchScore->begin(), matchScore->end(), std::greater<double>());
-                if ( bestMatch == NULL )
+                std::sort(match_score->begin(), match_score->end(), std::greater<double>());
+                if ( best_match == NULL )
                 {
-                    bestScore = *matchScore;
-                    bestMatch = it->second;
+                    best_score = *match_score;
+                    best_match = it->second;
                     ambiguous = false;
                 }
                 else 
                 {
                     size_t j;
-                    for (j=0; j<matchScore->size() && j<bestScore.size(); ++j)
+                    for (j=0; j<match_score->size() && j<best_score.size(); ++j)
                     {
                         
-                        if ((*matchScore)[j] < bestScore[j]) 
+                        if ( (*match_score)[j] < best_score[j] )
                         {
-                            bestScore = *matchScore;
-                            bestMatch = it->second;
+                            best_score = *match_score;
+                            best_match = it->second;
                             ambiguous = false;
                             break;
                         }
-                        else if ((*matchScore)[j] > bestScore[j])
+                        else if ((*match_score)[j] > best_score[j])
                         {
                             break;
                         }
                         
                     }
-                    if (j==matchScore->size() || j==bestScore.size()) 
+                    if (j==match_score->size() || j==best_score.size())
                     {
                         ambiguous = true;   // Continue checking, there might be better matches ahead
                     }
@@ -406,18 +411,21 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
         }
         
         // free the memory
-        delete matchScore;
+        delete match_score;
         
         /* Delete all processed arguments except those of the best matching function, if it is ambiguous */
-        for ( it = retVal.first; it != retVal.second; it++ ) 
+        for ( it = ret_val.first; it != ret_val.second; it++ )
         {
-            if ( !( (*it).second == bestMatch && ambiguous == false ) )
+            if ( !( (*it).second == best_match && ambiguous == false ) )
+            {
                 (*it).second->clear();
+            }
+            
         }
-        if ( bestMatch == NULL || ambiguous == true ) 
+        if ( best_match == NULL || ambiguous == true )
         {
             std::ostringstream msg;
-            if ( bestMatch == NULL )
+            if ( best_match == NULL )
             {
                 msg << "No overloaded function '" << name << "' matches for arguments (";
             }
@@ -432,14 +440,14 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 {
                     msg << ",";
                 }
-                const RevPtr<const RevVariable>& theVar = j->getVariable();
-                msg << " " << theVar->getRevObject().getTypeSpec().getType();
+                const RevPtr<const RevVariable>& the_var = j->getVariable();
+                msg << " " << the_var->getRevObject().getTypeSpec().getType();
                 
             }
             msg << " )" << std::endl;
             
             msg << "Potentially matching functions are:" << std::endl;
-            for ( it = retVal.first; it != retVal.second; it++ ) 
+            for ( it = ret_val.first; it != ret_val.second; it++ )
             {
                 (*it).second->printValue( msg, true );
                 msg << std::endl;
@@ -448,7 +456,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
         }
         else 
         {
-            return *bestMatch;
+            return *best_match;
         }
         
     }
@@ -464,24 +472,24 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
 Function* FunctionTable::getFirstFunction( const std::string& name ) const
 {
     // find the template function
-    std::vector<Function *> theFunctions = findFunctions(name);
+    std::vector<Function *> the_functions = findFunctions(name);
     
-    if ( theFunctions.size() == 0 )
+    if ( the_functions.size() == 0 )
     {
         throw RbException("Could not find function with name '" + name + "'");
     }
     
     // free memory
-    for (size_t i=1; i<theFunctions.size(); ++i)
+    for (size_t i=1; i<the_functions.size(); ++i)
     {
-        Function *the_function = theFunctions[i];
+        Function *the_function = the_functions[i];
         delete the_function;
         
         // just for savety
-        theFunctions[i] = NULL;
+        the_functions[i] = NULL;
     }
     
-    return theFunctions[0];
+    return the_functions[0];
 }
 
 
@@ -490,29 +498,29 @@ Function* FunctionTable::getFunction( const std::string& name ) const
 {
     
     // find the template function
-    std::vector<Function *> theFunctions = findFunctions(name);
+    std::vector<Function *> the_functions = findFunctions(name);
     
     // free memory
-    for (size_t i=1; i<theFunctions.size(); ++i)
+    for (size_t i=1; i<the_functions.size(); ++i)
     {
-        Function *the_function = theFunctions[i];
+        Function *the_function = the_functions[i];
         delete the_function;
         
         // just for savety
-        theFunctions[i] = NULL;
+        the_functions[i] = NULL;
     }
     
-    if ( theFunctions.size() > 1 ) 
+    if ( the_functions.size() > 1 )
     {
-        Function *the_function = theFunctions[0];
+        Function *the_function = the_functions[0];
         delete the_function;
         
         std::ostringstream o;
-        o << "Found " << theFunctions.size() << " functions with name \"" << name + "\". Identification not possible if arguments are not specified.";
+        o << "Found " << the_functions.size() << " functions with name \"" << name + "\". Identification not possible if arguments are not specified.";
         throw RbException( o.str() );
     }
     
-    return theFunctions[0];
+    return the_functions[0];
 }
 
 
@@ -521,9 +529,9 @@ const Function& FunctionTable::getFunction(const std::string& name, const std::v
 {
     
     // find the template function
-    const Function& theFunction = findFunction(name, args, once);
+    const Function& the_function = findFunction(name, args, once);
 
-    return theFunction;
+    return the_function;
 }
 
 void FunctionTable::getFunctionNames(std::vector<std::string>& names) const

@@ -31,7 +31,7 @@ namespace RevLanguage {
         RealPos(void);                                                              //!< Default constructor
         RealPos(RevBayesCore::TypedDagNode<double> *x);                             //!< Construct from double
         RealPos(double x);                                                          //!< Construct from double
-        RealPos(int x);                                                             //!< Construct from int 
+        RealPos(long x);                                                             //!< Construct from int
 
         // Basic operator functions
         virtual RevObject*              add(const RevObject &rhs) const;            //!< Addition operator used for example in '+=' statements

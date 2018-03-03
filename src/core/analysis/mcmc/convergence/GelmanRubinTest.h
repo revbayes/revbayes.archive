@@ -28,8 +28,8 @@ namespace RevBayesCore {
       GelmanRubinTest(double R=1.001, std::size_t n=10);
     
         // implementen functions from convergence diagnostic
-        bool                assessConvergenceSingleChain(const std::vector<double>& values, std::size_t burnin);
-        bool                assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<std::size_t>& burnin);
+        bool                assessConvergence(const TraceNumeric& trace);
+        bool                assessConvergence(const std::vector<TraceNumeric>& traces);
     
     private:
     

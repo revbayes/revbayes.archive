@@ -33,7 +33,7 @@ Func_chromosomesPloidy* Func_chromosomesPloidy::clone( void ) const
 RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_chromosomesPloidy::createFunction( void ) const {
     
     
-    RevBayesCore::TypedDagNode< int >* n           = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< long >* n           = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* gamma_d  = static_cast<const RealPos &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* delta_d  = static_cast<const RealPos &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* rho_d    = static_cast<const RealPos &>( this->args[3].getVariable()->getRevObject() ).getDagNode();

@@ -63,7 +63,8 @@ RevPtr<RevVariable> Func_source::execute( void )
         
         // Read a line
         std::string line;
-        getline( inFile, line );
+        RevBayesCore::RbFileManager reader = RevBayesCore::RbFileManager();
+        reader.safeGetline(inFile, line);
         lineNumber++;
         
         if ( echo_on == true )
@@ -173,8 +174,8 @@ const TypeSpec& Func_source::getTypeSpec( void ) const
 const TypeSpec& Func_source::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlUtils::Void;
+    static TypeSpec return_typeSpec = RlUtils::Void;
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

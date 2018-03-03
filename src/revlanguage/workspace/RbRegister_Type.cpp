@@ -11,7 +11,7 @@
  * This is the central registry of Rev objects. It is a large file and needs
  * to be properly organized to facilitate maintenance. Follow these simple
  * guidelines to ensure that your additions follow the existing structure.
- * 
+ *
  * 1. All headers are added in groups corresponding to directories in the
  *    revlanguage code base.
  * 2. All objects (types, distributions, and functions) are registered in
@@ -48,8 +48,9 @@
 /* Container types (in folder "datatypes/container") */
 #include "RlCorrespondenceAnalysis.h"
 #include "RlMatrixReal.h"
+#include "RlMatrixRealPos.h"
 #include "RlMatrixRealSymmetric.h"
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 
@@ -57,7 +58,11 @@
 #include "ModelVector.h"
 #include "WorkspaceVector.h"
 
+/* Container types (in folder "distributions/phylogenetics") */
+#include "Dist_bdp.h"
+
 /* Evolution types (in folder "datatypes/phylogenetics") */
+#include "RlDistanceMatrix.h"
 
 /* Character state types (in folder "datatypes/phylogenetics/character") */
 #include "RlAminoAcidState.h"
@@ -105,6 +110,7 @@
 
 /* These types are needed as template types for the moves */
 #include "RlBranchLengthTree.h"
+#include "RlCharacterHistoryRateModifier.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
 #include "RlRateGenerator.h"
@@ -117,7 +123,7 @@
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 {
-    
+
     try
     {
 
@@ -125,14 +131,17 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
         AddWorkspaceVectorType<CladogeneticProbabilityMatrix,3>::addTypeToWorkspace( *this, new CladogeneticProbabilityMatrix() );
         AddWorkspaceVectorType<CladogeneticSpeciationRateMatrix,3>::addTypeToWorkspace( *this, new CladogeneticSpeciationRateMatrix() );
+        AddWorkspaceVectorType<DistanceMatrix,3>::addTypeToWorkspace( *this, new DistanceMatrix() );
         AddWorkspaceVectorType<MatrixReal,3>::addTypeToWorkspace( *this, new MatrixReal() );
+        AddWorkspaceVectorType<MatrixRealPos,3>::addTypeToWorkspace( *this, new MatrixRealPos() );
         AddWorkspaceVectorType<MatrixRealSymmetric,3>::addTypeToWorkspace( *this, new MatrixRealSymmetric() );
         AddWorkspaceVectorType<AbstractHomologousDiscreteCharacterData,3>::addTypeToWorkspace( *this, new AbstractHomologousDiscreteCharacterData() );
-        
+        AddWorkspaceVectorType<CharacterHistoryRateModifier,3>::addTypeToWorkspace( *this, new CharacterHistoryRateModifier() );
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
         AddWorkspaceVectorType<Tree,3>::addTypeToWorkspace( *this, new Tree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
+//        AddWorkspaceVectorType<Dist_bdp,3>::addTypeToWorkspace( *this, new Dist_bdp() );
 
         addTypeWithConstructor( new Clade() );
         addTypeWithConstructor( new Taxon() );
@@ -140,21 +149,23 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         
         //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
 //        addFunction( new Func_workspaceVector<AbstractModelObject>() );
-        
+
+//        addFunction( new Func_workspaceVector<Dist_bdp>() );
+        addFunction( new Func_workspaceVector<TypedDistribution<TimeTree> >() );
 		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
-        
+
 //        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );
         addFunction( new Func_workspaceVector<Monitor>() );
-        
+
         //        AddVectorizedWorkspaceType<Move,3>::addTypeToWorkspace( *this, new Move() );
         addFunction( new Func_workspaceVector<Move>() );
-        
+
         addFunction( new Func_workspaceVector<StoppingRule>() );
-        
+
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
-        
+
         /* Add character types (in folder "datatypes/evolution/character") (alphabetic order) */
-        
+
         /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
 
         /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
@@ -164,7 +175,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 
         /* Add math types (in folder "datatypes/math") */
         addTypeWithConstructor( new CorrespondenceAnalysis()                    );
-        addType( new RateMap()                                                  );
+        //addTypeWithConstructor( new RateGeneratorSequence()                     );
 //        addType( new MatrixReal()                                               );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
@@ -191,19 +202,17 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
     }
     catch(RbException& rbException)
     {
-        
+
         RBOUT("Caught an exception while initializing types in the workspace\n");
         std::ostringstream msg;
         rbException.print(msg);
         msg << std::endl;
         RBOUT(msg.str());
-        
+
         RBOUT("Please report this bug to the RevBayes Development Core Team");
-        
+
         RBOUT("Press any character to exit the program.");
         getchar();
         exit(1);
     }
 }
-
-

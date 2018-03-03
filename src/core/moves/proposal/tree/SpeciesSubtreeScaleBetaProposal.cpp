@@ -23,7 +23,7 @@ SpeciesSubtreeScaleBetaProposal::SpeciesSubtreeScaleBetaProposal( StochasticNode
 {
     // tell the base class to add the node
     addNode( speciesTree );
-    
+
 }
 
 
@@ -43,14 +43,14 @@ void SpeciesSubtreeScaleBetaProposal::addGeneTree(StochasticNode<Tree> *gt)
             break;
         }
     }
-    
+
     // only add this variable if it doesn't exist in our list already
     if ( exists == false )
     {
         geneTrees.push_back( gt );
         addNode( gt );
     }
-    
+
 }
 
 
@@ -72,7 +72,7 @@ void SpeciesSubtreeScaleBetaProposal::cleanProposal( void )
  */
 SpeciesSubtreeScaleBetaProposal* SpeciesSubtreeScaleBetaProposal::clone( void ) const
 {
-    
+
     return new SpeciesSubtreeScaleBetaProposal( *this );
 }
 
@@ -85,7 +85,7 @@ SpeciesSubtreeScaleBetaProposal* SpeciesSubtreeScaleBetaProposal::clone( void ) 
 const std::string& SpeciesSubtreeScaleBetaProposal::getProposalName( void ) const
 {
     static std::string name = "SpeciesSubtreeScaleBeta";
-    
+
     return name;
 }
 
@@ -97,35 +97,35 @@ const std::string& SpeciesSubtreeScaleBetaProposal::getProposalName( void ) cons
  */
 double SpeciesSubtreeScaleBetaProposal::doProposal( void )
 {
-    
+
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
-    
+
     Tree& tau = speciesTree->getValue();
-    
-    // pick a random node which is not the root and neither the direct descendant of the root
+
+    // pick a random node which is not the root and not a tip
     TopologyNode* node;
     do {
         double u = rng->uniform01();
         size_t index = size_t( std::floor(tau.getNumberOfNodes() * u) );
         node = &tau.getNode(index);
     } while ( node->isRoot() || node->isTip() );
-    
+
     TopologyNode& parent = node->getParent();
-    
+
     // we need to work with the times
     double parent_age  = parent.getAge();
     double my_age      = node->getAge();
-    
+
     // now we store all necessary values
     storedNode = node;
     storedSpeciesTreeAges = std::vector<double>(tau.getNumberOfNodes(), 0.0);
     TreeUtilities::getAges(&tau, node, storedSpeciesTreeAges);
-    
+
     // lower bound
     double min_age = 0.0;
     TreeUtilities::getOldestTip(&tau, node, min_age);
-    
+
     // draw new ages
     double current_value = my_age / (parent_age - min_age);
     double a = alpha + 1.0;
@@ -134,22 +134,22 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
 
     // Sebastian: This is for debugging to test if the proposal's acceptance rate is 1.0 as it should be!
 //    new_value = current_value;
-    
-    double my_new_age = new_value * (parent_age - min_age);
-    
+
+    double my_new_age = new_value * (parent_age - min_age) + min_age;
+
     double scaling_factor = my_new_age / my_age;
-    
+
     size_t num_nodes = node->getNumberOfNodesInSubtree( false );
-    
+
     storedGeneTreeAges = std::vector<std::vector<double> >(geneTrees.size(), std::vector<double>());
 
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
         Tree& gene_tree = geneTrees[i]->getValue();
-        
+
         std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(gene_tree, *node );
-        
+
         storedGeneTreeAges[i] = std::vector<double>(gene_tree.getNumberOfNodes(), 0.0);
         TreeUtilities::getAges(&gene_tree, &gene_tree.getRoot(), storedGeneTreeAges[i]);
 
@@ -157,14 +157,14 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
         {
             // add the number of nodes that we are going to scale in the subtree
             num_nodes += nodes[j]->getNumberOfNodesInSubtree( false );
-            
+
             // rescale the subtree of this gene tree
             TreeUtilities::rescaleSubtree(&gene_tree, nodes[j], scaling_factor );
-            
+
         }
-        
+
     }
-    
+
     // Sebastian: We need to work on a mechanism to make these proposal safe for non-ultrametric trees!
     //    if (min_age != 0.0)
     //    {
@@ -176,38 +176,39 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
     //            }
     //        }
     //    }
-    
+
     // rescale the subtree of the species tree
     TreeUtilities::rescaleSubtree(&tau, node, scaling_factor );
-    
+
     // compute the Hastings ratio
     double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
     double new_a = alpha + 1.0;
-    double new_b = (a-1.0) / new_value - a + 2.0;
+    double new_b = (new_a-1.0) / new_value - new_a + 2.0;
     double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
-    double lnHastingsratio = (backward - forward) * (num_nodes-1);
-    
+
+    double lnHastingsratio = (num_nodes > 1 ? ( log(scaling_factor) + backward - forward ) * (num_nodes-1) : 0.0 );
+
     return lnHastingsratio;
 }
 
 
 std::vector<TopologyNode*> SpeciesSubtreeScaleBetaProposal::getOldestNodesInPopulation( Tree &tau, TopologyNode &n )
 {
-    
+
     // I need all the oldest nodes/subtrees that have the same tips.
     // Those nodes need to be scaled too.
-    
+
     // get the beginning and ending age of the population
     double max_age = -1.0;
     if ( n.isRoot() == false )
     {
         max_age = n.getParent().getAge();
     }
-    
+
     // get all the taxa from the species tree that are descendants of node i
     std::vector<TopologyNode*> speciesTaxa;
     TreeUtilities::getTaxaInSubtree( &n, speciesTaxa );
-    
+
     // get all the individuals
     std::set<TopologyNode*> individualTaxa;
     for (size_t i = 0; i < speciesTaxa.size(); ++i)
@@ -219,22 +220,22 @@ std::vector<TopologyNode*> SpeciesSubtreeScaleBetaProposal::getOldestNodesInPopu
             individualTaxa.insert( ind[j] );
         }
     }
-    
+
     // create the set of the nodes within this population
     std::set<TopologyNode*> nodesInPopulationSet;
-    
+
     // now go through all nodes in the gene
     while ( individualTaxa.empty() == false )
     {
         // get the first element
         std::set<TopologyNode*>::iterator it = individualTaxa.begin();
-        
+
         // store the pointer
         TopologyNode *geneNode = *it;
-        
+
         // and now remove the element from the list
         individualTaxa.erase( it );
-        
+
         // add this node to our list of node we need to scale, if:
         // a) this is the root node
         // b) this is not the root and the age of the parent node is larger than the parent's age of the species node
@@ -248,16 +249,16 @@ std::vector<TopologyNode*> SpeciesSubtreeScaleBetaProposal::getOldestNodesInPopu
             // add this node if it is within the age of our population
             nodesInPopulationSet.insert( geneNode );
         }
-        
+
     }
-    
+
     // convert the set into a vector
     std::vector<TopologyNode*> nodesInPopulation;
     for (std::set<TopologyNode*>::iterator it = nodesInPopulationSet.begin(); it != nodesInPopulationSet.end(); ++it)
     {
         nodesInPopulation.push_back( *it );
     }
-    
+
     return nodesInPopulation;
 }
 
@@ -267,7 +268,7 @@ std::vector<TopologyNode*> SpeciesSubtreeScaleBetaProposal::getOldestNodesInPopu
  */
 void SpeciesSubtreeScaleBetaProposal::prepareProposal( void )
 {
-    
+
 }
 
 
@@ -281,9 +282,9 @@ void SpeciesSubtreeScaleBetaProposal::prepareProposal( void )
  */
 void SpeciesSubtreeScaleBetaProposal::printParameterSummary(std::ostream &o) const
 {
-    
+
     o << "alpha = " << alpha;
-    
+
 }
 
 
@@ -302,7 +303,7 @@ void SpeciesSubtreeScaleBetaProposal::removeGeneTree(StochasticNode<Tree> *gt)
             --i;
         }
     }
-    
+
 }
 
 
@@ -320,12 +321,12 @@ void SpeciesSubtreeScaleBetaProposal::undoProposal( void )
     {
         // get the i-th gene tree
         Tree& geneTree = geneTrees[i]->getValue();
-        
+
         TreeUtilities::setAges(&geneTree, &geneTree.getRoot(), storedGeneTreeAges[i]);
-        
+
     }
-    TreeUtilities::setAges(&speciesTree->getValue(), &speciesTree->getValue().getRoot(), storedSpeciesTreeAges);
-    
+    TreeUtilities::setAges(&speciesTree->getValue(), storedNode, storedSpeciesTreeAges);
+
 }
 
 
@@ -337,7 +338,7 @@ void SpeciesSubtreeScaleBetaProposal::undoProposal( void )
  */
 void SpeciesSubtreeScaleBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    
+
     if ( oldN == speciesTree )
     {
         speciesTree = static_cast<StochasticNode<Tree>* >(newN) ;
@@ -352,7 +353,7 @@ void SpeciesSubtreeScaleBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *n
             }
         }
     }
-    
+
 }
 
 
@@ -365,7 +366,7 @@ void SpeciesSubtreeScaleBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *n
  */
 void SpeciesSubtreeScaleBetaProposal::tune( double rate )
 {
-    
+
     if ( rate > 0.234 )
     {
         alpha /= (1.0 + ((rate-0.234)/0.766) );
@@ -374,6 +375,5 @@ void SpeciesSubtreeScaleBetaProposal::tune( double rate )
     {
         alpha *= (2.0 - rate/0.234 );
     }
-    
-}
 
+}

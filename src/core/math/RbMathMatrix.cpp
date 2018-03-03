@@ -212,7 +212,7 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 		for (j=0; j<int(dim); j++)
             {
 			if (F[i][j] < 0.0)
-				F[i][j] = fabs(F[i][j]);
+				F[i][j] = 0.0;
             }
         }
 	return (0);
@@ -452,7 +452,7 @@ std::vector<double> RbMath::rowMeansMatrix(const MatrixReal& a) {
 	size_t n = a.getNumberOfColumns();
 
     std::vector<double> s = rowSumMatrix(a);
-	for(size_t i=0; i<m; i++){
+	for (size_t i=0; i<m; i++){
         s[i] /= n;
 	}
 
@@ -474,7 +474,7 @@ std::vector<double> RbMath::colMeansMatrix(const MatrixReal& a) {
 	size_t n = a.getNumberOfColumns();
 
     std::vector<double> s = colSumMatrix(a);
-	for(size_t i=0; i<n; i++){
+	for (size_t i=0; i<n; i++){
         s[i] /= m;
 	}
 

@@ -61,12 +61,12 @@ std::vector<std::string> getDefaultCompletions( void )
         c.insert(it->first);
     }
     
-    std::vector<std::string> functionTableNames;
-    ft.getFunctionNames(functionTableNames);
-    for (size_t i = 0; i < functionTableNames.size(); i++)
+    std::vector<std::string> function_table_names;
+    ft.getFunctionNames(function_table_names);
+    for (size_t i = 0; i < function_table_names.size(); i++)
     {
-//        std::cout << functionTableNames[i] << "\n";
-        c.insert(functionTableNames[i]);
+//        std::cout << function_table_names[i] << "\n";
+        c.insert(function_table_names[i]);
     }
     
     VariableTable v = RevLanguage::Workspace::userWorkspace().getVariableTable();
@@ -179,18 +179,18 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
         if (debug) { std::cout << "linenoise-debug: cmd.size()=" << cmd.size() << "\n"; }
         if (debug) { std::cout << "linenoise-debug: commandPos=" << commandPos << "\n"; }
 
-        // special hack: for some reason, baseVariable is only set by the parser when there is no trailing characters after the dot
+        // special hack: for some reason, base_variable is only set by the parser when there is no trailing characters after the dot
         // find position of right most dot
         // Sebastian: Currently unused
 //        size_t dotPosition = cmd.rfind(".");
 
-        if (pi.functionName != "")
+        if (pi.function_name != "")
         {
-            if (debug) { std::cout << "linenoise-debug: pi.functionName!=\"\"\n"; }
+            if (debug) { std::cout << "linenoise-debug: pi.function_name!=\"\"\n"; }
             // ---------- function defined ------------
-            if (pi.argumentLabel != "") // assigning an argument label
+            if (pi.argument_label != "") // assigning an argument label
             {
-                if (debug) { std::cout << "linenoise-debug: pi.argumentLabel!=\"\"\n"; }
+                if (debug) { std::cout << "linenoise-debug: pi.argument_label!=\"\"\n"; }
                 commandPos = cmd.rfind("=") + 1;
                 // not sure exactly what should be here... setting completions to everything
                 completions = getDefaultCompletions();
@@ -198,10 +198,10 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
             }
             else // break on either '(' or ','
             {
-                if (debug) { std::cout << "linenoise-debug: pi.argumentLabel==\"\"\n"; }
+                if (debug) { std::cout << "linenoise-debug: pi.argument_label==\"\"\n"; }
                 commandPos = std::max(cmd.rfind("("), cmd.rfind(",")) + 1;
                 
-                std::vector<Function *> v = Workspace::globalWorkspace().getFunctionTable().findFunctions(pi.functionName);
+                std::vector<Function *> v = Workspace::globalWorkspace().getFunctionTable().findFunctions(pi.function_name);
                 
                 for (std::vector<Function *>::iterator it = v.begin(); it != v.end(); it++)
                 {
@@ -215,7 +215,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
         }
         else
         {
-            if (debug) { std::cout << "linenoise-debug: pi.functionName==\"\"\n"; }
+            if (debug) { std::cout << "linenoise-debug: pi.function_name==\"\"\n"; }
             // ---------- default -----------            
             if (commandPos > 0)
             {
@@ -256,24 +256,24 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
 
 /**
  * Print out function signatures
- * @param buf
- * @param len
- * @param c
- * @return 
+ * @param buf The buffer into which we print
+ * @param len The length
+ * @param c The character
+ * @return  Returns the status
  */
 int printFunctionParameters(const char *buf, size_t len, char c)
 {
     std::string cmd = buf;
     RevLanguage::ParserInfo pi = RevLanguage::Parser::getParser().checkCommand(cmd, &RevLanguage::Workspace::userWorkspace());
-    if ( Workspace::globalWorkspace().existsFunction(pi.functionName) )
+    if ( Workspace::globalWorkspace().existsFunction(pi.function_name) )
     {
 
-        std::vector<Function *> functions = Workspace::globalWorkspace().getFunctionTable().findFunctions(pi.functionName);
+        std::vector<Function *> functions = Workspace::globalWorkspace().getFunctionTable().findFunctions(pi.function_name);
         
         for (std::vector<Function *>::iterator it = functions.begin(); it != functions.end(); ++it)
         {
             Function *f = *it;
-            std::cout << "\n\r" + f->getReturnType().getType() + " " + pi.functionName + " (";
+            std::cout << "\n\r" + f->getReturnType().getType() + " " + pi.function_name + " (";
 
             const RevLanguage::ArgumentRules& argRules = (*it)->getArgumentRules();
             for (size_t i = 0; i < argRules.size(); i++)
@@ -304,7 +304,6 @@ void RevClient::startInterpretor( void )
     
     int pid = 0;
 #ifdef RB_MPI
-//    pid = MPI::COMM_WORLD.Get_rank();
     MPI_Comm_rank(MPI_COMM_WORLD, &pid);
 #endif
     
@@ -378,7 +377,7 @@ void RevClient::startInterpretor( void )
                     }
                     else //if (result == 1)
                     {
-                        commandLine += "; " + cmd;
+                        commandLine += "\n " + cmd;
                     }
                 }
             }
@@ -386,7 +385,6 @@ void RevClient::startInterpretor( void )
         
         size_t bsz = commandLine.size();
 #ifdef RB_MPI
-//        MPI::COMM_WORLD.Bcast(&bsz, 1, MPI_INT, 0);
         MPI_Bcast(&bsz, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #endif
             
@@ -395,7 +393,6 @@ void RevClient::startInterpretor( void )
         for (int i = 0; i < bsz; i++)
             buffer[i] = commandLine[i];
 #ifdef RB_MPI
-//        MPI::COMM_WORLD.Bcast(buffer, (int)bsz, MPI_CHAR, 0);
         MPI_Bcast(buffer, (int)bsz, MPI_CHAR, 0, MPI_COMM_WORLD);
 #endif
             

@@ -86,6 +86,12 @@ namespace RevBayesCore {
             }
             return std::vector<valueType>::operator [](i);
         }
+        void                                                swap( valueType& a, valueType& b)
+        {
+            valueType temp = a;
+            a = b;
+            b = temp;
+        }
         void                                                printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
             o << "[";
@@ -98,7 +104,7 @@ namespace RevBayesCore {
                 o << " ";
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForUser( this->operator[](i), o, sep, l, left );
             }
-            o << "]";
+            o << " ]";
         }
         void                                                printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
@@ -204,6 +210,14 @@ namespace RevBayesCore {
         void                                                erase(size_t i) { valueType *tmp=values[i]; values.erase(values.begin()+i); delete tmp; }
         size_t                                              size(void) const { return this->values.size(); }
 
+        void                                                swap( valueType& a, valueType& b)
+        {
+            valueType *temp = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( a );
+            a = b;
+            b = *temp;
+            
+            delete temp;
+        }
         void                                                printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
             o << "[";
@@ -216,7 +230,7 @@ namespace RevBayesCore {
                 o << " ";
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForUser( this->operator[](i), o, sep, l, left );
             }
-            o << "]";
+            o << " ]";
         }
         void                                                printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
         {

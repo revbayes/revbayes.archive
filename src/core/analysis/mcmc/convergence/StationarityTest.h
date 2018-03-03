@@ -26,8 +26,8 @@ namespace RevBayesCore {
         StationarityTest(std::size_t nBlocks=10, double p=0.01);
     
         // implementen functions from convergence diagnostic
-        bool            assessConvergenceSingleChain(const std::vector<double>& values, std::size_t burnin);
-        bool            assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<std::size_t>& burnin);
+        bool            assessConvergence(const TraceNumeric& trace);
+        bool            assessConvergence(const std::vector<TraceNumeric>& traces);
     
         // setters
         void            setNBlocks(std::size_t n) { nBlocks = n; }

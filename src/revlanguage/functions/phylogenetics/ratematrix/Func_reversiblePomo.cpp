@@ -9,6 +9,7 @@
 
 #include "ReversiblePomoRateMatrixFunction.h"
 #include "Func_reversiblePomo.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RateMatrix_ReversiblePomo.h"
 #include "Real.h"
@@ -40,15 +41,20 @@ Func_reversiblePomo* Func_reversiblePomo::clone( void ) const {
 
 RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_reversiblePomo::createFunction( void ) const
 {
+    RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* bf = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
-  RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator >* q = static_cast<const RateMatrix &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    if ( er->getValue().size() != (bf->getValue().size() * (bf->getValue().size()-1) / 2.0) )
+    {
+        throw RbException("The dimensions between the base frequencies and the substitution rates do not match (they should be 4 and 6).");
+    }
 
-  //  RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix >* q = static_cast<const RateMatrix &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    //RevBayesCore::TypedDagNode< double >* root_pol = static_cast<const double &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::TypedDagNode< int >* n = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+  //RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator >* q = static_cast<const RateMatrix &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::ReversiblePomoRateMatrixFunction* f = new RevBayesCore::ReversiblePomoRateMatrixFunction( n, q );
+    RevBayesCore::TypedDagNode< long >* n = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+
+    RevBayesCore::ReversiblePomoRateMatrixFunction* f = new RevBayesCore::ReversiblePomoRateMatrixFunction( n, er, bf );
 
     return f;
 }
@@ -58,19 +64,21 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_reversiblePomo:
 const ArgumentRules& Func_reversiblePomo::getArgumentRules( void ) const
 {
 
-    static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rules_set = false;
+  static ArgumentRules argumentRules = ArgumentRules();
+  static bool          rules_set = false;
 
-    if ( !rules_set )
-    {
+  if ( !rules_set )
+  {
+    argumentRules.push_back( new ArgumentRule( "baseFrequencies", Simplex::getClassTypeSpec(), "The stationary frequencies of the 4 DNA states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    argumentRules.push_back( new ArgumentRule( "exchangeRates"      , ModelVector<Real>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
-        argumentRules.push_back( new ArgumentRule( "mutationRates", RateGenerator::getClassTypeSpec()    , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "virtualNe"    , Natural::getClassTypeSpec()          , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    //argumentRules.push_back( new ArgumentRule( "mutationRates", RateGenerator::getClassTypeSpec()    , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    argumentRules.push_back( new ArgumentRule( "virtualNe"    , Natural::getClassTypeSpec()          , "The virtual population size", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
-        rules_set = true;
-    }
+    rules_set = true;
+  }
 
-    return argumentRules;
+  return argumentRules;
 }
 
 

@@ -10,24 +10,24 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 NaturalNumbersState::NaturalNumbersState(size_t n) : DiscreteCharacterState( n ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(n)
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(n)
 {
-
+    
 }
 
 
 
 /** Constructor that sets the observation */
 NaturalNumbersState::NaturalNumbersState(const std::string &s, int m) : DiscreteCharacterState( m ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(m)
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(m)
 {
     setState(s);
 }
@@ -35,11 +35,11 @@ NaturalNumbersState::NaturalNumbersState(const std::string &s, int m) : Discrete
 
 /** Constructor that sets the observation */
 NaturalNumbersState::NaturalNumbersState(int s, int m) : DiscreteCharacterState( m ),
-    is_gap( false ),
-    is_missing( false ),
-    index_single_state( 0 ),
-    num_observed_states( 0 ),
-    state(m)
+is_gap( false ),
+is_missing( false ),
+index_single_state( 0 ),
+num_observed_states( 0 ),
+state(m)
 {
     setStateByIndex( s );
 }
@@ -99,7 +99,7 @@ std::string NaturalNumbersState::getStateLabels( void ) const
         labels += boost::lexical_cast<std::string>(n);
     }
     return labels;
-	
+    
 }
 
 std::string NaturalNumbersState::getStringValue(void) const
@@ -115,8 +115,8 @@ std::string NaturalNumbersState::getStringValue(void) const
         return "-";
     }
     
-	return boost::lexical_cast<std::string>(index_single_state);
-	
+    return boost::lexical_cast<std::string>(index_single_state);
+    
 }
 
 
@@ -160,10 +160,36 @@ void NaturalNumbersState::setState(const std::string &symbol)
         try
         {
             state.clear();
-            size_t pos = boost::lexical_cast<size_t>( symbol );
-            state.set( pos );
-            num_observed_states = 1;
-            index_single_state = pos;
+
+            if (symbol[0] == '(')
+            {
+                // parse ambiguous character states like (2 4 5)
+                std::string temp = "";
+                size_t num_observed = 0;
+                for (size_t i = 1; i < symbol.size(); ++i)
+                {
+                    if (symbol[i] == ' ' || symbol[i] == ')') 
+                    {
+                        size_t pos = boost::lexical_cast<size_t>( temp );
+                        state.set( pos );
+                        num_observed++;
+                        index_single_state = pos;
+                        temp = "";
+                    }
+                    else
+                    {
+                        temp = temp + symbol[i];
+                    }
+                }
+                num_observed_states = num_observed;
+            } 
+            else
+            {
+                size_t pos = boost::lexical_cast<size_t>( symbol );
+                state.set( pos );
+                num_observed_states = 1;
+                index_single_state = pos;
+            }
         }
         catch( boost::bad_lexical_cast const& )
         {

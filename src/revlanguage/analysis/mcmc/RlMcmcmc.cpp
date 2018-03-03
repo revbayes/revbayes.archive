@@ -59,13 +59,29 @@ void Mcmcmc::constructInternalObject( void )
         mvs.push_back( ws_vec_mvs[i].getValue() );
     }
     const std::string &                                     sched   = static_cast<const RlString &>( moveschedule->getRevObject() ).getValue();
-    int                                                     nchains = static_cast<const Natural &>( num_chains->getRevObject() ).getValue();
-    int                                                     si      = static_cast<const Natural &>( swap_interval->getRevObject() ).getValue();
+    int                                                     nchains = (int)static_cast<const Natural &>( num_chains->getRevObject() ).getValue();
+    int                                                     si      = (int)static_cast<const Natural &>( swap_interval->getRevObject() ).getValue();
     double                                                  delta   = static_cast<const RealPos &>( delta_heat->getRevObject() ).getValue();
-    int                                                     nreps   = static_cast<const Natural &>( num_runs->getRevObject() ).getValue();
-    RevBayesCore::Mcmcmc *m = new RevBayesCore::Mcmcmc(mdl, mvs, mntr, sched, nchains, si, delta);
+    int                                                     nreps   = (int)static_cast<const Natural &>( num_runs->getRevObject() ).getValue();
+    const std::string &                                     comb    = static_cast<const RlString &>( combine_traces->getRevObject() ).getValue();
+    int                                                     ntries  = (int)static_cast<const Natural &>( num_init_attempts->getRevObject() ).getValue();
     
-    value = new RevBayesCore::MonteCarloAnalysis(m,nreps);
+    RevBayesCore::MonteCarloAnalysisOptions::TraceCombinationTypes ct = RevBayesCore::MonteCarloAnalysisOptions::SEQUENTIAL;
+    if ( comb == "sequential" )
+    {
+        ct = RevBayesCore::MonteCarloAnalysisOptions::SEQUENTIAL;
+    }
+    else if ( comb == "mixed" )
+    {
+        ct = RevBayesCore::MonteCarloAnalysisOptions::MIXED;
+    }
+    else if ( comb == "none" )
+    {
+        ct = RevBayesCore::MonteCarloAnalysisOptions::NONE;
+    }
+    RevBayesCore::Mcmcmc *m = new RevBayesCore::Mcmcmc(mdl, mvs, mntr, sched, nchains, si, delta, ntries);
+    
+    value = new RevBayesCore::MonteCarloAnalysis(m,nreps,ct);
     
 }
 
@@ -259,8 +275,8 @@ const MemberRules& Mcmcmc::getParameterRules(void) const
         const MemberRules &parentRules = MonteCarloAnalysis::getParameterRules();
         memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());
         
-        memberRules.push_back( new ArgumentRule("nchains"    , Natural::getClassTypeSpec()  , "The number of chains to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(4) ) );
-        memberRules.push_back( new ArgumentRule("swapInterval" , Natural::getClassTypeSpec(), "The interval at which swaps will be attempted.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10)) );
+        memberRules.push_back( new ArgumentRule("nchains"    , Natural::getClassTypeSpec()  , "The number of chains to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural( long(4) ) ) );
+        memberRules.push_back( new ArgumentRule("swapInterval" , Natural::getClassTypeSpec(), "The interval at which swaps will be attempted.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural( long(10) )) );
         memberRules.push_back( new ArgumentRule("deltaHeat"    , RealPos::getClassTypeSpec(), "The delta parameter for the heat function.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.2) ) );
 
         

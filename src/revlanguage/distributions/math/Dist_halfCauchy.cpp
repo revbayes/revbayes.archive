@@ -152,7 +152,7 @@ std::vector<std::string> Dist_halfCauchy::getHelpDetails(void) const
     details.push_back( details_1 );
     
     std::string details_2 = "";
-    details_2 += "f(x) = 1/(pi * sigma) * 1/(1 + x-(location/scale)^2)";
+    details_2 += "f(x) = 2/(pi * sigma) * 1/(1 + x-(location/scale)^2)";
     
     details.push_back( details_2 );
     
@@ -170,7 +170,7 @@ std::string Dist_halfCauchy::getHelpExample(void) const
     // create an example as a single string variable.
     std::string example = "";
 
-    example += "# we simulate some oversations\n";
+    example += "# we simulate some obversations\n";
     example += "x <- rHalfCauchy(n=10,location=0,scale=1)\n";
     example += "# let's see what the minimum is (you could do the max too). If this is not ‘location’, we're in trouble!\n";
     example += "min(x)\n";

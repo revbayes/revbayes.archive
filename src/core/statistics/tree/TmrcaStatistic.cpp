@@ -33,7 +33,7 @@ TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, cons
         taxon_bitset_map[ordered_taxa[i]] = i;
     }
     
-    for(size_t i=0; i < clade.size(); i++)
+    for (size_t i=0; i < clade.size(); i++)
     {
         const TopologyNode& node = tree->getValue().getTipNodeWithName(clade.getTaxonName(i));
 //        bitset.set(node.getIndex());
@@ -82,10 +82,10 @@ void TmrcaStatistic::fireTreeChangeEvent(const TopologyNode &n, const unsigned& 
 
 void TmrcaStatistic::initialize( void )
 {
+    
     clade.resetTaxonBitset( tree->getValue().getTaxonBitSetMap() );
     taxa_count = clade.size();
     index = -RbConstants::Integer::max;
-    
 }
 
 

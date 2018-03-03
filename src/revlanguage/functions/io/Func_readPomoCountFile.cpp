@@ -41,7 +41,7 @@ RevPtr<RevVariable> Func_readPomoCountFile::execute( void )
 
 	// get the information from the arguments for reading the file
 	const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
-	RevBayesCore::TypedDagNode<int>* virtualPopulationSize = static_cast<const Integer &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+	RevBayesCore::TypedDagNode<long>* virtualPopulationSize = static_cast<const Integer &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
 	RevBayesCore::PomoCountFileReader* pcfr = new RevBayesCore::PomoCountFileReader( fn.getValue(), virtualPopulationSize->getValue(), ' ' );
 
@@ -119,6 +119,6 @@ const TypeSpec& Func_readPomoCountFile::getTypeSpec( void ) const
 const TypeSpec& Func_readPomoCountFile::getReturnType( void ) const
 {
 
-	static TypeSpec returnTypeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
-	return returnTypeSpec;
+	static TypeSpec return_typeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
+	return return_typeSpec;
 }

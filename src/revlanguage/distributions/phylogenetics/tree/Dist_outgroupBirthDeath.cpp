@@ -63,26 +63,31 @@ RevBayesCore::ConstantRateOutgroupBirthDeathProcess* Dist_outgroupBirthDeath::cr
     // get the parameters
     
     // the start age
-    RevBayesCore::TypedDagNode<double>* ra      = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ra      = static_cast<const RealPos &>( start_age->getRevObject() ).getDagNode();
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
     RevBayesCore::TypedDagNode<double>* e       = static_cast<const RealPos &>( mu->getRevObject() ).getDagNode();
     // sampling probability (ingroup)
-    RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ri      = static_cast<const Probability &>( rhoIngroup->getRevObject() ).getDagNode();
     // sampling probability (outgroup)
-    RevBayesCore::TypedDagNode<double>* ro       = static_cast<const Probability &>( rhoOutgroup->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ro      = static_cast<const Probability &>( rhoOutgroup->getRevObject() ).getDagNode();
+    // sampling strategy (ingroup)
+    const std::string& ssi                      = static_cast<const RlString &>( samplingStrategyIngroup->getRevObject() ).getValue();
+    // strategy (outgroup)
+    const std::string& sso                      = static_cast<const RlString &>( samplingStrategyOutgroup->getRevObject() ).getValue();
     
-    // sampling condition
-    const std::string& cond                     = "time"; // just conditions on sampling at T=time
-    
+    // condition
+    const std::string& cdt                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
+
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
-    std::vector<RevBayesCore::Taxon> t          = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
+    std::vector<RevBayesCore::Taxon> t         = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
+    std::vector<RevBayesCore::Taxon> t_out     = static_cast<const ModelVector<Taxon> &>( taxaOutgroup->getRevObject() ).getValue();
     
     // create the internal distribution object
     RevBayesCore::ConstantRateOutgroupBirthDeathProcess* d;
 
-    d = new RevBayesCore::ConstantRateOutgroupBirthDeathProcess(ra, s, e, r, ro, cond, t);
+    d = new RevBayesCore::ConstantRateOutgroupBirthDeathProcess(ra, s, e, ri, ro, ssi, sso, cdt, t, t_out);
     
     return d;
 }
@@ -125,7 +130,7 @@ std::vector<std::string> Dist_outgroupBirthDeath::getDistributionFunctionAliases
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    a_names.push_back( "OBDP" );
+    a_names.push_back( "OutgroupBDP" );
     
     return a_names;
 }
@@ -168,7 +173,16 @@ const MemberRules& Dist_outgroupBirthDeath::getParameterRules(void) const
         
         dist_member_rules.push_back( new ArgumentRule( "lambda",          RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "mu",              RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "rhoIngroup",             Probability::getClassTypeSpec(), "The ingroup sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        
         dist_member_rules.push_back( new ArgumentRule( "rhoOutgroup",     Probability::getClassTypeSpec(), "The outgroup sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "taxaOutgroup",    ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        std::vector<std::string> optionsStrategy;
+        optionsStrategy.push_back( "uniform" );
+        optionsStrategy.push_back( "diversified" );
+        dist_member_rules.push_back( new OptionRule( "samplingStrategyOutgroup", new RlString("uniform"), optionsStrategy, "The sampling strategy of including outgroup taxa at the present." ) );
+        dist_member_rules.push_back( new OptionRule( "samplingStrategyIngroup", new RlString("uniform"), optionsStrategy, "The sampling strategy of including ingroup taxa at the present." ) );
+//        dist_member_rules.push_back( new ArgumentRule( "backbone",        TimeTree::getClassTypeSpec(), "The backbone topological constraints.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
@@ -215,9 +229,25 @@ void Dist_outgroupBirthDeath::setConstParameter(const std::string& name, const R
     {
         mu = var;
     }
+    else if ( name == "rhoIngroup" )
+    {
+        rhoIngroup = var;
+    }
     else if ( name == "rhoOutgroup" )
     {
         rhoOutgroup = var;
+    }
+    else if ( name == "taxaOutgroup" )
+    {
+        taxaOutgroup = var;
+    }
+    else if ( name == "samplingStrategyOutgroup" )
+    {
+        samplingStrategyOutgroup = var;
+    }
+    else if ( name == "samplingStrategyIngroup" )
+    {
+        samplingStrategyIngroup = var;
     }
     else
     {

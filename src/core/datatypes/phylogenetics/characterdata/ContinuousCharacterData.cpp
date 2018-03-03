@@ -108,28 +108,30 @@ void ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, s
         const std::string &n = taxa[i].getName();
         ContinuousTaxonData& taxon = getTaxonData( n );
         
-        size_t idx = obsd.getIndexOfTaxon( n );
-        if ( idx != RbConstants::Size_t::inf)
+        try
         {
-            used[idx] = true;
-            taxon.concatenate( obsd.getTaxonData( n ) );
+            obsd.getIndexOfTaxon( n );
+        }
+        catch(RbException &e)
+        {
+            if ( type == "intersection" )
+            {
+                toDelete.push_back(n);
+            }
+            else if ( type == "union" )
+            {
+                AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
+                taxon_data->setAllCharactersMissing();
+                taxon.concatenate( *taxon_data );
+                delete taxon_data;
+            }
+            else
+            {
+                throw RbException("Cannot add two character data objects because second character data object has no taxon with name '" + n + "n'!");
+            }
+        }
 
-        }
-        else if ( type == "intersection" )
-        {
-            toDelete.push_back(n);
-        }
-        else if ( type == "union" )
-        {
-            AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
-            taxon_data->setAllCharactersMissing();
-            taxon.concatenate( *taxon_data );
-            delete taxon_data;
-        }
-        else
-        {
-            throw RbException("Cannot add two character data objects because second character data object has no taxon with name '" + n + "n'!");
-        }
+        taxon.concatenate( obsd.getTaxonData( n ) );
     }
     for (size_t i=0; i<toDelete.size(); i++)
     {
@@ -182,7 +184,7 @@ void ContinuousCharacterData::excludeAllCharacters(void)
     
     for (size_t i = 0; i < getTaxonData( 0 ).getNumberOfCharacters(); ++i)
     {
-        deletedCharacters.insert( i );
+        deleted_characters.insert( i );
     }
     
 }
@@ -205,7 +207,7 @@ void ContinuousCharacterData::excludeCharacter(size_t i)
     }
     
     
-    deletedCharacters.insert( i );
+    deleted_characters.insert( i );
     
 }
 
@@ -214,8 +216,8 @@ void ContinuousCharacterData::executeMethod(const std::string &n, const std::vec
     
     if ( n == "get" )
     {
-        int index_taxon = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
-        int index_site = static_cast<const TypedDagNode<int> *>( args[1] )->getValue()-1;
+        long index_taxon = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
+        long index_site = static_cast<const TypedDagNode<long> *>( args[1] )->getValue()-1;
         rv = getTaxonData(index_taxon)[index_site];
     }
     else
@@ -239,7 +241,9 @@ const double& ContinuousCharacterData::getCharacter( size_t tn, size_t cn ) cons
 {
     
     if ( cn >= getNumberOfCharacters() )
+    {
         throw RbException( "Character index out of range" );
+    }
     
     return getTaxonData( tn )[cn];
 }
@@ -258,6 +262,409 @@ std::string ContinuousCharacterData::getDataType(void) const
     return dt;
 }
 
+
+/**
+ * Get the maximum difference between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getMaxDifference( size_t index ) const
+{
+    
+    double max = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    if ( diff > max )
+                    {
+                        max = diff;
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+
+    return max;
+}
+
+
+/**
+ * Get the maximum difference between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getMaxSpeciesDifference( size_t char_index ) const
+{
+    
+    std::map<std::string,size_t> species_to_index;
+    size_t num_species = 0;
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        if ( species_to_index.find(t.getSpeciesName()) == species_to_index.end() )
+        {
+            species_to_index.insert( std::pair<std::string, size_t>(t.getSpeciesName(),num_species++) );
+        }
+        
+    }
+    
+    // create some vectors for the number of samples per species and the species mean
+    std::vector<double> samples_per_species = std::vector<double>(num_species, 0.0);
+    std::vector<double> species_mean = std::vector<double>(num_species, 0.0);
+    
+    // now populate the vectors by iterating over all samples
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        const std::string &name = t.getSpeciesName();
+        size_t index = species_to_index[ name ];
+        
+        ++samples_per_species[index];
+        species_mean[index] += getTaxonData( t.getName() ).getCharacter( char_index );
+        
+    }
+    
+    // we need to normalize the values to actually get the species means
+    for (size_t i=0; i<num_species; ++i)
+    {
+        // sanity check that we had a least one sample for this species
+        if ( samples_per_species[i] > 0 )
+        {
+            species_mean[i] /= samples_per_species[i];
+        }
+        
+    }
+    
+    // now compute the max difference
+    double max = 0.0;
+    for (size_t i=0; i<(num_species-1); ++i)
+    {
+        // sanity check that we had a least one sample for this species
+        if ( samples_per_species[i] > 0 )
+        {
+            
+            // now loop over the second species that we compare it to
+            for (size_t j=i+1; j<num_species; ++j)
+            {
+                
+                if ( samples_per_species[j] > 0 && max < fabs(species_mean[i]-species_mean[j]) )
+                {
+                    max = fabs(species_mean[i] - species_mean[j]);
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    return max;
+    
+}
+
+
+
+/**
+ * Get the mean between all differences between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getMeanDifference( size_t index ) const
+{
+    
+    double mean = 0.0;
+    double n_samples = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+            
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    mean += diff;
+                    ++n_samples;
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    mean /= n_samples;
+    
+    return mean;
+}
+
+
+
+/**
+ * Get the mean difference between any two species mean values.
+ *
+ * \return      The mean difference.
+ */
+double ContinuousCharacterData::getMeanSpeciesDifference( size_t char_index ) const
+{
+    
+    std::map<std::string,size_t> species_to_index;
+    size_t num_species = 0;
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        if ( species_to_index.find(t.getSpeciesName()) == species_to_index.end() )
+        {
+            species_to_index.insert( std::pair<std::string, size_t>(t.getSpeciesName(),num_species++) );
+        }
+        
+    }
+    
+    // create some vectors for the number of samples per species and the species mean
+    std::vector<double> samples_per_species = std::vector<double>(num_species, 0.0);
+    std::vector<double> species_mean = std::vector<double>(num_species, 0.0);
+    
+    // now populate the vectors by iterating over all samples
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        const std::string &name = t.getSpeciesName();
+        size_t index = species_to_index[ name ];
+        
+        ++samples_per_species[index];
+        species_mean[index] += getTaxonData( t.getName() ).getCharacter( char_index );
+        
+    }
+    
+    // we need to normalize the values to actually get the species means
+    for (size_t i=0; i<num_species; ++i)
+    {
+        // sanity check that we had a least one sample for this species
+        if ( samples_per_species[i] > 0 )
+        {
+            species_mean[i] /= samples_per_species[i];
+        }
+        
+    }
+    
+    // now compute the mean difference
+    double mean = 0.0;
+    double n_pairs = 0.0;
+    for (size_t i=0; i<(num_species-1); ++i)
+    {
+        // sanity check that we had a least one sample for this species
+        if ( samples_per_species[i] > 0 )
+        {
+            
+            // now loop over the second species that we compare it to
+            for (size_t j=i+1; j<num_species; ++j)
+            {
+                
+                if ( samples_per_species[j] > 0 )
+                {
+                    mean += fabs(species_mean[i] - species_mean[j]);
+                    ++n_pairs;
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    return mean / n_pairs;
+    
+}
+
+
+
+/**
+ * Get the mean between all differences between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getMeanValue( size_t index ) const
+{
+    
+    double mean = 0.0;
+    double n_samples = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+                    
+            mean += a;
+            ++n_samples;
+            
+        }
+        
+    }
+    
+    mean /= n_samples;
+    
+    return mean;
+}
+
+
+/**
+ * Get the minimum difference between two observed values.
+ *
+ * \return      The min difference.
+ */
+double ContinuousCharacterData::getMinDifference( size_t index ) const
+{
+    
+    double min = RbConstants::Double::inf;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+            
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    if ( diff < min )
+                    {
+                        min = diff;
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    return min;
+}
+
+
+
+/**
+ * Get the minimum difference between two species mean values.
+ *
+ * \return      The min difference.
+ */
+double ContinuousCharacterData::getMinSpeciesDifference( size_t char_index ) const
+{
+    
+    std::map<std::string,size_t> species_to_index;
+    size_t num_species = 0;
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        if ( species_to_index.find(t.getSpeciesName()) == species_to_index.end() )
+        {
+            species_to_index.insert( std::pair<std::string, size_t>(t.getSpeciesName(),num_species++) );
+        }
+        
+    }
+    
+    // create some vectors for the number of samples per species and the species mean
+    std::vector<double> samples_per_species = std::vector<double>(num_species, 0.0);
+    std::vector<double> species_mean = std::vector<double>(num_species, 0.0);
+    
+    // now populate the vectors by iterating over all samples
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        const std::string &name = t.getSpeciesName();
+        size_t index = species_to_index[ name ];
+        
+        ++samples_per_species[index];
+        species_mean[index] += getTaxonData( t.getName() ).getCharacter( char_index );
+        
+    }
+    
+    // we need to normalize the values to actually get the species means
+    for (size_t i=0; i<num_species; ++i)
+    {
+        // sanity check that we had a least one sample for this species
+        if ( samples_per_species[i] > 0 )
+        {
+            species_mean[i] /= samples_per_species[i];
+        }
+        
+    }
+    
+    // now compute the max difference
+    double min = RbConstants::Double::inf;
+    for (size_t i=0; i<(num_species-1); ++i)
+    {
+        // sanity check that we had a least one sample for this species
+        if ( samples_per_species[i] > 0 )
+        {
+            
+            // now loop over the second species that we compare it to
+            for (size_t j=i+1; j<num_species; ++j)
+            {
+                
+                if ( samples_per_species[j] > 0 && min > fabs(species_mean[i]-species_mean[j]) )
+                {
+                    min = fabs(species_mean[i] - species_mean[j]);
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    return min;
+}
 
 
 /** 
@@ -288,11 +695,12 @@ size_t ContinuousCharacterData::getNumberOfCharacters(void) const
  *
  * \return    The total number of characters
  */
-size_t ContinuousCharacterData::getNumberOfIncludedCharacters(void) const {
+size_t ContinuousCharacterData::getNumberOfIncludedCharacters(void) const
+{
     
     if (getNumberOfTaxa() > 0) 
     {
-        return getTaxonData(0).getNumberOfCharacters() - deletedCharacters.size();
+        return getTaxonData(0).getNumberOfCharacters() - deleted_characters.size();
     }
     return 0;
 }
@@ -411,6 +819,165 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &t
 
 
 /**
+ * Get the variance between all differences between two observed values.
+ *
+ * \return      The var difference.
+ */
+double ContinuousCharacterData::getVarDifference( size_t index ) const
+{
+    
+    double mean = getMeanDifference( index );
+    double var = 0.0;
+    double n_samples = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+            
+            for (size_t j=i+1; j<taxa.size(); ++j )
+            {
+                
+                if ( isTaxonExcluded(j) == false )
+                {
+                    
+                    const ContinuousTaxonData& taxon_j = getTaxonData( j );
+                    double b = taxon_j.getCharacter( index );
+                    double diff = fabs( a-b );
+                    
+                    var += ((diff-mean)*(diff-mean));
+                    ++n_samples;
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    var /= (n_samples-1);
+    
+    return var;
+}
+
+
+
+/**
+ * Get the variance of the difference between any two species mean values.
+ *
+ * \return      The var difference.
+ */
+double ContinuousCharacterData::getVarSpeciesDifference( size_t char_index ) const
+{
+    
+    std::map<std::string,size_t> species_to_index;
+    size_t num_species = 0;
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        if ( species_to_index.find(t.getSpeciesName()) == species_to_index.end() )
+        {
+            species_to_index.insert( std::pair<std::string, size_t>(t.getSpeciesName(),num_species++) );
+        }
+        
+    }
+    
+    // create some vectors for the number of samples per species and the species mean
+    std::vector<double> samples_per_species = std::vector<double>(num_species, 0.0);
+    std::vector<double> species_mean = std::vector<double>(num_species, 0.0);
+    
+    // now populate the vectors by iterating over all samples
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        const std::string &name = t.getSpeciesName();
+        size_t index = species_to_index[ name ];
+        
+        ++samples_per_species[index];
+        species_mean[index] += getTaxonData( t.getName() ).getCharacter( char_index );
+        
+    }
+    
+    // we need to normalize the values to actually get the species means
+    for (size_t i=0; i<num_species; ++i)
+    {
+        // sanity check that we had a least one sample for this species
+        if ( samples_per_species[i] > 0 )
+        {
+            species_mean[i] /= samples_per_species[i];
+        }
+        
+    }
+    
+    // now compute the mean difference
+    double mean = 0.0;
+    double n_pairs = 0.0;
+    for (size_t i=0; i<(num_species-1); ++i)
+    {
+        // sanity check that we had a least one sample for this species
+        if ( samples_per_species[i] > 0 )
+        {
+            
+            // now loop over the second species that we compare it to
+            for (size_t j=i+1; j<num_species; ++j)
+            {
+                
+                if ( samples_per_species[j] > 0 )
+                {
+                    mean += fabs(species_mean[i] - species_mean[j]);
+                    ++n_pairs;
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    mean /= n_pairs;
+    
+    
+    // now compute the mean difference
+    double var = 0.0;
+    for (size_t i=0; i<(num_species-1); ++i)
+    {
+        // sanity check that we had a least one sample for this species
+        if ( samples_per_species[i] > 0 )
+        {
+            
+            // now loop over the second species that we compare it to
+            for (size_t j=i+1; j<num_species; ++j)
+            {
+                
+                if ( samples_per_species[j] > 0 )
+                {
+                    double a = species_mean[i];
+                    double b = species_mean[j];
+                    double diff = fabs( a-b );
+                    
+                    var += ((diff-mean)*(diff-mean));
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    var /= (n_pairs-1);
+    
+    return var;
+    
+}
+
+
+/**
  * Include a character.
  * Since we didn't actually deleted the character but marked it for exclusion
  * we can now simply remove the flag.
@@ -428,7 +995,7 @@ void ContinuousCharacterData::includeCharacter(size_t i)
     }
     
     
-    deletedCharacters.erase( i );
+    deleted_characters.erase( i );
     
 }
 
@@ -472,8 +1039,8 @@ void ContinuousCharacterData::initFromString(const std::string &s)
 bool ContinuousCharacterData::isCharacterExcluded(size_t i) const 
 {
     
-	std::set<size_t>::const_iterator it = deletedCharacters.find( i );
-	if ( it != deletedCharacters.end() )
+	std::set<size_t>::const_iterator it = deleted_characters.find( i );
+	if ( it != deleted_characters.end() )
 		return true;
     
     return false;
@@ -495,6 +1062,32 @@ bool ContinuousCharacterData::isCharacterResolved(const std::string &tn, size_t 
 }
 
 
+//!< print object for user (in user-formatted way)
+void ContinuousCharacterData::printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const
+{
+    
+    o << *this;
+    
+}
+
+
+//!< print object for user (in user-formatted way)
+void ContinuousCharacterData::printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
+{
+    
+    o << *this;
+    
+}
+
+
+//!< print object for user (in user-formatted way)
+void ContinuousCharacterData::printForComplexStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
+{
+    o << "{Hello}";
+}
+
+
+
 /**
  * Remove all the excluded character.
  *
@@ -504,7 +1097,7 @@ void ContinuousCharacterData::removeExcludedCharacters( void )
     
     for (std::map<std::string, AbstractTaxonData*>::iterator it = taxonMap.begin(); it != taxonMap.end(); ++it)
     {
-        it->second->removeCharacters( deletedCharacters );
+        it->second->removeCharacters( deleted_characters );
     }
     
 }
@@ -519,9 +1112,11 @@ void ContinuousCharacterData::restoreCharacter(size_t i)
 {
     
     if (i >= getNumberOfCharacters() )
+    {
         throw RbException( "Character index out of range" );
+    }
     
-    deletedCharacters.erase( i );
+    deleted_characters.erase( i );
     
 }
 

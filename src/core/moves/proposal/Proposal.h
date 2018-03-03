@@ -31,12 +31,14 @@ namespace RevBayesCore {
         const std::vector<DagNode*>&                            getNodes(void) const;                                                                   //!< Get the vector of nodes for which the proposal is drawing new values.
         void                                                    swapNode(DagNode *oldN, DagNode *newN);                                                 //!< Swap the pointers to the variable on which the move works on.
         void                                                    setMove(Move *m);                                                                       //!< Set the pointer to move object holding this proposal
-        
+        const Move*                                             getMove(void) const;                                                                    //!< Get the pointer to move object holding this proposal
+
         // pure virtual public methods
         virtual void                                            cleanProposal(void) = 0;                                                                //!< Cleanup proposal
         virtual Proposal*                                       clone(void) const = 0;                                                                  //!< Make a deep copy
         virtual double                                          doProposal(void) = 0;                                                                   //!< Actually do the proposal.
         virtual const std::string&                              getProposalName(void) const = 0;                                                        //!< Get the name of this proposal used for printing out info.
+        virtual std::vector<DagNode*>                           identifyNodesToTouch(void);
         virtual void                                            prepareProposal(void) = 0;                                                              //!< Propose a new state
         virtual void                                            printParameterSummary(std::ostream &o) const = 0;                                       //!< Print the parameter summary
         virtual void                                            tune(double r) = 0;                                                                     //!< Tune the parameters of the proposal.

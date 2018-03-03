@@ -1,6 +1,7 @@
 #include "RlSimplex.h"
 
 #include "ConstantNode.h"
+#include "RlMemberFunction.h"
 #include "Natural.h"
 #include "Probability.h"
 #include "RbException.h"
@@ -14,7 +15,7 @@ using namespace RevLanguage;
  * Construct an empty simplex.
  * We simply rely on the base class.
  */
-Simplex::Simplex( void ) : ModelObject<RevBayesCore::Simplex>()
+Simplex::Simplex( void ) : ModelObject<RevBayesCore::Simplex>( new RevBayesCore::Simplex() )
 {
     initMethods();
 }
@@ -81,13 +82,6 @@ RevPtr<RevVariable> Simplex::executeMethod( std::string const &name, const std::
         // return a new RevVariable with the size of this container
         return RevPtr<RevVariable>( new RevVariable( new Natural( size() ), "" ) );
     }
-    else if ( name == "[]" )
-    {
-        found = true;
-        
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
-        return RevPtr<RevVariable>( new RevVariable( getElement( index ) ) );
-    }
     
     return ModelObject<RevBayesCore::Simplex>::executeMethod( name, args, found );
 }
@@ -105,9 +99,10 @@ const std::string& Simplex::getClassType(void)
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Simplex::getClassTypeSpec(void) { 
+const TypeSpec& Simplex::getClassTypeSpec(void)
+{
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &ModelObject<RevBayesCore::Simplex>::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &ModelObject<RevBayesCore::Simplex>::getClassTypeSpec(), &Probability::getClassTypeSpec() );
     
 	return rev_type_spec; 
 }
@@ -134,8 +129,8 @@ void Simplex::initMethods( void )
     
     ArgumentRules* elementArgRules = new ArgumentRules();
     elementArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "[]", Probability::getClassTypeSpec(), elementArgRules ) );
-    
+    this->methods.addFunction( new MemberFunction<Simplex,Probability >("[]", this, elementArgRules ) );
+
 }
 
 

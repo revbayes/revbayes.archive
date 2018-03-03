@@ -10,7 +10,8 @@
 using namespace RevLanguage;
     
 /** Default constructor */
-RealPos::RealPos( void ) : Real( 1.0 ) {
+RealPos::RealPos( void ) : Real( 1.0 )
+{
 
 }
 
@@ -23,6 +24,7 @@ RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x )
     {
         throw RbException( "Nonpositive value for " + getClassType() );
     }
+    
 }
 
 
@@ -39,7 +41,7 @@ RealPos::RealPos( double x ) : Real( x )
 
 
 /** Construct from int */
-RealPos::RealPos( int x ) : Real( x )
+RealPos::RealPos( long x ) : Real( double(x) )
 {
 
     if ( x < 0 )
@@ -224,6 +226,24 @@ const TypeSpec& RealPos::getTypeSpec( void ) const
 }
 
 
+/** Is convertible to type? */
+double RealPos::isConvertibleTo(const TypeSpec& type, bool once) const
+{
+    
+    if ( type == Real::getClassTypeSpec() )
+    {
+        return 0.2;
+    }
+    else if ( once == true && type == Probability::getClassTypeSpec() && dag_node->getValue() <= 1.0 )
+    {
+        return 0.1;
+    }
+    
+    double tmp = Real::isConvertibleTo(type, once);
+    return ( (tmp == -1.0) ? -1.0 : (tmp+0.2));
+}
+
+
 /**
  * Generic multiplication operator.
  * We test if the rhs is of a type that we use for a specialized multiplication operation.
@@ -280,21 +300,4 @@ RealPos* RealPos::multiply(const RevLanguage::RealPos &rhs) const
     RealPos *n = new RealPos( dag_node->getValue() * rhs.getValue() );
     
     return n;
-}
-
-/** Is convertible to type? */
-double RealPos::isConvertibleTo(const TypeSpec& type, bool once) const
-{
-
-    if ( type == Real::getClassTypeSpec() )
-    {
-        return 0.2;
-    }
-    else if ( once == true && type == Probability::getClassTypeSpec() && dag_node->getValue() <= 1.0 )
-    {
-        return 0.1;
-    }
-    
-    double tmp = Real::isConvertibleTo(type, once);
-    return ( (tmp == -1.0) ? -1.0 : (tmp+0.2));
 }

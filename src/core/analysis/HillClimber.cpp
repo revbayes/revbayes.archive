@@ -10,7 +10,6 @@
 #include "RbMathLogic.h"
 #include "RbOptions.h"
 #include "RlUserInterface.h"
-#include "SequenctialMoveSchedule.h"
 #include "SingleRandomMoveSchedule.h"
 #include "RandomMoveSchedule.h"
 #include "ExtendedNewickTreeMonitor.h"
@@ -21,6 +20,7 @@
 #include <iomanip>
 #include <sstream>
 #include <typeinfo>
+#include "SequentialMoveSchedule.h"
 
 
 using namespace RevBayesCore;
@@ -312,8 +312,8 @@ bool HillClimber::hasConverged(double min_acceptance_ratio)
     
     for (size_t i=0; i<moves.size() && converged == true; ++i)
     {
-        size_t num_tried    = moves[i].getNumberTried();
-        size_t num_accepted = moves[i].getNumberAccepted();
+        size_t num_tried    = moves[i].getNumberTriedCurrentPeriod();
+        size_t num_accepted = moves[i].getNumberAcceptedCurrentPeriod();
         
         if ( num_tried > 0)
         {
@@ -484,10 +484,10 @@ void HillClimber::nextCycle( void )
     {
         
         // Get the move
-        Move& theMove = schedule->nextMove( generation );
+        Move& the_move = schedule->nextMove( generation );
         
         // Perform the move
-        theMove.performHillClimbingStep( 1.0, 1.0);
+        the_move.performHillClimbingStep( 1.0, 1.0);
         
     }
     
@@ -510,8 +510,8 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
     for (RbConstIterator<Move> it = mvs.begin(); it != mvs.end(); ++it)
     {
         
-        Move *theMove = it->clone();
-        std::vector<DagNode*> nodes = theMove->getDagNodes();
+        Move *the_move = it->clone();
+        std::vector<DagNode*> nodes = the_move->getDagNodes();
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
@@ -520,7 +520,7 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
             // error checking
             if ( the_node->getName() == "" )
             {
-                throw RbException( "Unable to connect move '" + theMove->getMoveName() + "' to DAG copy because variable name was lost");
+                throw RbException( "Unable to connect move '" + the_move->getMoveName() + "' to DAG copy because variable name was lost");
             }
             
             DagNode* theNewNode = NULL;
@@ -539,10 +539,10 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
             }
             
             // now swap the node
-            theMove->swapNode( *j, theNewNode );
+            the_move->swapNode( *j, theNewNode );
         }
-        moves.push_back( *theMove );
-        delete theMove;
+        moves.push_back( *the_move );
+        delete the_move;
     }
     
     for (RbConstIterator<Monitor> it = mons.begin(); it != mons.end(); ++it)

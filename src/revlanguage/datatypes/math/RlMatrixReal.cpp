@@ -197,5 +197,3 @@ void MatrixReal::initializeMethods( void )
     methods.addFunction( new MemberProcedure( "ncolumns", Natural::getClassTypeSpec(), nColumnsArgRules) );
 
 }
-
-

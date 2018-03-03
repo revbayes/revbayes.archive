@@ -63,7 +63,7 @@ const std::string& ScaleBactrianProposal::getProposalName( void ) const
 /** 
  * Perform the proposal.
  *
- * A scaling Proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * A scaling Proposal draws a random uniform number u ~ unif (-0.5,0.5)
  * and scales the current vale by a scaling factor
  * sf = exp( lambda * u )
  * where lambda is the tuning parameter of the Proposal to influence the size of the proposals.
@@ -80,7 +80,7 @@ double ScaleBactrianProposal::propose( double &val )
     storedValue = val;
     
     double u = rng->uniform01();
-    double delta = RbStatistics::Normal::rv(0.0, 1.0, *GLOBAL_RNG) * sqrt(1 - 0.95*0.95);
+    double delta = RbStatistics::Normal::rv(*GLOBAL_RNG) * RbConstants::BACT_SD;
     
     // See Yang and Rodriguez (2013) SI eqns 19 and 20
     // Currently hard-coding m = 0.95

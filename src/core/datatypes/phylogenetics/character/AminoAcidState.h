@@ -52,7 +52,6 @@ namespace RevBayesCore {
         size_t                          num_observed_states;
         RbBitSet                        state;
 
-        
     };
     
 }

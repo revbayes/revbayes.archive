@@ -104,7 +104,7 @@ const ArgumentRules& Func_formatDiscreteCharacterData::getArgumentRules( void ) 
     {
         argumentRules.push_back( new ArgumentRule( "data"  , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character data object.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "format", RlString::getClassTypeSpec(), "The data format.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("DEC")) );
-        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), "The number of states (format==\"DEC\" only).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), "The number of states (format==\"DEC\" only).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0L)) );
         rulesSet = true;
     }
     
@@ -175,6 +175,6 @@ const TypeSpec& Func_formatDiscreteCharacterData::getTypeSpec( void ) const
 const TypeSpec& Func_formatDiscreteCharacterData::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = RevNullObject::getClassTypeSpec();
+    return return_typeSpec;
 }

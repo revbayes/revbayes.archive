@@ -11,7 +11,7 @@
 
 using namespace RevBayesCore;
 
-SimplexScaleFunction::SimplexScaleFunction(const TypedDagNode< RbVector< double > > *s, const TypedDagNode< double > *f, const TypedDagNode< int > *i) : TypedFunction< RbVector<double> >( new RbVector<double>() ),
+SimplexScaleFunction::SimplexScaleFunction(const TypedDagNode< RbVector< double > > *s, const TypedDagNode< double > *f, const TypedDagNode< long > *i) : TypedFunction< RbVector<double> >( new RbVector<double>() ),
     simplex( s ),
     factor( f ),
     index( i )
@@ -80,7 +80,7 @@ void SimplexScaleFunction::swapParameterInternal(const DagNode *oldP, const DagN
         simplex = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     } 
     else if ( oldP == index ) {
-        index = static_cast<const TypedDagNode< int >* >( newP );
+        index = static_cast<const TypedDagNode< long >* >( newP );
     }
     else {
         TypedFunction< RbVector< double> >::swapParameter( oldP, newP );

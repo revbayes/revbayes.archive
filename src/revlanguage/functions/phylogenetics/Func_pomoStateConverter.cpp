@@ -40,7 +40,7 @@ RevPtr<RevVariable> Func_pomoStateConverter::execute() {
     
     const RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* aln = static_cast<const AbstractHomologousDiscreteCharacterData&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode< int >* n = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< long >* n = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
 
     RevBayesCore::PomoStateConverter* c = new RevBayesCore::PomoStateConverter(  );
@@ -54,7 +54,7 @@ RevPtr<RevVariable> Func_pomoStateConverter::execute() {
         gene2species[it->getName()] = it->getSpeciesName();
     }
     
-    AbstractHomologousDiscreteCharacterData PomoAln = c->convertData( aln->getValue(), n->getValue(), gene2species ) ;
+    AbstractHomologousDiscreteCharacterData PomoAln = c->convertData( aln->getValue(), (int)n->getValue(), gene2species ) ;
         
     return new RevVariable( new AbstractHomologousDiscreteCharacterData( PomoAln ) );
 }
@@ -115,9 +115,9 @@ std::string Func_pomoStateConverter::getFunctionName( void ) const
 const TypeSpec& Func_pomoStateConverter::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
+    static TypeSpec return_typeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 
 

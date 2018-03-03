@@ -27,7 +27,7 @@ namespace RevBayesCore {
     class OrderedRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        OrderedRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *m);
+        OrderedRateMatrixFunction(const TypedDagNode<long> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *m);
         
         virtual                                     ~OrderedRateMatrixFunction(void);                                                    //!< Virtual destructor
         
@@ -42,7 +42,7 @@ namespace RevBayesCore {
         
         // members
         
-        const TypedDagNode<int>*                    n;
+        const TypedDagNode<long>*                    n;
         const TypedDagNode<double>*                 lambda;
         const TypedDagNode<double>*                 mu;
         

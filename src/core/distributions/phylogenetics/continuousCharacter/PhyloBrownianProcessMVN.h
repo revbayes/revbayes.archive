@@ -22,7 +22,11 @@ namespace RevBayesCore {
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
         PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, size_t nSites );
+        PhyloBrownianProcessMVN(const PhyloBrownianProcessMVN &p);
         virtual                                                            ~PhyloBrownianProcessMVN(void);                                                              //!< Virtual destructor
+        
+        PhyloBrownianProcessMVN&                                            operator=(const PhyloBrownianProcessMVN &p);
+
         
         // public member functions
         // pure virtual
@@ -53,14 +57,14 @@ namespace RevBayesCore {
         const TypedDagNode< double >*                                       homogeneous_root_state;
         const TypedDagNode< RbVector< double > >*                           heterogeneous_root_state;
         
-        size_t                                                              numTips;
+        size_t                                                              num_tips;
         std::vector<std::vector<double> >                                   obs;
-        MatrixReal*                                                         phylogeneticCovarianceMatrix;
-        MatrixReal*                                                         storedPhylogeneticCovarianceMatrix;
-        MatrixReal                                                          inversePhylogeneticCovarianceMatrix;
-        bool                                                                changedCovariance;
-        bool                                                                needsCovarianceRecomputation;
-        bool                                                                needsScaleRecomputation;
+        MatrixReal*                                                         phylogenetic_covariance_matrix;
+        MatrixReal*                                                         stored_phylogenetic_covariance_matrix;
+        MatrixReal                                                          inverse_phylogenetic_covariance_matrix;
+        bool                                                                changed_covariance;
+        bool                                                                needs_covariance_recomputation;
+        bool                                                                needs_scale_recomputation;
     };
     
 }

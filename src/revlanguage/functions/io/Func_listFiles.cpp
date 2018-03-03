@@ -138,8 +138,8 @@ const TypeSpec& Func_listFiles::getTypeSpec( void ) const
 const TypeSpec& Func_listFiles::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = ModelVector<RlString>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = ModelVector<RlString>::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

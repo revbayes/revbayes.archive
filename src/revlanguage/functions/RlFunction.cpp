@@ -122,7 +122,7 @@ std::string Function::callSignature(void) const
  *       Finally, the ellipsis arguments no longer have to be last among the rules, but they
  *       are still the last arguments after processing.
  */
-bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vector<double>* matchScore, bool once)
+bool Function::checkArguments( const std::vector<Argument>& passed_args, std::vector<double>* match_score, bool once)
 {
     
     /*********************  0. Initialization  **********************/
@@ -130,60 +130,62 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
     double MAX_ARGS = 1000.0;
     
     /* Get the argument rules */
-    const ArgumentRules& theRules = getArgumentRules();
+    const ArgumentRules& the_rules = getArgumentRules();
     
     /* Get the number of argument rules */
-    size_t nRules = theRules.size();
+    size_t num_rules = the_rules.size();
     
     /* Keep track of which arguments we have used, and which argument slots we have filled, and with what passed arguments */
-    std::vector<bool>   taken           = std::vector<bool>( passedArgs.size(), false );
-    std::vector<bool>   filled          = std::vector<bool>( theRules.size(), false );
+    std::vector<bool>   taken           = std::vector<bool>( passed_args.size(), false );
+    std::vector<bool>   filled          = std::vector<bool>( the_rules.size(), false );
     
     
     /*********************  1. Do exact matching  **********************/
     
     /* Do exact matching of labels */
-    for(size_t i=0; i<passedArgs.size(); i++) 
+    for (size_t i=0; i<passed_args.size(); i++)
     {
         
-        /* Test if swallowed by ellipsis; if so, we can quit because the remaining passedArgs will also be swallowed */
+        /* Test if swallowed by ellipsis; if so, we can quit because the remaining passed_args will also be swallowed */
         if ( taken[i] )
         {
             break;
         }
         
         /* Skip if no label */
-        if ( passedArgs[i].getLabel().size() == 0 )
+        if ( passed_args[i].getLabel().size() == 0 )
         {
             continue;
         }
         
         /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
-        for (size_t j=0; j<nRules; j++) 
+        for (size_t j=0; j<num_rules; j++)
         {
-            std::vector<std::string> aliases = theRules[j].getArgumentAliases();
+            std::vector<std::string> aliases = the_rules[j].getArgumentAliases();
 
-            for(size_t k=0; k < aliases.size(); k++)
+            for (size_t k=0; k < aliases.size(); k++)
             {
-                if ( passedArgs[i].getLabel() == aliases[k] )
+                if ( passed_args[i].getLabel() == aliases[k] )
                 {
                     
                     if ( filled[j] )
+                    {
                         return false;
-
-                    Argument &arg = const_cast<Argument&>(passedArgs[i]);
-                    double penalty = theRules[j].isArgumentValid( arg, once );
+                    }
+                    
+                    Argument &arg = const_cast<Argument&>(passed_args[i]);
+                    double penalty = the_rules[j].isArgumentValid( arg, once );
                     if ( penalty != -1 )
                     {
                         taken[i]          = true;
                         filled[j]         = true;
 
-                        if ( matchScore != NULL)
+                        if ( match_score != NULL)
                         {
-                            double score = computeMatchScore(passedArgs[i].getVariable(), theRules[j]);
+                            double score = computeMatchScore(passed_args[i].getVariable(), the_rules[j]);
                             score += abs(int(i)-int(j)) / MAX_ARGS;
                             score += penalty*100.0;
-                            matchScore->push_back(score);
+                            match_score->push_back(score);
                         }
                     }
                     else
@@ -192,7 +194,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                     }
 
                     // We got an exact match -> we can skip the other labels for checking
-                    j = nRules;
+                    j = num_rules;
                     break;
                 }
             }
@@ -203,7 +205,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
     /*********************  2. Do partial matching  **********************/
     
     /* Do partial matching of labels */
-    for(size_t i=0; i<passedArgs.size(); i++) 
+    for (size_t i=0; i<passed_args.size(); i++)
     {
         
         /* Skip if already matched */
@@ -213,46 +215,46 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
         }
         
         /* Skip if no label */
-        if ( passedArgs[i].getLabel().size() == 0 )
+        if ( passed_args[i].getLabel().size() == 0 )
         {
             continue;
         }
         
         /* Initialize match index and number of matches */
-        int nMatches = 0;
-        int matchRule = -1;
+        int num_matches = 0;
+        int match_rule = -1;
         
         /* Try all rules */
-        for (size_t j=0; j<nRules; j++) 
+        for (size_t j=0; j<num_rules; j++)
         {
-            std::vector<std::string> aliases = theRules[j].getArgumentAliases();
+            std::vector<std::string> aliases = the_rules[j].getArgumentAliases();
 
-            for(size_t k=0; k < aliases.size(); k++)
+            for (size_t k=0; k < aliases.size(); k++)
             {
-                if ( !filled[j] && aliases[k].compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 )
+                if ( filled[j] == false && aliases[k].compare(0, passed_args[i].getLabel().size(), passed_args[i].getLabel()) == 0 )
                 {
-                    ++nMatches;
-                    matchRule = static_cast<int>( j );
+                    ++num_matches;
+                    match_rule = static_cast<int>( j );
                 }
             }
         }
         
-        if (nMatches == 1)
+        if ( num_matches == 1 )
         {
             
-            Argument &arg = const_cast<Argument&>(passedArgs[i]);
-            double penalty = theRules[matchRule].isArgumentValid(arg, once );
+            Argument &arg = const_cast<Argument&>(passed_args[i]);
+            double penalty = the_rules[match_rule].isArgumentValid(arg, once );
             if ( penalty != -1 )
             {
                 taken[i]                  = true;
-                filled[matchRule]         = true;
+                filled[match_rule]        = true;
             
-                if ( matchScore != NULL)
+                if ( match_score != NULL)
                 {
-                    double score = computeMatchScore(passedArgs[i].getVariable(), theRules[matchRule]);
-                    score += abs(int(i)-int(matchRule)) / MAX_ARGS;
+                    double score = computeMatchScore(passed_args[i].getVariable(), the_rules[match_rule]);
+                    score += abs(int(i)-int(match_rule)) / MAX_ARGS;
                     score += penalty*100.0;
-                    matchScore->push_back(score);
+                    match_score->push_back(score);
                 }
             }
             else
@@ -264,10 +266,10 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
     }
     
     
-    /*********************  3. Fill with unused passedArgs  **********************/
+    /*********************  3. Fill with unused passed_args  **********************/
     
     /* Fill in empty slots using the remaining args in order */
-    for(size_t i=0; i<passedArgs.size(); i++) 
+    for (size_t i=0; i<passed_args.size(); i++)
     {
         
         /* Skip if already matched */
@@ -277,29 +279,29 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
         }
         
         /* Find first empty slot and try to fit argument there */
-        for (size_t j=0; j<nRules; j++) 
+        for (size_t j=0; j<num_rules; j++)
         {
             
             if ( filled[j] == false ) 
             {
                 
-                Argument &arg = const_cast<Argument&>(passedArgs[i]);
-                double penalty = theRules[j].isArgumentValid( arg, once );
+                Argument &arg = const_cast<Argument&>(passed_args[i]);
+                double penalty = the_rules[j].isArgumentValid( arg, once );
                 if ( penalty != -1 )
                 {
                     taken[i]          = true;
-                    if ( !theRules[j].isEllipsis() ) 
+                    if ( the_rules[j].isEllipsis() == false )
                     {
                         filled[j]     = true;
                     }
                     
-                    if ( matchScore != NULL) 
+                    if ( match_score != NULL)
                     {
-                        const RevPtr<const RevVariable>& argVar = passedArgs[i].getVariable();
-                        double score = computeMatchScore(argVar, theRules[j]);
+                        const RevPtr<const RevVariable>& arg_var = passed_args[i].getVariable();
+                        double score = computeMatchScore(arg_var, the_rules[j]);
                         score += abs(int(i)-int(j)) / MAX_ARGS;
                         score += penalty*100.0;
-                        matchScore->push_back(score);
+                        match_score->push_back(score);
                     }
                     
                     break;
@@ -320,15 +322,15 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
     /*********************  4. Fill with default values  **********************/
     
     /* Fill in empty slots using default values */
-    for(size_t i=0; i<nRules; i++) 
+    for (size_t i=0; i<num_rules; i++)
     {
         
-        if ( filled[i] == true || theRules[i].isEllipsis() )
+        if ( filled[i] == true || the_rules[i].isEllipsis() )
         {
             continue;
         }
         
-        if ( theRules[i].hasDefault() == false )
+        if ( the_rules[i].hasDefault() == false )
         {
             return false;
         }
@@ -366,15 +368,15 @@ double Function::computeMatchScore(const RevVariable *var, const ArgumentRule &r
    
     double     score = 10000;   // Needs to be larger than the max depth of the class hierarchy
 
-    const TypeSpec& argClass = var->getRevObject().getTypeSpec();
-    const std::vector<TypeSpec> &ruleArgTypes = rule.getArgumentTypeSpec();
-    for ( std::vector<TypeSpec>::const_iterator it = ruleArgTypes.begin(); it != ruleArgTypes.end(); ++it) 
+    const TypeSpec& arg_class = var->getRevObject().getTypeSpec();
+    const std::vector<TypeSpec> &rule_arg_types = rule.getArgumentTypeSpec();
+    for ( std::vector<TypeSpec>::const_iterator it = rule_arg_types.begin(); it != rule_arg_types.end(); ++it)
     {
         int j = 0;
-        const TypeSpec* parent = &argClass;
+        const TypeSpec* parent = &arg_class;
         do
         {
-            if (*parent == *it )
+            if ( *parent == *it )
             {
                 score = j;
                 break;
@@ -445,10 +447,10 @@ void Function::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
 {
     // create the help function entry that we will fill with some values
     RevBayesCore::RbHelpFunction *help = static_cast<RevBayesCore::RbHelpFunction*>( e );
-    RevBayesCore::RbHelpFunction &helpEntry = *help;
+    RevBayesCore::RbHelpFunction &help_entry = *help;
     
     // usage
-    helpEntry.setUsage( getHelpUsage() );
+    help_entry.setUsage( getHelpUsage() );
     
     // arguments
     const MemberRules& rules = getArgumentRules();
@@ -515,16 +517,16 @@ void Function::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
         arguments.push_back( argument );
     }
     
-    helpEntry.setArguments( arguments );
+    help_entry.setArguments( arguments );
     
     // return value
-    helpEntry.setReturnType( getReturnType().getType() );
+    help_entry.setReturnType( getReturnType().getType() );
     
     // details
-    helpEntry.setDetails( getHelpDetails() );
+    help_entry.setDetails( getHelpDetails() );
     
     // example
-    helpEntry.setExample( getHelpExample() );
+    help_entry.setExample( getHelpExample() );
     
 }
 
@@ -683,68 +685,68 @@ void Function::printValue(std::ostream& o, bool user) const
  * @todo Fredrik: Static and dynamic type conversion added, but partly hack-ish, so the implementation
  *       needs to be revised
  */
-void Function::processArguments( const std::vector<Argument>& passedArgs, bool once )
+void Function::processArguments( const std::vector<Argument>& passed_args, bool once )
 {
 
     /*********************  0. Initialization  **********************/
     /* Get my own copy of the argument vector */
-    std::vector<Argument> pArgs = passedArgs;
+    std::vector<Argument> p_args = passed_args;
     
     /* Get the argument rules */
-    const ArgumentRules& theRules = getArgumentRules();
+    const ArgumentRules& the_rules = getArgumentRules();
 
     /* Get the number of argument rules */
-    size_t nRules = theRules.size();
+    size_t num_rules = the_rules.size();
 
     /* Clear previously processed arguments */
     args.clear();
     
     /* Keep track of which arguments we have used, and which argument slots we have filled, and with what passed arguments */
-    std::vector<bool>   taken           = std::vector<bool>( passedArgs.size(), false );
-    std::vector<bool>   filled          = std::vector<bool>( nRules, false );
-    std::vector<size_t> passedArgIndex  = std::vector<size_t>( nRules, 1000 );
-    std::vector<Argument> ellipsisArgs;
+    std::vector<bool>   taken            = std::vector<bool>( passed_args.size(), false );
+    std::vector<bool>   filled           = std::vector<bool>( num_rules, false );
+    std::vector<size_t> passed_arg_index = std::vector<size_t>( num_rules, 1000 );
+    std::vector<Argument> ellipsis_args;
 
     /*********************  1. Do exact matching  **********************/
 
     /* Do exact matching of labels */
-    for(size_t i=0; i<passedArgs.size(); i++)
+    for (size_t i=0; i<passed_args.size(); i++)
     {
 
-        /* Test if swallowed by ellipsis; if so, we can quit because the remaining passedArgs will also be swallowed */
+        /* Test if swallowed by ellipsis; if so, we can quit because the remaining passed_args will also be swallowed */
         if ( taken[i] )
         {
             break;
         }
         
         /* Skip if no label */
-        if ( passedArgs[i].getLabel().size() == 0 )
+        if ( passed_args[i].getLabel().size() == 0 )
         {
             continue;
         }
         
         /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
-        for (size_t j=0; j<nRules; j++)
+        for (size_t j=0; j<num_rules; j++)
         {
-            std::vector<std::string> aliases = theRules[j].getArgumentAliases();
+            std::vector<std::string> aliases = the_rules[j].getArgumentAliases();
 
-            for(size_t k=0; k < aliases.size(); k++)
+            for (size_t k=0; k < aliases.size(); k++)
             {
-                if ( passedArgs[i].getLabel() == aliases[k] )
+                if ( passed_args[i].getLabel() == aliases[k] )
                 {
 
                     if ( filled[j] )
                     {
-                        throw RbException( "Duplicate argument labels '" + passedArgs[i].getLabel() );
+                        throw RbException( "Duplicate argument labels '" + passed_args[i].getLabel() );
                     }
 
-                    pArgs[i]            = theRules[j].fitArgument( pArgs[i], once );
-                    taken[i]            = true;
-                    filled[j]           = true;
-                    passedArgIndex[j]   = static_cast<int>( i );
+                    p_args[i]               = the_rules[j].fitArgument( p_args[i], once );
+                    taken[i]                = true;
+                    filled[j]               = true;
+                    passed_arg_index[j]     = static_cast<int>( i );
 
                     // We got an exact match -> we can skip the other labels for checking
-                    j = nRules;
+                    j = num_rules;
                     break;
                 }
             }
@@ -755,7 +757,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
     /*********************  2. Do partial matching  **********************/
 
     /* Do partial matching of labels */
-    for(size_t i=0; i<passedArgs.size(); i++) 
+    for (size_t i=0; i<passed_args.size(); i++)
     {
 
         /* Skip if already matched */
@@ -765,57 +767,57 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         }
         
         /* Skip if no label */
-        if ( passedArgs[i].getLabel().size() == 0 )
+        if ( passed_args[i].getLabel().size() == 0 )
         {
             continue;
         }
         
         /* Initialize match index and number of matches */
-        int nMatches = 0;
-        int matchRule = -1;
+        int num_matches = 0;
+        int match_rule = -1;
         std::string label;
 
         /* Try all rules */
-        for (size_t j=0; j<nRules; j++) 
+        for (size_t j=0; j<num_rules; j++)
         {
-            std::vector<std::string> aliases = theRules[j].getArgumentAliases();
+            std::vector<std::string> aliases = the_rules[j].getArgumentAliases();
 
-            for(size_t k=0; k < aliases.size(); k++)
+            for (size_t k=0; k < aliases.size(); k++)
             {
-                if ( !filled[j] && aliases[k].compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 )
+                if ( !filled[j] && aliases[k].compare(0, passed_args[i].getLabel().size(), passed_args[i].getLabel()) == 0 )
                 {
-                    ++nMatches;
-                    matchRule = static_cast<int>( j );
+                    ++num_matches;
+                    match_rule = static_cast<int>( j );
                     label = aliases[k];
                 }
             }
         }
 
-        if (nMatches > 1)
+        if (num_matches > 1)
         {
-            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches mutliple parameter labels." );
+            throw RbException( "Argument label '" + passed_args[i].getLabel() + "' matches mutliple parameter labels." );
         }
-        else if (nMatches < 1)
+        else if (num_matches < 1)
         {
-            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches no untaken parameter labels." );
+            throw RbException( "Argument label '" + passed_args[i].getLabel() + "' matches no untaken parameter labels." );
         }
         
-        if ( nMatches == 1)
+        if ( num_matches == 1)
         {
-            pArgs[i].setLabel(label);
-            pArgs[i]                    = theRules[matchRule].fitArgument( pArgs[i], once );
-            taken[i]                    = true;
-            filled[matchRule]           = true;
-            passedArgIndex[matchRule]   = static_cast<int>( i );
+            p_args[i].setLabel(label);
+            p_args[i]                       = the_rules[match_rule].fitArgument( p_args[i], once );
+            taken[i]                        = true;
+            filled[match_rule]              = true;
+            passed_arg_index[match_rule]    = static_cast<int>( i );
         }
         
     }
 
 
-    /*********************  3. Fill with unused passedArgs  **********************/
+    /*********************  3. Fill with unused passed_args  **********************/
 
     /* Fill in empty slots using the remaining args in order */
-    for(size_t i=0; i<passedArgs.size(); i++) 
+    for (size_t i=0; i<passed_args.size(); i++)
     {
 
         /* Skip if already matched */
@@ -825,32 +827,32 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         }
         
         /* Find first empty slot and try to fit argument there */
-        for (size_t j=0; j<nRules; j++) 
+        for (size_t j=0; j<num_rules; j++)
         {
 
             if ( filled[j] == false &&
-                 ( (!theRules[j].isEllipsis() && passedArgs[i].getLabel().size() == 0) || (theRules[j].isEllipsis()) ) )
+                 ( (!the_rules[j].isEllipsis() && passed_args[i].getLabel().size() == 0) || (the_rules[j].isEllipsis()) ) )
             {
                 
-                Argument &arg = const_cast<Argument&>(passedArgs[i]);
-                double penalty = theRules[j].isArgumentValid( arg, once );
+                Argument &arg = const_cast<Argument&>(passed_args[i]);
+                double penalty = the_rules[j].isArgumentValid( arg, once );
                 if ( penalty != -1 )
                 {
-                    if(theRules[j].getArgumentAliases().size() > 1)
+                    if (the_rules[j].getArgumentAliases().size() > 1)
                     {
-                        throw RbException("Could not determine argument label for parameter '" + theRules[j].getArgumentLabel() + "'.");
+                        throw RbException("Could not determine argument label for parameter '" + the_rules[j].getArgumentLabel() + "'.");
                     }
-                    pArgs[i].setLabel( theRules[j].getArgumentLabel() );
-                    pArgs[i]          = theRules[j].fitArgument( pArgs[i], once );
-                    taken[i]          = true;
-                    if ( !theRules[j].isEllipsis() ) 
+                    p_args[i].setLabel( the_rules[j].getArgumentLabel() );
+                    p_args[i]           = the_rules[j].fitArgument( p_args[i], once );
+                    taken[i]            = true;
+                    if ( the_rules[j].isEllipsis() == false )
                     {
-                        filled[j]     = true;
-                        passedArgIndex[j] = static_cast<int>( i );
+                        filled[j]       = true;
+                        passed_arg_index[j] = static_cast<int>( i );
                     }
                     else 
                     {
-                        ellipsisArgs.push_back( pArgs[i] );
+                        ellipsis_args.push_back( p_args[i] );
                     }
                     
                     break;
@@ -859,52 +861,52 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         }
         
         /* Final test if we found a match */
-        if ( !taken[i] )
+        if ( taken[i] == false )
         {
-            throw RbException("Superfluous argument of type '" + passedArgs[i].getVariable()->getRevObject().getType() + "' and name '" + passedArgs[i].getLabel() + "' passed to function '" + getType() + "'.");
+            throw RbException("Superfluous argument of type '" + passed_args[i].getVariable()->getRevObject().getType() + "' and name '" + passed_args[i].getLabel() + "' passed to function '" + getType() + "'.");
         }
     }
 
     /*********************  4. Fill with default values  **********************/
 
     /* Fill in empty slots using default values */
-    for(size_t i=0; i<nRules; i++) 
+    for (size_t i=0; i<num_rules; i++)
     {
 
-        if ( filled[i] == true || theRules[i].isEllipsis())
+        if ( filled[i] == true || the_rules[i].isEllipsis())
         {
             continue;
         }
         
         // we just leave the optional arguments empty
-        if ( !theRules[i].hasDefault() )
+        if ( !the_rules[i].hasDefault() )
         {
-            throw RbException("No argument found for parameter '" + theRules[i].getArgumentLabel() + "'.");
+            throw RbException("No argument found for parameter '" + the_rules[i].getArgumentLabel() + "'.");
         }
         
-        const ArgumentRule& theRule = theRules[i];
-        RevPtr<RevVariable> theVar = theRule.getDefaultVariable().clone();
-        theVar->setName( "." + theRule.getArgumentLabel() );
-        theVar->setRequiredTypeSpec( theRule.getDefaultVariable().getRequiredTypeSpec() );
-        size_t idx = pArgs.size();
-        passedArgIndex[i] = idx;
-        pArgs.push_back( Argument( theVar, theRule.getArgumentLabel(), theRule.getEvaluationType() != ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        const ArgumentRule& theRule = the_rules[i];
+        RevPtr<RevVariable> the_var = theRule.getDefaultVariable().clone();
+        the_var->setName( "." + theRule.getArgumentLabel() );
+        the_var->setRequiredTypeSpec( theRule.getDefaultVariable().getRequiredTypeSpec() );
+        size_t idx = p_args.size();
+        passed_arg_index[i] = idx;
+        p_args.push_back( Argument( the_var, theRule.getArgumentLabel(), theRule.getEvaluationType() != ArgumentRule::BY_CONSTANT_REFERENCE ) );
     }
 
     argsProcessed = true;
     
     /*********************  5. Insert arguments into argument list  **********************/
-    for (size_t j=0; j<nRules; j++) 
+    for (size_t j=0; j<num_rules; j++)
     {
-        if ( passedArgIndex[j] < 1000 )
+        if ( passed_arg_index[j] < 1000 )
         {
-            args.push_back( pArgs[ passedArgIndex[j] ] );
+            args.push_back( p_args[ passed_arg_index[j] ] );
         }
         
     }
     
     /*********************  6. Insert ellipsis arguments  **********************/
-    for (std::vector<Argument>::iterator i = ellipsisArgs.begin(); i != ellipsisArgs.end(); i++) 
+    for (std::vector<Argument>::iterator i = ellipsis_args.begin(); i != ellipsis_args.end(); i++) 
     {
         args.push_back( *i );
     }

@@ -40,6 +40,7 @@ namespace RevBayesCore {
         std::string             getFullFilePath(void) const;                                                                                            //!< Returns the name of the path
         std::string             getLastPathComponent(void);
         const std::string&      getPathSeparator(void) const;                                                                                           //!< Returns the path separator
+        std::istream&           safeGetline(std::istream& is, std::string& t);
         std::string             getStringByDeletingLastPathComponent(const std::string& s);
         bool                    isDirectory(void) const;                                                                                                //!< Is this a directory
         bool                    isFile(void) const;                                                                                                     //!< Is this a file

@@ -52,14 +52,14 @@ bool RbBitSet::operator<(const RbBitSet& x) const
 /** Bitwise and */
 RbBitSet RbBitSet::operator&(const RbBitSet& x) const
 {
-    if(x.value.size() != value.size())
+    if (x.value.size() != value.size())
     {
         throw(RbException("Cannot and RbBitSets of unequal size"));
     }
     RbBitSet r(value.size());
-    for(size_t i = 0; i < value.size(); i++)
+    for (size_t i = 0; i < value.size(); i++)
     {
-        if( value[i] && x.value[i] )
+        if ( value[i] && x.value[i] )
         {
             r.set(i);
         }
@@ -70,14 +70,14 @@ RbBitSet RbBitSet::operator&(const RbBitSet& x) const
 /** Bitwise or */
 RbBitSet RbBitSet::operator|(const RbBitSet& x) const
 {
-    if(x.value.size() != value.size())
+    if (x.value.size() != value.size())
     {
         throw(RbException("Cannot or RbBitSets of unequal sizes"));
     }
     RbBitSet r(value.size());
-    for(size_t i = 0; i < value.size(); i++)
+    for (size_t i = 0; i < value.size(); i++)
     {
-        if( value[i] || x.value[i] )
+        if ( value[i] || x.value[i] )
         {
             r.set(i);
         }
@@ -88,14 +88,14 @@ RbBitSet RbBitSet::operator|(const RbBitSet& x) const
 /** Bitwise xor */
 RbBitSet RbBitSet::operator^(const RbBitSet& x) const
 {
-    if(x.value.size() != value.size())
+    if (x.value.size() != value.size())
     {
         throw(RbException("Cannot xor RbBitSets of unequal size"));
     }
     RbBitSet r(value.size());
-    for(size_t i = 0; i < value.size(); i++)
+    for (size_t i = 0; i < value.size(); i++)
     {
-        if( value[i] != x.value[i] )
+        if ( value[i] != x.value[i] )
         {
             r.set(i);
         }
@@ -106,7 +106,7 @@ RbBitSet RbBitSet::operator^(const RbBitSet& x) const
 /** Unary not */
 RbBitSet& RbBitSet::operator~()
 {
-    for(size_t i = 0; i < value.size(); i++)
+    for (size_t i = 0; i < value.size(); i++)
     {
         value[i] = !value[i];
     }
@@ -119,7 +119,7 @@ RbBitSet& RbBitSet::operator~()
 /** Bitwise and assignment */
 RbBitSet& RbBitSet::operator&=(const RbBitSet& x)
 {
-    if(x.value.size() != value.size())
+    if (x.value.size() != value.size())
     {
         throw(RbException("Cannot and RbBitSets of unequal size"));
     }
@@ -132,7 +132,7 @@ RbBitSet& RbBitSet::operator&=(const RbBitSet& x)
 /** Bitwise or assignment */
 RbBitSet& RbBitSet::operator|=(const RbBitSet& x)
 {
-    if(x.value.size() != value.size())
+    if (x.value.size() != value.size())
     {
         throw(RbException("Cannot or RbBitSets of unequal size"));
     }
@@ -161,6 +161,14 @@ void RbBitSet::flip(size_t i)
     num_set_bits += ( value[i] ? 1 : -1 );
 }
 
+void RbBitSet::flip()
+{
+    for(size_t i = 0; i < value.size(); i++)
+    {
+        value[i] = ( value[i] == false );
+        num_set_bits += ( value[i] ? 1 : -1 );
+    }
+}
 
 size_t RbBitSet::getFirstSetBit( void ) const
 {
@@ -172,7 +180,6 @@ size_t RbBitSet::getFirstSetBit( void ) const
     
     return index;
 }
-
 
 size_t RbBitSet::getNumberSetBits( void ) const
 {
@@ -194,9 +201,19 @@ void RbBitSet::resize(size_t size)
 
 void RbBitSet::set(size_t i)
 {
+    
+    if ( i >= value.size() )
+    {
+        throw RbException("Index out of bounds in bitset. This will likely cause unexpectad behavior.");
+    }
+    
+    if (value[i] == false)
+    {
+        ++num_set_bits;
+    }
+    
     // set the internal value
     value[i] = true;
-    ++num_set_bits;
 }
 
 
@@ -209,9 +226,13 @@ size_t RbBitSet::size(void) const
 
 void RbBitSet::unset(size_t i)
 {
+    if (value[i] == true)
+    {
+        --num_set_bits;
+    }
+    
     // set the internal value
     value[i] = false;
-    --num_set_bits;
 }
 
 

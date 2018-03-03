@@ -17,7 +17,6 @@
 #include "RbException.h"
 #include "RlTree.h"
 #include "RlTraceTree.h"
-#include "TraceTree.h"
 #include "TypedDagNode.h"
 
 #include <map>
@@ -59,7 +58,7 @@ RevPtr<RevVariable> Func_treeTrace::execute( void )
     RevObject& b = args[1].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
-        burnin = static_cast<const Integer &>(b).getValue();
+        burnin = (int)static_cast<const Integer &>(b).getValue();
     }
     else
     {
@@ -146,6 +145,6 @@ const TypeSpec& Func_treeTrace::getTypeSpec( void ) const
 const TypeSpec& Func_treeTrace::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = TraceTree::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = TraceTree::getClassTypeSpec();
+    return return_typeSpec;
 }

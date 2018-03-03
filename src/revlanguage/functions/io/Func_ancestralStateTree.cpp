@@ -2,6 +2,7 @@
 #include "OptionRule.h"
 #include "ConstantNode.h"
 #include "Func_ancestralStateTree.h"
+#include "JointAncestralStateTrace.h"
 #include "ModelVector.h"
 #include "NexusWriter.h"
 #include "Probability.h"
@@ -14,9 +15,6 @@
 #include "RlAncestralStateTrace.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TreeSummary.h"
-#include "TraceTree.h"
-#include "AncestralStateTrace.h"
 #include "WorkspaceVector.h"
 
 #include <map>
@@ -58,14 +56,11 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     const TraceTree& tt = static_cast<const TraceTree&>( args[2].getVariable()->getRevObject() );
     
     // make a new tree summary object
-    RevBayesCore::TreeSummary summary;
+    RevBayesCore::TraceTree tree_trace;
+
     if (args[2].getVariable()->getRevObject() != RevNullObject::getInstance())
     {
-        summary = tt.getValue();
-    }
-    else
-    {
-        summary = RevBayesCore::TreeSummary();
+        tree_trace = tt.getValue();
     }
     
     // should we annotate start states?
@@ -79,7 +74,7 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     RevObject& b = args[5].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
-        burnin = static_cast<const Integer &>(b).getValue();
+        burnin = (int)static_cast<const Integer &>(b).getValue();
     }
     else
     {
@@ -89,6 +84,7 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
 
     std::string summary_stat = static_cast<const RlString&>( args[6].getVariable()->getRevObject() ).getValue();
     
+
     std::string reconstruction = static_cast<const RlString &>(args[7].getVariable()->getRevObject()).getValue();
     bool conditional = false;
     if ( reconstruction == "conditional" )
@@ -100,19 +96,22 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
         throw RbException("Joint ancestral state summaries are not yet implemented. Coming soon!");
     }
     
-    int site = static_cast<const Integer &>(args[8].getVariable()->getRevObject()).getValue() - 1;
+    int site = (int)static_cast<const Integer &>(args[8].getVariable()->getRevObject()).getValue() - 1;
     
     bool verbose = static_cast<const RlBoolean &>(args[9].getVariable()->getRevObject()).getValue();
     
     // get the tree with ancestral states
+    RevBayesCore::JointAncestralStateTrace joint_trace(ancestralstate_traces, tree_trace);
+    joint_trace.setBurnin(burnin);
+
     RevBayesCore::Tree* tree;
     if (start_states)
     {
-        tree = summary.cladoAncestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, conditional, false, verbose);
+        tree = joint_trace.cladoAncestralStateTree(it->getValue(), summary_stat, site, conditional, false, verbose);
     }
     else
     {
-        tree = summary.ancestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site, conditional, false, verbose);
+        tree = joint_trace.ancestralStateTree(it->getValue(), summary_stat, site, conditional, false, verbose);
     }
     
     // return the tree
@@ -161,6 +160,7 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
         summary_stats.push_back( "MAP" );
         summary_stats.push_back( "mean" );
         argumentRules.push_back( new OptionRule( "summary_statistic", new RlString("MAP"), summary_stats, "The statistic used to summarize ancestral states. 'MAP' displays the 3 states with highest posterior probabilities. 'mean' displays the mean value and 95% CI." ) );
+
         std::vector<std::string> reconstruction;
         reconstruction.push_back( "conditional" );
         reconstruction.push_back( "joint" );
@@ -222,7 +222,7 @@ const TypeSpec& Func_ancestralStateTree::getTypeSpec( void ) const
 const TypeSpec& Func_ancestralStateTree::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = Tree::getClassTypeSpec();
+    return return_typeSpec;
 }
 

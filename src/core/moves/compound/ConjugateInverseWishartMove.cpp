@@ -14,7 +14,7 @@ ConjugateInverseWishartMove::ConjugateInverseWishartMove(StochasticNode<MatrixRe
     sigma( s )
 {
     InverseWishartDistribution* dist = dynamic_cast<InverseWishartDistribution *>( &sigma->getDistribution() );
-    if(dist == NULL)
+    if (dist == NULL)
     {
         throw(RbException("ConjugateInverseWishart move only works for parameters with an Inverse Wishart prior distribution"));
     }
@@ -90,16 +90,16 @@ void ConjugateInverseWishartMove::performGibbsMove( void )
         }
     }
     
-    if( num_children == 0 )
+    if ( num_children == 0 )
     {
         throw(RbException("Inverse Wishart parameter for ConjugateInverseWishart move has no Multivariate Normal children"));
     }
 
-    if(sigma0 != NULL)
+    if (sigma0 != NULL)
     {
         A += sigma0->getValue();
     }
-    else if( kappaVector != NULL)
+    else if ( kappaVector != NULL)
     {
         for (size_t i=0; i<dim; ++i)
         {

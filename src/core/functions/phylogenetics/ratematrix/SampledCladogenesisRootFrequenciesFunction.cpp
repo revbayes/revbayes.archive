@@ -1,3 +1,11 @@
+//
+//  SampledCladogenesisRootFrequenciesFunction.cpp
+//  revbayes-proj
+//
+//  Created by Michael Landis on 8/11/16.
+//  Copyright © 2016 Michael Landis. All rights reserved.
+//
+
 #include "AbstractCladogenicStateFunction.h"
 #include "AbstractCharacterHistoryBirthDeathProcess.h"
 #include "DeterministicNode.h"
@@ -138,8 +146,8 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         
         // get root history information
         const AbstractCharacterHistoryBirthDeathProcess* dist = dynamic_cast<const AbstractCharacterHistoryBirthDeathProcess* >( &tree->getDistribution() );
-        CharacterHistory tree_history = dist->getCharacterHistory();
-        BranchHistory branch_history = tree_history[root.getIndex()];
+        const CharacterHistoryDiscrete& tree_history = static_cast<const CharacterHistoryDiscrete&>(dist->getCharacterHistory());
+        const BranchHistory& branch_history = tree_history[root.getIndex()];
         const std::multiset<CharacterEvent*,CharacterEventCompare>& events = branch_history.getHistory();
         
         // for each interval between events, go from present to past
@@ -149,17 +157,18 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         
         double t = 0.0;
         double dt = 0.0;
-        double event_age = 0.0;
-        std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
-        for (it = events.begin(); it != events.end(); it++)
+        double prev_age = startAge;
+        double event_age = prev_age;
+        std::multiset<CharacterEvent*,CharacterEventCompare>::reverse_iterator it;
+        for (it = events.rbegin(); it != events.rend(); it++)
         {
             
-            dt = (*it)->getTime() - t;
-            event_age = startAge - t;
+            prev_age = event_age;
+            event_age = (*it)->getAge();
             
             // anagenetic changes occurring between (event_age, event_age-dt)
             
-            rm.calculateTransitionProbabilities(event_age, event_age-dt, rate, tp_next );
+            rm.calculateTransitionProbabilities(prev_age, event_age, rate, tp_next );
             tp *= tp_next;
             
             // first compute clado probs at younger end of branch
@@ -186,7 +195,7 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         // last interval
         dt = brlen - t;
         
-        rm.calculateTransitionProbabilities( endAge+dt, endAge, rate, tp_next );
+        rm.calculateTransitionProbabilities( event_age, endAge, rate, tp_next );
         tp *= tp_next;
         
 

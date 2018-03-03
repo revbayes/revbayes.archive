@@ -114,6 +114,13 @@ void Proposal::addNode( DagNode *n )
 }
 
 
+const Move* Proposal::getMove( void ) const
+{
+    
+    return move;
+}
+
+
 
 /**
  * Get the vector of nodes on which this proposal is working on.
@@ -127,6 +134,11 @@ const std::vector<DagNode*>& Proposal::getNodes( void ) const
 }
 
 
+std::vector<DagNode*> Proposal::identifyNodesToTouch(void)
+{
+
+    return nodes;
+}
 
 
 

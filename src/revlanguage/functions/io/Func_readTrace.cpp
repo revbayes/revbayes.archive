@@ -8,7 +8,6 @@
 #include "RlString.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TraceNumeric.h"
 #include "RlTrace.h"
 #include "RlUserInterface.h"
 #include "WorkspaceVector.h"
@@ -89,7 +88,7 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
                 
             // Read a line
             std::string line;
-            getline( inFile, line );
+            myFileManager.safeGetline(inFile, line);
                 
             // skip empty lines
             //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -149,7 +148,7 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
 
         if ( b.isType( Integer::getClassTypeSpec() ) )
         {
-            burnin = static_cast<const Integer &>(b).getValue();
+            burnin = (int)static_cast<const Integer &>(b).getValue();
         }
         else
         {
@@ -240,8 +239,8 @@ const TypeSpec& Func_readTrace::getTypeSpec( void ) const
 /** Get return type */
 const TypeSpec& Func_readTrace::getReturnType( void ) const
 {
-    static TypeSpec returnTypeSpec = WorkspaceVector<Trace>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = WorkspaceVector<Trace>::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

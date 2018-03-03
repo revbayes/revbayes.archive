@@ -13,7 +13,6 @@
  */
 
 #include "RlAncestralStateTrace.h"
-#include "AncestralStateTrace.h"
 
 #include "ArgumentRules.h"
 #include "MemberProcedure.h"
@@ -27,7 +26,7 @@ AncestralStateTrace::AncestralStateTrace() : WorkspaceToCoreWrapperObject<RevBay
 {
 
 	ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of iterations to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of iterations to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0L)) );
     
 }
 
@@ -36,7 +35,7 @@ AncestralStateTrace::AncestralStateTrace() : WorkspaceToCoreWrapperObject<RevBay
 AncestralStateTrace::AncestralStateTrace(const RevBayesCore::AncestralStateTrace& m) : WorkspaceToCoreWrapperObject<RevBayesCore::AncestralStateTrace>( new RevBayesCore::AncestralStateTrace( m ) ) {
     
 	ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of iterations to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of iterations to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0L)) );
 
 }
 

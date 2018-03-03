@@ -72,6 +72,11 @@ RevPtr<RevVariable> Func_structure::execute( void )
         
     }
     
+    o << "_RevType      = " << the_var->getRevObject().getType() << std::endl;
+    o << "_value        = ";
+    the_var->printValue(o, true);
+    o << std::endl;
+    
     if ( the_var->isWorkspaceVariable() && verbose == true )
     {
         o << "_varType      = workspace (control)" << std::endl;
@@ -276,8 +281,8 @@ const TypeSpec& Func_structure::getTypeSpec( void ) const
 const TypeSpec& Func_structure::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlUtils::Void;
+    static TypeSpec return_typeSpec = RlUtils::Void;
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

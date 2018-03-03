@@ -15,7 +15,7 @@ using namespace RevBayesCore;
 
 
 //TypedFunction<MatrixReal>( new MatrixReal( mc + 1, (mc + 1) * (mc + 1), 0.0 ) ),
-CladogeneticSpeciationRateMatrixFunction::CladogeneticSpeciationRateMatrixFunction(const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<int> > >* events, const TypedDagNode<RevBayesCore::RbVector<double> >* spec_rates, int n_states):
+CladogeneticSpeciationRateMatrixFunction::CladogeneticSpeciationRateMatrixFunction(const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* events, const TypedDagNode<RevBayesCore::RbVector<double> >* spec_rates, int n_states):
 TypedFunction<CladogeneticSpeciationRateMatrix>( new CladogeneticSpeciationRateMatrix( n_states ) ),
 cladogenetic_events( events ), 
 num_states( n_states ),
@@ -60,7 +60,7 @@ void CladogeneticSpeciationRateMatrixFunction::update( void )
    
     // get speciation rates and the clado events
     const std::vector<double>& sr = speciation_rates->getValue();
-    const RbVector<RbVector<int> >& events = cladogenetic_events->getValue();
+    const RbVector<RbVector<long> >& events = cladogenetic_events->getValue();
 
     if (sr.size() != events.size())
     {
@@ -78,9 +78,9 @@ void CladogeneticSpeciationRateMatrixFunction::update( void )
         }
         
         std::vector<unsigned> idx(3);
-        idx[0] = events[i][0];
-        idx[1] = events[i][1];
-        idx[2] = events[i][2];
+        idx[0] = (unsigned)events[i][0];
+        idx[1] = (unsigned)events[i][1];
+        idx[2] = (unsigned)events[i][2];
         event_map[ idx ] = sr[i];
     }
     

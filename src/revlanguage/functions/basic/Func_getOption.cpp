@@ -48,17 +48,17 @@ RevPtr<RevVariable> Func_getOption::execute( void )
 const ArgumentRules& Func_getOption::getArgumentRules( void ) const
 {
     
-    static ArgumentRules argumentRules = ArgumentRules();
+    static ArgumentRules argument_rules = ArgumentRules();
     static bool rules_set = false;
     
     if ( !rules_set )
     {
         
-        argumentRules.push_back( new ArgumentRule( "key", RlString::getClassTypeSpec(), "The key-identifier for the option.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new ArgumentRule( "key", RlString::getClassTypeSpec(), "The key-identifier for the option.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rules_set = true;
     }
     
-    return argumentRules;
+    return argument_rules;
 }
 
 
@@ -209,8 +209,8 @@ const TypeSpec& Func_getOption::getTypeSpec( void ) const
 const TypeSpec& Func_getOption::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlUtils::Void;
+    static TypeSpec return_typeSpec = RlUtils::Void;
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

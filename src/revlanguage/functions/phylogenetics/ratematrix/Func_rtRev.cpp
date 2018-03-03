@@ -85,9 +85,9 @@ std::string Func_rtRev::getFunctionName( void ) const
 const TypeSpec& Func_rtRev::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
+    static TypeSpec return_typeSpec = RateGenerator::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 
 

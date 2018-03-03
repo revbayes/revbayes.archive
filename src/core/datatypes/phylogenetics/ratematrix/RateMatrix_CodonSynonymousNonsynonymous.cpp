@@ -14,10 +14,11 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous(size_t n) : TimeReversibleRateMatrix( n )
+RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous( void ) : TimeReversibleRateMatrix( 61 ),
+    codon_freqs(61,1.0/61)
 {
     
-    theEigenSystem       = new EigenSystem(the_rate_matrix);
+    eigen_system       = new EigenSystem(the_rate_matrix);
     c_ijk.resize(num_states * num_states * num_states);
     cc_ijk.resize(num_states * num_states * num_states);
     
@@ -26,14 +27,15 @@ RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous
 
 
 /** Copy constructor */
-RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous(const RateMatrix_CodonSynonymousNonsynonymous& m) : TimeReversibleRateMatrix( m )
+RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous(const RateMatrix_CodonSynonymousNonsynonymous& m) : TimeReversibleRateMatrix( m ),
+    codon_freqs( m.codon_freqs )
 {
     
-    theEigenSystem       = new EigenSystem( *m.theEigenSystem );
-    c_ijk                = m.c_ijk;
-    cc_ijk               = m.cc_ijk;
+    eigen_system        = new EigenSystem( *m.eigen_system );
+    c_ijk               = m.c_ijk;
+    cc_ijk              = m.cc_ijk;
     
-    theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+    eigen_system->setRateMatrixPtr(the_rate_matrix);
 }
 
 
@@ -41,7 +43,7 @@ RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous
 RateMatrix_CodonSynonymousNonsynonymous::~RateMatrix_CodonSynonymousNonsynonymous(void)
 {
     
-    delete theEigenSystem;
+    delete eigen_system;
 }
 
 
@@ -52,13 +54,14 @@ RateMatrix_CodonSynonymousNonsynonymous& RateMatrix_CodonSynonymousNonsynonymous
     {
         TimeReversibleRateMatrix::operator=( r );
         
-        delete theEigenSystem;
+        delete eigen_system;
         
-        theEigenSystem       = new EigenSystem( *r.theEigenSystem );
-        c_ijk                = r.c_ijk;
-        cc_ijk               = r.cc_ijk;
+        eigen_system        = new EigenSystem( *r.eigen_system );
+        c_ijk               = r.c_ijk;
+        cc_ijk              = r.cc_ijk;
+        codon_freqs         = r.codon_freqs;
         
-        theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+        eigen_system->setRateMatrixPtr(the_rate_matrix);
     }
     
     return *this;
@@ -86,11 +89,11 @@ RateMatrix_CodonSynonymousNonsynonymous& RateMatrix_CodonSynonymousNonsynonymous
 void RateMatrix_CodonSynonymousNonsynonymous::calculateCijk(void)
 {
     
-    if ( theEigenSystem->isComplex() == false )
+    if ( eigen_system->isComplex() == false )
     {
         // real case
-        const MatrixReal& ev  = theEigenSystem->getEigenvectors();
-        const MatrixReal& iev = theEigenSystem->getInverseEigenvectors();
+        const MatrixReal& ev  = eigen_system->getEigenvectors();
+        const MatrixReal& iev = eigen_system->getInverseEigenvectors();
         double* pc = &c_ijk[0];
         for (size_t i=0; i<num_states; i++)
         {
@@ -106,8 +109,8 @@ void RateMatrix_CodonSynonymousNonsynonymous::calculateCijk(void)
     else
     {
         // complex case
-        const MatrixComplex& cev  = theEigenSystem->getComplexEigenvectors();
-        const MatrixComplex& ciev = theEigenSystem->getComplexInverseEigenvectors();
+        const MatrixComplex& cev  = eigen_system->getComplexEigenvectors();
+        const MatrixComplex& ciev = eigen_system->getComplexInverseEigenvectors();
         std::complex<double>* pc = &cc_ijk[0];
         for (size_t i=0; i<num_states; i++)
         {
@@ -127,7 +130,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::calculateCijk(void)
 void RateMatrix_CodonSynonymousNonsynonymous::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     double t = rate * (startAge - endAge);
-    if ( theEigenSystem->isComplex() == false )
+    if ( eigen_system->isComplex() == false )
     {
         tiProbsEigens(t, P);
     }
@@ -157,18 +160,17 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
     MatrixReal& m = *the_rate_matrix;
     
     std::vector<double> rate = std::vector<double>(5,0);
-    rate[0] = 0;
-    rate[1] = kappa;
-    rate[2] = 1;
-    rate[3] = kappa*omega;
-    rate[4] = omega;
+    rate[0] = 0.0;
+    rate[1] = 1.0;
+    rate[2] = omega;
 
-    size_t rateClass = 0;
+    int rate_class = 0;
     
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0; i<num_states; ++i)
     {
-        CodonState c1 = CodonState(i);
+        
+        CodonState c1 = CodonState( CodonState::CODONS[i] );
         std::vector<unsigned int> codon_from = c1.getTripletStates();
         unsigned int codon_from_pos_1 = codon_from[0];
         unsigned int codon_from_pos_2 = codon_from[1];
@@ -178,7 +180,8 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
         
         for (size_t j=i+1; j<num_states; ++j)
         {
-            CodonState c2 = CodonState(j);
+
+            CodonState c2 = CodonState( CodonState::CODONS[j] );
             
             std::vector<unsigned int> codon_to = c2.getTripletStates();
             unsigned int codon_to_pos_1 = codon_to[0];
@@ -187,38 +190,22 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
             
             AminoAcidState aa_to = c2.getAminoAcidState();
             
-            rateClass = 0;
+            rate_class = -1;
             if (codon_from_pos_1 != codon_to_pos_1)
             {
-                if ( (codon_from_pos_1 == 0 && codon_to_pos_1 == 2) || (codon_from_pos_1 == 2 && codon_to_pos_1 == 0) || // A <-> G
-                     (codon_from_pos_1 == 1 && codon_to_pos_1 == 3) || (codon_from_pos_1 == 3 && codon_to_pos_1 == 1) )  // C <-> T
-                {
-                    rateClass = 1; // Transition at position 1
-                }
-                else
-                {
-                    rateClass = 2; // Transversion at position 1
-                }
+                rate_class = 1;
             }
             
             if (codon_from_pos_2 != codon_to_pos_2)
             {
                 
-                if (rateClass == -1)
+                if (rate_class == -1)
                 {
-                    if ( (codon_from_pos_2 == 0 && codon_to_pos_2 == 2) || (codon_from_pos_2 == 2 && codon_to_pos_2 == 0) || // A <-> G
-                         (codon_from_pos_2 == 1 && codon_to_pos_2 == 3) || (codon_from_pos_2 == 3 && codon_to_pos_2 == 1) )  // C <-> T
-                    {
-                        rateClass = 1; // Transition
-                    }
-                    else
-                    {
-                        rateClass = 2; // Transversion
-                    }
+                    rate_class = 1;
                 }
                 else
                 {
-                    rateClass = 0; // Codon changes at more than one position
+                    rate_class = 0; // Codon changes at more than one position
                 }
                 
             }
@@ -226,38 +213,33 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
             if (codon_from_pos_3 != codon_to_pos_3)
             {
                 
-                if (rateClass == -1)
+                if (rate_class == -1)
                 {
-                    if ( (codon_from_pos_3 == 0 && codon_to_pos_3 == 2) || (codon_from_pos_3 == 2 && codon_to_pos_3 == 0) || // A <-> G
-                         (codon_from_pos_3 == 1 && codon_to_pos_3 == 3) || (codon_from_pos_3 == 3 && codon_to_pos_3 == 1) )  // C <-> T
-                    {
-                        rateClass = 1; // Transition
-                    }
-                    else
-                    {
-                        rateClass = 2; // Transversion
-                    }
+                    rate_class = 1;
                     
                 }
                 else
                 {
-                    rateClass = 0; // Codon changes at more than one position
+                    rate_class = 0; // Codon changes at more than one position
                 }
                 
             }
             
-            if (rateClass != 0)
+            if (rate_class > 0 && aa_from != aa_to)
             {
-                
-                if (aa_from != aa_to)
-                {
-                    rateClass += 2; // Is a non-synonymous change
-                }
-                
+                rate_class = 2; // Is a non-synonymous change
             }
             
-            m[i][j] = rate[rateClass] * stationary_freqs[j];
-            m[j][i] = rate[rateClass] * stationary_freqs[i];
+            if ( rate_class > 0 )
+            {
+                m[i][j] = rate[rate_class] * codon_freqs[j];
+                m[j][i] = rate[rate_class] * codon_freqs[i];
+            }
+            else
+            {
+                m[i][j] = 0.0;
+                m[j][i] = 0.0;
+            }
             
         }
     }
@@ -273,7 +255,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsEigens(double t, Transition
 {
     
     // get a reference to the eigenvalues
-    const std::vector<double>& eigenValue = theEigenSystem->getRealEigenvalues();
+    const std::vector<double>& eigenValue = eigen_system->getRealEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
     std::vector<double> eigValExp(num_states);
@@ -290,7 +272,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsEigens(double t, Transition
         for (size_t j=0; j<num_states; j++, ++p)
         {
             double sum = 0.0;
-            for(size_t s=0; s<num_states; s++)
+            for (size_t s=0; s<num_states; s++)
             {
                 sum += (*ptr++) * eigValExp[s];
             }
@@ -303,11 +285,12 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsEigens(double t, Transition
 
 
 /** Calculate the transition probabilities for the complex case */
-void RateMatrix_CodonSynonymousNonsynonymous::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_CodonSynonymousNonsynonymous::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const
+{
     
     // get a reference to the eigenvalues
-    const std::vector<double>& eigenValueReal = theEigenSystem->getRealEigenvalues();
-    const std::vector<double>& eigenValueComp = theEigenSystem->getImagEigenvalues();
+    const std::vector<double>& eigenValueReal = eigen_system->getRealEigenvalues();
+    const std::vector<double>& eigenValueComp = eigen_system->getImagEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
     std::vector<std::complex<double> > ceigValExp(num_states);
@@ -324,7 +307,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsComplexEigens(double t, Tra
         for (size_t j=0; j<num_states; j++)
         {
             std::complex<double> sum = std::complex<double>(0.0, 0.0);
-            for(size_t s=0; s<num_states; s++)
+            for (size_t s=0; s<num_states; s++)
                 sum += (*ptr++) * ceigValExp[s];
             P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
         }
@@ -332,11 +315,31 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsComplexEigens(double t, Tra
 }
 
 
+void RateMatrix_CodonSynonymousNonsynonymous::setOmega(double o)
+{
+    
+    omega = o;
+    
+    // set flags
+    needs_update = true;
+    
+}
+
+
+void RateMatrix_CodonSynonymousNonsynonymous::setCodonFrequencies( const std::vector<double> &f )
+{
+    codon_freqs = f;
+    
+    // set flags
+    needs_update = true;
+}
+
+
 /** Update the eigen system */
 void RateMatrix_CodonSynonymousNonsynonymous::updateEigenSystem(void)
 {
     
-    theEigenSystem->update();
+    eigen_system->update();
     calculateCijk();
     
 }
@@ -350,11 +353,14 @@ void RateMatrix_CodonSynonymousNonsynonymous::update( void )
         // compute the off-diagonal values
         computeOffDiagonal();
         
+        // we also need to update the stationary frequencies
+        this->stationary_freqs = codon_freqs;
+        
         // set the diagonal values
         setDiagonal();
         
         // rescale
-        rescaleToAverageRate( 1.0 );
+        rescaleToAverageRate( 3.0 );
         
         // now update the eigensystem
         updateEigenSystem();

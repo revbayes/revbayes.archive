@@ -32,10 +32,6 @@ RateGenerator_Epoch::RateGenerator_Epoch(size_t n, size_t ne) : RateGenerator( n
     epochRateGenerators = RbVector<RateGenerator>(1,  RateMatrix_JC(this->num_states));
     update();
     
-//    std::vector<size_t> transition_states;
-//    std::vector<double> transition_times;
-//    simulateStochasticMapping(5.0, 1.0, 1.0, transition_states, transition_times);
-    
 }
 
 /** Destructor */
@@ -100,14 +96,13 @@ void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, doub
             const RateGenerator& rg = epochRateGenerators[epochIdx];
             double r = epochRates[epochIdx];
             rg.calculateTransitionProbabilities( currAge, nextAge, r * rate, P );
-//            for (size_t i1 = 0; i1 < rg.size(); i1++) {
-//                for (size_t i2 = 0; i2 < rg.size(); i2++) {
-//                    std::cout << rg.getRate(i1,i2,currAge,1.0) << "  ";
-//                }
-//                std::cout << "\n";
-//            }
+
             // epochs construct DTMC
             tp *= P;
+            
+//            std::cout << P << "\n\n";
+//            std::cout << tp << "\n";
+//            std::cout << "-------\n";
             
             // advance increment
             currAge = nextAge;
@@ -231,6 +226,13 @@ bool RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
     
     bool success = false;
 
+    // Trees may have branches of zero length, e.g. sampled ancestors under FBDP
+    // These branches always have start states that match end states.
+    if (startAge == endAge)
+    {
+        transition_times.push_back(0.0);
+        return true;
+    }
 
     // compute the breakpoint times
     std::vector<double> breakpoint_times;
@@ -297,6 +299,7 @@ bool RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
             save_times[prev_idx] += transition_times[i];
         }
     }
+    
     transition_states = save_states;
     transition_times = save_times;
 

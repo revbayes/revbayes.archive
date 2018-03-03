@@ -30,7 +30,7 @@ namespace RevLanguage {
      * @since 2014-03-27, version 1.0
      *
      */
-    class MatrixRealSymmetric : public MatrixReal  {
+    class MatrixRealSymmetric : public MatrixReal {
         
     public:
         
@@ -51,6 +51,9 @@ namespace RevLanguage {
         virtual RevPtr<RevVariable>     executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
 
     protected:
+
+    private:
+        void                            initializeMethods(void);
 
     };
 

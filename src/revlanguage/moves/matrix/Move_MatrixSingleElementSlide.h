@@ -37,7 +37,7 @@ namespace RevLanguage {
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         RevPtr<const RevVariable>                   v;
-        RevPtr<const RevVariable>                   lambda;
+        RevPtr<const RevVariable>                   delta;
         RevPtr<const RevVariable>                   weight;
         RevPtr<const RevVariable>                   tune;
         
@@ -46,5 +46,5 @@ namespace RevLanguage {
 }
 
 
-#endif	/* MOVE_MATRIXSINGLEELEMENTSLIDE_H */
+#endif	/* Move_MatrixSingleElementSlide_H */
 

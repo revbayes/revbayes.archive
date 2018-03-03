@@ -58,8 +58,8 @@ namespace RevLanguage {
                                                    std::set<std::string>&   localVars) const;                   //!< Is this element safe in a function?
 
     protected:
-        SyntaxElement*              leftOperand;                                                                //!< The left operand
-        SyntaxElement*              rightOperand;                                                               //!< The right operand
+        SyntaxElement*              left_operand;                                                               //!< The left operand
+        SyntaxElement*              right_operand;                                                              //!< The right operand
         enum operatorT              operation;                                                                  //!< The type of operation
     
     };

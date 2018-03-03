@@ -21,31 +21,20 @@ namespace RevBayesCore {
     class PruneTreeFunction : public TypedFunction<Tree> {
         
     public:
-        PruneTreeFunction(const TypedDagNode<Tree> *t, std::set<Taxon> rt, std::set<Taxon> pt, bool pf);
+        PruneTreeFunction(const TypedDagNode<Tree> *t, std::vector<Taxon> taxa, bool r, bool pf);
         virtual                                            ~PruneTreeFunction(void);                                                         //!< Virtual destructor
         
         // public member functions
         PruneTreeFunction*                                  clone(void) const;                                                                  //!< Create an independent clone
-        void                                                keep(DagNode* affecter);
-        void                                                restore(DagNode *restorer);
-        void                                                reInitialized(void);                                                                //!< The arguments have been re-initialized
-        void                                                touch(DagNode *toucher );
         void                                                update(void);
         
     protected:
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                    //!< Implementation of swaping parameters
         
     private:
-        void                                                setRetainedTaxa(void);
-        int                                                 recursivelyRetainTaxa(TopologyNode* node);
         
         // members
-        std::map<TopologyNode*, int>                        pruneCount;
-        bool                                                pruneFossils;
-        std::set<Taxon>                                     prunedTaxa;
-        std::map<Taxon, int>                                retainedIndices;
-        std::set<Taxon>                                     retainedTaxa;
-        std::set<Taxon>                                     initRetainedTaxa;
+        RbBitSet                                            prune_map;
 
         // parameters
         const TypedDagNode<Tree>*                           tau;

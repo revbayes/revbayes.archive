@@ -56,7 +56,7 @@ namespace RevLanguage {
         ArgumentRules*                                      argument_rules;                                                              //!< Argument rules (different for different member functions)
         std::string                                         proc_name;
         RevPtr<RevVariable>                                 object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
-        TypeSpec                                            returnType;                                                                 //!< Return type (different for different member functions)
+        TypeSpec                                            return_type;                                                                 //!< Return type (different for different member functions)
         
     };
     

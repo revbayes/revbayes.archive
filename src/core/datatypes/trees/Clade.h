@@ -2,8 +2,9 @@
 #define Clade_H
 
 #include <map>
-#include <vector>
+#include <set>
 #include <string>
+#include <vector>
 
 #include "RbBitSet.h"
 #include "RbException.h"
@@ -28,7 +29,8 @@ namespace RevBayesCore {
                                                     Clade(void);                                                            //! Default constructor: empty clade of age 0.0
                                                     Clade(const Taxon &t, const RbBitSet &b = RbBitSet() );                 //!< Default constructor with optional index
                                                     Clade(const std::vector<Taxon> &n, const RbBitSet &b = RbBitSet() );    //!< Default constructor with optional index
-        
+                                                    Clade(const RbBitSet &b, const std::vector<Taxon> &n );    //!< Default constructor with optional index
+
         virtual                                    ~Clade(void) {}
         
         std::vector<Taxon>::const_iterator          begin(void) const;
@@ -52,7 +54,7 @@ namespace RevBayesCore {
         double                                      getAge(void) const;                                         //!< Get the age of this clade.
         const RbBitSet&                             getBitRepresentation(void) const;                           //!< Get the clade as a bit representation.
         void                                        setBitRepresentation(const RbBitSet &b);
-        const std::vector<Taxon>&                   getMrca(void) const;                                        //!< Get the mrca taxon.
+        const std::set<Taxon>&                      getMrca(void) const;                                        //!< Get the mrca taxon.
         int                                         getNumberMissingTaxa(void) const;                           //!< Get the number of missing taxa.
         size_t                                      getNumberOfTaxa(void) const;                                //!< Get the number of taxa.
         std::vector<Clade>                          getOptionalConstraints(void) const;                         //!< Get optional clade constraints
@@ -64,8 +66,9 @@ namespace RevBayesCore {
         bool                                        isOptionalMatch(void) const;                           //!< Get negative constraint flag.
         void                                        resetTaxonBitset(const std::map<std::string, size_t> map);
         void                                        setAge(double a);                                           //!< Set the age of the clade.
+
         void                                        setOptionalConstraints(std::vector<Clade> c);               //!< Set optional clade constraints.
-        void                                        setMrca(const std::vector<Taxon>&);                         //!< Set the mrca taxon, if applicable.
+        void                                        setMrca(const std::set<Taxon>&);                            //!< Set the mrca taxon, if applicable.
         void                                        setNumberMissingTaxa(int n);                                //!< Set the number of missing taxa in this clade.
         void                                        setTaxonAge(size_t i, double age);                          //!< Set a single taxon's age.
         void                                        setNegativeConstraint(bool);                                //!< Set clade to be a negative constraint
@@ -81,7 +84,7 @@ namespace RevBayesCore {
         double                                      age;
         RbBitSet                                    bitset;
         int                                         num_missing;
-        std::vector<Taxon>                          mrca;
+        std::set<Taxon>                             mrca;
         std::vector<Taxon>                          taxa;
         bool                                        is_negative_constraint;
         bool                                        is_optional_match;

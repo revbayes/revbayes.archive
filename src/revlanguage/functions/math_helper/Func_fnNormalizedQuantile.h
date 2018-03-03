@@ -87,12 +87,12 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_fnNormalized
     const ContinuousDistribution& rlDistribution    = static_cast<const ContinuousDistribution &>( this->args[0].getVariable()->getRevObject() );
     RevBayesCore::ContinuousDistribution* dist     = static_cast<RevBayesCore::ContinuousDistribution* >( rlDistribution.createDistribution() );    
     
-    int nc = static_cast<const Integer &>( this->args[1].getVariable()->getRevObject() ).getValue();
+    int nc = (int)static_cast<const Integer &>( this->args[1].getVariable()->getRevObject() ).getValue();
     
     double binWidth = 1.0 / ((double)nc);
     double binMid = binWidth * 0.5;
     std::vector<const RevBayesCore::TypedDagNode<double> *> gRates = std::vector<const RevBayesCore::TypedDagNode<double>* >();
-    for(int i=1; i<=nc; i++)
+    for (int i=1; i<=nc; i++)
     {
         RevBayesCore::ConstantNode<double> *quant = new RevBayesCore::ConstantNode<double>("", new double((double)i * binWidth - binMid));
         RevBayesCore::DeterministicNode<double> *tmp = new RevBayesCore::DeterministicNode<double>("", new RevBayesCore::QuantileFunction(quant,  dist));

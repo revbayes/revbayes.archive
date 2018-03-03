@@ -39,11 +39,12 @@ void Mntr_Probability::constructInternalObject( void )
     // now allocate a new sliding move
     const std::string&                  fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string&                  sep     = static_cast<const RlString &>( separator->getRevObject() ).getValue();
-    int                                 g       = static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
+    int                                 g       = (int)static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
     bool                                pp      = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
     bool                                l       = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
     bool                                pr      = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
     bool                                ap      = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
+    bool                                wv      = static_cast<const RlBoolean &>( version->getRevObject() ).getValue();
     RevBayesCore::ProbabilityMonitor *m = new RevBayesCore::ProbabilityMonitor((unsigned long)g, fn, sep);
     
     // now set the flags
@@ -51,6 +52,7 @@ void Mntr_Probability::constructInternalObject( void )
     m->setPrintLikelihood( l );
     m->setPrintPosterior( pp );
     m->setPrintPrior( pr );
+    m->setPrintVersion( wv );
     
     // store the new model into our value variable
     value = m;
@@ -107,8 +109,7 @@ const MemberRules& Mntr_Probability::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("likelihood"    , RlBoolean::getClassTypeSpec(), "Should we print the likelihood?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         memberRules.push_back( new ArgumentRule("prior"         , RlBoolean::getClassTypeSpec(), "Should we print the joint prior probability?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         memberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), "Should we append to an existing file?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-         memberRules.push_back( new ArgumentRule("version", RlBoolean::getClassTypeSpec(), "Should we record the software version?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        
+        memberRules.push_back( new ArgumentRule("version"       , RlBoolean::getClassTypeSpec(), "Should we record the software version?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         
         rules_set = true;
     }

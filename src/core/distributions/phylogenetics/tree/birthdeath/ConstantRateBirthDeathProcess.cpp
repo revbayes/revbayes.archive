@@ -75,7 +75,7 @@ double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) 
 
 
 
-double ConstantRateBirthDeathProcess::simulateDivergenceTime(double origin, double present, double rho) const
+double ConstantRateBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
 
     // Get the rng
@@ -85,7 +85,7 @@ double ConstantRateBirthDeathProcess::simulateDivergenceTime(double origin, doub
     double age = present - origin;
     double b = speciation->getValue();
     double d = extinction->getValue();
-    
+    double r = rho->getValue();
  
     // get a random draw
     double u = rng->uniform01();
@@ -95,12 +95,11 @@ double ConstantRateBirthDeathProcess::simulateDivergenceTime(double origin, doub
     double t = 0.0;
     if ( b > d )
     {
-// times <- ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b)
-        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
     }
     else
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(rho*b*exp((b-d)*age)+(b*(1-rho)-d) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
     }
     
     return origin + t;

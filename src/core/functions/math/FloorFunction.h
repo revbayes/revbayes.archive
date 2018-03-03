@@ -16,7 +16,7 @@ namespace RevBayesCore {
      * \since Version 1.0, 2012-08-13
      *
      */
-    class FloorFunction : public TypedFunction<int> {
+    class FloorFunction : public TypedFunction<long> {
         
     public:
         FloorFunction(const TypedDagNode<double> *a);

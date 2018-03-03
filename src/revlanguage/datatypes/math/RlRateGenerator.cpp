@@ -57,28 +57,44 @@ RevPtr<RevVariable> RateGenerator::executeMethod(std::string const &name, const 
 
 /* Get Rev type of object */
 const std::string& RateGenerator::getClassType(void) {
-    
+
     static std::string rev_type = "RateGenerator";
-    
+
 	return rev_type;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RateGenerator::getClassTypeSpec(void) {
-    
+
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
-    
+
 	return rev_type_spec;
 }
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& RateGenerator::getTypeSpec(void) const {
-    
+
     static TypeSpec type_spec = getClassTypeSpec();
     return type_spec;
 }
 
 void RateGenerator::initMethods(void) {
     ; // do nothing
+}
+
+/**
+ * Print the value of the matrix, respecting the formatting of the
+ * model object elements. We do this by retrieving the elements, one
+ * by one, and printing them using their own printValue implementation.
+ * Among other things, this takes care of proper formatting.
+ *
+ * We make a perfectly safe const cast here, since we only utilize the
+ * const printValue function of the element.
+ */
+void RateGenerator::printValue( std::ostream& o, bool user ) const
+{
+
+    this->getDagNode()->printValue( o, ",", -1, true, user, true );
+
 }

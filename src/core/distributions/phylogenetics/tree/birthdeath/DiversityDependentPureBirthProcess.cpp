@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 
@@ -20,7 +21,7 @@ using namespace RevBayesCore;
  * \param[in]    tn     Taxa.
  * \param[in]    c      Clades conditioned to be present.
  */
-DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<int> *k,
+DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<long> *k,
                                                                        const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
         initialSpeciation( s ), 
         capacity( k ) 
@@ -76,12 +77,12 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     
     int n = 1;
     double b = initialSpeciation->getValue();
-    int k = capacity->getValue();
+    int k = (int)capacity->getValue();
     double lastTime = 0.0;
     double speciationRate, timeInterval;
-    for (size_t i = 1; i < num_taxa-1; ++i)
+    for (size_t i = 1; i < value->getNumberOfTips()-1; ++i)
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
+        if ( RbMath::isNan(lnProbTimes) ||
             lnProbTimes == RbConstants::Double::inf || 
             lnProbTimes == RbConstants::Double::neginf ) 
         {
@@ -198,7 +199,7 @@ void DiversityDependentPureBirthProcess::swapParameterInternal(const DagNode *ol
     }
     else if (oldP == capacity) 
     {
-        capacity = static_cast<const TypedDagNode<int>* >( newP );
+        capacity = static_cast<const TypedDagNode<long>* >( newP );
     }
     else 
     {

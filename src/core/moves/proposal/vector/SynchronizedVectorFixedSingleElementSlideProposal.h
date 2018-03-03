@@ -17,7 +17,7 @@ namespace RevBayesCore {
      *
      * This move randomly picks an element of a vector of positive real numbers,
      * proposes a sliding offset and then slides the value.
-     * A sliding proposal draws a random uniform number u ~ unif(-0.5,0.5)
+     * A sliding proposal draws a random uniform number u ~ unif (-0.5,0.5)
      * and slides the current vale by a sliding offset
      * delta  = ( lambda * u )
      * where lambda is the tuning parameter of the proposal to influence the size of the proposals.
@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class SynchronizedVectorFixedSingleElementSlideProposal : public Proposal {
         
     public:
-        SynchronizedVectorFixedSingleElementSlideProposal(const std::vector<StochasticNode<RbVector<double> >* > &n, double l, const std::vector<int> &i);  //!< Constructor
+        SynchronizedVectorFixedSingleElementSlideProposal(const std::vector<StochasticNode<RbVector<double> >* > &n, double l, const std::vector<long> &i);  //!< Constructor
         
         void                                                    cleanProposal(void);                                                                //!< Clean up proposal
         SynchronizedVectorFixedSingleElementSlideProposal*      clone(void) const;                                                                  //!< Clone object
@@ -52,7 +52,7 @@ namespace RevBayesCore {
         std::vector< StochasticNode<RbVector<double> >* >       variables;
         
         double                                                  lambda;                                                                             //!< The Slide parameter of the move (larger lambda -> larger proposals).
-        std::vector<int>                                        indices;                                                                              //!< The index of the last modified element.
+        std::vector<long>                                       indices;                                                                              //!< The index of the last modified element.
         double                                                  stored_delta;                                                                        //!< The stored value of the last modified element.
         
         

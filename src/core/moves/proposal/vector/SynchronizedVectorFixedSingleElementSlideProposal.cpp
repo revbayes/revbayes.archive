@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SynchronizedVectorFixedSingleElementSlideProposal::SynchronizedVectorFixedSingleElementSlideProposal( const std::vector< StochasticNode< RbVector<double> > *> &n, double l, const std::vector<int> &i) : Proposal(),
+SynchronizedVectorFixedSingleElementSlideProposal::SynchronizedVectorFixedSingleElementSlideProposal( const std::vector< StochasticNode< RbVector<double> > *> &n, double l, const std::vector<long> &i) : Proposal(),
     variables( n ),
     lambda( l ),
     indices( i ),
@@ -73,7 +73,7 @@ const std::string& SynchronizedVectorFixedSingleElementSlideProposal::getProposa
 /**
  * Perform the proposal.
  *
- * A scaling Proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * A scaling Proposal draws a random uniform number u ~ unif (-0.5,0.5)
  * and Slides the current vale by a scaling factor
  * sf = exp( lambda * u )
  * where lambda is the tuning parameter of the Proposal to influence the size of the proposals.

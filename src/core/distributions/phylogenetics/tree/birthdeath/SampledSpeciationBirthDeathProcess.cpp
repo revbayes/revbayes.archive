@@ -281,10 +281,10 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         double prev_time     = 0.0;
         
         // compute probability for the observed and sampled speciation events on the branch
-        for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
+        for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_reverse_iterator it=hist.rbegin(); it!=hist.rend(); ++it)
         {
             CharacterEvent* event = *it;
-            double curr_time = event->getTime();
+            double curr_time = event->getAge(); // CHECK THIS AGE
             double time_interval = curr_time - prev_time;
             double curr_age = prev_age - time_interval;
 
@@ -349,7 +349,7 @@ double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
     
     // fill the likelihoods
     if (!true) {
-        computeNodeProbability(root, root.getIndex() );
+        ; //computeNodeProbability(root, root.getIndex() );
     }
     else {
         const TopologyNode &left = root.getChild(0);
@@ -371,7 +371,7 @@ double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
 }
 
 
-void SampledSpeciationBirthDeathProcess::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<int> &rv) const
+void SampledSpeciationBirthDeathProcess::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<long> &rv) const
 {
     
     if ( n == "numberEvents" )
@@ -408,9 +408,9 @@ void SampledSpeciationBirthDeathProcess::executeMethod(const std::string &n, con
             
             size_t j = 0;
             std::multiset<CharacterEvent*, CharacterEventCompare> h = branch_histories[i].getHistory();
-            for ( std::multiset<CharacterEvent*, CharacterEventCompare>::iterator it = h.begin(); it != h.end(); it++ )
+            for ( std::multiset<CharacterEvent*, CharacterEventCompare>::reverse_iterator it = h.rbegin(); it != h.rend(); it++ )
             {
-                rv[i][j++] = (*it)->getTime();
+                rv[i][j++] = (*it)->getAge(); // CHECK THIS AGE
                 if (j > num_slots) break;
             }
         }
@@ -437,7 +437,7 @@ void SampledSpeciationBirthDeathProcess::getAffected(RbOrderedSet<DagNode *> &af
 /**
  * Get the character history object.
  */
-CharacterHistory& SampledSpeciationBirthDeathProcess::getCharacterHistory( void )
+CharacterHistoryDiscrete& SampledSpeciationBirthDeathProcess::getCharacterHistory( void )
 {
     
     return branch_histories;
@@ -446,7 +446,7 @@ CharacterHistory& SampledSpeciationBirthDeathProcess::getCharacterHistory( void 
 /**
  * Get the character history object.
  */
-CharacterHistory SampledSpeciationBirthDeathProcess::getCharacterHistory( void ) const
+const CharacterHistoryDiscrete& SampledSpeciationBirthDeathProcess::getCharacterHistory( void ) const
 {
     
     return branch_histories;
@@ -557,7 +557,7 @@ void SampledSpeciationBirthDeathProcess::simulateEventsForTreeAdHoc( void )
                     if (u < p)
                     {
                         double pos = (startAge - currAge) / (startAge - endAge);
-                        CharacterEvent* evt = new CharacterEvent(0, 0, pos);
+                        CharacterEvent* evt = new CharacterEventDiscrete(0, 0, pos);
                         
                         branch_histories.addEvent(evt, i);
                     }
@@ -793,7 +793,7 @@ void SampledSpeciationBirthDeathProcess::simulateUnsampledLineages(Tree* t, std:
 //        std::cout << nodes[u]->getParent().getIndex() << " " << nodes[u]->getParent().getAge() <<  " -> " << nodes[u]->getIndex() << " " << nodes[u]->getAge() <<"\n";
 //        std::cout << "\n";
         
-        CharacterEvent* evt = new CharacterEvent(0, 0, time);
+        CharacterEvent* evt = new CharacterEventDiscrete(0, 0, time);
         branch_histories.addEvent(evt, node_index);
     }
     
@@ -848,7 +848,7 @@ void SampledSpeciationBirthDeathProcess::simulateUnsampledLineages(Tree* t, std:
      
     for (size_t i = 0; i < rootEventTimes.size(); i++)
     {
-        CharacterEvent* evt = new CharacterEvent(0, 0, rootEventTimes[i]);
+        CharacterEvent* evt = new CharacterEventDiscrete(0, 0, rootEventTimes[i]);
         branch_histories.addEvent(evt, root->getIndex());
     }
     

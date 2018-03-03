@@ -78,7 +78,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         
         // get data from file
         RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0], lines_to_skip);
-       
+
         int max = StringUtilities::asIntegerNumber( lab );
         
         // loop through data and get each NaturalNumbers value
@@ -314,8 +314,8 @@ const TypeSpec& Func_readCharacterDataDelimited::getTypeSpec( void ) const
 const TypeSpec& Func_readCharacterDataDelimited::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = NaturalNumbersState::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = NaturalNumbersState::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

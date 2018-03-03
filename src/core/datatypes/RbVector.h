@@ -45,28 +45,6 @@ namespace RevBayesCore {
 
     };
     
-//    template<>
-//    class RbVector<int> : public RbVectorImpl<int, IsAbstract<int>::Is > {
-//        
-//    public:
-//        // constructor(s)
-//        RbVector() : RbVectorImpl<int, IsAbstract<int>::Is  >( ) {}
-//        RbVector(size_t n) : RbVectorImpl<int, IsAbstract<int>::Is  >( n ) {}
-//        RbVector(size_t n, const int &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( n, v ) {}
-//        RbVector(const RbVectorImpl<int, IsAbstract<int>::Is >::vectorType &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( v ) {}
-//        RbVector(const RbVector<double> &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( ) {  for (size_t i=0; i<v.size(); ++i) push_back( int(v[i]) ); }
-//        RbVector(const RbVector<int> &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( v ) {}
-//        virtual                                            ~RbVector(void) {}
-//        
-//        // public member functions
-//        RbVector<int>*                                      clone(void) const { return new RbVector<int>( *this ); }                                                                            //!< Create an independent clone
-//        void                                                printElement(std::ostream &o, size_t i, std::string sep="\t", int l=-1, bool left=true) const { o << this->operator[](i); }         //!< Print the i-th element
-//        
-//        void                                                sort(void) { std::sort(this->std::vector<int>::begin(), this->std::vector<int>::end() ); }
-//        
-//        
-//    };
-    
     template<>
     class RbVector<double> : public RbVectorImpl<double, IsAbstract<double>::Is > {
         
@@ -74,9 +52,9 @@ namespace RevBayesCore {
         // constructor(s)
         RbVector() : RbVectorImpl<double, IsAbstract<double>::Is  >( ) {}
         RbVector(size_t n) : RbVectorImpl<double, IsAbstract<double>::Is  >( n ) {}
-        RbVector(size_t n, const double &v) : RbVectorImpl<double, IsAbstract<int>::Is  >( n, v ) {}
+        RbVector(size_t n, const double &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( n, v ) {}
         RbVector(const std::vector<double> &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( v ) {}
-        RbVector(const RbVector<int> &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( ) {  for (size_t i=0; i<v.size(); ++i) push_back( double(v[i]) ); }
+        RbVector(const RbVector<long> &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( ) {  for (size_t i=0; i<v.size(); ++i) push_back( double(v[i]) ); }
         RbVector(const RbVector<double> &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( v ) {}
         virtual                                            ~RbVector(void) {}
         
@@ -85,13 +63,22 @@ namespace RevBayesCore {
         void                                                printElement(std::ostream &o, size_t i, std::string sep="\t", int l=-1, bool left=true) const { std::stringstream ss; ss << this->operator[](i); std::string s = ss.str(); StringUtilities::fillWithSpaces( s, l, left ); o << s; } //!< Print the i-th element
         
 //        StringUtilities::fillWithSpaces( s, columnWidth, false );
-        void                                                sort(void) { std::sort(this->std::vector<double>::begin(), this->std::vector<double>::end() ); }
+        void                                                sort(bool ascending = true) {
+                                                                if ( ascending == true)
+                                                                {
+                                                                    std::sort(this->std::vector<double>::begin(), this->std::vector<double>::end() );
+                                                                }
+                                                                else
+                                                                {
+                                                                    std::sort(this->std::vector<double>::rbegin(), this->std::vector<double>::rend() );
+                                                                }
+                                                            }
         
         
     };
     
     template <>
-    inline void RbVector<int>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+    inline void RbVector<long>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
     {
         std::stringstream ss;
         ss << this->operator[](idx);
@@ -130,9 +117,15 @@ namespace RevBayesCore {
         o << s;
     }
     
+    
+    template <class valueType>
+    std::ostream&                                       operator<<(std::ostream& o, const RbVector<valueType>& x);
+    
 }
 
 
+template <class valueType>
+std::ostream&                                       operator<<(std::ostream& o, const RevBayesCore::RbVector<valueType>& x);
 
 #include "Cloner.h"
 #include "IsAbstract.h"
@@ -181,14 +174,14 @@ RevBayesCore::RbVector<valueType>::~RbVector( void )
 
 
 template <class valueType>
-RevBayesCore::RbVector<valueType>* RevBayesCore::RbVector<valueType>::clone(void) const {
+RevBayesCore::RbVector<valueType>* RevBayesCore::RbVector<valueType>::clone(void) const
+{
     
     return new RbVector<valueType>( *this );
 }
 
 /**
  * Find and return the index of pivot element.
- * @param a - The array.
  * @param first - The start of the sequence.
  * @param last - The end of the sequence.
  * @return - the pivot element
@@ -199,10 +192,10 @@ int RevBayesCore::RbVector<valueType>::pivot(int first, int last)
     int  p = first;
     const valueType& pivotElement = this->operator[](first);
     
-    for(int i = first+1 ; i <= last ; i++)
+    for (int i = first+1 ; i <= last ; i++)
     {
         /* If you want to sort the list in the other order, change "<=" to ">" */
-        if(this->operator[](i) <= pivotElement)
+        if (this->operator[](i) <= pivotElement)
         {
             p++;
             
@@ -287,6 +280,43 @@ void RevBayesCore::RbVector<valueType>::swap( valueType& a, valueType& b)
     delete temp;
 }
 
+
+template <class valueType>
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const RbVector<valueType>& x)
+{
+    
+    o << "[";
+    for ( size_t i = 0; i < x.size(); ++i )
+    {
+        if ( i > 0 )
+        {
+            o << ",";
+        }
+        o << " " << x[i];
+    }
+    o << "]";
+    
+    return o;
+}
+
+
+template <class valueType>
+std::ostream& operator<<(std::ostream& o, const RevBayesCore::RbVector<valueType>& x)
+{
+    
+    o << "[";
+    for ( size_t i = 0; i < x.size(); ++i )
+    {
+        if ( i > 0 )
+        {
+            o << ",";
+        }
+        o << " " << x[i];
+    }
+    o << "]";
+    
+    return o;
+}
 
 #endif
 

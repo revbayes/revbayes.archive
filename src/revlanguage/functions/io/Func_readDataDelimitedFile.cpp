@@ -13,6 +13,7 @@
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 #include "RlMatrixReal.h"
+#include "RlMatrixRealPos.h"
 #include "RlStandardState.h"
 #include "RlString.h"
 #include "StringUtilities.h"
@@ -172,7 +173,7 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
                 }
             }
 
-            return new RevVariable( new MatrixReal(m) );
+            return new RevVariable( new MatrixRealPos(m) );
         }
         else if (matrix_type == REAL)
         {
@@ -315,8 +316,8 @@ const TypeSpec& Func_readDataDelimitedFile::getTypeSpec( void ) const
 const TypeSpec& Func_readDataDelimitedFile::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = WorkspaceVector<WorkspaceVector<AbstractModelObject> >::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = WorkspaceVector<WorkspaceVector<AbstractModelObject> >::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

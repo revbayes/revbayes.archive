@@ -271,7 +271,7 @@ std::string Dist_multispeciesCoalescentInverseGammaPrior::getHelpExample(void) c
     // create an example as a single string variable.
     std::string example = "";
     example += "# We are going to save the trees we simulate in the folder simulatedTrees:\n";
-    example += "dataFolder = \"simulatedTrees\" \n";
+    example += "dataFolder = \"simulatedTrees/\" \n";
     example += "# Let’s simulate a species tree with 10 taxa, 2 gene trees, 3 alleles per species:\n";
     example += "n_species <- 10\n";
     example += "n_genes <- 2\n";
@@ -298,7 +298,7 @@ std::string Dist_multispeciesCoalescentInverseGammaPrior::getHelpExample(void) c
     example += "  print(geneTrees[g])\n";
     example += "}\n";
     example += "# We can save the species tree and the gene trees: \n";
-    example += "write(speciesTree, filename=dataFolder+\"speciesTree\")\n";
+    example += "write(spTree, filename=dataFolder+\"speciesTree\")\n";
     example += "# Saving the gene trees\n";
     example += "for (i in 1:(n_genes)) {\n";
     example += "  write(geneTrees[i], filename=dataFolder+\"geneTree_\"+i+\".tree\")\n";
@@ -336,6 +336,7 @@ std::vector<std::string> Dist_multispeciesCoalescentInverseGammaPrior::getHelpSe
     // create an entry for each suggested function
     std::vector<std::string> see_also;
     see_also.push_back( "dnMultiSpeciesCoalescent" );
+    see_also.push_back( "dnMultiSpeciesCoalescentUniformPrior" );
 
 
     return see_also;

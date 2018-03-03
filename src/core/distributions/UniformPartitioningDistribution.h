@@ -27,7 +27,7 @@ namespace RevBayesCore {
      *
      */
     template <class valueType>
-    class UniformPartitioningDistribution : public TypedDistribution< RbVector<valueType> >, public MemberObject<int> {
+    class UniformPartitioningDistribution : public TypedDistribution< RbVector<valueType> >, public MemberObject<long> {
         
     public:
         // constructor(s)
@@ -37,7 +37,7 @@ namespace RevBayesCore {
         // public member functions
         UniformPartitioningDistribution*                    clone(void) const;                                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
-        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;     //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;     //!< Map the member methods to internal function calls
         const std::vector<valueType>&                       getParameterValues(void) const;
         int                                                 getCurrentIndex(void) const;
         RbVector<valueType>*                                getPartition(void);
@@ -91,7 +91,7 @@ RevBayesCore::UniformPartitioningDistribution<valueType>::UniformPartitioningDis
     this->addParameter( parameter_values );
     
     // calculate the number of partitions
-    int num_elements = parameter_values->getValue().size();
+    int num_elements = (int)parameter_values->getValue().size();
     if ( include_zero == false )
     {
         num_partitions = RbMath::bell( num_elements ); 
@@ -124,7 +124,7 @@ RevBayesCore::UniformPartitioningDistribution<valueType>::UniformPartitioningDis
     this->addParameter( parameter_values );
     
     // calculate the number of partitions
-    int num_elements = parameter_values->getValue().size();
+    int num_elements = (int)parameter_values->getValue().size();
     if ( include_zero == false )
     {
         num_partitions = RbMath::bell( num_elements ); 
@@ -144,7 +144,7 @@ template <class valueType>
 RevBayesCore::RbVector<valueType>* RevBayesCore::UniformPartitioningDistribution<valueType>::assignValues( void )
 {
     
-    int num_elements = parameter_values->getValue().size();
+    int num_elements = (int)parameter_values->getValue().size();
     RbVector<valueType>* rv = new RbVector<valueType>();
     RbVector<valueType>& temp = *rv;
     
@@ -194,12 +194,12 @@ double RevBayesCore::UniformPartitioningDistribution<valueType>::computeLnProbab
 
 
 template <class valueType>
-void RevBayesCore::UniformPartitioningDistribution<valueType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+void RevBayesCore::UniformPartitioningDistribution<valueType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, long &rv) const
 {
     
     if ( n == "getAllocationIndex" )
     {
-        rv = int(index);
+        rv = long(index);
     }
     else
     {
@@ -227,7 +227,7 @@ const std::vector<valueType>& RevBayesCore::UniformPartitioningDistribution<valu
 template <class valueType>
 RevBayesCore::RbVector<valueType>* RevBayesCore::UniformPartitioningDistribution<valueType>::getPartition( void )
 {
-    int num_elements = parameter_values->getValue().size(); 
+    int num_elements = (int)parameter_values->getValue().size();
 
     if ( include_zero == true )
     {

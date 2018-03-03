@@ -1,4 +1,4 @@
-#include "ArgumentRule.h"
+ #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
 #include "Dist_norm.h"
@@ -243,18 +243,18 @@ std::string Dist_norm::getHelpTitle(void) const
 const MemberRules& Dist_norm::getParameterRules(void) const
 {
 
-    static MemberRules distNormMemberRules;
+    static MemberRules dist_member_rules;
     static bool rules_set = false;
 
-    if ( !rules_set )
+    if ( rules_set == false )
     {
-        distNormMemberRules.push_back( new ArgumentRule( "mean", Real::getClassTypeSpec()   , "The mean parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd"  , RealPos::getClassTypeSpec(), "The standard deviation parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
-
+        dist_member_rules.push_back( new ArgumentRule( "mean", Real::getClassTypeSpec()   , "The mean parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "sd"  , RealPos::getClassTypeSpec(), "The standard deviation parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        
         rules_set = true;
     }
 
-    return distNormMemberRules;
+    return dist_member_rules;
 }
 
 
@@ -321,6 +321,6 @@ void Dist_norm::setConstParameter(const std::string& name, const RevPtr<const Re
     }
     else
     {
-        Distribution::setConstParameter(name, var);
+        ContinuousDistribution::setConstParameter(name, var);
     }
 }

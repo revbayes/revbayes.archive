@@ -32,7 +32,7 @@ RevBayesCore::BinomialDistribution* Dist_binomial::createDistribution( void ) co
 {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<int>*    vn = static_cast<const Natural     &>( n->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<long>*    vn = static_cast<const Natural     &>( n->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* vp = static_cast<const Probability &>( p->getRevObject() ).getDagNode();
     RevBayesCore::BinomialDistribution* d  = new RevBayesCore::BinomialDistribution( vn, vp );
     return d;
@@ -54,6 +54,21 @@ const TypeSpec& Dist_binomial::getClassTypeSpec(void)
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
 	return rev_type_spec;
+}
+
+
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_binomial::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "binom" );
+
+    return a_names;
 }
 
 

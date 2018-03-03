@@ -23,7 +23,7 @@ namespace RevBayesCore {
     class Mcmc : public MonteCarloSampler {
     
     public:
-        Mcmc(const Model &m, const RbVector<Move> &moves, const RbVector<Monitor> &mons);
+        Mcmc(const Model &m, const RbVector<Move> &moves, const RbVector<Monitor> &mons, size_t ntries=1000);
         Mcmc(const Mcmc &m);
         virtual                                            ~Mcmc(void);                                                                             //!< Virtual destructor
         
@@ -34,7 +34,7 @@ namespace RevBayesCore {
         void                                                addMonitor(const Monitor &m);
         void                                                disableScreenMonitor(bool all, size_t rep);                                             //!< Disable/remove all screen monitors
         Mcmc*                                               clone(void) const;
-        void                                                finishMonitors(size_t n);                                                               //!< Finish the monitors
+        void                                                finishMonitors(size_t n, MonteCarloAnalysisOptions::TraceCombinationTypes ct);                 //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain
@@ -60,6 +60,7 @@ namespace RevBayesCore {
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
         void                                                setModel(Model *m, bool redraw);
+        void                                                setMoves(const RbVector<Move> &mvs);
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
         void                                                startMonitors(size_t numCycles, bool reopen);                                           //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
@@ -69,7 +70,7 @@ namespace RevBayesCore {
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
-        void                                                setActivePIDSpecialized(size_t i, size_t n);                                                      //!< Set the number of processes for this class.
+        void                                                setActivePIDSpecialized(size_t a, size_t n);                                                      //!< Set the number of processes for this class.
 
         
         bool                                                chain_active;
@@ -79,6 +80,7 @@ namespace RevBayesCore {
         Model*                                              model;
         RbVector<Monitor>                                   monitors;
         RbVector<Move>                                      moves;
+        size_t                                              num_init_attempts;
         MoveSchedule*                                       schedule;
         std::string                                         schedule_type;                                                                           //!< Type of move schedule to be used
 

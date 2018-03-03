@@ -131,56 +131,47 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
         RBOUT("\tSingle Chain Convergence Assessment");
         RBOUT("\t-----------------------------------\n\n");
         
-        std::vector< std::vector<RevBayesCore::TraceNumeric> > runs;
+        std::vector< std::vector<RevBayesCore::TraceNumeric> > runs(vectorOfFileNames.size(), std::vector<RevBayesCore::TraceNumeric>() );
         std::vector< size_t > burnins;
         
-        for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
+        for (size_t p = 0; p < vectorOfFileNames.size(); p++)
         {
             
-            std::vector<RevBayesCore::TraceNumeric> d;
-            const std::string &fn = *p;
+            const std::string &fn = vectorOfFileNames[p];
             
             RBOUT("\tProcessing file '" + fn + "'");
             
             // read in the traces from this file
-            readTrace(fn, d);
+            readTrace(fn, runs[p]);
             
             // add the traces to our runs
-            runs.push_back( d );
-            std::vector<RevBayesCore::TraceNumeric> &data = runs[runs.size()-1];
+            std::vector<RevBayesCore::TraceNumeric>& data = runs[p];
             
             size_t maxBurnin = 0;
             
+            // find the max burnin
             for ( size_t i = 0; i < data.size(); ++i)
             {
-                RevBayesCore::TraceNumeric &t = data[i];
-                const std::vector<double> &v = t.getValues();
-                size_t b = burninEst->estimateBurnin( v );
+                size_t b = burninEst->estimateBurnin( data[i] );
+
                 if ( maxBurnin < b )
                 {
                     maxBurnin = b;
                 }
             }
             
-            burnins.push_back( maxBurnin );
-            
             bool failed = false;
             size_t numFailedParams = 0;
             for ( size_t i = 0; i < data.size(); ++i)
             {
-                RevBayesCore::TraceNumeric &t = data[i];
-                const std::vector<double> &v = t.getValues();
-                t.setBurnin( maxBurnin );
-                t.computeStatistics();
+                data[i].setBurnin( maxBurnin );
+                data[i].computeStatistics();
                 
-                const std::string &traceName = t.getParameterName();
-                
-                
-                bool gewekeStat = gewekeTest->assessConvergenceSingleChain( v, maxBurnin );
-                bool essStat = essTest->assessConvergenceSingleChain( v, maxBurnin );
-//                bool gelmanStat = gelmanRubinTest->assessConvergenceSingleChain( v, maxBurnin );
-                bool stationarityStat = stationarityTest->assessConvergenceSingleChain( v, maxBurnin );
-                bool heidelbergerStat = heidelbergerTest->assessConvergenceSingleChain( v, maxBurnin );
+                bool gewekeStat = gewekeTest->assessConvergence( data[i] );
+                bool essStat = essTest->assessConvergence( data[i] );
+//                bool gelmanStat = gelmanRubinTest->assessConvergence( data[i] );
+                bool stationarityStat = stationarityTest->assessConvergence( data[i] );
+                bool heidelbergerStat = heidelbergerTest->assessConvergence( data[i] );
                 bool failedParam = !gewekeStat || !stationarityStat || !heidelbergerStat || !essStat;
                 
                 if ( failedParam == true )
@@ -192,9 +183,9 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
                 
                 if ( verbose == true )
                 {
-                    RBOUT("\t\tResults for parameter '" + traceName + "'\n" );
+                    RBOUT("\t\tResults for parameter '" + data[i].getParameterName() + "'\n" );
                     std::stringstream ss("");
-                    ss << "\t\t\tESS = " << t.getEss();
+                    ss << "\t\t\tESS = " << data[i].getESS();
                     RBOUT( ss.str() );
                     std::string p = (gewekeStat ? "TRUE" : "FALSE");
                     RBOUT("\t\t\tPassed Geweke test:\t\t\t\t" + p);
@@ -219,7 +210,7 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
             }
             else
             {
-                RBOUT("No failure to convergence could be detected in file '"+ fn +"'.\n\n");
+                RBOUT("No failure to converge was detected in file '"+ fn +"'.\n\n");
             }
             
             passed &= !failed;
@@ -233,7 +224,7 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
             RBOUT("\tMulti Chain Convergence Assessment");
             RBOUT("\t----------------------------------\n\n");
             
-            std::vector<RevBayesCore::TraceNumeric> &run = runs[0];
+            std::vector<RevBayesCore::TraceNumeric>& run = runs[0];
             
             bool failed = false;
             size_t numFailedParams = 0;
@@ -241,10 +232,10 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
             for (size_t j=0; j<run.size(); ++j)
             {
                 
-                RevBayesCore::TraceNumeric &t = run[j];
+                RevBayesCore::TraceNumeric& t = run[j];
                 const std::string &traceName = t.getParameterName();
-                std::vector< std::vector<double> > v;
-                v.push_back( t.getValues() );
+                std::vector<RevBayesCore::TraceNumeric> v;
+                v.push_back( t );
                 
                 for (size_t i=1; i<runs.size(); ++i)
                 {
@@ -263,17 +254,17 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
                     {
                         throw RbException("Could not find a trace for parameter '" + traceName + "' in file '" + runs[i][0].getFileName() + "'.");
                     }
-                    RevBayesCore::TraceNumeric &nextTrace = runs[i][index];
-                    v.push_back( nextTrace.getValues() );
+                    RevBayesCore::TraceNumeric& nextTrace = runs[i][index];
+                    v.push_back( nextTrace );
             
                 }
                 
                 
-//                bool gewekeStat = gewekeTest->assessConvergenceMultipleChains( v, burnins );
-//                bool essStat = essTest->assessConvergenceMultipleChains( v, burnins );
-                bool gelmanStat = gelmanRubinTest->assessConvergenceMultipleChains( v, burnins );
-                bool stationarityStat = stationarityTest->assessConvergenceMultipleChains( v, burnins );
-//                bool heidelbergerStat = heidelbergerTest->assessConvergenceMultipleChains( v, burnins );
+//                bool gewekeStat = gewekeTest->assessConvergence( v );
+//                bool essStat = essTest->assessConvergence( v );
+                bool gelmanStat = gelmanRubinTest->assessConvergence( v );
+                bool stationarityStat = stationarityTest->assessConvergence( v );
+//                bool heidelbergerStat = heidelbergerTest->assessConvergence( v );
                 bool failedParam =  !gelmanStat || !stationarityStat;
                 
                 if ( failedParam == true )
@@ -436,7 +427,8 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
         
         // Read a line
         std::string line;
-        getline( inFile, line );
+        RevBayesCore::RbFileManager reader = RevBayesCore::RbFileManager();
+        reader.safeGetline(inFile, line);
         
         // skip empty lines
         //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];

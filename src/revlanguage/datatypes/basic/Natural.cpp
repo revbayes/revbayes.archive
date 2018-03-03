@@ -19,20 +19,20 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Natural::Natural( void ) : Integer( 0 )
+Natural::Natural( void ) : Integer( 0L )
 {
 
 }
 
 
-Natural::Natural( RevBayesCore::TypedDagNode<int> *v ) : Integer( v )
+Natural::Natural( RevBayesCore::TypedDagNode<long> *v ) : Integer( v )
 {
     
 }
 
 
 /** Construct from int */
-Natural::Natural( int x ) : Integer( x )
+Natural::Natural( long x ) : Integer( x )
 {
 
     if ( x < 0 )
@@ -40,25 +40,6 @@ Natural::Natural( int x ) : Integer( x )
         throw RbException( "Negative value for " + getClassType() );
     }
     
-}
-
-
-/* Construct from unsigned int */
-Natural::Natural( unsigned int x ) : Integer( x )
-{
-        
-}
-
-
-/* Construct from unsigned long */
-Natural::Natural( unsigned long x) : Integer( int(x) )
-{
-
-    if ( x > INT_MAX )
-    {
-        throw RbException( "Value out of range for " + getClassType() );
-    }
-
 }
 
 

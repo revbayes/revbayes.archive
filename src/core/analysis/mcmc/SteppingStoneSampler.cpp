@@ -66,7 +66,6 @@ double SteppingStoneSampler::marginalLikelihood( void ) const
     }
     
 #ifdef RB_MPI
-//    MPI::COMM_WORLD.Bcast(&marginal, 1, MPI::DOUBLE, 0);
     MPI_Bcast(&marginal, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 #endif
     

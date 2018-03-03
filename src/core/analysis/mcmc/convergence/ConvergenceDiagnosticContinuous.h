@@ -8,7 +8,7 @@
 #ifndef ConvergenceDiagnosticContinuous_H
 #define ConvergenceDiagnosticContinuous_H
 
-#include "TraceAnalysisContinuous.h"
+#include "TraceNumeric.h"
 
 #include <vector>
 
@@ -17,16 +17,12 @@ namespace RevBayesCore {
     class ConvergenceDiagnosticContinuous {
     
     public:
-        ConvergenceDiagnosticContinuous();
+        //ConvergenceDiagnosticContinuous();
         virtual                    ~ConvergenceDiagnosticContinuous(void) {}
     
-        virtual bool                assessConvergenceSingleChain(const std::vector<double>& values, std::size_t burnin) { return false; }
-        virtual bool                assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<std::size_t>& burnin) { return false; }
-    
-    protected:
-    
-        TraceAnalysisContinuous     analysis;
-        
+        virtual bool                assessConvergence(const TraceNumeric& trace) { return false; }
+        virtual bool                assessConvergence(const std::vector<TraceNumeric>& traces) { return false; }
+
     };
 
 }

@@ -155,11 +155,11 @@ void RootTimeSlideUniformProposal::undoProposal( void )
  */
 void RootTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    if(oldN == variable)
+    if (oldN == variable)
     {
         variable = static_cast<StochasticNode<Tree>* >(newN) ;
     }
-    else if(oldN == origin)
+    else if (oldN == origin)
     {
         origin = static_cast<StochasticNode<double>* >(newN) ;
     }

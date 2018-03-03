@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class DiversityDependentPureBirthProcess : public AbstractBirthDeathProcess {
         
     public:
-        DiversityDependentPureBirthProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<int> *k,
+        DiversityDependentPureBirthProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<long> *k,
                                            const std::string &cdt, const std::vector<Taxon> &tn);                                //!< Constructor
         
         // public member functions
@@ -45,7 +45,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<double>*                         initialSpeciation;                                                                                  //!< The initial speciation rate (lambda_0).
-        const TypedDagNode<int>*                            capacity;                                                                                           //!< The carrying capacity (K).
+        const TypedDagNode<long>*                            capacity;                                                                                           //!< The carrying capacity (K).
         
     };
     

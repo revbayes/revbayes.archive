@@ -71,11 +71,6 @@ RevPtr<RevVariable> Func_simCompleteTree::execute( void )
         // set the age of this tip node
         node->setAge( taxa[i].getAge() );
         
-        if (node->getAge() > 0)
-        {
-            node->setFossil(true);
-        }
-        
         // add the new node to the list
         nodes[i] = node;
     }
@@ -240,7 +235,7 @@ const TypeSpec& Func_simCompleteTree::getTypeSpec( void ) const
 const TypeSpec& Func_simCompleteTree::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = TimeTree::getClassTypeSpec();
+    static TypeSpec return_typeSpec = TimeTree::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }

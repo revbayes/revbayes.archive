@@ -5,7 +5,7 @@
 
 
 
-RevBayesCore::DiscretizeGammaFunction::DiscretizeGammaFunction(const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<int> *nc, bool med) : TypedFunction< RbVector<double> >( new RbVector<double>(nc->getValue(), 1.0) ),
+RevBayesCore::DiscretizeGammaFunction::DiscretizeGammaFunction(const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<long> *nc, bool med) : TypedFunction< RbVector<double> >( new RbVector<double>(nc->getValue(), 1.0) ),
     shape( s ),
     rate( r ),
     numCats(nc),
@@ -41,7 +41,7 @@ void RevBayesCore::DiscretizeGammaFunction::swapParameterInternal(const DagNode 
     
     if (oldP == numCats)
     {
-        numCats = static_cast<const TypedDagNode<int>* >( newP );
+        numCats = static_cast<const TypedDagNode<long>* >( newP );
     }
     
 }
@@ -51,7 +51,7 @@ void RevBayesCore::DiscretizeGammaFunction::update( void )
     
     double a = shape->getValue();
     double b = rate->getValue();
-    int nCats = numCats->getValue();
+    int nCats = (int)numCats->getValue();
     
     double factor = a / b * nCats;
 

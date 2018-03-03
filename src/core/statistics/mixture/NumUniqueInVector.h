@@ -28,7 +28,7 @@
 namespace RevBayesCore {
     
 	template <class valueType>
-    class NumUniqueInVector : public TypedFunction<int> {
+    class NumUniqueInVector : public TypedFunction<long> {
         
     public:
 																NumUniqueInVector(const TypedDagNode< RbVector<valueType> >* v);        //!< Default constructor
@@ -54,7 +54,7 @@ namespace RevBayesCore {
 using namespace RevBayesCore;
 
 template<class valueType>
-NumUniqueInVector<valueType>::NumUniqueInVector(const TypedDagNode< RbVector<valueType> >* v) : TypedFunction<int>( new int(0) ), elementVals( v ) {
+NumUniqueInVector<valueType>::NumUniqueInVector(const TypedDagNode< RbVector<valueType> >* v) : TypedFunction<long>( new long(0) ), elementVals( v ) {
     // add the tree parameter as a parent
     addParameter( elementVals );
     update();
@@ -78,10 +78,10 @@ void NumUniqueInVector<valueType>::update( void ) {
 	std::vector<int> numCustomerPerTable;
 	int numTables = 0;
 	size_t numElements = pv.size();
-	for(int i=0; i<numElements; i++){
+	for (int i=0; i<numElements; i++){
 		valueType v = pv[i];
 		size_t tID = findValueinValuePerTable(v, valuePerTable);
-		if(tID < valuePerTable.size()){
+		if (tID < valuePerTable.size()){
 			numCustomerPerTable[tID] += 1;
 		}
 		else{
@@ -107,11 +107,11 @@ template <class valueType>
 size_t NumUniqueInVector<valueType>::findValueinValuePerTable(valueType v, std::vector<valueType> vpt){
 	
 	size_t tID = vpt.size();
-	if(tID == 0)
+	if (tID == 0)
 		return tID;
 	else{
-		for(size_t i=0; i<vpt.size(); i++){
-			if(vpt[i] == v){
+		for (size_t i=0; i<vpt.size(); i++){
+			if (vpt[i] == v){
 				return i;
 			}
 		}

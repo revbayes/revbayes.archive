@@ -1,7 +1,8 @@
-#ifndef __rb_mlandis__RateMatrix_FreeK__
-#define __rb_mlandis__RateMatrix_FreeK__
+#ifndef RateMatrix_FreeK_H
+#define RateMatrix_FreeK_H
 
 #include "GeneralRateMatrix.h"
+
 #include <complex>
 #include <vector>
 
@@ -33,8 +34,12 @@ namespace RevBayesCore {
     class RateMatrix_FreeK : public GeneralRateMatrix {
         
     public:
+        
+        enum METHOD { SCALING_AND_SQUARING, SCALING_AND_SQUARING_PADE, SCALING_AND_SQUARING_TAYLOR, UNIFORMIZATION, EIGEN };
+        
         RateMatrix_FreeK(size_t k);                                                                                               //!< Construct rate matrix with n states
         RateMatrix_FreeK(size_t k, bool r);
+        RateMatrix_FreeK(size_t k, bool r, std::string method);
         RateMatrix_FreeK(const RateMatrix_FreeK& m);                                                                                //!< Copy constructor
         virtual                         ~RateMatrix_FreeK(void);                                                              //!< Destructor
         
@@ -51,16 +56,34 @@ namespace RevBayesCore {
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
         void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case
         void                                tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
+        void                                tiProbsUniformization(double t, TransitionProbabilityMatrix& P) const;              //!< Calculate transition probabilities with uniformization
+        void                                tiProbsScalingAndSquaring(double t, TransitionProbabilityMatrix& P) const;          //!< Calculate transition probabilities with scaling and squaring
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
+        void                                updateUniformization(void);                                                         //!< Update the system for uniformization
+        void                                expandUniformization(int truncation, double tolerance) const;
+        void                                expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tolerance) const;
+        void                                checkMatrixIrreducible(double tolerance, TransitionProbabilityMatrix& P) const;
+        void                                checkMatrixDiff(MatrixReal x, double tolerance, bool& diff) const;
         
         bool                                rescale;
+        
+        void                                exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
+        inline void                         multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
+        
+        // members for uniformization
+        MatrixReal                          singleStepMatrix;
+        std::vector<MatrixReal>*            matrixProducts;
+        double                              maxRate;
+        
+        // the eigensystem
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >  cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
-        void                                exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
-        inline void                         multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
+
+        METHOD                              my_method;
+        
     };
     
 }
 
-#endif /* defined(__rb_mlandis__RateMatrix_FreeK__) */
+#endif

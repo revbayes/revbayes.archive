@@ -114,8 +114,8 @@ const TypeSpec& Func_readAtlas::getTypeSpec( void ) const
 const TypeSpec& Func_readAtlas::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlAtlas::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = RlAtlas::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 
