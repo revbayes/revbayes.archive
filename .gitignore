@@ -43,3 +43,4 @@ projects/xcode/revbayes.xcodeproj
 .history
 history.txt
 .history
+.ycm_extra_conf.py
