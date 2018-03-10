@@ -13,6 +13,8 @@
 #include "RateMatrix_JC.h"
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
+#include "RealPos.h"
+#include "RlString.h"
 #include "StandardState.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
@@ -54,6 +56,10 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     use_cladogenetic_events( false ),
     use_origin( uo ),
     sample_character_history( false ),
+    average_speciation( std::vector<double>(5, 0.0) ),
+    average_extinction( std::vector<double>(5, 0.0) ),
+    time_in_state( std::vector<double>(ext->getValue().size(), 0.0) ),    
+    simmap( "" ),
     cladogenesis_matrix( NULL ),
     process_age( age ),
     mu( ext ),
@@ -998,9 +1004,15 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
     // recurse towards tips
     recursivelyDrawStochasticCharacterMap(left, l, character_histories);
     recursivelyDrawStochasticCharacterMap(right, r, character_histories);
+
+    Tree t = Tree(*value);
+    t.clearNodeParameters();
+    t.addNodeParameter( "character_history", character_histories, false );
+    simmap = t.getSimmapNewickRepresentation();
     
     // turn off sampling until we need it again
     sample_character_history = false;
+
 }
 
 
@@ -1008,6 +1020,8 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
 {
     
     size_t node_index = node.getIndex();
+    std::vector<double> speciation_rates = calculateTotalSpeciationRatePerState();
+    std::vector<double> extinction_rates = mu->getValue();
     
     // sample characters by their probability conditioned on the branch's start state going to end states
     
@@ -1033,7 +1047,12 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
     transition_states.push_back(current_state);
     
     int downpass_dt = int( branch_partial_likelihoods[node_index].size() ) - 1;
-    
+   
+    // keep track of rates in each time interval so we can calculate per branch averages of each rate
+    double total_speciation_rate = 0.0;
+    double total_extinction_rate = 0.0;
+    double num_dts = 0.0;
+
     // loop over every time slice, stopping before the last time slice
     while ( downpass_dt >= 0 && ((current_dt + 1) * dt) < branch_length)
     {
@@ -1102,6 +1121,12 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         
         current_dt++;
         downpass_dt--;
+        
+        // keep track of rates in this interal so we can calculate per branch averages of each rate
+        total_speciation_rate += speciation_rates[current_state];
+        total_extinction_rate += extinction_rates[current_state];
+        time_in_state[current_state] += dt;
+        num_dts += 1;
     }
     
     if ( node.isTip() == true )
@@ -1123,6 +1148,12 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
             // use the simulated state
             new_state = current_state;
         }
+        
+        // keep track of rates in this interval so we can calculate per branch averages of each rate
+        total_speciation_rate += speciation_rates[new_state];
+        total_extinction_rate += extinction_rates[new_state];
+        time_in_state[new_state] += dt;
+        num_dts += 1;
         
         // check if there was a character state transition
         if (new_state != current_state)
@@ -1161,6 +1192,10 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         }
         simmap_string = simmap_string + "}";
         
+        // calculate average diversification rates on this branch
+        average_speciation[node_index] = total_speciation_rate / num_dts;
+        average_extinction[node_index] = total_extinction_rate / num_dts;
+
         // save the character history for this branch
         character_histories[node_index] = new std::string(simmap_string);
         
@@ -1170,15 +1205,10 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         // the last time slice of the branch will be the state of the node before any cladogenetic events
         
         std::map<std::vector<unsigned>, double> event_map;
-        std::vector<double> speciation_rates;
         if ( use_cladogenetic_events == true )
         {
             // get cladogenesis event map (sparse speciation rate matrix)
             event_map = cladogenesis_matrix->getValue().getEventMap();
-        }
-        else
-        {
-            speciation_rates = lambda->getValue();
         }
         
         // get likelihoods of descendant nodes
@@ -1265,6 +1295,12 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
             }
         }
         
+        // keep track of rates in this interval so we can calculate per branch averages of each rate
+        total_speciation_rate += speciation_rates[a];
+        total_extinction_rate += extinction_rates[a];
+        time_in_state[a] += dt;
+        num_dts += 1;
+        
         // check if there was a character state transition
         if (a != current_state)
         {
@@ -1306,6 +1342,10 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         // save the character history for this branch
         character_histories[node_index] = new std::string(simmap_string);
         
+        // calculate average diversification rates on this branch
+        average_speciation[node_index] = total_speciation_rate / num_dts;
+        average_extinction[node_index] = total_extinction_rate / num_dts;
+        
         // recurse towards tips
         recursivelyDrawStochasticCharacterMap(left, l, character_histories);
         recursivelyDrawStochasticCharacterMap(right, r, character_histories);
@@ -1320,8 +1360,38 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> StateDependentSpeciationExtinction
         found = true;
         
         const AbstractHomologousDiscreteCharacterData& v = static_cast<const TypedDagNode<AbstractHomologousDiscreteCharacterData > *>( args[0] )->getValue();
+    
+        // check if the tip names match
+        bool match = true;
+        std::vector<string> tips = value->getTipNames();
+        for (size_t i = 0; i < tips.size(); i++)
+        {
+            found = false;
+            for (size_t j = 0; j < v.getNumberOfTaxa(); j++)
+            {
+                if (tips[i] == v[j].getTaxonName()) 
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (found == false)
+            {
+                match = false;
+                break;
+            }
+        }
+        if (match == false)
+        {
+            throw RbException("To clamp a character data object all taxa present in the tree must be present in the character data.");
+        }
         
         static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData( v.clone() );
+   
+        // simulate character history over the tree conditioned on the new tip data
+        size_t num_nodes = value->getNumberOfNodes();
+        std::vector<std::string*> character_histories(num_nodes);
+        drawStochasticCharacterMap(character_histories);
 
         return NULL;
     }
@@ -1332,7 +1402,35 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> StateDependentSpeciationExtinction
         RevLanguage::AbstractHomologousDiscreteCharacterData *tip_states = new RevLanguage::AbstractHomologousDiscreteCharacterData( getCharacterData() );
         return new RevLanguage::RevVariable( tip_states );
     }
+    if ( name == "getCharHistory" )
+    {
+        found = true;
+        return new RevLanguage::RevVariable( new RlString( simmap ) );        
+    }
     return TypedDistribution<Tree>::executeProcedure( name, args, found );
+}
+
+
+void StateDependentSpeciationExtinctionProcess::executeMethod(const std::string &name, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
+{
+   
+    if ( name == "averageSpeciationRate" )
+    {
+        rv = average_speciation;        
+    }
+    else if ( name == "averageExtinctionRate" )
+    {
+        rv = average_extinction;        
+    }
+    else if ( name == "getTimeInState" )
+    {
+        rv = time_in_state;        
+    }
+    else
+    {
+        throw RbException("The character dependent birth-death process does not have a member method called '" + name + "'.");
+    }
+
 }
 
 
@@ -1660,6 +1758,8 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
     //    TypedDistribution<Tree>::setValue(v, f);
     static_cast<TreeDiscreteCharacterData *>(this->value)->setTree( *v );
     resizeVectors(v->getNumberOfNodes());
+    
+    // clear memory
     delete v;
     
     value->getTreeChangeEventHandler().addListener( this );
@@ -1677,6 +1777,24 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
         }
         
     }
+
+    // make character data objects -- all unknown/missing
+    std::vector<string> tips = value->getTipNames();
+    HomologousDiscreteCharacterData<NaturalNumbersState> *tip_data = new HomologousDiscreteCharacterData<NaturalNumbersState>();
+    for (size_t i = 0; i < tips.size(); i++)
+    {
+        DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(tips[i]);
+        NaturalNumbersState state = NaturalNumbersState(0, num_states);
+        state.setState("?");
+        this_tip_data.addCharacter(state);
+        tip_data->addTaxonData(this_tip_data);
+    }
+    static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
+   
+    // simulate character history over the new tree
+    size_t num_nodes = value->getNumberOfNodes();
+    std::vector<std::string*> character_histories(num_nodes);
+    drawStochasticCharacterMap(character_histories);
 }
 
 
@@ -2147,6 +2265,10 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     setValue(psi);
     static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
     
+    size_t num_nodes = value->getNumberOfNodes();
+    std::vector<std::string*> character_histories(num_nodes);
+    drawStochasticCharacterMap(character_histories);
+    
 }
 
 
@@ -2295,4 +2417,7 @@ void StateDependentSpeciationExtinctionProcess::resizeVectors(size_t num_nodes)
     dirty_nodes = std::vector<bool>(num_nodes, true);
     node_partial_likelihoods = std::vector<std::vector<std::vector<double> > >(num_nodes, std::vector<std::vector<double> >(2,std::vector<double>(2*num_states,0)));
     scaling_factors = std::vector<std::vector<double> >(num_nodes, std::vector<double>(2,0.0) );
+    average_speciation = std::vector<double>(num_nodes, 0.0);
+    average_extinction = std::vector<double>(num_nodes, 0.0);
+    time_in_state = std::vector<double>(num_states, 0.0);    
 }
