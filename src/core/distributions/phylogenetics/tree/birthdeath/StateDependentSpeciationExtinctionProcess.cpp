@@ -898,6 +898,11 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
     sample_character_history = true;
     computeLnProbability();
 
+    for (size_t i = 0; i < num_states; i++) 
+    {
+        time_in_state[i] = 0.0;
+    }
+
     // now begin the root-to-tip pass, drawing ancestral states for each time slice conditional on the start states
     std::map<std::vector<unsigned>, double> eventMap;
     std::vector<double> speciation_rates;
