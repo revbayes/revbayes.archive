@@ -449,6 +449,12 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
 
         rv = Boolean( index == clade_index );
     }
+    else if ( n == "hasSameTopology" )
+    {
+        const Tree& t = static_cast<const TypedDagNode<Tree> *>( args[0] )->getValue();
+        
+        rv = Boolean( hasSameTopology(t) );
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");

@@ -58,7 +58,7 @@ double LaplaceDistribution::getMax( void ) const
 
 double LaplaceDistribution::getMin( void ) const
 {
-        return RbConstants::Double::inf;
+    return RbConstants::Double::neginf;
 }
 
 
