@@ -215,8 +215,8 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
     double logy = L_f + log(unif());
     
     // Find initial boundaries and draw first value (Murray step 3)
-    double theta = unif()*RbConstants::TwoPI;
-    double L = theta - RbConstants::TwoPI;
+    double theta = unif()*window;
+    double L = theta - window;
     double R = theta;
     
     double sin_theta = std::sin(theta);
@@ -224,11 +224,12 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
     
     // Run slice loop (Murray steps 4-10, with automatic termination after 200 steps)
     std::vector<double> f_prime = std::vector<double>(variables.size(),0.0);
+    size_t loop_iterations = 0;
     for (size_t i=0;i<200;++i)
     {
-
+        ++loop_iterations;
         // step 4
-        for (size_t j = 0; j < f.size(); j++)
+        for (size_t j = 0; j < f.size(); ++j)
         {
             f_prime[j] = f[j] * cos_theta + nu[j] * sin_theta;
         }
@@ -260,18 +261,9 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
     
     double new_movement = 0.0;
     
-    for (size_t i = 0; i < f.size(); ++i)
-    {
-        new_movement += std::pow((f_prime[i] - f[i]),2.0);
-    }
-    total_movement += std::sqrt(new_movement);
+    total_movement += cos_theta;
     
     numPr += lnL.get_num_evals();
-    
-//    if (auto_tuning and (num_tried > 3) and (numPr/num_tried > 9) )
-//    {
-//        window *= 0.95;
-//    }
     
 }
 
@@ -332,13 +324,13 @@ void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o) const
     o<<"\n";
     if (num_tried_total > 0)
     {
-      o<<"  Ave. abs(angle(x1,x2)) = "<<total_movement/num_tried_total<<std::endl;
+      o<<"  Ave. cos(angle(x1,x2)) = "<<total_movement/num_tried_current_period<<std::endl;
     }
 
     // print the average distance moved
     if (num_tried_total > 0)
     {
-      o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried_total<<std::endl;
+      o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried_current_period<<std::endl;
     }
 
     //    proposal->printParameterSummary( o );

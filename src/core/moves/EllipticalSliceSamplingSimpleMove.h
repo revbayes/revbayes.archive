@@ -45,7 +45,6 @@ namespace RevBayesCore {
 
         // parameters
         std::vector< StochasticNode<double> *>                  variables;                                          //!< The (Multivariate-Normally-distributed) variables the Proposal is working on
-        std::vector< StochasticNode<double> *>                  sd;                                                 //!< Vector of standard deviations for the above MVN distribution
         double                                                  window;                                             //!< Window width for slice sampling
         double                                                  total_movement;                                     //!< total distance moved under auto-tuning
         int                                                     numPr;                                              //!< Number of probability evaluations

@@ -178,8 +178,9 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
     {
         return logDet;
     }
-    
-    if ( omega.getCholeskyDecomposition().checkPositiveSemidefinite() == false )
+   
+    CholeskyDecomposition c = CholeskyDecomposition(&omega);
+    if ( c.checkPositiveSemidefinite() == false )
     {
         return RbConstants::Double::neginf;
     }
