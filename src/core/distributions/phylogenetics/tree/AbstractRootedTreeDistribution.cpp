@@ -104,7 +104,8 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
 {
     
     // proceed as long as derived classes validate a non-zero likeilhood
-    if (!isLnProbabilityNonZero()) {
+    if ( isLnProbabilityNonZero() == false )
+    {
         return RbConstants::Double::neginf;
     }
     
