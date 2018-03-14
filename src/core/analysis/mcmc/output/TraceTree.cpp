@@ -1177,6 +1177,33 @@ std::vector<Clade> TraceTree::getUniqueClades( double min_clade_prob, bool verbo
 }
 
 
+std::vector<Tree> TraceTree::getUniqueTrees( double credible_interval_size, bool verbose )
+{
+    summarize( verbose );
+    
+    std::vector<Tree> unique_trees;
+    NewickConverter converter;
+    double total_prob = 0;
+    double total_samples = size();
+    for (std::set<Sample<std::string> >::const_reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
+    {
+        double freq =it->second;
+        double p =freq/(total_samples-burnin);
+        total_prob += p;
+        
+        Tree* current_tree = converter.convertFromNewick( it->first );
+        unique_trees.push_back( *current_tree );
+        delete current_tree;
+        if ( total_prob >= credible_interval_size )
+        {
+            break;
+        }
+        
+    }
+    
+    return unique_trees;
+}
+
 
 bool TraceTree::isCoveredInInterval(const std::string &v, double ci_size, bool verbose)
 {

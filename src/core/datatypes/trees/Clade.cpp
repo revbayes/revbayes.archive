@@ -50,11 +50,35 @@ Clade::Clade( const Taxon &t, const RbBitSet &b ) :
 Clade::Clade(const std::vector<Taxon> &n, const RbBitSet &b) :
     age( 0.0 ),
     bitset( b ),
-    num_missing( b.size() > n.size() ? b.size() - n.size() : 0 ),
+    num_missing( b.size() > n.size() ? int(b.size()) - int(n.size()) : 0 ),
     taxa( n ),
     is_negative_constraint(false),
     is_optional_match(false)
 {
+    
+    VectorUtilities::sort( taxa );
+}
+
+
+/**
+ * Default constructor that instantiates the object.
+ * Additionally, we sort the vector of taxon names.
+ *
+ * \param[in]   n    The vector containing the taxon names.
+ */
+Clade::Clade(const std::set<Taxon> &n, const RbBitSet &b) :
+    age( 0.0 ),
+    bitset( b ),
+    num_missing( b.size() > n.size() ? int(b.size()) - int(n.size()) : 0 ),
+    taxa(),
+    is_negative_constraint(false),
+    is_optional_match(false)
+{
+    
+    for (std::set<Taxon>::const_iterator it=n.begin(); it!=n.end(); ++it)
+    {
+        taxa.push_back( *it );
+    }
     
     VectorUtilities::sort( taxa );
 }
