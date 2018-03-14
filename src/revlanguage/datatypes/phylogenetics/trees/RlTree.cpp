@@ -239,6 +239,10 @@ void Tree::initMethods( void )
     isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "isInternal", RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
 
+    ArgumentRules* same_topology_arg_rules = new ArgumentRules();
+    same_topology_arg_rules->push_back(        new ArgumentRule("tree"    , Tree::getClassTypeSpec(), "The reference tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<Tree, RlBoolean>( "hasSameTopology", this, same_topology_arg_rules ) );
+    
     ArgumentRules* nnodesArgRules = new ArgumentRules();
     methods.addFunction( new MemberFunction<Tree, Natural>( "nnodes", this, nnodesArgRules ) );
 
