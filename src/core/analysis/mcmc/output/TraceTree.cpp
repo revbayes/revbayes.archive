@@ -1150,31 +1150,30 @@ int TraceTree::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbose
 }
 
 
-std::vector<Tree> TraceTree::getUniqueTrees( double credible_interval_size, bool verbose )
+std::vector<Clade> TraceTree::getUniqueClades( double min_clade_prob, bool verbose )
 {
     summarize( verbose );
     
-    std::vector<Tree> unique_trees;
+    std::vector<Clade> unique_clades;
     NewickConverter converter;
-    double total_prob = 0;
     double total_samples = size();
-    for (std::set<Sample<std::string> >::const_reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
+    for (std::set<Sample<Split> >::const_reverse_iterator it = clade_samples.rbegin(); it != clade_samples.rend(); ++it)
     {
         double freq =it->second;
-        double p =freq/(total_samples-burnin);
-        total_prob += p;
+        double p = freq/(total_samples-burnin);
         
-        Tree* current_tree = converter.convertFromNewick( it->first );
-        unique_trees.push_back( *current_tree );
-        delete current_tree;
-        if ( total_prob >= credible_interval_size )
+        Split current_split = it->first;
+        Clade current_clade = Clade( current_split.second );
+        if ( p < min_clade_prob )
         {
             break;
         }
         
+        unique_clades.push_back( current_clade );
+        
     }
     
-    return unique_trees;
+    return unique_clades;
 }
 
 
@@ -1182,22 +1181,30 @@ std::vector<Tree> TraceTree::getUniqueTrees( double credible_interval_size, bool
 bool TraceTree::isCoveredInInterval(const std::string &v, double ci_size, bool verbose)
 {
     
-    summarize( verbose );
-    
-
-    RandomNumberGenerator *rng = GLOBAL_RNG;
-    
     std::vector<std::string> tip_names = objectAt(0).getTipNames();
     std::sort(tip_names.begin(),tip_names.end());
     std::string outgroup = tip_names[0];
     
     Tree tree;
     tree.initFromString(v);
-
+    
     if ( tree.isRooted() == false && rooted == false )
     {
         tree.reroot( outgroup, true );
     }
+    
+    return isCoveredInInterval(tree, ci_size, verbose);
+}
+
+
+
+bool TraceTree::isCoveredInInterval(const Tree &tree, double ci_size, bool verbose)
+{
+    
+    summarize( verbose );
+    
+
+    RandomNumberGenerator *rng = GLOBAL_RNG;
     
     std::string newick = tree.getPlainNewickRepresentation();
     
