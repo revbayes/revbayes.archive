@@ -237,15 +237,15 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         }
         
     }
-    else if ( name == "isCovered" )
+    else if ( name == "isTreeCovered" )
     {
         found = true;
         
         // get the tree which is the only argument for this method
         const RevBayesCore::Tree &current_tree = static_cast<const Tree &>( args[0].getVariable()->getRevObject() ).getValue();
-        bool ci_szie = static_cast<const Probability &>( args[1].getVariable()->getRevObject() ).getValue();
+        double ci_size = static_cast<const Probability &>( args[1].getVariable()->getRevObject() ).getValue();
         bool verbose = static_cast<const RlBoolean &>( args[2].getVariable()->getRevObject() ).getValue();
-        bool cov = this->value->isCoveredInInterval(current_tree, ci_szie, verbose);
+        bool cov = this->value->isCoveredInInterval(current_tree, ci_size, verbose);
         
         return new RevVariable( new RlBoolean( cov ) );
     }
@@ -367,7 +367,7 @@ void TraceTree::initMethods( void )
     is_covered_arg_rules->push_back( new ArgumentRule("tree", Tree::getClassTypeSpec(), "The tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
     is_covered_arg_rules->push_back( new ArgumentRule("ci_size", Probability::getClassTypeSpec(), "The size of the credible interval.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
     is_covered_arg_rules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), "Printing verbose output.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true)) );
-    this->methods.addFunction( new MemberProcedure( "isCovered", RlBoolean::getClassTypeSpec(), is_covered_arg_rules) );
+    this->methods.addFunction( new MemberProcedure( "isTreeCovered", RlBoolean::getClassTypeSpec(), is_covered_arg_rules) );
     
     
     ArgumentRules* computePairwiseRFDistanceArgRules = new ArgumentRules();

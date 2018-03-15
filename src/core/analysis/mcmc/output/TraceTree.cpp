@@ -877,22 +877,25 @@ TraceTree::Split TraceTree::collectTreeSample(const TopologyNode& n, RbBitSet& i
 
     Split parent_split(taxa, mrca, rooted);
 
-    // store the age for this split
-    clade_ages[parent_split].push_back( age );
-
-    // increment split count
-    cladeCountMap[parent_split]++;
-
-    // add conditional clade ages
-    for (std::vector<Split>::iterator child=child_splits.begin(); child !=child_splits.end(); ++child )
+    if ( taxa.size() > 0 )
     {
-        // inserts new entries if doesn't already exist
-        conditional_clade_ages[parent_split][*child].push_back( clade_ages[*child].back() );
+        // store the age for this split
+        clade_ages[parent_split].push_back( age );
+
+        // increment split count
+        cladeCountMap[parent_split]++;
+
+        // add conditional clade ages
+        for (std::vector<Split>::iterator child=child_splits.begin(); child !=child_splits.end(); ++child )
+        {
+            // inserts new entries if doesn't already exist
+            conditional_clade_ages[parent_split][*child].push_back( clade_ages[*child].back() );
+        }
+
+        // store the age for this split, conditional on the tree topology
+        tree_clade_ages[newick][parent_split].push_back( age );
     }
-
-    // store the age for this split, conditional on the tree topology
-    tree_clade_ages[newick][parent_split].push_back( age );
-
+    
     return parent_split;
 }
 
@@ -1155,19 +1158,37 @@ std::vector<Clade> TraceTree::getUniqueClades( double min_clade_prob, bool verbo
     summarize( verbose );
     
     std::vector<Clade> unique_clades;
-    NewickConverter converter;
     double total_samples = size();
+    
+    std::vector<Taxon> ordered_taxa = objectAt(0).getTaxa();
+    VectorUtilities::sort( ordered_taxa );
+    
     for (std::set<Sample<Split> >::const_reverse_iterator it = clade_samples.rbegin(); it != clade_samples.rend(); ++it)
     {
-        double freq =it->second;
-        double p = freq/(total_samples-burnin);
         
-        Split current_split = it->first;
-        Clade current_clade = Clade( current_split.second );
+        double freq = it->second;
+        double p    = freq/(total_samples-burnin);
+        
         if ( p < min_clade_prob )
         {
             break;
         }
+        
+        
+        Clade current_clade(it->first.first, ordered_taxa);
+        current_clade.setMrca(it->first.second);
+        
+        if ( current_clade.size() == 1 ) continue;
+        
+//        Split current_split = it->first;
+//        const std::set<Taxon> &taxa = current_split.second;
+//        std::cerr << "Taxa:\t\t";
+//        for (std::set<Taxon>::const_iterator it=taxa.begin(); it!=taxa.end(); ++it) std::cerr << *it << ", ";
+//        std::cerr << std::endl;
+        
+//        Clade current_clade = Clade( taxa );
+        
+//        std::cerr << "Clade:\t\t" << p << "\t\t" << current_clade << std::endl;
         
         unique_clades.push_back( current_clade );
         
@@ -1684,6 +1705,7 @@ void TraceTree::summarize( bool verbose )
     std::string outgroup = tip_names[0];
 
     rooted = objectAt(0).isRooted();
+    size_t num_taxa = objectAt(0).getNumberOfTips();
 
     clade_samples.clear();
     tree_samples.clear();
@@ -1729,13 +1751,17 @@ void TraceTree::summarize( bool verbose )
     }
     
     // sort the clade samples in ascending frequency
-    for(std::map<Split, long>::iterator it = clade_counts.begin(); it != clade_counts.end(); it++)
+    for (std::map<Split, long>::iterator it = clade_counts.begin(); it != clade_counts.end(); it++)
     {
-        clade_samples.insert( Sample<Split>(it->first, it->second) );
+        if ( it->first.first.getNumberSetBits() > 0 && it->first.first.getNumberSetBits() < (num_taxa-1) )
+        {
+            clade_samples.insert( Sample<Split>(it->first, it->second) );
+        }
+        
     }
 
     // sort the tree samples in ascending frequency
-    for(std::map<std::string, long>::iterator it = tree_counts.begin(); it != tree_counts.end(); it++)
+    for (std::map<std::string, long>::iterator it = tree_counts.begin(); it != tree_counts.end(); it++)
     {
         tree_samples.insert( Sample<std::string>(it->first, it->second) );
     }

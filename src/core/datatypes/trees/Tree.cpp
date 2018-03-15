@@ -449,6 +449,15 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
 
         rv = Boolean( index == clade_index );
     }
+    else if ( n == "containsClade" )
+    {
+        Clade clade = static_cast<const TypedDagNode<Clade> *>( args[0] )->getValue();
+        clade.resetTaxonBitset( getTaxonBitSetMap() );
+        
+        bool contained = root->containsClade(clade, true);
+        
+        rv = Boolean( contained );
+    }
     else if ( n == "hasSameTopology" )
     {
         const Tree& t = static_cast<const TypedDagNode<Tree> *>( args[0] )->getValue();
