@@ -847,11 +847,11 @@ TraceTree::Split TraceTree::collectTreeSample(const TopologyNode& n, RbBitSet& i
     RbBitSet taxa(intaxa.size());
     std::set<Taxon> mrca;
 
-    if( n.isTip() )
+    if ( n.isTip() )
     {
         n.getTaxa(taxa);
 
-        if( rooted && n.isSampledAncestor() )
+        if ( rooted && n.isSampledAncestor() )
         {
             sampled_ancestor_counts[n.getTaxon()]++;
 
@@ -866,7 +866,7 @@ TraceTree::Split TraceTree::collectTreeSample(const TopologyNode& n, RbBitSet& i
 
             child_splits.push_back( collectTreeSample(child_node, taxa, newick, cladeCountMap) );
 
-            if( rooted && child_node.isSampledAncestor() )
+            if ( rooted && child_node.isSampledAncestor() )
             {
                 mrca.insert(child_node.getTaxon());
             }
@@ -877,7 +877,7 @@ TraceTree::Split TraceTree::collectTreeSample(const TopologyNode& n, RbBitSet& i
 
     Split parent_split(taxa, mrca, rooted);
 
-    if ( taxa.size() > 0 )
+    if ( taxa.size() > 0 || true )
     {
         // store the age for this split
         clade_ages[parent_split].push_back( age );
@@ -922,10 +922,9 @@ double TraceTree::computeEntropy( double credible_interval_size, int num_taxa, b
         
     }
 
-    /*This calculation is directly from AMP / Jeremy's paper.*/
+    /* This calculation is directly from AMP / Jeremy's paper. */
     double ln_ntopologies = RbMath::lnFactorial(2*num_taxa - 5) - RbMath::lnFactorial(num_taxa - 3) - (num_taxa-3)*RbConstants::LN2;
     entropy += ln_ntopologies;
-    /*std::cout << ntopologies << '\n';*/
     
     return entropy;
 }
@@ -1132,7 +1131,6 @@ int TraceTree::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbose
     
     std::string newick = t.getPlainNewickRepresentation();
     
-    //double total_samples = trace.size();
     double freq = 0;
     
     for (std::set<Sample<std::string> >::const_reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
@@ -1140,8 +1138,7 @@ int TraceTree::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbose
         
         if ( newick == it->first )
         {
-            freq =it->second;
-            //            p = freq/(total_samples-burnin);
+            freq = it->second;
             
             // now we found it
             break;
@@ -1179,16 +1176,6 @@ std::vector<Clade> TraceTree::getUniqueClades( double min_clade_prob, bool verbo
         current_clade.setMrca(it->first.second);
         
         if ( current_clade.size() == 1 ) continue;
-        
-//        Split current_split = it->first;
-//        const std::set<Taxon> &taxa = current_split.second;
-//        std::cerr << "Taxa:\t\t";
-//        for (std::set<Taxon>::const_iterator it=taxa.begin(); it!=taxa.end(); ++it) std::cerr << *it << ", ";
-//        std::cerr << std::endl;
-        
-//        Clade current_clade = Clade( taxa );
-        
-//        std::cerr << "Clade:\t\t" << p << "\t\t" << current_clade << std::endl;
         
         unique_clades.push_back( current_clade );
         
@@ -1751,9 +1738,10 @@ void TraceTree::summarize( bool verbose )
     }
     
     // sort the clade samples in ascending frequency
-    for (std::map<Split, long>::iterator it = clade_counts.begin(); it != clade_counts.end(); it++)
+    for (std::map<Split, long>::iterator it = clade_counts.begin(); it != clade_counts.end(); ++it)
     {
-        if ( it->first.first.getNumberSetBits() > 0 && it->first.first.getNumberSetBits() < (num_taxa-1) )
+//        if ( it->first.first.getNumberSetBits() > 0 )
+//        if ( it->first.first.getNumberSetBits() > 0 && it->first.first.getNumberSetBits() < (num_taxa-1) )
         {
             clade_samples.insert( Sample<Split>(it->first, it->second) );
         }
@@ -1761,7 +1749,7 @@ void TraceTree::summarize( bool verbose )
     }
 
     // sort the tree samples in ascending frequency
-    for (std::map<std::string, long>::iterator it = tree_counts.begin(); it != tree_counts.end(); it++)
+    for (std::map<std::string, long>::iterator it = tree_counts.begin(); it != tree_counts.end(); ++it)
     {
         tree_samples.insert( Sample<std::string>(it->first, it->second) );
     }
