@@ -877,7 +877,7 @@ TraceTree::Split TraceTree::collectTreeSample(const TopologyNode& n, RbBitSet& i
 
     Split parent_split(taxa, mrca, rooted);
 
-    if ( taxa.size() > 0 || true )
+    if ( taxa.size() > 0 )
     {
         // store the age for this split
         clade_ages[parent_split].push_back( age );
@@ -1150,7 +1150,7 @@ int TraceTree::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbose
 }
 
 
-std::vector<Clade> TraceTree::getUniqueClades( double min_clade_prob, bool verbose )
+std::vector<Clade> TraceTree::getUniqueClades( double min_clade_prob, bool non_trivial_only, bool verbose )
 {
     summarize( verbose );
     
@@ -1159,6 +1159,7 @@ std::vector<Clade> TraceTree::getUniqueClades( double min_clade_prob, bool verbo
     
     std::vector<Taxon> ordered_taxa = objectAt(0).getTaxa();
     VectorUtilities::sort( ordered_taxa );
+    size_t num_taxa = ordered_taxa.size();
     
     for (std::set<Sample<Split> >::const_reverse_iterator it = clade_samples.rbegin(); it != clade_samples.rend(); ++it)
     {
@@ -1166,16 +1167,17 @@ std::vector<Clade> TraceTree::getUniqueClades( double min_clade_prob, bool verbo
         double freq = it->second;
         double p    = freq/(total_samples-burnin);
         
+        // first we check if this clade is above the minimum level
         if ( p < min_clade_prob )
         {
             break;
         }
         
-        
+        // now lets actually construct the clade
         Clade current_clade(it->first.first, ordered_taxa);
         current_clade.setMrca(it->first.second);
         
-        if ( current_clade.size() == 1 ) continue;
+        if ( current_clade.size() <= 1 || current_clade.size() >= ( rooted ? num_taxa : (num_taxa-1) ) ) continue;
         
         unique_clades.push_back( current_clade );
         
