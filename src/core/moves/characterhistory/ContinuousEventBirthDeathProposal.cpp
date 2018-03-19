@@ -60,19 +60,47 @@ const std::string& ContinuousEventBirthDeathProposal::getProposalName( void ) co
 double ContinuousEventBirthDeathProposal::computeEventProposalProbability(CharacterEvent *event)
 {
     
-    TypedDistribution<double> *dist_lambda  = static_cast<ConditionedBirthDeathShiftProcessContinuous*>(distribution)->getSpeciationRateDistibution();
-    TypedDistribution<double> *dist_mu      = static_cast<ConditionedBirthDeathShiftProcessContinuous*>(distribution)->getExtinctionRateDistibution();
+    ConditionedBirthDeathShiftProcessContinuous *process = static_cast<ConditionedBirthDeathShiftProcessContinuous*>(distribution);
+    
+    double ln_proposal_prob = 0;
 
     CharacterEventContinuous *cont_event = static_cast<CharacterEventContinuous*>( event );
     double rate_lambda  = cont_event->getState(0);
     double rate_mu      = cont_event->getState(1);
 
-    dist_lambda->setValue( new double(rate_lambda) );
-    dist_mu->setValue( new double(rate_mu) );
+    if ( process->isSpeciationRateConstant() == true )
+    {
+        
+        if ( process->getRootSpeciationRate() != rate_lambda )
+        {
+            ln_proposal_prob = RbConstants::Double::neginf;
+        }
+        
+    }
+    else
+    {
+        TypedDistribution<double> *dist_lambda  = process->getSpeciationRateDistibution();
+        dist_lambda->setValue( new double(rate_lambda) );
+        ln_proposal_prob += dist_lambda->computeLnProbability();
+    }
+    
+    if ( process->isExtinctionRateConstant() == true )
+    {
+        
+        if ( process->getRootExtinctionRate() != rate_mu )
+        {
+            ln_proposal_prob = RbConstants::Double::neginf;
+        }
+        
+    }
+    else
+    {
+        TypedDistribution<double> *dist_mu = process->getExtinctionRateDistibution();
+        dist_mu->setValue( new double(rate_mu) );
+        ln_proposal_prob += dist_mu->computeLnProbability();
+    }
+    
 
-    double ln_proposal_prob = 0;
-    ln_proposal_prob += dist_lambda->computeLnProbability();
-    ln_proposal_prob += dist_mu->computeLnProbability();
 
     return ln_proposal_prob;
 }
@@ -80,17 +108,29 @@ double ContinuousEventBirthDeathProposal::computeEventProposalProbability(Charac
 
 CharacterEvent* ContinuousEventBirthDeathProposal::drawNewEvent(double event_time)
 {
-    // first, get the two distributions
-    TypedDistribution<double> *dist_lambda  = static_cast<ConditionedBirthDeathShiftProcessContinuous*>(distribution)->getSpeciationRateDistibution();
-    TypedDistribution<double> *dist_mu      = static_cast<ConditionedBirthDeathShiftProcessContinuous*>(distribution)->getExtinctionRateDistibution();
+    ConditionedBirthDeathShiftProcessContinuous *process = static_cast<ConditionedBirthDeathShiftProcessContinuous*>(distribution);
+
+    // first, get the new values
+    double rate_lambda  = process->getRootSpeciationRate();
+    double rate_mu      = process->getRootExtinctionRate();
     
-    // now redraw values
-    dist_lambda->redrawValue();
-    dist_mu->redrawValue();
+    // then, randomly pick a speciation rate if not constant
+    if ( process->isSpeciationRateConstant() == false )
+    {
+        TypedDistribution<double> *dist_lambda  = process->getSpeciationRateDistibution();
+        // now redraw values
+        dist_lambda->redrawValue();
+        rate_lambda = dist_lambda->getValue();
+    }
     
-    // next, get the new values
-    double rate_lambda  = dist_lambda->getValue();
-    double rate_mu      = dist_mu->getValue();
+    // then, randomly pick a extinction rate if not constant
+    if ( process->isExtinctionRateConstant() == false )
+    {
+        TypedDistribution<double> *dist_mu  = process->getExtinctionRateDistibution();
+        // now redraw values
+        dist_mu->redrawValue();
+        rate_mu = dist_mu->getValue();
+    }
     
     std::vector<double> new_state;
     new_state.push_back( rate_lambda );

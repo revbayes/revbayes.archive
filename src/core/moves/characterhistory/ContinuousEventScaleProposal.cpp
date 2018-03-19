@@ -86,8 +86,18 @@ double ContinuousEventScaleProposal::doProposal( void )
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
     
+    std::vector<size_t> rate_indices;
+    if ( distribution->isSpeciationRateConstant() == false )
+    {
+        rate_indices.push_back( 0 );
+    }
+    if ( distribution->isExtinctionRateConstant() == false )
+    {
+        rate_indices.push_back( 1 );
+    }
+    
     size_t num_events = history.getNumberEvents();
-    failed = (num_events == 0);
+    failed = (num_events == 0 && rate_indices.size() > 0);
     
     if ( failed == false )
     {
@@ -96,7 +106,8 @@ double ContinuousEventScaleProposal::doProposal( void )
         CharacterEventContinuous *event = history.pickRandomEvent( branch_index );
 
         // pick a index (either speciation or extinction)
-        size_t rate_index = ( rng->uniform01() > 0.5 ? 1 : 0 );
+        size_t tmp = size_t( floor( rng->uniform01() * rate_indices.size() ) );
+        size_t rate_index = rate_indices[tmp];
 
         // store the index
         stored_index = rate_index;
