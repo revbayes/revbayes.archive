@@ -166,15 +166,19 @@ RevPtr<RevVariable> Func_readContinuousCharacterData::execute( void )
             if ( m->size() == 1 )
             {
                 o2 << "Successfully read one file with one character matrix from directory '" << fn.getValue() << "'";
+                ret_val = new ContinuousCharacterData( (*m)[0] );
+                delete m;
             }
             else
             {
                 o2 << "Successfully read one file with " << m->size() << " character matrices from directory '" << fn.getValue() << "'";
+                ret_val = m;
             }
         }
         else
         {
             o2 << "Successfully read " << num_files_read << " files with " << m->size() << " character matrices from directory '" << fn.getValue() << "'";
+            ret_val = m;
         }
         RBOUT(o2.str());
         std::set<std::string> my_warnings = reader.getWarnings();
