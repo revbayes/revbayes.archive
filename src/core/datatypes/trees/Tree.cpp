@@ -544,6 +544,20 @@ const TopologyNode& Tree::getInteriorNode( size_t indx ) const
 }
 
 
+const TopologyNode& Tree::getMrca(const Clade &c) const
+{
+    
+    return *(root->getMrca( c ));
+}
+
+
+const TopologyNode& Tree::getMrca(const TopologyNode &n) const
+{
+    
+    return *(root->getMrca( n ));
+}
+
+
 std::string Tree::getNewickRepresentation() const
 {
 

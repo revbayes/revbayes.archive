@@ -1024,6 +1024,64 @@ const std::string& TopologyNode::getName( void ) const
 
 /**
  * Is the argument clade contained in the clade descending from this node?
+ */
+const TopologyNode* TopologyNode::getMrca(const Clade &c) const
+{
+    
+    return getNode( c, false );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ */
+const TopologyNode* TopologyNode::getMrca(const TopologyNode &n) const
+{
+    
+    return getNode( n, false );
+}
+
+
+///**
+// * Is the argument clade contained in the clade descending from this node?
+// */
+//const TopologyNode* TopologyNode::getMrca(const std::vector<Taxon> &t) const
+//{
+//
+//    return getNode( t, false );
+//}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+TopologyNode* TopologyNode::getNode(const TopologyNode &n, bool strict)
+{
+    
+    RbBitSet your_taxa = RbBitSet( tree->getNumberOfTips() );
+    n.getTaxa( your_taxa );
+    
+    return getNode( your_taxa, strict );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+const TopologyNode* TopologyNode::getNode(const TopologyNode &n, bool strict) const
+{
+    
+    RbBitSet your_taxa = RbBitSet( tree->getNumberOfTips() );
+    n.getTaxa( your_taxa );
+    
+    return getNode( your_taxa, strict );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
  * By strict we mean that the contained clade has to be monophyletic in the containing clade.
  */
 TopologyNode* TopologyNode::getNode(const Clade &c, bool strict)

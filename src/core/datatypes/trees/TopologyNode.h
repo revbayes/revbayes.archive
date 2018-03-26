@@ -99,18 +99,18 @@ namespace RevBayesCore {
         size_t                                      getIndex(void) const;                                                               //!< Get index of node
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
         const std::string&                          getName() const;                                                                    //!< Get name of node
+        const TopologyNode*                         getMrca(const Clade &c) const;
+        const TopologyNode*                         getMrca(const TopologyNode &n) const;
+//        const TopologyNode*                         getMrca(const std::vector<Taxon> &t) const;
         TopologyNode*                               getNode(const Clade &c, bool strict);
         TopologyNode*                               getNode(const RbBitSet &c, bool strict);
+        TopologyNode*                               getNode(const TopologyNode &n, bool strict);
         const TopologyNode*                         getNode(const Clade &c, bool strict) const;
         const TopologyNode*                         getNode(const RbBitSet &c, bool strict) const;
+        const TopologyNode*                         getNode(const TopologyNode &n, bool strict) const;
         const std::vector<std::string>&             getNodeParameters(void) const;                                                      //!< Get the branch length leading towards this node
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
         size_t                                      getNumberOfNodesInSubtree(bool tips) const;
-        
-     // std::string                                 getNodeField(std::string key) const;
-     // size_t                                      getNodeFieldNumber() const;
-        
-        //!< Get the number of nodes contained in this subtree.
         TopologyNode&                               getParent(void);                                                                    //!< Returns the node's parent
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
         std::string                                 getSpeciesName() const;                                                             //!< Get the species name for the node

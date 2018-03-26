@@ -143,6 +143,7 @@
 #include "Dist_phyloDistanceGamma.h"
 #include "Dist_sampledSpeciationBirthDeathProcess.h"
 #include "Dist_SSBDP.h"
+#include "Dist_UltrametricTree.h"
 #include "Dist_uniformTimeTree.h"
 #include "Dist_uniformTopology.h"
 #include "Dist_uniformTopologyBranchLength.h"
@@ -331,6 +332,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
 		// empirical tree distributions
 		AddDistribution< Tree                       >( new Dist_empiricalTree() );
+        
+        // ultrametric tree distributions
+        AddDistribution< TimeTree                   >( new Dist_UltrametricTree() );
 
 		// Distance Matrix Gamma distribution
 		AddDistribution< DistanceMatrix             >( new Dist_phyloDistanceGamma() );
