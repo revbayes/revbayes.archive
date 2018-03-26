@@ -1801,8 +1801,11 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
    
     // simulate character history over the new tree
     size_t num_nodes = value->getNumberOfNodes();
-    std::vector<std::string*> character_histories(num_nodes);
-    drawStochasticCharacterMap(character_histories);
+    if (num_nodes > 2)
+    {
+        std::vector<std::string*> character_histories(num_nodes);
+        drawStochasticCharacterMap(character_histories);
+    }
 }
 
 
@@ -2274,8 +2277,11 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
     
     size_t num_nodes = value->getNumberOfNodes();
-    std::vector<std::string*> character_histories(num_nodes);
-    drawStochasticCharacterMap(character_histories);
+    if (num_nodes > 2)
+    {
+        std::vector<std::string*> character_histories(num_nodes);
+        drawStochasticCharacterMap(character_histories);
+    }
     
 }
 
