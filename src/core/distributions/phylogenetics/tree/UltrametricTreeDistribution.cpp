@@ -5,6 +5,7 @@
 #include "RbMathCombinatorialFunctions.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
+#include "TreeUtilities.h"
 #include "UltrametricTreeDistribution.h"
 
 #include <algorithm>
@@ -43,7 +44,7 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree
         this->addParameter( *it );
     }
     
-    const std::vector<const DagNode*>& pars_rp = tree_prior->getParameters();
+    const std::vector<const DagNode*>& pars_rp = rate_prior->getParameters();
     for (std::vector<const DagNode*>::const_iterator it = pars_rp.begin(); it != pars_rp.end(); ++it)
     {
         this->addParameter( *it );
@@ -81,6 +82,7 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree
 UltrametricTreeDistribution::UltrametricTreeDistribution( const UltrametricTreeDistribution &d ) : TypedDistribution<Tree>( d ),
     tree_prior( d.tree_prior->clone() ),
     rate_prior( d.rate_prior->clone() ),
+    root_age( d.root_age ),
     trees( d.trees ),
     num_samples( d.num_samples ),
     sample_block_start( d.sample_block_start ),
@@ -116,6 +118,7 @@ UltrametricTreeDistribution& UltrametricTreeDistribution::operator=( const Ultra
         
         tree_prior          = d.tree_prior->clone();
         rate_prior          = d.rate_prior->clone();
+        root_age            = d.root_age;
         trees               = d.trees;
         num_samples         = d.num_samples;
         sample_block_start  = d.sample_block_start;
@@ -216,17 +219,25 @@ UltrametricTreeDistribution* UltrametricTreeDistribution::clone( void ) const
 }
 
 
-double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &tree)
+double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &my_tree, const Tree &sampled_tree)
 {
     
-    Tree &my_tree = *(this->value);
+    // we need to check if the "outgroup" is present first
+    // by "outgroup" I mean the left subtree of the rooted tree.
+    const TopologyNode &outgroup = my_tree.getRoot().getChild(0);
+    if ( sampled_tree.containsClade(outgroup, true) == false )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
+    Tree *current_copy = sampled_tree.clone();
+    current_copy->reroot( outgroup.getClade(), true );
     
     // initialize the probability
     double ln_prob = RbConstants::Double::neginf;
     
-    
     // first we check if the tree topologies are the same
-    if ( my_tree.hasSameTopology( tree ) )
+    if ( my_tree.hasSameTopology( *current_copy ) )
     {
         // reset the probability
         ln_prob = 0.0;
@@ -238,18 +249,25 @@ double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &t
             if (the_node->isRoot() == false)
             {
                 
-                const TopologyNode &sampled_node = tree.getMrca( *the_node );
+                const TopologyNode &sampled_node = current_copy->getMrca( *the_node );
                 
                 double branch_time = the_node->getBranchLength();
                 double branch_exp_num_events = sampled_node.getBranchLength();
                 double branch_rate = branch_exp_num_events / branch_time;
                 
+                if ( RbMath::isFinite( branch_rate ) == false )
+                    std::cerr << "Rate = " << branch_rate << ",\t\ttime" << branch_time << std::endl;
+
+                
                 rate_prior->setValue( new double(branch_rate) );
                 ln_prob += rate_prior->computeLnProbability();
+//                std::cerr << "P(Rate = " << branch_rate << ") = " << rate_prior->computeLnProbability() << std::endl;
                 
             }
         }
     }
+    
+    delete current_copy;
     
     return ln_prob;
 }
@@ -261,6 +279,34 @@ double UltrametricTreeDistribution::computeLnProbability( void )
 {
     
     size_t num_samples = trees.size();
+
+    // create a temporary copy of the this tree
+    Tree *my_tree = value->clone();
+    
+    // get the root node because we need to make this tree unrooted (for topology comparison)
+    TopologyNode *old_root = &my_tree->getRoot();
+    size_t child_index = 0;
+    if ( old_root->getChild(child_index).isTip() == true )
+    {
+        child_index = 1;
+    }
+    TopologyNode *new_root = &old_root->getChild( child_index );
+    TopologyNode *second_child = &old_root->getChild( (child_index == 0 ? 1 : 0) );
+    
+    double bl_first = new_root->getBranchLength();
+    double bl_second = second_child->getBranchLength();
+    
+    old_root->removeChild( new_root );
+    old_root->removeChild( second_child );
+    new_root->setParent( NULL );
+    new_root->addChild( second_child );
+    second_child->setParent( new_root );
+    
+    second_child->setBranchLength( bl_first + bl_second );
+    
+    // finally we need to set the new root to our tree copy
+    my_tree->setRoot( new_root, true);
+    my_tree->setRooted( false );
     
     // Variable declarations and initialization
     double ln_prob = 0.0;
@@ -274,11 +320,12 @@ double UltrametricTreeDistribution::computeLnProbability( void )
         if ( i >= sample_block_start && i < sample_block_end )
         {
             const Tree &this_tree = trees[i];
-            ln_probs[i] = computeBranchRateLnProbability( this_tree );
+            ln_probs[i] = computeBranchRateLnProbability( *my_tree, this_tree );
         }
         
     }
     
+    delete my_tree;
     
 #ifdef RB_MPI
     for (size_t i = 0; i < num_samples; ++i)
@@ -399,11 +446,33 @@ void UltrametricTreeDistribution::redrawValue( void )
 void UltrametricTreeDistribution::simulateTree( void )
 {
     
-//    delete value;
+    delete value;
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
+    size_t index = size_t( rng->uniform01() * trees.size() ) ;
+    
+    value = trees[index].clone();
+    TopologyNode *new_root = new TopologyNode( value->getNumberOfNodes()+1 );
+    
+    TopologyNode &old_root = value->getRoot();
+    TopologyNode &og = old_root.getChild(2);
+    old_root.removeChild(&og);
+    new_root->addChild(&old_root);
+    new_root->addChild( &og );
+    old_root.setParent( new_root );
+    og.setParent( new_root );
+    
+    double midpoint = og.getBranchLength() / 2.0;
+    old_root.setBranchLength( midpoint );
+    og.setBranchLength( midpoint );
+    
+    value->setRoot( new_root, true);
+    value->setRooted( true );
+    
+    TreeUtilities::makeUltrametric(value);
+    TreeUtilities::rescaleTree(value, &(value->getRoot()), root_age->getValue()/value->getRoot().getAge());
     
 }
 

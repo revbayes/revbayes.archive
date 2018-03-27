@@ -40,7 +40,7 @@ namespace RevBayesCore {
         // helper functions
         void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
         void                                                buildRandomBinaryHistory(std::vector<TopologyNode *> &tips);
-        double                                              computeBranchRateLnProbability(const Tree &t);
+        double                                              computeBranchRateLnProbability(const Tree &x, const Tree &y);
         void                                                simulateTree(void);
         
         // members

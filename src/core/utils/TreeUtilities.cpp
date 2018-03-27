@@ -306,31 +306,41 @@ void RevBayesCore::TreeUtilities::offsetTree(Tree *t, TopologyNode *n, double fa
 void RevBayesCore::TreeUtilities::makeUltrametric(Tree *t)
 {
 
-      double max = 0.0;
-      std::vector<double > ages ;
-      for (size_t i = 0; i < t->getNumberOfTips(); ++i)
-      {
+    double max = 0.0;
+    std::vector<double > ages ;
+    for (size_t i = 0; i < t->getNumberOfTips(); ++i)
+    {
         TopologyNode* node = &(t->getTipNode( i ) );
         double age = node->getBranchLength();
         node = &(node->getParent());
-        while (!node->isRoot() ) {
-          age += node->getBranchLength();
-          node = &(node->getParent());
+        
+        while (!node->isRoot() )
+        {
+            age += node->getBranchLength();
+            node = &(node->getParent());
         }
         if (age > max) {
           max = age;
         }
         ages.push_back(age);
 
-      }
+    }
 
-      //We extend terminal branches
-      for (size_t i = 0; i < t->getNumberOfTips(); ++i)
-      {
+    // We extend terminal branches
+    for (size_t i = 0; i < t->getNumberOfTips(); ++i)
+    {
         t->getTipNode( i ).setBranchLength(t->getTipNode( i ).getBranchLength() + max - ages[i]);
-        t->getTipNode( i ).setAge(0.0);
-      }
+//        t->getTipNode( i ).setAge(0.0);
+    }
+    
+    setAgesRecursively(t, &(t->getRoot()), max);
 
+    // make sure that all the tips have an age of 0
+    for (size_t i = 0; i < t->getNumberOfTips(); ++i)
+    {
+        t->getTipNode( i ).setAge(0.0);
+    }
+    
 }
 
 
@@ -396,9 +406,32 @@ void RevBayesCore::TreeUtilities::setAges(Tree *t, TopologyNode *n, std::vector<
         // rescale both children
         std::vector<TopologyNode*> children = n->getChildren();
         for (size_t i = 0; i < children.size(); i++)
+        {
             setAges( t, children[i], ages);
+        }
+        
     }
 
+}
+
+void RevBayesCore::TreeUtilities::setAgesRecursively(RevBayesCore::Tree *t, RevBayesCore::TopologyNode *n, double age)
+{
+    // first, we set the age of this node
+    n->setAge( age );
+    
+    // we only rescale internal nodes
+    if ( n->isTip() == false )
+    {
+        
+        // rescale both children
+        std::vector<TopologyNode*> children = n->getChildren();
+        for (size_t i = 0; i < children.size(); ++i)
+        {
+            setAgesRecursively( t, children[i], age-children[i]->getBranchLength());
+        }
+        
+    }
+    
 }
 
 
