@@ -183,7 +183,7 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
         {
             ascending = true;
         }
-        else if ( times != times_sorted_ascending )
+        else if ( times != times_sorted_descending )
         {
             throw(RbException("Interval times must be provided in order"));
         }

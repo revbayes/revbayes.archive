@@ -186,7 +186,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
         {
             ascending = true;
         }
-        else if ( times != times_sorted_ascending )
+        else if ( times != times_sorted_descending )
         {
             throw(RbException("Interval times must be provided in order"));
         }
@@ -258,6 +258,8 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         double d = node.getAge();
         double o = node.getTaxon().getAgeRange().getMax();
         double y = node.getTaxon().getAgeRange().getMin();
+
+        bool extant_only = (o == 0.0);
 
         size_t bi = l(b);
         size_t di = l(d);
