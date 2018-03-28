@@ -206,6 +206,26 @@ void Tree::collapseNegativeBranchLengths(double l)
 
 }
 
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+bool Tree::containsClade(const TopologyNode &n, bool unrooted) const
+{
+    RbBitSet your_taxa = RbBitSet( getNumberOfTips() );
+    n.getTaxa( your_taxa );
+    
+    bool contains = root->containsClade( your_taxa, true );
+    
+    if ( contains == false && unrooted == true )
+    {
+        your_taxa.flip();
+        contains = root->containsClade( your_taxa, true );;
+    }
+    
+    return contains;
+}
+
 
 /**
  * Drop the tip node with the given name.
@@ -539,7 +559,11 @@ std::vector<Taxon> Tree::getFossilTaxa() const
 const TopologyNode& Tree::getInteriorNode( size_t indx ) const
 {
 
-    // \TODO: Bound checking, maybe draw from downpass array instead
+    size_t n = getNumberOfTips();
+    if ( indx > (n-2) )
+    {
+        throw RbException("Cannot acces interior node '" + StringUtilities::to_string(indx) + "' for a tree with " + StringUtilities::to_string(n) + " tips.");
+    }
     return *nodes[ indx + getNumberOfTips() ];
 }
 
@@ -971,7 +995,13 @@ double Tree::getTreeLength( void ) const
 bool Tree::hasSameTopology(const Tree &t) const
 {
 
-    return getPlainNewickRepresentation() == t.getPlainNewickRepresentation();
+    std::string a = getPlainNewickRepresentation();
+    std::string b = t.getPlainNewickRepresentation();
+    
+//    std::cerr << std::endl << a << std::endl;
+//    std::cerr << std::endl << b << std::endl;
+    
+    return a == b;
 }
 
 
@@ -1316,7 +1346,6 @@ void Tree::reroot(const Clade &o, bool reindex)
 
     if ( root->containsClade(outgroup, strict ) == false )
     {
-        bool found = false;
 
         // check for the inverted clade
         RbBitSet b = outgroup.getBitRepresentation();
@@ -1325,13 +1354,9 @@ void Tree::reroot(const Clade &o, bool reindex)
 
         if ( root->containsClade(outgroup, strict ) == false )
         {
-            found = true;
-        }
-
-        if( found == false )
-        {
             throw RbException("Cannot reroot the tree because we could not find an outgroup with name '" + outgroup.toString() + "'.");
         }
+
     }
 
     // reset parent/child relationships

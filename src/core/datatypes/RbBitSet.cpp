@@ -163,7 +163,7 @@ void RbBitSet::flip(size_t i)
 
 void RbBitSet::flip()
 {
-    for(size_t i = 0; i < value.size(); i++)
+    for (size_t i = 0; i < value.size(); i++)
     {
         value[i] = ( value[i] == false );
         num_set_bits += ( value[i] ? 1 : -1 );

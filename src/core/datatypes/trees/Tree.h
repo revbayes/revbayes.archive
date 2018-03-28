@@ -67,6 +67,7 @@ namespace RevBayesCore {
 		void                                                clearNodeParameters(void);
 
         void                                                collapseNegativeBranchLengths(double length);                                                       //!< Don't allow parents to be younger than their children (TimeTrees only)
+        bool                                                containsClade(const TopologyNode &n, bool unrooted) const;
         void                                                dropTipNode(size_t i);                                                          //!< Get a pointer to tip node i
         void                                                dropTipNodeWithName(const std::string &n);                                                          //!< Get a pointer to tip node i
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
