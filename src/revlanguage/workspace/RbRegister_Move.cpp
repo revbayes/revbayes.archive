@@ -153,6 +153,7 @@
 #include "Move_DiscreteEventCategoryRandomWalk.h"
 #include "Move_EventTimeBeta.h"
 #include "Move_EventTimeSlide.h"
+#include "Move_GibbsDrawCharacterHistory.h"
 
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
@@ -325,6 +326,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_EventTimeBeta()                                );
         addTypeWithConstructor( new Move_EventTimeSlide()                               );
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()                       );
+        addTypeWithConstructor( new Move_GibbsDrawCharacterHistory()                    );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor( new Move_AddRemoveTip()                     );

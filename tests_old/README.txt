@@ -1,3 +1,0 @@
-This file contains some information of our test suit.
-
-Our test are based on simple input scripts for RevBayes. You don't have to call the single files, just call "test.Rev" in the base test directory. These test files produce some output which is stored in some files. The output can be compared to the expected output using running the shell script "Test performance.sh". The number of mismatches are stored in the file "Test performance results.txt"
