@@ -550,6 +550,12 @@ const TopologyNode& Tree::getMrca(const Clade &c) const
     return *(root->getMrca( c ));
 }
 
+const TopologyNode& Tree::getMrca(const Clade &c, bool strict) const
+{
+    
+    return *(root->getMrca( c,strict ));
+}
+
 
 const TopologyNode& Tree::getMrca(const TopologyNode &n) const
 {
