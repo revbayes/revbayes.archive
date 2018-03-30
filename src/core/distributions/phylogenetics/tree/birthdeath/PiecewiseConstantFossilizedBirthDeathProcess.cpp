@@ -346,7 +346,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         }
         else if( presence_absence )
         {
-            if( getFossilCount(oi, i) )
+            if( getFossilCount(oi, i) > 0 )
             {
                 double o_star = oi > 0 ? std::min(b, times[oi-1]) : b;
                 double y_star = std::max(d, times[oi]);
@@ -359,7 +359,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 
                 for(size_t j = oi + 1; j <= yi; j++)
                 {
-                    if( getFossilCount(j, i) )
+                    if( getFossilCount(j, i) > 0 )
                     {
                         double Ls = times[j-1] - std::max(d, times[j]);
 
