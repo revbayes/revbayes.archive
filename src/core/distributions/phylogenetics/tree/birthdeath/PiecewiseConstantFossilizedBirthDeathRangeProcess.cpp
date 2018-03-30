@@ -9,7 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
-
+#include <iomanip>
 using namespace RevBayesCore;
 
 /**
@@ -189,9 +189,9 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
         }
     }
 
-    p_i         = std::vector<double>(num_intervals+1, 1.0);
-    q_i         = std::vector<double>(num_intervals+1, 1.0);
-    q_tilde_i   = std::vector<double>(num_intervals+1, 1.0);
+    p_i         = std::vector<double>(num_intervals, 1.0);
+    q_i         = std::vector<double>(num_intervals, 1.0);
+    q_tilde_i   = std::vector<double>(num_intervals, 1.0);
 
     birth       = std::vector<double>(num_intervals, 0.0);
     death       = std::vector<double>(num_intervals, 0.0);
@@ -303,7 +303,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         // include intermediate q terms
         for (size_t j = bi; j < oi; j++)
         {
-            lnProbTimes += log( q_i[j+1] );
+            lnProbTimes += log( q_i[j] );
         }
 
         // include factor for the first appearance
@@ -315,7 +315,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         // include intermediate q_tilde terms
         for (size_t j = oi; j < di; j++)
         {
-            lnProbTimes += log( q_tilde_i[j+1] );
+            lnProbTimes += log( q_tilde_i[j] );
         }
 
         // divide by q_tilde at the death time
@@ -433,6 +433,20 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         return RbConstants::Double::neginf;
     }
 
+    std::cout << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+
+    for (size_t i = 0; i < num_intervals; ++i)
+        std::cout << "lambda[" << i << "]\t" << birth[i] << std::endl;
+    for (size_t i = 0; i < num_intervals; ++i)
+        std::cout << "mu[" << i << "]\t" << death[i] << std::endl;
+    for (size_t i = 0; i < num_intervals; ++i)
+        std::cout << "psi[" << i << "]\t" << fossil[i] << std::endl;
+    for (size_t i = 0; i < num_intervals; ++i)
+        std::cout << "q[" << i << "]\t" << q_i[i] << std::endl;
+    for (size_t i = 0; i < num_intervals; ++i)
+        std::cout << "q~[" << i << "]\t" << q_tilde_i[i] << std::endl;
+
+    std::cout << "lnL\t" << lnProbTimes << std::endl;
 
     return lnProbTimes;
 }
@@ -671,7 +685,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::integrateQ( size_t i, 
     double dt   = t - ti;
 
     double A = sqrt( diff*diff + 4.0*bp);
-    double B = ( (1.0 - 2.0*(1.0-r)*p_i[i+1] )*b + d + f ) / A;
+    double B = ( (1.0 - 2.0*(1.0-r)*p_i[i] )*b + d + f ) / A;
 
     double e = exp(-A*dt);
 
@@ -721,7 +735,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::p( size_t i, double t 
     double dt   = t - ti;
     
     double A = sqrt( diff*diff + 4.0*bp);
-    double B = ( (1.0 - 2.0*(1.0-r)*p_i[i+1] )*b + d + f ) / A;
+    double B = ( (1.0 - 2.0*(1.0-r)*p_i[i] )*b + d + f ) / A;
     
     double e = exp(-A*dt);
     double tmp = b + d + f - A * ((1.0+B)-e*(1.0-B))/((1.0+B)+e*(1.0-B));
@@ -774,7 +788,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::q( size_t i, double t,
     double dt   = t - ti;
 
     double A = sqrt( diff*diff + 4.0*bp);
-    double B = ( (1.0 - 2.0*(1.0-r)*p_i[i+1] )*b + d + f ) / A;
+    double B = ( (1.0 - 2.0*(1.0-r)*p_i[i] )*b + d + f ) / A;
 
     double e = exp(-A*dt);
     double tmp = (1.0+B) + e*(1.0-B);
@@ -882,15 +896,15 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::updateIntervals( )
             double dt   = t - ti;
 
             double A = sqrt( diff*diff + 4.0*b*f);
-            double B = ( (1.0 - 2.0*(1.0-r)*p_i[i+1] )*b + d + f ) / A;
+            double B = ( (1.0 - 2.0*(1.0-r)*p_i[i] )*b + d + f ) / A;
 
             double e = exp(-A*dt);
 
             double tmp = (1.0 + B) + e*(1.0 - B);
 
-            q_i[i]       = 4.0*e / (tmp*tmp);
-            q_tilde_i[i] = sqrt(q_i[i]*exp(-(b+d+f)*dt));
-            p_i[i]       = (b + d + f - A * ((1.0+B)-e*(1.0-B))/tmp)/(2.0*b);
+            q_i[i-1]       = 4.0*e / (tmp*tmp);
+            q_tilde_i[i-1] = sqrt(q_i[i-1]*exp(-(b+d+f)*dt));
+            p_i[i-1]       = (b + d + f - A * ((1.0+B)-e*(1.0-B))/tmp)/(2.0*b);
         }
 
         if( presence_absence )
