@@ -343,14 +343,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 
             for(size_t j = oi + 1; j <= yi; j++)
             {
-                double Ls = times[j-1];
-
-                if( j < yi )
-                    Ls -= times[j];
-                else
-                    Ls -= y;
-
-                L[j] += Ls;
+                L[j] += times[j-1] - std::max(y, times[j]);
             }
         }
         else if( presence_absence )
@@ -370,12 +363,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
                 {
                     if( getFossilCount(j, i) > 0 )
                     {
-                        double Ls = times[j-1];
-
-                        if( j < yi )
-                            Ls -= times[j];
-                        else
-                            Ls -= std::max(d, times[j]);
+                        double Ls = times[j-1] - std::max(d, times[j]);
 
                         L[j] += fossil[j] * Ls + log( 1.0 - exp( - Ls * fossil[j] ) );
                     }
@@ -420,8 +408,6 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
     if ( homogeneous_rho->getValue() < 1.0)
         lnProbTimes += num_extant_unsampled * log( 1.0 - homogeneous_rho->getValue() );
 
-    
-
     // condition on survival
     if ( condition == "survival" )
     {
@@ -432,21 +418,6 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
     {
         return RbConstants::Double::neginf;
     }
-
-    std::cout << std::setprecision(std::numeric_limits<double>::digits10 + 1);
-
-    for (size_t i = 0; i < num_intervals; ++i)
-        std::cout << "lambda[" << i << "]\t" << birth[i] << std::endl;
-    for (size_t i = 0; i < num_intervals; ++i)
-        std::cout << "mu[" << i << "]\t" << death[i] << std::endl;
-    for (size_t i = 0; i < num_intervals; ++i)
-        std::cout << "psi[" << i << "]\t" << fossil[i] << std::endl;
-    for (size_t i = 0; i < num_intervals; ++i)
-        std::cout << "q[" << i << "]\t" << q_i[i] << std::endl;
-    for (size_t i = 0; i < num_intervals; ++i)
-        std::cout << "q~[" << i << "]\t" << q_tilde_i[i] << std::endl;
-
-    std::cout << "lnL\t" << lnProbTimes << std::endl;
 
     return lnProbTimes;
 }

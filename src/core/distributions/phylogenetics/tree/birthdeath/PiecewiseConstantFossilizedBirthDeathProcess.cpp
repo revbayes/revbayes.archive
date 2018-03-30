@@ -341,14 +341,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 
             for(size_t j = oi + 1; j <= yi; j++)
             {
-                double Ls = times[j-1];
-
-                if( j < yi )
-                    Ls -= times[j];
-                else
-                    Ls -= y;
-
-                L[j] += Ls;
+                L[j] += times[j-1] - std::max(y, times[j]);
             }
         }
         else if( presence_absence )
@@ -368,12 +361,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
                 {
                     if( getFossilCount(j, i) )
                     {
-                        double Ls = times[j-1];
-
-                        if( j < yi )
-                            Ls -= times[j];
-                        else
-                            Ls -= std::max(d, times[j]);
+                        double Ls = times[j-1] - std::max(d, times[j]);
 
                         L[j] += fossil[j]*Ls + log( 1.0 - exp( - Ls * fossil[j] ) );
                     }
@@ -417,8 +405,6 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     // add the unsampled extant tip age term
     if ( homogeneous_rho->getValue() < 1.0)
         lnProbTimes += num_extant_unsampled * log( 1.0 - homogeneous_rho->getValue() );
-
-    
 
     // condition on survival
     if ( condition == "survival" )
