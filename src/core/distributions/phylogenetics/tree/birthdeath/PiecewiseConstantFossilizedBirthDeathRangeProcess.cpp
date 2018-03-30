@@ -362,9 +362,9 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 
                 double t_alpha = times[oi];
 
-                double Hi = integrateQ(oi, o_star) - integrateQ(oi, y_star);
+                double H = integrateQ(oi, o_star) - integrateQ(oi, y_star);
 
-                L[oi] += log( Hi ) + log( fossil[oi] ) - fossil[oi]*( y_star - t_alpha );
+                L[oi] += log( H ) + log( fossil[oi] ) - fossil[oi]*( y_star - t_alpha );
 
                 for(size_t j = oi + 1; j <= yi; j++)
                 {
