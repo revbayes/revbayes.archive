@@ -420,7 +420,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // matrix function (converts into MatrixReal)
         addFunction( new Func_matrix() );
 
-        // min function
+        // max function
         addFunction( new Func_max()  );
 
         // mean function
