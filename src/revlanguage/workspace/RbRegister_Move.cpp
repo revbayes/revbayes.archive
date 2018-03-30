@@ -88,6 +88,7 @@
 #include "Move_ShrinkExpand.h"
 #include "Move_SingleElementScale.h"
 #include "Move_SingleElementSlide.h"
+#include "Move_EllipticalSliceSamplingLognormalIID.h"
 #include "Move_EllipticalSliceSamplingSimple.h"
 #include "Move_SynchronizedVectorFixedSingleElementSlide.h"
 #include "Move_VectorBinarySwitch.h"
@@ -247,6 +248,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_VectorSingleElementScale() );
         addTypeWithConstructor( new Move_VectorSingleElementSlide() );
         addTypeWithConstructor( new Move_VectorFixedSingleElementSlide() );
+        addTypeWithConstructor( new Move_EllipticalSliceSamplingLognormalIID() );
         addTypeWithConstructor( new Move_EllipticalSliceSamplingSimple() );
         addTypeWithConstructor( new Move_SynchronizedVectorFixedSingleElementSlide() );
 
