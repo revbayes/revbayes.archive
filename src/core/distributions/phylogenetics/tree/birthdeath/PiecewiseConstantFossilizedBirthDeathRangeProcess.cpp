@@ -337,76 +337,47 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
                 kappa_prime[yi]++;
             }
 
-            if( oi == yi )
-            {
-                L[oi] += o - y;
-            }
-            else
-            {
-                L[oi] += o - times[oi];
+            double y_star = std::max(y, times[oi]);
 
-                for(size_t j = oi + 1; j < yi; j++)
-                {
-                    L[j] += times[j-1] - times[j];
-                }
+            L[oi] += o - y_star;
 
-                L[yi] += times[yi-1] - y;
+            for(size_t j = oi + 1; j <= yi; j++)
+            {
+                double Ls = times[j-1];
+
+                if( j < yi )
+                    Ls -= times[j];
+                else
+                    Ls -= y;
+
+                L[j] += Ls;
             }
         }
         else if( presence_absence )
         {
-            if( bi == di )
+            if( getFossilCount(oi, i) > 0 )
             {
-                long count = getFossilCount(bi,i);
+                double o_star = oi > 0 ? std::min(b, times[oi-1]) : b;
+                double y_star = std::max(d, times[oi]);
 
-                if( count > 0 )
+                double t_alpha = times[oi];
+
+                double Hi = integrateQ(oi, o_star) - integrateQ(oi, y_star);
+
+                L[oi] += log( Hi ) + log( fossil[oi] ) - fossil[oi]*( y_star - t_alpha );
+
+                for(size_t j = oi + 1; j <= yi; j++)
                 {
-                    L[bi] += log( integrateQ(bi,b) - integrateQ(di,d) ) + log(fossil[bi]) - fossil[di]*( d-getIntervalTime(di) );
-                }
-            }
-            else
-            {
-                bool first = true;
-
-                long count = getFossilCount(bi,i);
-
-                double Ls = b - times[bi];
-                if( count > 0 )
-                {
-                    L[bi] += log( integrateQ( bi, b ) - integrateQ( bi, times[bi] ) ) + log(fossil[bi]);
-                    first = false;
-                }
-
-                for(size_t j = bi + 1; j < di; j++)
-                {
-                    count = getFossilCount(j,i);
-                    if( count > 0 )
+                    if( getFossilCount(j, i) > 0 )
                     {
-                        if( first )
-                        {
-                            L[j] += log( integrateQ( j, times[j-1] ) - integrateQ( j, times[j] ) ) + log(fossil[j]);
-                            first = false;
-                        }
+                        double Ls = times[j-1];
+
+                        if( j < yi )
+                            Ls -= times[j];
                         else
-                        {
-                            Ls = times[j-1] - times[j];
-                            L[j] += fossil[j]*Ls + log( 1.0 - exp( - Ls * fossil[j] ) );
-                        }
-                    }
-                }
+                            Ls -= std::max(d, times[j]);
 
-                count = getFossilCount(di,i);
-                if( count > 0 )
-                {
-                    if( first )
-                    {
-                        L[di] += log( integrateQ( di, times[di-1] ) - integrateQ( di, d ) ) + log(fossil[di]) - fossil[di]*( d-times[di] );
-                        first = false;
-                    }
-                    else
-                    {
-                        Ls = times[di-1] - d;
-                        L[di] += fossil[di]*Ls + log( 1.0 - exp( - Ls * fossil[di] ) );
+                        L[j] += fossil[j] * Ls + log( 1.0 - exp( - Ls * fossil[j] ) );
                     }
                 }
             }
