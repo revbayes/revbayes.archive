@@ -268,12 +268,12 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         // check constraints
         if( presence_absence )
         {
-            if( !( b > d && (( y == 0.0 && d == 0.0 ) || ( y != 0.0 && d >= 0.0 && yi <= di )) ) )
+            if( !( b > d && bi <= oi && ((y == 0.0 && d == 0.0) || (y > 0 && yi <= di)) && d >= 0.0 ) )
             {
                 return RbConstants::Double::neginf;
             }
         }
-        else if ( !( b > o && o >= y && (y > d || (y == d && y == 0.0)) && d >= 0.0 ) )
+        else if ( !( b > o && o >= y && y >= d && d >= 0.0 ) )
         {
             return RbConstants::Double::neginf;
         }
@@ -281,7 +281,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 
         // count the number of rho-sampled tips
         num_extant_sampled  += (d == 0.0 && y == 0.0);  // l
-        num_extant_unsampled += (d == 0.0 && y != 0.0); // n - m - l
+        num_extant_unsampled += (d == 0.0 && y > 0.0); // n - m - l
 
 
         // find the origin time
