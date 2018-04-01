@@ -350,14 +350,14 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
         {
             if( getFossilCount(oi, i) > 0 )
             {
-                double o_star = oi > 0 ? std::min(b, times[oi-1]) : b;
-                double y_star = std::max(d, times[oi]);
+                double t_plus = std::max(d, times[oi]);
+                double t_plus_Ls_alpha = oi > 0 ? std::min(b, times[oi-1]) : b;
 
                 double t_alpha = times[oi];
 
-                double H = integrateQ(oi, o_star) - integrateQ(oi, y_star);
+                double H = integrateQ(oi, t_plus_Ls_alpha) - integrateQ(oi, t_plus);
 
-                L[oi] += log( H ) + log( fossil[oi] ) - fossil[oi]*( y_star - t_alpha );
+                L[oi] += log( H ) + log( fossil[oi] ) - fossil[oi]*( t_plus - t_alpha );
 
                 for(size_t j = oi + 1; j <= yi; j++)
                 {
