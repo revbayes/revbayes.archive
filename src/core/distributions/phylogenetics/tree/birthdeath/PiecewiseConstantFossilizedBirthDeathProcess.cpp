@@ -95,25 +95,29 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         // offset speciation density
         lnProb -= log( birth[y_ai] );
 
-        // multiply by q~/q at the birth time
-        lnProb += q(y_ai, y_a, true) - q(y_ai, y_a);
+        // replace q with q~ at the birth time
+        lnProb -=  q(y_ai, y_a) - q(y_ai, y_a, true);
 
-        // include common intermediate q terms
+        // replace common intermediate q terms
         for (size_t j = y_ai; j < si; j++)
         {
-            lnProb += q_tilde_i[j] - q_i[j];
+            lnProb -= q_i[j] - q_tilde_i[j];
         }
 
-        // compute integrand bounds
+        // evaluate antiderivative
+        // at s_i
         double x_s = q(si, s) - q(si, s, true);
+
+        //at o_i
         double x_o = q(oi, s) - q(oi, s, true);
 
-        // include remaining intermediate q terms
+        // replace intermediate q terms
         for (size_t j = si; j < oi; j++)
         {
-            x_o += q_tilde_i[j] - q_i[j];
+            x_o -= q_i[j] - q_tilde_i[j];
         }
 
+        // compute definite integral
         lnProb += log(exp(x_s) - exp(x_o));
     }
 
