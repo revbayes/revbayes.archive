@@ -83,7 +83,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     {
         double ps = log( pSurvival( getOriginAge(), 0) );
 
-        lnProb += use_origin ? ps : 2.0*ps;
+        lnProb -= use_origin ? ps : 2.0*ps;
     }
 
     return lnProb;
@@ -410,7 +410,7 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
             d_i[i] = child.getAge();
         }
 
-        if( c != 0 )
+        if( c > 0 )
         {
             b_i[i] = node.getAge();
         }
