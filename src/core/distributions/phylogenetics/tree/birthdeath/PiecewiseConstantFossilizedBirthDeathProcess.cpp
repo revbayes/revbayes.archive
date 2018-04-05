@@ -41,6 +41,8 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     AbstractPiecewiseConstantSerialSampledRangeProcess(inspeciation, inextinction, inpsi, incounts, inrho, intimes, intaxa, pa)
 {
 
+    s_i = std::vector<double>(intaxa.size(), 0.0);
+
     redrawValue();
 }
 
@@ -77,6 +79,43 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityDiverge
 double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
     double lnProb = computeLnProbabilityRanges();
+
+    for(size_t j = 0; j < I.size(); j++)
+    {
+        size_t i = I[j];
+
+        double y_a = b_i[i];
+        double s   = s_i[i];
+        double o   = AbstractBirthDeathProcess::taxa[i].getAgeRange().getMax();
+
+        size_t y_ai = l(y_a);
+        size_t si = l(s);
+        size_t oi = l(o);
+
+        // offset speciation density
+        lnProb -= log( birth[y_ai] );
+
+        // multiply by q~/q at the birth time
+        lnProb += q(y_ai, y_a, true) - q(y_ai, y_a);
+
+        // include common intermediate q terms
+        for (size_t j = y_ai; j < si; j++)
+        {
+            lnProb += q_tilde_i[j] - q_i[j];
+        }
+
+        // compute integrand bounds
+        double x_s = q(si, s) - q(si, s, true);
+        double x_o = q(oi, s) - q(oi, s, true);
+
+        // include remaining intermediate q terms
+        for (size_t j = si; j < oi; j++)
+        {
+            x_o += q_tilde_i[j] - q_i[j];
+        }
+
+        lnProb += log(exp(x_s) - exp(x_o));
+    }
 
     // condition on survival
     if ( condition == "survival" )
@@ -161,15 +200,17 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
 
     for (size_t i = 0; i < n.size(); ++i)
     {
-        // make sure the tip age is younger than the last occurrence
+        // make sure the tip age is equal to the last occurrence
         if( n[i]->isTip() )
         {
             double min = n[i]->getTaxon().getAgeRange().getMin();
 
-            if( min == n[i]->getAge() )
-            {
-                n[i]->setAge( present + rng->uniform01() * ( min - present ) );
-            }
+            n[i]->setAge(min);
+
+//            if( min == n[i]->getAge() )
+//            {
+//                n[i]->setAge( present + rng->uniform01() * ( min - present ) );
+//            }
         }
 
         double first_occurrence = getMaxTaxonAge( *n[i] );
@@ -397,6 +438,8 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
 {
     std::vector<TopologyNode* > children = node.getChildren();
 
+    bool sa = node.isSampledAncestor(true);
+
     size_t species = node.getIndex();
 
     for(size_t c = 0; c < children.size(); c++)
@@ -405,19 +448,33 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
 
         size_t i = updateStartEndTimes(child);
 
+        // if child is a tip, set the end time
         if( child.isTip() )
         {
             d_i[i] = child.getAge();
         }
 
-        if( c > 0 )
+        if( s_i[i] == 0.0 && node.getAge() > AbstractBirthDeathProcess::taxa[i].getAgeRange().getMax() )
         {
-            b_i[i] = node.getAge();
+            s_i[i] = node.getAge();
         }
+
+        // is child a new species?
+        // set start time at this node
+        if( ( sa == false && c > 0 ) || ( sa && child.isSampledAncestor() == false ) )
+        {
+            b_i[i] = node.getAge(); // y_{a(i)}
+
+            if( sa ) I.push_back(i);
+        }
+        // if child is the ancestral species and this is the root
+        // set the start time to the origin
         else if( node.isRoot() )
         {
             b_i[i] = getOriginAge();
         }
+        // child is the ancestral species
+        // propagate species index
         else
         {
             species = i;
@@ -434,6 +491,10 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
  */
 void PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( void ) const
 {
+    I.clear();
+
+    s_i = std::vector<double>(AbstractBirthDeathProcess::taxa.size(), 0.0);
+
     updateStartEndTimes(getValue().getRoot());
 }
 
