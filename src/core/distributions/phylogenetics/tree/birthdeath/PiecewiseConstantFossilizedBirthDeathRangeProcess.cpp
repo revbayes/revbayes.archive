@@ -67,21 +67,21 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
     // prepare the probability computation
     updateGamma();
 
-    double lnProbRanges = computeLnProbabilityRanges();
+    double lnProb = computeLnProbabilityRanges();
 
     for( size_t i = 0; i < taxa.size(); i++ )
     {
         // multiply by the number of possible birth locations
-        lnProbRanges += log( gamma_i[i] == 0 ? 1 : gamma_i[i] );
+        lnProb += log( gamma_i[i] == 0 ? 1 : gamma_i[i] );
     }
 
     // condition on survival
     if ( condition == "survival" )
     {
-        lnProbRanges -= log( pSurvival(maxb,0) );
+        lnProb -= log( pSurvival(origin,0) );
     }
 
-    return lnProbRanges;
+    return lnProb;
 }
 
 
@@ -162,10 +162,14 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::pSurvival(double start
  */
 void PiecewiseConstantFossilizedBirthDeathRangeProcess::updateStartEndTimes( void ) const
 {
+    origin = 0;
+
     for (size_t i = 0; i < taxa.size(); i++)
     {
         b_i[i] = (*this->value)[i][0];
         d_i[i] = (*this->value)[i][1];
+
+        origin = std::max(origin, b_i[i]);
     }
 }
 

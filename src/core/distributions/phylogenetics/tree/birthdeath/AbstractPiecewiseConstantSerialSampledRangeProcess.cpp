@@ -33,7 +33,7 @@ AbstractPiecewiseConstantSerialSampledRangeProcess::AbstractPiecewiseConstantSer
                                                                                                      const TypedDagNode< RbVector<double> > *intimes,
                                                                                                      const std::vector<Taxon> &intaxa,
                                                                                                      bool pa ) :
-    ascending(false), homogeneous_rho(inrho), timeline( intimes ), maxb(0), taxa(intaxa), presence_absence(pa)
+    ascending(false), homogeneous_rho(inrho), timeline( intimes ), taxa(intaxa), presence_absence(pa)
 {
     // initialize all the pointers to NULL
     homogeneous_lambda             = NULL;
@@ -220,7 +220,7 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::computeLnProbabilityR
     size_t num_extant_sampled = 0;
     size_t num_extant_unsampled = 0;
 
-    maxb = 0;
+    double maxb = 0;
     double maxl = 0;
 
     std::vector<long> kappa_prime (num_intervals, 0);
@@ -268,7 +268,6 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::computeLnProbabilityR
         // find the origin time
         if (b > maxb)
         {
-            maxb = b;
             maxl = birth[bi];
         }
 

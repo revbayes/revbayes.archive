@@ -76,38 +76,17 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityDiverge
  */
 double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
-    double lnProbRanges = computeLnProbabilityRanges();
+    double lnProb = computeLnProbabilityRanges();
 
     // condition on survival
     if ( condition == "survival" )
     {
-        lnProbRanges -= log( pSurvival(maxb,0) );
+        double ps = log( pSurvival( getOriginAge(), 0) );
+
+        lnProb += use_origin ? ps : 2.0*ps;
     }
 
-    return lnProbRanges;
-}
-
-
-double PiecewiseConstantFossilizedBirthDeathProcess::getBirthTime( const TopologyNode& node ) const
-{
-    if( node.isRoot() )
-    {
-        return getOriginAge();
-    }
-    else
-    {
-        const TopologyNode& parent = node.getParent();
-
-        // define left child as ancestral species
-        if( node.getIndex() == parent.getChild(0).getIndex() )
-        {
-            return getBirthTime( parent );
-        }
-        else
-        {
-            return parent.getAge();
-        }
-    }
+    return lnProb;
 }
 
 
@@ -414,13 +393,48 @@ double PiecewiseConstantFossilizedBirthDeathProcess::simulateDivergenceTime(doub
 }
 
 
+size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const TopologyNode& node ) const
+{
+    std::vector<TopologyNode* > children = node.getChildren();
+
+    size_t species = node.getIndex();
+
+    for(size_t c = 0; c < children.size(); c++)
+    {
+        const TopologyNode& child = *children[c];
+
+        size_t i = updateStartEndTimes(child);
+
+        if( child.isTip() )
+        {
+            d_i[i] = child.getAge();
+        }
+
+        if( c != 0 )
+        {
+            b_i[i] = node.getAge();
+        }
+        else if( node.isRoot() )
+        {
+            b_i[i] = getOriginAge();
+        }
+        else
+        {
+            species = i;
+        }
+    }
+
+    return species;
+}
+
+
 /**
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
 void PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( void ) const
 {
-
+    updateStartEndTimes(getValue().getRoot());
 }
 
 

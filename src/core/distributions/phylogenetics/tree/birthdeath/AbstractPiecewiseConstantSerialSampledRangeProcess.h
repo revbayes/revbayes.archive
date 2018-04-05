@@ -88,7 +88,6 @@ namespace RevBayesCore {
         mutable std::vector<double>                     fossil;
         mutable std::vector<double>                     times;
 
-        mutable double                                  maxb;
         mutable std::vector<double>                     b_i;
         mutable std::vector<double>                     d_i;
 
