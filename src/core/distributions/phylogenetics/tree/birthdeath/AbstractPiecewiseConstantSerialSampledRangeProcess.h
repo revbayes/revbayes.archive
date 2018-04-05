@@ -91,6 +91,8 @@ namespace RevBayesCore {
         mutable std::vector<double>                     b_i;
         mutable std::vector<double>                     d_i;
 
+        mutable std::vector<double>                     H;
+
         mutable std::vector<double>                     q_i;
         mutable std::vector<double>                     q_tilde_i;
         mutable std::vector<double>                     p_i;

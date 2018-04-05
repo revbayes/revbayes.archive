@@ -191,6 +191,8 @@ AbstractPiecewiseConstantSerialSampledRangeProcess::AbstractPiecewiseConstantSer
     b_i = std::vector<double>(taxa.size(), 0.0);
     d_i = std::vector<double>(taxa.size(), 0.0);
 
+    if( presence_absence ) H = std::vector<double>(taxa.size(), 0.0);
+
     p_i         = std::vector<double>(num_intervals, 1.0);
     q_i         = std::vector<double>(num_intervals, 0.0);
     q_tilde_i   = std::vector<double>(num_intervals, 0.0);
@@ -328,14 +330,16 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::computeLnProbabilityR
         {
             if( getFossilCount(oi, i) > 0 )
             {
-                double t_plus = std::max(d, times[oi]);
-                double t_plus_Ls_alpha = oi > 0 ? std::min(b, times[oi-1]) : b;
+                double delta = std::max(d, times[oi]);
+                double delta_plus_Ls_alpha = oi > 0 ? std::min(b, times[oi-1]) : b;
 
                 double t_alpha = times[oi];
 
-                double H = integrateQ(oi, t_plus_Ls_alpha) - integrateQ(oi, t_plus);
+                H[i] = integrateQ(oi, delta_plus_Ls_alpha) - integrateQ(oi, delta);
 
-                L[oi] += log( H ) + log( fossil[oi] ) - fossil[oi]*( t_plus - t_alpha );
+                H[i] += log( H[i] ) + log( fossil[oi] ) - fossil[oi]*( delta - t_alpha );
+
+                L[oi] += H[i];
 
                 for(size_t j = oi + 1; j <= yi; j++)
                 {

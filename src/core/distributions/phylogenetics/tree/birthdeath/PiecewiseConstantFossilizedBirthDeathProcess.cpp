@@ -87,10 +87,12 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         double y_a = b_i[i];
         double s   = s_i[i];
         double o   = AbstractBirthDeathProcess::taxa[i].getAgeRange().getMax();
+        double y   = d_i[i];
 
         size_t y_ai = l(y_a);
         size_t si = l(s);
-        size_t oi = l(o);
+
+        size_t oi = presence_absence ? oldest_intervals[i] : l(o);
 
         // offset speciation density
         lnProb -= log( birth[y_ai] );
@@ -109,7 +111,20 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         double x_s = q(si, s) - q(si, s, true);
 
         //at o_i
-        double x_o = q(oi, s) - q(oi, s, true);
+        double x_o;
+        if( presence_absence )
+        {
+            double a = std::max(y, times[oi]);
+            double Ls_plus_a = oi > 0 ? std::min(y_a, times[oi-1]) : y_a;
+            double Ls = Ls_plus_a - a;
+
+            // replace H_i
+            x_o = log(1.0 - exp(-Ls*fossil[oi]) ) - H[i];
+        }
+        else
+        {
+            x_o = q(oi, o) - q(oi, o, true);
+        }
 
         // replace intermediate q terms
         for (size_t j = si; j < oi; j++)
