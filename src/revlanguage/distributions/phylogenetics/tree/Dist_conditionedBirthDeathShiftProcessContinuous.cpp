@@ -47,9 +47,9 @@ RevBayesCore::ConditionedBirthDeathShiftProcessContinuous* Dist_conditionedBirth
     RevBayesCore::TypedDagNode<double>* r_sp = static_cast<const RealPos &>( root_speciation->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* r_ex = static_cast<const RealPos &>( root_extinction->getRevObject() ).getDagNode();
     const Distribution& rl_distribution_speciation  = static_cast<const Distribution &>( speciation->getRevObject() );
-    RevBayesCore::TypedDistribution<double>* distribution_speciation    = static_cast<RevBayesCore::TypedDistribution<double>* >( rl_distribution_speciation.createDistribution() );
+    RevBayesCore::TypedDistribution<double>* distribution_speciation    = dynamic_cast<RevBayesCore::TypedDistribution<double>* >( rl_distribution_speciation.createDistribution() );
     const Distribution& rl_distribution_extinction  = static_cast<const Distribution &>( extinction->getRevObject() );
-    RevBayesCore::TypedDistribution<double>* distribution_extinction    = static_cast<RevBayesCore::TypedDistribution<double>* >( rl_distribution_extinction.createDistribution() );
+    RevBayesCore::TypedDistribution<double>* distribution_extinction    = dynamic_cast<RevBayesCore::TypedDistribution<double>* >( rl_distribution_extinction.createDistribution() );
     RevBayesCore::TypedDagNode<double>* er   = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* rh   = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
