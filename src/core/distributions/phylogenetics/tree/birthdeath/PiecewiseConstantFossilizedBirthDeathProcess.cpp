@@ -454,6 +454,7 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
             d_i[i] = child.getAge();
         }
 
+        // store the node age directly ancestral to the first occurrence of this species
         if( s_i[i] == 0.0 && node.getAge() > AbstractBirthDeathProcess::taxa[i].getAgeRange().getMax() )
         {
             s_i[i] = node.getAge();
