@@ -97,21 +97,18 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         // offset speciation density
         lnProb -= log( birth[y_ai] );
 
-        // replace q with q~ at the birth time
-        lnProb -=  q(y_ai, y_a) - q(y_ai, y_a, true);
 
-        // replace common intermediate q terms
-        for (size_t j = y_ai; j < si; j++)
+        // evaluate antiderivative at oi
+
+        // replace q with q~ at the birth time
+        double x = q(y_ai, y_a, true) - q(y_ai, y_a);
+
+        // replace intermediate q terms
+        for (size_t j = y_ai; j < oi; j++)
         {
-            lnProb -= q_i[j] - q_tilde_i[j];
+            x -= q_i[j] - q_tilde_i[j];
         }
 
-        // evaluate antiderivative
-        // at s_i
-        double x_s = q(si, s) - q(si, s, true);
-
-        //at o_i
-        double x_o;
         if( presence_absence )
         {
             double a = std::max(y, times[oi]);
@@ -119,21 +116,16 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
             double Ls = Ls_plus_a - a;
 
             // replace H_i
-            x_o = log(1.0 - exp(-Ls*fossil[oi]) ) - H[i];
+            x += log(1.0 - exp(-Ls*fossil[oi]) ) - H[i];
         }
         else
         {
-            x_o = q(oi, o) - q(oi, o, true);
-        }
-
-        // replace intermediate q terms
-        for (size_t j = si; j < oi; j++)
-        {
-            x_o -= q_i[j] - q_tilde_i[j];
+            // replace q terms at oi
+            x += q(oi, o) - q(oi, o, true);
         }
 
         // compute definite integral
-        lnProb += log(exp(x_s) - exp(x_o));
+        lnProb += log(-expm1(x));
     }
 
     // condition on survival
