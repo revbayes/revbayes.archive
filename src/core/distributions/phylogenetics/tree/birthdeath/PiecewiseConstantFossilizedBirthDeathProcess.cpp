@@ -86,7 +86,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         size_t i = I[j];
 
         double y_a = b_i[i];
-        double o   = AbstractBirthDeathProcess::taxa[i].getAgeRange().getMax();
+        double o   = taxa[i].getAgeRange().getMax();
 
         size_t y_ai = l(y_a);
 
@@ -129,30 +129,30 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     // replace extinction events with sampling events
     if( extended == false )
     {
-        for(size_t i = 0; i < AbstractBirthDeathProcess::taxa.size(); i++)
+        for(size_t i = 0; i < taxa.size(); i++)
         {
             size_t di = l(d_i[i]);
 
             // check constraints
             if( presence_absence )
             {
-                // yi == di
-                if( youngest_intervals[i] != di )
+                if( d_i[i] > 0.0 )
                 {
-                    return RbConstants::Double::neginf;
-                }
+                    // yi == di
+                    if( youngest_intervals[i] != di )
+                    {
+                        return RbConstants::Double::neginf;
+                    }
 
-                // if the tip is a sampling event in the past
-                // then replace one unobserved fossil sample with an observed fossil sample
-                // i.e increment the observed fossil count
-                if(d_i[i] > 0.0)
-                {
+                    // if the tip is a sampling event in the past
+                    // then replace one unobserved fossil sample with an observed fossil sample
+                    // i.e increment the observed fossil count
                     double Ls = times[di-1] - std::max(d_i[i], times[di]);
                     lnProb += fossil[di] - log( 1.0 - exp( - Ls * fossil[di] ) );
                 }
             }
             // y == d
-            else if ( d_i[i] != AbstractBirthDeathProcess::taxa[i].getAgeRange().getMin() )
+            else if ( d_i[i] != taxa[i].getAgeRange().getMin() )
             {
                 return RbConstants::Double::neginf;
             }
@@ -162,7 +162,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
             if( d_i[i] > 0.0 )
             {
                 lnProb -= death[di];
-                lnProb += p(d_i[i], di);
+                lnProb += log( p(d_i[i], di) );
             }
         }
     }
@@ -494,7 +494,7 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
 
     bool sa = node.isSampledAncestor(true);
 
-    size_t species = node.getIndex();
+    size_t species = find(taxa.begin(), taxa.end(), node.getTaxon()) - taxa.begin();
 
     for(size_t c = 0; c < children.size(); c++)
     {

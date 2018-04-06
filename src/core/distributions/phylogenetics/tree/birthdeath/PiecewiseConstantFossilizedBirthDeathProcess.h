@@ -30,6 +30,8 @@ namespace RevBayesCore {
      */
     class PiecewiseConstantFossilizedBirthDeathProcess : public AbstractBirthDeathProcess, public AbstractPiecewiseConstantSerialSampledRangeProcess {
         
+        using AbstractBirthDeathProcess::taxa;
+
     public:
         PiecewiseConstantFossilizedBirthDeathProcess (const TypedDagNode<double>* ra,
                                                       const DagNode *speciation,
