@@ -136,21 +136,23 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
             // check constraints
             if( presence_absence )
             {
+                // yi == di
                 if( youngest_intervals[i] != di )
                 {
                     return RbConstants::Double::neginf;
                 }
+
+                // if the tip is a sampling event
+                // then replace one unobserved fossil sample with an observed fossil sample
+                // i.e increment the observed fossil count
+                double Ls = times[di-1] - std::max(d_i[i], times[di]);
+                lnProb += fossil[di] - log( 1.0 - exp( - Ls * fossil[di] ) );
             }
+            // y == d
             else if ( d_i[i] != AbstractBirthDeathProcess::taxa[i].getAgeRange().getMin() )
             {
                 return RbConstants::Double::neginf;
             }
-
-            // if the tip is a sampling event
-            // then replace one unobserved fossil sample with an observed fossil sample
-            // i.e increment the observed fossil count
-            double Ls = times[di-1] - std::max(d_i[i], times[di]);
-            lnProb += fossil[di] - log( 1.0 - exp( - Ls * fossil[di] ) );
 
             // if the tip is a sampling event in the past
             // replace observed extinction time with unobserved extinction time
