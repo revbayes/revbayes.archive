@@ -131,9 +131,20 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     {
         for(size_t i = 0; i < AbstractBirthDeathProcess::taxa.size(); i++)
         {
-            TopologyNode& node = this->value->getNode(i);
+            size_t di = l(d_i[i]);
 
-            size_t di = l(node.getAge());
+            // check constraints
+            if( presence_absence )
+            {
+                if( youngest_intervals[i] != di )
+                {
+                    return RbConstants::Double::neginf;
+                }
+            }
+            else if ( d_i[i] != AbstractBirthDeathProcess::taxa[i].getAgeRange().getMin() )
+            {
+                return RbConstants::Double::neginf;
+            }
 
             // if the tip is a sampling event
             // then replace one unobserved fossil sample with an observed fossil sample
@@ -143,10 +154,10 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 
             // if the tip is a sampling event in the past
             // replace observed extinction time with unobserved extinction time
-            if( node.getAge() > 0.0 )
+            if( d_i[i] > 0.0 )
             {
                 lnProb -= death[di];
-                lnProb += p(node.getAge(), di);
+                lnProb += p(d_i[i], di);
             }
         }
     }
