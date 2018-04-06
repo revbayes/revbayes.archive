@@ -50,6 +50,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                               timeline;                                                                               //!< The interval times
         RevPtr<const RevVariable>                               fossil_counts;                                                                          //!< The fossil counts
         RevPtr<const RevVariable>                               presence_absence;
+        RevPtr<const RevVariable>                               extended;
         std::string                                             start_condition;                                                                        //!< The start condition of the process (rootAge/originAge)
 
     };

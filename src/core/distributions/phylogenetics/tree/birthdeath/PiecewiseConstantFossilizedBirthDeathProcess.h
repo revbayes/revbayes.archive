@@ -41,7 +41,8 @@ namespace RevBayesCore {
                                                       const std::string &condition,
                                                       const std::vector<Taxon> &taxa,
                                                       bool uo,
-                                                      bool pa );  //!< Constructor
+                                                      bool pa,
+                                                      bool ex );  //!< Constructor
         
         // public member functions
         PiecewiseConstantFossilizedBirthDeathProcess*   clone(void) const;                                         //!< Create an independent clone
@@ -72,7 +73,7 @@ namespace RevBayesCore {
         double                                          getMaxTaxonAge( const TopologyNode& ) const;
 
         mutable std::vector<bool>                       I;
-        mutable std::vector<double>                     s_i;
+        bool                                            extended;
 
     };
 }

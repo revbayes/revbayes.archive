@@ -36,12 +36,12 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
                                                                                            const std::string &incondition,
                                                                                            const std::vector<Taxon> &intaxa,
                                                                                            bool uo,
-                                                                                           bool pa ) :
+                                                                                           bool pa,
+                                                                                           bool ex) :
     AbstractBirthDeathProcess(ra, incondition, intaxa, uo),
-    AbstractPiecewiseConstantSerialSampledRangeProcess(inspeciation, inextinction, inpsi, incounts, inrho, intimes, intaxa, pa)
+    AbstractPiecewiseConstantSerialSampledRangeProcess(inspeciation, inextinction, inpsi, incounts, inrho, intimes, intaxa, pa),
+    extended(ex)
 {
-
-    s_i = std::vector<double>(intaxa.size(), 0.0);
 
     redrawValue();
 }
@@ -80,23 +80,20 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 {
     double lnProb = computeLnProbabilityRanges();
 
+    // integrate speciation times for descendants of sampled ancestors
     for(size_t j = 0; j < I.size(); j++)
     {
         size_t i = I[j];
 
         double y_a = b_i[i];
-        double s   = s_i[i];
         double o   = AbstractBirthDeathProcess::taxa[i].getAgeRange().getMax();
-        double y   = d_i[i];
 
         size_t y_ai = l(y_a);
-        size_t si = l(s);
 
         size_t oi = presence_absence ? oldest_intervals[i] : l(o);
 
         // offset speciation density
         lnProb -= log( birth[y_ai] );
-
 
         // evaluate antiderivative at oi
 
@@ -111,7 +108,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 
         if( presence_absence )
         {
-            double a = std::max(y, times[oi]);
+            double a = std::max(d_i[i], times[oi]);
             double Ls_plus_a = oi > 0 ? std::min(y_a, times[oi-1]) : y_a;
             double Ls = Ls_plus_a - a;
 
@@ -126,6 +123,32 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 
         // compute definite integral
         lnProb += log(-expm1(x));
+    }
+
+    // if this is a sampled tree
+    // replace extinction events with sampling events
+    if( extended == false )
+    {
+        for(size_t i = 0; i < AbstractBirthDeathProcess::taxa.size(); i++)
+        {
+            TopologyNode& node = this->value->getNode(i);
+
+            size_t di = l(node.getAge());
+
+            // if the tip is a sampling event
+            // then replace one unobserved fossil sample with an observed fossil sample
+            // i.e increment the observed fossil count
+            double Ls = times[di-1] - std::max(d_i[i], times[di]);
+            lnProb += fossil[di] - log( 1.0 - exp( - Ls * fossil[di] ) );
+
+            // if the tip is a sampling event in the past
+            // replace observed extinction time with unobserved extinction time
+            if( node.getAge() > 0.0 )
+            {
+                lnProb -= death[di];
+                lnProb += p(node.getAge(), di);
+            }
+        }
     }
 
     // condition on survival
@@ -216,12 +239,16 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
         {
             double min = n[i]->getTaxon().getAgeRange().getMin();
 
-            n[i]->setAge(min);
-
-//            if( min == n[i]->getAge() )
-//            {
-//                n[i]->setAge( present + rng->uniform01() * ( min - present ) );
-//            }
+            // in the extended tree, tip ages are extinction times
+            if( extended )
+            {
+                n[i]->setAge( present + rng->uniform01() * ( min - present ) );
+            }
+            // in the sampled tree, tip ages are sampling times
+            else
+            {
+                n[i]->setAge(min);
+            }
         }
 
         double first_occurrence = getMaxTaxonAge( *n[i] );
@@ -465,12 +492,6 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
             d_i[i] = child.getAge();
         }
 
-        // store the node age directly ancestral to the first occurrence of this species
-        if( s_i[i] == 0.0 && node.getAge() > AbstractBirthDeathProcess::taxa[i].getAgeRange().getMax() )
-        {
-            s_i[i] = node.getAge();
-        }
-
         // is child a new species?
         // set start time at this node
         if( ( sa == false && c > 0 ) || ( sa && child.isSampledAncestor() == false ) )
@@ -504,8 +525,6 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
 void PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( void ) const
 {
     I.clear();
-
-    s_i = std::vector<double>(AbstractBirthDeathProcess::taxa.size(), 0.0);
 
     updateStartEndTimes(getValue().getRoot());
 }
