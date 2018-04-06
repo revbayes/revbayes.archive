@@ -204,6 +204,8 @@ AbstractPiecewiseConstantSerialSampledRangeProcess::AbstractPiecewiseConstantSer
 
     oldest_intervals = std::vector<size_t>( taxa.size(), num_intervals - 1 );
     youngest_intervals = std::vector<size_t>( taxa.size(), num_intervals - 1 );
+
+    updateIntervals();
 }
 
 /**
