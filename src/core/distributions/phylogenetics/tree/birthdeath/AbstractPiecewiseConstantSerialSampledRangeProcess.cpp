@@ -339,7 +339,7 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::computeLnProbabilityR
 
                 H[i] = integrateQ(oi, delta_plus_Ls_alpha) - integrateQ(oi, delta);
 
-                H[i] += log( H[i] ) + log( fossil[oi] ) - fossil[oi]*( delta - t_alpha );
+                H[i] = log( H[i] ) + log( fossil[oi] ) - fossil[oi]*( delta - t_alpha );
 
                 L[oi] += H[i];
 
