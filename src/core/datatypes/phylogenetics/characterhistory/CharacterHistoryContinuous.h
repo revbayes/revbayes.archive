@@ -21,6 +21,7 @@ namespace RevBayesCore {
         CharacterHistoryContinuous(Tree *t, size_t nc, bool rb = false);
         virtual ~CharacterHistoryContinuous(void);
         
+        BranchHistoryContinuous&                operator[](size_t i);
         const BranchHistoryContinuous&          operator[](size_t i) const;
         
         CharacterHistoryContinuous*             clone(void) const;

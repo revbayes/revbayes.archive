@@ -23,7 +23,7 @@ namespace RevBayesCore {
      * @since 2014-11-18, version 1.0
      */
     template <class valueType>
-    class EmpiricalSampleDistribution : public TypedDistribution< RbVector<valueType> > {
+    class EmpiricalSampleDistribution : public TypedDistribution< RbVector<valueType> >, public MemberObject< RbVector<double> > {
         
     public:
         // constructor(s)
@@ -36,6 +36,7 @@ namespace RevBayesCore {
         // public member functions
         EmpiricalSampleDistribution*                        clone(void) const;                                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
         RevLanguage::RevPtr<RevLanguage::RevVariable>       executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found);
         void                                                redrawValue(void);
         void                                                setValue(RbVector<valueType> *v, bool f=false);
@@ -58,6 +59,7 @@ namespace RevBayesCore {
         size_t                                              sample_block_end;
         size_t                                              sample_block_size;
 
+        std::vector<double>                                 ln_probs;
         
 #ifdef RB_MPI
         std::vector<size_t>                                 pid_per_sample;
@@ -85,7 +87,8 @@ RevBayesCore::EmpiricalSampleDistribution<valueType>::EmpiricalSampleDistributio
     num_samples( 0 ),
     sample_block_start( 0 ),
     sample_block_end( num_samples ),
-    sample_block_size( num_samples )
+    sample_block_size( num_samples ),
+    ln_probs(num_samples, 0.0)
 {
 
     // add the parameters of the distribution
@@ -110,7 +113,8 @@ RevBayesCore::EmpiricalSampleDistribution<valueType>::EmpiricalSampleDistributio
     num_samples( d.num_samples ),
     sample_block_start( d.sample_block_start ),
     sample_block_end( d.sample_block_end ),
-    sample_block_size( d.sample_block_size )
+    sample_block_size( d.sample_block_size ),
+    ln_probs( d.ln_probs )
 {
     
 #ifdef RB_MPI
@@ -170,6 +174,9 @@ RevBayesCore::EmpiricalSampleDistribution<valueType>& RevBayesCore::EmpiricalSam
         sample_block_end    = d.sample_block_end;
         sample_block_size   = d.sample_block_size;
         
+        ln_probs            = d.ln_probs;
+
+        
 #ifdef RB_MPI
         pid_per_sample = d.pid_per_sample;
 #endif
@@ -209,7 +216,6 @@ double RevBayesCore::EmpiricalSampleDistribution<valueType>::computeLnProbabilit
     double ln_prob = 0;
     double prob    = 0;
     
-    std::vector<double> ln_probs = std::vector<double>(num_samples, 0.0);
     std::vector<double> probs    = std::vector<double>(num_samples, 0.0);
     
     // add the ln-probs for each sample
@@ -302,6 +308,30 @@ double RevBayesCore::EmpiricalSampleDistribution<valueType>::computeLnProbabilit
 #endif
     
     return ln_prob;
+}
+
+
+template <class mixtureType>
+void RevBayesCore::EmpiricalSampleDistribution<mixtureType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
+{
+    
+    if ( n == "getSampleProbabilities" )
+    {
+        
+        bool log_transorm = static_cast<const TypedDagNode<Boolean>* >( args[0] )->getValue();
+
+        rv.clear();
+        rv.resize(num_samples);
+        for (size_t i = 0; i < num_samples; ++i)
+        {
+            rv[i] = (log_transorm ? ln_probs[i] : exp(ln_probs[i]));
+        }
+    }
+    else
+    {
+        throw RbException("An empirical-sample distribution does not have a member method called '" + n + "'.");
+    }
+    
 }
 
 
@@ -404,6 +434,9 @@ void RevBayesCore::EmpiricalSampleDistribution<valueType>::setValue(RbVector<val
         pid_per_sample[i] = size_t(floor( double(i) / num_samples * this->num_processes ) ) + this->active_PID;
     }
 #endif
+    
+    ln_probs = std::vector<double>(num_samples, 0.0);
+
     
     // delegate class
     TypedDistribution< RbVector<valueType> >::setValue( v, force );

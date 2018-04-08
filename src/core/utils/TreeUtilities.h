@@ -44,6 +44,7 @@ namespace RevBayesCore {
         void                    rescaleSubtree(Tree *t, TopologyNode *n, double factor, bool v=false);
         void                    rescaleTree(Tree *t, TopologyNode *n, double factor);
         void                    setAges(Tree *t, TopologyNode *n, std::vector<double>& ages);
+        void                    setAgesRecursively(Tree *t, TopologyNode *n, double age);
 
         // internal helper functions
         void                    constructTimeTreeRecursively(TopologyNode *tn, const TopologyNode &n, std::vector<TopologyNode*> &nodes, std::vector<double> &ages, double depth);

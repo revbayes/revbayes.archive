@@ -1,16 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the uniform time tree distribution.
- *
- * @brief Declaration of the uniform time tree distribution class.
- *
- * @author Fredrik Ronquist
- * @note   This class does not support the deterministic behavior
- *         required by time trees with origin time variables, and
- *         should not be used until this is fixed.
- *
- */
-
 #ifndef UniformTimeTreeDistribution_H
 #define UniformTimeTreeDistribution_H
 

@@ -978,6 +978,34 @@ size_t TopologyNode::getIndex( void ) const
     return index;
 }
 
+/**
+ * Get the indices of nodes contained in the subtree starting with this node as the root.
+ * This either returns 1 if this is a tip node (or 0 if we do not count tipes)
+ * or computes recursively the number of nodes in both children plus one for this node.
+ *
+ * \param[in]   countTips   Shall we count tips?
+ * \return                  Subtree size.
+ */
+void TopologyNode::getIndicesOfNodesInSubtree( bool countTips, std::vector<size_t>* indices ) const
+{
+    
+    if ( tip_node )
+    {
+        if (countTips)
+        {
+            indices->push_back(index);
+        }
+    }
+    else
+    {
+        indices->push_back(index);
+        // now call this function recursively for all your children
+        children[0]->getIndicesOfNodesInSubtree(countTips, indices);
+        children[1]->getIndicesOfNodesInSubtree(countTips, indices);
+    }
+    
+}
+
 
 /**
  * Get the maximal depth starting from this node.
@@ -1019,6 +1047,70 @@ const std::string& TopologyNode::getName( void ) const
 {
     
     return getTaxon().getName();
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ */
+const TopologyNode* TopologyNode::getMrca(const Clade &c) const
+{
+    
+    return getNode( c, false );
+}
+
+const TopologyNode* TopologyNode::getMrca(const Clade &c, bool strict) const
+{
+    
+    return getNode( c, strict );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ */
+const TopologyNode* TopologyNode::getMrca(const TopologyNode &n) const
+{
+    
+    return getNode( n, false );
+}
+
+
+///**
+// * Is the argument clade contained in the clade descending from this node?
+// */
+//const TopologyNode* TopologyNode::getMrca(const std::vector<Taxon> &t) const
+//{
+//
+//    return getNode( t, false );
+//}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+TopologyNode* TopologyNode::getNode(const TopologyNode &n, bool strict)
+{
+    
+    RbBitSet your_taxa = RbBitSet( tree->getNumberOfTips() );
+    n.getTaxa( your_taxa );
+    
+    return getNode( your_taxa, strict );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+const TopologyNode* TopologyNode::getNode(const TopologyNode &n, bool strict) const
+{
+    
+    RbBitSet your_taxa = RbBitSet( tree->getNumberOfTips() );
+    n.getTaxa( your_taxa );
+    
+    return getNode( your_taxa, strict );
 }
 
 

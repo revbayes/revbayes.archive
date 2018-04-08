@@ -96,7 +96,12 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
         throw RbException("Joint ancestral state summaries are not yet implemented. Coming soon!");
     }
     
-    int site = (int)static_cast<const Integer &>(args[8].getVariable()->getRevObject()).getValue() - 1;
+    int site = (int)static_cast<const Integer &>(args[8].getVariable()->getRevObject()).getValue();
+    if ( site == 0 )
+    {
+        throw RbException("In Rev we index using a base '1'. That means, the first site has position '1'. You entered '0' for the site index.");
+    }
+    --site;
     
     bool verbose = static_cast<const RlBoolean &>(args[9].getVariable()->getRevObject()).getValue();
     

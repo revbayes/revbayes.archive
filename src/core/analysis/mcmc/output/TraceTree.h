@@ -1,6 +1,7 @@
 #ifndef TraceTree_H
 #define TraceTree_H
 
+#include "Clade.h"
 #include "Trace.h"
 #include "Tree.h"
 
@@ -73,10 +74,12 @@ namespace RevBayesCore {
         std::vector<double>                        computePairwiseRFDistance( double credible_interval_size, bool verbose );
         std::vector<double>                        computeTreeLengths(void);
         int                                        getBurnin(void) const;
+        std::vector<Clade>                         getUniqueClades(double ci=0.95, bool non_trivial_only=true, bool verbose=true);
         std::vector<Tree>                          getUniqueTrees(double ci=0.95, bool verbose=true);
         int                                        getTopologyFrequency(const Tree &t, bool verbose);
         bool                                       isClock(void);
         bool                                       isCoveredInInterval(const std::string &v, double size, bool verbose);
+        bool                                       isCoveredInInterval(const Tree &t, double size, bool verbose);
         Tree*                                      mapTree(AnnotationReport report, bool verbose);
         Tree*                                      mccTree(AnnotationReport report, bool verbose);
         Tree*                                      mrTree(AnnotationReport report, double cutoff, bool verbose);

@@ -250,7 +250,7 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps, MonteCarloAnalysisOp
             {
                 for (size_t i=1; i<n_reps; ++i)
                 {
-                    if ( !(std::getline(*input_streams[1],read_lines[1])) )
+                    if ( !(std::getline(*input_streams[i],read_lines[i])) )
                     {
                         throw RbException("Cannot merge output trace files with unequal number of lines.");
                     }

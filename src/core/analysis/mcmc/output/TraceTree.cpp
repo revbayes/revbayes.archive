@@ -847,11 +847,11 @@ TraceTree::Split TraceTree::collectTreeSample(const TopologyNode& n, RbBitSet& i
     RbBitSet taxa(intaxa.size());
     std::set<Taxon> mrca;
 
-    if( n.isTip() )
+    if ( n.isTip() )
     {
         n.getTaxa(taxa);
 
-        if( rooted && n.isSampledAncestor() )
+        if ( rooted && n.isSampledAncestor() )
         {
             sampled_ancestor_counts[n.getTaxon()]++;
 
@@ -866,7 +866,7 @@ TraceTree::Split TraceTree::collectTreeSample(const TopologyNode& n, RbBitSet& i
 
             child_splits.push_back( collectTreeSample(child_node, taxa, newick, cladeCountMap) );
 
-            if( rooted && child_node.isSampledAncestor() )
+            if ( rooted && child_node.isSampledAncestor() )
             {
                 mrca.insert(child_node.getTaxon());
             }
@@ -877,22 +877,25 @@ TraceTree::Split TraceTree::collectTreeSample(const TopologyNode& n, RbBitSet& i
 
     Split parent_split(taxa, mrca, rooted);
 
-    // store the age for this split
-    clade_ages[parent_split].push_back( age );
-
-    // increment split count
-    cladeCountMap[parent_split]++;
-
-    // add conditional clade ages
-    for (std::vector<Split>::iterator child=child_splits.begin(); child !=child_splits.end(); ++child )
+    if ( taxa.size() > 0 )
     {
-        // inserts new entries if doesn't already exist
-        conditional_clade_ages[parent_split][*child].push_back( clade_ages[*child].back() );
+        // store the age for this split
+        clade_ages[parent_split].push_back( age );
+
+        // increment split count
+        cladeCountMap[parent_split]++;
+
+        // add conditional clade ages
+        for (std::vector<Split>::iterator child=child_splits.begin(); child !=child_splits.end(); ++child )
+        {
+            // inserts new entries if doesn't already exist
+            conditional_clade_ages[parent_split][*child].push_back( clade_ages[*child].back() );
+        }
+
+        // store the age for this split, conditional on the tree topology
+        tree_clade_ages[newick][parent_split].push_back( age );
     }
-
-    // store the age for this split, conditional on the tree topology
-    tree_clade_ages[newick][parent_split].push_back( age );
-
+    
     return parent_split;
 }
 
@@ -919,10 +922,9 @@ double TraceTree::computeEntropy( double credible_interval_size, int num_taxa, b
         
     }
 
-    /*This calculation is directly from AMP / Jeremy's paper.*/
+    /* This calculation is directly from AMP / Jeremy's paper. */
     double ln_ntopologies = RbMath::lnFactorial(2*num_taxa - 5) - RbMath::lnFactorial(num_taxa - 3) - (num_taxa-3)*RbConstants::LN2;
     entropy += ln_ntopologies;
-    /*std::cout << ntopologies << '\n';*/
     
     return entropy;
 }
@@ -1129,7 +1131,6 @@ int TraceTree::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbose
     
     std::string newick = t.getPlainNewickRepresentation();
     
-    //double total_samples = trace.size();
     double freq = 0;
     
     for (std::set<Sample<std::string> >::const_reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
@@ -1137,8 +1138,7 @@ int TraceTree::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbose
         
         if ( newick == it->first )
         {
-            freq =it->second;
-            //            p = freq/(total_samples-burnin);
+            freq = it->second;
             
             // now we found it
             break;
@@ -1147,6 +1147,43 @@ int TraceTree::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbose
     }
     
     return freq;
+}
+
+
+std::vector<Clade> TraceTree::getUniqueClades( double min_clade_prob, bool non_trivial_only, bool verbose )
+{
+    summarize( verbose );
+    
+    std::vector<Clade> unique_clades;
+    double total_samples = size();
+    
+    std::vector<Taxon> ordered_taxa = objectAt(0).getTaxa();
+    VectorUtilities::sort( ordered_taxa );
+    size_t num_taxa = ordered_taxa.size();
+    
+    for (std::set<Sample<Split> >::const_reverse_iterator it = clade_samples.rbegin(); it != clade_samples.rend(); ++it)
+    {
+        
+        double freq = it->second;
+        double p    = freq/(total_samples-burnin);
+        
+        // first we check if this clade is above the minimum level
+        if ( p < min_clade_prob )
+        {
+            break;
+        }
+        
+        // now lets actually construct the clade
+        Clade current_clade(it->first.first, ordered_taxa);
+        current_clade.setMrca(it->first.second);
+        
+        if ( current_clade.size() <= 1 || current_clade.size() >= ( rooted ? num_taxa : (num_taxa-1) ) ) continue;
+        
+        unique_clades.push_back( current_clade );
+        
+    }
+    
+    return unique_clades;
 }
 
 
@@ -1178,14 +1215,8 @@ std::vector<Tree> TraceTree::getUniqueTrees( double credible_interval_size, bool
 }
 
 
-
 bool TraceTree::isCoveredInInterval(const std::string &v, double ci_size, bool verbose)
 {
-    
-    summarize( verbose );
-    
-
-    RandomNumberGenerator *rng = GLOBAL_RNG;
     
     std::vector<std::string> tip_names = objectAt(0).getTipNames();
     std::sort(tip_names.begin(),tip_names.end());
@@ -1193,11 +1224,24 @@ bool TraceTree::isCoveredInInterval(const std::string &v, double ci_size, bool v
     
     Tree tree;
     tree.initFromString(v);
-
+    
     if ( tree.isRooted() == false && rooted == false )
     {
         tree.reroot( outgroup, true );
     }
+    
+    return isCoveredInInterval(tree, ci_size, verbose);
+}
+
+
+
+bool TraceTree::isCoveredInInterval(const Tree &tree, double ci_size, bool verbose)
+{
+    
+    summarize( verbose );
+    
+
+    RandomNumberGenerator *rng = GLOBAL_RNG;
     
     std::string newick = tree.getPlainNewickRepresentation();
     
@@ -1650,6 +1694,7 @@ void TraceTree::summarize( bool verbose )
     std::string outgroup = tip_names[0];
 
     rooted = objectAt(0).isRooted();
+    size_t num_taxa = objectAt(0).getNumberOfTips();
 
     clade_samples.clear();
     tree_samples.clear();
@@ -1695,13 +1740,18 @@ void TraceTree::summarize( bool verbose )
     }
     
     // sort the clade samples in ascending frequency
-    for(std::map<Split, long>::iterator it = clade_counts.begin(); it != clade_counts.end(); it++)
+    for (std::map<Split, long>::iterator it = clade_counts.begin(); it != clade_counts.end(); ++it)
     {
-        clade_samples.insert( Sample<Split>(it->first, it->second) );
+//        if ( it->first.first.getNumberSetBits() > 0 )
+//        if ( it->first.first.getNumberSetBits() > 0 && it->first.first.getNumberSetBits() < (num_taxa-1) )
+        {
+            clade_samples.insert( Sample<Split>(it->first, it->second) );
+        }
+        
     }
 
     // sort the tree samples in ascending frequency
-    for(std::map<std::string, long>::iterator it = tree_counts.begin(); it != tree_counts.end(); it++)
+    for (std::map<std::string, long>::iterator it = tree_counts.begin(); it != tree_counts.end(); ++it)
     {
         tree_samples.insert( Sample<std::string>(it->first, it->second) );
     }

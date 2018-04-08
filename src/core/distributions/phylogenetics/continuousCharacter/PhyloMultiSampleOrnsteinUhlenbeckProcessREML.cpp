@@ -911,7 +911,7 @@ void PhyloMultiSampleOrnsteinUhlenbeckProcessREML::touchSpecialization( DagNode*
     if ( affecter == this->heterogeneous_sigma )
     {
         
-        const std::set<size_t> &indices = this->heterogeneous_clock_rates->getTouchedElementIndices();
+        const std::set<size_t> &indices = this->heterogeneous_sigma->getTouchedElementIndices();
         
         // maybe all of them have been touched or the flags haven't been set properly
         if ( indices.size() == 0 )

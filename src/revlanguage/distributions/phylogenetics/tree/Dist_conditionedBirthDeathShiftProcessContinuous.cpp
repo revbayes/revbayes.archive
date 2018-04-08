@@ -46,10 +46,21 @@ RevBayesCore::ConditionedBirthDeathShiftProcessContinuous* Dist_conditionedBirth
     RevBayesCore::TypedDagNode<double>* ra   = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* r_sp = static_cast<const RealPos &>( root_speciation->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* r_ex = static_cast<const RealPos &>( root_extinction->getRevObject() ).getDagNode();
-    const Distribution& rl_distribution_speciation  = static_cast<const Distribution &>( speciation->getRevObject() );
-    RevBayesCore::TypedDistribution<double>* distribution_speciation    = dynamic_cast<RevBayesCore::TypedDistribution<double>* >( rl_distribution_speciation.createDistribution() );
-    const Distribution& rl_distribution_extinction  = static_cast<const Distribution &>( extinction->getRevObject() );
-    RevBayesCore::TypedDistribution<double>* distribution_extinction    = dynamic_cast<RevBayesCore::TypedDistribution<double>* >( rl_distribution_extinction.createDistribution() );
+    
+    RevBayesCore::TypedDistribution<double>* distribution_speciation = NULL;
+    if ( speciation->getRevObject() != RevNullObject::getInstance() )
+    {
+        const Distribution& rl_distribution_speciation  = static_cast<const Distribution &>( speciation->getRevObject() );
+        distribution_speciation = dynamic_cast<RevBayesCore::TypedDistribution<double>* >( rl_distribution_speciation.createDistribution() );
+    }
+    
+    RevBayesCore::TypedDistribution<double>* distribution_extinction = NULL;
+    if ( extinction->getRevObject() != RevNullObject::getInstance() )
+    {
+        const Distribution& rl_distribution_extinction  = static_cast<const Distribution &>( extinction->getRevObject() );
+        distribution_extinction = dynamic_cast<RevBayesCore::TypedDistribution<double>* >( rl_distribution_extinction.createDistribution() );
+    }
+
     RevBayesCore::TypedDagNode<double>* er   = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* rh   = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
@@ -158,8 +169,8 @@ const MemberRules& Dist_conditionedBirthDeathShiftProcessContinuous::getParamete
         memberRules.push_back( new ArgumentRule( "rootAge"      , RealPos::getClassTypeSpec()                   , "The age of the root."                                , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "rootLambda"   , RealPos::getClassTypeSpec()                   , "The speciation rate at the root."                    , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "rootMu"       , RealPos::getClassTypeSpec()                   , "The extinction rate at the root."                    , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "lambda"       , TypedDistribution<RealPos>::getClassTypeSpec(), "The prior distribution for the speciation rates."    , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "mu"           , TypedDistribution<RealPos>::getClassTypeSpec(), "The prior distribution for the extinction rates."    , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "lambda"       , TypedDistribution<RealPos>::getClassTypeSpec(), "The prior distribution for the speciation rates."    , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "mu"           , TypedDistribution<RealPos>::getClassTypeSpec(), "The prior distribution for the extinction rates."    , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "delta"        , RealPos::getClassTypeSpec()                   , "The rate of jumping between rate categories."        , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "rho"          , Probability::getClassTypeSpec()               , "The taxon sampling probability."                     , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         std::vector<std::string> optionsCondition;

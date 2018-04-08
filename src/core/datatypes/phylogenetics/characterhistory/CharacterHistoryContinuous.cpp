@@ -37,6 +37,20 @@ CharacterHistoryContinuous::~CharacterHistoryContinuous()
 /**
  * Index operator.
  */
+BranchHistoryContinuous& CharacterHistoryContinuous::operator[](size_t i)
+{
+    if ( i > histories.size() )
+    {
+        throw RbException("Index out of bounds in character history.");
+    }
+    
+    return static_cast<BranchHistoryContinuous &>( *histories[i] );
+}
+
+
+/**
+ * Index operator.
+ */
 const BranchHistoryContinuous& CharacterHistoryContinuous::operator[](size_t i) const
 {
     if ( i > histories.size() )

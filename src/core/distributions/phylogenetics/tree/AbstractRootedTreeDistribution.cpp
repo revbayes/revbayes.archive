@@ -104,7 +104,8 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
 {
     
     // proceed as long as derived classes validate a non-zero likeilhood
-    if (!isLnProbabilityNonZero()) {
+    if ( isLnProbabilityNonZero() == false )
+    {
         return RbConstants::Double::neginf;
     }
     
@@ -187,7 +188,8 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
  *
  * \return     A vector of times. The caller needs to deallocate this vector.
  */
-bool AbstractRootedTreeDistribution::isLnProbabilityNonZero(void) {
+bool AbstractRootedTreeDistribution::isLnProbabilityNonZero(void)
+{
     return true;
 }
 
@@ -196,7 +198,7 @@ bool AbstractRootedTreeDistribution::isLnProbabilityNonZero(void) {
  * Get the divergence times meassured since the time of the origin.
  * We get the ages from the nodes and simply subtruct these from the time of the origin.
  *
- * \return     A vector of times. The caller needs to deallocate this vector.
+ * Fills vector of times. The caller needs to deallocate this vector.
  */
 void AbstractRootedTreeDistribution::recomputeDivergenceTimesSinceOrigin( void ) const
 {

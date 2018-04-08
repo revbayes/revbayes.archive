@@ -1799,6 +1799,10 @@ std::string JointAncestralStateTrace::getSiteState( const std::string &site_samp
     {
         states.push_back(state);
     }
+    if ( states.size() == 0 )
+    {
+        throw RbException("Problem while getting state for site '" + StringUtilities::toString(site) + "'.");
+    }
     if (site >= states.size())
     {
         site = 0;
