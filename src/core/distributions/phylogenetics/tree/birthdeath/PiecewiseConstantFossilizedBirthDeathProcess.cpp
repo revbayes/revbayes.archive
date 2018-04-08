@@ -286,6 +286,14 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
     // reset the age
     double max_age = getOriginAge();
 
+    if( minimum_age > max_age )
+    {
+        std::stringstream s;
+        s << "Tree age is " << max_age << " but oldest fossil occurrence is " << minimum_age;
+        throw(RbException(s.str()));
+    }
+
+
     if ( age <= minimum_age )
     {
         age = rng->uniform01() * ( max_age - minimum_age ) + minimum_age;
