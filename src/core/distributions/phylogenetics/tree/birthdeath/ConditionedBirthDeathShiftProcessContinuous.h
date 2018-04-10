@@ -36,6 +36,10 @@ namespace RevBayesCore {
         const CharacterHistoryContinuous&                   getCharacterHistory(void) const;                                                                                //!< Get the character histories
         TypedDistribution<double>*                          getExtinctionRateDistibution(void) const;
         TypedDistribution<double>*                          getSpeciationRateDistibution(void) const;
+        double                                              getRootExtinctionRate(void) const;
+        double                                              getRootSpeciationRate(void) const;
+        bool                                                isExtinctionRateConstant(void) const;
+        bool                                                isSpeciationRateConstant(void) const;
         void                                                redrawValue(void);                                                                                              //!< Draw a new random value from distribution
         void                                                setValue(Tree *v, bool force);
         
@@ -68,8 +72,8 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                         root_age;
         const TypedDagNode<double>*                         root_speciation;
         const TypedDagNode<double>*                         root_extinction;
-        TypedDistribution<double>*                          speciation;
-        TypedDistribution<double>*                          extinction;
+        TypedDistribution<double>*                          base_distribution_speciation;
+        TypedDistribution<double>*                          base_distribution_extinction;
         const TypedDagNode<double>*                         shift_rate;
         const TypedDagNode<double>*                         rho;                                                                                                            //!< Sampling probability of each species.
         

@@ -397,6 +397,8 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                     max = node_likelihood[num_states+i];
                 }
             }
+            max *= num_states;
+            
             for (size_t i=0; i<num_states; ++i)
             {
                 node_likelihood[num_states+i] /= max;
@@ -448,7 +450,7 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
         speciation_rates = lambda->getValue();
     }
 
-    bool speciation_node = true;
+    bool speciation_node = false;
     if ( left.isSampledAncestor() || right.isSampledAncestor() )
     {
         speciation_node = (psi == NULL);
@@ -541,7 +543,7 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     }
 
     scaling_factors[node_index][active_likelihood[node_index]] = scaling_factors[left_index][active_likelihood[left_index]] + scaling_factors[right_index][active_likelihood[right_index]];
-
+    
     return log(prob) + scaling_factors[node_index][active_likelihood[node_index]];
 }
 
@@ -1799,8 +1801,11 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
    
     // simulate character history over the new tree
     size_t num_nodes = value->getNumberOfNodes();
-    std::vector<std::string*> character_histories(num_nodes);
-    drawStochasticCharacterMap(character_histories);
+    if (num_nodes > 2)
+    {
+        std::vector<std::string*> character_histories(num_nodes);
+        drawStochasticCharacterMap(character_histories);
+    }
 }
 
 
@@ -2272,8 +2277,11 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
     
     size_t num_nodes = value->getNumberOfNodes();
-    std::vector<std::string*> character_histories(num_nodes);
-    drawStochasticCharacterMap(character_histories);
+    if (num_nodes > 2)
+    {
+        std::vector<std::string*> character_histories(num_nodes);
+        drawStochasticCharacterMap(character_histories);
+    }
     
 }
 
@@ -2407,8 +2415,16 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
     // rounding errors in the ODE stepper
     for (size_t i = 0; i < 2 * num_states; ++i)
     {
+        
+//        if ( likelihoods[i] < 0.0 )
+//            std::cerr << "Rounding error (<0)!:\t\t" << likelihoods[i] << "\n";
+//        if ( likelihoods[i] > 1.0 )
+//            std::cerr << "Rounding error (>1)!:\t\t" << likelihoods[i] << "\n";
+        
+        // Sebastian: The likelihoods here are probability densities (not log-transformed).
+        // These are densities because they are multiplied by the probability density of the speciation event happening.
         likelihoods[i] = ( likelihoods[i] < 0.0 ? 0.0 : likelihoods[i] );
-        likelihoods[i] = ( likelihoods[i] > 1.0 ? 1.0 : likelihoods[i] );
+//        likelihoods[i] = ( likelihoods[i] > 1.0 ? 1.0 : likelihoods[i] );
     }
 }
 

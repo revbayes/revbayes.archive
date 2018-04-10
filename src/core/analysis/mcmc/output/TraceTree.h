@@ -74,7 +74,7 @@ namespace RevBayesCore {
         std::vector<double>                        computePairwiseRFDistance( double credible_interval_size, bool verbose );
         std::vector<double>                        computeTreeLengths(void);
         int                                        getBurnin(void) const;
-        std::vector<Clade>                         getUniqueClades(double ci=0.95, bool verbose=true);
+        std::vector<Clade>                         getUniqueClades(double ci=0.95, bool non_trivial_only=true, bool verbose=true);
         std::vector<Tree>                          getUniqueTrees(double ci=0.95, bool verbose=true);
         int                                        getTopologyFrequency(const Tree &t, bool verbose);
         bool                                       isClock(void);

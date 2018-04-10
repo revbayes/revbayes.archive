@@ -17,8 +17,8 @@ ConditionedBirthDeathShiftProcessContinuous::ConditionedBirthDeathShiftProcessCo
     root_age( a ),
     root_speciation( root_sp ),
     root_extinction( root_ex ),
-    speciation( s ),
-    extinction( e ),
+    base_distribution_speciation( s ),
+    base_distribution_extinction( e ),
     shift_rate( ev ),
     rho( r ),
     branch_histories( NULL, 1 ),
@@ -35,15 +35,22 @@ ConditionedBirthDeathShiftProcessContinuous::ConditionedBirthDeathShiftProcessCo
     addParameter( rho );
     
     // add the parameters of the distribution
-    const std::vector<const DagNode*>& sp_pars = speciation->getParameters();
-    for (std::vector<const DagNode*>::const_iterator it = sp_pars.begin(); it != sp_pars.end(); ++it)
+    if ( base_distribution_speciation != NULL )
     {
-        this->addParameter( *it );
+        const std::vector<const DagNode*>& sp_pars = base_distribution_speciation->getParameters();
+        for (std::vector<const DagNode*>::const_iterator it = sp_pars.begin(); it != sp_pars.end(); ++it)
+        {
+            this->addParameter( *it );
+        }
     }
-    const std::vector<const DagNode*>& ex_pars = extinction->getParameters();
-    for (std::vector<const DagNode*>::const_iterator it = ex_pars.begin(); it != ex_pars.end(); ++it)
+    
+    if ( base_distribution_extinction != NULL )
     {
-        this->addParameter( *it );
+        const std::vector<const DagNode*>& ex_pars = base_distribution_extinction->getParameters();
+        for (std::vector<const DagNode*>::const_iterator it = ex_pars.begin(); it != ex_pars.end(); ++it)
+        {
+            this->addParameter( *it );
+        }
     }
 
     
@@ -283,7 +290,6 @@ double ConditionedBirthDeathShiftProcessContinuous::computeNodeProbability(const
     {
         
         double value_tipwards_birth  = computeStartValue( node_index, 0 );
-//        double value_tipwards_death  = computeStartValue( node_index, 1 );
         
         if ( node.isTip() )
         {
@@ -327,16 +333,37 @@ double ConditionedBirthDeathShiftProcessContinuous::computeNodeProbability(const
             double current_value_birth = computeStateValue( node.getIndex(), 0, begin_time );
             double current_value_death = computeStateValue( node.getIndex(), 1, begin_time );
             
-            speciation->setValue( new double(current_value_birth) );
-            extinction->setValue( new double(current_value_death) );
+            if ( base_distribution_speciation == NULL )
+            {
+                if ( current_value_birth != root_speciation->getValue() )
+                {
+                    ln_prob_node = RbConstants::Double::neginf;
+                }
+            }
+            else
+            {
+                base_distribution_speciation->setValue( new double(current_value_birth) );
+                ln_prob_node += base_distribution_speciation->computeLnProbability();
+            }
+            
+            if ( base_distribution_extinction == NULL )
+            {
+                if ( current_value_death != root_extinction->getValue() )
+                {
+                    ln_prob_node = RbConstants::Double::neginf;
+                }
+            }
+            else
+            {
+                base_distribution_extinction->setValue( new double(current_value_death) );
+                ln_prob_node += base_distribution_extinction->computeLnProbability();
+            }
             
             CharacterEvent* event = *it;
             double event_time = event->getAge();
 
             ln_prob_node += computeBranchProbability(begin_time, event_time, current_value_birth, current_value_death, shift_rate->getValue() );
             ln_prob_node += log( shift_rate->getValue() );
-            ln_prob_node += speciation->computeLnProbability();
-            ln_prob_node += extinction->computeLnProbability();
 
             begin_time = event_time;
 
@@ -678,13 +705,25 @@ const CharacterHistoryContinuous& ConditionedBirthDeathShiftProcessContinuous::g
 
 TypedDistribution<double>* ConditionedBirthDeathShiftProcessContinuous::getExtinctionRateDistibution(void) const
 {
-    return extinction;
+    return base_distribution_extinction;
 }
 
 
 TypedDistribution<double>* ConditionedBirthDeathShiftProcessContinuous::getSpeciationRateDistibution(void) const
 {
-    return speciation;
+    return base_distribution_speciation;
+}
+
+
+double ConditionedBirthDeathShiftProcessContinuous::getRootExtinctionRate(void) const
+{
+    return root_extinction->getValue();
+}
+
+
+double ConditionedBirthDeathShiftProcessContinuous::getRootSpeciationRate(void) const
+{
+    return root_speciation->getValue();
 }
 
 
@@ -730,6 +769,18 @@ void ConditionedBirthDeathShiftProcessContinuous::initializeBranchHistories(cons
         
     }
     
+}
+
+
+bool ConditionedBirthDeathShiftProcessContinuous::isExtinctionRateConstant( void ) const
+{
+    return base_distribution_extinction == NULL;
+}
+
+
+bool ConditionedBirthDeathShiftProcessContinuous::isSpeciationRateConstant( void ) const
+{
+    return base_distribution_speciation == NULL;
 }
 
 
@@ -862,6 +913,44 @@ void ConditionedBirthDeathShiftProcessContinuous::restoreSpecialization(DagNode 
         dag_node->restoreAffected();
     }
     
+    if ( affecter == root_speciation && isSpeciationRateConstant() == true )
+    {
+        CharacterHistoryContinuous& ch = branch_histories;
+        size_t num_branches = ch.getNumberBranches();
+        
+        double lambda = root_speciation->getValue();
+        
+        for (size_t i=0; i<num_branches; ++i)
+        {
+            BranchHistoryContinuous& bh = ch[i];
+            for ( size_t j=0; j<bh.getNumberEvents(); ++j )
+            {
+                bh.getEvent(j)->setState(lambda,0);
+            }
+            
+        }
+        
+    }
+    
+    if ( affecter == root_extinction && isExtinctionRateConstant() == true )
+    {
+        CharacterHistoryContinuous& ch = branch_histories;
+        size_t num_branches = ch.getNumberBranches();
+        
+        double mu = root_extinction->getValue();
+        
+        for (size_t i=0; i<num_branches; ++i)
+        {
+            BranchHistoryContinuous& bh = ch[i];
+            for ( size_t j=0; j<bh.getNumberEvents(); ++j )
+            {
+                bh.getEvent(j)->setState(mu,1);
+            }
+            
+        }
+        
+    }
+    
 }
 
 
@@ -895,9 +984,10 @@ void ConditionedBirthDeathShiftProcessContinuous::swapParameterInternal( const D
     {
         rho = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else
+    
+    if ( base_distribution_speciation != NULL )
     {
-        const std::vector<const DagNode*>& sp_pars = speciation->getParameters();
+        const std::vector<const DagNode*>& sp_pars = base_distribution_speciation->getParameters();
         bool is_speciation_par = false;
         for (std::vector<const DagNode*>::const_iterator it = sp_pars.begin(); it != sp_pars.end(); ++it)
         {
@@ -909,10 +999,15 @@ void ConditionedBirthDeathShiftProcessContinuous::swapParameterInternal( const D
         }
         if ( is_speciation_par == true )
         {
-            speciation->swapParameter(oldP,newP);
+            base_distribution_speciation->swapParameter(oldP,newP);
         }
         
-        const std::vector<const DagNode*>& ex_pars = extinction->getParameters();
+    }
+    
+    if ( base_distribution_extinction != NULL )
+    {
+        
+        const std::vector<const DagNode*>& ex_pars = base_distribution_extinction->getParameters();
         bool is_extinction_par = false;
         for (std::vector<const DagNode*>::const_iterator it = ex_pars.begin(); it != ex_pars.end(); ++it)
         {
@@ -924,7 +1019,7 @@ void ConditionedBirthDeathShiftProcessContinuous::swapParameterInternal( const D
         }
         if ( is_extinction_par == true )
         {
-            extinction->swapParameter(oldP,newP);
+            base_distribution_extinction->swapParameter(oldP,newP);
         }
         
     }
@@ -945,6 +1040,44 @@ void ConditionedBirthDeathShiftProcessContinuous::touchSpecialization(DagNode *a
         if ( this->dag_node != NULL )
         {
             dag_node->touchAffected();
+        }
+        
+    }
+    
+    if ( affecter == root_speciation && isSpeciationRateConstant() == true )
+    {
+        CharacterHistoryContinuous& ch = branch_histories;
+        size_t num_branches = ch.getNumberBranches();
+        
+        double lambda = root_speciation->getValue();
+        
+        for (size_t i=0; i<num_branches; ++i)
+        {
+            BranchHistoryContinuous& bh = ch[i];
+            for ( size_t j=0; j<bh.getNumberEvents(); ++j )
+            {
+                bh.getEvent(j)->setState(lambda,0);
+            }
+            
+        }
+        
+    }
+    
+    if ( affecter == root_extinction && isExtinctionRateConstant() == true )
+    {
+        CharacterHistoryContinuous& ch = branch_histories;
+        size_t num_branches = ch.getNumberBranches();
+        
+        double mu = root_extinction->getValue();
+        
+        for (size_t i=0; i<num_branches; ++i)
+        {
+            BranchHistoryContinuous& bh = ch[i];
+            for ( size_t j=0; j<bh.getNumberEvents(); ++j )
+            {
+                bh.getEvent(j)->setState(mu,1);
+            }
+            
         }
         
     }

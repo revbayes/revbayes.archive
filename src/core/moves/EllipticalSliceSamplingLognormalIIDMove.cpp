@@ -1,7 +1,9 @@
 #include "DagNode.h"
 #include "DistributionNormal.h"
+#include "DistributionLognormal.h"
+#include "LognormalDistribution.h"
 #include "NormalDistribution.h"
-#include "EllipticalSliceSamplingSimpleMove.h"
+#include "EllipticalSliceSamplingLognormalIIDMove.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -26,15 +28,17 @@ using namespace RevBayesCore;
  * \param[in]    w   The weight how often the proposal will be used (per iteration).
  * \param[in]    t   If auto tuning should be used.
  */
-EllipticalSliceSamplingSimpleMove::EllipticalSliceSamplingSimpleMove( std::vector< StochasticNode<double> *> n, double window_, double weight_, bool t ) : AbstractMove( std::vector<DagNode*>(), weight_ ,t),
+EllipticalSliceSamplingLognormalIIDMove::EllipticalSliceSamplingLognormalIIDMove( std::vector< StochasticNode<double> *> n, TypedDagNode<double>* m, TypedDagNode<double>* s, double window_, double weight_, bool t ) : AbstractMove( std::vector<DagNode*>(), weight_ ,t),
     variables( n ),
+    mu ( m ),
+    sigma ( s ),
     window( window_ ),
     total_movement( 0.0 )
 {
     // Check window is valid (in [0,2*pi])
     if (window > RbConstants::TwoPI)
     {
-        throw(RbException("mvEllipticalSliceSamplingSimple requires the window to be in the interval(0,2*pi]"));
+        throw(RbException("mvEllipticalSliceSamplingLognormalIID requires the window to be in the interval(0,2*pi]"));
     }
     
     // tell the base class to add the node
@@ -42,20 +46,27 @@ EllipticalSliceSamplingSimpleMove::EllipticalSliceSamplingSimpleMove( std::vecto
     {
         assert( not variables[i]->isClamped() );
         
-        NormalDistribution* dist = dynamic_cast<NormalDistribution *>( &variables[i]->getDistribution() );
+        LognormalDistribution* dist = dynamic_cast<LognormalDistribution *>( &variables[i]->getDistribution() );
         
         if (dist == NULL)
         {
-            throw(RbException("mvEllipticalSliceSamplingSimple only works for vector of variables with Normal(0,sigma) Distribution"));
+            throw(RbException("mvEllipticalSliceSamplingLognormalIID only works for vector of variables with lognormal distribution"));
         }
 
-        if (dist->getMean()->getValue() != 0.0)
+        if (dist->getMean()->getValue() != mu->getValue())
         {
-            throw(RbException("mvEllipticalSliceSamplingSimple only works for vector of variables with Normal(0,sigma) Distribution"));
+            throw(RbException("mvEllipticalSliceSamplingLognormalIID requires all elements have same mean"));
+        }
+        if (dist->getStDev()->getValue() != sigma->getValue())
+        {
+            throw(RbException("mvEllipticalSliceSamplingLognormalIID requires all elements have same sd"));
         }
 
         addNode( variables[i] );
     }
+    
+    addNode( mu );
+    addNode( sigma );
 
 }
 
@@ -63,7 +74,7 @@ EllipticalSliceSamplingSimpleMove::EllipticalSliceSamplingSimpleMove( std::vecto
 /**
  * Basic destructor doing nothing.
  */
-EllipticalSliceSamplingSimpleMove::~EllipticalSliceSamplingSimpleMove( void )
+EllipticalSliceSamplingLognormalIIDMove::~EllipticalSliceSamplingLognormalIIDMove( void )
 {
 }
 
@@ -72,11 +83,11 @@ EllipticalSliceSamplingSimpleMove::~EllipticalSliceSamplingSimpleMove( void )
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
- * \return A new copy of the EllipticalSliceSamplingSimpleMove. 
+ * \return A new copy of the EllipticalSliceSamplingLognormalIIDMove. 
  */
-EllipticalSliceSamplingSimpleMove* EllipticalSliceSamplingSimpleMove::clone( void ) const 
+EllipticalSliceSamplingLognormalIIDMove* EllipticalSliceSamplingLognormalIIDMove::clone( void ) const 
 {
-    return new EllipticalSliceSamplingSimpleMove( *this );
+    return new EllipticalSliceSamplingLognormalIIDMove( *this );
 }
 
 
@@ -85,18 +96,18 @@ EllipticalSliceSamplingSimpleMove* EllipticalSliceSamplingSimpleMove::clone( voi
  *
  * \return The moves' name.
  */
-const std::string& EllipticalSliceSamplingSimpleMove::getMoveName( void ) const 
+const std::string& EllipticalSliceSamplingLognormalIIDMove::getMoveName( void ) const 
 {
-    static std::string name = "EllipticalSliceSamplingSimpleMove";
+    static std::string name = "EllipticalSliceSamplingLognormalIIDMove";
 
     return name;
 }
 
-double unif()
-{
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
-    return rng->uniform01();
-}
+//double unif()
+//{
+//    RandomNumberGenerator* rng     = GLOBAL_RNG;
+//    return rng->uniform01();
+//}
 
 
 /// This object allow computing the probability of the current point, and also store the variables's range
@@ -162,13 +173,12 @@ public:
     return Pr_;
   }
     
-  std::vector<double> current_value() const
+  std::vector<double> current_centered_log_value(double mean) const
   {
       std::vector<double> vals;
-      
       for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
       {
-          vals.push_back( (*it)->getValue() );
+          vals.push_back( log((*it)->getValue()) - mean );
       }
       
       return vals;
@@ -188,34 +198,33 @@ public:
 };
 
 
-void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pHeat )
+void EllipticalSliceSamplingLognormalIIDMove::performMcmcMove( double lHeat, double pHeat )
 {
 
     slice_function lnL(variables, lHeat, pHeat);
 
-    // Current values
-    std::vector<double> f = lnL.current_value();
+    double mean = mu->getValue();
+    double sd = sigma->getValue();
+    
+    // Get current values, log-transform and mean-center
+    std::vector<double> f = lnL.current_centered_log_value(mean);
     
     // Choose ellipse (Murray step 1)
     std::vector<double> nu = std::vector<double>(variables.size(),0.0);
     size_t i = 0;
     for (size_t i=0; i<variables.size(); ++i)
     {
-        NormalDistribution* normal = dynamic_cast<NormalDistribution *>( &variables[i]->getDistribution() );
-        
-        const TypedDagNode<double>* sd = normal->getStDev();
-        
-        nu[i] = sd->getValue() * RbStatistics::Normal::rv(*GLOBAL_RNG);
+        nu[i] = sd * RbStatistics::Normal::rv(*GLOBAL_RNG);
         
     }
 
     // Log-likelihood threshold (Murray step 2)
     double L_f = lnL();
     
-    double logy = L_f + log(unif());
+    double logy = L_f + log(GLOBAL_RNG->uniform01());
     
     // Find initial boundaries and draw first value (Murray step 3)
-    double theta = unif()*window;
+    double theta = (GLOBAL_RNG->uniform01())*window;
     double L = theta - window;
     double R = theta;
     
@@ -231,7 +240,11 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
         // step 4
         for (size_t j = 0; j < f.size(); ++j)
         {
-            f_prime[j] = f[j] * cos_theta + nu[j] * sin_theta;
+//            f_prime[j] = exp(f[j] * cos_theta + nu[j] * sin_theta + mean);
+            f_prime[j] = f[j] * cos_theta;
+            f_prime[j] += nu[j] * sin_theta;
+            f_prime[j] += mean;
+            f_prime[j] = exp(f_prime[j]);
         }
 
         // step 5 (step 6 is return value)
@@ -250,7 +263,7 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
             L = theta;
         }
         // Draw next theta, compute sine/cosine
-        theta = L + unif()*(R-L);
+        theta = L + (GLOBAL_RNG->uniform01())*(R-L);
         sin_theta = std::sin(theta);
         cos_theta = std::cos(theta);
     }
@@ -258,7 +271,7 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
     if ( i == 200 ) {
         std::abort();
     }
-        
+    
     total_movement += cos_theta;
     
     numPr += lnL.get_num_evals();
@@ -274,7 +287,7 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o) const 
+void EllipticalSliceSamplingLognormalIIDMove::printSummary(std::ostream &o) const 
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -346,7 +359,7 @@ void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o) const
  * Reset the move counters. Here we only reset the counter for the number of accepted moves.
  *
  */
-void EllipticalSliceSamplingSimpleMove::resetMoveCounters( void )
+void EllipticalSliceSamplingLognormalIIDMove::resetMoveCounters( void )
 {
     total_movement = 0.0;
     num_tried_current_period = 0;
@@ -360,7 +373,7 @@ void EllipticalSliceSamplingSimpleMove::resetMoveCounters( void )
  * \param[in]     oldN     The old variables that needs to be replaced.
  * \param[in]     newN     The new Revvariables.
  */
-void EllipticalSliceSamplingSimpleMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void EllipticalSliceSamplingLognormalIIDMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     for (size_t i = 0; i < variables.size(); ++i)
@@ -372,6 +385,17 @@ void EllipticalSliceSamplingSimpleMove::swapNodeInternal(DagNode *oldN, DagNode 
         }
     }
     
+    if ( mu == oldN )
+    {
+        mu = static_cast<TypedDagNode<double> *>(newN);
+    }
+
+    if ( sigma == oldN )
+    {
+        sigma = static_cast<TypedDagNode<double> *>(newN);
+    }
+
+    
 }
 
 
@@ -379,13 +403,13 @@ void EllipticalSliceSamplingSimpleMove::swapNodeInternal(DagNode *oldN, DagNode 
  * Tune the move to accept the desired acceptance ratio.
  * We only compute the acceptance ratio here and delegate the call to the proposal.
  */
-void EllipticalSliceSamplingSimpleMove::tune( void ) 
+void EllipticalSliceSamplingLognormalIIDMove::tune( void ) 
 {
 
-    if (numPr/num_tried_current_period > 9)
-    {
-        window *= 0.9;
-    }
+    double predicted_window = 4.0*total_movement/num_tried_current_period;
+    
+    double p = exp(-double(num_tried_current_period)*0.5);
+    window = p*window + (1.0-p)*predicted_window;
 
 }
 

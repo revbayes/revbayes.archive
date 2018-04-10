@@ -73,6 +73,7 @@
 /* Character data types (in folder "datatypes/phylogenetics/datamatrix") */
 #include "RlAbstractCharacterData.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
+#include "RlContinuousCharacterData.h"
 
 /* Tree types (in folder "datatypes/phylogenetics/trees") */
 #include "RlClade.h"
@@ -136,6 +137,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<MatrixRealPos,3>::addTypeToWorkspace( *this, new MatrixRealPos() );
         AddWorkspaceVectorType<MatrixRealSymmetric,3>::addTypeToWorkspace( *this, new MatrixRealSymmetric() );
         AddWorkspaceVectorType<AbstractHomologousDiscreteCharacterData,3>::addTypeToWorkspace( *this, new AbstractHomologousDiscreteCharacterData() );
+        AddWorkspaceVectorType<ContinuousCharacterData,3>::addTypeToWorkspace( *this, new ContinuousCharacterData() );
         AddWorkspaceVectorType<CharacterHistoryRateModifier,3>::addTypeToWorkspace( *this, new CharacterHistoryRateModifier() );
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );

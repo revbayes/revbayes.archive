@@ -83,6 +83,7 @@
 #include "Func_checkNodeOrderConstraints.h"
 #include "Func_computeWeightedNodeOrderConstraintsScore.h"
 #include "Func_concatenate.h"
+#include "Func_CladeSpecificHierarchicalBranchRate.h"
 #include "Func_concatenateFromVector.h"
 #include "Func_constructRootedTripletDistribution.h"
 #include "Func_extantTree.h"
@@ -336,6 +337,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_chromosomesCladoProbs() );
         addFunction( new Func_chromosomesCladoEventsBD() );
         addFunction( new Func_chromosomesPloidyCladoEventsBD() );
+        addFunction( new Func_CladeSpecificHierarchicalBranchRate() );
         addFunction( new Func_cladogeneticSpeciationRateMatrix() );
         addFunction( new Func_MixtureCladoProbs() );
         addFunction( new Func_SampledCladogenesisRootFrequencies() );

@@ -202,7 +202,8 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_reversibleJumpMixtureConstant<val
 
 /** Set a member variable */
 template <typename valType>
-void RevLanguage::Dist_reversibleJumpMixtureConstant<valType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void RevLanguage::Dist_reversibleJumpMixtureConstant<valType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "constantValue" )
     {
