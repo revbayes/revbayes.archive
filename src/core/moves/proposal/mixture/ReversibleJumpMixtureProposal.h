@@ -124,6 +124,7 @@ void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::cleanProposal( vo
 {
     
     delete stored_value;
+    stored_value = NULL;
 }
 
 
