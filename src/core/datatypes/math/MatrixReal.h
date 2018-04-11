@@ -97,6 +97,7 @@ namespace RevBayesCore {
         bool                                    isPositive() const;
         bool                                    isSquareMatrix(void) const;
         bool                                    isSymmetric(void) const;
+        bool                                    isUsingCholesky(void) const { return use_cholesky_decomp; }
         void                                    setCholesky(bool c) const;
         
         size_t                                  size(void) const;

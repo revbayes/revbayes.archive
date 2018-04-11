@@ -211,7 +211,6 @@ void EllipticalSliceSamplingLognormalIIDMove::performMcmcMove( double lHeat, dou
     
     // Choose ellipse (Murray step 1)
     std::vector<double> nu = std::vector<double>(variables.size(),0.0);
-    size_t i = 0;
     for (size_t i=0; i<variables.size(); ++i)
     {
         nu[i] = sd * RbStatistics::Normal::rv(*GLOBAL_RNG);
@@ -268,7 +267,7 @@ void EllipticalSliceSamplingLognormalIIDMove::performMcmcMove( double lHeat, dou
         cos_theta = std::cos(theta);
     }
     
-    if ( i == 200 ) {
+    if ( loop_iterations == 200 ) {
         std::abort();
     }
     
