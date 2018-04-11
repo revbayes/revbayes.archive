@@ -93,9 +93,8 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_FBDP::createDistribution( void ) c
     }
 
     bool pa = static_cast<const RlBoolean &>( presence_absence->getRevObject() ).getValue();
-    bool ex = static_cast<const RlBoolean &>( extended->getRevObject() ).getValue();
 
-    RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* d = new RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess(sa, l, m, p, c, r, rt, cond, t, uo, pa, ex);
+    RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* d = new RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess(sa, l, m, p, c, r, rt, cond, t, uo, pa);
 
     return d;
 }
@@ -206,8 +205,7 @@ const MemberRules& Dist_FBDP::getParameterRules(void) const
         dist_member_rules.push_back( new OptionRule( "condition", new RlString("time"), optionsCondition, "The condition of the process." ) );
         dist_member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        dist_member_rules.push_back( new ArgumentRule( "binary" , RlBoolean::getClassTypeSpec() , "Treat fossil counts as binary presence/absence data?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        dist_member_rules.push_back( new ArgumentRule( "extended" , RlBoolean::getClassTypeSpec() , "Treat tip nodes as extinction events?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        dist_member_rules.push_back( new ArgumentRule( "presence" , RlBoolean::getClassTypeSpec() , "Treat fossil counts as presence absence data?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
 
         rules_set = true;
     }
@@ -271,13 +269,9 @@ void Dist_FBDP::setConstParameter(const std::string& name, const RevPtr<const Re
     {
         fossil_counts = var;
     }
-    else if ( name == "binary" )
+    else if ( name == "presence" )
     {
         presence_absence = var;
-    }
-    else if ( name == "extended" )
-    {
-        extended = var;
     }
     else
     {

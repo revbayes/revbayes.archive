@@ -192,7 +192,7 @@ const MemberRules& Dist_FBDPRange::getParameterRules(void) const
         dist_member_rules.push_back( new OptionRule( "condition", new RlString("time"), optionsCondition, "The condition of the process." ) );
         dist_member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa with stratigraphic ranges used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        dist_member_rules.push_back( new ArgumentRule( "binary" , RlBoolean::getClassTypeSpec() , "Treat fossil counts as binary presence/absence data?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        dist_member_rules.push_back( new ArgumentRule( "presence" , RlBoolean::getClassTypeSpec() , "Treat fossil counts as presence absence data?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
 
         rules_set = true;
     }
@@ -259,7 +259,7 @@ void Dist_FBDPRange::setConstParameter(const std::string& name, const RevPtr<con
     {
         condition = var;
     }
-    else if ( name == "binary" )
+    else if ( name == "presence" )
     {
         presence_absence = var;
     }
