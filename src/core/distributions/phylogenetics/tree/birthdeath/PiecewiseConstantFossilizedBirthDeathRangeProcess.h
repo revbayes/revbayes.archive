@@ -1,6 +1,7 @@
 #ifndef PiecewiseConstantFossilizedBirthDeathRangeProcess_H
 #define PiecewiseConstantFossilizedBirthDeathRangeProcess_H
 
+#include "AbstractPiecewiseConstantSerialSampledRangeProcess.h"
 #include "MatrixReal.h"
 #include "RbVector.h"
 #include "TypedDagNode.h"
@@ -32,7 +33,7 @@ namespace RevBayesCore {
      * @since 2014-03-18, version 1.0
      *
      */
-    class PiecewiseConstantFossilizedBirthDeathRangeProcess : public TypedDistribution<MatrixReal > {
+    class PiecewiseConstantFossilizedBirthDeathRangeProcess : public TypedDistribution<MatrixReal>, public AbstractPiecewiseConstantSerialSampledRangeProcess {
         
     public:
         PiecewiseConstantFossilizedBirthDeathRangeProcess (const DagNode *speciation,
@@ -48,16 +49,13 @@ namespace RevBayesCore {
         // public member functions
         PiecewiseConstantFossilizedBirthDeathRangeProcess*   clone(void) const;                                         //!< Create an independent clone
 
-        double                                          getExtinctionRate( size_t index ) const;
-        long                                            getFossilCount( size_t index, size_t taxon ) const;
-        long                                            getFossilCount( size_t index ) const;
-        double                                          getFossilizationRate( size_t index ) const;
-        double                                          getIntervalTime( size_t index ) const;
-        double                                          getSpeciationRate( size_t index ) const;
-
     protected:
+        void                                            updateStartEndTimes() const;
+
         // Parameter management functions
         double                                          computeLnProbability(void);                            //!< Compute the log-transformed probability of the current value.
+
+        double                                          pSurvival(double start, double end) const;
 
         // Parameter management functions
         void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
@@ -70,53 +68,15 @@ namespace RevBayesCore {
         
         // helper functions
         void                                            updateGamma(bool force = false);                             //!< Number of species alive at time t.
-        size_t                                          l(double t) const;                                     //!< Find the index so that times[index-1] < t < times[index]
-        double                                          pSurvival(double start, double end) const;             //!< Compute the probability of survival of the process (without incomplete taxon sampling).
-        double                                          p(size_t i, double t) const;
-        double                                          q(size_t i, double t, bool tilde = false) const;
-        double                                          integrateQ(size_t i, double t) const;
-
-        void                                            updateIntervals();
         void                                            redrawValue(void);
 
-        bool                                            ascending;
-
-        size_t                                          num_intervals;
-
-        // members
-        const TypedDagNode<double >*                    homogeneous_lambda;                                    //!< The homogeneous speciation rates.
-        const TypedDagNode<RbVector<double> >*          heterogeneous_lambda;                                  //!< The heterogeneous speciation rates.
-        const TypedDagNode<double >*                    homogeneous_mu;                                        //!< The homogeneous speciation rates.
-        const TypedDagNode<RbVector<double> >*          heterogeneous_mu;                                      //!< The heterogeneous speciation rates.
-        const TypedDagNode<double >*                    homogeneous_psi;                                       //!< The homogeneous speciation rates.
-        const TypedDagNode<RbVector<double> >*          heterogeneous_psi;                                     //!< The heterogeneous speciation rates.
-        const TypedDagNode<double >*                    homogeneous_rho;                                       //!< The homogeneous speciation rates.
-        const TypedDagNode<RbVector<double> >*          timeline;                                              //!< The times of the instantaneous sampling events.
-        const TypedDagNode<long>*                       fossil_counts;                                         //!< The number of fossil observations, per interval.
-        const TypedDagNode<RbVector<long> >*            interval_fossil_counts;                                //!< The number of fossil observations, per interval.
-        const TypedDagNode<RbVector<RbVector<long> > >* species_interval_fossil_counts;                        //!< The number of fossil observations, per species/interval.
-
-        std::vector<double>                             birth;
-        std::vector<double>                             death;
-        std::vector<double>                             fossil;
-        std::vector<double>                             times;
-
-        std::vector<double>                             q_i;
-        std::vector<double>                             q_tilde_i;
-        std::vector<double>                             p_i;
+        mutable double                                  origin;
 
         std::vector<size_t>                             gamma_i;
         std::vector<std::vector<bool> >                 gamma_links;
         std::vector<bool>                               dirty_gamma;
 
         std::string                                     condition;
-        std::vector<Taxon>                              taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
-
-        bool                                            marginalize_k;
-        bool                                            presence_absence;
-
-        std::vector<size_t>                             oldest_intervals;
-        std::vector<size_t>                             youngest_intervals;
     };
 }
 
