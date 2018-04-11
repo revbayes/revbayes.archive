@@ -35,21 +35,16 @@ RevPtr<RevVariable> UserFunction::execute( void )
     // If the return type object has a DAG node inside it, we return an appropriate model/container/factor object
     // with a deterministic node inside it. Otherwise we return a "flat" RevObject without a dag node inside it.
 
-    RevObject* retVal = Workspace::userWorkspace().makeNewDefaultObject( getReturnType().getType() );
+    RevPtr<RevVariable> ret_var = executeCode();
 
-    if ( retVal->isModelObject() )
+    RevObject& retVal = ret_var->getRevObject();
+
+    if ( retVal.isModelObject() )
     {
-        retVal->makeUserFunctionValue( this->clone() );
-
-        return new RevVariable( retVal );
+        retVal.makeUserFunctionValue( this->clone() );
     }
-    else
-    {
-        // "Flat" call: Simply execute and return the variable
-        delete retVal;  // We don't need this
 
-        return executeCode();
-    }
+    return ret_var;
 }
 
 
