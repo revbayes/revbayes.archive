@@ -81,10 +81,10 @@ RevBayesCore::EventDistribution<typename valType::valueType>* RevLanguage::Dist_
     
     // get the parameters
     const Distribution& rl_vp                                           = static_cast<const Distribution &>( value_distribution->getRevObject() );
-    RevBayesCore::TypedDistribution<typename valType::valueType>* vp    = static_cast<RevBayesCore::TypedDistribution<typename valType::valueType>* >( rl_vp.createDistribution() );
+    RevBayesCore::TypedDistribution<typename valType::valueType>* vp    = dynamic_cast<RevBayesCore::TypedDistribution<typename valType::valueType>* >( rl_vp.createDistribution() );
     
     const Distribution& rl_ep                                           = static_cast<const Distribution &>( event_distribution->getRevObject() );
-    RevBayesCore::TypedDistribution<long>* ep                           = static_cast<RevBayesCore::TypedDistribution<long>* >( rl_ep.createDistribution() );
+    RevBayesCore::TypedDistribution<long>* ep                           = dynamic_cast<RevBayesCore::TypedDistribution<long>* >( rl_ep.createDistribution() );
     
     RevBayesCore::EventDistribution<typename valType::valueType>* d        = new RevBayesCore::EventDistribution<typename valType::valueType>(ep, vp);
     

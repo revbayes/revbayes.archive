@@ -47,7 +47,7 @@ void Move_IndependentTopology::constructInternalObject( void )
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
 
     const Distribution& rlDistribution                        = static_cast<const Distribution &>( proposal_distribution->getRevObject() );
-    RevBayesCore::TypedDistribution<RevBayesCore::Tree>* prop = static_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rlDistribution.createDistribution() );
+    RevBayesCore::TypedDistribution<RevBayesCore::Tree>* prop = dynamic_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rlDistribution.createDistribution() );
 
     const RevBayesCore::Clade& c      = static_cast<const Clade&>( outgroup->getRevObject() ).getValue();
 
