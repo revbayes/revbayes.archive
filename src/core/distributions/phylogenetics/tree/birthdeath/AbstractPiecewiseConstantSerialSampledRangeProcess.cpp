@@ -233,12 +233,6 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::computeLnProbabilityR
     // add the fossil tip age terms
     for (size_t i = 0; i < taxa.size(); ++i)
     {
-        if ( RbMath::isFinite(lnProbTimes) == false )
-        {
-            return RbConstants::Double::neginf;
-        }
-
-
         double b = b_i[i];
         double d = d_i[i];
         double o = taxa[i].getAgeRange().getMax();
@@ -353,6 +347,11 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::computeLnProbabilityR
                     }
                 }
             }
+        }
+
+        if ( RbMath::isFinite(lnProbTimes) == false )
+        {
+            return RbConstants::Double::neginf;
         }
     }
 
