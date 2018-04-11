@@ -50,10 +50,10 @@ RevBayesCore::UltrametricTreeDistribution* Dist_UltrametricTree::createDistribut
     
     // get the parameters
     const Distribution& rl_tree_prior                           = static_cast<const Distribution &>( tree_prior->getRevObject() );
-    RevBayesCore::TypedDistribution<RevBayesCore::Tree>* tp     = static_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rl_tree_prior.createDistribution() );
+    RevBayesCore::TypedDistribution<RevBayesCore::Tree>* tp     = dynamic_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rl_tree_prior.createDistribution() );
     
     const Distribution& rl_rate_prior                           = static_cast<const Distribution &>( rate_prior->getRevObject() );
-    RevBayesCore::TypedDistribution<double>* rp                 = static_cast<RevBayesCore::TypedDistribution<double>* >( rl_rate_prior.createDistribution() );
+    RevBayesCore::TypedDistribution<double>* rp                 = dynamic_cast<RevBayesCore::TypedDistribution<double>* >( rl_rate_prior.createDistribution() );
     
     RevBayesCore::TypedDagNode<double>* ra                      = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
 

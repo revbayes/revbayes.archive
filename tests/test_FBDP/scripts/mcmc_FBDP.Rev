@@ -37,9 +37,17 @@ origin_time ~ dnUnif(37.0, 55.0)
 
 # create some moves that change the stochastic variables
 # all moves are sliding proposals but you could use scaling proposals for the rates too
-moves[mvi++] = mvSlide(speciation_rate,delta=1,weight=1)
-moves[mvi++] = mvSlide(extinction_rate,delta=1,weight=1)
-moves[mvi++] = mvSlide(psi,delta=1,weight=1)
+moves[mvi++] = mvScale(speciation_rate,lambda=1,weight=1)
+moves[mvi++] = mvScale(speciation_rate,lambda=0.1,weight=1)
+moves[mvi++] = mvScale(speciation_rate,lambda=0.01,weight=1)
+
+moves[mvi++] = mvScale(extinction_rate,lambda=1,weight=1)
+moves[mvi++] = mvScale(extinction_rate,lambda=0.1,weight=1)
+moves[mvi++] = mvScale(extinction_rate,lambda=0.01,weight=1)
+
+moves[mvi++] = mvScale(psi,lambda=1,weight=1)
+moves[mvi++] = mvScale(psi,lambda=0.1,weight=1)
+moves[mvi++] = mvScale(psi,lambda=0.01,weight=1)
 
 ### Define the tree-prior distribution as the fossilized birth-death process ###
 fbd_dist = dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=1.0, taxa=taxa)
@@ -54,7 +62,7 @@ constraints = v(clade_ursinae)
 fbd_tree ~ dnConstrainedTopology(fbd_dist, constraints=constraints)
 
 moves[mvi++] = mvFNPR(fbd_tree, weight=1.0)
-moves[mvi++] = mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=1.0)
+moves[mvi++] = mvTipTimeSlideUniform(fbd_tree, weight=1.0)
 moves[mvi++] = mvNodeTimeSlideUniform(fbd_tree, weight=1.0)
 moves[mvi++] = mvRootTimeSlideUniform(fbd_tree, origin_time, weight=1.0)
 
@@ -68,7 +76,7 @@ moves[mvi++] = mvRootTimeSlideUniform(fbd_tree, origin_time, weight=1.0)
 mymodel = model(fbd_tree)
 
 
-monitors[1] = mnStochasticVariable(filename="output/mcmc_FBDP.out",printgen=1, separator = TAB)
+monitors[1] = mnStochasticVariable(filename="output/mcmc_FBDP.out",printgen=1)
 
 mymcmc = mcmc(mymodel, monitors, moves, moveschedule="single")
 

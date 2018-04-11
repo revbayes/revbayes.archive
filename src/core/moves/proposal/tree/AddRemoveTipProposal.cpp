@@ -106,7 +106,8 @@ double AddRemoveTipProposal::doProposal( void )
             if ( ( extinct == true && node->isFossil() == true && node->isSampledAncestor() == sampled_ancestors ) ||
                 (  extant == true && node->isFossil() == false ) )
             {
-                tips.push_back(node);
+                if( ( node->isSampledAncestor() == false && node->getParent().isSampledAncestor(true) == true ) == false )
+                    tips.push_back(node);
             }
         }
 
@@ -229,7 +230,7 @@ double AddRemoveTipProposal::addTip(TopologyNode *n)
             storedTip->setSampledAncestor(true);
         }
 
-        hr = log( t.getNumberOfExtinctTips() );
+        //hr = log( t.getNumberOfExtinctTips() );
     }
     else
     {
@@ -286,7 +287,8 @@ double AddRemoveTipProposal::removeTip(TopologyNode *n)
         {
             lnJacobian -= log(parent->getAge());
         }
-        hr = - log( t.getNumberOfExtinctTips() + 1 );
+
+        //hr = - log( t.getNumberOfExtinctTips() + 1 );
     }
     else
     {

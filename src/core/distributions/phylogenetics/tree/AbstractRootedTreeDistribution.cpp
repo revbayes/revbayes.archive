@@ -118,13 +118,26 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
         const TopologyNode &the_node = *(*it);
         if ( the_node.isRoot() == false )
         {
-            double age_diff = the_node.getAge() - the_node.getParent().getAge();
-
-            if ( age_diff > 0 && the_node.isSampledAncestor() == false )
+            if( the_node.isTip() )
             {
-                return RbConstants::Double::neginf;
+                if ( the_node.isSampledAncestor() == true )
+                {
+                    if( the_node.getAge() - the_node.getParent().getAge() != 0 )
+                    {
+                        return RbConstants::Double::neginf;
+                    }
+                    else if ( the_node.isFossil() == false )
+                    {
+                        return RbConstants::Double::neginf;
+                    }
+                    else if ( the_node.getBranchLength() != 0 )
+                    {
+                        return RbConstants::Double::neginf;
+                    }
+
+                }
             }
-            else if ( age_diff != 0 && the_node.isSampledAncestor() == true )
+            else if( the_node.getAge() - the_node.getParent().getAge() > 0 )
             {
                 return RbConstants::Double::neginf;
             }
@@ -133,27 +146,6 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
         else if ( the_node.getAge() > getOriginAge() )
         {
             return RbConstants::Double::neginf;
-        }
-        
-    }
-    
-    // check that the sampled ancestor nodes have a zero branch length
-    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
-    {
-        
-        const TopologyNode &the_node = *(*it);
-        if ( the_node.isSampledAncestor() == true )
-        {
-            
-            if ( the_node.isFossil() == false )
-            {
-                return RbConstants::Double::neginf;
-            }
-            else if ( the_node.getBranchLength() != 0 )
-            {
-                return RbConstants::Double::neginf;
-            }
-            
         }
         
         if ( the_node.getBranchLength() < 0 )
@@ -506,7 +498,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
         {
 
             // now we simulate new ages
-            double next_sim_age = simulateNextAge(active_nodes.size()-2, present-age, present-current_age, present);
+            double next_sim_age = simulateNextAge(active_nodes.size()-2, age, present, current_age);
 
             if ( next_sim_age < next_node_age )
             {
@@ -516,20 +508,20 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
                 TopologyNode* left_child = active_nodes[index_left];
                 active_nodes.erase(active_nodes.begin()+long(index_left));
                 size_t index_right = static_cast<size_t>( floor(rng->uniform01()*active_nodes.size()) );
-                TopologyNode* right_right = active_nodes[index_right];
+                TopologyNode* right_child = active_nodes[index_right];
                 active_nodes.erase(active_nodes.begin()+long(index_right));
 
                 // erase the nodes also from the origin nodes vector
                 n.erase(std::remove(n.begin(), n.end(), left_child), n.end());
-                n.erase(std::remove(n.begin(), n.end(), right_right), n.end());
+                n.erase(std::remove(n.begin(), n.end(), right_child), n.end());
 
 
                 // create a parent for the two
                 TopologyNode *parent = new TopologyNode();
                 parent->addChild( left_child );
-                parent->addChild( right_right );
+                parent->addChild( right_child );
                 left_child->setParent( parent );
-                right_right->setParent( parent );
+                right_child->setParent( parent );
                 parent->setAge( next_sim_age );
 
                 // insert the parent to our list
@@ -555,7 +547,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 
         // pick two nodes
         TopologyNode* left_child = n[0];
-        TopologyNode* right_right = n[1];
+        TopologyNode* right_child = n[1];
 
         // erase the nodes also from the origin nodes vector
         n.clear();
@@ -563,9 +555,9 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
         // create a parent for the two
         TopologyNode *parent = new TopologyNode();
         parent->addChild( left_child );
-        parent->addChild( right_right );
+        parent->addChild( right_child );
         left_child->setParent( parent );
-        right_right->setParent( parent );
+        right_child->setParent( parent );
         parent->setAge( age );
 
         // insert the parent to our list
@@ -581,19 +573,12 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 
 
 
-double AbstractRootedTreeDistribution::simulateNextAge(size_t n, double start, double end, double present) const
+double AbstractRootedTreeDistribution::simulateNextAge(size_t n, double origin, double present, double min) const
 {
 
-    std::vector<double> times = simulateDivergenceTimes(n, start, end, present);
+    std::vector<double> times = simulateDivergenceTimes(n, origin, present, min);
 
-    double next_time = times.back();
-//    double next_time = (*times)[0];
-    
-//    double next_time = simulateDivergenceTime(start, end);
-
-//    return next_time + present - end;
-    return present - next_time;
-//    return end - next_time;
+    return times.front();
 }
 
 
@@ -650,7 +635,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
         ra = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
     }
 
-    simulateClade(nodes, ra, max_age);
+    simulateClade(nodes, ra, 0.0);
 
     TopologyNode *root = nodes[0];
 

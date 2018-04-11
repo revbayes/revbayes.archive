@@ -1,10 +1,13 @@
 #include "RlSimplex.h"
 
 #include "ConstantNode.h"
+#include "ModelVector.h"
 #include "RlMemberFunction.h"
 #include "Natural.h"
 #include "Probability.h"
 #include "RbException.h"
+#include "Real.h"
+#include "RealPos.h"
 #include "RlUtils.h"
 #include "WorkspaceVector.h"
 
@@ -65,6 +68,30 @@ Simplex::~Simplex()
 Simplex* Simplex::clone( void ) const
 {
     return new Simplex( *this );
+}
+
+
+/**
+ * In this function we check whether this type is convertible to some other
+ * Rev object type. Here we focus entirely on supporting conversion to
+ * other generic vectors with compatible elements. This is not done automatically
+ * because of the templating: a vector of RealPos does not inherit from a vector
+ * of Real, for example.
+ */
+RevObject* Simplex::convertTo( const TypeSpec& type ) const
+{
+    
+    if ( type == ModelVector<Real>::getClassTypeSpec() )
+    {
+        return new ModelVector<Real>( RevBayesCore::RbVector<double>(dag_node->getValue()) );
+    }
+    else if ( type == ModelVector<RealPos>::getClassTypeSpec() )
+    {
+        return new ModelVector<RealPos>( RevBayesCore::RbVector<double>(dag_node->getValue()) );
+    }
+
+    
+    return ModelObject<RevBayesCore::Simplex>::convertTo( type );
 }
 
 

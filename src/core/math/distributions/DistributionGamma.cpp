@@ -31,8 +31,8 @@ using namespace RevBayesCore;
  * for a gamma-distributed random variable.
  *
  * \brief Gamma probability density.
- * \param the shape parameter of the gamma. 
- * \param the rate parameter of the gamma. 
+ * \param shape is the shape parameter of the gamma.
+ * \param rate is the rate parameter of the gamma.
  * \param x is the gamma random variable. 
  * \return Returns the probability density.
  * \throws Does not throw an error.
@@ -49,8 +49,8 @@ double RbStatistics::Gamma::pdf(double shape, double rate, double x)
  * for a gamma-distributed random variable.
  *
  * \brief Gamma probability density.
- * \param the shape parameter of the gamma. 
- * \param the rate parameter of the gamma. 
+ * \param shape is the shape parameter of the gamma.
+ * \param rate is the rate parameter of the gamma.
  * \param x is the gamma random variable. 
  * \return Returns the probability density.
  * \throws Does not throw an error.
@@ -93,8 +93,8 @@ double RbStatistics::Gamma::pdf(double shape, double rate, double x, bool isLog)
  * for a gamma-distributed random variable.
  *
  * \brief Natural log of gamma probability density.
- * \param the shape parameter of the gamma. 
- * \param the rate parameter of the gamma. 
+ * \param shape is the shape parameter of the gamma.
+ * \param rate is the rate parameter of the gamma.
  * \param x is the gamma random variable. 
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
@@ -110,8 +110,8 @@ double RbStatistics::Gamma::lnPdf(double shape, double rate, double x)
  * for a gamma-distributed random variable.
  *
  * \brief Gamma cumulative probability.
- * \param the shape parameter of the gamma. 
- * \param the rate parameter of the gamma. 
+ * \param shape is the shape parameter of the gamma.
+ * \param rate is the rate parameter of the gamma.
  * \param x is the gamma random variable. 
  * \return Returns the cumulative probability.
  * \throws Does not throw an error.
@@ -127,8 +127,8 @@ double RbStatistics::Gamma::cdf(double shape, double rate, double x)
  * distribution.
  *
  * \brief Gamma quantile.
- * \param the shape parameter. 
- * \param the rate parameter. 
+ * \param shape is the shape parameter.
+ * \param rate is the rate parameter. 
  * \param p is the probability up to the quantile. 
  * \return Returns the quantile.
  * \throws Does not throw an error.

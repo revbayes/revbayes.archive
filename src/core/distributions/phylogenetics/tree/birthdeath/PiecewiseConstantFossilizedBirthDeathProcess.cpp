@@ -1,8 +1,9 @@
 #include "DistributionExponential.h"
-#include "PiecewiseConstantFossilizedBirthDeathRangeProcess.h"
+#include "PiecewiseConstantFossilizedBirthDeathProcess.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbMathCombinatorialFunctions.h"
 #include "RbMathLogic.h"
 #include "StochasticNode.h"
 #include "TypedDistribution.h"
@@ -25,15 +26,17 @@ using namespace RevBayesCore;
  * \param[in]    cdt            Condition of the process (none/survival/#Taxa).
  * \param[in]    tn             Taxa.
  */
-PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBirthDeathRangeProcess(const DagNode *inspeciation,
-                                                                                                     const DagNode *inextinction,
-                                                                                                     const DagNode *inpsi,
-                                                                                                     const DagNode *incounts,
-                                                                                                     const TypedDagNode<double> *inrho,
-                                                                                                     const TypedDagNode< RbVector<double> > *intimes,
-                                                                                                     const std::string &incondition,
-                                                                                                     const std::vector<Taxon> &intaxa,
-                                                                                                     bool pa ) : TypedDistribution<MatrixReal>(new MatrixReal(intaxa.size(), 2)),
+PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDeathProcess(const TypedDagNode<double> *ra,
+                                                                                           const DagNode *inspeciation,
+                                                                                           const DagNode *inextinction,
+                                                                                           const DagNode *inpsi,
+                                                                                           const DagNode *incounts,
+                                                                                           const TypedDagNode<double> *inrho,
+                                                                                           const TypedDagNode< RbVector<double> > *intimes,
+                                                                                           const std::string &incondition,
+                                                                                           const std::vector<Taxon> &intaxa,
+                                                                                           bool uo,
+                                                                                           bool pa ) : AbstractBirthDeathProcess(ra, incondition, intaxa, uo),
     ascending(false), homogeneous_rho(inrho), timeline( intimes ), condition(incondition), taxa(intaxa), presence_absence(pa)
 {
     // initialize all the pointers to NULL
@@ -198,15 +201,12 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
     fossil      = std::vector<double>(num_intervals, 0.0);
     times       = std::vector<double>(num_intervals, 0.0);
 
-    dirty_gamma = std::vector<bool>(taxa.size(), true);
-    gamma_i     = std::vector<size_t>(taxa.size(), 0);
-    gamma_links = std::vector<std::vector<bool> >(taxa.size(), std::vector<bool>(taxa.size(), false));
-
     oldest_intervals = std::vector<size_t>( taxa.size(), num_intervals - 1 );
     youngest_intervals = std::vector<size_t>( taxa.size(), num_intervals - 1 );
 
+    updateIntervals();
+
     redrawValue();
-    updateGamma(true);
 }
 
 
@@ -216,9 +216,9 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
  *
  * \return A new copy of myself 
  */
-PiecewiseConstantFossilizedBirthDeathRangeProcess* PiecewiseConstantFossilizedBirthDeathRangeProcess::clone( void ) const
+PiecewiseConstantFossilizedBirthDeathProcess* PiecewiseConstantFossilizedBirthDeathProcess::clone( void ) const
 {
-    return new PiecewiseConstantFossilizedBirthDeathRangeProcess( *this );
+    return new PiecewiseConstantFossilizedBirthDeathProcess( *this );
 }
 
 
@@ -226,11 +226,10 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess* PiecewiseConstantFossilizedBi
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( void )
+double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
     // prepare the probability computation
     updateIntervals();
-    updateGamma();
 
     // variable declarations and initialization
     double lnProbTimes = 0.0;
@@ -245,18 +244,20 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
     std::vector<double> L (num_intervals, 0.0);
 
     // add the fossil tip age terms
-    for (size_t i = 0; i < taxa.size(); ++i)
+    for (size_t i = 0; i < value->getNumberOfTips(); ++i)
     {
         if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::neginf;
         }
-        
 
-        double b = (*this->value)[i][0];
-        double d = (*this->value)[i][1];
-        double o = taxa[i].getAgeRange().getMax();
-        double y = taxa[i].getAgeRange().getMin();
+        
+        const TopologyNode& node = value->getNode(i);
+
+        double b = getBirthTime( node );
+        double d = node.getAge();
+        double o = node.getTaxon().getAgeRange().getMax();
+        double y = node.getTaxon().getAgeRange().getMin();
 
         size_t bi = l(b);
         size_t di = l(d);
@@ -293,9 +294,6 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 
         // include speciation density
         lnProbTimes += log( birth[bi] );
-
-        // multiply by the number of possible birth locations
-        lnProbTimes += log( gamma_i[i] == 0 ? 1 : gamma_i[i] );
 
         // multiply by q at the birth time
         lnProbTimes += log( q(bi, b) );
@@ -467,54 +465,50 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::computeLnProbability( 
 }
 
 
-/**
- * Compute the number of ranges that intersect with range i
- *
- * \param[in]    i      index of range for which to compute gamma
- *
- * \return Small gamma
- */
-void PiecewiseConstantFossilizedBirthDeathRangeProcess::updateGamma(bool force)
+double PiecewiseConstantFossilizedBirthDeathProcess::getBirthTime( const TopologyNode& node ) const
 {
-    for (size_t i = 0; i < taxa.size(); i++)
+    if( node.isRoot() )
     {
-        if ( dirty_gamma[i] || force )
+        return getOriginAge();
+    }
+    else
+    {
+        const TopologyNode& parent = node.getParent();
+
+        // define left child as ancestral species
+        if( node.getIndex() == parent.getChild(0).getIndex() )
         {
-            double ai = (*this->value)[i][0];
-            double bi = (*this->value)[i][1];
-
-            if ( force == true ) gamma_i[i] = 0;
-
-            for (size_t j = 0; j < taxa.size(); j++)
-            {
-                if (i == j) continue;
-
-                double aj = (*this->value)[j][0];
-                double bj = (*this->value)[j][1];
-
-                bool linki = ( ai < aj && ai > bj );
-                bool linkj = ( aj < ai && aj > bi );
-
-                if ( gamma_links[i][j] != linki && force == false )
-                {
-                    gamma_i[i] += linki ? 1 : -1;
-                }
-                if ( gamma_links[j][i] != linkj && force == false )
-                {
-                    gamma_i[j] += linkj ? 1 : -1;
-                }
-
-                if ( force == true ) gamma_i[i] += linki;
-
-                gamma_links[i][j] = linki;
-                gamma_links[j][i] = linkj;
-            }
+            return getBirthTime( parent );
+        }
+        else
+        {
+            return parent.getAge();
         }
     }
 }
 
 
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::getExtinctionRate( size_t index ) const
+double PiecewiseConstantFossilizedBirthDeathProcess::getMaxTaxonAge( const TopologyNode& node ) const
+{
+    if( node.isTip() )
+    {
+        return node.getTaxon().getAgeRange().getMax();
+    }
+    else
+    {
+        double max = 0;
+
+        for( size_t i = 0; i < node.getNumberOfChildren(); i++)
+        {
+            max = std::max( getMaxTaxonAge( node.getChild(i) ), max );
+        }
+
+        return max;
+    }
+}
+
+
+double PiecewiseConstantFossilizedBirthDeathProcess::getExtinctionRate( size_t index ) const
 {
 
     // remove the old parameter first
@@ -535,13 +529,13 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::getExtinctionRate( siz
 }
 
 
-long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t interval, size_t species ) const
+long PiecewiseConstantFossilizedBirthDeathProcess::getFossilCount( size_t interval, size_t species ) const
 {
 
     // remove the old parameter first
     if ( fossil_counts != NULL )
     {
-        return (int)fossil_counts->getValue();
+        return fossil_counts->getValue();
     }
     else if( interval_fossil_counts != NULL)
     {
@@ -568,14 +562,14 @@ long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t i
         {
             throw(RbException("Fossil count index out of bounds"));
         }
-        return ascending ? (int)species_interval_fossil_counts->getValue()[species][num - 1 - interval] : (int)species_interval_fossil_counts->getValue()[species][interval];
+        return ascending ? species_interval_fossil_counts->getValue()[species][num - 1 - interval] : species_interval_fossil_counts->getValue()[species][interval];
     }
 
     throw(RbException("Fossil counts have been marginalized"));
 }
 
 
-long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t interval ) const
+long PiecewiseConstantFossilizedBirthDeathProcess::getFossilCount( size_t interval ) const
 {
 
     // remove the old parameter first
@@ -616,7 +610,7 @@ long PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilCount( size_t i
 }
 
 
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilizationRate( size_t index ) const
+double PiecewiseConstantFossilizedBirthDeathProcess::getFossilizationRate( size_t index ) const
 {
 
     // remove the old parameter first
@@ -637,7 +631,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::getFossilizationRate( 
 }
 
 
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::getIntervalTime( size_t index ) const
+double PiecewiseConstantFossilizedBirthDeathProcess::getIntervalTime( size_t index ) const
 {
 
     if ( index == num_intervals - 1 )
@@ -662,7 +656,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::getIntervalTime( size_
 }
 
 
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::getSpeciationRate( size_t index ) const
+double PiecewiseConstantFossilizedBirthDeathProcess::getSpeciationRate( size_t index ) const
 {
 
     // remove the old parameter first
@@ -686,7 +680,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::getSpeciationRate( siz
 /**
  * \ln\int exp(psi t) q_tilde(t)/q(t) dt
  */
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::integrateQ( size_t i, double t ) const
+double PiecewiseConstantFossilizedBirthDeathProcess::integrateQ( size_t i, double t ) const
 {
     // get the parameters
     double b = birth[i];
@@ -725,16 +719,26 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::integrateQ( size_t i, 
  * t_0 is origin
  * t_l = 0.0
  */
-size_t PiecewiseConstantFossilizedBirthDeathRangeProcess::l(double t) const
+size_t PiecewiseConstantFossilizedBirthDeathProcess::l(double t) const
 {
     return times.rend() - std::upper_bound( times.rbegin(), times.rend(), t);
+}
+
+
+double PiecewiseConstantFossilizedBirthDeathProcess::lnProbTreeShape(void) const
+{
+    // the fossilized birth death divergence times density is derived for an unlabeled oriented tree
+    // so we convert to a labeled oriented tree probability by multiplying by 1 / n!
+    // where n is the number of extant tips
+
+    return - RbMath::lnFactorial( value->getNumberOfExtantTips() );
 }
 
 
 /**
  * p_i(t)
  */
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::p( size_t i, double t ) const
+double PiecewiseConstantFossilizedBirthDeathProcess::p( size_t i, double t ) const
 {
     if ( t == 0) return 1.0;
 
@@ -767,7 +771,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::p( size_t i, double t 
  *
  * \return Probability of survival.
  */
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::pSurvival(double start, double end) const
+double PiecewiseConstantFossilizedBirthDeathProcess::pSurvival(double start, double end) const
 {
     double t = start;
 
@@ -786,7 +790,7 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::pSurvival(double start
 /**
  * q_i(t)
  */
-double PiecewiseConstantFossilizedBirthDeathRangeProcess::q( size_t i, double t, bool tilde ) const
+double PiecewiseConstantFossilizedBirthDeathProcess::q( size_t i, double t, bool tilde ) const
 {
     
     if ( t == 0.0 ) return 1.0;
@@ -817,67 +821,268 @@ double PiecewiseConstantFossilizedBirthDeathRangeProcess::q( size_t i, double t,
 
 
 /**
- * Simulate new speciation times.
+ *
  */
-void PiecewiseConstantFossilizedBirthDeathRangeProcess::redrawValue(void)
+void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<TopologyNode *> &n, double age, double present)
 {
-    // incorrect placeholder
-    
+
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    
-    double max = 0;
-    // get the max first occurence
-    for (size_t i = 0; i < taxa.size(); i++)
+
+    // get the minimum birth age
+    std::vector<double> first_occurrences;
+
+    double current_age = RbConstants::Double::inf;
+    double minimum_age = 0.0;
+
+    for (size_t i = 0; i < n.size(); ++i)
     {
-        double o = taxa[i].getAgeRange().getMax();
-        if ( o > max ) max = o;
-    }
-    
-    max *= 1.1;
-    
-    if (max == 0.0)
-    {
-        max = 1.0;
-    }
-
-    // get random uniform draws
-    for (size_t i = 0; i < taxa.size(); i++)
-    {
-        double b = taxa[i].getAgeRange().getMax() + rng->uniform01()*(max - taxa[i].getAgeRange().getMax());
-        double d = rng->uniform01()*taxa[i].getAgeRange().getMin();
-
-        (*this->value)[i][0] = b;
-        (*this->value)[i][1] = d;
-    }
-}
-
-
-void PiecewiseConstantFossilizedBirthDeathRangeProcess::keepSpecialization(DagNode *toucher)
-{
-    dirty_gamma = std::vector<bool>(taxa.size(), false);
-}
-
-
-void PiecewiseConstantFossilizedBirthDeathRangeProcess::restoreSpecialization(DagNode *toucher)
-{
-
-}
-
-
-void PiecewiseConstantFossilizedBirthDeathRangeProcess::touchSpecialization(DagNode *toucher, bool touchAll)
-{
-    if ( toucher == dag_node )
-    {
-        std::set<size_t> touched_indices = dag_node->getTouchedElementIndices();
-
-        for ( std::set<size_t>::iterator it = touched_indices.begin(); it != touched_indices.end(); it++)
+        // make sure the tip age is younger than the last occurrence
+        if( n[i]->isTip() )
         {
-            size_t touched_range = (*it) / taxa.size();
+            double min = n[i]->getTaxon().getAgeRange().getMin();
 
-            dirty_gamma[touched_range] = true;
+            if( min == n[i]->getAge() )
+            {
+                n[i]->setAge( present + rng->uniform01() * ( min - present ) );
+            }
         }
+
+        double first_occurrence = getMaxTaxonAge( *n[i] );
+
+        if( first_occurrence > minimum_age )
+        {
+            minimum_age = first_occurrence;
+        }
+
+        first_occurrences.push_back( first_occurrence );
+
+        if ( current_age > n[i]->getAge() )
+        {
+            current_age = n[i]->getAge();
+        }
+
     }
+
+    // reset the age
+    double max_age = getOriginAge();
+
+    if ( age <= minimum_age )
+    {
+        age = rng->uniform01() * ( max_age - minimum_age ) + minimum_age;
+    }
+
+
+    std::vector<double> ages;
+    while ( n.size() > 2 && current_age < age )
+    {
+
+        // get all the nodes with first occurrences younger than the current age
+        std::vector<TopologyNode*> active_nodes;
+        std::vector<TopologyNode*> active_right_nodes;
+        for (size_t i = 0; i < n.size(); ++i)
+        {
+
+            if ( current_age >= n[i]->getAge() )
+            {
+                active_nodes.push_back( n[i] );
+            }
+            if( current_age >= first_occurrences[i] )
+            {
+                active_right_nodes.push_back( n[i] );
+            }
+
+        }
+
+        // we need to get the next node age older than the current age
+        double next_node_age = age;
+        for (size_t i = 0; i < n.size(); ++i)
+        {
+            if ( current_age < n[i]->getAge() && n[i]->getAge() < next_node_age )
+            {
+                next_node_age = n[i]->getAge();
+            }
+            if ( current_age < first_occurrences[i] && first_occurrences[i] < next_node_age )
+            {
+                next_node_age = first_occurrences[i];
+            }
+
+        }
+
+        // only simulate if there are at least two valid/active nodes and one active left node
+        if ( active_nodes.size() <= 2 || active_right_nodes.empty() )
+        {
+            current_age = next_node_age;
+        }
+        else
+        {
+            // now we simulate new ages
+            double next_sim_age = simulateNextAge(active_nodes.size()-2, age, present, current_age);
+
+            if ( next_sim_age < next_node_age )
+            {
+                // randomly pick two nodes
+                size_t index_left = static_cast<size_t>( floor(rng->uniform01()*active_nodes.size()) );
+                TopologyNode* left_child = active_nodes[index_left];
+
+                size_t index_right = static_cast<size_t>( floor(rng->uniform01()*active_right_nodes.size()) );
+                TopologyNode* right_child = active_right_nodes[index_right];
+
+                while( left_child == right_child )
+                {
+                    index_left = static_cast<size_t>( floor(rng->uniform01()*active_nodes.size()) );
+                    left_child = active_nodes[index_left];
+
+                    index_right = static_cast<size_t>( floor(rng->uniform01()*active_right_nodes.size()) );
+                    right_child = active_right_nodes[index_right];
+                }
+
+                // erase the nodes also from the origin nodes vector
+                std::vector<TopologyNode *>::iterator child_it_left = std::find( n.begin(), n.end(), left_child );
+                std::vector<double>::iterator fa_it_left = first_occurrences.begin() + std::distance( n.begin(), child_it_left );
+                double fa_left = *fa_it_left;
+
+                first_occurrences.erase(fa_it_left);
+                n.erase(child_it_left);
+
+                std::vector<TopologyNode *>::iterator child_it_right = std::find( n.begin(), n.end(), right_child );
+                std::vector<double>::iterator fa_it_right = first_occurrences.begin() + std::distance( n.begin(), child_it_right );
+                double fa_right = *fa_it_right;
+
+                first_occurrences.erase(fa_it_right);
+                n.erase(child_it_right);
+
+
+                // create a parent for the two
+                TopologyNode *parent = new TopologyNode();
+                parent->addChild( left_child );
+                parent->addChild( right_child );
+                left_child->setParent( parent );
+                right_child->setParent( parent );
+                parent->setAge( next_sim_age );
+
+                // insert the parent to our list
+                n.push_back( parent );
+                first_occurrences.push_back( std::max(fa_left, fa_right) );
+
+                current_age = next_sim_age;
+                ages.push_back( next_sim_age );
+            }
+            else
+            {
+                current_age = next_node_age;
+            }
+
+        }
+
+        if ( n.size() > 2 && current_age >= age  ) throw RbException("Unexpected number of taxa (remaining #taxa was " + StringUtilities::toString(n.size()) + " and age was " + current_age + " with maximum age of " + age + ") in tree simulation");
+
+    }
+
+
+    if ( n.size() == 2 )
+    {
+
+        // pick two nodes
+        TopologyNode* left_child = n[0];
+        TopologyNode* right_child = n[1];
+
+        // make sure the speciation event is older than the new species first occurrence
+        if( first_occurrences[1] > age )
+        {
+            if( first_occurrences[0] > age )
+            {
+                throw(RbException("Cannot simulate clade of age " + StringUtilities::toString(age) + ", minimum age is " + StringUtilities::toString(minimum_age) ));
+            }
+            else
+            {
+                std::swap( left_child, right_child );
+            }
+        }
+        else if( age > first_occurrences[0] )
+        {
+            if( rng->uniform01() < 0.5 )
+            {
+                std::swap( left_child, right_child );
+            }
+        }
+
+        // erase the nodes also from the origin nodes vector
+        n.clear();
+
+        // create a parent for the two
+        TopologyNode *parent = new TopologyNode();
+        parent->addChild( left_child );
+        parent->addChild( right_child );
+        left_child->setParent( parent );
+        right_child->setParent( parent );
+        parent->setAge( age );
+
+        // insert the parent to our list
+        n.push_back( parent );
+    }
+    else
+    {
+        throw RbException("Unexpected number of taxa (" + StringUtilities::toString(n.size()) + ") in tree simulation");
+    }
+
+
+}
+
+
+/**
+ * Simulate new speciation times.
+ */
+double PiecewiseConstantFossilizedBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
+{
+    // incorrect placeholder for constant FBDP
+
+    // Get the rng
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+
+    size_t i = l(present);
+
+    // get the parameters
+    double age = origin - present;
+    double b = birth[i];
+    double d = death[i];
+    //double f = fossil[i];
+    double r = homogeneous_rho->getValue();
+
+
+    // get a random draw
+    double u = rng->uniform01();
+
+    // compute the time for this draw
+    // see Hartmann et al. 2010 and Stadler 2011
+    double t = 0.0;
+    if ( b > d )
+    {
+        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
+    }
+    else
+    {
+        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
+    }
+
+    return present + t;
+}
+
+
+void PiecewiseConstantFossilizedBirthDeathProcess::keepSpecialization(DagNode *toucher)
+{
+}
+
+
+void PiecewiseConstantFossilizedBirthDeathProcess::restoreSpecialization(DagNode *toucher)
+{
+
+}
+
+
+void PiecewiseConstantFossilizedBirthDeathProcess::touchSpecialization(DagNode *toucher, bool touchAll)
+{
+
 }
 
 
@@ -885,11 +1090,11 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::touchSpecialization(DagN
  *
  *
  */
-void PiecewiseConstantFossilizedBirthDeathRangeProcess::updateIntervals( )
+void PiecewiseConstantFossilizedBirthDeathProcess::updateIntervals( ) const
 {
     std::vector<bool> youngest(taxa.size(), true);
 
-    for (int i = (int)num_intervals - 1; i >= 0; i--)
+    for (int i = num_intervals - 1; i >= 0; i--)
     {
         double b = getSpeciationRate(i);
         double d = getExtinctionRate(i);
@@ -947,7 +1152,7 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::updateIntervals( )
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void PiecewiseConstantFossilizedBirthDeathRangeProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void PiecewiseConstantFossilizedBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     if (oldP == heterogeneous_lambda)
     {

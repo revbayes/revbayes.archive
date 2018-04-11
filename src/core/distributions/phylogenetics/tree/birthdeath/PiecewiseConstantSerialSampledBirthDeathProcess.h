@@ -97,6 +97,8 @@ namespace RevBayesCore {
         mutable std::vector<double>                     mu;
         mutable std::vector<double>                     psi;
         mutable std::vector<double>                     rho;
+
+        bool                                            ascending;
     };
 }
 
