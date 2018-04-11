@@ -42,7 +42,7 @@ namespace RevBayesCore {
     class StochasticNode;
     
     template<class variableType>
-    class TypedDistribution : public virtual Distribution {
+    class TypedDistribution : public Distribution {
         
     public:
         // constructors and destructor
