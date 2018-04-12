@@ -8,6 +8,7 @@
 #include "RevLanguageMain.h"
 #include "RlCommandLineOutputStream.h"
 #include "RlUserInterfaceOutputStream.h"
+#include "RlUserInterface.h"
 #include "Parser.h"
 #include "Workspace.h"
 
