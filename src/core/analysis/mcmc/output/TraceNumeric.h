@@ -1,10 +1,3 @@
-//
-//  TraceNumeric.h
-//  RevBayesGui
-//
-//  Created by Sebastian Hoehna on 4/4/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
 #ifndef TraceNumeric_H
 #define TraceNumeric_H
 
