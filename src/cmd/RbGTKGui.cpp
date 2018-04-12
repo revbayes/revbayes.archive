@@ -19,9 +19,11 @@ using namespace RevBayesGTK;
 
 static gint button_press (GtkWidget *, GdkEvent *);
 //static void menuitem_response (gchar *);
+static void menuitem_font_response(gchar *);
 static void menuitem_load_response(gchar *);
 static void menuitem_run_selected_response(gchar *);
 static void menuitem_save_response(gchar *);
+static void menuitem_set_wd_response(gchar *);
 static void menuitem_source_response(gchar *);
 
 
@@ -161,7 +163,6 @@ void RbGTKGui::executeRevCommand(const std::string &command)
     for (size_t i=0; i<lines.size(); ++i)
     {
         std::string current_command = lines[i];
-        std::cerr << current_command << std::endl;
         
         GtkTextIter end;
         gtk_text_buffer_get_end_iter(output_text, &end);
@@ -174,7 +175,6 @@ void RbGTKGui::executeRevCommand(const std::string &command)
         result = RevLanguage::Parser::getParser().processCommand(current_command, &RevLanguage::Workspace::userWorkspace());
     
         const std::string &output = rev_output->getOutputString();
-        std::cerr << "Rev> " << output << std::endl;
         if ( output != "" )
         {
             gtk_text_buffer_get_end_iter(output_text, &end);
@@ -188,17 +188,43 @@ void RbGTKGui::executeRevCommand(const std::string &command)
     
 }
 
+
+void RbGTKGui::addCommand(const std::string &c)
+{
+    command_history.push_back(c);
+    command_index = command_history.size()-1;
+}
+
+
+const std::string& RbGTKGui::getNextCommand(void) const
+{
+    if ( command_history.size() > 0 )
+    {
+        return (command_index >= command_history.size() ? empty_string : command_history[command_index++]);
+    }
+    
+    return empty_string;
+}
+
+
+const std::string& RbGTKGui::getPreviousCommand(void) const
+{
+    if ( command_history.size() > 0 )
+    {
+        return command_history[(command_index == 0 ? command_index : command_index--)];
+    }
+    
+    return empty_string;
+}
+
+
 void RbGTKGui::start( int argc, char *argv[] )
 {
     
     GtkWidget *table;
     
     GtkWidget       *output_frame;
-    GtkWidget       *output_view;
-//    GtkWidget       *output_align;
-    
     GtkWidget       *script_frame;
-
     GtkWidget       *command_frame;
     
     gtk_init (&argc, &argv);
@@ -219,6 +245,7 @@ void RbGTKGui::start( int argc, char *argv[] )
     
     GtkWidget *menubar          = gtk_menu_bar_new();
     GtkWidget *file_sub_menu    = gtk_menu_new();
+    GtkWidget *edit_sub_menu    = gtk_menu_new();
     GtkWidget *run_sub_menu     = gtk_menu_new();
     
     GtkWidget *file_menu    = gtk_menu_item_new_with_label("File");
@@ -227,6 +254,10 @@ void RbGTKGui::start( int argc, char *argv[] )
     GtkWidget *source_menu  = gtk_menu_item_new_with_label("Source script");
     GtkWidget *wd_menu      = gtk_menu_item_new_with_label("Set working directory");
     GtkWidget *quit_menu    = gtk_menu_item_new_with_label("Quit");
+    
+    GtkWidget *edit_menu            = gtk_menu_item_new_with_label("Edit");
+    GtkWidget *script_font_menu     = gtk_menu_item_new_with_label("Select script font");
+    GtkWidget *output_font_menu     = gtk_menu_item_new_with_label("Select output font");
 
     GtkWidget *run_menu             = gtk_menu_item_new_with_label("Run");
     GtkWidget *run_selected_menu    = gtk_menu_item_new_with_label("Run selected");
@@ -235,12 +266,21 @@ void RbGTKGui::start( int argc, char *argv[] )
     gtk_signal_connect_object (GTK_OBJECT (source_menu), "activate",
                                GTK_SIGNAL_FUNC (menuitem_source_response),
                                (gpointer) "source");
+    gtk_signal_connect_object (GTK_OBJECT (wd_menu), "activate",
+                               GTK_SIGNAL_FUNC (menuitem_set_wd_response),
+                               (gpointer) "set_wd");
     gtk_signal_connect_object (GTK_OBJECT (load_menu), "activate",
                                GTK_SIGNAL_FUNC (menuitem_load_response),
                                (gpointer) "load");
     gtk_signal_connect_object (GTK_OBJECT (save_menu), "activate",
                                GTK_SIGNAL_FUNC (menuitem_save_response),
                                (gpointer) "save");
+    gtk_signal_connect_object (GTK_OBJECT (output_font_menu), "activate",
+                               GTK_SIGNAL_FUNC (menuitem_font_response),
+                               (gpointer) "output");
+    gtk_signal_connect_object (GTK_OBJECT (script_font_menu), "activate",
+                               GTK_SIGNAL_FUNC (menuitem_font_response),
+                               (gpointer) "script");
     gtk_signal_connect_object (GTK_OBJECT (run_selected_menu), "activate",
                                GTK_SIGNAL_FUNC (menuitem_run_selected_response),
                                (gpointer) "run.selected");
@@ -255,6 +295,11 @@ void RbGTKGui::start( int argc, char *argv[] )
     gtk_menu_shell_append(GTK_MENU_SHELL(file_sub_menu), save_menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_sub_menu), quit_menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), file_menu);
+    
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(edit_menu), edit_sub_menu);
+    gtk_menu_shell_append(GTK_MENU_SHELL(edit_sub_menu), script_font_menu);
+    gtk_menu_shell_append(GTK_MENU_SHELL(edit_sub_menu), output_font_menu);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), edit_menu);
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(run_menu), run_sub_menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(run_sub_menu), run_selected_menu);
@@ -272,8 +317,32 @@ void RbGTKGui::start( int argc, char *argv[] )
     gtk_box_pack_start(GTK_BOX(vbox), menubar, FALSE, FALSE, 0);
 
     
-    table = gtk_table_new(3, 2, FALSE);
     
+    /* create the script view */
+    /* We need */
+    /*    a text entry */
+    /*    a frame */
+    
+    script_view = gtk_text_view_new();
+    script_text = gtk_text_view_get_buffer(GTK_TEXT_VIEW(script_view));
+    gtk_widget_modify_font(script_view, pango_font_description_from_string ("Monospace 20"));
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(script_view), TRUE);
+    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(script_view), TRUE);
+    
+    GtkWidget* script_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(script_scrolled_window) ,GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
+    script_frame = gtk_frame_new("Script");
+    
+    gtk_container_add(GTK_CONTAINER(script_scrolled_window), script_view);
+    gtk_container_add(GTK_CONTAINER(script_frame), script_scrolled_window);
+    
+    gtk_widget_show(script_scrolled_window);
+    gtk_widget_show(script_frame);
+    gtk_widget_show(script_view);
+    
+    
+    //    gtk_widget_set_size_request(script_frame, 300, 200);
+
     
     /* create the output view */
     /* We need */
@@ -281,6 +350,7 @@ void RbGTKGui::start( int argc, char *argv[] )
     /*    a text buffer */
     /*    a frame */
     output_view = gtk_text_view_new();
+    gtk_widget_modify_font (output_view, pango_font_description_from_string ("Monospace 20"));
     gtk_text_view_set_editable(GTK_TEXT_VIEW(output_view), FALSE);
     gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(output_view), FALSE);
 
@@ -299,10 +369,7 @@ void RbGTKGui::start( int argc, char *argv[] )
     gtk_widget_show(output_frame);
     gtk_widget_show(output_view);
     
-    gtk_widget_set_size_request(output_frame, 800, 400);
-
-    gtk_table_attach(GTK_TABLE(table), output_frame, 0, 1, 1, 2,
-                     GTK_EXPAND, GTK_EXPAND, 5, 5);
+//    gtk_widget_set_size_request(output_frame, 800, 400);
     
     /* create the command view */
     /* We need */
@@ -319,39 +386,33 @@ void RbGTKGui::start( int argc, char *argv[] )
     gtk_container_add(GTK_CONTAINER(command_frame), command_entry);
     gtk_widget_show(command_frame);
     gtk_widget_show(command_entry);
-
-
-    gtk_table_attach(GTK_TABLE(table), command_frame, 0, 1, 2, 3,
-                     GTK_FILL, GTK_FILL, 5, 5);
-    
-    
-    /* create the script view */
-    /* We need */
-    /*    a text entry */
-    /*    a frame */
-    
-    script_view = gtk_text_view_new();
-    script_text = gtk_text_view_get_buffer(GTK_TEXT_VIEW(script_view));
-    gtk_text_view_set_editable(GTK_TEXT_VIEW(script_view), TRUE);
-    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(script_view), TRUE);
-    
-    GtkWidget* script_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(output_scrolled_window) ,GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
-    script_frame = gtk_frame_new("Script");
-    
-    gtk_container_add(GTK_CONTAINER(script_scrolled_window), script_view);
-    gtk_container_add(GTK_CONTAINER(script_frame), script_scrolled_window);
-    
-    gtk_widget_show(script_scrolled_window);
-    gtk_widget_show(script_frame);
-    gtk_widget_show(script_view);
-    
-    
-    gtk_widget_set_size_request(script_frame, 300, 200);
-    gtk_table_attach(GTK_TABLE(table), script_frame, 0, 1, 0, 1,
-                     GTK_FILL, GTK_FILL, 5, 5);
     
 //    gtk_container_add(GTK_CONTAINER(window), table);
+    
+    GtkWidget *panel_script_output = gtk_vpaned_new();
+    gtk_paned_add1 ( (GtkPaned*)panel_script_output, script_frame);
+    gtk_paned_add2 ( (GtkPaned*)panel_script_output, output_frame);
+    
+    
+//    table = gtk_table_new(2, 2, FALSE);
+    table = gtk_vbox_new(FALSE, 5);
+//    gtk_box_set_spacing ( (GtkBox*)table, 10);
+//    gtk_container_add(GTK_CONTAINER(window), table);
+    
+    gtk_box_pack_start(GTK_BOX(table), panel_script_output, TRUE, TRUE, 5);
+    gtk_box_pack_start(GTK_BOX(table), command_frame, FALSE, TRUE, 5);
+
+    
+//    gtk_table_attach(GTK_TABLE(table), panel_script_output, 0, 1, 0, 1,
+//                     GTK_FILL, GTK_FILL, 5, 5);
+//    gtk_table_attach(GTK_TABLE(table), command_frame, 0, 1, 1, 2,
+//                     GTK_FILL, GTK_FILL, 5, 5);
+    //    gtk_table_attach(GTK_TABLE(table), script_frame, 0, 1, 0, 1,
+    //                     GTK_FILL, GTK_FILL, 5, 5);
+    //    gtk_table_attach(GTK_TABLE(table), output_frame, 0, 1, 1, 2,
+    //                     GTK_EXPAND, GTK_EXPAND, 5, 5);
+    
+    
     gtk_container_add(GTK_CONTAINER(vbox), table);
     gtk_widget_show_all(window);
     gtk_widget_show(window);
@@ -369,6 +430,34 @@ void RbGTKGui::start( int argc, char *argv[] )
     
     gtk_main();
 
+}
+
+
+static void menuitem_font_response( gchar *caller )
+{
+    RevBayesGTK::RbGTKGui& gui_instance = RevBayesGTK::RbGTKGui::globalInstanceGUI();
+    
+    GtkWidget *dialog;
+    dialog = gtk_font_selection_dialog_new("Select font");
+//    dialog = gtk_font_chooser_dialog_new("Select font", GTK_WINDOW(gui_instance.getMainWindow()));
+    if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)
+    {
+        char *fontname;
+        
+        fontname = gtk_font_selection_dialog_get_font_name ( (GtkFontSelectionDialog*) dialog);
+//        fontname = gtk_font_chooser_get_font ( (GtkFontChooser*)dialog);
+
+        if ( std::string(caller) == "script" )
+        {
+            gtk_widget_modify_font(gui_instance.getScriptView(), pango_font_description_from_string (fontname));
+        }
+        else if ( std::string(caller) == "output" )
+        {
+            gtk_widget_modify_font(gui_instance.getOutputView(), pango_font_description_from_string (fontname));
+        }
+    }
+    
+    gtk_widget_destroy (dialog);
 }
 
 
@@ -412,26 +501,29 @@ static void menuitem_load_response( gchar *string )
         char *filename;
         
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-        printf ("%s\n", filename);
         
         
         // open file
         std::ifstream read_stream;
-        RevBayesCore::RbFileManager f = RevBayesCore::RbFileManager(filename);
-//        if ( f.openFile(read_stream) == false )
-//        {
+        RevBayesCore::RbFileManager f = RevBayesCore::RbFileManager( std::string(filename) );
+        if ( f.openFile(read_stream) == false )
+        {
 //            throw RbException( "Could not open file " + filename );
-//        }
+            std::cerr << "Could not open file with name '" << std::string(filename) << "'." << std::endl;
+        }
         
         // read file
         std::string read_line = "";
         GtkTextIter end;
-        while (f.safeGetline(read_stream,read_line))
+//        while ( f.safeGetline(read_stream,read_line) )
+        while ( read_stream.good() )
         {
-            gtk_text_buffer_get_end_iter(gui_instance.getOutputTextBuffer(), &end);
-            gtk_text_buffer_insert(gui_instance.getOutputTextBuffer(), &end, read_line.c_str(), -1);
-            gtk_text_buffer_get_end_iter(gui_instance.getOutputTextBuffer(), &end);
-            gtk_text_buffer_insert(gui_instance.getOutputTextBuffer(), &end, "\n", -1);
+            f.safeGetline( read_stream, read_line );
+            
+            gtk_text_buffer_get_end_iter(gui_instance.getScriptTextBuffer(), &end);
+            gtk_text_buffer_insert(gui_instance.getScriptTextBuffer(), &end, read_line.c_str(), -1);
+            gtk_text_buffer_get_end_iter(gui_instance.getScriptTextBuffer(), &end);
+            gtk_text_buffer_insert(gui_instance.getScriptTextBuffer(), &end, "\n", -1);
             
 //            gtk_entry_set_text(GTK_ENTRY(gui_instance.getCommandTextField()), "");
             
@@ -446,6 +538,36 @@ static void menuitem_load_response( gchar *string )
     gtk_widget_destroy (dialog);
 }
 
+
+static void menuitem_set_wd_response( gchar *string )
+{
+    RevBayesGTK::RbGTKGui& gui_instance = RevBayesGTK::RbGTKGui::globalInstanceGUI();
+    
+    GtkWidget *dialog;
+    
+    dialog = gtk_file_chooser_dialog_new ("Select working directory",
+                                          GTK_WINDOW(gui_instance.getMainWindow()),
+                                          GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          NULL);
+    
+    if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
+    {
+        char *filename;
+        
+        filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+        
+        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager( std::string(filename) );
+        std::cerr << "Full file name:\t\t" << fm.getFullFileName() << std::endl;
+        
+        std::string command = "setwd(\"" + std::string(filename) + + "\");";
+        gui_instance.executeRevCommand(command);
+        
+    }
+    
+    gtk_widget_destroy (dialog);
+}
 
 static void menuitem_source_response( gchar *string )
 {
