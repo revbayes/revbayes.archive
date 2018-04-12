@@ -437,7 +437,7 @@ static void menuitem_load_response( gchar *string )
             
         };
         
-        f.closeFile( readStream );
+        f.closeFile( read_stream );
         
         g_free (filename);
         
