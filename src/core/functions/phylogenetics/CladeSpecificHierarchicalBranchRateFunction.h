@@ -32,7 +32,6 @@ namespace RevBayesCore {
         std::vector<Clade>                                      clades;
         const TypedDagNode< RbVector<double> > *                base_rates;
         const TypedDagNode< RbVector<double> > *                clade_rates;
-        TypedDagNode< RbVector<double> > *                      expanded_clade_rates;
         size_t                                                  n_branches;
         size_t                                                  n_clades;
         std::vector<size_t>                                     flat_clades;

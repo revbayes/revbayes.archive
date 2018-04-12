@@ -179,10 +179,21 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
         return logDet;
     }
    
-    CholeskyDecomposition c = CholeskyDecomposition(&omega);
-    if ( c.checkPositiveSemidefinite() == false )
+    // check positive semidefiniteness
+    if ( omega.isUsingCholesky() == true )
     {
-        return RbConstants::Double::neginf;
+        if ( omega.getCholeskyDecomposition().checkPositiveSemidefinite() == false )
+        {
+            return RbConstants::Double::neginf;
+        }
+    }
+    else
+    {
+        CholeskyDecomposition c = CholeskyDecomposition(&omega);
+        if ( c.checkPositiveSemidefinite() == false )
+        {
+            return RbConstants::Double::neginf;
+        }
     }
 
     size_t dim = x.size();

@@ -66,6 +66,7 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
     const std::string& fn  = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
     bool header            = static_cast<const RlBoolean&>( args[1].getVariable()->getRevObject() ).getValue();
     const std::string& del = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
+    bool rownames          = static_cast<const RlBoolean&>( args[3].getVariable()->getRevObject() ).getValue();
     
     // get data from file
     RevBayesCore::DelimitedDataReader* tsv_data = new RevBayesCore::DelimitedDataReader(fn, del[0], header);
@@ -92,7 +93,7 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
         WorkspaceVector<AbstractModelObject> row;
 
         // make row
-        for (size_t j= 0; j < data[i].size(); ++j)
+        for (size_t j= rownames; j < data[i].size(); ++j)
         {
             int elemtype = 0;
 
@@ -262,6 +263,7 @@ const ArgumentRules& Func_readDataDelimitedFile::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "file",      RlString::getClassTypeSpec(), "The name of the file to read in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "header",    RlBoolean::getClassTypeSpec(), "Skip first line?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
         argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
+        argumentRules.push_back( new ArgumentRule( "rownames",  RlBoolean::getClassTypeSpec(), "Skip first column?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
         rules_set = true;
         
     }
@@ -297,8 +299,21 @@ std::string Func_readDataDelimitedFile::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
     std::string f_name = "readDataDelimitedFile";
-    
+
     return f_name;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::vector<std::string> Func_readDataDelimitedFile::getFunctionNameAliases( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::vector<std::string> f_names;
+    f_names.push_back("readTable");
+
+    return f_names;
 }
 
 

@@ -4,6 +4,7 @@
 #include "TimeInterval.h"
 
 #include <string>
+#include <ostream>
 
 namespace RevBayesCore {
     

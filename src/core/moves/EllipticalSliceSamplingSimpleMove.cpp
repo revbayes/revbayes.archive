@@ -198,7 +198,6 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
     
     // Choose ellipse (Murray step 1)
     std::vector<double> nu = std::vector<double>(variables.size(),0.0);
-    size_t i = 0;
     for (size_t i=0; i<variables.size(); ++i)
     {
         NormalDistribution* normal = dynamic_cast<NormalDistribution *>( &variables[i]->getDistribution() );
@@ -255,7 +254,7 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
         cos_theta = std::cos(theta);
     }
     
-    if ( i == 200 ) {
+    if ( loop_iterations == 200 ) {
         std::abort();
     }
         

@@ -135,7 +135,7 @@ bool Taxon::operator>=(const RevBayesCore::Taxon &t) const
  */
 double Taxon::getAge( void ) const
 {
-    return age_range.getStart();
+    return age_range.getMin();
 }
 
 
@@ -179,8 +179,8 @@ const std::string& Taxon::getSpeciesName( void ) const
  */
 void Taxon::setAge(double a)
 {
-    age_range.setStart(a);
-    age_range.setEnd(a);
+    age_range.setMin(a);
+    age_range.setMax(a);
 }
 
 

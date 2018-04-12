@@ -838,11 +838,7 @@ void Function::processArguments( const std::vector<Argument>& passed_args, bool 
                 double penalty = the_rules[j].isArgumentValid( arg, once );
                 if ( penalty != -1 )
                 {
-                    if (the_rules[j].getArgumentAliases().size() > 1)
-                    {
-                        throw RbException("Could not determine argument label for parameter '" + the_rules[j].getArgumentLabel() + "'.");
-                    }
-                    p_args[i].setLabel( the_rules[j].getArgumentLabel() );
+                    p_args[i].setLabel( the_rules[j].getArgumentAliases().front() );
                     p_args[i]           = the_rules[j].fitArgument( p_args[i], once );
                     taken[i]            = true;
                     if ( the_rules[j].isEllipsis() == false )

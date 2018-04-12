@@ -60,7 +60,8 @@ namespace RevLanguage {
 
         RevPtr<const RevVariable>           taxon;
         RevPtr<const RevVariable>           species;
-        RevPtr<const RevVariable>           age;
+        RevPtr<const RevVariable>           minage;
+        RevPtr<const RevVariable>           maxage;
     };
 }
 
