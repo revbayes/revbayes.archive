@@ -39,9 +39,13 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
                                                                                            bool pa,
                                                                                            bool ex) :
     AbstractBirthDeathProcess(ra, incondition, intaxa, uo),
-    AbstractPiecewiseConstantSerialSampledRangeProcess(inspeciation, inextinction, inpsi, incounts, inrho, intimes, intaxa, pa),
+    AbstractPiecewiseConstantFossilizedRangeProcess(inspeciation, inextinction, inpsi, incounts, inrho, intimes, intaxa, pa),
     extended(ex)
 {
+    for(std::set<const DagNode*>::iterator it = range_parameters.begin(); it != range_parameters.end(); it++)
+    {
+        addParameter(*it);
+    }
 
     redrawValue();
 }
@@ -563,5 +567,5 @@ void PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( void ) c
 void PiecewiseConstantFossilizedBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
-    AbstractPiecewiseConstantSerialSampledRangeProcess::swapParameterInternal(oldP, newP);
+    AbstractPiecewiseConstantFossilizedRangeProcess::swapParameterInternal(oldP, newP);
 }

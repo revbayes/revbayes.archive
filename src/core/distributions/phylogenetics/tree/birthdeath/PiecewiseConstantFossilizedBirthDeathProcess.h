@@ -3,7 +3,7 @@
 
 #include "RbVector.h"
 #include "AbstractBirthDeathProcess.h"
-#include "AbstractPiecewiseConstantSerialSampledRangeProcess.h"
+#include "AbstractPiecewiseConstantFossilizedRangeProcess.h"
 
 namespace RevBayesCore {
     
@@ -28,7 +28,7 @@ namespace RevBayesCore {
      * @since 2014-03-18, version 1.0
      *
      */
-    class PiecewiseConstantFossilizedBirthDeathProcess : public AbstractBirthDeathProcess, public AbstractPiecewiseConstantSerialSampledRangeProcess {
+    class PiecewiseConstantFossilizedBirthDeathProcess : public AbstractBirthDeathProcess, public AbstractPiecewiseConstantFossilizedRangeProcess {
         
         using AbstractBirthDeathProcess::taxa;
 

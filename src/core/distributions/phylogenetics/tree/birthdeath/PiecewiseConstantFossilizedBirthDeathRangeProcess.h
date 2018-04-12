@@ -1,7 +1,7 @@
 #ifndef PiecewiseConstantFossilizedBirthDeathRangeProcess_H
 #define PiecewiseConstantFossilizedBirthDeathRangeProcess_H
 
-#include "AbstractPiecewiseConstantSerialSampledRangeProcess.h"
+#include "AbstractPiecewiseConstantFossilizedRangeProcess.h"
 #include "MatrixReal.h"
 #include "RbVector.h"
 #include "TypedDagNode.h"
@@ -33,7 +33,7 @@ namespace RevBayesCore {
      * @since 2014-03-18, version 1.0
      *
      */
-    class PiecewiseConstantFossilizedBirthDeathRangeProcess : public TypedDistribution<MatrixReal>, public AbstractPiecewiseConstantSerialSampledRangeProcess {
+    class PiecewiseConstantFossilizedBirthDeathRangeProcess : public TypedDistribution<MatrixReal>, public AbstractPiecewiseConstantFossilizedRangeProcess {
         
     public:
         PiecewiseConstantFossilizedBirthDeathRangeProcess (const DagNode *speciation,
