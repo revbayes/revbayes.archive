@@ -227,6 +227,35 @@ add_executable(rb-jupyter ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 target_link_libraries(rb-jupyter rb-parser rb-core libs ${Boost_LIBRARIES})
 set_target_properties(rb-jupyter PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
+elif [ "$cmd" = "true" ]
+then
+echo '
+
+# Use the package PkgConfig to detect GTK+ headers/library files
+FIND_PACKAGE(PkgConfig REQUIRED)
+PKG_CHECK_MODULES(GTK REQUIRED gtk+-2.0)
+
+# Setup CMake to use GTK+, tell the compiler where to look for headers
+# and to the linker where to look for libraries
+INCLUDE_DIRECTORIES(${GTK_INCLUDE_DIRS})
+LINK_DIRECTORIES(${GTK_LIBRARY_DIRS})
+
+# Add other flags to the compiler
+ADD_DEFINITIONS(${GTK_CFLAGS_OTHER})
+
+# Add an executable compiled from hello.c
+ADD_EXECUTABLE(rb-cmd ${PROJECT_SOURCE_DIR}/cmd/main.cpp)
+
+# Link the target to the GTK+ libraries
+#TARGET_LINK_LIBRARIES(hello rb-cmd-lib ${Boost_LIBRARIES} ${GTK_LIBRARIES})
+TARGET_LINK_LIBRARIES(rb-cmd rb-parser rb-core libs rb-cmd-lib ${Boost_LIBRARIES} ${GTK_LIBRARIES})
+
+SET(CMD_FILES ${PROJECT_SOURCE_DIR}/cmd/RbGTKGui.cpp)
+ADD_LIBRARY(rb-cmd-lib ${CMD_FILES})
+
+#target_link_libraries(rb-jupyter rb-parser rb-core libs ${Boost_LIBRARIES})
+SET_TARGET_PROPERTIES(rb-cmd PROPERTIES PREFIX "../")
+' >> $HERE/CMakeLists.txt
 else
 echo '
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
@@ -260,3 +289,4 @@ echo 'set(PARSER_FILES' > "$HERE/revlanguage/CMakeLists.txt"
 find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/revlanguage/CMakeLists.txt"
 echo ')
 add_library(rb-parser ${PARSER_FILES})'  >> "$HERE/revlanguage/CMakeLists.txt"
+
