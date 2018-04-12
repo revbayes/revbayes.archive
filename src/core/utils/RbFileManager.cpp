@@ -3,17 +3,15 @@
 #include "RbSettings.h"
 #include "StringUtilities.h"
 
-#include <boost/filesystem.hpp>
-
 #include <iostream>
 #include <string>
 #include <cstring>
 #include <sys/stat.h>
 #include <cstdlib>
 
-//#ifndef RB_XCODE
-//#include <boost/filesystem.hpp>
-//#endif
+#ifndef RB_XCODE
+#include <boost/filesystem.hpp>
+#endif
 
 //#ifdef WIN32
 //#	include <dirent.h>
@@ -669,12 +667,20 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
     StringUtilities::replaceSubstring(name,"/","\\");
 #   endif
     
+#    ifdef RB_XCODE
+    //    std::filesystem::path path(winPathString); // Construct the path from a string.
+    if ( name.size() > 0 && name[0] != '/' )
+    {
+        name = getCurrentDirectory() + path_separator + input_string;
+    }
+#    else
     boost::filesystem::path tmp_file = boost::filesystem::path(name);
-//    std::filesystem::path path(winPathString); // Construct the path from a string.
+    //    std::filesystem::path path(winPathString); // Construct the path from a string.
     if ( tmp_file.is_absolute() == false )
     {
         name = getCurrentDirectory() + path_separator + input_string;
     }
+#    endif
 
     
     // check if the path is a good one
