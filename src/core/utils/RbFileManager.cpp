@@ -626,7 +626,7 @@ bool RbFileManager::openFile(std::ifstream& strm)
     
     // concatenate path and file name
     std::string file_pathName = file_path + path_separator + file_name;
-    
+        
     // here we assume that the presence of the path/file has
     // been checked elsewhere
     strm.open( file_pathName.c_str(), std::ios::in );
