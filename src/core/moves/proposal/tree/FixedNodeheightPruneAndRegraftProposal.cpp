@@ -110,7 +110,7 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
         return RbConstants::Double::neginf;
     }
     
-    // pick a random node which is not the root and neithor the direct descendant of the root
+    // pick a random node which is neither the root nor the direct descendant of the root
     TopologyNode* node;
     do {
         double u = rng->uniform01();

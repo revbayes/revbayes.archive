@@ -221,11 +221,13 @@ void TopologyNode::addBranchParameters(std::string const &n, const std::vector<s
 
 
 /** Add a child node. We own it from here on. */
-void TopologyNode::addChild(TopologyNode* c)
+void TopologyNode::addChild(TopologyNode* c, size_t pos )
 {
-    
-    // add the child to our internal vector
-    children.push_back(c);
+    // add child to beginning if pos is out of bounds
+    pos = std::min(pos, children.size());
+
+    // add the child at pos offset from the end
+    children.insert((children.rbegin() + pos).base(), c);
     
     // fire tree change event
     if ( tree != NULL )
@@ -235,15 +237,6 @@ void TopologyNode::addChild(TopologyNode* c)
     
     tip_node = false;
     interior_node = true;
-    
-//    bool child_sampled_ancestor = false;
-//    for (size_t i = 0; i < children.size(); i++)
-//    {
-//        child_sampled_ancestor |= ( children[i]->getAge() == age );
-//    }
-//    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );
-//    c->setFossil( c->getAge() > 0.0 && c->isTip() );
-//    fossil          = a < 0.0;
 
 }
 
@@ -1602,13 +1595,15 @@ void TopologyNode::removeAllChildren(void)
 
 
 /** Remove a child from the vector of children */
-void TopologyNode::removeChild(TopologyNode* c)
+size_t TopologyNode::removeChild(TopologyNode* c)
 {
     
     std::vector<TopologyNode* >::iterator it = find(children.begin(), children.end(), c);
+    size_t pos = 0;
     if ( it != children.end() )
     {
-        children.erase(it);
+        // get offset from the end
+        pos = std::distance(children.erase(it), children.end());
     }
     else
     {
@@ -1625,15 +1620,8 @@ void TopologyNode::removeChild(TopologyNode* c)
         tree->getTreeChangeEventHandler().fire( *c, RevBayesCore::TreeChangeEventMessage::TOPOLOGY );
         tree->getTreeChangeEventHandler().fire( *this, RevBayesCore::TreeChangeEventMessage::TOPOLOGY );
     }
-    
-    /*bool child_sampled_ancestor = false;
-    for (size_t i = 0; i < children.size(); i++)
-    {
-        child_sampled_ancestor |= ( children[i]->getAge() == age );
-    }
-    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );*/
 
-
+    return pos;
 }
 
 
