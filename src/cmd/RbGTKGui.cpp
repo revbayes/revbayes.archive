@@ -492,13 +492,11 @@ static void menuitem_set_wd_response( gchar *string )
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
         
         RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager( std::string(filename) );
-        std::cerr << "Full file name:\t\t" << fm.getFullFileName() << std::endl;
         
         std::string fn = std::string(filename);
 #       if defined (RB_WIN)
         StringUtilities::replaceSubstring(fn, "\\", "\\\\");
 #       endif
-        std::cerr << "Tmp file name:\t\t" << fn << std::endl;
 
         std::string command = "setwd(\"" + fn + "\");";
         gui_instance.executeRevCommand(command, false);
