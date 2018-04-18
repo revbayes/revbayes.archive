@@ -450,17 +450,17 @@ void AbstractFileMonitor::openStream( bool reopen )
     
     RbFileManager f = RbFileManager(working_file_name);
     f.createDirectoryForFile();
-        
+            
     // open the stream to the file
     if ( append == true || reopen == true )
     {
-        out_stream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
+        out_stream.open( f.getFullFileName().c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
     }
     else
     {
-        out_stream.open( working_file_name.c_str(), std::fstream::out);
+        out_stream.open( f.getFullFileName().c_str(), std::fstream::out);
         out_stream.close();
-        out_stream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out);
+        out_stream.open( f.getFullFileName().c_str(), std::fstream::in | std::fstream::out);
     }
     
 //    out_stream.close();
