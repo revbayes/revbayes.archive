@@ -2,6 +2,8 @@
 #define RbGTKGui_H
 
 #include <stdio.h>
+#include <string>
+#include <vector>
 #include <gtk/gtk.h>
 
 #include "RevLanguageMain.h"
