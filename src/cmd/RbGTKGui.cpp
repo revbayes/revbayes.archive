@@ -496,7 +496,7 @@ static void menuitem_set_wd_response( gchar *string )
         
         std::string fn = std::string(filename);
 #       if defined (RB_WIN)
-        RevBayesCore::StringUtilities::replaceSubstring(fn, "\\", "\\\\");
+        StringUtilities::replaceSubstring(fn, "\\", "\\\\");
 #       endif
         std::cerr << "Tmp file name:\t\t" << fn << std::endl;
 
