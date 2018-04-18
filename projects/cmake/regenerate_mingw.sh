@@ -58,13 +58,8 @@ if [ "$mac" = "true" ]
 then
 ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
-#./bootstrap.sh --with-libraries=filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
-#./b2 link=static macosx-version-min=10.6
 else
-#./bootstrap.bat --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals gcc
 ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals --with-toolset=mingw
-#sed -e s/gcc/mingw/ project-config.jam > project-config.jam
-#sed -i 's/\bmingw\b/gcc/' project-config.jam > project-config.jam
 ./b2 link=static
 fi
 
@@ -112,8 +107,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 elif [ "$win" = "true" ]
 then
 echo '
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -static -std=gnu++98 -static-libgcc -static-libstdc++")
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -static -static-libgcc")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -static -std=gnu++98")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -static")
 '  >> "$HERE/CMakeLists.txt"
@@ -165,7 +158,6 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 SET(BOOST_ROOT ../../../boost_1_60_0)
 SET(Boost_USE_STATIC_RUNTIME true)
 SET(Boost_USE_STATIC_LIBS ON)
-#find_package(Boost 1.60.0 COMPONENTS regex signals thread date_time program_options serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
 find_package(Boost
 1.60.0
 COMPONENTS regex
@@ -180,7 +172,6 @@ MESSAGE("Boost information:")
 MESSAGE("  Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIR}")
 MESSAGE("  Boost_LIBRARIES: ${Boost_LIBRARIES}")
 MESSAGE("  Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
-#INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 
@@ -245,10 +236,7 @@ PKG_CHECK_MODULES(GTK REQUIRED gtk+-2.0)
 
 # Setup CMake to use GTK+, tell the compiler where to look for headers
 # and to the linker where to look for libraries
-#INCLUDE_DIRECTORIES(${GTK_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES( /mingw64/include/gtk-2.0;/mingw64/lib/gtk-2.0/include;/mingw64/include/pango-1.0;/mingw64/include/fribidi;/mingw64/include/cairo;/mingw64/include/atk-1.0;/mingw64/include/cairo;/mingw64/include/pixman-1;/mingw64/include;/mingw64/include/freetype2;/mingw64/include;/mingw64/include/harfbuzz;/mingw64/include/libpng16;/mingw64/include/gdk-pixbuf-2.0;/mingw64/include/libpng16;/mingw64/include;/mingw64/include/glib-2.0;/mingw64/lib/glib-2.0/include;/mingw64/include )
-
-#LINK_DIRECTORIES(${GTK_LIBRARY_DIRS})
 LINK_DIRECTORIES( /mingw64/lib )
 
 # Add other flags to the compiler
