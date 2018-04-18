@@ -525,6 +525,10 @@ static void menuitem_source_response( gchar *string )
         
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
 
+#       if defined (RB_WIN)
+        StringUtilities::replaceSubstring(filename, "\\", "\\\\");
+#       endif
+        
         std::string command = "source(\"" + std::string(filename) + "\");";
         gui_instance.executeRevCommand(command, false);
         
