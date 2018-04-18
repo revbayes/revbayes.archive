@@ -14,7 +14,8 @@ fi
     mv GitVersion.cpp ../../src/revlanguage/utils/
 
 	./regenerate.sh $@
-	cd build && cmake .
+	cd build 
+	CC=gcc CXX=g++ cmake .
 	make -j 4
 	cd ..
 	
