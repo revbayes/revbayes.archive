@@ -361,7 +361,8 @@ void RevLanguage::Parser::setParserMode(ParserMode mode)
  *       signal is set to 2. Any remaining part of the command buffer
  *       is discarded.
  */
-int RevLanguage::Parser::processCommand(std::string& command, Environment* env) {
+int RevLanguage::Parser::processCommand(std::string& command, Environment* env)
+{
 
     // make sure mode is not checking
     this->setParserMode(EXECUTING);
