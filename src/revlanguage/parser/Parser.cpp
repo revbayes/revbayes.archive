@@ -367,8 +367,6 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env)
     // make sure mode is not checking
     this->setParserMode(EXECUTING);
 
-    //    extern Environment* executionEnvironment;
-
     executionEnvironment = env;
 
     // Break command into Rev lines
