@@ -59,6 +59,7 @@ then
 ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
 elif [ "$win" = "true" ]
+then
 ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals --with-toolset=mingw
 ./b2 link=static
 else
