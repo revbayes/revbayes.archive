@@ -311,7 +311,12 @@ std::string RbFileManager::getFullFilePath( void ) const
     
     // check if file_path is relative or absolute
     // add current working path only if relative
+#    ifdef RB_XCODE
     if ( file_path.size() > 0 && path_separator[0] != file_path[0] )
+#    else
+    boost::filesystem::path tmp_file = boost::filesystem::path(file_path);
+    if ( tmp_file.is_absolute() == false )
+#    endif
     {
         
         fullfile_path = RbSettings::userSettings().getWorkingDirectory() + path_separator + file_path;
