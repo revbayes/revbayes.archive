@@ -53,7 +53,11 @@ namespace RevBayesCore {
         size_t                                              sample_block_start;
         size_t                                              sample_block_end;
         size_t                                              sample_block_size;
-        
+
+#ifdef RB_MPI
+        std::vector<size_t>                                 pid_per_sample;
+#endif
+
         std::vector<double>                                 ln_probs;
 //        size_t                                              num_taxa;
 //        std::vector<Taxon>                                  taxa;
