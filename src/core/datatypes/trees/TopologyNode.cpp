@@ -1159,31 +1159,34 @@ TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict)
         
     }
     
-    // now check, if required, that the contained clade is monophyletic in the containing clade.
-    if ( strict == true )
+   
+    // we already know from our check above that all taxa from the contained clade are present in this clade.
+    // so we just need to check if there are additional taxa in this clade
+    // and if so, then we need to check that the contained clade is contained in one of my children.
+    if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
     {
-        // we already know from our check above that all taxa from the contained clade are present in this clade.
-        // so we just need to check if there are additional taxa in this clade
-        // and if so, then we need to check that the contained clade is contained in one of my children.
-        if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
+            
+        // loop over all children
+        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
         {
-            
-            // loop over all children
-            for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
+            // check if the clade is contained in this child
+            TopologyNode *is_contained_in_child = (*it)->getNode( your_taxa, strict );
+            if ( is_contained_in_child != NULL )
             {
-                // check if the clade is contained in this child
-                TopologyNode *is_contained_in_child = (*it)->getNode( your_taxa, strict );
-                if ( is_contained_in_child != NULL )
-                {
-                    // yeah, so we can abort and return true
-                    return is_contained_in_child;
-                }
+                // yeah, so we can abort and return true
+                return is_contained_in_child;
             }
-            
-            return NULL;
         }
         
+        // now check, if required, that the contained clade is monophyletic in the containing clade.
+        // this will only be done if we haven't found the clade within one of our children
+        if ( strict == true )
+        {
+            return NULL;
+        }
+
     }
+    
     
     return this;
 }
@@ -1235,27 +1238,28 @@ const TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict
         
     }
     
-    // now check, if required, that the contained clade is monophyletic in the containing clade.
-    if ( strict == true )
+    // we already know from our check above that all taxa from the contained clade are present in this clade.
+    // so we just need to check if there are additional taxa in this clade
+    // and if so, then we need to check that the contained clade is contained in one of my children.
+    if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
     {
-        // we already know from our check above that all taxa from the contained clade are present in this clade.
-        // so we just need to check if there are additional taxa in this clade
-        // and if so, then we need to check that the contained clade is contained in one of my children.
-        if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
+            
+        // loop over all children
+        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
         {
-            
-            // loop over all children
-            for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
+            // check if the clade is contained in this child
+            TopologyNode *is_contained_in_child = (*it)->getNode( your_taxa, strict );
+            if ( is_contained_in_child != NULL )
             {
-                // check if the clade is contained in this child
-                TopologyNode *is_contained_in_child = (*it)->getNode( your_taxa, strict );
-                if ( is_contained_in_child != NULL )
-                {
-                    // yeah, so we can abort and return true
-                    return is_contained_in_child;
-                }
+                // yeah, so we can abort and return true
+                return is_contained_in_child;
             }
-            
+        }
+        
+        // now check, if required, that the contained clade is monophyletic in the containing clade.
+        // this will only be done if we haven't found the clade within one of our children
+        if ( strict == true )
+        {
             return NULL;
         }
         
