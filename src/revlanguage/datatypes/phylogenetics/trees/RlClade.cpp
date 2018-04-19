@@ -176,6 +176,15 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Clade::executeMethod(std::string c
         RevBayesCore::Taxon t = this->dag_node->getValue().getTaxon( index );
         return new RevVariable( new Taxon( t ) );
     }
+    else if (name == "setNumberOfTaxaMissing" )
+    {
+        found = true;
+        int n = (int)static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue();
+        
+        this->dag_node->getValue().setNumberMissingTaxa( n );
+        return NULL;
+    }
+    
     
     return ModelObject<RevBayesCore::Clade>::executeMethod( name, args, found );
 }
@@ -269,7 +278,11 @@ void Clade::initMethods( void )
     ArgumentRules* taxaArgRules = new ArgumentRules();
     taxaArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "getTaxon", Taxon::getClassTypeSpec(), taxaArgRules ) );
-    
+
+    ArgumentRules* set_num_missing_arg_rules = new ArgumentRules();
+    set_num_missing_arg_rules->push_back( new ArgumentRule( "n", Natural::getClassTypeSpec(), "The number of missing taxa.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setNumberOfTaxaMissing", RlUtils::Void, set_num_missing_arg_rules ) );
+
     
 }
 

@@ -613,7 +613,7 @@ bool TopologyNode::containsClade(const RbBitSet &your_taxa, bool strict) const
     
     if ( your_taxa.size() != my_taxa.size() )
     {
-        throw RbException("Problem in bit representation of clades.");
+        throw RbException("Cannot check if the clade is contained within a node because of a problem in bit representation of clades.");
     }
     
     // this node needs to have at least as many taxa to contain the other clade
@@ -824,7 +824,7 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
     // sanity check
     if ( your_taxa.size() != my_taxa.size() )
     {
-        throw RbException("Problem in bit representation of clades.");
+        throw RbException("Cannot compute the clade index because of a problem in bit representation of clades.");
     }
     
     // this node needs to have at least as many taxa to contain the other clade
@@ -1130,7 +1130,7 @@ TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict)
     
     if ( your_taxa.size() != my_taxa.size() )
     {
-        throw RbException("Problem in bit representation of clades.");
+        throw RbException("Cannot retrieve a node because of a problem in bit representation of clades.");
     }
     
     // this node needs to have at least as many taxa to contain the other clade
@@ -1206,7 +1206,7 @@ const TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict
     
     if ( your_taxa.size() != my_taxa.size() )
     {
-        throw RbException("Problem in bit representation of clades.");
+        throw RbException("Cannot retrieve a (const) node because of a problem in bit representation of clades.");
     }
     
     // this node needs to have at least as many taxa to contain the other clade

@@ -98,9 +98,9 @@ Clade::Clade(const RbBitSet &b, const std::vector<Taxon> &n) :
     is_optional_match(false)
 {
 
-    for(size_t i = 0; i < b.size(); i++)
+    for (size_t i = 0; i < b.size(); i++)
     {
-        if( b.isSet(i) )
+        if ( b.isSet(i) )
         {
             taxa.push_back(n[i]);
         }
