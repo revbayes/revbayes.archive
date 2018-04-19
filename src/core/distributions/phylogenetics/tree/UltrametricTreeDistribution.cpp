@@ -11,6 +11,11 @@
 #include <algorithm>
 #include <cmath>
 
+
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 using namespace RevBayesCore;
 
 UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree>* tp, TypedDistribution<double>* rp, TypedDagNode<double> *ra, const TraceTree &tree_trace) : TypedDistribution<Tree>( new Tree() ),
@@ -58,8 +63,8 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree
     sample_block_start = 0;
     sample_block_end   = num_samples;
 #ifdef RB_MPI
-    sample_block_start = size_t(floor( (double(this->pid-this->active_PID)   / this->num_processes ) * num_samples) );
-    sample_block_end   = size_t(floor( (double(this->pid+1-this->active_PID) / this->num_processes ) * num_samples) );
+    sample_block_start = size_t(floor( (double(this->pid - this->active_PID)   / this->num_processes ) * num_samples) );
+    sample_block_end   = size_t(floor( (double(this->pid+1 - this->active_PID) / this->num_processes ) * num_samples) );
 #endif
     sample_block_size  = sample_block_end - sample_block_start;
     

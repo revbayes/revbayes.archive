@@ -53,6 +53,7 @@
 
 /* Moves on real values */
 #include "Move_HSRFHyperpriorsGibbs.h"
+#include "Move_HSRFUnevenGridHyperpriorsGibbs.h"
 #include "Move_SliceSampling.h"
 #include "Move_Scale.h"
 #include "Move_GammaScale.h"
@@ -238,6 +239,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 
         /* Moves on vectors */
         addTypeWithConstructor( new Move_HSRFHyperpriorsGibbs() );
+        addTypeWithConstructor( new Move_HSRFUnevenGridHyperpriorsGibbs() );
         addTypeWithConstructor( new Move_SingleElementSlide() );
         addTypeWithConstructor( new Move_SingleElementScale() );
         addTypeWithConstructor( new Move_ShrinkExpand() );

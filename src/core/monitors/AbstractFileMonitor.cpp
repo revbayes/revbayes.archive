@@ -92,7 +92,7 @@ void AbstractFileMonitor::addFileExtension(const std::string &s, bool dir)
         RbFileManager fm = RbFileManager(filename);
         working_file_name = fm.getFilePath() + fm.getPathSeparator() + s + fm.getPathSeparator() + fm.getFileName();
     }
-    
+
 }
 
 
@@ -117,9 +117,10 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps, MonteCarloAnalysisOp
         int sample_number = 0;
         
         // open the stream to the file
-        combined_output_stream.open( filename.c_str(), std::fstream::out);
+        RbFileManager fm = RbFileManager(filename);
+        combined_output_stream.open( fm.getFullFileName().c_str(), std::fstream::out);
         combined_output_stream.close();
-        combined_output_stream.open( filename.c_str(), std::fstream::in | std::fstream::out);
+        combined_output_stream.open( fm.getFullFileName().c_str(), std::fstream::in | std::fstream::out);
         
         if ( tc == MonteCarloAnalysisOptions::SEQUENTIAL )
         {
@@ -128,7 +129,6 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps, MonteCarloAnalysisOp
                 std::stringstream ss;
                 ss << "_run_" << (i+1);
                 std::string s = ss.str();
-                RbFileManager fm = RbFileManager(filename);
                 std::string current_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + s + "." + fm.getFileExtension();
             
                 RbFileManager current_fm = RbFileManager(current_file_name);
@@ -450,17 +450,17 @@ void AbstractFileMonitor::openStream( bool reopen )
     
     RbFileManager f = RbFileManager(working_file_name);
     f.createDirectoryForFile();
-        
+            
     // open the stream to the file
     if ( append == true || reopen == true )
     {
-        out_stream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
+        out_stream.open( f.getFullFileName().c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
     }
     else
     {
-        out_stream.open( working_file_name.c_str(), std::fstream::out);
+        out_stream.open( f.getFullFileName().c_str(), std::fstream::out);
         out_stream.close();
-        out_stream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out);
+        out_stream.open( f.getFullFileName().c_str(), std::fstream::in | std::fstream::out);
     }
     
 //    out_stream.close();

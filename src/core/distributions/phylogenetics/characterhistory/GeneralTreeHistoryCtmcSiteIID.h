@@ -200,6 +200,7 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
 //        std::cerr << "Rejecting (invalid times)." << std::endl;
         return RbConstants::Double::neginf;
     }
+//    bh->print();
 
     // check parent and child states to make sure they match with the
     // ancestral and descendant branches; otherwise, return -Inf
@@ -229,7 +230,7 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
     std::vector<size_t> counts = computeCounts(curr_state);
 
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
-    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+    std::multiset<CharacterEvent*,CharacterEventCompare>::reverse_iterator it_h;
 
     // stepwise events
     double lnL = 0.0;
@@ -237,7 +238,13 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
     double end_age = node.getAge();
     double event_age;
     
-    for (it_h = history.begin(); it_h != history.end(); ++it_h)
+//    if ( history.size() > 1 )
+//    {
+//        
+//        double dummy = 0.0;
+//    }
+    
+    for (it_h = history.rbegin(); it_h != history.rend(); ++it_h)
     {
         CharacterEventDiscrete* char_event = static_cast<CharacterEventDiscrete*>(*it_h);
 
@@ -250,7 +257,7 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
         double tr = rm.getRate(static_cast<CharacterEventDiscrete*>(curr_state[idx])->getState(), char_event->getState(), current_age, branch_rate);
         double sr = rm.getSumOfRates(curr_state, counts) * branch_rate;
         lnL += log(tr) - sr * (current_age - event_age);
-
+        
         // update counts
         counts[static_cast<CharacterEventDiscrete*>(curr_state[idx])->getState()] -= 1;
         counts[s] += 1;

@@ -2,6 +2,7 @@
 #include "RbUtil.h"
 #include "StringUtilities.h"
 #include "RlUserInterface.h"
+#include "RlUserInterfaceOutputStream.h"
 
 #if defined (RB_MPI)
 #include <mpi.h>
@@ -11,7 +12,8 @@ using namespace RevLanguage;
 
 
 UserInterface::UserInterface( void ) :
-    process_id( 0 )
+    process_id( 0 ),
+    output_stream( NULL )
 {
 #if defined (RB_MPI)
     MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
@@ -70,7 +72,8 @@ void UserInterface::output(std::string msg)
     if ( process_id == 0 )
     {
         std::string pad = "   ";
-        std::cout << StringUtilities::formatStringForScreen( msg, pad, pad, RbSettings::userSettings().getLineWidth() );
+        std::string tmp = StringUtilities::formatStringForScreen( msg, pad, pad, RbSettings::userSettings().getLineWidth() );
+        output_stream->output(tmp);
     }
     
 }
@@ -88,7 +91,8 @@ void UserInterface::output(std::string msg, const bool hasPadding)
         }
         else
         {
-            std::cout << msg << std::endl;
+            output_stream->output(msg);
+            output_stream->outputEndOfLine();
         }
         
     }
@@ -96,8 +100,14 @@ void UserInterface::output(std::string msg, const bool hasPadding)
 
 
 /** Convert to string and then call output to print message string */
-void UserInterface::output(std::ostringstream msg) {
+void UserInterface::output(std::ostringstream msg)
+{
 
     output( msg.str() );
 }
 
+
+void UserInterface::setOutputStream(UserInterfaceOutputStream *o)
+{
+    output_stream = o;
+}

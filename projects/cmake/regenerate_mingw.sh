@@ -58,12 +58,8 @@ if [ "$mac" = "true" ]
 then
 ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
-elif [ "$win" = "true" ]
-then
-./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals --with-toolset=mingw
-./b2 link=static
 else
-./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals --with-toolset=mingw
 ./b2 link=static
 fi
 
@@ -237,59 +233,36 @@ echo '
 FIND_PACKAGE(PkgConfig REQUIRED)
 PKG_CHECK_MODULES(GTK REQUIRED gtk+-2.0)
 #PKG_CHECK_MODULES(GTK REQUIRED gtk+-3.0)
-' >> $HERE/CMakeLists.txt
 
 # Setup CMake to use GTK+, tell the compiler where to look for headers
 # and to the linker where to look for libraries
-if [ "$win" = "true" ]
-then
-echo '
 INCLUDE_DIRECTORIES( /mingw64/include/gtk-2.0;/mingw64/lib/gtk-2.0/include;/mingw64/include/pango-1.0;/mingw64/include/fribidi;/mingw64/include/cairo;/mingw64/include/atk-1.0;/mingw64/include/cairo;/mingw64/include/pixman-1;/mingw64/include;/mingw64/include/freetype2;/mingw64/include;/mingw64/include/harfbuzz;/mingw64/include/libpng16;/mingw64/include/gdk-pixbuf-2.0;/mingw64/include/libpng16;/mingw64/include;/mingw64/include/glib-2.0;/mingw64/lib/glib-2.0/include;/mingw64/include )
 LINK_DIRECTORIES( /mingw64/lib )
-' >> $HERE/CMakeLists.txt
-else
-echo '
-INCLUDE_DIRECTORIES(${GTK_INCLUDE_DIRS})
-LINK_DIRECTORIES(${GTK_LIBRARY_DIRS})
-' >> $HERE/CMakeLists.txt
-fi
 
-echo '
 # Add other flags to the compiler
 ADD_DEFINITIONS(${GTK_CFLAGS_OTHER})
 
 # Add an executable compiled from hello.c
 ADD_EXECUTABLE(RevStudio ${PROJECT_SOURCE_DIR}/cmd/main.cpp)
-' >> $HERE/CMakeLists.txt
 
 # Link the target to the GTK+ libraries
-if [ "$win" = "true" ]
-then
-echo '
-TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRARIES}
-"/mingw64/lib/libgtk-win32-2.0.dll.a"
-"/mingw64/lib/libgdk-win32-2.0.dll.a"
-"/mingw64/lib/libpangowin32-1.0.dll.a"
-"/mingw64/lib/libpangocairo-1.0.dll.a"
-"/mingw64/lib/libpango-1.0.dll.a"
-"/mingw64/lib/libfribidi.dll.a"
-"/mingw64/lib/libatk-1.0.dll.a"
-"/mingw64/lib/libcairo.dll.a"
-"/mingw64/lib/libgdk_pixbuf-2.0.dll.a"
-"/mingw64/lib/libgio-2.0.dll.a"
-"/mingw64/lib/libgobject-2.0.dll.a"
-"/mingw64/lib/libglib-2.0.dll.a"
+TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRARIES} 
+"/mingw64/lib/libgtk-win32-2.0.dll.a" 
+"/mingw64/lib/libgdk-win32-2.0.dll.a" 
+"/mingw64/lib/libpangowin32-1.0.dll.a" 
+"/mingw64/lib/libpangocairo-1.0.dll.a" 
+"/mingw64/lib/libpango-1.0.dll.a" 
+"/mingw64/lib/libfribidi.dll.a" 
+"/mingw64/lib/libatk-1.0.dll.a" 
+"/mingw64/lib/libcairo.dll.a" 
+"/mingw64/lib/libgdk_pixbuf-2.0.dll.a" 
+"/mingw64/lib/libgio-2.0.dll.a" 
+"/mingw64/lib/libgobject-2.0.dll.a" 
+"/mingw64/lib/libglib-2.0.dll.a" 
 "/mingw64/lib/libintl.dll.a"
 )
-' >> $HERE/CMakeLists.txt
-else
-echo '
-TARGET_LINK_LIBRARIES(RevStudio rb-parser rb-core libs rb-cmd-lib ${Boost_LIBRARIES} ${GTK_LIBRARIES})
-' >> $HERE/CMakeLists.txt
-fi
-
-echo '
 SET_TARGET_PROPERTIES(RevStudio PROPERTIES PREFIX "../")
+#SET_PROPERTY(TARGET rb-cmd PROPERTY CXX_STANDARD 98)
 
 add_subdirectory(cmd)
 ' >> $HERE/CMakeLists.txt
@@ -297,10 +270,13 @@ add_subdirectory(cmd)
 if [ ! -d "$HERE/cmd" ]; then
 mkdir "$HERE/cmd"
 fi
-echo 'SET(CMD_FILES' > "$HERE/cmd/CMakeLists.txt"
+echo 'set(CMD_FILES' > "$HERE/cmd/CMakeLists.txt"
 find cmd | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/cmd/CMakeLists.txt"
 echo ')
 ADD_LIBRARY(rb-cmd-lib ${CMD_FILES})'  >> "$HERE/cmd/CMakeLists.txt"
+
+#SET(CMD_FILES ${PROJECT_SOURCE_DIR}/cmd/RbGTKGui.cpp)
+#ADD_LIBRARY(rb-cmd-lib ${CMD_FILES})
 
 else
 echo '
