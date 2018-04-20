@@ -365,20 +365,6 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
         
             proposal->cleanProposal();
         }
-        else if (ln_acceptance_ratio < -300.0)
-        {
-            rejected = true;
-            
-            proposal->undoProposal();
-        
-            // call restore for each node
-            for (size_t i = 0; i < touched_nodes.size(); ++i)
-            {
-                // get the pointer to the current node
-                DagNode* the_node = touched_nodes[i];
-                the_node->restore();
-            }
-        }
         else
         {
             double r = exp(ln_acceptance_ratio);

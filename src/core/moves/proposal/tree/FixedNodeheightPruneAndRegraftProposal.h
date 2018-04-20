@@ -53,6 +53,10 @@ namespace RevBayesCore {
         bool                                    failed;
         TopologyNode*                           storedBrother;
         TopologyNode*                           storedNewBrother;
+
+        size_t                                  storedBrotherPos;
+        size_t                                  storedNewBrotherPos;
+        size_t                                  storedParentPos;
     };
     
 }
