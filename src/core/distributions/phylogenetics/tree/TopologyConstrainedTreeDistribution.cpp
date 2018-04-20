@@ -734,7 +734,6 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
             
         }
         
-        std::cerr << "Adding " << c.getNumberMissingTaxa() << " missing species to the clade." << std::endl;
 
         // here we need to start adding our "fake" tips
         for ( int index_missing_species = 0; index_missing_species < c.getNumberMissingTaxa(); ++index_missing_species)
@@ -763,7 +762,6 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
             clade_age = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
         }
         
-        std::cerr << "Simulate a clade with " << nodes_in_clade.size() << " nodes." << std::endl;
         tree_base_distribution->simulateClade(nodes_in_clade, clade_age, 0.0);
         nodes.push_back( nodes_in_clade[0] );
         
