@@ -271,13 +271,15 @@ void Tree::dropTipNode( size_t index )
         grand_parent.addChild( sibling );
         sibling->setParent( &grand_parent );
 
-        // update character history for stochastic maps
-        if (parent.getTimeInState().size() > 0)
+        // update character history 
+        if (parent.getTimeInState().size() > 0 && sibling->getTimeInState().size() > 0)
         {
+            std::vector<double> sibling_state_times = sibling->getTimeInState();
             for (size_t i = 0; i < parent.getTimeInState().size(); i++)
             {
-                grand_parent.getTimeInState()[i] += parent.getTimeInState()[i];
+                sibling_state_times[i] += parent.getTimeInState()[i];
             }
+            sibling->setTimeInState(sibling_state_times);
         }
     }
     else
@@ -292,6 +294,10 @@ void Tree::dropTipNode( size_t index )
             root->removeChild(&node);
             sibling->setParent(NULL);
             root = sibling;
+            if (root->getTimeInState().size() > 0)
+            {
+                root->setTimeInState(std::vector<double>(root->getTimeInState().size(), 0.0));
+            }
         }
         else
         {
@@ -299,22 +305,13 @@ void Tree::dropTipNode( size_t index )
         }
     }
     
-    bool resetIndex = true;
-    
     nodes.clear();
     
     // bootstrap all nodes from the root and add the in a pre-order traversal
     fillNodesByPhylogeneticTraversal(root);
-    if ( resetIndex == true )
+    for (unsigned int i = 0; i < nodes.size(); ++i)
     {
-        for (unsigned int i = 0; i < nodes.size(); ++i)
-        {
-            nodes[i]->setIndex(i);
-        }
-    }
-    else
-    {
-        orderNodesByIndex();
+        nodes[i]->setIndex(i);
     }
     
     num_nodes = nodes.size();

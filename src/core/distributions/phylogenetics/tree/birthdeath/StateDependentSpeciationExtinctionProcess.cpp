@@ -1947,8 +1947,8 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
         }
     }
     
-    // sample ancestor, left, and right character states from probs
-    size_t a = 0, l = 0, r = 0;
+    // sample left and right character states from probs
+    size_t l = 0, r = 0;
     
     if (sample_probs_sum == 0)
     {
@@ -1960,7 +1960,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             if (u < v)
             {
                 const std::vector<unsigned>& states = it->first;
-                a = states[0];
                 l = states[1];
                 r = states[2];
                 break;
@@ -1979,7 +1978,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             if (u < 0.0)
             {
                 const std::vector<unsigned>& states = it->first;
-                a = states[0];
                 l = states[1];
                 r = states[2];
                 break;
@@ -2129,7 +2127,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
         // determine which lineage gets the event
         size_t event_index = 0;
         u = rng->uniform01() * static_cast<double>(lineages_in_state[event_state].size());
-        event_index = floor(lineages_in_state[event_state][u]);
+        event_index = lineages_in_state[event_state][floor(u)];
 
         if (event_type == "extinction")
         {
@@ -2194,8 +2192,8 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                 sample_probs_sum += speciation_rates[event_state];
             }
             
-            // sample ancestor, left, and right character states from probs
-            size_t a = 0, l = 0, r = 0;
+            // sample left and right character states from probs
+            size_t l = 0, r = 0;
             
             if (sample_probs_sum == 0)
             {
@@ -2207,7 +2205,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                     if (u < v)
                     {
                         const std::vector<unsigned>& states = it->first;
-                        a = states[0];
                         l = states[1];
                         r = states[2];
                         break;
@@ -2226,7 +2223,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                     if (u < 0.0)
                     {
                         const std::vector<unsigned>& states = it->first;
-                        a = states[0];
                         l = states[1];
                         r = states[2];
                         break;
