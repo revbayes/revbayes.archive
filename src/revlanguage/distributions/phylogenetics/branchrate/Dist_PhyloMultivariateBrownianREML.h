@@ -39,6 +39,8 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       site_rates;
         RevPtr<const RevVariable>                       nSites;
         RevPtr<const RevVariable>                       rate_matrix;
+        RevPtr<const RevVariable>                       method;
+
         
         
     };

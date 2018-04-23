@@ -35,10 +35,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     size_t n_nodes = tau->getValue().getNumberOfNodes();
+    const std::string& mt = static_cast<const RlString &>( method->getRevObject() ).getValue();
     
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* vcv = static_cast<const MatrixRealSymmetric&>( rate_matrix->getRevObject() ).getDagNode();
 
-    RevBayesCore::PhyloMultivariateBrownianProcessREML *dist = new RevBayesCore::PhyloMultivariateBrownianProcessREML(tau, vcv, n);
+    RevBayesCore::PhyloMultivariateBrownianProcessREML *dist = new RevBayesCore::PhyloMultivariateBrownianProcessREML(tau, vcv, n, mt);
 
     // set the clock rates
     if ( branchRates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
@@ -143,6 +144,11 @@ const MemberRules& Dist_PhyloMultivariateBrownianREML::getParameterRules(void) c
         
         dist_member_rules.push_back( new ArgumentRule( "nSites"         ,  Natural::getClassTypeSpec(), "The number of sites used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
 
+        std::vector<std::string> options;
+        options.push_back( "MVN" );
+        options.push_back( "transform" );
+        dist_member_rules.push_back( new OptionRule( "method", new RlString("MVN"), options, "How to compute the multivariate probabilities." ) );
+
         
         rules_set = true;
     }
@@ -229,6 +235,11 @@ void Dist_PhyloMultivariateBrownianREML::setConstParameter(const std::string& na
     {
         rate_matrix = var;
     }
+    else if ( name == "method" )
+    {
+        method = var;
+    }
+
     else
     {
         Distribution::setConstParameter(name, var);

@@ -19,7 +19,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        PhyloMultivariateBrownianProcessREML(const TypedDagNode<Tree> *t, const TypedDagNode<MatrixReal> *c, size_t nSites );
+        PhyloMultivariateBrownianProcessREML(const TypedDagNode<Tree> *t, const TypedDagNode<MatrixReal> *c, size_t nSites, std::string mt );
         virtual                                                            ~PhyloMultivariateBrownianProcessREML(void);                                                              //!< Virtual destructor
         
         // public member functions
@@ -44,6 +44,7 @@ namespace RevBayesCore {
         std::vector<double>                                                 simulateRootCharacters(size_t n);
         virtual void                                                        simulateRecursively(const TopologyNode& node, std::vector< ContinuousTaxonData > &t);
         virtual void                                                        touchSpecialization(DagNode *toucher, bool touchAll);
+        void                                                                eigenTransformCharacters( void );
 
         // Parameter management functions.
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter
@@ -66,6 +67,9 @@ namespace RevBayesCore {
         const TypedDagNode< MatrixReal >*                                   rate_matrix;
         size_t                                                              active_matrix;
         std::vector<MatrixReal>                                             precision_matrices;
+        
+        std::string                                                         method;
+        EigenSystem*                                                        theEigenSystem;
         
     };
     

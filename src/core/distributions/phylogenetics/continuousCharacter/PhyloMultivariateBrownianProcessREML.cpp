@@ -4,13 +4,14 @@
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "TopologyNode.h"
+#include "EigenSystem.h"
 
 #include <cmath>
 
 
 using namespace RevBayesCore;
 
-PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const TypedDagNode<Tree> *t, const TypedDagNode<MatrixReal> *c, size_t ns) :
+PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const TypedDagNode<Tree> *t, const TypedDagNode<MatrixReal> *c, size_t ns, std::string mt) :
     AbstractPhyloBrownianProcess( t, ns ),
     partial_likelihoods( std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) ) ),
     contrasts( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0.0) ) ) ),
@@ -22,7 +23,8 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     dirty_nodes( std::vector<bool>(this->num_nodes, true) ),
     rate_matrix( c ),
     active_matrix(0),
-    precision_matrices( std::vector<MatrixReal>( 2, MatrixReal(num_sites) ) )
+    precision_matrices( std::vector<MatrixReal>( 2, MatrixReal(num_sites) ) ),
+    method(mt)
 {
     
     // add the parameters to our set
@@ -36,6 +38,13 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     precision_matrices[0].setCholesky(true);
     precision_matrices[1] = rate_matrix->getValue().computeInverse();
     precision_matrices[1].setCholesky(true);
+    
+    // transform the data if necessary
+    if (method == "transform") {
+        // TODO: re-transform data
+        theEigenSystem = new EigenSystem(&rate_matrix->getValue());
+        eigenTransformCharacters();
+    }
     
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -107,7 +116,31 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
     
 }
 
+void PhyloMultivariateBrownianProcessREML::eigenTransformCharacters( void )
+{
+    
+    // just for safety, make sure we don't call this if we're not using method == "transform"
+    if ( method != "transform" )
+    {
+        return;
+    }
+    
+    // make sure that the eigen system is up-to-date
+    theEigenSystem->updatePositiveEigenvalues();
+    
+    
+    
+    MatrixReal the_eigen_vectors = theEigenSystem->getEigenvectors();
+    
+    MatrixReal hopefully_the_right_answer = the_eigen_vectors * the_eigen_vectors.getTranspose();
+    
+    
+    double dummy = 0.0;
 
+    
+    
+    
+}
 
 void PhyloMultivariateBrownianProcessREML::fireTreeChangeEvent( const TopologyNode &n, const unsigned& m )
 {
@@ -398,6 +431,12 @@ void PhyloMultivariateBrownianProcessREML::resetValue( void )
         changed_nodes[index] = true;
     }
     
+    // re-transform data if necessary
+    if (method == "transform") {
+        // TODO: re-transform data
+    }
+
+    
 }
 
 
@@ -408,6 +447,11 @@ void PhyloMultivariateBrownianProcessREML::restoreSpecialization( DagNode* affec
     if ( affecter == rate_matrix )
     {
         active_matrix = (active_matrix == 0 ? 1 : 0);
+        
+        if (method == "transform") {
+            // TODO: re-transform data
+        }
+
     }
     
     // reset the flags
@@ -531,6 +575,11 @@ void PhyloMultivariateBrownianProcessREML::touchSpecialization( DagNode* affecte
         
         // we need to recompute the likelihood
         touchAll = true;
+        
+        if (method == "transform") {
+            // TODO: re-transform data
+        }
+        
     }
     else if ( affecter != this->tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     {
@@ -577,6 +626,11 @@ void PhyloMultivariateBrownianProcessREML::swapParameterInternal(const DagNode *
         precision_matrices[0].setCholesky(true);
         precision_matrices[1] = rate_matrix->getValue().computeInverse();
         precision_matrices[1].setCholesky(true);
+        
+        if (method == "transform") {
+            // TODO: re-transform data
+        }
+
     }
     else
     {
