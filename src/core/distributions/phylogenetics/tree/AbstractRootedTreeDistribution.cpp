@@ -441,6 +441,28 @@ void AbstractRootedTreeDistribution::redrawValue( void )
 
 
 /**
+ * Restore the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
+{
+    if ( affecter == process_age )
+    {
+        if ( use_origin == false )
+        {
+            value->getRoot().setAge( process_age->getValue() );
+        }
+        
+        if ( dag_node != NULL )
+        {
+            dag_node->restoreAffected();
+        }
+    }
+    
+}
+
+
+/**
  *
  */
 void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &n, double age, double present)
@@ -460,10 +482,11 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
         }
 
     }
-
+    
     std::vector<double> ages;
     while ( n.size() > 2 && current_age < age )
     {
+
 
         // get all the nodes before the current age
         std::vector<TopologyNode*> active_nodes;
@@ -537,7 +560,10 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 
         }
         
-        if ( n.size() > 2 && current_age >= age  ) throw RbException("Unexpected number of taxa (remaining #taxa was " + StringUtilities::toString(n.size()) + " and age was " + current_age + " with maximum age of " + age + ") in tree simulation");
+        if ( n.size() > 2 && current_age >= age  )
+        {
+            throw RbException("Unexpected number of taxa (remaining #taxa was " + StringUtilities::toString(n.size()) + " and age was " + current_age + " with maximum age of " + age + ") in tree simulation");
+        }
         
     }
 
@@ -646,28 +672,6 @@ void AbstractRootedTreeDistribution::simulateTree( void )
     delete value;
     value = psi;
 
-}
-
-
-/**
- * Restore the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
-void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
-{
-    if ( affecter == process_age )
-    {
-        if ( use_origin == false )
-        {
-            value->getRoot().setAge( process_age->getValue() );
-        }
-
-        if ( dag_node != NULL )
-        {
-            dag_node->restoreAffected();
-        }
-    }
-    
 }
 
 

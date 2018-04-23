@@ -35,7 +35,7 @@ MarginalLikelihoodEstimator::MarginalLikelihoodEstimator(const std::string &fn, 
         bool hasHeaderBeenRead = false;
         
         // Open file
-        std::ifstream inFile( fn.c_str() );
+        std::ifstream inFile( myFileManager.getFullFileName().c_str() );
         
         if ( !inFile )
         {

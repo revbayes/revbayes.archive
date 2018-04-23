@@ -85,6 +85,16 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
 
         return NULL;
     }
+    else if (name == "getClade")
+    {
+        found = true;
+        
+        const std::vector<RevBayesCore::Taxon> &taxa = static_cast<const ModelVector<Taxon>&>( args[0].getVariable()->getRevObject() ).getValue();
+        RevBayesCore::Clade tmp = RevBayesCore::Clade( taxa );
+        tmp.resetTaxonBitset( this->dag_node->getValue().getTaxonBitSetMap() );
+        RevBayesCore::Clade c = this->dag_node->getValue().getMrca( tmp ).getClade();
+        return new RevVariable( new Clade( c ) );
+    }
     else if (name == "isInternal")
     {
         found = true;
@@ -298,6 +308,10 @@ void Tree::initMethods( void )
 
     ArgumentRules* makeUltraArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "makeUltrametric", RlUtils::Void, makeUltraArgRules ) );
+
+    ArgumentRules* get_clade_arg_rules = new ArgumentRules();
+    get_clade_arg_rules->push_back( new ArgumentRule( "clade", ModelVector<Taxon>::getClassTypeSpec(), "Vector of some of the taxa included in the clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "getClade", Clade::getClassTypeSpec(), get_clade_arg_rules ) );
 
 
     // member functions

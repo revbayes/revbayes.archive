@@ -6,6 +6,9 @@
 #include "RandomNumberGenerator.h"
 #include "RevClient.h"
 #include "RevLanguageMain.h"
+#include "RlCommandLineOutputStream.h"
+#include "RlUserInterfaceOutputStream.h"
+#include "RlUserInterface.h"
 #include "Parser.h"
 #include "Workspace.h"
 
@@ -64,6 +67,9 @@ int main(int argc, char* argv[]) {
     
     /* initialize environment */
     RevLanguageMain rl = RevLanguageMain(batch_mode);
+    
+    CommandLineOutputStream *rev_output = new CommandLineOutputStream();
+    RevLanguage::UserInterface::userInterface().setOutputStream( rev_output );
     rl.startRevLanguageEnvironment(sourceFiles);
     
 #   ifdef RB_XCODE

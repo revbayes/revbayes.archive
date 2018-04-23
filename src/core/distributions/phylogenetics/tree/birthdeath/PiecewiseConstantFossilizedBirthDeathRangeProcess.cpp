@@ -35,11 +35,16 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
                                                                                                      const std::vector<Taxon> &intaxa,
                                                                                                      bool pa ) : condition(incondition),
     TypedDistribution<MatrixReal>(new MatrixReal(intaxa.size(), 2)),
-    AbstractPiecewiseConstantSerialSampledRangeProcess(inspeciation, inextinction, inpsi, incounts, inrho, intimes, intaxa, pa)
+    AbstractPiecewiseConstantFossilizedRangeProcess(inspeciation, inextinction, inpsi, incounts, inrho, intimes, intaxa, pa)
 {
     dirty_gamma = std::vector<bool>(taxa.size(), true);
     gamma_i     = std::vector<size_t>(taxa.size(), 0);
     gamma_links = std::vector<std::vector<bool> >(taxa.size(), std::vector<bool>(taxa.size(), false));
+
+    for(std::set<const DagNode*>::iterator it = range_parameters.begin(); it != range_parameters.end(); it++)
+    {
+        addParameter(*it);
+    }
 
     redrawValue();
     updateGamma(true);
@@ -247,5 +252,5 @@ void PiecewiseConstantFossilizedBirthDeathRangeProcess::touchSpecialization(DagN
  */
 void PiecewiseConstantFossilizedBirthDeathRangeProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
-    AbstractPiecewiseConstantSerialSampledRangeProcess::swapParameterInternal(oldP, newP);
+    AbstractPiecewiseConstantFossilizedRangeProcess::swapParameterInternal(oldP, newP);
 }

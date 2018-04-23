@@ -48,13 +48,15 @@ namespace RevBayesCore {
         
         
         // helper functions
-        virtual double                                      computeLnProbabilityTimes(void) const;                                          //!< Compute the log-transformed probability of the current value.
+        virtual double                                      computeLnProbabilityTimes(void) const;                                      //!< Compute the log-transformed probability of the current value.
         double                                              lnP1(double T, double r) const;
         double                                              lnP1(double t, double T, double r) const;
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const;         //!< Compute the log-transformed probability of the number of taxa.
+        double                                              lnProbSurvival(double start, double end) const;                             //!< Compute the probability of survival of the process (without incomplete taxon sampling).
+        double                                              lnProbSurvival(double start, double end, double r) const;                   //!< Compute the probability of survival of the process including uniform taxon sampling.
         double                                              pSurvival(double start, double end) const;                                  //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                              pSurvival(double start, double end, double r) const;                        //!< Compute the probability of survival of the process including uniform taxon sampling.
-        
+
         // members
         const TypedDagNode<double>*                         rho;                                                                        //!< Sampling probability of each species.
         std::string                                         sampling_strategy;                                                          //!< The incomplete taxon sampling strategy (uniform/diversified).

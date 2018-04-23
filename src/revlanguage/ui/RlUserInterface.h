@@ -20,6 +20,8 @@
 #ifndef UserInterface_H
 #define UserInterface_H
 
+#include "RlUserInterfaceOutputStream.h"
+
 #include <iostream>
 #include <sstream>
 
@@ -30,12 +32,13 @@ namespace RevLanguage {
 class UserInterface {
 
     public:
-        bool                        ask(std::string msg);                                      //!< Ask user a question
-        bool                        initialize(void) { return true; }                          //!< Initialize interface    
-        void                        output(std::string msg);                                   //!< Display message from string
-        void                        output(std::string msg, const bool hasPadding);            //!< Display message from string with control of padding
-        void                        output(std::ostringstream msg);                            //!< Display message from stringstream
-        static UserInterface&       userInterface(void)                                        //!< Get the user interface
+        bool                        ask(std::string msg);                                       //!< Ask user a question
+        bool                        initialize(void) { return true; }                           //!< Initialize interface
+        void                        output(std::string msg);                                    //!< Display message from string
+        void                        output(std::string msg, const bool hasPadding);             //!< Display message from string with control of padding
+        void                        output(std::ostringstream msg);                             //!< Display message from stringstream
+        void                        setOutputStream(UserInterfaceOutputStream *o);              //!< Set the output stream for the current interface
+        static UserInterface&       userInterface(void)                                         //!< Get the user interface
 		                               {
 		                               static UserInterface theInterface = UserInterface();
 		                               return theInterface;
@@ -48,6 +51,7 @@ class UserInterface {
         UserInterface&              operator=(const UserInterface& w) { return (*this); }       //!< Prevent assignment
     
         int                         process_id;
+        UserInterfaceOutputStream*  output_stream;
 };
     
 }

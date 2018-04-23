@@ -193,6 +193,8 @@ std::vector<std::string> Dist_SSBDP::getDistributionFunctionAliases( void ) cons
     std::vector<std::string> a_names;
     a_names.push_back( "SSBDP" );
     a_names.push_back( "SkylineBDP" );
+//    a_names.push_back( "FBDP" );
+//    a_names.push_back( "EFBDP" );
     
     return a_names;
 }

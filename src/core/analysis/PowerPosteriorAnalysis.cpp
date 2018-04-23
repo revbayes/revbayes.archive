@@ -319,7 +319,7 @@ void PowerPosteriorAnalysis::summarizeStones( void )
     f.createDirectoryForFile();
     
     std::ofstream outStream;
-    outStream.open( filename.c_str(), std::fstream::out);
+    outStream.open( f.getFullFileName().c_str(), std::fstream::out);
     outStream << "state\t" << "power\t" << "likelihood" << std::endl;
 
     // Append each stone

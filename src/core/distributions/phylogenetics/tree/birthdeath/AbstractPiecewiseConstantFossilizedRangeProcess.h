@@ -1,5 +1,5 @@
-#ifndef AbstractPiecewiseConstantSerialSampledRangeProcess_H
-#define AbstractPiecewiseConstantSerialSampledRangeProcess_H
+#ifndef AbstractPiecewiseConstantFossilizedRangeProcess_H
+#define AbstractPiecewiseConstantFossilizedRangeProcess_H
 
 #include "MatrixReal.h"
 #include "RbVector.h"
@@ -32,10 +32,10 @@ namespace RevBayesCore {
      * @since 2014-03-18, version 1.0
      *
      */
-    class AbstractPiecewiseConstantSerialSampledRangeProcess : public virtual Distribution {
+    class AbstractPiecewiseConstantFossilizedRangeProcess {
         
     public:
-        AbstractPiecewiseConstantSerialSampledRangeProcess(const DagNode *speciation,
+        AbstractPiecewiseConstantFossilizedRangeProcess(const DagNode *speciation,
                                                              const DagNode *extinction,
                                                              const DagNode *psi,
                                                              const DagNode *counts,
@@ -43,6 +43,8 @@ namespace RevBayesCore {
                                                              const TypedDagNode<RbVector<double> > *times,
                                                              const std::vector<Taxon> &taxa,
                                                              bool pa );  //!< Constructor
+
+        virtual ~AbstractPiecewiseConstantFossilizedRangeProcess(){};
 
         double                                          getExtinctionRate( size_t index ) const;
         long                                            getFossilCount( size_t index, size_t taxon ) const;
@@ -104,6 +106,8 @@ namespace RevBayesCore {
 
         mutable std::vector<size_t>                     oldest_intervals;
         mutable std::vector<size_t>                     youngest_intervals;
+
+        std::set<const DagNode*>                        range_parameters;
     };
 }
 

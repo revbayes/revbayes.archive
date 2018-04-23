@@ -1,5 +1,5 @@
 #include "DistributionExponential.h"
-#include "AbstractPiecewiseConstantSerialSampledRangeProcess.h"
+#include "AbstractPiecewiseConstantFossilizedRangeProcess.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -25,7 +25,7 @@ using namespace RevBayesCore;
  * \param[in]    cdt            Condition of the process (none/survival/#Taxa).
  * \param[in]    tn             Taxa.
  */
-AbstractPiecewiseConstantSerialSampledRangeProcess::AbstractPiecewiseConstantSerialSampledRangeProcess(const DagNode *inspeciation,
+AbstractPiecewiseConstantFossilizedRangeProcess::AbstractPiecewiseConstantFossilizedRangeProcess(const DagNode *inspeciation,
                                                                                                      const DagNode *inextinction,
                                                                                                      const DagNode *inpsi,
                                                                                                      const DagNode *incounts,
@@ -51,8 +51,8 @@ AbstractPiecewiseConstantSerialSampledRangeProcess::AbstractPiecewiseConstantSer
     heterogeneous_lambda = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
     homogeneous_lambda = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
 
-    addParameter( homogeneous_lambda );
-    addParameter( heterogeneous_lambda );
+    range_parameters.insert( homogeneous_lambda );
+    range_parameters.insert( heterogeneous_lambda );
 
     if ( heterogeneous_lambda == NULL && homogeneous_lambda == NULL)
     {
@@ -74,8 +74,8 @@ AbstractPiecewiseConstantSerialSampledRangeProcess::AbstractPiecewiseConstantSer
     heterogeneous_mu = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inextinction);
     homogeneous_mu = dynamic_cast<const TypedDagNode<double >*>(inextinction);
 
-    addParameter( homogeneous_mu );
-    addParameter( heterogeneous_mu );
+    range_parameters.insert( homogeneous_mu );
+    range_parameters.insert( heterogeneous_mu );
 
     if ( heterogeneous_mu == NULL && homogeneous_mu == NULL)
     {
@@ -97,8 +97,8 @@ AbstractPiecewiseConstantSerialSampledRangeProcess::AbstractPiecewiseConstantSer
     heterogeneous_psi = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inpsi);
     homogeneous_psi = dynamic_cast<const TypedDagNode<double >*>(inpsi);
 
-    addParameter( homogeneous_psi );
-    addParameter( heterogeneous_psi );
+    range_parameters.insert( homogeneous_psi );
+    range_parameters.insert( heterogeneous_psi );
 
     if ( heterogeneous_psi == NULL && homogeneous_psi == NULL)
     {
@@ -120,9 +120,9 @@ AbstractPiecewiseConstantSerialSampledRangeProcess::AbstractPiecewiseConstantSer
     interval_fossil_counts         = dynamic_cast<const TypedDagNode<RbVector<long> >*>(incounts);
     fossil_counts                  = dynamic_cast<const TypedDagNode<long> *>(incounts);
 
-    addParameter( species_interval_fossil_counts );
-    addParameter( interval_fossil_counts );
-    addParameter( fossil_counts );
+    range_parameters.insert( species_interval_fossil_counts );
+    range_parameters.insert( interval_fossil_counts );
+    range_parameters.insert( fossil_counts );
 
     marginalize_k = ( species_interval_fossil_counts == NULL && interval_fossil_counts == NULL && fossil_counts == NULL);
 
@@ -164,8 +164,8 @@ AbstractPiecewiseConstantSerialSampledRangeProcess::AbstractPiecewiseConstantSer
         }
     }
 
-    addParameter( homogeneous_rho );
-    addParameter( timeline );
+    range_parameters.insert( homogeneous_rho );
+    range_parameters.insert( timeline );
     
     num_intervals = timeline == NULL ? 1 : timeline->getValue().size()+1;
 
@@ -212,7 +212,7 @@ AbstractPiecewiseConstantSerialSampledRangeProcess::AbstractPiecewiseConstantSer
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double AbstractPiecewiseConstantSerialSampledRangeProcess::computeLnProbabilityRanges( void ) const
+double AbstractPiecewiseConstantFossilizedRangeProcess::computeLnProbabilityRanges( void ) const
 {
     // prepare the probability computation
     updateIntervals();
@@ -400,7 +400,7 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::computeLnProbabilityR
 }
 
 
-double AbstractPiecewiseConstantSerialSampledRangeProcess::getExtinctionRate( size_t index ) const
+double AbstractPiecewiseConstantFossilizedRangeProcess::getExtinctionRate( size_t index ) const
 {
 
     // remove the old parameter first
@@ -421,7 +421,7 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::getExtinctionRate( si
 }
 
 
-long AbstractPiecewiseConstantSerialSampledRangeProcess::getFossilCount( size_t interval, size_t species ) const
+long AbstractPiecewiseConstantFossilizedRangeProcess::getFossilCount( size_t interval, size_t species ) const
 {
 
     // remove the old parameter first
@@ -461,7 +461,7 @@ long AbstractPiecewiseConstantSerialSampledRangeProcess::getFossilCount( size_t 
 }
 
 
-long AbstractPiecewiseConstantSerialSampledRangeProcess::getFossilCount( size_t interval ) const
+long AbstractPiecewiseConstantFossilizedRangeProcess::getFossilCount( size_t interval ) const
 {
 
     // remove the old parameter first
@@ -502,7 +502,7 @@ long AbstractPiecewiseConstantSerialSampledRangeProcess::getFossilCount( size_t 
 }
 
 
-double AbstractPiecewiseConstantSerialSampledRangeProcess::getFossilizationRate( size_t index ) const
+double AbstractPiecewiseConstantFossilizedRangeProcess::getFossilizationRate( size_t index ) const
 {
 
     // remove the old parameter first
@@ -523,7 +523,7 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::getFossilizationRate(
 }
 
 
-double AbstractPiecewiseConstantSerialSampledRangeProcess::getIntervalTime( size_t index ) const
+double AbstractPiecewiseConstantFossilizedRangeProcess::getIntervalTime( size_t index ) const
 {
 
     if ( index == num_intervals - 1 )
@@ -548,7 +548,7 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::getIntervalTime( size
 }
 
 
-double AbstractPiecewiseConstantSerialSampledRangeProcess::getSpeciationRate( size_t index ) const
+double AbstractPiecewiseConstantFossilizedRangeProcess::getSpeciationRate( size_t index ) const
 {
 
     // remove the old parameter first
@@ -572,7 +572,7 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::getSpeciationRate( si
 /**
  * \ln\int exp(psi t) q_tilde(t)/q(t) dt
  */
-double AbstractPiecewiseConstantSerialSampledRangeProcess::integrateQ( size_t i, double t ) const
+double AbstractPiecewiseConstantFossilizedRangeProcess::integrateQ( size_t i, double t ) const
 {
     // get the parameters
     double b = birth[i];
@@ -611,7 +611,7 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::integrateQ( size_t i,
  * t_0 is origin
  * t_l = 0.0
  */
-size_t AbstractPiecewiseConstantSerialSampledRangeProcess::l(double t) const
+size_t AbstractPiecewiseConstantFossilizedRangeProcess::l(double t) const
 {
     return times.rend() - std::upper_bound( times.rbegin(), times.rend(), t);
 }
@@ -620,7 +620,7 @@ size_t AbstractPiecewiseConstantSerialSampledRangeProcess::l(double t) const
 /**
  * p_i(t)
  */
-double AbstractPiecewiseConstantSerialSampledRangeProcess::p( size_t i, double t ) const
+double AbstractPiecewiseConstantFossilizedRangeProcess::p( size_t i, double t ) const
 {
     if ( t == 0) return 1.0;
 
@@ -648,7 +648,7 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::p( size_t i, double t
 /**
  * q_i(t)
  */
-double AbstractPiecewiseConstantSerialSampledRangeProcess::q( size_t i, double t, bool tilde ) const
+double AbstractPiecewiseConstantFossilizedRangeProcess::q( size_t i, double t, bool tilde ) const
 {
     
     if ( t == 0.0 ) return 0.0;
@@ -682,7 +682,7 @@ double AbstractPiecewiseConstantSerialSampledRangeProcess::q( size_t i, double t
  *
  *
  */
-void AbstractPiecewiseConstantSerialSampledRangeProcess::updateIntervals() const
+void AbstractPiecewiseConstantFossilizedRangeProcess::updateIntervals() const
 {
     std::vector<bool> youngest(taxa.size(), true);
 
@@ -744,7 +744,7 @@ void AbstractPiecewiseConstantSerialSampledRangeProcess::updateIntervals() const
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void AbstractPiecewiseConstantSerialSampledRangeProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void AbstractPiecewiseConstantFossilizedRangeProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     if (oldP == heterogeneous_lambda)
     {

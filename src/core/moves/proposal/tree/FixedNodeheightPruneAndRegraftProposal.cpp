@@ -110,7 +110,7 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
         return RbConstants::Double::neginf;
     }
     
-    // pick a random node which is not the root and neithor the direct descendant of the root
+    // pick a random node which is neither the root nor the direct descendant of the root
     TopologyNode* node;
     do {
         double u = rng->uniform01();
@@ -147,17 +147,17 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
     storedNewBrother    = newBro;
     
     // prune
-    grandparent->removeChild( parent );
-    parent->removeChild( brother );
-    grandparent->addChild( brother );
+    storedParentPos = grandparent->removeChild( parent );
+    storedBrotherPos = parent->removeChild( brother );
+    grandparent->addChild( brother, storedParentPos );
     brother->setParent( grandparent );
     
     // regraft
     TopologyNode* newGrandParent = &newBro->getParent();
-    newGrandParent->removeChild( newBro );
-    newGrandParent->addChild( parent );
+    storedNewBrotherPos = newGrandParent->removeChild( newBro );
+    newGrandParent->addChild( parent, storedNewBrotherPos );
     parent->setParent( newGrandParent );
-    parent->addChild( newBro );
+    parent->addChild( newBro, storedBrotherPos );
     newBro->setParent( parent );
     
     return 0.0;
@@ -210,15 +210,15 @@ void FixedNodeheightPruneAndRegraftProposal::undoProposal( void )
         // prune
         newGrandparent.removeChild( &parent );
         parent.removeChild( storedNewBrother );
-        newGrandparent.addChild( storedNewBrother );
+        newGrandparent.addChild( storedNewBrother, storedNewBrotherPos );
         storedNewBrother->setParent( &newGrandparent );
         
         
         // regraft
         grandparent.removeChild( storedBrother );
-        parent.addChild( storedBrother );
+        parent.addChild( storedBrother, storedBrotherPos );
         storedBrother->setParent( &parent );
-        grandparent.addChild( &parent );
+        grandparent.addChild( &parent, storedParentPos );
         parent.setParent( &grandparent );
     }
     
