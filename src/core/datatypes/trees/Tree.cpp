@@ -270,6 +270,15 @@ void Tree::dropTipNode( size_t index )
         parent.removeChild( sibling );
         grand_parent.addChild( sibling );
         sibling->setParent( &grand_parent );
+
+        // update character history for stochastic maps
+        if (parent.getTimeInState().size() > 0)
+        {
+            for (size_t i = 0; i < parent.getTimeInState().size(); i++)
+            {
+                grand_parent.getTimeInState()[i] += parent.getTimeInState()[i];
+            }
+        }
     }
     else
     {

@@ -1909,6 +1909,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     double t = process_age->getValue();
     root->setAge(t);
     root->setNodeType(false, true, true);
+    root->setTimeInState(std::vector<double>(num_states, 0.0));
     nodes.push_back(root);
 
     // now draw a state for the root cladogenetic event
@@ -1992,6 +1993,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     root->addChild(left);
     left->setParent(root);
     left->setNodeType(true, false, false);
+    left->setTimeInState(std::vector<double>(num_states, 0.0));
     lineages_in_state[l].push_back(1);
     nodes.push_back(left);
 
@@ -2000,6 +2002,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     root->addChild(right);
     right->setParent(root);
     right->setNodeType(true, false, false);
+    right->setTimeInState(std::vector<double>(num_states, 0.0));
     lineages_in_state[r].push_back(2);
     nodes.push_back(right);
 
@@ -2020,6 +2023,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
       
         if (t < 0)
         {
+            dt = dt - (0 - t);
             t = 0;
         }
 
@@ -2032,6 +2036,9 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                 size_t idx = lineages_in_state[i][j];
                 nodes[idx]->setAge(t);
                 num_lineages++;
+                std::vector<double> state_times = nodes[idx]->getTimeInState();
+                state_times[i] += dt;
+                nodes[idx]->setTimeInState(state_times);
             }
         }
 
@@ -2234,6 +2241,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             nodes[event_index]->addChild(left);
             left->setParent(nodes[event_index]);
             left->setNodeType(true, false, false);
+            left->setTimeInState(std::vector<double>(num_states, 0.0));
             lineages_in_state[l].push_back(index);
             nodes.push_back(left);
 
@@ -2243,6 +2251,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             nodes[event_index]->addChild(right);
             right->setParent(nodes[event_index]);
             right->setNodeType(true, false, false);
+            right->setTimeInState(std::vector<double>(num_states, 0.0));
             lineages_in_state[r].push_back(index);
             nodes.push_back(right);
            
@@ -2256,7 +2265,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     Tree *psi = new Tree();
     psi->setRoot(root, true);
     psi->setRooted(true);
-    
+   
     if (prune_extinct_lineages == true)
     {
         for (size_t i = 0; i < num_states; i++)
@@ -2271,16 +2280,33 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             }
         }
     }
-    resizeVectors(psi->getNumberOfNodes());
-    setValue(psi);
-    static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
     
-    size_t num_nodes = value->getNumberOfNodes();
-    if (num_nodes > 2)
+    // update character history vectors 
+    resizeVectors(psi->getNumberOfNodes());
+    simmap = "";
+    for (size_t i = 0; i < psi->getNumberOfNodes(); i++)
     {
-        std::vector<std::string*> character_histories(num_nodes);
-        drawStochasticCharacterMap(character_histories);
-    }
+        double branch_total_speciation = 0.0;
+        double branch_total_extinction = 0.0;
+        for (size_t j = 0; j < num_states; j++) 
+        {
+            time_in_state[j] += psi->getNodes()[i]->getTimeInState()[j];
+            branch_total_speciation += psi->getNodes()[i]->getTimeInState()[j] * speciation_rates[j];
+            branch_total_extinction += psi->getNodes()[i]->getTimeInState()[j] * extinction_rates[j];
+        }
+        if (psi->getNodes()[i]->getBranchLength() > 0)
+        {
+            average_speciation[i] = branch_total_speciation/psi->getNodes()[i]->getBranchLength();
+            average_extinction[i] = branch_total_extinction/psi->getNodes()[i]->getBranchLength();
+        }
+    }    
+    
+    // set the simulated values
+    value->getTreeChangeEventHandler().removeListener( this );
+    static_cast<TreeDiscreteCharacterData *>(this->value)->setTree( *psi );
+    delete psi;
+    value->getTreeChangeEventHandler().addListener( this );
+    static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
     
 }
 
