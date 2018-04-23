@@ -2287,7 +2287,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
         for (size_t j = 0; j < num_states; j++) 
         {
             time_in_state[j] += psi->getNodes()[i]->getTimeInState()[j];
-            branch_total_speciation += psi->getNodes()[i]->getTimeInState()[j] * speciation_rates[j];
+            branch_total_speciation += psi->getNodes()[i]->getTimeInState()[j] * total_speciation_rates[j];
             branch_total_extinction += psi->getNodes()[i]->getTimeInState()[j] * extinction_rates[j];
         }
         if (psi->getNodes()[i]->getBranchLength() > 0)
