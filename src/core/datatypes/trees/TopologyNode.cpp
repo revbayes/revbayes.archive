@@ -226,7 +226,10 @@ void TopologyNode::addBranchParameters(std::string const &n, const std::vector<s
 void TopologyNode::addChild(TopologyNode* c, size_t pos )
 {
     // add child to beginning if pos is out of bounds
-    pos = std::min(pos, children.size());
+    if( pos > children.size() )
+    {
+        throw(RbException("Child position index out of bounds"));
+    }
 
     // add the child at pos offset from the end
     children.insert((children.rbegin() + pos).base(), c);
@@ -1615,7 +1618,8 @@ size_t TopologyNode::removeChild(TopologyNode* c)
     if ( it != children.end() )
     {
         // get offset from the end
-        pos = std::distance(children.erase(it), children.end());
+        pos = std::distance(it, children.end())-1;
+        children.erase(it);
     }
     else
     {
