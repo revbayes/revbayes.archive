@@ -76,7 +76,6 @@ namespace RevBayesCore {
 
         mutable std::vector<bool>                       I;
         bool                                            extended;
-
     };
 }
 

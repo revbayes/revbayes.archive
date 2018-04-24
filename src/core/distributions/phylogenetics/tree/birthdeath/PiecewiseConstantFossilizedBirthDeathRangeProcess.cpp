@@ -41,7 +41,7 @@ PiecewiseConstantFossilizedBirthDeathRangeProcess::PiecewiseConstantFossilizedBi
     gamma_i     = std::vector<size_t>(taxa.size(), 0);
     gamma_links = std::vector<std::vector<bool> >(taxa.size(), std::vector<bool>(taxa.size(), false));
 
-    for(std::set<const DagNode*>::iterator it = range_parameters.begin(); it != range_parameters.end(); it++)
+    for(std::vector<const DagNode*>::iterator it = range_parameters.begin(); it != range_parameters.end(); it++)
     {
         addParameter(*it);
     }
