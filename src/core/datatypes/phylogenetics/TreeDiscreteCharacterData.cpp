@@ -137,7 +137,6 @@ void TreeDiscreteCharacterData::setTree(const Tree &t)
     delete root;
     root = NULL;
     
-    binary      = t.isBinary();
     num_tips    = t.getNumberOfTips();
     num_nodes   = t.getNumberOfNodes();
     rooted      = t.isRooted();

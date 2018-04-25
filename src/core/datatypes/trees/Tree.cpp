@@ -17,7 +17,6 @@ using namespace RevBayesCore;
 Tree::Tree(void) :
     changeEventHandler(),
     root( NULL ),
-    binary( true ),
     rooted( false ),
     is_negative_constraint( false ),
     num_tips( 0 ),
@@ -31,7 +30,6 @@ Tree::Tree(void) :
 Tree::Tree(const Tree& t) :
     changeEventHandler( ),
     root( NULL ),
-    binary( t.binary ),
     rooted( t.rooted ),
     is_negative_constraint( t.is_negative_constraint ),
     num_tips( t.num_tips ),
@@ -85,7 +83,6 @@ Tree& Tree::operator=(const Tree &t)
         nodes.clear();
         delete root;
         root = NULL;
-        binary                 = t.binary;
         num_tips               = t.num_tips;
         num_nodes              = t.num_nodes;
         rooted                 = t.rooted;
@@ -1051,10 +1048,18 @@ void Tree::initFromString(const std::string &s)
 }
 
 
-bool Tree::isBinary(void) const
+bool Tree::isBinary(void) const 
 {
-
-    return binary;
+    for (size_t i = 0; i < getNumberOfInteriorNodes(); ++i)
+    {
+        const TopologyNode &n = getInteriorNode( i );
+        if (n.getNumberOfChildren() != 2)
+        {
+            return false;
+            break;
+        }
+    }
+    return true;
 }
 
 
