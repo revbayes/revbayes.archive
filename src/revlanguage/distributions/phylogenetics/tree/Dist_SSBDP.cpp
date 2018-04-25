@@ -192,9 +192,8 @@ std::vector<std::string> Dist_SSBDP::getDistributionFunctionAliases( void ) cons
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
     a_names.push_back( "SSBDP" );
+    a_names.push_back( "FBDP" );
     a_names.push_back( "SkylineBDP" );
-//    a_names.push_back( "FBDP" );
-//    a_names.push_back( "EFBDP" );
     
     return a_names;
 }
