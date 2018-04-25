@@ -38,6 +38,12 @@ const AbstractHomologousDiscreteCharacterData& TreeDiscreteCharacterData::getCha
 }
 
 
+std::vector<double> TreeDiscreteCharacterData::getTimeInStates( void )
+{
+    return time_in_states;
+}
+
+
 bool TreeDiscreteCharacterData::hasCharacterData( void ) const
 {
 
@@ -101,6 +107,12 @@ void TreeDiscreteCharacterData::setCharacterData( AbstractHomologousDiscreteChar
 }
 
 
+void TreeDiscreteCharacterData::setTimeInStates( std::vector<double> t )
+{
+    time_in_states = t;
+}
+
+
 void TreeDiscreteCharacterData::writeToFile(const std::string &dir, const std::string &fn) const
 {
     // do not write a file if the tree is invalid
@@ -126,6 +138,20 @@ void TreeDiscreteCharacterData::writeToFile(const std::string &dir, const std::s
         fm = RbFileManager(dir, fn + ".tsv");
         RevBayesCore::DelimitedCharacterDataWriter writer; 
         writer.writeData(fm.getFullFileName(), *character_data, "\t"[0]);
+
+        // write the character history's time spent in each state
+        fm = RbFileManager(dir, fn + "_time_in_states.tsv");
+        o.open( fm.getFullFileName().c_str(), std::fstream::out);
+        for (size_t i = 0; i < time_in_states.size(); i++)
+        {
+            o << time_in_states[i]; 
+            if (i < (time_in_states.size() - 1))
+            {
+                o << "\t";
+            }
+        }
+        o << std::endl;
+        o.close();
     }
 }
 

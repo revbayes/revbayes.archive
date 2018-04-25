@@ -272,14 +272,14 @@ void Tree::dropTipNode( size_t index )
         sibling->setParent( &grand_parent );
 
         // update character history 
-        if (parent.getTimeInState().size() > 0 && sibling->getTimeInState().size() > 0)
+        if (parent.getTimeInStates().size() > 0 && sibling->getTimeInStates().size() > 0)
         {
-            std::vector<double> sibling_state_times = sibling->getTimeInState();
-            for (size_t i = 0; i < parent.getTimeInState().size(); i++)
+            std::vector<double> sibling_state_times = sibling->getTimeInStates();
+            for (size_t i = 0; i < parent.getTimeInStates().size(); i++)
             {
-                sibling_state_times[i] += parent.getTimeInState()[i];
+                sibling_state_times[i] += parent.getTimeInStates()[i];
             }
-            sibling->setTimeInState(sibling_state_times);
+            sibling->setTimeInStates(sibling_state_times);
         }
     }
     else
@@ -294,9 +294,9 @@ void Tree::dropTipNode( size_t index )
             root->removeChild(&node);
             sibling->setParent(NULL);
             root = sibling;
-            if (root->getTimeInState().size() > 0)
+            if (root->getTimeInStates().size() > 0)
             {
-                root->setTimeInState(std::vector<double>(root->getTimeInState().size(), 0.0));
+                root->setTimeInStates(std::vector<double>(root->getTimeInStates().size(), 0.0));
             }
         }
         else
