@@ -1500,6 +1500,12 @@ double StateDependentSpeciationExtinctionProcess::getOriginAge( void ) const
 }
 
 
+std::vector<double> StateDependentSpeciationExtinctionProcess::getTimeInStates( void ) const
+{
+    return time_in_states;
+}
+
+
 /**
  * By default, the root age is assumed to be equal to the origin time.
  * This should be overridden if a distinct root age is needed
