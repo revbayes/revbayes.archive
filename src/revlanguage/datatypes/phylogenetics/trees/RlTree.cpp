@@ -95,6 +95,13 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         RevBayesCore::Clade c = this->dag_node->getValue().getMrca( tmp ).getClade();
         return new RevVariable( new Clade( c ) );
     }
+    else if (name == "isBinary")
+    {
+        found = true;
+
+        bool tf = this->dag_node->getValue().isBinary();
+        return new RevVariable( new RlBoolean( tf ) );
+    }
     else if (name == "isInternal")
     {
         found = true;
@@ -244,6 +251,8 @@ const TypeSpec& Tree::getTypeSpec( void ) const
  */
 void Tree::initMethods( void )
 {
+    ArgumentRules* isBinaryArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "isBinary", RlBoolean::getClassTypeSpec(), isBinaryArgRules ) );
 
     ArgumentRules* isInternalArgRules = new ArgumentRules();
     isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
