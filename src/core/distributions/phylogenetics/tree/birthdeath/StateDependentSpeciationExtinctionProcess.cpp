@@ -1758,6 +1758,10 @@ void StateDependentSpeciationExtinctionProcess::setNumberOfTimeSlices( double n 
  */
 void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
 {
+    if (v->isBinary() == false)
+    {
+        throw RbException("The character-dependent birth death process is only implemented for binary trees.");
+    }
 
     value->getTreeChangeEventHandler().removeListener( this );
 

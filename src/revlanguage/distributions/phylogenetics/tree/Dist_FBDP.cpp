@@ -109,7 +109,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_FBDP::createDistribution( void ) c
 const std::string& Dist_FBDP::getClassType( void )
 {
     
-    static std::string rev_type = "Dist_FBDP";
+    static std::string rev_type = "Dist_FBDRP";
     
     return rev_type;
 }
@@ -138,8 +138,7 @@ std::vector<std::string> Dist_FBDP::getDistributionFunctionAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    a_names.push_back( "FBDP" );
-    a_names.push_back( "EFBDP" );
+    a_names.push_back( "FBDRP" );
     
     return a_names;
 }
@@ -155,7 +154,7 @@ std::vector<std::string> Dist_FBDP::getDistributionFunctionAliases( void ) const
 std::string Dist_FBDP::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "FossilizedBirthDeath";
+    std::string d_name = "FossilizedBirthDeathRange";
     
     return d_name;
 }
