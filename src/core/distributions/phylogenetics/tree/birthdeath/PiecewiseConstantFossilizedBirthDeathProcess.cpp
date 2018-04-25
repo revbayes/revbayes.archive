@@ -166,7 +166,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
             if( d_i[i] > 0.0 )
             {
                 lnProb -= death[di];
-                lnProb += log( p(d_i[i], di) );
+                lnProb += log( fossil[di] ) + log( p(d_i[i], di) );
             }
         }
     }
