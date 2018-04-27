@@ -1,5 +1,5 @@
-#ifndef Func_append_H
-#define Func_append_H
+#ifndef Func_appendVector_H
+#define Func_appendVector_H
 
 #include "ModelVector.h"
 #include "RlTypedFunction.h"
@@ -9,20 +9,20 @@
 namespace RevLanguage {
     
     /**
-     * @brief Func_append: function creating model vectors
+     * @brief Func_appendVector: function creating model vectors
      *
      * This templated function constructs vectors and is used for language
      * constructs such as "v( x1, x2, ..., xn)" and "[ x1, x2, ..., xn ]" when
      * the elements are non-abstract model objects with non-abstract value types.
      */
     template <typename valType>
-    class Func_append : public TypedFunction< ModelVector< valType> > {
+    class Func_appendVector : public TypedFunction< ModelVector< valType> > {
         
     public:
-        Func_append(void);                                                                 //!< Default constructor
+        Func_appendVector(void);                                                                 //!< Default constructor
         
         // Basic utility functions
-        Func_append*                                                                                 clone(void) const;                                          //!< Clone the object
+        Func_appendVector*                                                                              clone(void) const;                                          //!< Clone the object
         static const std::string&                                                                       getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                                                          getClassTypeSpec(void);                                     //!< Get class type spec
         std::string                                                                                     getFunctionName(void) const;
@@ -50,7 +50,7 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
-#include "VectorAppendElement.h"
+#include "VectorAppendVector.h"
 #include "RbUtil.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
@@ -60,7 +60,7 @@ namespace RevLanguage {
 
 /** Default constructor */
 template <typename valType>
-RevLanguage::Func_append<valType>::Func_append() : TypedFunction< ModelVector<valType> >()
+RevLanguage::Func_appendVector<valType>::Func_appendVector() : TypedFunction< ModelVector<valType> >()
 {
 }
 
@@ -72,20 +72,20 @@ RevLanguage::Func_append<valType>::Func_append() : TypedFunction< ModelVector<va
  * \return A new copy of the process.
  */
 template <typename valType>
-RevLanguage::Func_append<valType>* RevLanguage::Func_append<valType>::clone( void ) const
+RevLanguage::Func_appendVector<valType>* RevLanguage::Func_appendVector<valType>::clone( void ) const
 {
-    return new Func_append( *this );
+    return new Func_appendVector( *this );
 }
 
 
 /** Execute function: create deterministic append<valType> object */
 template <typename valType>
-RevBayesCore::TypedFunction< RevBayesCore::RbVector< typename valType::valueType> >* RevLanguage::Func_append<valType>::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RbVector< typename valType::valueType> >* RevLanguage::Func_appendVector<valType>::createFunction( void ) const
 {
     const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< typename valType::valueType> >* v     = static_cast<const ModelVector<valType> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    const RevBayesCore::TypedDagNode< typename valType::valueType>* x                               = static_cast<const valType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< typename valType::valueType> >* x     = static_cast<const ModelVector<valType> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::VectorAppendElement<typename valType::valueType>* func = new RevBayesCore::VectorAppendElement<typename valType::valueType>( v, x );
+    RevBayesCore::VectorAppendVector<typename valType::valueType>* func = new RevBayesCore::VectorAppendVector<typename valType::valueType>( v, x );
     
     return func;
 }
@@ -93,7 +93,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector< typename valType::valueType
 
 /** Get argument rules */
 template <typename valType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_append<valType>::getArgumentRules( void ) const
+const RevLanguage::ArgumentRules& RevLanguage::Func_appendVector<valType>::getArgumentRules( void ) const
 {
     static ArgumentRules argument_rules = ArgumentRules();
     static bool          rules_set = false;
@@ -101,8 +101,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_append<valType>::getArgument
     if ( rules_set == false )
     {
         
-        argument_rules.push_back( new ArgumentRule( "v", ModelVector< valType>::getClassTypeSpec(), "The vector that we append.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        argument_rules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), "The value that we append.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new ArgumentRule( "v", ModelVector< valType >::getClassTypeSpec(), "The vector that we append.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new ArgumentRule( "x", ModelVector< valType >::getClassTypeSpec(), "The values that we append.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }
@@ -113,9 +113,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_append<valType>::getArgument
 
 /** Get Rev type of object (static version) */
 template <typename valType>
-const std::string& RevLanguage::Func_append<valType>::getClassType( void )
+const std::string& RevLanguage::Func_appendVector<valType>::getClassType( void )
 {
-    static std::string rev_type = "Func_append<" + valType::getClassType() + ">";
+    static std::string rev_type = "Func_appendVector<" + valType::getClassType() + ">";
     
     return rev_type;
 }
@@ -123,7 +123,7 @@ const std::string& RevLanguage::Func_append<valType>::getClassType( void )
 
 /** Get Rev type spec of object (static version) */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_append<valType>::getClassTypeSpec( void )
+const RevLanguage::TypeSpec& RevLanguage::Func_appendVector<valType>::getClassTypeSpec( void )
 {
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
@@ -135,7 +135,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_append<valType>::getClassTypeSpec
  * Get the primary Rev name for this function.
  */
 template <typename valType>
-std::string RevLanguage::Func_append<valType>::getFunctionName( void ) const
+std::string RevLanguage::Func_appendVector<valType>::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
     std::string f_name = "append";
@@ -150,11 +150,11 @@ std::string RevLanguage::Func_append<valType>::getFunctionName( void ) const
  * \return Rev aliases of constructor function.
  */
 template <typename valType>
-std::vector<std::string> RevLanguage::Func_append<valType>::getFunctionNameAliases( void ) const
+std::vector<std::string> RevLanguage::Func_appendVector<valType>::getFunctionNameAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-//    a_names.push_back( "append" );
+    //    a_names.push_back( "append" );
     
     return a_names;
 }
@@ -164,7 +164,7 @@ std::vector<std::string> RevLanguage::Func_append<valType>::getFunctionNameAlias
  * Get the author(s) of this function so they can receive credit (and blame) for it.
  */
 template <typename valType>
-std::vector<std::string> RevLanguage::Func_append<valType>::getHelpAuthor(void) const
+std::vector<std::string> RevLanguage::Func_appendVector<valType>::getHelpAuthor(void) const
 {
     // create a vector of authors for this function
     std::vector<std::string> authors;
@@ -178,7 +178,7 @@ std::vector<std::string> RevLanguage::Func_append<valType>::getHelpAuthor(void) 
  * Get the (brief) description for this function
  */
 template <typename valType>
-std::vector<std::string> RevLanguage::Func_append<valType>::getHelpDescription(void) const
+std::vector<std::string> RevLanguage::Func_appendVector<valType>::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
@@ -192,7 +192,7 @@ std::vector<std::string> RevLanguage::Func_append<valType>::getHelpDescription(v
  * Get the more detailed description of the function
  */
 template <typename valType>
-std::vector<std::string> RevLanguage::Func_append<valType>::getHelpDetails(void) const
+std::vector<std::string> RevLanguage::Func_appendVector<valType>::getHelpDetails(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> details;
@@ -208,15 +208,15 @@ std::vector<std::string> RevLanguage::Func_append<valType>::getHelpDetails(void)
  * are also used to test if this function still works.
  */
 template <typename valType>
-std::string RevLanguage::Func_append<valType>::getHelpExample(void) const
+std::string RevLanguage::Func_appendVector<valType>::getHelpExample(void) const
 {
     // create an example as a single string variable.
     std::string example = "";
     
     example += "a <- 1:3\n";
-    example += "b <- 4\n";
+    example += "b <- 4:6\n";
     example += "c := append(a,b)\n";
-
+    
     return example;
 }
 
@@ -226,7 +226,7 @@ std::string RevLanguage::Func_append<valType>::getHelpExample(void) const
  *
  */
 template <typename valType>
-std::vector<RevBayesCore::RbHelpReference> RevLanguage::Func_append<valType>::getHelpReferences(void) const
+std::vector<RevBayesCore::RbHelpReference> RevLanguage::Func_appendVector<valType>::getHelpReferences(void) const
 {
     // create an entry for each reference
     std::vector<RevBayesCore::RbHelpReference> references;
@@ -240,7 +240,7 @@ std::vector<RevBayesCore::RbHelpReference> RevLanguage::Func_append<valType>::ge
  * Get the names of similar and suggested other functions
  */
 template <typename valType>
-std::vector<std::string> RevLanguage::Func_append<valType>::getHelpSeeAlso(void) const
+std::vector<std::string> RevLanguage::Func_appendVector<valType>::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
@@ -255,7 +255,7 @@ std::vector<std::string> RevLanguage::Func_append<valType>::getHelpSeeAlso(void)
  * Get the title of this help entry
  */
 template <typename valType>
-std::string RevLanguage::Func_append<valType>::getHelpTitle(void) const
+std::string RevLanguage::Func_appendVector<valType>::getHelpTitle(void) const
 {
     // create a title variable
     std::string title = "Append a value";
@@ -266,7 +266,7 @@ std::string RevLanguage::Func_append<valType>::getHelpTitle(void) const
 
 /** Get Rev type spec of object (dynamic version) */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_append<valType>::getTypeSpec( void ) const
+const RevLanguage::TypeSpec& RevLanguage::Func_appendVector<valType>::getTypeSpec( void ) const
 {
     return this->getClassTypeSpec();
 }
