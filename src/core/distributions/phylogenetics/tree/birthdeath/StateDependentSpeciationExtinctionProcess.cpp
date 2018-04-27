@@ -58,7 +58,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     sample_character_history( false ),
     average_speciation( std::vector<double>(5, 0.0) ),
     average_extinction( std::vector<double>(5, 0.0) ),
-    time_in_state( std::vector<double>(ext->getValue().size(), 0.0) ),    
+    time_in_states( std::vector<double>(ext->getValue().size(), 0.0) ),    
     simmap( "" ),
     cladogenesis_matrix( NULL ),
     process_age( age ),
@@ -902,7 +902,7 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
 
     for (size_t i = 0; i < num_states; i++) 
     {
-        time_in_state[i] = 0.0;
+        time_in_states[i] = 0.0;
     }
 
     // now begin the root-to-tip pass, drawing ancestral states for each time slice conditional on the start states
@@ -1132,7 +1132,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         // keep track of rates in this interal so we can calculate per branch averages of each rate
         total_speciation_rate += speciation_rates[current_state];
         total_extinction_rate += extinction_rates[current_state];
-        time_in_state[current_state] += dt;
+        time_in_states[current_state] += dt;
         num_dts += 1;
     }
     
@@ -1159,7 +1159,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         // keep track of rates in this interval so we can calculate per branch averages of each rate
         total_speciation_rate += speciation_rates[new_state];
         total_extinction_rate += extinction_rates[new_state];
-        time_in_state[new_state] += dt;
+        time_in_states[new_state] += dt;
         num_dts += 1;
         
         // check if there was a character state transition
@@ -1305,7 +1305,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         // keep track of rates in this interval so we can calculate per branch averages of each rate
         total_speciation_rate += speciation_rates[a];
         total_extinction_rate += extinction_rates[a];
-        time_in_state[a] += dt;
+        time_in_states[a] += dt;
         num_dts += 1;
         
         // check if there was a character state transition
@@ -1399,6 +1399,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> StateDependentSpeciationExtinction
         size_t num_nodes = value->getNumberOfNodes();
         std::vector<std::string*> character_histories(num_nodes);
         drawStochasticCharacterMap(character_histories);
+        static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
 
         return NULL;
     }
@@ -1429,9 +1430,9 @@ void StateDependentSpeciationExtinctionProcess::executeMethod(const std::string 
     {
         rv = average_extinction;        
     }
-    else if ( name == "getTimeInState" )
+    else if ( name == "getTimeInStates" )
     {
-        rv = time_in_state;        
+        rv = time_in_states;        
     }
     else
     {
@@ -1496,6 +1497,12 @@ double StateDependentSpeciationExtinctionProcess::getOriginAge( void ) const
 {
 
     return process_age->getValue();
+}
+
+
+std::vector<double> StateDependentSpeciationExtinctionProcess::getTimeInStates( void ) const
+{
+    return time_in_states;
 }
 
 
@@ -1757,6 +1764,10 @@ void StateDependentSpeciationExtinctionProcess::setNumberOfTimeSlices( double n 
  */
 void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
 {
+    if (v->isBinary() == false)
+    {
+        throw RbException("The character-dependent birth death process is only implemented for binary trees.");
+    }
 
     value->getTreeChangeEventHandler().removeListener( this );
 
@@ -1805,6 +1816,7 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
         std::vector<std::string*> character_histories(num_nodes);
         drawStochasticCharacterMap(character_histories);
     }
+    static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
 }
 
 
@@ -1909,6 +1921,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     double t = process_age->getValue();
     root->setAge(t);
     root->setNodeType(false, true, true);
+    root->setTimeInStates(std::vector<double>(num_states, 0.0));
     nodes.push_back(root);
 
     // now draw a state for the root cladogenetic event
@@ -1946,8 +1959,8 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
         }
     }
     
-    // sample ancestor, left, and right character states from probs
-    size_t a = 0, l = 0, r = 0;
+    // sample left and right character states from probs
+    size_t l = 0, r = 0;
     
     if (sample_probs_sum == 0)
     {
@@ -1959,7 +1972,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             if (u < v)
             {
                 const std::vector<unsigned>& states = it->first;
-                a = states[0];
                 l = states[1];
                 r = states[2];
                 break;
@@ -1978,7 +1990,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             if (u < 0.0)
             {
                 const std::vector<unsigned>& states = it->first;
-                a = states[0];
                 l = states[1];
                 r = states[2];
                 break;
@@ -1992,6 +2003,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     root->addChild(left);
     left->setParent(root);
     left->setNodeType(true, false, false);
+    left->setTimeInStates(std::vector<double>(num_states, 0.0));
     lineages_in_state[l].push_back(1);
     nodes.push_back(left);
 
@@ -2000,6 +2012,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     root->addChild(right);
     right->setParent(root);
     right->setNodeType(true, false, false);
+    right->setTimeInStates(std::vector<double>(num_states, 0.0));
     lineages_in_state[r].push_back(2);
     nodes.push_back(right);
 
@@ -2020,6 +2033,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
       
         if (t < 0)
         {
+            dt = dt - (0 - t);
             t = 0;
         }
 
@@ -2032,6 +2046,9 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                 size_t idx = lineages_in_state[i][j];
                 nodes[idx]->setAge(t);
                 num_lineages++;
+                std::vector<double> state_times = nodes[idx]->getTimeInStates();
+                state_times[i] += dt;
+                nodes[idx]->setTimeInStates(state_times);
             }
         }
 
@@ -2122,7 +2139,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
         // determine which lineage gets the event
         size_t event_index = 0;
         u = rng->uniform01() * static_cast<double>(lineages_in_state[event_state].size());
-        event_index = floor(lineages_in_state[event_state][u]);
+        event_index = lineages_in_state[event_state][floor(u)];
 
         if (event_type == "extinction")
         {
@@ -2187,8 +2204,8 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                 sample_probs_sum += speciation_rates[event_state];
             }
             
-            // sample ancestor, left, and right character states from probs
-            size_t a = 0, l = 0, r = 0;
+            // sample left and right character states from probs
+            size_t l = 0, r = 0;
             
             if (sample_probs_sum == 0)
             {
@@ -2200,7 +2217,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                     if (u < v)
                     {
                         const std::vector<unsigned>& states = it->first;
-                        a = states[0];
                         l = states[1];
                         r = states[2];
                         break;
@@ -2219,7 +2235,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
                     if (u < 0.0)
                     {
                         const std::vector<unsigned>& states = it->first;
-                        a = states[0];
                         l = states[1];
                         r = states[2];
                         break;
@@ -2234,6 +2249,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             nodes[event_index]->addChild(left);
             left->setParent(nodes[event_index]);
             left->setNodeType(true, false, false);
+            left->setTimeInStates(std::vector<double>(num_states, 0.0));
             lineages_in_state[l].push_back(index);
             nodes.push_back(left);
 
@@ -2243,6 +2259,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             nodes[event_index]->addChild(right);
             right->setParent(nodes[event_index]);
             right->setNodeType(true, false, false);
+            right->setTimeInStates(std::vector<double>(num_states, 0.0));
             lineages_in_state[r].push_back(index);
             nodes.push_back(right);
            
@@ -2256,7 +2273,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     Tree *psi = new Tree();
     psi->setRoot(root, true);
     psi->setRooted(true);
-    
+   
     if (prune_extinct_lineages == true)
     {
         for (size_t i = 0; i < num_states; i++)
@@ -2271,16 +2288,34 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             }
         }
     }
-    resizeVectors(psi->getNumberOfNodes());
-    setValue(psi);
-    static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
     
-    size_t num_nodes = value->getNumberOfNodes();
-    if (num_nodes > 2)
+    // update character history vectors 
+    resizeVectors(psi->getNumberOfNodes());
+    simmap = "";
+    for (size_t i = 0; i < psi->getNumberOfNodes(); i++)
     {
-        std::vector<std::string*> character_histories(num_nodes);
-        drawStochasticCharacterMap(character_histories);
-    }
+        double branch_total_speciation = 0.0;
+        double branch_total_extinction = 0.0;
+        for (size_t j = 0; j < num_states; j++) 
+        {
+            time_in_states[j] += psi->getNodes()[i]->getTimeInStates()[j];
+            branch_total_speciation += psi->getNodes()[i]->getTimeInStates()[j] * total_speciation_rates[j];
+            branch_total_extinction += psi->getNodes()[i]->getTimeInStates()[j] * extinction_rates[j];
+        }
+        if (psi->getNodes()[i]->getBranchLength() > 0)
+        {
+            average_speciation[i] = branch_total_speciation/psi->getNodes()[i]->getBranchLength();
+            average_extinction[i] = branch_total_extinction/psi->getNodes()[i]->getBranchLength();
+        }
+    }    
+    
+    // set the simulated values
+    value->getTreeChangeEventHandler().removeListener( this );
+    static_cast<TreeDiscreteCharacterData *>(this->value)->setTree( *psi );
+    delete psi;
+    value->getTreeChangeEventHandler().addListener( this );
+    static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
+    static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
     
 }
 
@@ -2440,5 +2475,5 @@ void StateDependentSpeciationExtinctionProcess::resizeVectors(size_t num_nodes)
     scaling_factors = std::vector<std::vector<double> >(num_nodes, std::vector<double>(2,0.0) );
     average_speciation = std::vector<double>(num_nodes, 0.0);
     average_extinction = std::vector<double>(num_nodes, 0.0);
-    time_in_state = std::vector<double>(num_states, 0.0);    
+    time_in_states = std::vector<double>(num_states, 0.0);    
 }

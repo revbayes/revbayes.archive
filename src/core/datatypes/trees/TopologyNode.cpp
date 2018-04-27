@@ -81,7 +81,8 @@ TopologyNode::TopologyNode(const TopologyNode &n) :
     tip_node( n.tip_node ),
     sampled_ancestor( n.sampled_ancestor ),
     node_comments( n.node_comments ),
-    branch_comments( n.branch_comments )
+    branch_comments( n.branch_comments ),
+    time_in_states( n.time_in_states )
 {
     
     // copy the children
@@ -133,6 +134,7 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n)
         root_node               = n.root_node;
         node_comments           = n.node_comments;
         branch_comments         = n.branch_comments;
+        time_in_states           = n.time_in_states;
         
         // copy the members
         parent          = n.parent;
@@ -224,7 +226,10 @@ void TopologyNode::addBranchParameters(std::string const &n, const std::vector<s
 void TopologyNode::addChild(TopologyNode* c, size_t pos )
 {
     // add child to beginning if pos is out of bounds
-    pos = std::min(pos, children.size());
+    if( pos > children.size() )
+    {
+        throw(RbException("Child position index out of bounds"));
+    }
 
     // add the child at pos offset from the end
     children.insert((children.rbegin() + pos).base(), c);
@@ -1400,6 +1405,12 @@ Taxon& TopologyNode::getTaxon( void )
 }
 
 
+std::vector<double> TopologyNode::getTimeInStates()
+{
+    return time_in_states;
+}
+
+
 double TopologyNode::getTmrca(const Clade &c) const
 {
     const std::vector<Taxon>& yourTaxa = c.getTaxa();
@@ -1607,7 +1618,8 @@ size_t TopologyNode::removeChild(TopologyNode* c)
     if ( it != children.end() )
     {
         // get offset from the end
-        pos = std::distance(children.erase(it), children.end());
+        pos = std::distance(it, children.end())-1;
+        children.erase(it);
     }
     else
     {
@@ -1777,6 +1789,12 @@ void TopologyNode::setTaxonIndices(const TaxonMap &tm)
     }
     
     
+}
+
+
+void TopologyNode::setTimeInStates(std::vector<double> t)
+{
+    time_in_states = t;
 }
 
 

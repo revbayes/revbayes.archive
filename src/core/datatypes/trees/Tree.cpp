@@ -17,7 +17,6 @@ using namespace RevBayesCore;
 Tree::Tree(void) :
     changeEventHandler(),
     root( NULL ),
-    binary( true ),
     rooted( false ),
     is_negative_constraint( false ),
     num_tips( 0 ),
@@ -31,7 +30,6 @@ Tree::Tree(void) :
 Tree::Tree(const Tree& t) :
     changeEventHandler( ),
     root( NULL ),
-    binary( t.binary ),
     rooted( t.rooted ),
     is_negative_constraint( t.is_negative_constraint ),
     num_tips( t.num_tips ),
@@ -85,7 +83,6 @@ Tree& Tree::operator=(const Tree &t)
         nodes.clear();
         delete root;
         root = NULL;
-        binary                 = t.binary;
         num_tips               = t.num_tips;
         num_nodes              = t.num_nodes;
         rooted                 = t.rooted;
@@ -270,6 +267,17 @@ void Tree::dropTipNode( size_t index )
         parent.removeChild( sibling );
         grand_parent.addChild( sibling );
         sibling->setParent( &grand_parent );
+
+        // update character history 
+        if (parent.getTimeInStates().size() > 0 && sibling->getTimeInStates().size() > 0)
+        {
+            std::vector<double> sibling_state_times = sibling->getTimeInStates();
+            for (size_t i = 0; i < parent.getTimeInStates().size(); i++)
+            {
+                sibling_state_times[i] += parent.getTimeInStates()[i];
+            }
+            sibling->setTimeInStates(sibling_state_times);
+        }
     }
     else
     {
@@ -283,6 +291,10 @@ void Tree::dropTipNode( size_t index )
             root->removeChild(&node);
             sibling->setParent(NULL);
             root = sibling;
+            if (root->getTimeInStates().size() > 0)
+            {
+                root->setTimeInStates(std::vector<double>(root->getTimeInStates().size(), 0.0));
+            }
         }
         else
         {
@@ -290,22 +302,13 @@ void Tree::dropTipNode( size_t index )
         }
     }
     
-    bool resetIndex = true;
-    
     nodes.clear();
     
     // bootstrap all nodes from the root and add the in a pre-order traversal
     fillNodesByPhylogeneticTraversal(root);
-    if ( resetIndex == true )
+    for (unsigned int i = 0; i < nodes.size(); ++i)
     {
-        for (unsigned int i = 0; i < nodes.size(); ++i)
-        {
-            nodes[i]->setIndex(i);
-        }
-    }
-    else
-    {
-        orderNodesByIndex();
+        nodes[i]->setIndex(i);
     }
     
     num_nodes = nodes.size();
@@ -1045,10 +1048,18 @@ void Tree::initFromString(const std::string &s)
 }
 
 
-bool Tree::isBinary(void) const
+bool Tree::isBinary(void) const 
 {
-
-    return binary;
+    for (size_t i = 0; i < getNumberOfInteriorNodes(); ++i)
+    {
+        const TopologyNode &n = getInteriorNode( i );
+        if (n.getNumberOfChildren() != 2)
+        {
+            return false;
+            break;
+        }
+    }
+    return true;
 }
 
 

@@ -26,23 +26,23 @@ using namespace RevBayesCore;
  * \param[in]    tn             Taxa.
  */
 AbstractPiecewiseConstantFossilizedRangeProcess::AbstractPiecewiseConstantFossilizedRangeProcess(const DagNode *inspeciation,
-                                                                                                     const DagNode *inextinction,
-                                                                                                     const DagNode *inpsi,
-                                                                                                     const DagNode *incounts,
-                                                                                                     const TypedDagNode<double> *inrho,
-                                                                                                     const TypedDagNode< RbVector<double> > *intimes,
-                                                                                                     const std::vector<Taxon> &intaxa,
-                                                                                                     bool pa ) :
+                                                                                                 const DagNode *inextinction,
+                                                                                                 const DagNode *inpsi,
+                                                                                                 const DagNode *incounts,
+                                                                                                 const TypedDagNode<double> *inrho,
+                                                                                                 const TypedDagNode< RbVector<double> > *intimes,
+                                                                                                 const std::vector<Taxon> &intaxa,
+                                                                                                 bool pa ) :
     ascending(false), homogeneous_rho(inrho), timeline( intimes ), taxa(intaxa), presence_absence(pa)
 {
     // initialize all the pointers to NULL
     homogeneous_lambda             = NULL;
     homogeneous_mu                 = NULL;
     homogeneous_psi                = NULL;
-    fossil_counts                  = NULL;
     heterogeneous_lambda           = NULL;
     heterogeneous_mu               = NULL;
     heterogeneous_psi              = NULL;
+    fossil_counts                  = NULL;
     interval_fossil_counts         = NULL;
     species_interval_fossil_counts = NULL;
 
@@ -51,8 +51,8 @@ AbstractPiecewiseConstantFossilizedRangeProcess::AbstractPiecewiseConstantFossil
     heterogeneous_lambda = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
     homogeneous_lambda = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
 
-    range_parameters.insert( homogeneous_lambda );
-    range_parameters.insert( heterogeneous_lambda );
+    range_parameters.push_back( homogeneous_lambda );
+    range_parameters.push_back( heterogeneous_lambda );
 
     if ( heterogeneous_lambda == NULL && homogeneous_lambda == NULL)
     {
@@ -74,8 +74,8 @@ AbstractPiecewiseConstantFossilizedRangeProcess::AbstractPiecewiseConstantFossil
     heterogeneous_mu = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inextinction);
     homogeneous_mu = dynamic_cast<const TypedDagNode<double >*>(inextinction);
 
-    range_parameters.insert( homogeneous_mu );
-    range_parameters.insert( heterogeneous_mu );
+    range_parameters.push_back( homogeneous_mu );
+    range_parameters.push_back( heterogeneous_mu );
 
     if ( heterogeneous_mu == NULL && homogeneous_mu == NULL)
     {
@@ -97,8 +97,8 @@ AbstractPiecewiseConstantFossilizedRangeProcess::AbstractPiecewiseConstantFossil
     heterogeneous_psi = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inpsi);
     homogeneous_psi = dynamic_cast<const TypedDagNode<double >*>(inpsi);
 
-    range_parameters.insert( homogeneous_psi );
-    range_parameters.insert( heterogeneous_psi );
+    range_parameters.push_back( homogeneous_psi );
+    range_parameters.push_back( heterogeneous_psi );
 
     if ( heterogeneous_psi == NULL && homogeneous_psi == NULL)
     {
@@ -120,9 +120,9 @@ AbstractPiecewiseConstantFossilizedRangeProcess::AbstractPiecewiseConstantFossil
     interval_fossil_counts         = dynamic_cast<const TypedDagNode<RbVector<long> >*>(incounts);
     fossil_counts                  = dynamic_cast<const TypedDagNode<long> *>(incounts);
 
-    range_parameters.insert( species_interval_fossil_counts );
-    range_parameters.insert( interval_fossil_counts );
-    range_parameters.insert( fossil_counts );
+    range_parameters.push_back( species_interval_fossil_counts );
+    range_parameters.push_back( interval_fossil_counts );
+    range_parameters.push_back( fossil_counts );
 
     marginalize_k = ( species_interval_fossil_counts == NULL && interval_fossil_counts == NULL && fossil_counts == NULL);
 
@@ -164,8 +164,8 @@ AbstractPiecewiseConstantFossilizedRangeProcess::AbstractPiecewiseConstantFossil
         }
     }
 
-    range_parameters.insert( homogeneous_rho );
-    range_parameters.insert( timeline );
+    range_parameters.push_back( homogeneous_rho );
+    range_parameters.push_back( timeline );
     
     num_intervals = timeline == NULL ? 1 : timeline->getValue().size()+1;
 

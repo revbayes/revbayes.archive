@@ -121,6 +121,7 @@ namespace RevBayesCore {
         void                                        getTaxa(std::vector<Taxon> &taxa, RbBitSet &bitset) const;                          //!< Fill the vector of taxa and the taxon bitset
         Taxon&                                      getTaxon();                                                                         //!< Get the taxon for this node
         const Taxon&                                getTaxon() const;                                                                   //!< Get the taxon for this node
+        std::vector<double>                         getTimeInStates();
         double                                      getTmrca(const Clade &c) const;
         double                                      getTmrca(const TopologyNode &n) const;
         double                                      getTmrca(const std::vector<Taxon> &t) const;
@@ -144,6 +145,7 @@ namespace RevBayesCore {
         void                                        setSpeciesName(std::string const &n);                                               //!< Set the species name of this node
         void                                        setTaxon(Taxon const &t);                                                           //!< Set the taxon of this node
         void                                        setTaxonIndices(const TaxonMap &tm);                                                //!< Set the indices of the taxa from the taxon map
+        void                                        setTimeInStates(std::vector<double> t);
         void                                        setTree(Tree *t);                                                                   //!< Sets the tree pointer
         void                                        setParent(TopologyNode* p);                                                         //!< Sets the node's parent
         
@@ -172,6 +174,9 @@ namespace RevBayesCore {
         // information for newick representation
         std::vector<std::string>                    node_comments;
         std::vector<std::string>                    branch_comments;
+       
+        // for stochastic maps
+        std::vector<double>                         time_in_states;
         
 //        RevLanguage::RevPtr<TaxonMap>               taxon_map;
         
