@@ -5,6 +5,7 @@
 #include "ModelVector.h"
 #include "Natural.h"
 #include "Real.h"
+#include "RealPos.h"
 #include "RlContinuousTaxonData.h"
 #include "RlString.h"
 #include "RbUtil.h"
@@ -229,6 +230,27 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
         
         return new RevVariable( new Real(var) );
     }
+    else if ( name == "var" )
+    {
+        found = true;
+        
+        // get the argument for the index
+        long index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        double var = this->dag_node->getValue().getVarValue( index );
+        
+        return new RevVariable( new RealPos(var) );
+    }
+    else if ( name == "withinSpeciesVar" )
+    {
+        found = true;
+        
+        // get the argument for the index
+        long index_species  = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        long index_site     = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue() - 1;
+        double var = this->dag_node->getValue().getWithinSpeciesVariance( index_species, index_site );
+        
+        return new RevVariable( new RealPos(var) );
+    }
     
     
     return ModelObject<RevBayesCore::ContinuousCharacterData>::executeMethod( name, args, found );
@@ -270,7 +292,7 @@ void ContinuousCharacterData::initMethods( void )
 {
     
     // add the DAG node member methods
-    // note that this is a sage case because all DAG nodes are member objects
+    // note that this is a safe case because all DAG nodes are member objects
     if ( dag_node != NULL )
     {
         const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dag_node )->getMethods();
@@ -325,6 +347,15 @@ void ContinuousCharacterData::initMethods( void )
     ArgumentRules* var_species_diff_arg_rules = new ArgumentRules();
     var_species_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "varSpeciesDifference", Real::getClassTypeSpec(), var_species_diff_arg_rules ) );
+    
+    ArgumentRules* var_arg_rules = new ArgumentRules();
+    var_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "var", RealPos::getClassTypeSpec(), var_arg_rules ) );
+    
+    ArgumentRules* within_species_var_arg_rules = new ArgumentRules();
+    within_species_var_arg_rules->push_back( new ArgumentRule( "species" , Natural::getClassTypeSpec(), "The index of the species.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    within_species_var_arg_rules->push_back( new ArgumentRule( "site" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "withinSpeciesVar", RealPos::getClassTypeSpec(), within_species_var_arg_rules ) );
 
     
     // member functions
