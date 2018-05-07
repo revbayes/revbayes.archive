@@ -82,7 +82,7 @@ TopologyNode::TopologyNode(const TopologyNode &n) :
     sampled_ancestor( n.sampled_ancestor ),
     node_comments( n.node_comments ),
     branch_comments( n.branch_comments ),
-    time_in_state( n.time_in_state )
+    time_in_states( n.time_in_states )
 {
     
     // copy the children
@@ -134,7 +134,7 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n)
         root_node               = n.root_node;
         node_comments           = n.node_comments;
         branch_comments         = n.branch_comments;
-        time_in_state           = n.time_in_state;
+        time_in_states           = n.time_in_states;
         
         // copy the members
         parent          = n.parent;
@@ -1405,9 +1405,9 @@ Taxon& TopologyNode::getTaxon( void )
 }
 
 
-std::vector<double> TopologyNode::getTimeInState()
+std::vector<double> TopologyNode::getTimeInStates()
 {
-    return time_in_state;
+    return time_in_states;
 }
 
 
@@ -1792,9 +1792,9 @@ void TopologyNode::setTaxonIndices(const TaxonMap &tm)
 }
 
 
-void TopologyNode::setTimeInState(std::vector<double> t)
+void TopologyNode::setTimeInStates(std::vector<double> t)
 {
-    time_in_state = t;
+    time_in_states = t;
 }
 
 
