@@ -1301,6 +1301,7 @@ bool RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
     if ( end_states[node_index][site].isAmbiguous() == true )
     {
         ambiguous_end_state = true;
+        charType end_char = end_states[node_index][site].getStateIndex();
     }
     else
     {
@@ -1702,11 +1703,68 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointCondi
     
     // ideally sample ambiguous tip states given the underlying process and ancestral state
     // for now, always sample the clamped character
+    
+    // sample characters conditioned on start states, going to end states
     std::vector<double> p(this->num_chars, 0.0);
     for (size_t i = 0; i < this->num_sites; i++)
     {
+        
         charType c = td.getCharacter(i);
-        endStates[node_index][i] = c;
+        
+        
+        if (!c.isAmbiguous())
+        {
+            // we know the tip state for unambiguous characters
+            endStates[node_index][i] = c;
+        }
+        else
+        {
+            // we sample the tip state for ambiguous characters
+            size_t cat = sampledSiteRates[i];
+            size_t k = startStates[node_index][i].getStateIndex();
+            
+            // sum to sample
+            double sum = 0.0;
+            
+            // if the matrix is compressed use the pattern for this site
+            size_t pattern = i;
+            if ( compressed == true )
+            {
+                pattern = site_pattern[i];
+            }
+            
+            // get the ambiguous character's bitset for the tip taxon
+            RbBitSet bs = td.getCharacter(i).getState();
+            
+            // iterate over possible end states for each site given start state
+            for (size_t j = 0; j < this->num_chars; j++)
+            {
+                double tp_kj = this->transition_prob_matrices[cat][k][j] * bs[j];
+                p[j] = tp_kj;
+                sum += p[j];
+            }
+            
+            // sample char from p
+            charType c = charType( template_state );
+            double u = GLOBAL_RNG->uniform01() * sum;
+            for (size_t state = 0; state < this->num_chars; state++)
+            {
+                u -= p[state];
+                if (u < 0.0)
+                {
+                    endStates[node_index][i] = c;
+                    break;
+                }
+                if (c.getStateIndex() + 1 >= c.getNumberOfStates())
+                {
+                    c.setToFirstState();
+                }
+                else
+                {
+                    c++;
+                }
+            }
+        }
     }
     
     // no further recursion
