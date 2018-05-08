@@ -136,8 +136,8 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 void RbSettings::initializeUserSettings(void)
 {
     moduleDir = "modules";      // the default module directory
-    useScaling = false;         // the default useScaling
-    scalingDensity = 4;         // the default scaling density
+    useScaling = true;         // the default useScaling
+    scalingDensity = 1;         // the default scaling density
     lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
     outputPrecision = 7;
