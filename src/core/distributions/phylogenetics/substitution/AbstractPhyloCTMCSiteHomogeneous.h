@@ -1295,19 +1295,10 @@ bool RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
     size_t node_index = node.getIndex();
     size_t start_state = start_states[node_index][site].getStateIndex();
     size_t end_state = start_state;
-    bool ambiguous_end_state = false;
-    
-    // check whether we should simulate the end state
-    if ( end_states[node_index][site].isAmbiguous() == true )
-    {
-        ambiguous_end_state = true;
-        charType end_char = end_states[node_index][site].getStateIndex();
-    }
-    else
-    {
-        end_state = end_states[node_index][site].getStateIndex();
-    }
-    
+
+    // NOTE: ambiguous tip states are sampled along with internal node states
+    end_state = end_states[node_index][site].getStateIndex();
+       
     // set up vectors to hold the character transition events
     std::vector<size_t> transition_states;
     std::vector<double> transition_times;
@@ -1371,6 +1362,7 @@ bool RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
         start_age = branch_length;
         end_age = 0.0;
     }
+    
     
     // simulate stochastic map
     transition_states.push_back(end_state);
