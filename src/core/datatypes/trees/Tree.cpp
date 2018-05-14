@@ -414,8 +414,6 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     }
     else if ( n == "fitchScore" )
     {
-        //AbstractHomologousDiscreteCharacterData c = static_cast<const AbstractHomologousDiscreteCharacterData *>( args[0].getVariable()->getRevObject() );
-        //const AbstractHomologousDiscreteCharacterData& c = static_cast<const AbstractHomologousDiscreteCharacterData &>( *args[0]  );
         const TypedDagNode< AbstractHomologousDiscreteCharacterData >* c = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( args[0] );
         rv = RevBayesCore::TreeUtilities::getFitchScore( *this, c->getValue() );
     }
