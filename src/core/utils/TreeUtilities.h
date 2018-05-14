@@ -15,6 +15,7 @@
 #ifndef TreeUtilities_H
 #define TreeUtilities_H
 
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "DistanceMatrix.h"
 #include "MatrixReal.h"
 #include "Tree.h"
@@ -57,7 +58,8 @@ namespace RevBayesCore {
         double                  getAgeOfMRCA(const Tree &t, std::string first, std::string second) ;
         int                     getCollessMetric(const TopologyNode&, int& size);
         double                  getGammaStatistic(const Tree &t);
-
+        int                     getFitchScore(const Tree &t, const AbstractHomologousDiscreteCharacterData &c);
+        std::set<size_t>        recursivelyComputeFitch(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, size_t site, int &score);
 
 
     }

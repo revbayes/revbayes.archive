@@ -1,6 +1,7 @@
 #include "ModelVector.h"
 #include "Natural.h"
 #include "RbUtil.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlBoolean.h"
 #include "RlClade.h"
 #include "RlTree.h"
@@ -94,6 +95,13 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         tmp.resetTaxonBitset( this->dag_node->getValue().getTaxonBitSetMap() );
         RevBayesCore::Clade c = this->dag_node->getValue().getMrca( tmp ).getClade();
         return new RevVariable( new Clade( c ) );
+    }
+    else if (name == "isBinary")
+    {
+        found = true;
+
+        bool tf = this->dag_node->getValue().isBinary();
+        return new RevVariable( new RlBoolean( tf ) );
     }
     else if (name == "isInternal")
     {
@@ -244,6 +252,8 @@ const TypeSpec& Tree::getTypeSpec( void ) const
  */
 void Tree::initMethods( void )
 {
+    ArgumentRules* isBinaryArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "isBinary", RlBoolean::getClassTypeSpec(), isBinaryArgRules ) );
 
     ArgumentRules* isInternalArgRules = new ArgumentRules();
     isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -258,6 +268,10 @@ void Tree::initMethods( void )
 
     ArgumentRules* ntipsArgRules = new ArgumentRules();
     methods.addFunction( new MemberFunction<Tree, Natural>( "ntips", this, ntipsArgRules ) );
+    
+    ArgumentRules* fitchArgRules = new ArgumentRules();
+    fitchArgRules->push_back( new ArgumentRule( "characters", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The charcter alignment from which to compute the Fitch Score.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<Tree, Natural>( "fitchScore", this, fitchArgRules ) );
 
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );

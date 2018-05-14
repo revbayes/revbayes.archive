@@ -1,3 +1,4 @@
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "MatrixReal.h"
 #include "RbBitSet.h"
 #include "RbException.h"
@@ -8,6 +9,7 @@
 #include <algorithm>
 #include <iostream>
 #include <limits>
+#include <set>
 
 using namespace RevBayesCore;
 
@@ -660,4 +662,52 @@ double RevBayesCore::TreeUtilities::getGammaStatistic(const Tree &t)
 
 
     return num/den;
+}
+
+
+/* 
+ * Algorithm from Fitch (1970) "Distinguishing Homologous from Analogous Proteins"
+ */
+int RevBayesCore::TreeUtilities::getFitchScore(const Tree &t, const AbstractHomologousDiscreteCharacterData &c)
+{
+    int score = 0;
+    for (size_t i = 0; i < c.getNumberOfCharacters(); i++)
+    {
+        recursivelyComputeFitch(t.getRoot(), c, i, score);
+    }
+    return score;
+}
+
+
+std::set<size_t> RevBayesCore::TreeUtilities::recursivelyComputeFitch(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, size_t site, int &score)
+{
+    if (node.isTip() == true)
+    {
+        std::set<size_t> tip_set;
+        std::string n = node.getName();
+        size_t state = c.getTaxonData(n).getCharacter(site).getStateIndex();
+        tip_set.insert( state );
+        return tip_set;
+    }
+    else
+    {
+        if ( node.getNumberOfChildren() != 2 )
+        {
+            throw RbException("Fitch score calculation is only implemented for binary trees.");
+        }
+        std::set<size_t> l = recursivelyComputeFitch(node.getChild(0), c, site, score);
+        std::set<size_t> r = recursivelyComputeFitch(node.getChild(1), c, site, score);
+
+        std::set<size_t> intersect;
+        set_intersection(l.begin(), l.end(), r.begin(), r.end(), std::inserter(intersect, intersect.begin()));
+
+        if (intersect.size() == 0)
+        {
+            score++;
+            std::set<size_t> union_set;
+            set_union(l.begin(), l.end(), r.begin(), r.end(), std::inserter(union_set, union_set.begin()));
+            return union_set;
+        }
+        return intersect;
+    }
 }

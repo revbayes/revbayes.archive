@@ -468,7 +468,7 @@ double RevBayesCore::TreeHistoryCtmc<charType>::getBranchRate(size_t nodeIdx) co
 template<class charType>
 const RevBayesCore::BranchHistory&  RevBayesCore::TreeHistoryCtmc<charType>::getHistory(const TopologyNode& nd) const
 {
-    return histories[nd.getIndex()];
+    return *histories[nd.getIndex()];
 }
 
 template<class charType>

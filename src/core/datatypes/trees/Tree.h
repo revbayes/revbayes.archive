@@ -112,7 +112,7 @@ namespace RevBayesCore {
         TreeChangeEventHandler&                             getTreeChangeEventHandler(void) const;                                                              //!< Get the change-event handler for this tree
         double                                              getTreeLength(void) const;
         bool                                                hasSameTopology( const Tree &t ) const;                                                             //!< Has this tree the same topology?
-        bool                                                isBinary(void) const;                                                                               //!< Is the Tree rooted
+        bool                                                isBinary(void) const;                                                                               //!< Is the Tree binary
         bool                                                isBroken(void) const;                                                                               //!< Is this tree ultrametric?
         bool                                                isNegativeConstraint(void) const;                                                                   //!< Is this tree used as a negative constraint?
         bool                                                isRooted(void) const;                                                                               //!< Is the Tree rooted
@@ -148,7 +148,6 @@ namespace RevBayesCore {
         // private members
         TopologyNode*                                       root;
         std::vector<TopologyNode*>                          nodes;                                                                  //!< Vector of pointers to all nodes
-        bool                                                binary;                                                                 //!< Is the BranchLengthTree binary?
         bool                                                rooted;
         bool                                                is_negative_constraint;
         size_t                                              num_tips;

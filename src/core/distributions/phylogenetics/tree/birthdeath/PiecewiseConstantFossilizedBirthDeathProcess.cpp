@@ -42,7 +42,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     AbstractPiecewiseConstantFossilizedRangeProcess(inspeciation, inextinction, inpsi, incounts, inrho, intimes, intaxa, pa),
     extended(ex)
 {
-    for(std::set<const DagNode*>::iterator it = range_parameters.begin(); it != range_parameters.end(); it++)
+    for(std::vector<const DagNode*>::iterator it = range_parameters.begin(); it != range_parameters.end(); it++)
     {
         addParameter(*it);
     }
@@ -166,7 +166,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
             if( d_i[i] > 0.0 )
             {
                 lnProb -= death[di];
-                lnProb += log( p(d_i[i], di) );
+                lnProb += log( fossil[di] ) + log( p(d_i[i], di) );
             }
         }
     }
@@ -502,11 +502,16 @@ double PiecewiseConstantFossilizedBirthDeathProcess::simulateDivergenceTime(doub
 
 size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const TopologyNode& node ) const
 {
+    if( node.isTip() )
+    {
+        return find(taxa.begin(), taxa.end(), node.getTaxon()) - taxa.begin();
+    }
+
+    size_t species;
+
     std::vector<TopologyNode* > children = node.getChildren();
 
     bool sa = node.isSampledAncestor(true);
-
-    size_t species = find(taxa.begin(), taxa.end(), node.getTaxon()) - taxa.begin();
 
     for(size_t c = 0; c < children.size(); c++)
     {
@@ -514,7 +519,7 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
 
         size_t i = updateStartEndTimes(child);
 
-        // if child is a tip, set the end time
+        // if child is a tip, set the species/end time
         if( child.isTip() )
         {
             d_i[i] = child.getAge();
@@ -522,23 +527,24 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
 
         // is child a new species?
         // set start time at this node
-        if( ( sa == false && c > 0 ) || ( sa && child.isSampledAncestor() == false ) )
+        if( ( sa == false && c > 0 ) || ( sa && !child.isSampledAncestor() ) )
         {
             b_i[i] = node.getAge(); // y_{a(i)}
 
             if( sa ) I.push_back(i);
         }
-        // if child is the ancestral species and this is the root
-        // set the start time to the origin
-        else if( node.isRoot() )
-        {
-            b_i[i] = getOriginAge();
-        }
         // child is the ancestral species
-        // propagate species index
         else
         {
+            // propagate species index
             species = i;
+
+            // if this is the root
+            // set the start time to the origin
+            if( node.isRoot() )
+            {
+                b_i[i] = getOriginAge();
+            }
         }
     }
 

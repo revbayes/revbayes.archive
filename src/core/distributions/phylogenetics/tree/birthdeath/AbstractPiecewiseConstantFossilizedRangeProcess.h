@@ -107,7 +107,7 @@ namespace RevBayesCore {
         mutable std::vector<size_t>                     oldest_intervals;
         mutable std::vector<size_t>                     youngest_intervals;
 
-        std::set<const DagNode*>                        range_parameters;
+        std::vector<const DagNode*>                     range_parameters;
     };
 }
 

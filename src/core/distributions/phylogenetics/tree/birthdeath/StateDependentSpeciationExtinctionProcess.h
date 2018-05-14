@@ -53,6 +53,7 @@ namespace RevBayesCore {
         void                                                            fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                                 //!< The tree has changed and we want to know which part.
         const AbstractHomologousDiscreteCharacterData&                  getCharacterData() const;
         double                                                          getOriginAge(void) const;
+        std::vector<double>                                             getTimeInStates(void) const;
         double                                                          getRootAge(void) const;
         virtual void                                                    redrawValue(void);
         void                                                            setCladogenesisMatrix(const TypedDagNode< CladogeneticSpeciationRateMatrix > *r);
@@ -115,7 +116,7 @@ namespace RevBayesCore {
         bool                                                            sample_character_history;                                                                           //!< are we sampling the character history along branches?
         std::vector<double>                                             average_speciation;
         std::vector<double>                                             average_extinction;
-        std::vector<double>                                             time_in_state;
+        std::vector<double>                                             time_in_states;
         std::string                                                     simmap;
         
         // parameters
