@@ -412,6 +412,13 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     {
         rv = num_tips;
     }
+    else if ( n == "fitchScore" )
+    {
+        //AbstractHomologousDiscreteCharacterData c = static_cast<const AbstractHomologousDiscreteCharacterData *>( args[0].getVariable()->getRevObject() );
+        //const AbstractHomologousDiscreteCharacterData& c = static_cast<const AbstractHomologousDiscreteCharacterData &>( *args[0]  );
+        const TypedDagNode< AbstractHomologousDiscreteCharacterData >* c = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( args[0] );
+        rv = RevBayesCore::TreeUtilities::getFitchScore( *this, c->getValue() );
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");

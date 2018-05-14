@@ -1,6 +1,7 @@
 #include "ModelVector.h"
 #include "Natural.h"
 #include "RbUtil.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlBoolean.h"
 #include "RlClade.h"
 #include "RlTree.h"
@@ -267,6 +268,10 @@ void Tree::initMethods( void )
 
     ArgumentRules* ntipsArgRules = new ArgumentRules();
     methods.addFunction( new MemberFunction<Tree, Natural>( "ntips", this, ntipsArgRules ) );
+    
+    ArgumentRules* fitchArgRules = new ArgumentRules();
+    fitchArgRules->push_back( new ArgumentRule( "characters", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The charcter alignment from which to compute the Fitch Score.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<Tree, Natural>( "fitchScore", this, fitchArgRules ) );
 
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );
