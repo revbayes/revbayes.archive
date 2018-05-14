@@ -162,6 +162,7 @@
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_AddRemoveTip.h"
+#include "Move_BurstEvent.h"
 #include "Move_BranchLengthScale.h"
 #include "Move_CollapseExpandFossilBranch.h"
 #include "Move_IndependentTopology.h"
@@ -336,6 +337,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor( new Move_AddRemoveTip()                     );
+        addTypeWithConstructor( new Move_BurstEvent()                       );
         addTypeWithConstructor( new Move_BranchLengthScale()                );
         addTypeWithConstructor( new Move_CollapseExpandFossilBranch()       );
         addTypeWithConstructor( new Move_IndependentTopology()              );

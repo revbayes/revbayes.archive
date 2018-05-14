@@ -17,7 +17,10 @@ namespace RevBayesCore {
                                const std::string &cdt, const std::vector<Taxon> &tn);
         
         // public member functions
-        BirthDeathBurstProcess*         clone(void) const;
+        BirthDeathBurstProcess*                             clone(void) const;
+        double                                              getBurstTime(void) const;
+        bool                                                isBurstSpeciation(size_t i) const;
+        void                                                setBurstSpeciation(size_t i, bool tf);
         
     protected:
         double                                              computeLnProbabilityDivergenceTimes(void) const;                                //!< Compute the log-transformed probability of the current value.

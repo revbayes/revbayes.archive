@@ -188,6 +188,20 @@ double BirthDeathBurstProcess::computeLnProbabilityTimes( void ) const
 }
 
 
+double BirthDeathBurstProcess::getBurstTime( void ) const
+{
+    
+    return time_burst->getValue();
+}
+
+
+bool BirthDeathBurstProcess::isBurstSpeciation( size_t index ) const
+{
+    
+    return lineage_bursted_at_event[index];
+}
+
+
 double BirthDeathBurstProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
@@ -214,6 +228,13 @@ double BirthDeathBurstProcess::lnProbTreeShape(void) const
 double BirthDeathBurstProcess::pSurvival(double start, double end) const
 {
     return 1.0 - pZero(end);
+}
+
+
+void BirthDeathBurstProcess::setBurstSpeciation( size_t index, bool tf )
+{
+    
+    lineage_bursted_at_event[index] = tf;
 }
 
 
