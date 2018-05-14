@@ -60,6 +60,7 @@ namespace RevBayesCore {
         double                  getGammaStatistic(const Tree &t);
         int                     getFitchScore(const Tree &t, const AbstractHomologousDiscreteCharacterData &c);
         std::set<size_t>        recursivelyComputeFitch(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, size_t site, int &score);
+        double                  getMeanInverseES(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index);
 
 
     }
