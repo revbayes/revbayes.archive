@@ -27,6 +27,12 @@ namespace RevBayesCore {
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
         
+        // virtual methods that may be overwritten, but then the derived class should call this methods
+        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                  //!< get affected nodes
+        virtual void                                        keepSpecialization(DagNode* affecter);
+        virtual void                                        restoreSpecialization(DagNode *restorer);
+        virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
+        
         // helper functions
         double                                              computeLnProbabilityTimes(void) const;                                          //!< Compute the log-transformed probability of the current value.
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }

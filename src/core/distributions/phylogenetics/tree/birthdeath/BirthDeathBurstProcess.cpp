@@ -188,6 +188,24 @@ double BirthDeathBurstProcess::computeLnProbabilityTimes( void ) const
 }
 
 
+/**
+ * Get the affected nodes by a change of this node.
+ * If the burst age has changed than we need to call get affected again.
+ */
+void BirthDeathBurstProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
+{
+    
+    if ( affecter == time_burst )
+    {
+        dag_node->getAffectedNodes( affected );
+    }
+    
+    // delegate to base class
+    AbstractRootedTreeDistribution::getAffected(affected, affecter);
+    
+}
+
+
 double BirthDeathBurstProcess::getBurstTime( void ) const
 {
     
@@ -202,17 +220,32 @@ bool BirthDeathBurstProcess::isBurstSpeciation( size_t index ) const
 }
 
 
+/**
+ * Keep the current value and reset some internal flags. Nothing to do here.
+ */
+void BirthDeathBurstProcess::keepSpecialization(DagNode *affecter)
+{
+    
+    if ( affecter == time_burst && dag_node != NULL)
+    {
+        dag_node->keepAffected();
+    }
+    
+    // delegate to base class
+    AbstractRootedTreeDistribution::keepSpecialization( affecter );
+    
+}
+
+
 double BirthDeathBurstProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
-    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / n!
-    // where n is the number of extant tips, m is the number of sampled extinct tips
+    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n-1} / n!
+    // where n is the number of extant tips
     
     int num_taxa = (int)value->getNumberOfTips();
-    int num_extinct = (int)value->getNumberOfExtinctTips();
-    int num_sa = (int)value->getNumberOfSampledAncestors();
     
-    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct);
+    return (num_taxa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa);
 }
 
 
@@ -228,6 +261,39 @@ double BirthDeathBurstProcess::lnProbTreeShape(void) const
 double BirthDeathBurstProcess::pSurvival(double start, double end) const
 {
     return 1.0 - pZero(end);
+}
+
+
+/**
+ * Restore the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void BirthDeathBurstProcess::restoreSpecialization(DagNode *affecter)
+{
+    if ( affecter == time_burst )
+    {
+        
+        size_t num_nodes = value->getNumberOfNodes();
+        double new_burst_time = time_burst->getValue();
+        
+        for (size_t i=0; i<num_nodes; ++i)
+        {
+            
+            if ( lineage_bursted_at_event[i] == true )
+            {
+                value->getNode(i).setAge( new_burst_time );
+            }
+        }
+        
+        if ( dag_node != NULL )
+        {
+            dag_node->restoreAffected();
+        }
+    }
+    
+    // delegate to base class
+    AbstractRootedTreeDistribution::restoreSpecialization( affecter );
+    
 }
 
 
@@ -376,6 +442,41 @@ void BirthDeathBurstProcess::swapParameterInternal(const DagNode *oldP, const Da
     
     // delegate the super-class
     AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
+    
+}
+
+
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void BirthDeathBurstProcess::touchSpecialization(DagNode *affecter, bool touchAll)
+{
+    
+    if ( affecter == time_burst )
+    {
+        
+        size_t num_nodes = value->getNumberOfNodes();
+        double new_burst_time = time_burst->getValue();
+        
+        for (size_t i=0; i<num_nodes; ++i)
+        {
+            
+            if ( lineage_bursted_at_event[i] == true )
+            {
+                value->getNode(i).setAge( new_burst_time );
+            }
+        }
+        
+        if ( dag_node != NULL )
+        {
+            dag_node->restoreAffected();
+        }
+    }
+    
+    // delegate to base class
+    AbstractRootedTreeDistribution::touchSpecialization( affecter, touchAll );
     
 }
 
