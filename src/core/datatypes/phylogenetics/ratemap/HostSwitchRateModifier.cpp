@@ -41,6 +41,7 @@ HostSwitchRateModifier& HostSwitchRateModifier::assign(const Assignable &m)
     }
 }
 
+//computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, std::vector<std::set<size_t> > sites_with_states, double age=0.0)
 double HostSwitchRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEventDiscrete* newState, double age)
 {
     // which character will change?
@@ -50,43 +51,37 @@ double HostSwitchRateModifier::computeRateMultiplier(std::vector<CharacterEvent 
     size_t from_state = static_cast<CharacterEventDiscrete*>(currState[index])->getState();
     size_t to_state = newState->getState();
     
-
-    
-    // losses are independent of other species
+    // loss event (independent of other hosts)
     if (from_state > to_state)
     {
         return 1.0;
     }
     
+    // gain event
+    double scaler_value = scale[ to_state - 1 ];
+    
     // if the gain event level's scaling factor equals zero, then there's no effect
-    if ( scale[ to_state ] == 0.0 )
+    if ( scaler_value == 0.0 )
     {
         return 1.0;
     }
     
     
-//    double f = 1.0;
+    // distance-scaled gain event
     double r = 0.0;
-    size_t n = 0;
-    // which characters are currently occupied?
-    std::vector<std::set<size_t> > states_by_sites(this->num_characters);
+    
+    // sum of phylo.distance-scaled rates
     for (size_t i = 0; i < this->num_characters; i++)
     {
         size_t s = static_cast<CharacterEventDiscrete*>(currState[i])->getState();
-        states_by_sites[i].insert(s);
-        
         if (s != 0) {
-            r += std::exp( -scale[s] * distance[s][to_state] );
-            n += 1;
+            double v = std::exp( -scaler_value * distance[i][index] );
+            r += v;
+//            std::cout << i << " -> " << index <<  " , "  << to_state << " = " << v << "\n";
+        } else {
+            ;
         }
     }
-    
-    // TODO: get phylogenetic distance between current lineage and new lineage at age
-   
-    
-    // for now, we get the phylogenetic distance between current and new lineage at
-    
-    
     
     return r;
 }
