@@ -85,6 +85,7 @@ namespace RevBayesCore {
         const EigenSystem&                      getEigenSystem(void) const ;
         CholeskyDecomposition&                  getCholeskyDecomposition(void);
         const CholeskyDecomposition&            getCholeskyDecomposition(void) const ;
+        const MatrixReal                        getLowerCholeskyFactor(void) const ;
         double                                  getDet() const;
         double                                  getLogDet() const;
         size_t                                  getNumberOfColumns(void) const;

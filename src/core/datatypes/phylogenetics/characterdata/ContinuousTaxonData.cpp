@@ -176,6 +176,16 @@ const double& ContinuousTaxonData::getCharacter(size_t index) const
     return sequence[index];
 }
 
+const std::vector<double>& ContinuousTaxonData::getCharacters(void) const
+{
+    return sequence;
+}
+
+std::vector<double>& ContinuousTaxonData::getCharacters(void)
+{
+    return sequence;
+}
+
 
 /**
  * Get the number of character stored in this object

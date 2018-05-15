@@ -18,6 +18,7 @@ namespace RevBayesCore {
         const MatrixReal                        getInverse(void) const { return inverseMatrix; }
         double                                  computeLogDet(void);
         const MatrixReal                        getLowerCholeskyFactor(void) const { return L; }
+//        MatrixReal                              getLowerCholeskyFactor(void) { return L; }
         const bool                              checkPositiveSemidefinite(void) const { return is_positive_semidefinite; }
 
     private:

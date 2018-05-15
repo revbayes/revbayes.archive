@@ -40,11 +40,9 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     precision_matrices[1].setCholesky(true);
     
     // transform the data if necessary
-    if (method == "transform") {
-        // TODO: re-transform data
-        theEigenSystem = new EigenSystem(&rate_matrix->getValue());
-        eigenTransformCharacters();
-    }
+//    if (method == "transform") {
+//        transformCharacters();
+//    }
     
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -116,7 +114,7 @@ double PhyloMultivariateBrownianProcessREML::computeLnProbability( void )
     
 }
 
-void PhyloMultivariateBrownianProcessREML::eigenTransformCharacters( void )
+void PhyloMultivariateBrownianProcessREML::transformCharacters( void )
 {
     
     // just for safety, make sure we don't call this if we're not using method == "transform"
@@ -125,15 +123,30 @@ void PhyloMultivariateBrownianProcessREML::eigenTransformCharacters( void )
         return;
     }
     
-    // make sure that the eigen system is up-to-date
-    theEigenSystem->updatePositiveEigenvalues();
+    // get the lower cholesky factor
+    MatrixReal lower_factor = rate_matrix->getValue().getLowerCholeskyFactor();
+    lower_factor.setCholesky(true);
+    MatrixReal inverse_upper_factor = lower_factor.computeInverse().getTranspose();
     
+    // get the nodes
+    std::vector<TopologyNode*> nodes = this->tau->getValue().getNodes();
     
-    
-    MatrixReal the_eigen_vectors = theEigenSystem->getEigenvectors();
-    
-    MatrixReal hopefully_the_right_answer = the_eigen_vectors * the_eigen_vectors.getTranspose();
-    
+    for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        if ( (*it)->isTip() )
+        {
+            
+            ContinuousTaxonData& taxon     = this->value->getTaxonData( (*it)->getName() );
+            std::vector<double> taxon_data = taxon.getCharacters();
+//            taxon_data                      = taxon_data * inverse_upper_factor;
+            std::vector<double> transformed_taxon_data = taxon_data * inverse_upper_factor;
+            
+//            contrasts[active_likelihood[(*it)->getIndex()]][(*it)->getIndex()] = transformed_taxon_data;
+//            contrasts[0][(*it)->getIndex()] = transformed_taxon_data;
+//            contrasts[1][(*it)->getIndex()] = transformed_taxon_data;
+            
+        }
+    }
     
     double dummy = 0.0;
 
@@ -377,6 +390,11 @@ void PhyloMultivariateBrownianProcessREML::recursivelyFlagNodeDirty( const Topol
 void PhyloMultivariateBrownianProcessREML::resetValue( void )
 {
     
+//    // re-transform data if necessary
+//    if (method == "transform") {
+//        transformCharacters();
+//    }
+
     // check if the vectors need to be resized
     partial_likelihoods = std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) );
     contrasts = std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) );
@@ -430,12 +448,6 @@ void PhyloMultivariateBrownianProcessREML::resetValue( void )
         active_likelihood[index] = 0;
         changed_nodes[index] = true;
     }
-    
-    // re-transform data if necessary
-    if (method == "transform") {
-        // TODO: re-transform data
-    }
-
     
 }
 
@@ -577,7 +589,7 @@ void PhyloMultivariateBrownianProcessREML::touchSpecialization( DagNode* affecte
         touchAll = true;
         
         if (method == "transform") {
-            // TODO: re-transform data
+            transformCharacters();
         }
         
     }
@@ -628,7 +640,7 @@ void PhyloMultivariateBrownianProcessREML::swapParameterInternal(const DagNode *
         precision_matrices[1].setCholesky(true);
         
         if (method == "transform") {
-            // TODO: re-transform data
+            transformCharacters();
         }
 
     }

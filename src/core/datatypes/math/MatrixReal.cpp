@@ -261,6 +261,19 @@ const CholeskyDecomposition& MatrixReal::getCholeskyDecomposition( void ) const
     return *cholesky_decomp;
 }
 
+const MatrixReal MatrixReal::getLowerCholeskyFactor( void ) const
+{
+    
+    if ( use_cholesky_decomp == false )
+    {
+        RbException("Attempted to access lower Cholesky factor when not using cholesky decompositie.");
+    }
+
+    cholesky_decomp->update();
+    return cholesky_decomp->getLowerCholeskyFactor();
+    
+}
+
 
 double MatrixReal::getDet() const
 {

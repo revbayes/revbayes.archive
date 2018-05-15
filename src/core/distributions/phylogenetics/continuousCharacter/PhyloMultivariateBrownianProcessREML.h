@@ -44,7 +44,7 @@ namespace RevBayesCore {
         std::vector<double>                                                 simulateRootCharacters(size_t n);
         virtual void                                                        simulateRecursively(const TopologyNode& node, std::vector< ContinuousTaxonData > &t);
         virtual void                                                        touchSpecialization(DagNode *toucher, bool touchAll);
-        void                                                                eigenTransformCharacters( void );
+        void                                                                transformCharacters( void );
 
         // Parameter management functions.
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter
@@ -69,7 +69,7 @@ namespace RevBayesCore {
         std::vector<MatrixReal>                                             precision_matrices;
         
         std::string                                                         method;
-        EigenSystem*                                                        theEigenSystem;
+        std::vector<double>                                                 rate_matrix_det;
         
     };
     

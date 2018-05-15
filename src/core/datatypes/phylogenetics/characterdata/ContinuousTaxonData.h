@@ -29,6 +29,8 @@ namespace RevBayesCore {
         void                                    addCharacter(const double &newChar, const bool tf);                 //!< Push back a new character
         const double&                           getCharacter(size_t index) const;                                   //!< Get the character at position index
         double&                                 getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
+        const std::vector<double>&              getCharacters(void) const;
+        std::vector<double>&                    getCharacters(void);
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
         double                                  getPercentageMissing(void) const;                                   //!< Returns the percentage of missing data for this sequence
         std::string                             getStringRepresentation(size_t idx) const;
