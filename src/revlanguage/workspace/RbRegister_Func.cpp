@@ -161,7 +161,7 @@
 #include "Func_generalRateGeneratorSequence.h"
 #include "Func_rangeEvolutionRateModifier.h"
 #include "Func_siteRateModifier.h"
-#include "Func_phylogeneticDistanceRateModifier.h"
+#include "Func_hostSwitchRateModifier.h"
 
 
 /* Cladogeneic state prob function */
@@ -325,7 +325,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_biogeo_de() );
         addFunction( new Func_distanceRateModifier() );
         addFunction( new Func_generalRateGeneratorSequence() );
-        addFunction( new Func_phylogeneticDistanceRateModifier() );
+        addFunction( new Func_hostSwitchRateModifier() );
         addFunction( new Func_rangeEvolutionRateModifier() );
         addFunction( new Func_siteRateModifier() );
 
