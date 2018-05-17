@@ -3,6 +3,7 @@
 #include "Clade.h"
 #include "BirthDeathBurstProcess.h"
 #include "Dist_BirthDeathBurstProcess.h"
+#include "RlDistributionMemberFunction.h"
 #include "DeterministicNode.h"
 #include "ModelVector.h"
 #include "Natural.h"
@@ -130,6 +131,17 @@ std::vector<std::string> Dist_BirthDeathBurstProcess::getDistributionFunctionAli
     a_names.push_back( "BDBP" );
     
     return a_names;
+}
+
+
+MethodTable Dist_BirthDeathBurstProcess::getDistributionMethods( void ) const
+{
+    MethodTable methods = TypedDistribution<TimeTree>::getDistributionMethods();
+    
+    ArgumentRules* num_spec_events_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_BirthDeathBurstProcess, Natural >( "numBurstSpeciations", variable, num_spec_events_arg_rules   ) );
+
+    return methods;
 }
 
 

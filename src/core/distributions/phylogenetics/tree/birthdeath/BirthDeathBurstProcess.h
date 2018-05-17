@@ -8,7 +8,7 @@ namespace RevBayesCore {
     class Clade;
     class Taxon;
     
-    class BirthDeathBurstProcess : public AbstractBirthDeathProcess {
+    class BirthDeathBurstProcess : public AbstractBirthDeathProcess, public MemberObject< long > {
         
     public:
         BirthDeathBurstProcess(const TypedDagNode<double> *ra,
@@ -27,6 +27,8 @@ namespace RevBayesCore {
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
         
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;
+
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                  //!< get affected nodes
         virtual void                                        keepSpecialization(DagNode* affecter);

@@ -188,6 +188,33 @@ double BirthDeathBurstProcess::computeLnProbabilityTimes( void ) const
 }
 
 
+void BirthDeathBurstProcess::executeMethod(const std::string &name, const std::vector<const DagNode *> &args, long &rv) const
+{
+    
+    if ( name == "numBurstSpeciations" )
+    {
+        rv = 0;
+        size_t num_nodes = value->getNumberOfNodes();
+        
+        for (size_t i=0; i<num_nodes; ++i)
+        {
+            
+            if ( lineage_bursted_at_event[i] == true )
+            {
+                ++rv;
+            }
+            
+        }
+        
+    }
+    else
+    {
+        throw RbException("The character dependent birth-death process does not have a member method called '" + name + "'.");
+    }
+    
+}
+
+
 /**
  * Get the affected nodes by a change of this node.
  * If the burst age has changed than we need to call get affected again.
