@@ -52,7 +52,7 @@ double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEv
     // loss event
     if (to_state == 0)
     {
-        if (sites_with_states[0].size() == 1 && forbid_extinction)
+        if (sites_with_states[1].size() == 1 && forbid_extinction)
         {
             return 0.0;
         }
