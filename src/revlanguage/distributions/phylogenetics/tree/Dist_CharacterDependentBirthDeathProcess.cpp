@@ -249,7 +249,7 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
         optionsCondition.push_back( "survival" );
         memberRules.push_back( new OptionRule( "condition"    , new RlString("time"), optionsCondition, "The condition of the birth-death process." ) );
         memberRules.push_back( new ArgumentRule( "nTimeSlices",RealPos::getClassTypeSpec(),      "The number of time slices for the numeric ODE.",           ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RealPos(500.0) ) );
-        memberRules.push_back( new ArgumentRule( "minNumLineages", Natural::getClassTypeSpec(),  "The minimum number of lineages to simulate.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new Natural((int)0) ) );
+        memberRules.push_back( new ArgumentRule( "minNumLineages", Natural::getClassTypeSpec(),  "The minimum number of lineages to simulate.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new Natural() ) );
         memberRules.push_back( new ArgumentRule( "maxNumLineages", Natural::getClassTypeSpec(),  "The maximum number of lineages to simulate.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new Natural(500) ) );
         memberRules.push_back( new ArgumentRule( "pruneExtinctLineages", RlBoolean::getClassTypeSpec(),  "When simulating should extinct lineages be pruned off?",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RlBoolean(true) ) );
 
