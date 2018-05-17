@@ -195,32 +195,6 @@ bool AbstractRootedTreeDistribution::isLnProbabilityNonZero(void)
 
 
 /**
- * Get the divergence times meassured since the time of the origin.
- * We get the ages from the nodes and simply subtruct these from the time of the origin.
- *
- * Fills vector of times. The caller needs to deallocate this vector.
- */
-void AbstractRootedTreeDistribution::recomputeDivergenceTimesSinceOrigin( void ) const
-{
-    
-    // get the time of the process
-    double org = process_age->getValue();
-    
-    // retrieved the speciation times
-    divergence_times = std::vector<double>();
-    for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i)
-    {
-        const TopologyNode& n = value->getInteriorNode( i );
-        double t = org - n.getAge();
-        divergence_times.push_back(t);
-    }
-    
-    // sort the vector of times in ascending order
-    std::sort(divergence_times.begin(), divergence_times.end());
-}
-
-
-/**
  * Compute the diversity of the tree at time t.
  *
  * \param[in]    t      time at which we want to know the diversity.
@@ -426,6 +400,32 @@ double AbstractRootedTreeDistribution::lnProbTreeShape(void) const
     size_t num_taxa = value->getNumberOfTips();
 
     return (num_taxa - 1) * RbConstants::LN2 - 2.0 * RbMath::lnFactorial((int)num_taxa) + log(num_taxa);
+}
+
+
+/**
+ * Get the divergence times meassured since the time of the origin.
+ * We get the ages from the nodes and simply subtruct these from the time of the origin.
+ *
+ * Fills vector of times. The caller needs to deallocate this vector.
+ */
+void AbstractRootedTreeDistribution::recomputeDivergenceTimesSinceOrigin( void ) const
+{
+    
+    // get the time of the process
+    double org = process_age->getValue();
+    
+    // retrieved the speciation times
+    divergence_times = std::vector<double>();
+    for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i)
+    {
+        const TopologyNode& n = value->getInteriorNode( i );
+        double t = org - n.getAge();
+        divergence_times.push_back(t);
+    }
+    
+    // sort the vector of times in ascending order
+    std::sort(divergence_times.begin(), divergence_times.end());
 }
 
 

@@ -346,6 +346,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
     const std::vector<unsigned long> &char_node = this->char_matrix[data_tip_index];
     const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[data_tip_index];
 
+    size_t char_data_node_index = this->value->indexOfTaxonWithName(node.getName());
+    
     // compute the transition probabilities
     this->updateTransitionProbabilities( node_index, node.getBranchLength() );
 
@@ -423,7 +425,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
                       const double* d  = tp_begin+(this->num_chars*c1);
 
                       double tmp = 0.0;
-                      std::vector< double > weights = this->value->getCharacter(node_index, site).getWeights();
+                      std::vector< double > weights = this->value->getCharacter(char_data_node_index, site).getWeights();
                       for ( size_t i=0; i<val.size(); ++i )
                       {
                           // check whether we observed this state

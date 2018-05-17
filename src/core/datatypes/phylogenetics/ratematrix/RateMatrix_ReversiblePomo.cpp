@@ -252,7 +252,7 @@ double RateMatrix_ReversiblePomo::mutCoeff(int nt1, int nt2) {
     }
 
   }
-  assert(r != 0.0);
+//  assert(r != 0.0);
   return r;
 
 }
@@ -339,22 +339,6 @@ void RateMatrix_ReversiblePomo::buildRateMatrix(void)
                 }
             (*the_rate_matrix)[state1][state1] = -(row_sum);
         }
-        // if (verbose_mode >= VB_maX) {
-        //     std::cout << std::setprecision(7)
-        //               << "DEBUG: Rate matrix calculated." << std::endl
-        //               << "DEBUG: mu=" << "\t"
-        //               << mutation_prob[0] << "\t"
-        //               << mutation_prob[1] << "\t"
-        //               << mutation_prob[2] << "\t"
-        //               << mutation_prob[3] << "\t"
-        //               << mutation_prob[4] << "\t"
-        //               << mutation_prob[5] << std::endl;
-        //     std::cout << "DEBUG: " << std::setprecision(3) << "PIs:\t"
-        //               << freq_fixed_states[0] << "\t"
-        //               << freq_fixed_states[1] << "\t"
-        //               << freq_fixed_states[2] << "\t"
-        //               << freq_fixed_states[3] << std::endl;
-        // }
 
 }
 
@@ -366,7 +350,7 @@ void RateMatrix_ReversiblePomo::calculateTransitionProbabilities(double startAge
   // We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
       // Mayrose et al. 2010 also used this method for chromosome evolution (named the squaring and scaling method in Moler and Van Loan 2003).
   double t = rate * (startAge - endAge);
-  exponentiateMatrixByScalingAndSquaring(t, P);
+  exponentiateMatrixByScalingAndSquaring(t, P );
 
   //
   //  // std::cout << "In calculatetransitionProbabilities: "<< t <<std::endl;
@@ -417,12 +401,13 @@ std::vector<double> RateMatrix_ReversiblePomo::getStationaryFrequencies( void ) 
   for (size_t i = 0; i < 4; ++i) {
     stationaryVector[i] = pi[i];
     sum = sum + stationaryVector[i];
+
   }
 
   //stationary frequencies of the polymorphic states
-  size_t ind = 5;
+  size_t ind = 4;
   for (size_t i = 0; i < 6; ++i) {
-    for (size_t j = 0; j < N-1; ++j) {
+    for (size_t j = 1; j < N; ++j) {
       stationaryVector[ind] = rho[i]*pi[i1[i]]*pi[i2[i]]*N/(j*(N-j));
       sum += stationaryVector[ind];
       ind = ind+1;
@@ -432,6 +417,7 @@ std::vector<double> RateMatrix_ReversiblePomo::getStationaryFrequencies( void ) 
   //normalization
   for (size_t i = 0; i < numElements; ++i ){
     stationaryVector[i] = stationaryVector[i]/sum;
+    std::cout << "in RateMatrix_ReversiblePomo: Stationary frequencies: " << stationaryVector[i]  <<std::endl;
   }
 
   return stationaryVector;
@@ -443,11 +429,30 @@ void RateMatrix_ReversiblePomo::update( void )
 
     if ( needs_update )
     {
+std::cout  << "HEHEHE" <<std::endl;
+    /*  for (size_t state1 = 0; state1 < num_states; state1++) {
+          double row_sum = 0.0;
+          // Loop over columns in row state1 (transition to state2).
+          for (size_t state2 = 0; state2 < num_states; state2++)
+              if (state2 != state1) {
+                (*the_rate_matrix)[state1][state2] = 0.25;
+                  row_sum = row_sum + 0.25;
+                      //((*the_rate_matrix)[state1][state2] = 1/4);
+                      std::cout << "(*the_rate_matrix)[state1][state2]: " << (*the_rate_matrix)[state1][state2] << " row_sum: " << row_sum <<std::endl;
+              }
+          (*the_rate_matrix)[state1][state1] = -(row_sum);
+      }*/
+
+
+
         buildRateMatrix();
 
-        // rescale
+        // rescale: not useful, same loglk.
         //rescaleToAverageRate( 1.0 );
 
+
+//TEMPORARY
+getStationaryFrequencies();
         // now update the eigensystem
 //        updateEigenSystem();
 
