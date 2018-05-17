@@ -1,7 +1,8 @@
 #ifndef NodeRejectionSampleProposal_H
 #define NodeRejectionSampleProposal_H
 
-#include "BranchHistory.h"
+#include "BranchHistoryDiscrete.h"
+#include "CharacterEventDiscrete.h"
 #include "DeterministicNode.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "DistributionBinomial.h"
@@ -263,9 +264,9 @@ double RevBayesCore::NodeRejectionSampleProposal<charType>::computeLnProposal(vo
             for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
             {
                 size_t site_index = *it_s;
-                size_t ancS  = nodeParentState[site_index]->getState();
-                size_t desS1 = leftChildState[site_index]->getState();
-                size_t desS2 = rightChildState[site_index]->getState();
+                size_t ancS  = static_cast<CharacterEventDiscrete*>(nodeParentState[site_index])->getState();
+                size_t desS1 = static_cast<CharacterEventDiscrete*>(leftChildState[site_index])->getState();
+                size_t desS2 = static_cast<CharacterEventDiscrete*>(rightChildState[site_index])->getState();
 
                 std::vector<double> state_probs(numStates,0.0);
                 double sum = 0.0;
@@ -276,7 +277,7 @@ double RevBayesCore::NodeRejectionSampleProposal<charType>::computeLnProposal(vo
                     state_probs[i] = p;
                 }
 
-                size_t s = nodeChildState[site_index]->getState();
+                size_t s = static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->getState();
                 lnP += log(state_probs[s]/sum);
             }
 
@@ -291,8 +292,8 @@ double RevBayesCore::NodeRejectionSampleProposal<charType>::computeLnProposal(vo
             for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
             {
                 size_t site_index = *it_s;
-                size_t desS1 = leftChildState[site_index]->getState();
-                size_t desS2 = rightChildState[site_index]->getState();
+                size_t desS1 = static_cast<CharacterEventDiscrete*>(leftChildState[site_index])->getState();
+                size_t desS2 = static_cast<CharacterEventDiscrete*>(rightChildState[site_index])->getState();
 
 
                 std::vector<double> state_probs(numStates,0.0);
@@ -304,7 +305,7 @@ double RevBayesCore::NodeRejectionSampleProposal<charType>::computeLnProposal(vo
                     state_probs[i] = p;
                 }
 
-                size_t s = nodeChildState[site_index]->getState();
+                size_t s = static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->getState();
                 lnP += log(state_probs[s]/sum);
 
             }
@@ -412,7 +413,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::prepareProposal( void 
     storedNodeState.resize(num_sites,0);
     for (size_t site_index = 0; site_index < num_sites; ++site_index)
     {
-        size_t s = nodeState[site_index]->getState();
+        size_t s = static_cast<CharacterEventDiscrete*>(nodeState[site_index])->getState();
         storedNodeState[site_index] = s;
     }
     
@@ -491,9 +492,9 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
             for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
             {
                 size_t site_index = *it_s;
-                size_t ancS  = nodeParentState[site_index]->getState();
-                size_t desS1 = leftChildState[site_index]->getState();
-                size_t desS2 = rightChildState[site_index]->getState();
+                size_t ancS  = static_cast<CharacterEventDiscrete*>(nodeParentState[site_index])->getState();
+                size_t desS1 = static_cast<CharacterEventDiscrete*>(leftChildState[site_index])->getState();
+                size_t desS2 = static_cast<CharacterEventDiscrete*>(rightChildState[site_index])->getState();
 
                 double u = GLOBAL_RNG->uniform01();
 
@@ -518,9 +519,9 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
                     ++s;
                 }
 
-                nodeChildState[site_index]->setState(s);
-                leftParentState[site_index]->setState(s);
-                rightParentState[site_index]->setState(s);
+                static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(leftParentState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(rightParentState[site_index])->setState(s);
             }
 
         }
@@ -534,8 +535,8 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
             for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
             {
                 size_t site_index = *it_s;
-                size_t desS1 = leftChildState[site_index]->getState();
-                size_t desS2 = rightChildState[site_index]->getState();
+                size_t desS1 = static_cast<CharacterEventDiscrete*>(leftChildState[site_index])->getState();
+                size_t desS2 = static_cast<CharacterEventDiscrete*>(rightChildState[site_index])->getState();
 
                 double u = GLOBAL_RNG->uniform01();
 
@@ -560,9 +561,9 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters( 
                     ++s;
                 }
 
-                nodeChildState[site_index]->setState(s);
-                leftParentState[site_index]->setState(s);
-                rightParentState[site_index]->setState(s);
+                static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(leftParentState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(rightParentState[site_index])->setState(s);
 
             }
 
@@ -600,9 +601,9 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::undoProposal( void )
     for (size_t site_index = 0; site_index < num_sites; ++site_index)
     {
         size_t s = storedNodeState[site_index];
-        nodeChildState[site_index]->setState(s);
-        leftParentState[site_index]->setState(s);
-        rightParentState[site_index]->setState(s);
+        static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->setState(s);
+        static_cast<CharacterEventDiscrete*>(leftParentState[site_index])->setState(s);
+        static_cast<CharacterEventDiscrete*>(rightParentState[site_index])->setState(s);
     }
 
     // restore path state

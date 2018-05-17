@@ -39,7 +39,7 @@ using namespace RevBayesCore;
  * \param[in]    mvs  The vector of moves.
  * \param[in]    mons The vector of monitors.
  */
-Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &mons) : MonteCarloSampler(),
+Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &mons, size_t ntries) : MonteCarloSampler(),
     chain_active( true ),
     chain_likelihood_heat( 1.0 ),
     chain_posterior_heat( 1.0 ),
@@ -47,6 +47,7 @@ Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &m
     model( m.clone() ),
     monitors( mons ),
     moves( mvs ),
+    num_init_attempts(ntries),
     schedule(NULL),
     schedule_type("random")
 {
@@ -72,6 +73,7 @@ Mcmc::Mcmc(const Mcmc &m) : MonteCarloSampler(m),
     model( m.model->clone() ),
     monitors( m.monitors ),
     moves( m.moves ),
+    num_init_attempts( m.num_init_attempts ),
     schedule( NULL ),
     schedule_type( m.schedule_type )
 {
@@ -194,7 +196,7 @@ Mcmc* Mcmc::clone( void ) const
 /**
  * Finish the monitors which will close the output streams.
  */
-void Mcmc::finishMonitors( size_t n_reps )
+void Mcmc::finishMonitors( size_t n_reps, MonteCarloAnalysisOptions::TraceCombinationTypes tc )
 {
     
     // iterate over all monitors
@@ -209,7 +211,7 @@ void Mcmc::finishMonitors( size_t n_reps )
             // combine results if we used more than one replicate
             if ( n_reps > 1 )
             {
-                monitors[i].combineReplicates( n_reps );
+                monitors[i].combineReplicates( n_reps, tc );
             }
             
         }
@@ -413,9 +415,8 @@ void Mcmc::initializeSampler( bool prior_only )
     
     
     int num_tries     = 0;
-    int max_num_tries = 100000;
     double ln_probability = 0.0;
-    for ( ; num_tries < max_num_tries; ++num_tries )
+    for ( ; num_tries < num_init_attempts; ++num_tries )
     {
         // a flag if we failed to find a valid starting value
         bool failed = false;
@@ -483,7 +484,7 @@ void Mcmc::initializeSampler( bool prior_only )
         
     }
     
-    if ( num_tries == max_num_tries )
+    if ( num_tries == num_init_attempts )
     {
         std::stringstream msg;
         msg << "Unable to find a starting state with computable probability";

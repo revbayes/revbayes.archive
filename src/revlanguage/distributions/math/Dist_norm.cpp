@@ -36,9 +36,7 @@ RevBayesCore::NormalDistribution* Dist_norm::createDistribution( void ) const
     // get the parameters
     RevBayesCore::TypedDagNode<double>* m = static_cast<const Real &>( mean->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( sd->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* mi  = static_cast<const Real &>( min->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* ma  = static_cast<const Real &>( max->getRevObject() ).getDagNode();
-    RevBayesCore::NormalDistribution*   d = new RevBayesCore::NormalDistribution(m, s, mi, ma);
+    RevBayesCore::NormalDistribution*   d = new RevBayesCore::NormalDistribution(m, s);
 
     return d;
 }
@@ -245,20 +243,18 @@ std::string Dist_norm::getHelpTitle(void) const
 const MemberRules& Dist_norm::getParameterRules(void) const
 {
 
-    static MemberRules distNormMemberRules;
+    static MemberRules dist_member_rules;
     static bool rules_set = false;
 
-    if ( !rules_set )
+    if ( rules_set == false )
     {
-        distNormMemberRules.push_back( new ArgumentRule( "mean", Real::getClassTypeSpec()   , "The mean parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd"  , RealPos::getClassTypeSpec(), "The standard deviation parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
-        distNormMemberRules.push_back( new ArgumentRule( "min", Real::getClassTypeSpec(), "The minimum.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(RbConstants::Double::neginf)));
-        distNormMemberRules.push_back( new ArgumentRule( "max", Real::getClassTypeSpec(), "The maximum.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(RbConstants::Double::inf)));
-
+        dist_member_rules.push_back( new ArgumentRule( "mean", Real::getClassTypeSpec()   , "The mean parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "sd"  , RealPos::getClassTypeSpec(), "The standard deviation parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        
         rules_set = true;
     }
 
-    return distNormMemberRules;
+    return dist_member_rules;
 }
 
 
@@ -323,16 +319,8 @@ void Dist_norm::setConstParameter(const std::string& name, const RevPtr<const Re
     {
         sd = var;
     }
-    else if ( name == "min")
-    {
-        min = var;
-    }
-    else if ( name == "max")
-    {
-        max = var;
-    }
     else
     {
-        Distribution::setConstParameter(name, var);
+        ContinuousDistribution::setConstParameter(name, var);
     }
 }

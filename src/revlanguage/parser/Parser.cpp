@@ -64,6 +64,7 @@ RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& c
     while (buf.good()) {
 
         std::stringstream temp;
+        bool escaped = false;
 
         while (buf.good()) {
 
@@ -74,7 +75,7 @@ RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& c
                     throw RbException("End of line while in quote");
                 }
                 continue;
-            } else if (c == '"') {
+            } else if (escaped == false && c == '"') {
                 /* switch quote on or off if not in comment */
                 if (inQuote == true)
                     inQuote = false;
@@ -103,6 +104,7 @@ RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& c
                     c = char( buf.get());
                 break;
             }
+            escaped = (c == '\\');
 
             temp.put(c);
         }
@@ -359,12 +361,11 @@ void RevLanguage::Parser::setParserMode(ParserMode mode)
  *       signal is set to 2. Any remaining part of the command buffer
  *       is discarded.
  */
-int RevLanguage::Parser::processCommand(std::string& command, Environment* env) {
+int RevLanguage::Parser::processCommand(std::string& command, Environment* env)
+{
 
     // make sure mode is not checking
     this->setParserMode(EXECUTING);
-
-    //    extern Environment* executionEnvironment;
 
     executionEnvironment = env;
 

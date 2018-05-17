@@ -13,7 +13,6 @@
  */
 
 #include "RlAncestralStateTrace.h"
-#include "AncestralStateTrace.h"
 
 #include "ArgumentRules.h"
 #include "MemberProcedure.h"

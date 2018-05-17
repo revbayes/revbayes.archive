@@ -23,17 +23,20 @@ LogUniformDistribution::LogUniformDistribution(const TypedDagNode<double> *mi, c
 }
 
 
-LogUniformDistribution::~LogUniformDistribution( void ) {
+LogUniformDistribution::~LogUniformDistribution( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
-double LogUniformDistribution::cdf( void ) const {
+double LogUniformDistribution::cdf( void ) const
+{
     return 0.0;
 }
 
 
-LogUniformDistribution* LogUniformDistribution::clone( void ) const {
+LogUniformDistribution* LogUniformDistribution::clone( void ) const
+{
     return new LogUniformDistribution( *this );
 }
 

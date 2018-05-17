@@ -61,7 +61,7 @@ RevBayesCore::MultispeciesCoalescentUniformPrior* Dist_multispeciesCoalescentUni
     const std::vector<RevBayesCore::Taxon>      &t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
     // get the number of nodes for the tree
-    size_t n_nodes = st->getValue().getNumberOfNodes();
+    // size_t n_nodes = st->getValue().getNumberOfNodes();
 
 
     RevBayesCore::MultispeciesCoalescentUniformPrior*   d = new RevBayesCore::MultispeciesCoalescentUniformPrior( st, t );

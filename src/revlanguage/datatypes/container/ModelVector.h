@@ -471,7 +471,13 @@ double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) c
             rlType org_element = rlType( org_internal_element );
 
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( type.getElementTypeSpec() != NULL && org_element.getTypeSpec() != *type.getElementTypeSpec() )
+            if ( type.getElementTypeSpec() == NULL )
+            {
+                // we cannot convert this element
+                return -1;
+            }
+            
+            if ( org_element.getTypeSpec() != *type.getElementTypeSpec() )
             {
             
                 double element_penalty = org_element.isConvertibleTo( *type.getElementTypeSpec(), once );

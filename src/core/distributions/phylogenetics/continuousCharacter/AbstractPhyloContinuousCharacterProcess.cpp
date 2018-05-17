@@ -12,8 +12,7 @@
 using namespace RevBayesCore;
 
 
-AbstractPhyloContinuousCharacterProcess::AbstractPhyloContinuousCharacterProcess(const TypedDagNode<Tree> *t, size_t ns) :
-    TypedDistribution< ContinuousCharacterData >(  new ContinuousCharacterData() ),
+AbstractPhyloContinuousCharacterProcess::AbstractPhyloContinuousCharacterProcess(const TypedDagNode<Tree> *t, size_t ns) : TypedDistribution< ContinuousCharacterData >(  new ContinuousCharacterData() ),
     num_nodes( t->getValue().getNumberOfNodes() ),
     num_sites( ns ),
     tau( t )
@@ -57,18 +56,23 @@ AbstractPhyloContinuousCharacterProcess::~AbstractPhyloContinuousCharacterProces
 double AbstractPhyloContinuousCharacterProcess::computeBranchTime( size_t nodeIdx, double brlen )
 {
     
-    // second, get the clock rate for the branch
+    // get the clock rate for the branch
     double branch_time;
     if ( this->heterogeneous_clock_rates != NULL )
     {
-        branch_time = this->heterogeneous_clock_rates->getValue()[nodeIdx] * brlen;
+        double sigma = this->heterogeneous_clock_rates->getValue()[nodeIdx];
+        branch_time = sigma * sigma * brlen;
     }
     else
     {
-        branch_time = this->homogeneous_clock_rate->getValue() * brlen;
+        double sigma = this->homogeneous_clock_rate->getValue();
+        branch_time = sigma * sigma * brlen;
     }
     
-    return branch_time;
+    // prevent division by zero
+    return branch_time <= 0.0 ? 1e-16 : branch_time;
+    
+//    return branch_time;
 }
 
 
@@ -104,7 +108,8 @@ void AbstractPhyloContinuousCharacterProcess::redrawValue( void )
     std::vector< ContinuousTaxonData > taxa = std::vector< ContinuousTaxonData >( num_nodes, ContinuousTaxonData( Taxon("") ) );
     
     // simulate the root sequence
-    ContinuousTaxonData &root = taxa[ tau->getValue().getRoot().getIndex() ];
+    size_t root_index = tau->getValue().getRoot().getIndex();
+    ContinuousTaxonData &root = taxa[ root_index ];
     
     std::vector<double> root_states = simulateRootCharacters(num_sites);
     for ( size_t i = 0; i < num_sites; ++i )
@@ -119,11 +124,9 @@ void AbstractPhyloContinuousCharacterProcess::redrawValue( void )
     // recursively simulate the sequences
     simulateRecursively( tau->getValue().getRoot(), taxa );
     
-    // add the taxon data to the character data
-    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
-    {
-        this->value->addTaxonData( taxa[i] );
-    }
+    // we call now our method to resample the tips
+    // this is important if we have multiple samples (e.g. individuals) per species
+    simulateTipSamples( taxa );
     
     // tell the derived classes
     this->resetValue();
@@ -256,6 +259,18 @@ void AbstractPhyloContinuousCharacterProcess::setValue(ContinuousCharacterData *
     
     // tell the derived classes
     this->resetValue();
+    
+}
+
+
+void AbstractPhyloContinuousCharacterProcess::simulateTipSamples( const std::vector< ContinuousTaxonData > &taxon_data )
+{
+    
+    // add the taxon data to the character data
+    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+    {
+        this->value->addTaxonData( taxon_data[i] );
+    }
     
 }
 

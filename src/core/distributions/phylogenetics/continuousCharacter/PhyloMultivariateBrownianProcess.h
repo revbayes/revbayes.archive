@@ -1,13 +1,5 @@
-//
-//  MultivariateBrownianProcess.h
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-26.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
-
-#ifndef __revbayes__PhyloMultivariateBrownianProcess__
-#define __revbayes__PhyloMultivariateBrownianProcess__
+#ifndef PhyloMultivariateBrownianProcess_H
+#define PhyloMultivariateBrownianProcess_H
 
 #include <iostream>
 

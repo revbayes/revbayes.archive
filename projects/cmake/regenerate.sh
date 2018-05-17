@@ -56,10 +56,12 @@ rm ./project-config.jam*  # clean up from previous runs
 
 if [ "$mac" = "true" ]
 then
-./bootstrap.sh --with-libraries=atomic,chrono,regex,thread,date_time,program_options,math,serialization,signals
+./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
-#./bootstrap.sh --with-libraries=filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
-#./b2 link=static macosx-version-min=10.6
+elif [ "$win" = "true" ]
+then
+./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals --with-toolset=mingw
+./b2 link=static
 else
 ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
@@ -109,7 +111,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 elif [ "$win" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -static")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -static -std=gnu++98")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -static")
 '  >> "$HERE/CMakeLists.txt"
 else
@@ -160,20 +162,20 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 SET(BOOST_ROOT ../../../boost_1_60_0)
 SET(Boost_USE_STATIC_RUNTIME true)
 SET(Boost_USE_STATIC_LIBS ON)
-#find_package(Boost 1.60.0 COMPONENTS regex signals thread date_time program_options serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
 find_package(Boost
 1.60.0
 COMPONENTS regex
 program_options
 thread
 signals
+system
+filesystem
 date_time
 serialization REQUIRED)
 MESSAGE("Boost information:")
 MESSAGE("  Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIR}")
 MESSAGE("  Boost_LIBRARIES: ${Boost_LIBRARIES}")
 MESSAGE("  Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
-#INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 
@@ -227,6 +229,79 @@ add_executable(rb-jupyter ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 target_link_libraries(rb-jupyter rb-parser rb-core libs ${Boost_LIBRARIES})
 set_target_properties(rb-jupyter PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
+elif [ "$cmd" = "true" ]
+then
+echo '
+
+# Use the package PkgConfig to detect GTK+ headers/library files
+FIND_PACKAGE(PkgConfig REQUIRED)
+PKG_CHECK_MODULES(GTK REQUIRED gtk+-2.0)
+#PKG_CHECK_MODULES(GTK REQUIRED gtk+-3.0)
+' >> $HERE/CMakeLists.txt
+
+# Setup CMake to use GTK+, tell the compiler where to look for headers
+# and to the linker where to look for libraries
+if [ "$win" = "true" ]
+then
+echo '
+INCLUDE_DIRECTORIES( /mingw64/include/gtk-2.0;/mingw64/lib/gtk-2.0/include;/mingw64/include/pango-1.0;/mingw64/include/fribidi;/mingw64/include/cairo;/mingw64/include/atk-1.0;/mingw64/include/cairo;/mingw64/include/pixman-1;/mingw64/include;/mingw64/include/freetype2;/mingw64/include;/mingw64/include/harfbuzz;/mingw64/include/libpng16;/mingw64/include/gdk-pixbuf-2.0;/mingw64/include/libpng16;/mingw64/include;/mingw64/include/glib-2.0;/mingw64/lib/glib-2.0/include;/mingw64/include )
+LINK_DIRECTORIES( /mingw64/lib )
+' >> $HERE/CMakeLists.txt
+else
+echo '
+INCLUDE_DIRECTORIES(${GTK_INCLUDE_DIRS})
+LINK_DIRECTORIES(${GTK_LIBRARY_DIRS})
+' >> $HERE/CMakeLists.txt
+fi
+
+echo '
+# Add other flags to the compiler
+ADD_DEFINITIONS(${GTK_CFLAGS_OTHER})
+
+# Add an executable compiled from hello.c
+ADD_EXECUTABLE(RevStudio ${PROJECT_SOURCE_DIR}/cmd/main.cpp)
+' >> $HERE/CMakeLists.txt
+
+# Link the target to the GTK+ libraries
+if [ "$win" = "true" ]
+then
+echo '
+TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRARIES}
+"/mingw64/lib/libgtk-win32-2.0.dll.a"
+"/mingw64/lib/libgdk-win32-2.0.dll.a"
+"/mingw64/lib/libpangowin32-1.0.dll.a"
+"/mingw64/lib/libpangocairo-1.0.dll.a"
+"/mingw64/lib/libpango-1.0.dll.a"
+"/mingw64/lib/libfribidi.dll.a"
+"/mingw64/lib/libatk-1.0.dll.a"
+"/mingw64/lib/libcairo.dll.a"
+"/mingw64/lib/libgdk_pixbuf-2.0.dll.a"
+"/mingw64/lib/libgio-2.0.dll.a"
+"/mingw64/lib/libgobject-2.0.dll.a"
+"/mingw64/lib/libglib-2.0.dll.a"
+"/mingw64/lib/libintl.dll.a"
+)
+' >> $HERE/CMakeLists.txt
+else
+echo '
+TARGET_LINK_LIBRARIES(RevStudio rb-parser rb-core libs rb-cmd-lib ${Boost_LIBRARIES} ${GTK_LIBRARIES})
+' >> $HERE/CMakeLists.txt
+fi
+
+echo '
+SET_TARGET_PROPERTIES(RevStudio PROPERTIES PREFIX "../")
+
+add_subdirectory(cmd)
+' >> $HERE/CMakeLists.txt
+
+if [ ! -d "$HERE/cmd" ]; then
+mkdir "$HERE/cmd"
+fi
+echo 'SET(CMD_FILES' > "$HERE/cmd/CMakeLists.txt"
+find cmd | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/cmd/CMakeLists.txt"
+echo ')
+ADD_LIBRARY(rb-cmd-lib ${CMD_FILES})'  >> "$HERE/cmd/CMakeLists.txt"
+
 else
 echo '
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
@@ -260,3 +335,4 @@ echo 'set(PARSER_FILES' > "$HERE/revlanguage/CMakeLists.txt"
 find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/revlanguage/CMakeLists.txt"
 echo ')
 add_library(rb-parser ${PARSER_FILES})'  >> "$HERE/revlanguage/CMakeLists.txt"
+

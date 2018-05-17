@@ -1,7 +1,8 @@
 #ifndef PathRejectionSampleProposal_H
 #define PathRejectionSampleProposal_H
 
-#include "BranchHistory.h"
+#include "BranchHistoryDiscrete.h"
+#include "CharacterEventDiscrete.h"
 #include "DeterministicNode.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "DistributionBinomial.h"
@@ -171,9 +172,9 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::cleanProposal( void )
     }
     
     // delete old events
-    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+    std::multiset<CharacterEvent*,CharacterEventCompare>::reverse_iterator it_h;
     std::vector<CharacterEvent*> events;
-    for (it_h = storedHistory.begin(); it_h != storedHistory.end(); ++it_h)
+    for (it_h = storedHistory.rbegin(); it_h != storedHistory.rend(); ++it_h)
     {
         if (lambda == 1.0)
         {
@@ -223,7 +224,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     std::vector<CharacterEvent*> currState = bh.getParentCharacters();
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh.getHistory();
     
-    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+    std::multiset<CharacterEvent*,CharacterEventCompare>::reverse_iterator it_h;
 
     std::vector<size_t> counts(numStates,0);
     fillStateCounts(currState, counts);
@@ -257,7 +258,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     double endAge = nd.getAge();
     double branchRate = getBranchRate(nd.getIndex());
     
-    for (it_h = history.begin(); it_h != history.end(); ++it_h)
+    for (it_h = history.rbegin(); it_h != history.rend(); ++it_h)
     {
         // next event time
         double idx = (*it_h)->getSiteIndex();
@@ -265,15 +266,15 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
         dt = currAge - eventAge;
 
         // get the new transition rate
-        double tr = rm.getRate( currState[ (*it_h)->getSiteIndex() ]->getState(), (*it_h)->getState(), currAge, branchRate);
+        double tr = rm.getRate( static_cast<CharacterEventDiscrete*>(currState[ (*it_h)->getSiteIndex() ])->getState(), static_cast<CharacterEventDiscrete*>(*it_h)->getState(), currAge, branchRate);
         double sr = rm.getSumOfRates(currState, counts, currAge, branchRate);
 
         // lnP for stepwise events for p(x->y)
         lnP += log(tr) - (sr * dt);
 
         // update counts
-        counts[ currState[idx]->getState() ] -= 1;
-        counts[ (*it_h)->getState() ] += 1;
+        counts[ static_cast<CharacterEventDiscrete*>(currState[idx])->getState() ] -= 1;
+        counts[ static_cast<CharacterEventDiscrete*>(*it_h)->getState() ] += 1;
         
         // update state
         currState[idx] = *it_h;
@@ -293,7 +294,7 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::fillStateCounts(std::v
 {
     for (size_t i = 0; i < s.size(); ++i)
     {
-        counts[ s[i]->getState() ] += 1;
+        counts[ static_cast<CharacterEventDiscrete*>(s[i])->getState() ] += 1;
     }
 }
 
@@ -359,33 +360,30 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
         return 0.0;
     }
 
-//    const RateGenerator& rm = q_map_site->getValue();
+    // get sampling rates
     const RateGenerator& rm = ( q_map_sequence != NULL ? q_map_sequence->getValue() : q_map_site->getValue() );
     
-
-    // clear characters
-    BranchHistory* bh = &p->getHistory(*node);
-
     // rejection sample path history
+    BranchHistory* bh = &p->getHistory(*node);
     std::vector<CharacterEvent*> parent_states = bh->getParentCharacters();
     std::vector<CharacterEvent*> child_states  = bh->getChildCharacters();
     std::multiset<CharacterEvent*,CharacterEventCompare> proposed_histories;
     
-    //for (size_t site_index=0; site_index < num_sites; ++site_index)
+    // update histories for sites in sampledCharacters
     std::set<size_t>::iterator it_s;
     for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
     {
         size_t site_index = *it_s;
         std::set<CharacterEvent*> tmpHistory;
-        size_t currState = parent_states[site_index]->getState();
-        size_t endState  = child_states[site_index]->getState();
+        size_t currState = static_cast<CharacterEventDiscrete*>(parent_states[site_index])->getState();
+        size_t endState  = static_cast<CharacterEventDiscrete*>(child_states[site_index])->getState();
         do
         {
             // delete previously rejected events
             tmpHistory.clear();
 
             // proceed with rejection sampling
-            currState = parent_states[site_index]->getState();
+            currState = static_cast<CharacterEventDiscrete*>(parent_states[site_index])->getState();
             double end_age = node->getAge();
             double age = end_age + branch_length;
             
@@ -394,41 +392,12 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
             {
                 double r = 0.0;
                 size_t nextState = 0;
-//<<<<<<< HEAD
                 std::vector<double> rates(numStates,0.0);
                 for (size_t i = 0; i < numStates; ++i)
                 {
                     if (i == currState)
                     {
                         continue;
-//=======
-//                if (num_states == 2)
-//                {
-//                    nextState = (currState == 1 ? 0 : 1);
-//                    r = rm.getSiteRate(*node, currState, nextState);
-//                }
-//                
-//                else
-//                {
-//                    std::vector<double> rates(num_states,0.0);
-//                    for (unsigned i = 0; i < num_states; i++)
-//                    {
-//                        if (i == currState)
-//                            continue;
-//                        double v = rm.getSiteRate(*node, currState, i);
-//                        rates[i] = v;
-//                        r += v;
-//                    }
-//                    double u = GLOBAL_RNG->uniform01() * r;
-//                    for (unsigned i = 0; i < num_states; i++)
-//                    {
-//                        u -= rates[i];
-//                        if (u <= 0.0)
-//                        {
-//                            nextState = i;
-//                            break;
-//                        }
-//>>>>>>> development
                     }
                     double v = rm.getRate(currState, i, age, getBranchRate(node->getIndex()));
                     rates[i] = v;
@@ -451,12 +420,12 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                 if (age > end_age)
                 {
                     currState = nextState;
-                    CharacterEvent* evt = new CharacterEvent(site_index, nextState, age);
+                    CharacterEvent* evt = new CharacterEventDiscrete(site_index, nextState, age);
                     tmpHistory.insert(evt);
                 }
                 else if (currState != endState)
                 {
-                    for (std::set<CharacterEvent*>::iterator it_h = tmpHistory.begin(); it_h != tmpHistory.end(); it_h++)
+                    for (std::set<CharacterEvent*>::reverse_iterator it_h = tmpHistory.rbegin(); it_h != tmpHistory.rend(); it_h++)
                     {
                         delete *it_h;
                     }
@@ -480,7 +449,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
     } else {
         bh->updateHistory(proposed_histories, sampledCharacters);
     }
-
+    
     // return hastings ratio
     proposedLnProb = computeLnProposal(*node, *bh);
 
@@ -585,9 +554,9 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::undoProposal( void )
 //    bh->print();
 
     std::multiset<CharacterEvent*,CharacterEventCompare> proposed_history = bh->getHistory();
-    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+    std::multiset<CharacterEvent*,CharacterEventCompare>::reverse_iterator it_h;
     std::vector<CharacterEvent*> events;
-    for (it_h = proposed_history.begin(); it_h != proposed_history.end(); ++it_h)
+    for (it_h = proposed_history.rbegin(); it_h != proposed_history.rend(); ++it_h)
     {
         if (lambda == 1.0)
         {

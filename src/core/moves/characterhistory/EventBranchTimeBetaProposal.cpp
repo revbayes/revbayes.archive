@@ -18,9 +18,9 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 EventBranchTimeBetaProposal::EventBranchTimeBetaProposal( StochasticNode<Tree> *n, double d, double o) : Proposal(),
-variable( n ),
-delta( d ),
-offset( o )
+    variable( n ),
+    delta( d ),
+    offset( o )
 {
     // tell the base class to add the node
     addNode( variable );
@@ -28,7 +28,7 @@ offset( o )
     distribution = dynamic_cast< AbstractCharacterHistoryBirthDeathProcess* >( &variable->getDistribution() );
     if ( distribution == NULL )
     {
-        throw RbException("Wrong type of variable for discrete-event-category random walk move.");
+        throw RbException("Wrong type of variable for event-time move.");
     }
 }
 
@@ -97,7 +97,7 @@ double EventBranchTimeBetaProposal::doProposal( void )
         history.removeEvent(event, branch_index);
         double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
         double my_age = distribution->getValue().getNode(branch_index).getAge();
-        
+
         // store the event
         stored_value = event;
         // get the current index

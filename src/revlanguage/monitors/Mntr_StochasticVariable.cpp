@@ -41,10 +41,12 @@ void Mntr_StochasticVariable::constructInternalObject( void )
     const std::string&                  sep     = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int                                 g       = static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
     bool                                ap      = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
+    bool                                wv      = static_cast<const RlBoolean &>( version->getRevObject() ).getValue();
     RevBayesCore::StochasticVariableMonitor *m = new RevBayesCore::StochasticVariableMonitor((unsigned long)g, fn, sep);
     
     // now set the flags
     m->setAppend( ap );
+    m->setPrintVersion( wv );
     
     // store the new StochasticVariable into our value variable
     value = m;
@@ -81,11 +83,12 @@ const MemberRules& Mntr_StochasticVariable::getParameterRules(void) const
     if ( !rules_set )
     {
         
-        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("printgen"      , Natural::getClassTypeSpec()  , "The frequency how often we print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("separator"     , RlString::getClassTypeSpec() , "The delimiter between variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
-        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), "Should we append or overwrite if the file exists?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        
+        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("filename"  , RlString::getClassTypeSpec() , "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , "The frequency how often we print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , "The delimiter between variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("append"    , RlBoolean::getClassTypeSpec(), "Should we append or overwrite if the file exists?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("version"   , RlBoolean::getClassTypeSpec(), "Should we record the software version?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+
         
         rules_set = true;
     }
@@ -145,6 +148,10 @@ void Mntr_StochasticVariable::setConstParameter(const std::string& name, const R
     else if ( name == "append" )
     {
         append = var;
+    }
+    else if ( name == "version" )
+    {
+        version = var;
     }
     else
     {

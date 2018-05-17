@@ -15,16 +15,16 @@
 
 using namespace RevBayesCore;
 
-Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt) : MonteCarloSampler( ),
-num_chains(nc),
-schedule_type(sT),
-current_generation(0),
-swap_interval(si),
-active_chain_index( 0 ),
-delta( dt ),
-generation( 0 ),
-numAttemptedSwaps( 0 ),
-numAcceptedSwaps( 0 )
+Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt, size_t ntries) : MonteCarloSampler(),
+    num_chains(nc),
+    schedule_type(sT),
+    current_generation(0),
+    swap_interval(si),
+    active_chain_index( 0 ),
+    delta( dt ),
+    generation( 0 ),
+    num_attempted_swaps( 0 ),
+    num_accepted_swaps( 0 )
 {
     
     // initialize container sizes
@@ -35,7 +35,7 @@ numAcceptedSwaps( 0 )
     heat_ranks.resize(num_chains, 0);
     
     // assign chains to processors, instantiate Mcmc objects
-    base_chain = new Mcmc(m, mv, mn);
+    base_chain = new Mcmc(m, mv, mn, ntries);
     
     
     // initialize the individual chains
@@ -53,8 +53,8 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
     schedule_type       = m.schedule_type;
     pid_per_chain       = m.pid_per_chain;
     
-    numAttemptedSwaps   = m.numAttemptedSwaps;
-    numAcceptedSwaps    = m.numAcceptedSwaps;
+    num_attempted_swaps = m.num_attempted_swaps;
+    num_accepted_swaps  = m.num_accepted_swaps;
     generation          = m.generation;
     
     
@@ -151,7 +151,7 @@ void Mcmcmc::disableScreenMonitor( bool all, size_t rep )
 /**
  * Start the monitors at the beginning of a run which will simply delegate this call to each chain.
  */
-void Mcmcmc::finishMonitors( size_t n_reps )
+void Mcmcmc::finishMonitors( size_t n_reps, MonteCarloAnalysisOptions::TraceCombinationTypes tc )
 {
     
     // Monitor
@@ -160,7 +160,7 @@ void Mcmcmc::finishMonitors( size_t n_reps )
         
         if ( chains[i] != NULL )
         {
-            chains[i]->finishMonitors( n_reps );
+            chains[i]->finishMonitors( n_reps, tc );
         }
     }
     
@@ -407,8 +407,8 @@ void Mcmcmc::reset( void )
 {
     
     // reset counters
-    numAcceptedSwaps = 0;
-    numAttemptedSwaps = 0;
+    num_accepted_swaps = 0;
+    num_attempted_swaps = 0;
     
     //    /* Reset the monitors */
     //    for (size_t i = 0; i < chainsPerProcess[pid].size(); ++i)
@@ -481,6 +481,7 @@ void Mcmcmc::setModel( Model *m, bool redraw )
     delete m;
     
 }
+
 
 void Mcmcmc::setActivePIDSpecialized(size_t i, size_t n)
 {
@@ -731,7 +732,7 @@ void Mcmcmc::swapNeighborChains(void)
     j = int(GLOBAL_RNG->uniform01() * (num_chains-1));
     k = j + 1;
     
-    ++numAttemptedSwaps;
+    ++num_attempted_swaps;
     
     // compute exchange ratio
     double bj = chain_heats[j];
@@ -812,7 +813,7 @@ void Mcmcmc::swapNeighborChains(void)
             }
         }
         
-        ++numAcceptedSwaps;
+        ++num_accepted_swaps;
     }
     
     
@@ -849,7 +850,7 @@ void Mcmcmc::swapRandomChains(void)
             while(j == k);
         }
         
-        ++numAttemptedSwaps;
+        ++num_attempted_swaps;
         
         // compute exchange ratio
         double bj = chain_heats[j];
@@ -898,7 +899,7 @@ void Mcmcmc::swapRandomChains(void)
             heat_ranks[j] = heat_ranks[k];
             heat_ranks[k] = tmp;
             
-            ++numAcceptedSwaps;
+            ++num_accepted_swaps;
         }
         
         
@@ -934,7 +935,7 @@ void Mcmcmc::swapRandomChains(void)
 void Mcmcmc::tune( void )
 {
     
-    double rate = numAcceptedSwaps / double(numAttemptedSwaps);
+    double rate = num_accepted_swaps / double(num_attempted_swaps);
     
     if ( rate > 0.44 )
     {

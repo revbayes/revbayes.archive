@@ -159,7 +159,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         for (size_t i = 0; i < characters.size(); i++)
         {
 //            if (i != 0) ss << ",";
-            ss << characters[i]->getState();
+            ss << static_cast<CharacterEventDiscrete*>(characters[i])->getState();
         }
     }
     else if (infoStr=="parent")
@@ -168,12 +168,12 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         for (size_t i = 0; i < characters.size(); i++)
         {
 //            if (i != 0) ss << ",";
-            ss << characters[i]->getState();
+            ss << static_cast<CharacterEventDiscrete*>(characters[i])->getState();
         }
     }
     else if (infoStr=="clado_state")
     {
-        GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
+        // GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
         // @MJL: fix this
 //        int cladoState = q->getCladogenicState(*n);
         int cladoState = 0;
@@ -192,7 +192,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
     }
     else if (infoStr=="bud_state")
     {
-        GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
+        // GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
         // @MJL: fix this
 //        int budState = (q)->getBuddingState(*n);
         int budState = 0;
@@ -203,12 +203,12 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
     {
         // loop over events
         const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh.getHistory();
-        std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
+        std::multiset<CharacterEvent*,CharacterEventCompare>::const_reverse_iterator it;
         
         std::vector<unsigned> v(num_states,0);
-        for (it = evts.begin(); it != evts.end(); it++)
+        for (it = evts.rbegin(); it != evts.rend(); it++)
         {
-            size_t s = (*it)->getState();
+            size_t s = static_cast<CharacterEventDiscrete*>(*it)->getState();
             v[s] += 1;
         }
 
@@ -225,15 +225,15 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
     {
         // loop over events
         const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh.getHistory();
-        std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
+        std::multiset<CharacterEvent*,CharacterEventCompare>::const_reverse_iterator it;
         std::vector<CharacterEvent*> characters = bh.getParentCharacters();
         
         std::vector<unsigned> v(num_states*num_states,0);
-        for (it = evts.begin(); it != evts.end(); it++)
+        for (it = evts.rbegin(); it != evts.rend(); it++)
         {
             size_t idx = (*it)->getSiteIndex();
-            size_t from = characters[idx]->getState();
-            size_t to = (*it)->getState();
+            size_t from = static_cast<CharacterEventDiscrete*>(characters[idx])->getState();
+            size_t to = static_cast<CharacterEventDiscrete*>(*it)->getState();
             v[ num_states*from + to ] += 1;
             characters[idx] = (*it);
         }
@@ -259,7 +259,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
     else if (infoStr=="events")
     {
         const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh.getHistory();
-        std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
+        std::multiset<CharacterEvent*,CharacterEventCompare>::const_reverse_iterator it;
         std::vector<CharacterEvent*> characters = bh.getParentCharacters();
         
         std::vector<unsigned> v(num_states*num_states,0);
@@ -270,15 +270,15 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
             ndAge = n->getParent().getAge();
         double brLen = n->getBranchLength();
 
-        for (it = evts.begin(); it != evts.end(); it++)
+        for (it = evts.rbegin(); it != evts.rend(); it++)
         {
-            if (it != evts.begin())
+            if (it != evts.rbegin())
                 ss << ",";
 
             ss << "{";
             ss << "t:" << (*it)->getAge() << ",";
             ss << "a:" << ndAge - brLen * (*it)->getAge() << ",";
-            ss << "s:" << (*it)->getState() << ",";
+            ss << "s:" << static_cast<CharacterEventDiscrete*>(*it)->getState() << ",";
             ss << "i:" << (*it)->getSiteIndex() << "";
             ss << "}";
 
@@ -377,14 +377,14 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildNumEve
     BranchHistory* bh = &p->getHistory(*nd);
 
     const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh->getHistory();
-    std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
+    std::multiset<CharacterEvent*,CharacterEventCompare>::const_reverse_iterator it;
 
     std::stringstream ss;
 
     unsigned v = 0;
-    for (it = evts.begin(); it != evts.end(); it++)
+    for (it = evts.rbegin(); it != evts.rend(); it++)
     {
-        if ( (*it)->getState() == state )
+        if ( static_cast<CharacterEventDiscrete*>(*it)->getState() == state )
             v++;
     }
     double eventRatio = (double)v / 1.0;//nd->getBranchLength();
@@ -408,12 +408,12 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildNumEve
         BranchHistory* bh = &p->getHistory(*nds[i]);
 
         const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh->getHistory();
-        std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
+        std::multiset<CharacterEvent*,CharacterEventCompare>::const_reverse_iterator it;
 
 
-        for (it = evts.begin(); it != evts.end(); it++)
+        for (it = evts.rbegin(); it != evts.rend(); it++)
         {
-            if ( (*it)->getState() == state )
+            if ( static_cast<CharacterEventDiscrete*>(*it)->getState() == state )
                 v++;
         }
 
@@ -429,8 +429,8 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCladoF
 {
     std::stringstream ss;
 
-    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
-    GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
+   //  TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    // GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
 
     const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
 
@@ -450,8 +450,8 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCladoS
 {
     std::stringstream ss;
 
-    TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
-    GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
+   //  TreeHistoryCtmc<charType>* p = static_cast< TreeHistoryCtmc<charType>* >(&variable->getDistribution());
+    // GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
     
     // @MJL: fix this
 //    int cladoState = q->getCladogenicState(*nd);

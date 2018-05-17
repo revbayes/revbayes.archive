@@ -43,6 +43,7 @@ namespace RevBayesCore {
         // pure virtual methods
         virtual void                                                        simulateRecursively(const TopologyNode& node, std::vector< ContinuousTaxonData > &t) = 0;
         virtual std::vector<double>                                         simulateRootCharacters(size_t n) = 0;
+        virtual void                                                        simulateTipSamples(const std::vector< ContinuousTaxonData > &td);
 
         
         // helper method for this and derived classes

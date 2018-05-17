@@ -104,7 +104,7 @@ namespace RevBayesCore {
                 o << " ";
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForUser( this->operator[](i), o, sep, l, left );
             }
-            o << "]";
+            o << " ]";
         }
         void                                                printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
         {
@@ -230,7 +230,7 @@ namespace RevBayesCore {
                 o << " ";
                 Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForUser( this->operator[](i), o, sep, l, left );
             }
-            o << "]";
+            o << " ]";
         }
         void                                                printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
         {

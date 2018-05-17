@@ -3,7 +3,6 @@
 
 #include "Monitor.h"
 
-
 #include <iostream>
 #include <queue>
 #include <string>

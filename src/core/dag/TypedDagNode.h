@@ -9,9 +9,7 @@
 #include "Simplex.h"
 #include "StringUtilities.h"
 #include "TraceNumeric.h"
-#include "TraceSimplex.h"
 #include "TraceTree.h"
-#include "TraceVectorNumeric.h"
 
 #include <ostream>
 #include <string>
@@ -29,7 +27,7 @@ namespace RevBayesCore {
         virtual TypedDagNode<valueType>*                    clone(void) const = 0;
 
         // member functions
-        virtual Trace*                                      createTraceObject(void) const;                                                                              //!< Create an empty trace object of the right trace type
+        virtual AbstractTrace*                              createTraceObject(void) const;                                                                              //!< Create an empty trace object of the right trace type
         virtual size_t                                      getNumberOfElements(void) const;                                                                            //!< Get the number of elements for this value
         virtual std::string                                 getValueAsString(void) const;
         virtual bool                                        isSimpleNumeric(void) const;                                                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
@@ -50,19 +48,19 @@ namespace RevBayesCore {
     // createTraceObject //
     ///////////////////////
     template<>
-    inline Trace*                                TypedDagNode<long>::createTraceObject(void) const { return new TraceNumeric(); }
+    inline AbstractTrace*                                TypedDagNode<long>::createTraceObject(void) const { return new TraceNumeric(); }
 
     template<>
-    inline Trace*                                TypedDagNode<double>::createTraceObject(void) const { return new TraceNumeric(); }
+    inline AbstractTrace*                                TypedDagNode<double>::createTraceObject(void) const { return new TraceNumeric(); }
 
     template<>
-    inline Trace*                                TypedDagNode< RbVector<double> >::createTraceObject(void) const { return new TraceVectorNumeric(); }
+    inline AbstractTrace*                                TypedDagNode<RbVector<double> >::createTraceObject(void) const { return new TraceNumericVector(); }
     
     template<>
-    inline Trace*                                TypedDagNode< Simplex >::createTraceObject(void) const { return new TraceSimplex(); }
+    inline AbstractTrace*                                TypedDagNode<Simplex>::createTraceObject(void) const { return new TraceSimplex(); }
     
     template<>
-    inline Trace*                                TypedDagNode<Tree>::createTraceObject(void) const { return new TraceTree( getValue().isRooted() ); }
+    inline AbstractTrace*                                TypedDagNode<Tree>::createTraceObject(void) const { return new TraceTree( getValue().isRooted() ); }
 
     
     /////////////////////
@@ -175,7 +173,7 @@ RevBayesCore::TypedDagNode<valueType>::~TypedDagNode( void )
 
 
 template<class valueType>
-RevBayesCore::Trace* RevBayesCore::TypedDagNode<valueType>::createTraceObject(void) const
+RevBayesCore::AbstractTrace* RevBayesCore::TypedDagNode<valueType>::createTraceObject(void) const
 {
     throw RbException("Cannot create a trace for variable '" + this->getName() + "' because there are not trace objects implemented for this value type.");
     

@@ -15,7 +15,7 @@ namespace RevBayesCore {
     class Distribution;
     class Monitor;
     class Move;
-    class Trace;
+    class AbstractTrace;
 
     class DagNode : public Parallelizable {
     
@@ -29,7 +29,7 @@ namespace RevBayesCore {
         virtual void                                                bootstrap(void) = 0;                                                                        //!< Bootstrap the current value of the node (applies only to stochastic nodes)
         virtual DagNode*                                            clone(void) const = 0;
         virtual DagNode*                                            cloneDAG(DagNodeMap &nodesMap, std::map<std::string, const DagNode* > &names) const = 0;    //!< Clone the entire DAG which is connected to this node
-        virtual Trace*                                              createTraceObject(void) const = 0;                                                          //!< Create an empty trace object of the right trace type
+        virtual AbstractTrace*                                      createTraceObject(void) const = 0;                                                          //!< Create an empty trace object of the right trace type
         virtual double                                              getLnProbability(void) = 0;
         virtual double                                              getLnProbabilityRatio(void) = 0;
         virtual size_t                                              getNumberOfElements(void) const = 0;                                                        //!< Get the number of elements for this value

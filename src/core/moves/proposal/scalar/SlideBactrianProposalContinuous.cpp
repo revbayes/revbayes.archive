@@ -86,10 +86,10 @@ double SlideBactrianProposalContinuous::doProposal( void )
     double min = variable->getMin();
     double max = variable->getMax();
         
-    double size = max - min;
+    //double size = max - min;
     
     double u = rng->uniform01();
-    double delta = RbStatistics::Normal::rv(0.0, 1.0, *GLOBAL_RNG) * sqrt(1 - 0.95*0.95);
+    double delta = RbStatistics::Normal::rv(*GLOBAL_RNG) * RbConstants::BACT_SD;
     
     // See Yang and Rodriguez (2013) SI eqns 19 and 20
     // Currently hard-coding m = 0.95
@@ -99,7 +99,7 @@ double SlideBactrianProposalContinuous::doProposal( void )
         delta -= 0.95;
     }
 
-    double newVal = val + delta;
+    double newVal = val + (lambda * delta);
     
     /* reflect the new value */
     do {

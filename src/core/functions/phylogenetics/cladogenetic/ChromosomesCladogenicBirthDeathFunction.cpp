@@ -15,11 +15,12 @@ using namespace RevBayesCore;
 
 
 //TypedFunction<MatrixReal>( new MatrixReal( mc + 1, (mc + 1) * (mc + 1), 0.0 ) ),
-ChromosomesCladogenicBirthDeathFunction::ChromosomesCladogenicBirthDeathFunction(const TypedDagNode< RbVector<double> > *sr, unsigned mc):
+ChromosomesCladogenicBirthDeathFunction::ChromosomesCladogenicBirthDeathFunction(const TypedDagNode< RbVector<double> > *sr, unsigned mc ):
 TypedFunction<CladogeneticSpeciationRateMatrix>( new CladogeneticSpeciationRateMatrix( mc + 1 ) ),
 speciationRates( sr ),
 maxChromo(mc),
-numEventTypes( (unsigned)sr->getValue().size() )
+numEventTypes( (unsigned)sr->getValue().size() ),
+use_hidden_rate(false)
 {
     addParameter( speciationRates );
     
@@ -180,8 +181,13 @@ void ChromosomesCladogenicBirthDeathFunction::update( void )
 {
     // reset the transition matrix
     delete value;
-//    value = new MatrixReal( maxChromo + 1, (maxChromo + 1) * (maxChromo + 1), 0.0 );
-    value = new CladogeneticSpeciationRateMatrix( maxChromo + 1 );
+    
+    // check for a hidden rate category
+    if (use_hidden_rate) { 
+        value = new CladogeneticSpeciationRateMatrix( (maxChromo + 1) * 2 );
+    } else { 
+        value = new CladogeneticSpeciationRateMatrix( maxChromo + 1 );
+    }
     
     const std::vector<double>& sr = speciationRates->getValue();
     
@@ -196,7 +202,14 @@ void ChromosomesCladogenicBirthDeathFunction::update( void )
             {
                 // reset all rates to 0.0
                 eventMap[ idx ] = 0.0;
-//                (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] = 0.0;
+                if (use_hidden_rate == true) 
+                {
+                    std::vector<unsigned> idx_hidden(3);
+                    idx_hidden[0] = idx[0] + maxChromo + 1;
+                    idx_hidden[1] = idx[1] + maxChromo + 1;
+                    idx_hidden[2] = idx[2] + maxChromo + 1;
+                    eventMap[ idx_hidden ] = 0.0;
+                }
             }
         }
 
@@ -219,16 +232,33 @@ void ChromosomesCladogenicBirthDeathFunction::update( void )
                     // normalize for all possible instances of this event type
                     double v = ( speciation_rate / eventMapCounts[ i ][ event_types[e] ] );
                     
-                    // save the rate in the rate matrix
-//                    (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] += v;
-                    
                     // save the rate in the event map
                     eventMap[ idx ] += v;
+                    if (use_hidden_rate == true) 
+                    {
+                        std::vector<unsigned> idx_hidden(3);
+                        idx_hidden[0] = idx[0] + maxChromo + 1;
+                        idx_hidden[1] = idx[1] + maxChromo + 1;
+                        idx_hidden[2] = idx[2] + maxChromo + 1;
+                        const std::vector<double>& rate_multipliers = hiddenRateMultipliers->getValue();
+                        eventMap[ idx_hidden ] += (v * rate_multipliers[0]);
+                    }
                 }
             }
         }
     }
     value->setEventMap(eventMap);
+}
+
+
+void ChromosomesCladogenicBirthDeathFunction::setRateMultipliers(const TypedDagNode< RbVector< double > >* rm) 
+{
+    hiddenRateMultipliers = rm;
+    addParameter( hiddenRateMultipliers );
+    use_hidden_rate = true;
+    
+    buildEventMap();
+    update();
 }
 
 
@@ -238,6 +268,10 @@ void ChromosomesCladogenicBirthDeathFunction::swapParameterInternal(const DagNod
     if (oldP == speciationRates)
     {
         speciationRates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    if (oldP == hiddenRateMultipliers)
+    {
+        hiddenRateMultipliers = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     
 }

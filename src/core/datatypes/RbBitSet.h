@@ -38,6 +38,7 @@ namespace RevBayesCore {
 
         void                            clear(void);
         bool                            empty(void) const;
+        void                            flip();
         void                            flip(size_t i);
         size_t                          getNumberSetBits(void) const;                                           //!< Get the number of bits set.
         size_t                          getFirstSetBit(void) const;                                             //!< Get the number of bits set.

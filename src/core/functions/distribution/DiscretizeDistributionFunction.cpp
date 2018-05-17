@@ -80,7 +80,7 @@ void DiscretizeDistributionFunction::swapParameterInternal(const DagNode *oldP, 
 void RevBayesCore::DiscretizeDistributionFunction::update( void )
 {
     
-    int nCats = numCats->getValue();
+    int nCats = (int)numCats->getValue();
     
     for (int i=0; i<nCats; ++i)
     {

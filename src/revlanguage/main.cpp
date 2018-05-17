@@ -6,6 +6,9 @@
 #include "RandomNumberGenerator.h"
 #include "RevClient.h"
 #include "RevLanguageMain.h"
+#include "RlCommandLineOutputStream.h"
+#include "RlUserInterfaceOutputStream.h"
+#include "RlUserInterface.h"
 #include "Parser.h"
 #include "Workspace.h"
 
@@ -46,16 +49,27 @@ int main(int argc, char* argv[]) {
     }
 #endif
     
+    /*default to interactive mode*/
+    bool batch_mode = false;
+
     /* seek out files from command line */
     std::vector<std::string> sourceFiles;
     int argIndex = 1;
     while (argIndex < argc)
     {
-        sourceFiles.push_back(std::string(argv[argIndex++]));
+        std::string arg(argv[argIndex++]);
+        /* check for batch mode flag */
+        if( arg == "--batch" || arg == "-b")
+            batch_mode = true;
+        else
+            sourceFiles.push_back(arg);
     }
     
     /* initialize environment */
-    RevLanguageMain rl = RevLanguageMain();
+    RevLanguageMain rl = RevLanguageMain(batch_mode);
+    
+    CommandLineOutputStream *rev_output = new CommandLineOutputStream();
+    RevLanguage::UserInterface::userInterface().setOutputStream( rev_output );
     rl.startRevLanguageEnvironment(sourceFiles);
     
 #   ifdef RB_XCODE

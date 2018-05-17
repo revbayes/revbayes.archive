@@ -26,7 +26,7 @@ namespace RevBayesCore {
     class CodonSynonymousNonsynonymousRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        CodonSynonymousNonsynonymousRateMatrixFunction(const TypedDagNode<double> *o, const TypedDagNode<double> *k, const TypedDagNode< Simplex > *bf);
+        CodonSynonymousNonsynonymousRateMatrixFunction(const TypedDagNode<double> *o, const TypedDagNode< Simplex > *bf);
         virtual                                            ~CodonSynonymousNonsynonymousRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -40,7 +40,6 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< Simplex >*                      base_frequencies;
-        const TypedDagNode<double>*                         kappa;
         const TypedDagNode<double>*                         omega;
         
     };

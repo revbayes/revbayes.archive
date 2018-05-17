@@ -91,7 +91,7 @@ RevLanguage::MemberFunction<memberObjectType, retType>& RevLanguage::MemberFunct
         
         delete argument_rules;
         
-        argument_rules      = new ArgumentRules(m.argument_rules);
+        argument_rules      = new ArgumentRules(*m.argument_rules);
         method_name         = m.method_name;
         object              = m.object;
         the_member_object   = m.the_member_object;

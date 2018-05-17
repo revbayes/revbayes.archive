@@ -2,11 +2,11 @@
 #define MonteCarloAnalysis_H
 
 #include "Cloneable.h"
-#include "MonteCarloSampler.h"
-#include "ModelTrace.h"
+#include "MonteCarloAnalysisOptions.h"
 #include "Parallelizable.h"
 #include "RbVector.h"
 #include "StoppingRule.h"
+#include "Trace.h"
 
 #include <vector>
 
@@ -16,6 +16,9 @@
 #endif
 
 namespace RevBayesCore {
+    
+    class Model;
+    class MonteCarloSampler;
     
     /**
      * @brief Monte Carlo analysis running and managing the MonteCarloSampler objects.
@@ -32,7 +35,8 @@ namespace RevBayesCore {
     class MonteCarloAnalysis : public Cloneable, public Parallelizable {
         
     public:
-        MonteCarloAnalysis(MonteCarloSampler *m, size_t r);
+                
+        MonteCarloAnalysis(MonteCarloSampler *m, size_t r, MonteCarloAnalysisOptions::TraceCombinationTypes ct);
         MonteCarloAnalysis(const MonteCarloAnalysis &m);
         virtual                                            ~MonteCarloAnalysis(void);                                       //!< Virtual destructor
         
@@ -63,7 +67,7 @@ namespace RevBayesCore {
         
         size_t                                              replicates;
         std::vector<MonteCarloSampler*>                     runs;
-        
+        MonteCarloAnalysisOptions::TraceCombinationTypes    trace_combination;
     };
     
     // Global functions using the class

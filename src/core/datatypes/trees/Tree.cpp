@@ -17,7 +17,6 @@ using namespace RevBayesCore;
 Tree::Tree(void) :
     changeEventHandler(),
     root( NULL ),
-    binary( true ),
     rooted( false ),
     is_negative_constraint( false ),
     num_tips( 0 ),
@@ -31,7 +30,6 @@ Tree::Tree(void) :
 Tree::Tree(const Tree& t) :
     changeEventHandler( ),
     root( NULL ),
-    binary( t.binary ),
     rooted( t.rooted ),
     is_negative_constraint( t.is_negative_constraint ),
     num_tips( t.num_tips ),
@@ -85,7 +83,6 @@ Tree& Tree::operator=(const Tree &t)
         nodes.clear();
         delete root;
         root = NULL;
-        binary                 = t.binary;
         num_tips               = t.num_tips;
         num_nodes              = t.num_nodes;
         rooted                 = t.rooted;
@@ -206,6 +203,26 @@ void Tree::collapseNegativeBranchLengths(double l)
 
 }
 
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+bool Tree::containsClade(const TopologyNode &n, bool unrooted) const
+{
+    RbBitSet your_taxa = RbBitSet( getNumberOfTips() );
+    n.getTaxa( your_taxa );
+    
+    bool contains = root->containsClade( your_taxa, true );
+    
+    if ( contains == false && unrooted == true )
+    {
+        your_taxa.flip();
+        contains = root->containsClade( your_taxa, true );;
+    }
+    
+    return contains;
+}
+
 
 /**
  * Drop the tip node with the given name.
@@ -216,43 +233,86 @@ void Tree::dropTipNodeWithName( const std::string &n )
 {
     // get the index of this name
     size_t index = getTipIndex( n );
+    dropTipNode( index );
+}
 
+
+
+/**
+ * Drop the tip node with the given name.
+ * The name should correspond to the taxon name, not the species name.
+ * This will throw an error if the name doesn't exist.
+ */
+void Tree::dropTipNode( size_t index )
+{
+    // get the index of this name
     TopologyNode &node          = getTipNode( index );
+    if (node.isRoot() == true && nodes.size() == 1)
+    {
+        // there is nothing left to prune
+        node.setName("");
+        node.setNodeType(false, true, false);
+        return;
+    }
     TopologyNode &parent        = node.getParent();
     TopologyNode &grand_parent  = parent.getParent();
-    TopologyNode *sibling       = &parent.getChild( 0 );
-    if ( sibling == &node )
+    if (parent.isRoot() == false)
     {
-        sibling = &parent.getChild( 1 );
-    }
-
-    grand_parent.removeChild( &parent );
-    parent.removeChild( sibling );
-    grand_parent.addChild( sibling );
-    sibling->setParent( &grand_parent );
-
-
-    bool resetIndex = true;
-
-    nodes.clear();
-
-    // bootstrap all nodes from the root and add the in a pre-order traversal
-    fillNodesByPhylogeneticTraversal(root);
-
-    if ( resetIndex == true )
-    {
-        for (unsigned int i = 0; i < nodes.size(); ++i)
+        TopologyNode *sibling = &parent.getChild( 0 );
+        if ( sibling == &node )
         {
-            nodes[i]->setIndex(i);
+            sibling = &parent.getChild( 1 );
+        }
+        grand_parent.removeChild( &parent );
+        parent.removeChild( sibling );
+        grand_parent.addChild( sibling );
+        sibling->setParent( &grand_parent );
+
+        // update character history 
+        if (parent.getTimeInStates().size() > 0 && sibling->getTimeInStates().size() > 0)
+        {
+            std::vector<double> sibling_state_times = sibling->getTimeInStates();
+            for (size_t i = 0; i < parent.getTimeInStates().size(); i++)
+            {
+                sibling_state_times[i] += parent.getTimeInStates()[i];
+            }
+            sibling->setTimeInStates(sibling_state_times);
         }
     }
     else
     {
-        orderNodesByIndex();
+        if (root->getNumberOfChildren() > 1)
+        {
+            TopologyNode *sibling = &root->getChild( 0 );
+            if ( sibling == &node )
+            {
+                sibling = &root->getChild( 1 );
+            }
+            root->removeChild(&node);
+            sibling->setParent(NULL);
+            root = sibling;
+            if (root->getTimeInStates().size() > 0)
+            {
+                root->setTimeInStates(std::vector<double>(root->getTimeInStates().size(), 0.0));
+            }
+        }
+        else
+        {
+            root->removeChild(&node);
+        }
     }
-
+    
+    nodes.clear();
+    
+    // bootstrap all nodes from the root and add the in a pre-order traversal
+    fillNodesByPhylogeneticTraversal(root);
+    for (unsigned int i = 0; i < nodes.size(); ++i)
+    {
+        nodes[i]->setIndex(i);
+    }
+    
     num_nodes = nodes.size();
-
+    
     // count the number of tips
     num_tips = 0;
     for (size_t i = 0; i < num_nodes; ++i)
@@ -265,7 +325,7 @@ void Tree::dropTipNodeWithName( const std::string &n )
         }
         num_tips += ( nodes[i]->isTip() ? 1 : 0);
     }
-
+    
 }
 
 
@@ -279,17 +339,27 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     }
     else if ( n == "branchLength" )
     {
-        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
+        int index = (int)static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         rv = getNode( index ).getBranchLength();
     }
     else if ( n == "nodeAge" )
     {
-        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
+        int index = (int)static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         rv = getNode( index ).getAge();
     }
     else if ( n == "treeLength" )
     {
         rv = getTreeLength();
+    }
+    else if (n == "gammaStatistic")
+    {
+        rv = RevBayesCore::TreeUtilities::getGammaStatistic( *this );
+    }
+    else if ( n == "meanInverseES" )
+    {
+        const TypedDagNode< AbstractHomologousDiscreteCharacterData >* c = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( args[0] );
+        size_t state_index = (size_t)static_cast<const TypedDagNode<int> *>( args[1] )->getValue();
+        rv = RevBayesCore::TreeUtilities::getMeanInverseES( *this, c->getValue(), state_index );
     }
     else
     {
@@ -334,6 +404,12 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
             rv += nodes[i]->isSampledAncestor();
         }
     }
+    else if (n == "colless")
+    {
+        int s = 0;
+
+        rv = RevBayesCore::TreeUtilities::getCollessMetric( getRoot(), s);
+    }
     else if (n == "nnodes")
     {
         rv = nodes.size();
@@ -341,6 +417,11 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     else if (n == "ntips")
     {
         rv = num_tips;
+    }
+    else if ( n == "fitchScore" )
+    {
+        const TypedDagNode< AbstractHomologousDiscreteCharacterData >* c = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( args[0] );
+        rv = RevBayesCore::TreeUtilities::getFitchScore( *this, c->getValue() );
     }
     else
     {
@@ -355,7 +436,7 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
 
     if ( n == "isContainedInClade" )
     {
-        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
+        int index = (int)static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         Clade clade = static_cast<const TypedDagNode<Clade> *>( args[1] )->getValue();
         clade.resetTaxonBitset( getTaxonBitSetMap() );
 
@@ -367,7 +448,8 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         }
 
 
-        size_t clade_index = RbConstants::Size_t::nan;
+        size_t clade_index = 0;
+        bool found = false;
         size_t min_clade_size = nodes.size() + 2;
         size_t taxa_count = clade.size();
 
@@ -378,7 +460,7 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
             size_t clade_size = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
             if ( clade_size < min_clade_size && clade_size >= taxa_count && node->containsClade( clade, false ) )
             {
-
+                found = true;
                 clade_index = node->getIndex();
                 min_clade_size = clade_size;
                 if ( taxa_count == clade_size )
@@ -390,7 +472,7 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
 
         }
 
-        if ( clade_index != RbConstants::Size_t::nan )
+        if ( found == true )
         {
             while ( index != clade_index && nodes[index]->isRoot() == false )
             {
@@ -400,6 +482,21 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         }
 
         rv = Boolean( index == clade_index );
+    }
+    else if ( n == "containsClade" )
+    {
+        Clade clade = static_cast<const TypedDagNode<Clade> *>( args[0] )->getValue();
+        clade.resetTaxonBitset( getTaxonBitSetMap() );
+        
+        bool contained = root->containsClade(clade, true);
+        
+        rv = Boolean( contained );
+    }
+    else if ( n == "hasSameTopology" )
+    {
+        const Tree& t = static_cast<const TypedDagNode<Tree> *>( args[0] )->getValue();
+        
+        rv = Boolean( hasSameTopology(t) );
     }
     else
     {
@@ -413,7 +510,6 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
  */
 void Tree::fillNodesByPhylogeneticTraversal(TopologyNode* node)
 {
-
     // now call this function recursively for all your children
     for (size_t i=0; i<node->getNumberOfChildren(); i++)
     {
@@ -454,6 +550,7 @@ const std::vector<std::vector<double> > Tree::getAdjacencyMatrix(void) const
     return adjacency;
 }
 
+
 std::vector<Taxon> Tree::getFossilTaxa() const
 {
     std::vector< Taxon > taxa;
@@ -476,8 +573,32 @@ std::vector<Taxon> Tree::getFossilTaxa() const
 const TopologyNode& Tree::getInteriorNode( size_t indx ) const
 {
 
-    // \TODO: Bound checking, maybe draw from downpass array instead
+    size_t n = getNumberOfTips();
+    if ( indx > (n-2) )
+    {
+        throw RbException("Cannot acces interior node '" + StringUtilities::to_string(indx) + "' for a tree with " + StringUtilities::to_string(n) + " tips.");
+    }
     return *nodes[ indx + getNumberOfTips() ];
+}
+
+
+const TopologyNode& Tree::getMrca(const Clade &c) const
+{
+    
+    return *(root->getMrca( c ));
+}
+
+const TopologyNode& Tree::getMrca(const Clade &c, bool strict) const
+{
+    
+    return *(root->getMrca( c,strict ));
+}
+
+
+const TopologyNode& Tree::getMrca(const TopologyNode &n) const
+{
+    
+    return *(root->getMrca( n ));
 }
 
 
@@ -792,7 +913,6 @@ TopologyNode& Tree::getTipNodeWithName( const std::string &n )
 }
 
 
-
 /**
  * Get the tip node with the given name.
  * The name should correspond to the taxon name, not the species name.
@@ -805,6 +925,7 @@ const TopologyNode& Tree::getTipNodeWithName( const std::string &n ) const
 
     return *nodes[ index ];
 }
+
 
 
 /**
@@ -888,7 +1009,13 @@ double Tree::getTreeLength( void ) const
 bool Tree::hasSameTopology(const Tree &t) const
 {
 
-    return getPlainNewickRepresentation() == t.getPlainNewickRepresentation();
+    std::string a = getPlainNewickRepresentation();
+    std::string b = t.getPlainNewickRepresentation();
+    
+//    std::cerr << std::endl << a << std::endl;
+//    std::cerr << std::endl << b << std::endl;
+    
+    return a == b;
 }
 
 
@@ -909,7 +1036,7 @@ void Tree::initFromFile( const std::string &dir, const std::string &fn )
 
         // Read a line
         std::string line;
-        getline( inStream, line );
+        fm.safeGetline( inStream, line );
 
         // append
         s += line;
@@ -932,10 +1059,18 @@ void Tree::initFromString(const std::string &s)
 }
 
 
-bool Tree::isBinary(void) const
+bool Tree::isBinary(void) const 
 {
-
-    return binary;
+    for (size_t i = 0; i < getNumberOfInteriorNodes(); ++i)
+    {
+        const TopologyNode &n = getInteriorNode( i );
+        if (n.getNumberOfChildren() != 2)
+        {
+            return false;
+            break;
+        }
+    }
+    return true;
 }
 
 
@@ -1057,11 +1192,170 @@ void Tree::orderNodesByIndex( void )
 
 }
 
+void Tree::pruneTaxa(const RbBitSet& prune_map )
+{
+    nodes.clear();
+
+    // bootstrap all nodes from the root and add the in a pre-order traversal
+    recursivelyPruneTaxa(root, prune_map);
+
+    for (unsigned int i = 0; i < nodes.size(); ++i)
+    {
+        nodes[i]->setIndex(i);
+    }
+}
+
+bool Tree::recursivelyPruneTaxa( TopologyNode* n, const RbBitSet& prune_map )
+{
+    if( n->isTip()  )
+    {
+        bool prune = prune_map[n->getIndex()];
+
+        if( prune == false )
+        {
+            nodes.insert(nodes.begin(), n);
+        }
+
+        return prune;
+    }
+
+    std::vector<TopologyNode*> children = n->getChildren();
+
+    //std::vector<TopologyNode*> retained_children;
+    std::vector<TopologyNode*> pruned_children;
+    for(size_t i = 0; i < children.size(); i++)
+    {
+        if( recursivelyPruneTaxa(children[i], prune_map) )
+        {
+            pruned_children.push_back(children[i]);
+        }
+    }
+
+    // if we don't prune any children, then add this node to the list of keepers
+    if( pruned_children.empty() )
+    {
+        nodes.push_back(n);
+    }
+
+    // if we prune all or zero children, then just continue up the tree
+    if( pruned_children.empty() || pruned_children.size() == children.size() )
+    {
+        return pruned_children.size() == children.size();
+    }
+
+    // if we prune some, but not all children, then patch over this node
+
+    // first prune the dead branches
+    for(size_t i = 0; i < pruned_children.size(); i++)
+    {
+        n->removeChild(pruned_children[i]);
+        pruned_children[i]->setParent(NULL);
+        delete pruned_children[i];
+    }
+
+    // if there are still enough retained root children, then return
+    if( n->isRoot() && rooted == false && children.size() - pruned_children.size() < 3 )
+    {
+        // there are not enough retained children
+        // patch up the node
+        std::vector<TopologyNode*> retained_children = n->getChildren();
+
+        for(size_t i = 0; i < retained_children.size(); i++)
+        {
+            n->removeChild(retained_children[i]);
+            retained_children[i]->setParent(NULL);
+        }
+
+        delete n;
+
+        if( retained_children.size() == 1 )
+        {
+            n = retained_children.back();
+
+            retained_children = n->getChildren();
+            for(size_t i = 0; i < retained_children.size(); i++)
+            {
+                n->removeChild(retained_children[i]);
+                retained_children[i]->setParent(NULL);
+            }
+
+            delete n;
+        }
+
+        root = retained_children.back();
+        root->addChild(retained_children.front());
+        retained_children.front()->setParent(root);
+    }
+    // if there are still at least 2 retained children, then return
+    else if( children.size() - pruned_children.size() < 2 )
+    {
+        // there is only one retained child
+        // patch up the 2-degree node
+        TopologyNode* retained_child = &n->getChild(0);
+
+        n->removeChild(retained_child);
+
+        if( n->isRoot() )
+        {
+            retained_child->setParent(NULL);
+            root = retained_child;
+        }
+        else
+        {
+            TopologyNode* parent = &n->getParent();
+
+            parent->removeChild(n);
+            parent->addChild(retained_child);
+            retained_child->setParent(parent);
+            n->setParent(NULL);
+        }
+
+        delete n;
+    }
+
+    return false;
+}
+
+
+void Tree::removeDuplicateTaxa( void )
+{
+    
+    bool removed_replicate = true;
+    while ( removed_replicate == true )
+    {
+        removed_replicate = false;
+        for ( size_t i=0; i<(num_tips-1); ++i )
+        {
+            const std::string &name_a = nodes[ i ]->getName();
+            for ( size_t j=i+1; j<num_tips; ++j )
+            {
+                const std::string &name_b = nodes[ j ]->getName();
+                if ( name_a == name_b )
+                {
+                    removed_replicate = true;
+                    dropTipNode( j );
+                    break;
+                }
+                
+            }
+
+            if ( removed_replicate == true )
+            {
+                break;
+            }
+            
+        }
+
+    }
+    
+}
+
 
 void Tree::renameNodeParameter(const std::string &old_name, const std::string &new_name)
 {
     getRoot().renameNodeParameter(old_name, new_name);
 }
+
 
 void Tree::reroot(const Clade &o, bool reindex)
 {
@@ -1074,7 +1368,17 @@ void Tree::reroot(const Clade &o, bool reindex)
 
     if ( root->containsClade(outgroup, strict ) == false )
     {
-        throw RbException("Cannot reroot the tree because we could not find an outgroup with name '" + outgroup.toString() + "'.");
+
+        // check for the inverted clade
+        RbBitSet b = outgroup.getBitRepresentation();
+        b.flip();
+        outgroup.setBitRepresentation(b);
+
+        if ( root->containsClade(outgroup, strict ) == false )
+        {
+            throw RbException("Cannot reroot the tree because we could not find an outgroup with name '" + outgroup.toString() + "'.");
+        }
+
     }
 
     // reset parent/child relationships
@@ -1097,6 +1401,7 @@ void Tree::reroot(const Clade &o, bool reindex)
     }
 
 }
+
 
 void Tree::reroot(const std::string &outgroup, bool reindex)
 {
@@ -1125,6 +1430,7 @@ void Tree::reroot(const std::string &outgroup, bool reindex)
 	setRoot( &outgroup_node.getParent(), reindex );
 
 }
+
 
 void Tree::reroot(TopologyNode &n, bool reindex)
 {
@@ -1160,10 +1466,12 @@ TopologyNode& Tree::reverseParentChild(TopologyNode &n)
     return *ret;
 }
 
+
 void Tree::setNegativeConstraint(bool tf)
 {
     is_negative_constraint = tf;
 }
+
 
 void Tree::setRooted(bool tf)
 {
@@ -1244,24 +1552,64 @@ void Tree::setTaxonIndices(const TaxonMap &tm)
 
 }
 
+
+/**
+ * Change the name of a taxon
+ *
+ * \param[in] current_name    self explanatory.
+ * \param[in] newName         self explanatory.
+ */
+void Tree::setTaxonName(const std::string& current_name, const std::string& newName)
+{
+    
+    TopologyNode& node = getTipNodeWithName( current_name );
+    Taxon& t = node.getTaxon();
+    t.setName( newName );
+    taxon_bitset_map.erase( current_name );
+    taxon_bitset_map.insert( std::pair<std::string, size_t>( newName, node.getIndex() ) );
+}
+
+
+/**
+ * Change the name of a taxon
+ *
+ * \param[in] current_name   self explanatory.
+ * \param[in] new_taxon      self explanatory.
+ */
+void Tree::setTaxonObject(const std::string& current_name, const Taxon& new_taxon)
+{
+    
+    const std::string &new_name = new_taxon.getName();
+    
+    TopologyNode& node = getTipNodeWithName( current_name );
+    node.setTaxon( new_taxon );
+    
+    taxon_bitset_map.erase( current_name );
+    taxon_bitset_map.insert( std::pair<std::string, size_t>( new_name, node.getIndex() ) );
+    
+}
+
+
 // Write this object into a file in its default format.
 void Tree::writeToFile( const std::string &dir, const std::string &fn ) const
 {
+    // do not write a file if the tree is invalid
+    if (this->getNumberOfTips() > 1)
+    {
+        RbFileManager fm = RbFileManager(dir, fn + ".newick");
+        fm.createDirectoryForFile();
 
-    RbFileManager fm = RbFileManager(dir, fn + ".newick");
-    fm.createDirectoryForFile();
+        // open the stream to the file
+        std::fstream outStream;
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
 
-    // open the stream to the file
-    std::fstream outStream;
-    outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
+        // write the value of the node
+        outStream << getNewickRepresentation();
+        outStream << std::endl;
 
-    // write the value of the node
-    outStream << getNewickRepresentation();
-    outStream << std::endl;
-
-    // close the stream
-    outStream.close();
-
+        // close the stream
+        outStream.close();
+    }
 }
 
 

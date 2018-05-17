@@ -63,6 +63,7 @@ AbstractHomologousDiscreteCharacterData::~AbstractHomologousDiscreteCharacterDat
 
 void AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d, std::string type) const
 {
+    
     const AbstractHomologousDiscreteCharacterData* tmp = dynamic_cast<const AbstractHomologousDiscreteCharacterData*>( &d );
     if ( tmp != NULL )
     {
@@ -79,11 +80,11 @@ void AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d, st
 void AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type) const
 {
     
-        // we need to make this a constant DAG node so that we can actually modify the value
-        // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
-        //    clone_obj->makeConstantValue();
-    
-        // now concatenate
+    // we need to make this a constant DAG node so that we can actually modify the value
+    // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
+    //    clone_obj->makeConstantValue();
+        
+    // now concatenate
     getDagNode()->getValue().concatenate( d.getValue(), type );
     
 }
@@ -99,6 +100,16 @@ AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData
 /* Map calls to member methods */
 RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
+    if ( name == "methods" )
+    {
+        found = true;
+        
+        // just print the method names (including inherited methods)
+        const MethodTable &m = getMethods();
+        m.printValue(std::cout, true);
+        
+        return NULL;
+    }
     
     RevPtr<RevVariable> retVal = dynamic_cast<RevMemberObject *>( dag_node )->executeMethod(name, args, found);
     
@@ -415,7 +426,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
                         {
                             if (state.isSet(k) && k +1 > max)
                             {
-                                max = k+1;
+                                max = (int)(k+1);
                             }
                         }
                     }

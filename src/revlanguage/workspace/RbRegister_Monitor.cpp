@@ -50,6 +50,7 @@
 #include "Mntr_Probability.h"
 #include "Mntr_Screen.h"
 #include "Mntr_StochasticVariable.h"
+#include "Mntr_CharacterHistoryTimeInStates.h"
 #include "Mntr_CharacterHistoryNewickFile.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
 
@@ -73,6 +74,7 @@ void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
         addTypeWithConstructor( new Mntr_Probability()                          );
         addTypeWithConstructor( new Mntr_Screen()                               );
         addTypeWithConstructor( new Mntr_StochasticVariable()                   );
+        addTypeWithConstructor( new Mntr_CharacterHistoryTimeInStates()         );
         addTypeWithConstructor( new Mntr_CharacterHistoryNewickFile()           );
         addTypeWithConstructor( new Mntr_CharacterHistoryNhxFile()              );
 

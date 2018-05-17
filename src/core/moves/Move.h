@@ -36,8 +36,10 @@ namespace RevBayesCore {
         virtual const RbOrderedSet<DagNode*>&                   getAffectedNodes(void) const = 0;                           //!< Get the nodes vector
         virtual const std::vector<DagNode*>&                    getDagNodes(void) const = 0;                                //!< Get the nodes vector
         virtual const std::string&                              getMoveName(void) const = 0;                                //!< Get the name of the move for summary printing
-        virtual size_t                                          getNumberAccepted(void) const = 0;                          //!< Get update weight of InferenceMove
-        virtual size_t                                          getNumberTried(void) const = 0;                             //!< Get update weight of InferenceMove
+        virtual size_t                                          getNumberAcceptedCurrentPeriod(void) const = 0;             //!< Get update weight of InferenceMove
+        virtual size_t                                          getNumberAcceptedTotal(void) const = 0;                     //!< Get update weight of InferenceMove
+        virtual size_t                                          getNumberTriedCurrentPeriod(void) const = 0;                //!< Get the number of tries for this move since the last reset
+        virtual size_t                                          getNumberTriedTotal(void) const = 0;                        //!< Get the number of tries for this move since the last reset
         virtual double                                          getUpdateWeight(void) const = 0;                            //!< Get update weight of InferenceMove
         virtual bool                                            isActive(unsigned long gen) const = 0;                      //!< Is this move active?
 //        virtual void                                            perform(double lHeat, double pHeat) = 0;                  //!< Perform the move.

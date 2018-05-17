@@ -174,6 +174,11 @@ void PowerPosteriorAnalysis::runAll(size_t gen)
 
 //    initMPI();
     
+    if( gen < sampleFreq )
+    {
+        throw(RbException("Trying to run power posterior analysis for fewer generations than sampleFreq, no samples will be stored"));
+    }
+
     // disable the screen monitor(s) if any
     sampler->disableScreenMonitor(true, 0);
     
@@ -302,7 +307,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     outStream.close();
     
     // Monitor
-    sampler->finishMonitors( 1 );
+    sampler->finishMonitors( 1, MonteCarloAnalysisOptions::NONE );
     
 }
 
@@ -314,7 +319,7 @@ void PowerPosteriorAnalysis::summarizeStones( void )
     f.createDirectoryForFile();
     
     std::ofstream outStream;
-    outStream.open( filename.c_str(), std::fstream::out);
+    outStream.open( f.getFullFileName().c_str(), std::fstream::out);
     outStream << "state\t" << "power\t" << "likelihood" << std::endl;
 
     // Append each stone
@@ -332,7 +337,7 @@ void PowerPosteriorAnalysis::summarizeStones( void )
         {
             bool header = true;
             std::string line = "";
-            while ( std::getline (inStream,line) )
+            while ( std::getline(inStream,line) )
             {
                 // we need to skip the header line
                 if ( header == true )

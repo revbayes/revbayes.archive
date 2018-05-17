@@ -147,7 +147,7 @@ double CollapseExpandFossilBranchProposal::collapseBranch(TopologyNode &n)
     }
     
     // determine lower and upper bound of backward move
-    double min_age = std::max( n.getAge(), sibling->getAge() );
+    double min_age = n.getTaxon().getAgeRange().getMax();
     double max_age = parent.getAge();
     if ( parent.isRoot() )
     {
@@ -162,7 +162,7 @@ double CollapseExpandFossilBranchProposal::collapseBranch(TopologyNode &n)
     }
     
     // test that the max age is larger than the min age
-    if ( max_age <= min_age || n.getAge() < min_age )
+    if ( max_age <= min_age || n.getAge() < sibling->getAge() )
     {
         failed = true;
         return RbConstants::Double::neginf;
@@ -210,7 +210,7 @@ double CollapseExpandFossilBranchProposal::expandBranch(TopologyNode &n)
     }
     
     // determine lower and upper bound of backward move
-    double min_age = std::max( n.getAge(), sibling->getAge() );
+    double min_age = n.getTaxon().getAgeRange().getMax();
     double max_age = parent.getAge();
     if ( parent.isRoot() )
     {

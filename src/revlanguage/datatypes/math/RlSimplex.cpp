@@ -1,9 +1,13 @@
 #include "RlSimplex.h"
 
 #include "ConstantNode.h"
+#include "ModelVector.h"
+#include "RlMemberFunction.h"
 #include "Natural.h"
 #include "Probability.h"
 #include "RbException.h"
+#include "Real.h"
+#include "RealPos.h"
 #include "RlUtils.h"
 #include "WorkspaceVector.h"
 
@@ -14,7 +18,7 @@ using namespace RevLanguage;
  * Construct an empty simplex.
  * We simply rely on the base class.
  */
-Simplex::Simplex( void ) : ModelObject<RevBayesCore::Simplex>()
+Simplex::Simplex( void ) : ModelObject<RevBayesCore::Simplex>( new RevBayesCore::Simplex() )
 {
     initMethods();
 }
@@ -68,6 +72,30 @@ Simplex* Simplex::clone( void ) const
 
 
 /**
+ * In this function we check whether this type is convertible to some other
+ * Rev object type. Here we focus entirely on supporting conversion to
+ * other generic vectors with compatible elements. This is not done automatically
+ * because of the templating: a vector of RealPos does not inherit from a vector
+ * of Real, for example.
+ */
+RevObject* Simplex::convertTo( const TypeSpec& type ) const
+{
+    
+    if ( type == ModelVector<Real>::getClassTypeSpec() )
+    {
+        return new ModelVector<Real>( RevBayesCore::RbVector<double>(dag_node->getValue()) );
+    }
+    else if ( type == ModelVector<RealPos>::getClassTypeSpec() )
+    {
+        return new ModelVector<RealPos>( RevBayesCore::RbVector<double>(dag_node->getValue()) );
+    }
+
+    
+    return ModelObject<RevBayesCore::Simplex>::convertTo( type );
+}
+
+
+/**
  * Map calls to member methods.
  */
 RevPtr<RevVariable> Simplex::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
@@ -80,13 +108,6 @@ RevPtr<RevVariable> Simplex::executeMethod( std::string const &name, const std::
         
         // return a new RevVariable with the size of this container
         return RevPtr<RevVariable>( new RevVariable( new Natural( size() ), "" ) );
-    }
-    else if ( name == "[]" )
-    {
-        found = true;
-        
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
-        return RevPtr<RevVariable>( new RevVariable( getElement( index ) ) );
     }
     
     return ModelObject<RevBayesCore::Simplex>::executeMethod( name, args, found );
@@ -105,7 +126,8 @@ const std::string& Simplex::getClassType(void)
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Simplex::getClassTypeSpec(void) { 
+const TypeSpec& Simplex::getClassTypeSpec(void)
+{
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), &ModelObject<RevBayesCore::Simplex>::getClassTypeSpec(), &Probability::getClassTypeSpec() );
     
@@ -134,8 +156,8 @@ void Simplex::initMethods( void )
     
     ArgumentRules* elementArgRules = new ArgumentRules();
     elementArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "[]", Probability::getClassTypeSpec(), elementArgRules ) );
-    
+    this->methods.addFunction( new MemberFunction<Simplex,Probability >("[]", this, elementArgRules ) );
+
 }
 
 

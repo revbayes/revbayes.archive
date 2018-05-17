@@ -17,14 +17,12 @@ namespace RevBayesCore {
      * @brief Codon rate matrix class with different rates for synonymous and non-synonymous substitutions.
      *
      * This class implements the codon rate matrix with different dN/ dS rates.
-     * The JC has no parameter but can be applied to any number of states.
+     * The only parameter is the stationary codon frequencies.
      * The resulting rate matrix is computed by:
      *
      *		0: codon changes in more than one codon position (or stop codons)
-     *		1: synonymous transition
-     *		2: synonymous transversion
-     *		3: non-synonymous transition
-     *		4: non-synonymous transversion
+     *		1: synonymous substitution * pi(target)
+     *		2: non-synonymous substitution * pi(target)
      *
      *
      * @copyright Copyright 2009-
@@ -45,7 +43,7 @@ namespace RevBayesCore {
         virtual RateMatrix_CodonSynonymousNonsynonymous&        assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
         void                                                    calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
         RateMatrix_CodonSynonymousNonsynonymous*                clone(void) const;
-        void                                                    setKappa(double k);
+        void                                                    setCodonFrequencies(const std::vector<double> &f);                                 //!< Set the nucleotide frequencies
         void                                                    setOmega(double o);
         void                                                    update(void);
         
@@ -56,13 +54,13 @@ namespace RevBayesCore {
         void                                                    tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
         void                                                    updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
         
-        EigenSystem*                                            theEigenSystem;                                                                     //!< Holds the eigen system
+        EigenSystem*                                            eigen_system;                                                                       //!< Holds the eigen system
         std::vector<double>                                     c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >                      cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
         
-        double                                                  kappa;
         double                                                  omega;
-
+        std::vector<double>                                     codon_freqs; 
+        
     };
     
 }

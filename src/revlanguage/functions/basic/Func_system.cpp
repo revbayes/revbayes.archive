@@ -34,10 +34,12 @@ Func_system* Func_system::clone( void ) const
 /** Execute function */
 RevPtr<RevVariable> Func_system::execute( void )
 {
+
+    RbSettings& s = RbSettings::userSettings();
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager();
+    std::string cmd = "cd " + s.getWorkingDirectory() + fm.getNewLine() + static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue().c_str();
     
-    const char *cmd = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue().c_str();
-    
-    system( cmd );
+    system( cmd.c_str() );
     
     return NULL;
 }

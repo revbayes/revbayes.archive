@@ -50,31 +50,6 @@ void EventBirthDeathProposal::cleanProposal( void )
     
 }
 
-/**
- * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
- *
- * \return A new copy of the proposal.
- */
-EventBirthDeathProposal* EventBirthDeathProposal::clone( void ) const
-{
-    
-    return new EventBirthDeathProposal( *this );
-}
-
-
-/**
- * Get Proposals' name of object
- *
- * \return The Proposals' name.
- */
-const std::string& EventBirthDeathProposal::getProposalName( void ) const
-{
-    static std::string name = "EventBirthDeath";
-    
-    return name;
-}
-
 
 /**
  * Perform the proposal.
@@ -123,13 +98,9 @@ double EventBirthDeathProposal::doBirthProposal( void )
     
     size_t num_events_before    = history.getNumberEvents();
     size_t num_branches         = history.getNumberBranches();
-    size_t num_states           = history.getNumberStates();
     
     // randomly pick a branch
     size_t branch_index = size_t( std::floor(num_branches * rng->uniform01()) );
-    
-    // draw a new state
-    size_t new_state = size_t( std::floor(num_states * rng->uniform01()) );
     
     // draw an event time, which is simply uniform between 0 and 1
     const TopologyNode& node = distribution->getValue().getNode(branch_index);
@@ -145,7 +116,9 @@ double EventBirthDeathProposal::doBirthProposal( void )
     double age = node.getAge();
     double event_time = rng->uniform01() * branch_length + age;
     
-    CharacterEvent *new_event = new CharacterEvent(0, new_state, event_time);
+    // draw a new state
+    CharacterEvent *new_event = drawNewEvent(event_time);
+    double ln_event_value_proposal_prob = computeEventProposalProbability( new_event );
     history.addEvent( new_event, branch_index );
     
     // store value for reversal of proposal
@@ -154,7 +127,7 @@ double EventBirthDeathProposal::doBirthProposal( void )
     
     double log_birth_move_prob = log(num_events_before == 0 ? 1.0 : 0.5);
     double log_death_move_prob = log(0.5);
-    double p_forward  = log_birth_move_prob - log(num_branches) - log(num_states) - log(branch_length);
+    double p_forward  = log_birth_move_prob - log(num_branches) + ln_event_value_proposal_prob - log(branch_length);
     double p_backward = log_death_move_prob - log(num_events_before+1);
     
     return p_backward - p_forward;
@@ -171,16 +144,15 @@ double EventBirthDeathProposal::doDeathProposal( void )
     
     size_t num_events_before    = history.getNumberEvents();
     size_t num_branches         = history.getNumberBranches();
-    size_t num_states           = history.getNumberStates();
-    
+
     size_t branch_index = 0;
     CharacterEvent *event = history.pickRandomEvent( branch_index );
     history.removeEvent( event, branch_index );
     
     // store the event
-    stored_value = event;
-    stored_branch_index = branch_index;
-    const TopologyNode& node = distribution->getValue().getNode(branch_index);
+    stored_value                = event;
+    stored_branch_index         = branch_index;
+    const TopologyNode& node    = distribution->getValue().getNode(branch_index);
     double branch_length = 0.0;
     if ( node.isRoot() == false )
     {
@@ -191,10 +163,12 @@ double EventBirthDeathProposal::doDeathProposal( void )
         branch_length = node.getAge();
     }
     
+    double ln_event_value_proposal_prob = computeEventProposalProbability( event );
+
     double log_death_move_prob = log(0.5);
     double log_birth_move_prob = log(num_events_before == 1 ? 1.0 : 0.5);
     double p_forward  = log_death_move_prob - log(num_events_before);
-    double p_backward = log_birth_move_prob - log(num_branches) - log(num_states) - log(branch_length);
+    double p_backward = log_birth_move_prob - log(num_branches) + ln_event_value_proposal_prob - log(branch_length);
     return p_backward - p_forward;
 }
 

@@ -423,7 +423,7 @@ template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousDiscreteCharacterData<charType> &obsd, std::string type)
 {
     
-    size_t sequenceLength = getNumberOfCharacters();
+    size_t sequence_length = getNumberOfCharacters();
     
     // check if both have the same number of taxa
     if ( taxa.size() != obsd.getNumberOfTaxa() && type != "union" && type != "intersection")
@@ -431,14 +431,17 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         throw RbException("Cannot concatenate two character data objects with different number of taxa!");
     }
     
-    std::vector<string> toDelete;
+    std::vector<string> to_delete;
     //    std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
     
     for (size_t i=0; i<obsd.getNumberOfTaxa(); ++i)
     {
         const std::string &n = obsd.getTaxonNameWithIndex( i );
-        size_t idx = getIndexOfTaxon( n );
-        if ( idx == RbConstants::Size_t::inf )
+        try
+        {
+            getIndexOfTaxon( n );
+        }
+        catch(RbException &e)
         {
             if ( type == "union" )
             {
@@ -452,42 +455,47 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const 
         }
     }
     
-    for (size_t i=0; i<taxa.size(); i++ )
+    for (size_t i=0; i<taxa.size(); ++i )
     {
         const std::string &n = taxa[i].getName();
         DiscreteTaxonData<charType>& taxon = getTaxonData( n );
         
-        size_t idx = obsd.getIndexOfTaxon( n );
-        if ( idx != RbConstants::Size_t::inf )
+        try
         {
-//            used[idx] = true;
+            //size_t idx = obsd.getIndexOfTaxon( n );
+            obsd.getIndexOfTaxon( n );
             taxon.concatenate( obsd.getTaxonData( n ) );
         }
-        else if (type == "intersection")
+        catch(RbException &e)
         {
-            toDelete.push_back(n);
+            if (type == "intersection")
+            {
+                to_delete.push_back(n);
+            }
+            else if (type == "union")
+            {
+                AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
+                taxon_data->setAllCharactersMissing();
+                taxon.concatenate( *taxon_data );
+                delete taxon_data;
+            }
+            else
+            {
+                throw RbException("Cannot concatenate two character data objects because second character data object has no taxon with name '" + n + "n'!");
+            }
         }
-        else if (type == "union")
-        {
-            AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
-            taxon_data->setAllCharactersMissing();
-            taxon.concatenate( *taxon_data );
-            delete taxon_data;
-        }
-        else
-        {
-            throw RbException("Cannot concatenate two character data objects because second character data object has no taxon with name '" + n + "n'!");
-        }
+
     }
-    for (size_t i=0; i<toDelete.size(); i++)
+    
+    for (size_t i=0; i<to_delete.size(); i++)
     {
-        deleteTaxon(toDelete[i]);
+        deleteTaxon(to_delete[i]);
     }
     
     const std::set<size_t> &exclChars = obsd.getExcludedCharacters();
     for (std::set<size_t>::const_iterator it = exclChars.begin(); it != exclChars.end(); ++it)
     {
-        deletedCharacters.insert( *it + sequenceLength );
+        deletedCharacters.insert( *it + sequence_length );
     }
     
 }
@@ -816,7 +824,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
     }
 
     int max;
-    for (max = long(observed.size()) - 1; max >= 0; max--)
+    for (max = int(observed.size()) - 1; max >= 0; max--)
     {
         if (observed.isSet(max))
         {
@@ -1267,7 +1275,6 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::includeCharacter(s
 /**
  * Initialize this object from a file
  *
- * \param[in]   idx    The site at which we want to know if it is constant?
  */
 template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromFile(const std::string &dir, const std::string &fn)
@@ -1309,7 +1316,7 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromFile(const
 /**
  * Initialize this object from a file
  *
- * \param[in]   idx    The site at which we want to know if it is constant?
+ * \param[in]   s    The string value.
  */
 template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromString(const std::string &s)

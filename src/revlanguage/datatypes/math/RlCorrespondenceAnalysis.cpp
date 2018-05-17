@@ -55,7 +55,7 @@ void CorrespondenceAnalysis::constructInternalObject( void )
     
     // now allocate a CorrespondenceAnalysis
     RevBayesCore::MatrixReal d  = static_cast<const MatrixReal &>( data->getRevObject() ).getValue();
-    unsigned int na             = static_cast<const Natural &>( num_axes->getRevObject() ).getValue();
+    unsigned int na             = (unsigned int)static_cast<const Natural &>( num_axes->getRevObject() ).getValue();
     double tol                  = static_cast<const RealPos &>( tolerance->getRevObject() ).getValue();
     
     value = new RevBayesCore::CorrespondenceAnalysis( d, na, tol );

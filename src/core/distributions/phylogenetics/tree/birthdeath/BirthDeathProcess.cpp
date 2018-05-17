@@ -91,39 +91,61 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     if ( sampling_strategy == "diversified" ) 
     {
         // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
-        double last_event = divergence_times[divergence_times.size()-2];
+        double last_event = divergence_times[divergence_times.size()-1];
         
         double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
         double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
         double F_t = p_0_t / p_0_T;
         
+//        if ( F_t > 1.0 || F_t < 0.0 )
+//        {
+//            throw RbException("Problem in computing the probability of missing species in BDP.");
+//        }
+        
         // get an estimate of the actual number of taxa
         double m = round(num_taxa / rho->getValue());
-        ln_prob_times += (m-num_taxa) * log(F_t) + log(RbMath::choose(m,num_taxa));
+        int initial_taxa = 2;
+//        if ( MRCA == TRUE ) k <- 2
+        ln_prob_times += (m-num_taxa) * log(F_t) + log(RbMath::choose(m-initial_taxa,num_taxa-initial_taxa));
     }
+    
+    int total_species = int(num_taxa);
+    
+//    double ln_fact_n_taxa = RbMath::lnFactorial( int(num_taxa-2) );
     
     // now iterate over the vector of missing species per interval
     for (size_t i=0; i<incomplete_clades.size(); ++i)
     {
         // We use equation (5) of Hoehna et al.
         // "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
-        
-//        double last_event = presentTime - this->value->getTmrca( incomplete_clades[i] );
         double last_event = presentTime - incomplete_clade_ages[i];
         
         double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
         double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
         double log_F_t = log(p_0_t) - log(p_0_T);
+        
+//        if ( log_F_t > 0.0 )
+//        {
+//            throw RbException("Problem in computing the probability of missing species in BDP.");
+//        }
 
         // get an estimate of the actual number of taxa
         int m = incomplete_clades[i].getNumberMissingTaxa();
         // remove the number of species that we started with
         
         // multiply the probability for the missing species
-        // lnl = lnl + sum( m * log_F_t ) #+ lchoose(m-k,nTaxa-k)
-        ln_prob_times += m * log_F_t; // + log(RbMath::choose(m,num_taxa));
+        ln_prob_times += m * log_F_t;
+//        ln_prob_times += m * log_F_t + RbMath::lnFactorial(m+num_taxa-2.0) - RbMath::lnFactorial(m) - ln_fact_n_taxa;
+//        ln_prob_times += m * log_F_t + log(RbMath::choose(m-initial_taxa,num_taxa-initial_taxa));
 
+
+        total_species += m;
     }
+    
+//    if ( incomplete_clades.size() > 0 )
+//    {
+//        ln_prob_times += RbMath::lnFactorial(total_species-2) - RbMath::lnFactorial( int(num_taxa-2) ) - RbMath::lnFactorial( int(total_species-num_taxa) );
+//    }
     
     return ln_prob_times;
 }
@@ -264,12 +286,62 @@ double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool
  *
  * \return The probability of survival of the process.
  */
+double BirthDeathProcess::lnProbSurvival(double start, double end, double r) const
+{
+    double rate = rateIntegral(start, end);
+    double prob_surv = computeProbabilitySurvival(start, end);
+    if ( prob_surv == 0.0 )
+    {
+        return 0.0;
+    }
+    else
+    {
+        double ps = 1.0 / prob_surv;
+        
+        return -log(ps - (r-1.0)/r * exp(rate) );
+    }
+}
+
+
+double BirthDeathProcess::lnProbSurvival(double start, double end) const
+{
+    double sampling_prob = rho->getValue();
+    
+    return lnProbSurvival(start, end, sampling_prob);
+}
+
+
+/**
+ * Compute the probabililty of survival (no extinction) of the process including uniform taxon sampling at the present time.
+ * The probability of survival is given by
+ * [1 + int_{t_low}^{t_high} ( mu(s) exp(rate(t,s)) ds ) ]^{-1}
+ * and can be simplified to
+ * [1 + int_{t_low}^{t_high} ( mu'(s) exp(rate'(t,s)) ds ) - (r-1)/r*exp(rate'(t_low,t_high)) ]^{-1}
+ * where mu' and rate' are the diversification rate function without incomplete taxon sampling.
+ * Therefore we can just call pSurvival without incomplete taxon sampling that will be computed in the derived classes,
+ * and add the sampling here so that sampling will be available for all models :)
+ * For more information please read Hoehna, S. 2014. The time-dependent reconstructed evolutionary process with a key-role for mass-extinction events.
+ *
+ * \param[in]    start      Start time of the process.
+ * \param[in]    end        End/stopping time of the process.
+ * \param[in]    r          Sampling probability.
+ *
+ * \return The probability of survival of the process.
+ */
 double BirthDeathProcess::pSurvival(double start, double end, double r) const
 {
     double rate = rateIntegral(start, end);
-    double ps = 1.0 / computeProbabilitySurvival(start, end);
+    double prob_surv = computeProbabilitySurvival(start, end);
+    if ( prob_surv == 0.0 )
+    {
+        return 0.0;
+    }
+    else
+    {
+        double ps = 1.0 / prob_surv;
     
-    return 1.0 / (ps - (r-1.0)/r * exp(rate) );
+        return 1.0 / (ps - (r-1.0)/r * exp(rate) );
+    }
 }
 
 

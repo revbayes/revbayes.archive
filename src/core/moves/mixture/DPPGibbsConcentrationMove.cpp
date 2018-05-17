@@ -80,7 +80,7 @@ void RevBayesCore::DPPGibbsConcentrationMove::performGibbsMove( void )
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 	double& cpv = variable->getValue();
 	
-	int k = numCats->getValue();
+	long k = numCats->getValue();
 	int nV = numElem;
 	
 	// This move is a fully conditional Gibbs move, with a Gamma distribution

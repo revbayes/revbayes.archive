@@ -41,6 +41,7 @@ namespace RevLanguage {
         std::vector<RevPtr<const RevVariable> >         vars;
         RevPtr<const RevVariable>                       filename;
         RevPtr<const RevVariable>                       printgen;
+        RevPtr<const RevVariable>                       version;
         RevPtr<const RevVariable>                       cdbdp;
         RevPtr<const RevVariable>                       ctmc;
         RevPtr<const RevVariable>                       separator;

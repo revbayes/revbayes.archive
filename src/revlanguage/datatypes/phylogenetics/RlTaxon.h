@@ -54,10 +54,14 @@ namespace RevLanguage {
         std::string                         getGuiInfo(void) { return ""; }
 
     protected:
+        
+        void                                initMethods(void);
         void                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);   //!< Set member variable
+
         RevPtr<const RevVariable>           taxon;
         RevPtr<const RevVariable>           species;
-        RevPtr<const RevVariable>           age;
+        RevPtr<const RevVariable>           minage;
+        RevPtr<const RevVariable>           maxage;
     };
 }
 

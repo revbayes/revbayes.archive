@@ -22,7 +22,12 @@ namespace RevBayesCore {
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
         PhyloOrnsteinUhlenbeckProcessEVE(const TypedDagNode<Tree> *t, size_t ns );
+        PhyloOrnsteinUhlenbeckProcessEVE(const PhyloOrnsteinUhlenbeckProcessEVE &p);
         virtual                                                            ~PhyloOrnsteinUhlenbeckProcessEVE(void);                                                              //!< Virtual destructor
+        
+        PhyloOrnsteinUhlenbeckProcessEVE&                                   operator=(const PhyloOrnsteinUhlenbeckProcessEVE &p);
+
+        
         
         // public member functions
         // pure virtual
@@ -54,11 +59,7 @@ namespace RevBayesCore {
         void                                                                computeCovarianceRecursive(const TopologyNode &n, MatrixReal &cv);
         void                                                                computeExpectation(std::vector<double> &e);
         void                                                                computeExpectationRecursive(const TopologyNode &n, double me, std::vector<double> &e);
-        size_t                                                              computeMrcaIndex(const TopologyNode *l, const TopologyNode *r);
-//        void                                                                computeLeafExpectation(std::vector<double> &e);
         void                                                                computeVarianceRecursive(const TopologyNode &n, std::vector<double> &v);
-        void                                                                expandExpectation(std::vector<double> &e);
-        void                                                                expandCovariance(MatrixReal &cv);
 
         // Parameter management functions.
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter
@@ -79,12 +80,10 @@ namespace RevBayesCore {
         const TypedDagNode< RbVector< double > >*                           heterogeneous_sigma;
         const TypedDagNode< RbVector< double > >*                           heterogeneous_theta;
         
-        size_t                                                              num_tips;
+        size_t                                                              num_species;
         std::vector<std::vector<double> >                                   obs;
         std::vector<double>*                                                means;
-//        std::vector<double>*                                                stored_means;
         MatrixReal*                                                         phylogenetic_covariance_matrix;
-//        MatrixReal*                                                         stored_phylogenetic_covariance_matrix;
         MatrixReal                                                          inverse_phylogenetic_covariance_matrix;
         bool                                                                changed_covariance;
         bool                                                                needs_covariance_recomputation;

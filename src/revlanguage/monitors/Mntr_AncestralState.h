@@ -50,6 +50,7 @@ namespace RevLanguage {
 		RevPtr<const RevVariable>                   ctmc;
         RevPtr<const RevVariable>                   separator;
         RevPtr<const RevVariable>                   append;
+        RevPtr<const RevVariable>                   version;
 		RevPtr<const RevVariable>                   monitorType;
     };
     

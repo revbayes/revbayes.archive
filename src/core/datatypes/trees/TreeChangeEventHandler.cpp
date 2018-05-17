@@ -1,11 +1,3 @@
-//
-//  TreeChangeEventHandler.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/27/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "TreeChangeEventHandler.h"
 #include "TreeChangeEventListener.h"
 

@@ -14,6 +14,9 @@ namespace RevLanguage {
         StochasticNode(const StochasticNode<valueType> &n);
         virtual                            ~StochasticNode(void);
         
+        StochasticNode&                     operator=( const StochasticNode &d );
+        
+        
         // public methods
         StochasticNode<valueType>*          clone(void) const;                                                                              //!< Clone the node
         virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
@@ -81,6 +84,26 @@ RevLanguage::StochasticNode<valueType>::StochasticNode( const RevLanguage::Stoch
 }
 
 
+
+template<class valueType>
+RevLanguage::StochasticNode<valueType>& RevLanguage::StochasticNode<valueType>::operator=( const RevLanguage::StochasticNode<valueType> &n )
+{
+
+    if ( this != &n )
+    {
+        RevBayesCore::StochasticNode<valueType>::operator=( n );
+
+        delete rlDistribution;
+        
+        rlDistribution = n.rlDistribution->clone();
+        methods = n.methods;
+        
+    }
+
+    
+}
+
+
 template<class valueType>
 RevLanguage::StochasticNode<valueType>::~StochasticNode( void )
 {
@@ -107,29 +130,30 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::StochasticNode<valueT
     RevMemberObject* mo = dynamic_cast<RevMemberObject*>( rlDistribution );
     if ( mo != NULL)
     {
-        RevPtr<RevVariable> retVal = mo->executeMethod(name, args, found);
+        RevPtr<RevVariable> ret_val = mo->executeMethod(name, args, found);
         
         if ( found == true )
         {
-            return retVal;
+            return ret_val;
         }
     }
     
-    std::vector<RevBayesCore::DagNode*> distArgs;
+    std::vector<RevBayesCore::DagNode*> dist_args;
     for (size_t i = 0; i < args.size(); ++i)
     {
         try
         {
-            distArgs.push_back( args[i].getVariable()->getRevObject().getDagNode() );
+            dist_args.push_back( args[i].getVariable()->getRevObject().getDagNode() );
         } catch ( ... )
         {
             // nothing to throw, just keep going
         }
     }
-    this->distribution->executeProcedure(name, distArgs, found);
+    
+    RevPtr<RevVariable> ret_proc_val = this->distribution->executeProcedure(name, dist_args, found);
     if ( found == true )
     {
-        return NULL;
+        return ret_proc_val;
     }
 
     

@@ -194,11 +194,11 @@ double RateMatrix_Senca::computePreferenceRatio(const CodonState &from, const Co
 
 /**
  *
- *		0: codon changes in more than one codon position (or stop codons)
- *		1: synonymous transition
- *		2: synonymous transversion
- *		3: non-synonymous transition
- *		4: non-synonymous transversion
+ *        0: codon changes in more than one codon position (or stop codons)
+ *        1: synonymous transition
+ *        2: synonymous transversion
+ *        3: non-synonymous transition
+ *        4: non-synonymous transversion
  */
 void RateMatrix_Senca::computeOffDiagonal( void )
 {
@@ -354,7 +354,7 @@ void RateMatrix_Senca::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
                 sum += (*ptr++) * eigValExp[s];
             }
             
-            //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
+            //            P[i][j] = (sum < 0.0) ? 0.0 : sum;
             (*p) = (sum < 0.0) ? 0.0 : sum;
         }
     }
@@ -425,5 +425,6 @@ void RateMatrix_Senca::update( void )
         needs_update = false;
     }
 }
+
 
 

@@ -101,7 +101,7 @@ RevPtr<RevVariable> RlString::executeMethod( std::string const &name, const std:
     {
         found = true;
         
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        long index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         const std::string &str = getValue();
         std::string letter(1,str[index]);
         return RevPtr<RevVariable>( new RevVariable( new RlString( letter ) ) );
@@ -111,17 +111,28 @@ RevPtr<RevVariable> RlString::executeMethod( std::string const &name, const std:
         found = true;
         
         size_t arg_idx = 0;
-        int begin = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
-        int end = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
+        long begin = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
+        long end = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
         const std::string &str = getValue();
         std::string substr = str.substr(begin,end-begin+1);
         return RevPtr<RevVariable>( new RevVariable( new RlString( substr ) ) );
+    }
+    else if ( name == "indexOf" || name == "find" )
+    {
+        found = true;
+        
+        size_t arg_idx = 0;
+        const std::string substr = static_cast<const RlString&>( args[arg_idx++].getVariable()->getRevObject() ).getValue();
+
+        std::string val = getValue();
+        size_t index = val.find( substr ) + 1;
+        return RevPtr<RevVariable>( new RevVariable( new Natural( index ) ) );
     }
     else if ( name == "[]" )
     {
         found = true;
         
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        long index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         const std::string &str = getValue();
         std::string letter(1,str[index]);
         return RevPtr<RevVariable>( new RevVariable( new RlString( letter ) ) );
@@ -179,6 +190,14 @@ void RlString::initMethods( void )
     substr_arg_rules->push_back( new ArgumentRule( "end",   Natural::getClassTypeSpec(), "The index of the last character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "substr", RlString::getClassTypeSpec(), substr_arg_rules) );
 
+    ArgumentRules* index_of_arg_rules = new ArgumentRules();
+    index_of_arg_rules->push_back( new ArgumentRule( "substr", RlString::getClassTypeSpec(), "The substring for which we want to find the position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "indexOf", Natural::getClassTypeSpec(), index_of_arg_rules) );
+
+    ArgumentRules* find_arg_rules = new ArgumentRules();
+    find_arg_rules->push_back( new ArgumentRule( "substr", RlString::getClassTypeSpec(), "The substring for which we want to find the position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "find", Natural::getClassTypeSpec(), find_arg_rules) );
+
     ArgumentRules* element_arg_rules = new ArgumentRules();
     element_arg_rules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "[]", RlString::getClassTypeSpec(), element_arg_rules ) );
@@ -205,6 +224,7 @@ void RlString::parseValue(void)
                 case '\\': c = '\\'; break;
                 case 'n': c = '\n'; break;
                 case 't': c = '\t'; break;
+                case '"': c = '"'; break;
                     // all other escapes
                 default:
                     // invalid escape sequence - skip it. alternatively you can copy it as is, throw an exception...
