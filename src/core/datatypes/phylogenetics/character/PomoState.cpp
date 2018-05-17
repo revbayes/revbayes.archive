@@ -766,11 +766,11 @@ RbBitSet PomoState::getState(void) const
 {
   std::cout << "in PomoState::getState1: " << stringValue_ << " "<< state << " and state.getNumberSetBits(): "<< state.getNumberSetBits() << std::endl;
     // we need to clear the bits first
-    RbBitSet bs = RbBitSet(4);
-
+    RbBitSet bs = RbBitSet( state.size());
+std::cout << "in PomoState::getState2: index_single_state: " << index_single_state <<std::endl;
     bs.set(index_single_state);
-std::cout << "index_single_state: "<<index_single_state<<std::endl;
-    std::cout << "in PomoState::getState2: " << stringValue_ << " " << state<< " and state.getNumberSetBits(): "<< state.getNumberSetBits() <<std::endl;
+
+    std::cout << "in PomoState::getState3: " << stringValue_ << " " << state<< " and state.getNumberSetBits(): "<< state.getNumberSetBits() <<std::endl;
     std::cout << state <<std::endl;
     return state;
 //    return bs;
