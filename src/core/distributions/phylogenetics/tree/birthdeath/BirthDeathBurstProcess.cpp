@@ -37,7 +37,8 @@ BirthDeathBurstProcess::BirthDeathBurstProcess( const TypedDagNode<double> *ra,
     mu( e ),
     beta( b ),
     time_burst( bt ),
-    rho( r )
+    rho( r ),
+    lineage_bursted_at_event(tn.size()*2-1,false)
 {
     addParameter( lambda );
     addParameter( mu );
@@ -105,7 +106,7 @@ double BirthDeathBurstProcess::computeLnProbabilityTimes( void ) const
     int num_extant_taxa = 0;
     
     std::vector<double> internal_node_ages = std::vector<double>();
-    for (size_t i = 0; i < num_nodes; i++)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
         const TopologyNode& n = value->getNode( i );
         double node_age = n.getAge();
@@ -114,6 +115,10 @@ double BirthDeathBurstProcess::computeLnProbabilityTimes( void ) const
         if ( n.isInternal() == true && n.isRoot() == false )
         {
             internal_node_ages.push_back( node_age );
+        }
+        else if ( n.isTip() == true )
+        {
+            ++num_extant_taxa;
         }
         
         // count the number of lineages alive at the burst event
@@ -150,26 +155,25 @@ double BirthDeathBurstProcess::computeLnProbabilityTimes( void ) const
         
     }
     
-    // get helper variables
-//    double a = birth_rate - death_rate;
-//    double c1 = a;
-//    double c2 = -(a - 2 * birth_rate * sampling_prob) / (birth_rate - death_rate);
-    
     // add the log probability for sampling the extant taxa
-    lnProbTimes += num_extant_taxa * log( 4.0 * sampling_prob );
+    lnProbTimes += num_extant_taxa * log( sampling_prob );
     
     // add the log probability of the initial sequences
-    lnProbTimes -= lnQ(process_time) * num_initial_lineages;
+    lnProbTimes += lnQ(process_time) * num_initial_lineages;
     
     // add the log probability for the internal node ages
     lnProbTimes += internal_node_ages.size() * log( birth_rate );
     for (size_t i=0; i<internal_node_ages.size(); i++)
     {
-        lnProbTimes -= lnQ(internal_node_ages[i]);
+        lnProbTimes += lnQ(internal_node_ages[i]);
     }
     
     // add the log probability for the burst event
-    lnProbTimes += log(burst_prob)     * num_lineages_burst_at_event;
+    if ( num_lineages_burst_at_event > 0 )
+    {
+        lnProbTimes += log(burst_prob)     * num_lineages_burst_at_event;
+    }
+    
     lnProbTimes += log( pow(1.0-burst_prob, num_lineages_alive_at_burst) + pow(burst_prob*pZero(burst_time), num_lineages_alive_at_burst) );
     
     // condition on survival
@@ -182,6 +186,7 @@ double BirthDeathBurstProcess::computeLnProbabilityTimes( void ) const
     {
         lnProbTimes -= lnProbNumTaxa( value->getNumberOfTips(), 0, process_time, true );
     }
+    
     
     return lnProbTimes;
     
@@ -354,16 +359,7 @@ double BirthDeathBurstProcess::simulateDivergenceTime(double origin, double pres
     
     
     // compute the time for this draw
-    // see Hartmann et al. 2010 and Stadler 2011
-    double t = 0.0;
-    if ( b > d )
-    {
-        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
-    }
-    else
-    {
-        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
-    }
+    double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     
     return present + t;
 }
@@ -385,13 +381,12 @@ double BirthDeathBurstProcess::pZero(double t) const
         double B = ((1.0 - 2.0*(1.0-sampling)) * birth + death ) /  A;
         E = birth + death - A * (1.0 + B - exp(-A*t) * (1.0-B)) / (1.0+B+exp(-A*t)*(1.0-B));
         E /= (2*birth);
-//        \frac{\lambda + \mu - A \frac{1+B_{t_\beta}-e^{-A(t-t_\beta)}(1-B_{t_\beta})}{1+B_{t_\beta}+e^{-A(t-t_\beta)}(1-B_{t_\beta})} }{ 2\lambda } \quad & \quad \text{otherwise}
-
     }
     else
     {
         double B_tmp = ((1.0 - 2.0*(1.0-sampling)) * birth + death ) /  A;
         double E_tmp = birth + death - A * (1.0 + B_tmp - exp(-A*t_b) * (1.0-B_tmp)) / (1.0+B_tmp+exp(-A*t_b)*(1.0-B_tmp));
+        E_tmp /= (2*birth);
         double B = ((1.0 - 2.0*((1.0-burst)*E_tmp+burst*E_tmp*E_tmp)) * birth + death ) /  A;
         E = birth + death - A * (1.0 + B - exp(-A*(t-t_b)) * (1.0-B)) / (1.0+B+exp(-A*(t-t_b))*(1.0-B));
         E /= (2*birth);
@@ -413,22 +408,39 @@ double BirthDeathBurstProcess::lnQ(double t) const
     
     double A = birth - death;
     double B = 0.0;
-    if ( t < t_b )
+    double D = 0.0;
+    if ( t < t_b || !true )
     {
         B = ((1.0 - 2.0*(1.0-sampling)) * birth + death ) /  A;
+        
+        D = 4.0*exp(-A*t);
+        double tmp = 1.0 + B + exp(-A*t)*(1.0-B);
+        D /= (tmp*tmp);
     }
     else
     {
         double B_tmp = ((1.0 - 2.0*(1.0-sampling)) * birth + death ) /  A;
         double E_tmp = birth + death - A * (1.0 + B_tmp - exp(-A*t_b) * (1.0-B_tmp)) / (1.0+B_tmp+exp(-A*t_b)*(1.0-B_tmp));
+        E_tmp /= (2*birth);
         B = ((1.0 - 2.0*((1.0-burst)*E_tmp+burst*E_tmp*E_tmp)) * birth + death ) /  A;
+        B = B_tmp;
+//        std::cerr << B << " - " << B_tmp << std::endl;
+        
+        D = 4.0*exp(-A*t);
+        double tmp = 1.0 + B + exp(-A*t)*(1.0-B);
+        D /= (tmp*tmp);
+        
+        double D_tb_a = 4.0*exp(-A*t_b);
+        double tmp_tb_a = 1.0 + B + exp(-A*t_b)*(1.0-B);
+        D_tb_a /= (tmp_tb_a*tmp_tb_a);
+        
+        double D_tb_b = 4.0*exp(-A*t_b);
+        double tmp_tb_b = 1.0 + B_tmp + exp(-A*t_b)*(1.0-B_tmp);
+        D_tb_b /= (tmp_tb_b*tmp_tb_b);
+        
+        D *= (D_tb_b / D_tb_a);
     }
     
-    double D = 4.0*exp(-A*t);
-    double tmp = 1.0 + B + exp(-A*t)*(1.0-B);
-    D /= (tmp*tmp);
-    
-    // numerically safe code
     return log( D );
 }
 
@@ -498,7 +510,7 @@ void BirthDeathBurstProcess::touchSpecialization(DagNode *affecter, bool touchAl
         
         if ( dag_node != NULL )
         {
-            dag_node->restoreAffected();
+            dag_node->touchAffected();
         }
     }
     
