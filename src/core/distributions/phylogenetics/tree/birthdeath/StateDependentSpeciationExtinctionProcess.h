@@ -42,6 +42,7 @@ namespace RevBayesCore {
                                                   const TypedDagNode<double> *rh,
                                                   const std::string &cdt,
                                                   bool uo,
+                                                  size_t min_lineages,
                                                   size_t max_lineages,
                                                   bool prune);
         
@@ -94,7 +95,7 @@ namespace RevBayesCore {
         std::vector<double>                                             pExtinction(double start, double end) const;                                                        //!< Compute the probability of extinction of the process (without incomplete taxon sampling).
         virtual double                                                  pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         void                                                            recursivelyFlagNodeDirty(const TopologyNode& n);
-        void                                                            simulateTree(void);
+        void                                                            simulateTree(size_t attempts = 0);
         std::vector<double>                                             calculateTotalAnageneticRatePerState(void);
         std::vector<double>                                             calculateTotalSpeciationRatePerState(void);
         void                                                            computeNodeProbability(const TopologyNode &n, size_t nIdx) const;
@@ -131,6 +132,7 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                                     rho;                                                                                                //!< Sampling probability of each species.
         
         RateMatrix_JC                                                   Q_default;
+        size_t                                                          min_num_lineages;
         size_t                                                          max_num_lineages;
         bool                                                            prune_extinct_lineages;
         double                                                          NUM_TIME_SLICES;

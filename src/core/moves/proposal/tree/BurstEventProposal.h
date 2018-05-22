@@ -1,5 +1,5 @@
-#ifndef CollapseExpandFossilBranchProposal_H
-#define CollapseExpandFossilBranchProposal_H
+#ifndef BurstEventProposal_H
+#define BurstEventProposal_H
 
 #include <string>
 
@@ -22,14 +22,14 @@ namespace RevBayesCore {
      * @since 2012-07-12, version 1.0
      *
      */
-    class CollapseExpandFossilBranchProposal : public Proposal {
+    class BurstEventProposal : public Proposal {
         
     public:
-        CollapseExpandFossilBranchProposal( StochasticNode<Tree> *n, TypedDagNode<double>* o);               //!<  constructor
+        BurstEventProposal( StochasticNode<Tree> *n);                                                       //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
-        CollapseExpandFossilBranchProposal*     clone(void) const;                                          //!< Clone object
+        BurstEventProposal*                     clone(void) const;                                          //!< Clone object
         double                                  doProposal(void);                                           //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                      //!< Prepare the proposal
@@ -40,21 +40,17 @@ namespace RevBayesCore {
     protected:
         
         void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);             //!< Swap the DAG nodes on which the Proposal is working on
-        
-        double                                  collapseBranch(TopologyNode &n);
-        double                                  expandBranch(TopologyNode &n);
-        
+                
     private:
         
         // parameters
-        StochasticNode<Tree>*                   tau;                                                        //!< The variable the Proposal is working on
-        TypedDagNode<double>*                   origin;                                                     //!< The variable the Proposal is working on
+        StochasticNode<Tree>*                   psi;                                                        //!< The variable the Proposal is working on
         
         // stored objects to undo proposal
-        TopologyNode*                           storedNode;
-        double                                  storedAge;
+        TopologyNode*                           stored_node;
+        double                                  stored_age;
         bool                                    failed;
-    
+        
     };
     
 }

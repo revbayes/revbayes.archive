@@ -38,14 +38,14 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(Typed
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
-    
+
     // add the parameters of the distribution
     const std::vector<const DagNode*>& pars = base_distribution->getParameters();
     for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
     {
         this->addParameter( *it );
     }
-    
+
     // if we own the tree, then we initialize our value with a true clone of the value of the base distribution
     if ( owns_tree == true )
     {
@@ -55,7 +55,7 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(Typed
     {
         value = &base_distribution->getValue();
     }
-    
+
     updateSetOfConstrainedNodes();
 }
 
@@ -71,8 +71,8 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(const
     // however, here we want to hold exactly the same value as the base-distribution
     // thus, we delete the newly created value
     delete value;
-    
-    
+
+
     // and then set it to the value of the base distribution
     if ( owns_tree == true )
     {
@@ -91,9 +91,9 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(const
 
 NodeOrderConstrainedTreeDistribution::~NodeOrderConstrainedTreeDistribution()
 {
-    
+
     delete base_distribution;
-    
+
     // DO NOT DELETE THE VALUE
     // the base distribution is the actual owner of the value!!!
     // we simply avoid the deletion of the value by setting its pointer to NULL
@@ -102,13 +102,13 @@ NodeOrderConstrainedTreeDistribution::~NodeOrderConstrainedTreeDistribution()
     {
         value = NULL;
     }
-    
+
 }
 
 
 NodeOrderConstrainedTreeDistribution* NodeOrderConstrainedTreeDistribution::clone( void ) const
 {
-    
+
     return new NodeOrderConstrainedTreeDistribution( *this );
 }
 
@@ -119,13 +119,13 @@ NodeOrderConstrainedTreeDistribution* NodeOrderConstrainedTreeDistribution::clon
  */
 double NodeOrderConstrainedTreeDistribution::computeLnProbability( void )
 {
-    
+
     // first check if the current tree matches the clade constraints
     if ( !matchesConstraints() )
     {
         return RbConstants::Double::neginf;
     }
-    
+
     // since we and the base distribution own the same value,
     // we do not need to set the value of the base distribution
     if ( owns_tree == true )
@@ -134,7 +134,7 @@ double NodeOrderConstrainedTreeDistribution::computeLnProbability( void )
     }
 
     double lnProb = base_distribution->computeLnProbability();
-    
+
     return lnProb;
 }
 
@@ -147,15 +147,15 @@ double NodeOrderConstrainedTreeDistribution::computeLnProbability( void )
  */
 bool NodeOrderConstrainedTreeDistribution::matchesConstraints( void )
 {
-    
+
     updateMapOfNodeAges();
-    
+    /*
     std::vector <std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> > > constra = constraints.getConstraints();
-    
+
     for (size_t i = 0; i < constra.size() ; ++i) {
         constrainedNodes.insert(constra[i].first);
         constrainedNodes.insert(constra[i].second);
-    }
+    }*/
 
     for (size_t i = 0; i < constra.size() ; ++i) {
         if ( nodeAges.at(constra[i].first) <  nodeAges.at(constra[i].second) ) {
@@ -169,7 +169,8 @@ bool NodeOrderConstrainedTreeDistribution::matchesConstraints( void )
 
 void NodeOrderConstrainedTreeDistribution::updateSetOfConstrainedNodes()
 {
-    std::vector <std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> > > constra = constraints.getConstraints();
+    //std::vector <std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> > >
+    constra = constraints.getConstraints();
     for (size_t i = 0; i < constra.size() ; ++i) {
         constrainedNodes.insert(constra[i].first);
         constrainedNodes.insert(constra[i].second);
@@ -181,17 +182,17 @@ void NodeOrderConstrainedTreeDistribution::updateSetOfConstrainedNodes()
 //Here we compute node ages from the current tree.
 void NodeOrderConstrainedTreeDistribution::updateMapOfNodeAges()
 {
-    
+
     nodeAges.clear();
     for (std::set< std::pair < std::string, std::string > >::iterator elem=constrainedNodes.begin(); elem != constrainedNodes.end(); ++elem)
     {
         nodeAges[(*elem)] = TreeUtilities::getAgeOfMRCA(*value, elem->first, elem->second);
     }
-    
-    
+
+
     //There must be a smart and efficient way of doing that.
     //For the moment we do it dumb and slow.
-    
+
     /*Attempt at a smart algorithm
      std::unordered_set<std::string> tipsToCareAbout;
      for (const auto& elem: constrainedNodes) {
@@ -228,12 +229,12 @@ void NodeOrderConstrainedTreeDistribution::updateMapOfNodeAges()
      }
      }
      }
-     
+
      }
      */
-    
+
     return;
-    
+
 }
 
 
@@ -243,7 +244,7 @@ void NodeOrderConstrainedTreeDistribution::updateMapOfNodeAges()
  */
 void NodeOrderConstrainedTreeDistribution::redrawValue( void )
 {
-    
+
     base_distribution->redrawValue();
     // if we own the tree, then we need to free the memory before we create a new random variable
     if ( owns_tree == true )
@@ -257,8 +258,8 @@ void NodeOrderConstrainedTreeDistribution::redrawValue( void )
         // to the new value of the base distribution
         value = &base_distribution->getValue();
     }
-    
-    
+
+
 }
 
 
@@ -267,11 +268,11 @@ void NodeOrderConstrainedTreeDistribution::redrawValue( void )
  */
 void NodeOrderConstrainedTreeDistribution::setValue(Tree *v, bool f )
 {
-    
+
     if ( owns_tree == true )
     {
         TypedDistribution<Tree>::setValue(v, f);
-        
+
         // if we own the tree then we simply initialize the base distribution with a clone
         base_distribution->setValue(v->clone(), f);
     }
@@ -280,15 +281,15 @@ void NodeOrderConstrainedTreeDistribution::setValue(Tree *v, bool f )
         // otherwise we set our value to the same value as the base distribution
         // but first we need to make sure that our base class doesn't delete the value
         value = NULL;
-        
+
         // and the we can set it for both ourselves and the base distribution
         TypedDistribution<Tree>::setValue(v, f);
         base_distribution->setValue(v, f);
     }
-    
+
     updateSetOfConstrainedNodes();
 
-    
+
     //    if ( rootAge != NULL )
     //    {
     //        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(rootAge);
@@ -305,7 +306,7 @@ void NodeOrderConstrainedTreeDistribution::setValue(Tree *v, bool f )
     //        }
     //
     //    }
-    
+
 }
 
 
@@ -318,9 +319,9 @@ void NodeOrderConstrainedTreeDistribution::setValue(Tree *v, bool f )
  */
 void NodeOrderConstrainedTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
-    
+
     base_distribution->swapParameter(oldP,newP);
-    
+
 }
 
 /**
@@ -346,5 +347,5 @@ void NodeOrderConstrainedTreeDistribution::restoreSpecialization(DagNode *restor
     base_distribution->restore(restorer);
     double a = base_distribution->getValue().getRoot().getAge();
     value->getRoot().setAge( a );
-    
+
 }

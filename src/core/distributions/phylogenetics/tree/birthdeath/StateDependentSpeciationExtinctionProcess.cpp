@@ -43,6 +43,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    const TypedDagNode<double> *rh,
                                                                                    const std::string &cdt,
                                                                                    bool uo,
+                                                                                   size_t min_lineages,
                                                                                    size_t max_lineages,
                                                                                    bool prune) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     condition( cdt ),
@@ -70,6 +71,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     rate( r ),
     rho( rh ),
     Q_default( ext->getValue().size() ),
+    min_num_lineages( min_lineages ),
     max_num_lineages( max_lineages ),
     prune_extinct_lineages( prune ),
     NUM_TIME_SLICES( 500.0 )
@@ -80,6 +82,11 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     addParameter( rho );
     addParameter( rate );
     addParameter( process_age );
+    
+    if ( min_num_lineages > max_num_lineages )
+    {
+        throw RbException("minNumLineages cannot be greater than maxNumLineages.");
+    }
     
     // set the length of the time slices used by the ODE for numerical integration
     dt = process_age->getValue() / NUM_TIME_SLICES * 50.0;
@@ -1871,13 +1878,18 @@ std::vector<double> StateDependentSpeciationExtinctionProcess::calculateTotalAna
 /**
  *
  */
-void StateDependentSpeciationExtinctionProcess::simulateTree( void )
+void StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
 {
     if ( use_origin == true )
     {
         // if originAge is set we start with one lineage
         // if rootAge is set we start with two lineages and their speciation event
         throw RbException("Simulations are currently only implemented when rootAge is set. You set the originAge.");
+    }
+
+    if ( attempts == 1000 )
+    {
+        throw RbException("After 1000 attempts a character-dependent birth death tree could not be simulated. Try changing minNumLineages or maxNumLineages.");
     }
 
     // a vector keeping track of the lineages currently surviving in each state
@@ -2052,8 +2064,16 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
             }
         }
 
-        // stop if we have reached the present or exceeded max num lineages
-        if (t == 0 || num_lineages >= max_num_lineages) 
+        // stop and retry if we have too many surviving lineages
+        if (num_lineages > max_num_lineages)
+        {
+            nodes.clear();
+            simulateTree(++attempts);
+            return;
+        }
+
+        // stop if we reached the present
+        if (t == 0) 
         {
             for (size_t i = 0; i < nodes.size(); i++)
             {
@@ -2273,7 +2293,24 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( void )
     Tree *psi = new Tree();
     psi->setRoot(root, true);
     psi->setRooted(true);
-   
+        
+    // stop and retry if we have too few surviving lineages
+    size_t num_lineages = 0;
+    for (size_t i = 0; i < num_states; i++)
+    {
+        for (size_t j = 0; j < lineages_in_state[i].size(); j++)
+        {
+            num_lineages++;
+        }
+    }
+    if (num_lineages < min_num_lineages)
+    {
+        delete psi;
+        simulateTree(++attempts);
+        return;
+    }
+  
+    // prune extinct lineage if necessary
     if (prune_extinct_lineages == true)
     {
         for (size_t i = 0; i < num_states; i++)
