@@ -33,7 +33,7 @@ AVMVNProposal::AVMVNProposal( double s, double e, double n0, double c0 ) : Propo
     waitBeforeLearning( n0 ),
     waitBeforeUsing ( c0 ),
     nTried ( 0 ),
-    updates (0 ),
+    updates ( 0 ),
     dim ( 0.0 ),
     C_emp(  ),
     x_bar(  ),
