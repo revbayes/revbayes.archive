@@ -38,6 +38,8 @@ namespace RevBayesCore {
         void                    getAges(Tree *t, TopologyNode *n, std::vector<double>& ages, bool internalsOnly=true);
         DistanceMatrix*         getDistanceMatrix(const Tree& tree);
         size_t                  getMrcaIndex(const TopologyNode *l, const TopologyNode *r);
+        int                     getNodalDistance(const TopologyNode *l, const TopologyNode *r);
+        DistanceMatrix*         getNodalDistanceMatrix(const Tree& tree);
         void                    getOldestTip(Tree* t, TopologyNode *n, double& oldest);
         void                    getTaxaInSubtree(TopologyNode *n, std::vector<TopologyNode*> &taxa );
         void                    offsetTree(Tree *t, TopologyNode *n, double factor);

@@ -218,6 +218,8 @@ RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(con
 }
 
 
+
+
 size_t RevBayesCore::TreeUtilities::getMrcaIndex(const TopologyNode *left, const TopologyNode *right)
 {
     
@@ -343,6 +345,40 @@ void RevBayesCore::TreeUtilities::makeUltrametric(Tree *t)
         t->getTipNode( i ).setAge(0.0);
     }
     
+}
+
+
+int RevBayesCore::TreeUtilities::getNodalDistance(const TopologyNode *left, const TopologyNode *right)
+{
+    if ( left == right ) 
+    {
+        return -1;
+    }
+    else if ( left->getAge() < right->getAge() )
+    {
+        return 1 + RevBayesCore::TreeUtilities::getNodalDistance( &left->getParent(), right );
+    }
+    else
+    {
+        return 1 + RevBayesCore::TreeUtilities::getNodalDistance( left, &right->getParent() );
+    }
+}
+
+
+RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getNodalDistanceMatrix(const Tree& tree)
+{
+    RevBayesCore::MatrixReal matrix = MatrixReal( tree.getNumberOfTips() );
+
+    std::vector<Taxon> names = tree.getTaxa( ) ;
+    for (size_t i = 0; i < names.size(); i++)
+    {
+        for (size_t j = i + 1; j < names.size(); j++)
+        {
+            matrix[i][j] = matrix[j][i] = TreeUtilities::getNodalDistance(&tree.getTipNode(i), &tree.getTipNode(j));
+        }
+    }
+
+    return new DistanceMatrix(matrix, names);
 }
 
 
