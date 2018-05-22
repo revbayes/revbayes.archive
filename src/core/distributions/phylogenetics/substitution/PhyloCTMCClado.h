@@ -27,6 +27,7 @@ namespace RevBayesCore {
     class PhyloCTMCClado : public AbstractPhyloCTMCSiteHomogeneous<charType> {
 
     public:
+//        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false, bool internal = false, bool gapmatch = true );
         PhyloCTMCClado(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal, bool gapmatch);
         PhyloCTMCClado(const PhyloCTMCClado &n);
         virtual                                            ~PhyloCTMCClado(void);                                                                   //!< Virtual destructor
@@ -108,8 +109,10 @@ namespace RevBayesCore {
 #include <map>
 #include <vector>
 
+//        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false, bool internal = false, bool gapmatch = true );
+
 template<class charType>
-RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal, bool gapmatch) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb ),
+RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal, bool gapmatch) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb, false, false, true ),
 
     cladoPartialLikelihoods(NULL),
     cladoMarginalLikelihoods(NULL),
@@ -654,7 +657,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeTipLikelihood(const Topology
                 for (size_t c1 = 0; c1 < this->num_chars; ++c1)
                 {
                     
-                    if ( this->using_ambiguous_characters == true && this->using_weighted_characters == false)
+                    if ( this->using_ambiguous_characters == true) // && this->using_weighted_characters == false)
                     {
                         // compute the likelihood that we had a transition from state c1 to the observed state org_val
                         // note, the observed state could be ambiguous!
@@ -683,37 +686,41 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeTipLikelihood(const Topology
                         p_site_mixture[c1] = tmp;
                         
                     }
-                    else if ( this->using_weighted_characters == true )
-                    {
-                        // compute the likelihood that we had a transition from state c1 to the observed state org_val
-                        // note, the observed state could be ambiguous!
-                        const RbBitSet &val = amb_char_node[site];
-                        
-                        // get the pointer to the transition probabilities for the terminal states
-                        const double* d  = tp_begin+(this->num_chars*c1);
-                        
-                        double tmp = 0.0;
-                        std::vector< double > weights = this->value->getCharacter(node_index, site).getWeights();
-                        for ( size_t i=0; i<val.size(); ++i )
-                        {
-                            // check whether we observed this state
-                            if ( val.isSet(i) == true )
-                            {
-                                // add the probability
-                                tmp += *d * weights[i] ;
-                            }
-                            
-                            // increment the pointer to the next transition probability
-                            ++d;
-                        } // end-while over all observed states for this character
-                        
-                        // store the likelihood
-                        p_site_mixture[c1] = tmp;
-                        
-                    }
+                     // MJL 180522: Very confused that this->using_weighted_characters == true, and seemingly only when optim -O3 is set!?
+//                    else if ( this->using_weighted_characters == true )
+//                    {
+//                        std::cout << "WHAT\n";
+//                        // compute the likelihood that we had a transition from state c1 to the observed state org_val
+//                        // note, the observed state could be ambiguous!
+//                        const RbBitSet &val = amb_char_node[site];
+//                        
+//                        // get the pointer to the transition probabilities for the terminal states
+//                        const double* d  = tp_begin+(this->num_chars*c1);
+//                        
+//                        double tmp = 0.0;
+//                        std::vector< double > weights = this->value->getCharacter(node_index, site).getWeights();
+//                        for ( size_t i=0; i<val.size(); ++i )
+//                        {
+//                            // check whether we observed this state
+//                            if ( val.isSet(i) == true )
+//                            {
+//                                // add the probability
+//                                tmp += *d * weights[i] ;
+//                            }
+//                            
+//                            // increment the pointer to the next transition probability
+//                            ++d;
+//                        } // end-while over all observed states for this character
+//                        
+//                        // store the likelihood
+//                        p_site_mixture[c1] = tmp;
+//                        
+//                    }
                     else // no ambiguous characters in use
                     {
                         unsigned long org_val = char_node[site];
+                        
+                        std::cout << "";
                         
                         // store the likelihood
                         p_site_mixture[c1] = tp_begin[c1*this->num_chars+org_val];
