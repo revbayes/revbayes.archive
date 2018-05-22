@@ -1,0 +1,86 @@
+#ifndef AVMVNProposal_H
+#define AVMVNProposal_H
+
+#include "RbVector.h"
+#include "Proposal.h"
+#include "StochasticNode.h"
+
+#include <ostream>
+#include <vector>
+#include <string>
+
+namespace RevBayesCore {
+    
+    /**
+     * @brief Up-Down Sliding Proposal for several parameters jointly.
+     *
+     *
+     * This proposal randomly slides all a set of parameter up while the other set of parameters
+     * is slided down by the same value. This should hopefully improve mixing in many cases.
+     * The actual sliding factor is computed by delta = lambda * ( u - 0.5 ) )
+     * where u ~ Uniform(0,1).
+     *
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @copyright GPL version 3
+     * @since 2015-05-25, version 1.0
+     *
+     */
+    class AVMVNProposal : public Proposal {
+        
+    public:
+        AVMVNProposal( double s, double e, double n0, double c0 );                                 //!< Constructor
+        
+        void                                        addVariable(StochasticNode<double> *v, std::string& transform);                                    //!< Add an up-scaling variable
+        void                                        addVariable(StochasticNode<RbVector<double> > *v, std::string& transform);                         //!< Add an up-scaling variable
+        void                                        cleanProposal(void);                                                                //!< Clean up proposal
+        AVMVNProposal*                              clone(void) const;                                                                  //!< Clone object
+        double                                      doProposal(void);                                                                   //!< Perform proposal
+        const std::string&                          getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
+        void                                        printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
+        void                                        prepareProposal(void);                                                              //!< Prepare the proposal
+        void                                        removeVariable(StochasticNode<double> *v, std::string& transform);                                 //!< Add an up-scaling variable
+        void                                        removeVariable(StochasticNode<RbVector<double> > *v, std::string& transform);                      //!< Add an up-scaling variable
+        void                                        tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
+        void                                        undoProposal(void);                                                                 //!< Reject the proposal
+        
+    protected:
+        
+        void                                        swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the DAG nodes on which the Proposal is working on
+        
+        
+    private:
+        // parameters
+        
+        std::vector<StochasticNode<double> *>               noTransformScalarVariables;
+        std::vector<StochasticNode<double> *>               logTransformScalarVariables;
+//        std::vector<StochasticNode<double> *>               logitTransformScalarVariables;
+        std::vector<StochasticNode<RbVector<double> > *>    noTransformVectorVariables;
+        std::vector<StochasticNode<RbVector<double> > *>    logConstrainedSumTransformVectorVariables;
+        
+        MatrixReal                                          C_emp;                                                   //!< The empirical covariance matrix of the samples
+
+        size_t                                              waitBeforeLearning;                                      //!< How long to wait before tracking empirical covariances
+        size_t                                              waitBeforeUsing;                                         //!< How long to wait before using the empirical covariances
+        size_t                                              nTried;                                                  //!< How many times has this move been used?
+        size_t                                              updates;                                                 //!< How many updates have been tried?
+                
+        double                                              sigma;                                                  //!< Variance of pre-learned (independent) normal proposal, also scales the MVN (proportional to variance, not SD)
+        double                                              epsilon;                                                //!< Controls the weighting of the learned VCV and an Identity matrix ( eps * I + (1-eps) * empirical)
+        double                                              dim;                                                    //!< Dimension of proposal
+        double                                              lnHastingsratio;                                        //!< The Hastings ratio, so that helper functions can adjust as needed
+        
+        std::vector<double>                                 storedValues;                                           //!< The values before proposing the move, for resetting
+        std::vector<double>                                 x_bar;                                                  //!< The averages in transformed space
+
+        // functions
+        void                                                getAVMVNMemberVariableValues(std::vector<double> *x);
+        void                                                setAVMVNMemberVariableValues(std::vector<double> x_prime, std::vector<double> x); 
+        
+        
+        
+    };
+    
+}
+
+#endif
+
