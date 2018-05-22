@@ -58,6 +58,7 @@ namespace RevBayesCore {
         std::vector<StochasticNode<RbVector<double> > *>    logConstrainedSumTransformVectorVariables;
         
         MatrixReal                                          C_emp;                                                   //!< The empirical covariance matrix of the samples
+        MatrixReal                                          AVMVN_vcv;                                               //!< The variance-covariance matrix for the move
 
         size_t                                              waitBeforeLearning;                                      //!< How long to wait before tracking empirical covariances
         size_t                                              waitBeforeUsing;                                         //!< How long to wait before using the empirical covariances

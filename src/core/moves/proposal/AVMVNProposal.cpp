@@ -36,6 +36,7 @@ AVMVNProposal::AVMVNProposal( double s, double e, double n0, double c0 ) : Propo
     updates ( 0 ),
     dim ( 0.0 ),
     C_emp(  ),
+    AVMVN_vcv(  ),
     x_bar(  ),
     storedValues(  ),
     proposedValues(  )
@@ -296,9 +297,7 @@ double AVMVNProposal::doProposal( void )
     // These in turn are accessed in the order: scalar (no transform, log, logit), vector (no transform, sum-constrained-log)
     std::vector<double> x;
     
-//    std::cout << "Getting variables" << std::endl;
     getAVMVNMemberVariableValues(&x);
-//    std::cout << "Got variables" << std::endl;
 
     if ( nTried == 1 )
     // First time using move, setting up components
@@ -314,16 +313,17 @@ double AVMVNProposal::doProposal( void )
             {
                 vcv[i][j] = 0.0;
             }
+            vcv[i][i] = sigma;
         }
         
         C_emp = vcv;
-        
+        AVMVN_vcv = vcv;
     }
     else
-    // Adjust empirical covariance matrix and averages
+    // Update empirical covariance matrix and averages
+    // However, we only change the matrix being used when we tune the variance parameter
     {
         // Store values
-//        storedValues.erase(storedValues.begin(),storedValues.end());
         for ( size_t i=0; i<dim; ++i )
         {
             storedValues[i] = x[i];
@@ -335,7 +335,6 @@ double AVMVNProposal::doProposal( void )
             
             double n = double(updates);
             
-//            x_bar_minus_1.erase(x_bar_minus_1.begin(),x_bar_minus_1.end());
             for ( size_t i=0; i<dim; ++i )
             {
                 // Update covariances first (to save us tracking current and previous averages)
@@ -352,42 +351,11 @@ double AVMVNProposal::doProposal( void )
         }
         
     }
-
     
     // Move
-    MatrixReal vcv( dim );
+    std::vector<double> x_prime = RbStatistics::MultivariateNormal::rvCovariance(x, AVMVN_vcv, *rng, sigma);
     
-    for (size_t i=0; i<dim; ++i)
-    {
-        vcv[i][i] = 1.0;
-    }
-    
-    if ( nTried > waitBeforeUsing )
-//        vcv = 1/dim * sigma * ((1 - epsilon) * C_emp + epsilon * vcv);
-    {
-        for (size_t i=0; i<dim; ++i)
-        {
-            for (size_t j=i; j<dim; ++j)
-            {
-                vcv[i][j] = 1/dim * sigma * ((1 - epsilon) * C_emp[i][j] + epsilon * vcv[i][j]);
-                vcv[j][i] = vcv[i][j];
-            }
-        }
-    }
-    else
-    {
-//        vcv = 1/dim * sigma * vcv;
-        for (size_t i=0; i<dim; ++i)
-        {
-            vcv[i][i] = 1/dim * sigma;
-        }
-  }
-    std::vector<double> x_prime = RbStatistics::MultivariateNormal::rvCovariance(x, vcv, *rng, sigma);
-    
-//    std::cout << "Setting variables" << std::endl;
     setAVMVNMemberVariableValues(x_prime, x);
-//    std::cout << "Set variables" << std::endl;
-
     
     return lnHastingsratio;
 
@@ -555,13 +523,14 @@ void AVMVNProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void AVMVNProposal::tune( double rate )
 {
     
-    if ( rate > 0.44 )
+    // Update proposal variance
+    if ( rate > 0.234 )
     {
-        sigma *= (1.0 + ((rate-0.44)/0.56) );
+        sigma *= (1.0 + ((rate-0.234)/0.764) );
     }
     else
     {
-        sigma /= (2.0 - rate/0.44 );
+        sigma /= (2.0 - rate/0.234 );
     }
     
     if ( sigma > 1 ) {
@@ -569,6 +538,35 @@ void AVMVNProposal::tune( double rate )
     } else {
         sigma = fmax(1/10000, sigma);
     }
+    
+    // Update our move's precision matrix too
+    MatrixReal vcv( dim );
+    
+    for (size_t i=0; i<dim; ++i)
+    {
+        vcv[i][i] = 1.0;
+    }
+    
+    if ( nTried > waitBeforeUsing )
+    {
+        for (size_t i=0; i<dim; ++i)
+        {
+            for (size_t j=i; j<dim; ++j)
+            {
+                vcv[i][j] = 1/dim * sigma * ((1 - epsilon) * C_emp[i][j] + epsilon * vcv[i][j]);
+                vcv[j][i] = vcv[i][j];
+            }
+        }
+    }
+    else
+    {
+        for (size_t i=0; i<dim; ++i)
+        {
+            vcv[i][i] = 1/dim * sigma;
+        }
+    }
+    
+    AVMVN_vcv = vcv;
     
 }
 
