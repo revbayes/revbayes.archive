@@ -61,6 +61,8 @@ namespace RevBayesCore {
         int                     getFitchScore(const Tree &t, const AbstractHomologousDiscreteCharacterData &c);
         std::set<size_t>        recursivelyComputeFitch(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, size_t site, int &score);
         double                  getMeanInverseES(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index);
+        std::vector<double>     getPSSP(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index);
+        std::set<size_t>        recursivelyGetPSSP(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, std::vector<double> &branch_lengths, size_t state_index);
 
 
     }

@@ -787,3 +787,62 @@ double RevBayesCore::TreeUtilities::getMeanInverseES(const Tree &t, const Abstra
     }
     return mean_inverse_es;
 }
+
+
+/* 
+ * Returns the Parsimoniously Same State Paths (PSSP). This is the set of branch lengths 
+ * from clades parsimoniously reconstructed to have the same state. Given (((A,B),C),(D,E)), if A, B, 
+ * D, and E are in state 0, then PSSP(0) will contain the four branch lengths in (A,B) and (D,E). Uses 
+ * Fitch's (1970) algorithm for parsimony ancestral state reconstruction.
+ */
+std::vector<double> RevBayesCore::TreeUtilities::getPSSP(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index)
+{
+    std::vector<double> branch_lengths;
+    if ( c.getNumberOfCharacters() != 1 )
+    {
+        throw RbException("getPSSP is only implemented for character alignments with a single site.");
+    }
+    recursivelyGetPSSP(t.getRoot(), c, branch_lengths, state_index);
+    return branch_lengths;
+}
+
+
+std::set<size_t> RevBayesCore::TreeUtilities::recursivelyGetPSSP(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, std::vector<double> &branch_lengths, size_t state_index)
+{
+    if (node.isTip() == true)
+    {
+        std::set<size_t> tip_set;
+        std::string n = node.getName();
+        size_t state = c.getTaxonData(n).getCharacter(0).getStateIndex();
+        tip_set.insert( state );
+        return tip_set;
+    }
+    else
+    {
+        if ( node.getNumberOfChildren() != 2 )
+        {
+            throw RbException("getPSSP is only implemented for binary trees.");
+        }
+        std::set<size_t> l = recursivelyGetPSSP(node.getChild(0), c, branch_lengths, state_index);
+        std::set<size_t> r = recursivelyGetPSSP(node.getChild(1), c, branch_lengths, state_index);
+
+        std::set<size_t> intersect;
+        set_intersection(l.begin(), l.end(), r.begin(), r.end(), std::inserter(intersect, intersect.begin()));
+
+        if (intersect.size() == 0)
+        {
+            std::set<size_t> union_set;
+            set_union(l.begin(), l.end(), r.begin(), r.end(), std::inserter(union_set, union_set.begin()));
+            return union_set;
+        }
+        if (intersect.size() == 1)
+        {
+            if (intersect.find(state_index) != intersect.end())
+            {
+                branch_lengths.push_back(node.getChild(0).getBranchLength());
+                branch_lengths.push_back(node.getChild(1).getBranchLength());
+            }
+        }
+        return intersect;
+    }
+}

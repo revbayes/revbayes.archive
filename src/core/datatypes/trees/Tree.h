@@ -23,6 +23,7 @@
 #define Tree_H
 
 #include "RbBoolean.h"
+#include "RbVector.h"
 #include "Cloneable.h"
 #include "MemberObject.h"
 #include "Serializable.h"
