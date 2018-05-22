@@ -37,7 +37,8 @@ AVMVNProposal::AVMVNProposal( double s, double e, double n0, double c0 ) : Propo
     dim ( 0.0 ),
     C_emp(  ),
     x_bar(  ),
-    storedValues(  )
+    storedValues(  ),
+    proposedValues(  )
 {
     if (waitBeforeUsing < waitBeforeLearning)
     {
@@ -295,24 +296,27 @@ double AVMVNProposal::doProposal( void )
     // These in turn are accessed in the order: scalar (no transform, log, logit), vector (no transform, sum-constrained-log)
     std::vector<double> x;
     
+//    std::cout << "Getting variables" << std::endl;
     getAVMVNMemberVariableValues(&x);
-    
+//    std::cout << "Got variables" << std::endl;
+
     if ( nTried == 1 )
     // First time using move, setting up components
     {
         dim = x.size();
+        MatrixReal vcv(dim);
         for ( size_t i=0; i<dim; ++i )
         {
             storedValues.push_back(x[i]);
             x_bar.push_back(0.0);
-//            x_bar_minus_1.push_back(0.0);
             
             for (size_t j=0; j < dim; ++j)
             {
-                C_emp[i][j] = 0.0;
-//                C_emp_minus_1[i][j] = 0.0;
+                vcv[i][j] = 0.0;
             }
         }
+        
+        C_emp = vcv;
         
     }
     else
@@ -351,7 +355,6 @@ double AVMVNProposal::doProposal( void )
 
     
     // Move
-    //    std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::vector<double>& mu, const MatrixReal& sigma, RandomNumberGenerator& rng, double scale)
     MatrixReal vcv( dim );
     
     for (size_t i=0; i<dim; ++i)
@@ -367,6 +370,7 @@ double AVMVNProposal::doProposal( void )
             for (size_t j=i; j<dim; ++j)
             {
                 vcv[i][j] = 1/dim * sigma * ((1 - epsilon) * C_emp[i][j] + epsilon * vcv[i][j]);
+                vcv[j][i] = vcv[i][j];
             }
         }
     }
@@ -380,7 +384,9 @@ double AVMVNProposal::doProposal( void )
   }
     std::vector<double> x_prime = RbStatistics::MultivariateNormal::rvCovariance(x, vcv, *rng, sigma);
     
+//    std::cout << "Setting variables" << std::endl;
     setAVMVNMemberVariableValues(x_prime, x);
+//    std::cout << "Set variables" << std::endl;
 
     
     return lnHastingsratio;

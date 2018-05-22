@@ -70,11 +70,12 @@ namespace RevBayesCore {
         double                                              lnHastingsratio;                                        //!< The Hastings ratio, so that helper functions can adjust as needed
         
         std::vector<double>                                 storedValues;                                           //!< The values before proposing the move, for resetting
+        std::vector<double>                                 proposedValues;                                         //!< The values proposed by the move
         std::vector<double>                                 x_bar;                                                  //!< The averages in transformed space
 
         // functions
         void                                                getAVMVNMemberVariableValues(std::vector<double> *x);
-        void                                                setAVMVNMemberVariableValues(std::vector<double> x_prime, std::vector<double> x); 
+        void                                                setAVMVNMemberVariableValues(std::vector<double> x_prime, std::vector<double> x);
         
         
         
