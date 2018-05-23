@@ -270,6 +270,7 @@ void PomoState::setState(const std::string &symbol)
      */
     std::cout << "in PomoState::setState: " << symbol <<std::endl;
     size_t index = 0;
+    size_t virtMinus1 = virtualPopulationSize_-1;
     //Checking if we have the preferred format, i.e. counts.
     if ( symbol.find(",") != std::string::npos ) {
         std::stringstream ss(symbol);
@@ -310,8 +311,9 @@ void PomoState::setState(const std::string &symbol)
                 std::cout << "in PomoState::setState id2: " << id2 <<std::endl;
             }
         }
-        if (count == 1) // monoallelic state
+        if ( count == 1 ) // monoallelic state
         {
+          std::cout << "MONOALLELIC: " << id1 << " ; "<< id2 <<std::endl;
             index = id1 ; //+ 1;
             //weights_[id1] = 1.0;
             state.clear();
@@ -320,6 +322,7 @@ void PomoState::setState(const std::string &symbol)
         }
         else if ( count == 2 ) //biallelic state
         {
+          std::cout << "BIALLELIC: " << id1 << " ; "<< id2 <<std::endl;
           //          index = 3 + id1*virtualPopulationSize_ + id2 ;
           int basicIndex = 4;
           if (id1==0) {
@@ -327,10 +330,10 @@ void PomoState::setState(const std::string &symbol)
               basicIndex = 4;
             }
             else if (id2 == 2) {
-              basicIndex = 4 + (virtualPopulationSize_-1);
+              basicIndex = 4 + (virtMinus1);
             }
             else if (id2 == 3) {
-              basicIndex = 4 + 2*(virtualPopulationSize_-1);
+              basicIndex = 4 + 2*(virtMinus1);
             }
             else  {
               throw RbException( "Pomo string state not correct. We found "+ symbol  );
@@ -338,10 +341,10 @@ void PomoState::setState(const std::string &symbol)
           }
           else if (id1==1) {
             if (id2 == 2) {
-              basicIndex = 4 + 3*(virtualPopulationSize_-1);
+              basicIndex = 4 + 3*(virtMinus1);
             }
             else if (id2 == 3) {
-              basicIndex = 4 + 4*(virtualPopulationSize_-1);
+              basicIndex = 4 + 4*(virtMinus1);
             }
             else  {
               throw RbException( "Pomo string state not correct. We found "+ symbol  );
@@ -349,7 +352,7 @@ void PomoState::setState(const std::string &symbol)
           }
           else if (id1==2) {
             if (id2 == 3) {
-              basicIndex = 4 + 5*(virtualPopulationSize_-1);
+              basicIndex = 4 + 5*(virtMinus1);
             }
             else  {
               throw RbException( "Pomo string state not correct. We found "+ symbol  );
@@ -363,15 +366,33 @@ void PomoState::setState(const std::string &symbol)
 
           std::cout <<"SITUATION "<<situation <<std::endl;
           state.clear();
-          //index corresponds to the exact place where the pomo state is.
-          index = basicIndex + virtualPopulationSize_ - num - 1;
+          // index corresponds to the closest place where the pomo state is.
+          // In case the virtual population size is inferior to the counts in the state,
+          // we have to do some maths.
+          // We have to get the closest numbers to the observed counts.
+          // Basically, the lowest count has to be >=1, and as close as possible
+          // to the observed count.
+          if (sum > virtualPopulationSize_) {
+            double obs_proportion = (double) (sum - num) / (double)sum ;
+            size_t corrected_num = 0;
+            if  (obs_proportion <= 1.0) {
+              corrected_num = virtualPopulationSize_ - 1;
+            }
+            else {
+              corrected_num = virtualPopulationSize_ - (size_t)round(obs_proportion);
+            }
+            index = basicIndex + virtualPopulationSize_ - corrected_num - 1;
+          }
+          else {
+            index = basicIndex + virtualPopulationSize_ - num - 1;
+          }
+          std::cout << "INDEX: " << index <<std::endl;
           //index = 3 + id1*virtualPopulationSize_ + id2 ;
           // Let's try Pomo state averaging.
           // Basically all cells in the weight matrix that contain only id1, only id2, or a combination of both should have a non-zero weight.
           double n = (double)sum;
           double p = (double)num/(double)sum;
 
-          size_t virtMinus1 = virtualPopulationSize_ - 1;
           std::vector<double> prob (virtualPopulationSize_ + 1);
           for (size_t j =0; j <= virtualPopulationSize_; ++j) {
             prob[j] = RbMath::choose(sum, num) *  pow( ( (double)j/double(virtualPopulationSize_)) , num) * pow( ( (double)(virtualPopulationSize_ - j)/double(virtualPopulationSize_) ) , (double)(sum-num)) ;
@@ -379,31 +400,31 @@ void PomoState::setState(const std::string &symbol)
           }
 
           if (situation == 4) { //A.C.
-            for (size_t j =0; j < virtualPopulationSize_; ++j) {
+            for (size_t j =0; j < virtMinus1; ++j) {
                 weights_[j+4] = prob[j+1];
                 state.set( j+4 );
             }
           }
           else if (situation == 5) { //A.G.
-            for (size_t j =0; j < virtualPopulationSize_; ++j) {
+            for (size_t j =0; j < virtMinus1; ++j) {
                 weights_[virtMinus1+j+4] = prob[j+1];
                 state.set( virtMinus1+j+4 );
             }
           }
           else if (situation == 6) { //A.T.
-            for (size_t j =0; j < virtualPopulationSize_; ++j) {
+            for (size_t j =0; j < virtMinus1; ++j) {
                 weights_[4 + 2 * virtMinus1 + j] = prob[j+1];
                 state.set( 4 + 2 * virtMinus1 + j );
             }
           }
           else if (situation == 7) { //C.G.
-            for (size_t j =0; j < virtualPopulationSize_; ++j) {
+            for (size_t j =0; j < virtMinus1; ++j) {
                 weights_[4 + 3 * virtMinus1 + j] = prob[j+1];
                 state.set( 4 + 3 * virtMinus1 + j );
             }
           }
           else if (situation == 8) { //C.T.
-            for (size_t j =0; j < virtualPopulationSize_; ++j) {
+            for (size_t j =0; j < virtMinus1; ++j) {
                 weights_[4 + 4 * virtMinus1 + j] = prob[j+1];
                 state.set( 4 + 4 * virtMinus1 + j );
             }
@@ -458,129 +479,7 @@ void PomoState::setState(const std::string &symbol)
         {
             throw RbException( "Pomo string state not correct. We found "+ symbol +", but only 2 states can be non-0." );
         }
-        //
-        // if ( vect[0] == vect[1] == vect[2] == vect[3] )
-        // {
-        //   index = 0; // We say we have a gap
-        // }
-        // else if ( vect[0] > vect[1] == vect[2] == vect[3] == 0 ) {
-        //   index = 1;
-        // }
-        // else if ( vect[1] > vect[0] == vect[2] == vect[3] == 0 ) {
-        //   index = 2;
-        // }
-        // else if ( vect[2] > vect[1] == vect[0] == vect[3] == 0 ) {
-        //   index = 3;
-        // }
-        // else if ( vect[3] > vect[1] == vect[2] == vect[0] == 0 ) {
-        //   index = 4;
-        // }
-        // else {
-        //
-        // }
-    }
-    //
-    // else if (symbol.length()==1)
-    // {
-    //     if (symbol == "-")
-    //     {
-    //         index = 0;
-    //     }
-    //     else if (symbol ==  "A")
-    //     {
-    //         index = 1;
-    //     }
-    //     else if (symbol ==  "C")
-    //     {
-    //         index = 2;
-    //     }
-    //     else if (symbol ==  "G")
-    //     {
-    //         index = 3;
-    //     }
-    //     else if (symbol ==  "T")
-    //     {
-    //         index = 4;
-    //     }
-    //     else
-    //     {
-    //         index =  0;
-    //     }
-    // }
-    // else if (symbol.length()!=6 )
-    // {
-    //     throw RbException( "Pomo string state not correctly formatted. We found "+ symbol +", but the preferred format is that of counts, e.g. 0,1,4,0 meaning 0 A, 1 C, 4 G, 0 T were sampled at that position." );
-    // }
-    // else
-    // {
-    //     std::string firstChar = symbol.substr(0,1);
-    //     int firstFreq = atoi ( symbol.substr(1,2).c_str() );
-    //     std::string secondChar = symbol.substr(3,1);
-    //     int secondFreq = atoi ( symbol.substr(4,2).c_str() );
-    //     if ( firstFreq + secondFreq > virtualPopulationSize_ )
-    //     {
-    //         throw RbException( "Pomo string state with frequencies that do not add up to the current virtual population size." );
-    //     }
-    //     if ( firstChar >= secondChar ) {
-    //         throw RbException( "Pomo string state with first state greater or equal to second state." );
-    //     }
-    //
-    //     int stepSize = 100 / virtualPopulationSize_;
-    //     int numStep = firstFreq / stepSize -1;
-    //
-    //     if (firstChar ==  "A")
-    //     {
-    //         if (secondChar ==  "C")
-    //         {
-    //             index = 5 + numStep;
-    //         }
-    //         else if (secondChar ==  "G")
-    //         {
-    //             index = 5 + virtualPopulationSize_ - 1 + numStep;
-    //         }
-    //         else if (secondChar ==  "T")
-    //         {
-    //             index = 5 + 2*(virtualPopulationSize_ - 1) + numStep;
-    //         }
-    //         else
-    //         {
-    //             throw RbException( "Pomo string state with incorrect second state: should be A, C, G or T." );
-    //         }
-    //     }
-    //     if (firstChar == "C")
-    //     {
-    //         if (secondChar ==  "G")
-    //         {
-    //             index = 5 + 3*(virtualPopulationSize_ - 1) + numStep;
-    //         }
-    //         else if (secondChar ==  "T")
-    //         {
-    //             index = 5 + 4*(virtualPopulationSize_ - 1) + numStep;
-    //         }
-    //         else
-    //         {
-    //             throw RbException( "Pomo string state with incorrect second state: should be A, C, G or T." );
-    //         }
-    //     }
-    //     if (firstChar == "G")
-    //     {
-    //         if (secondChar ==  "T")
-    //         {
-    //             index = 5 + 5*(virtualPopulationSize_ - 1) + numStep;
-    //         }
-    //         else
-    //         {
-    //             throw RbException( "Pomo string state with incorrect second state: should be A, C, G or T." );
-    //         }
-    //
-    //     }
-    //     else
-    //     {
-    //         throw RbException( "Pomo string state with incorrect first state: should be A, C, G or T." );
-    //     }
-    //
-    // }
-
+      }
 
     std::cout << "in PomoState::setState END index: " << index <<std::endl;
 
