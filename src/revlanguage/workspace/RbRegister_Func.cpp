@@ -105,6 +105,7 @@
 #include "Func_tmrca.h"
 #include "Func_treeAssembly.h"
 #include "Func_treePairwiseDistances.h"
+#include "Func_treePairwiseNodalDistances.h"
 #include "Func_treeScale.h"
 
 
@@ -367,6 +368,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_symmetricDifference()                             );
         addFunction( new Func_tmrca()                                           );
         addFunction( new Func_treePairwiseDistances()                           );
+        addFunction( new Func_treePairwiseNodalDistances()                      );
         addFunction( new Func_treeAssembly()                                    );
         addFunction( new Func_treeScale()                                       );
 
