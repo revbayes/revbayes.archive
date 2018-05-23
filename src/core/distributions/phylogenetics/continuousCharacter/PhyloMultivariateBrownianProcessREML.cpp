@@ -1,8 +1,10 @@
 #include "DistributionMultivariateNormal.h"
+#include "DistributionNormal.h"
 #include "PhyloMultivariateBrownianProcessREML.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "RbMathMatrix.h"
 #include "TopologyNode.h"
 #include "EigenSystem.h"
 
@@ -24,7 +26,9 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     rate_matrix( c ),
     active_matrix(0),
     precision_matrices( std::vector<MatrixReal>( 2, MatrixReal(num_sites) ) ),
-    method(mt)
+    method(mt),
+    rate_matrix_log_det( std::vector<double>(2) ),
+    inverse_upper_factor( std::vector<MatrixReal>( 2, MatrixReal(num_sites) ) )
 {
     
     // add the parameters to our set
@@ -40,10 +44,25 @@ PhyloMultivariateBrownianProcessREML::PhyloMultivariateBrownianProcessREML(const
     precision_matrices[1].setCholesky(true);
     
     // transform the data if necessary
-//    if (method == "transform") {
-//        transformCharacters();
-//    }
-    
+    if (method == "transform")
+    {
+        
+        MatrixReal lower_factor = rate_matrix->getValue().getLowerCholeskyFactor();
+        lower_factor.setCholesky(true);
+        size_t n = lower_factor.getDim();
+        
+        MatrixReal upper_factor = lower_factor.getTranspose();
+        MatrixReal inv_upper_factor = MatrixReal(n, n, 0.0);
+        RbMath::matrixInverse(upper_factor, inv_upper_factor);
+        
+        inverse_upper_factor[0] = inv_upper_factor;
+        inverse_upper_factor[1] = inv_upper_factor;
+        
+        rate_matrix_log_det[0]  = rate_matrix->getValue().getLogDet();
+        rate_matrix_log_det[1]  = rate_matrix_log_det[0];
+        
+    }
+
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
 
@@ -124,34 +143,28 @@ void PhyloMultivariateBrownianProcessREML::transformCharacters( void )
     }
     
     // get the lower cholesky factor
-    MatrixReal lower_factor = rate_matrix->getValue().getLowerCholeskyFactor();
-    lower_factor.setCholesky(true);
-    MatrixReal inverse_upper_factor = lower_factor.computeInverse().getTranspose();
+    MatrixReal &this_inverse_upper_factor = inverse_upper_factor[active_matrix];
     
     // get the nodes
     std::vector<TopologyNode*> nodes = this->tau->getValue().getNodes();
+    
     
     for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         if ( (*it)->isTip() )
         {
             
-            ContinuousTaxonData& taxon     = this->value->getTaxonData( (*it)->getName() );
-            std::vector<double> taxon_data = taxon.getCharacters();
-//            taxon_data                      = taxon_data * inverse_upper_factor;
-            std::vector<double> transformed_taxon_data = taxon_data * inverse_upper_factor;
-            
-//            contrasts[active_likelihood[(*it)->getIndex()]][(*it)->getIndex()] = transformed_taxon_data;
-//            contrasts[0][(*it)->getIndex()] = transformed_taxon_data;
-//            contrasts[1][(*it)->getIndex()] = transformed_taxon_data;
+            size_t node_index = (*it)->getIndex();
+            ContinuousTaxonData& taxon                  = this->value->getTaxonData( (*it)->getName() );
+            std::vector<double>  taxon_data             = taxon.getCharacters();
+            std::vector<double>  transformed_taxon_data = taxon_data * this_inverse_upper_factor;
+            contrasts[this->active_likelihood[node_index]][node_index] = transformed_taxon_data;
             
         }
     }
-    
-    double dummy = 0.0;
 
-    
-    
+//    double dummy;
+
     
 }
 
@@ -282,8 +295,44 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
                 mu_node[i] = (mu_left[i] * t_right + mu_right[i] * t_left) / (t_left + t_right);
             }
             
-            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfPrecision(means, precision_matrices[active_matrix], these_contrasts, branch_length);
-            p_node = lnl_contrast + p_left + p_right;
+            if ( method == "transform" ) {
+                
+                double lgdet = rate_matrix_log_det[active_matrix];
+                double stdev = sqrt(t_left + t_right);
+                p_node       = p_left + p_right;
+                
+                // calculate the univariate standard normal
+                for (int i=0; i<this->num_sites; i++)
+                {
+
+                    // get the site specific rate of evolution
+//                    double standDev = this->computeSiteRate(i) * stdev;
+                    
+                    // compute the contrasts for this site and node
+                    double contrast = mu_left[i] - mu_right[i];
+
+                    // compute the probability for the contrasts at this node
+                    double lnl_node = RbStatistics::Normal::lnPdf(0, 1, contrast / stdev);
+//
+//                    // sum up the probabilities of the contrasts
+                    p_node += lnl_node;
+                    
+                } // end for-loop over all sites
+                
+                // add in the logdet from the transformation
+                p_node -= 0.5 * lgdet + num_sites * log( stdev );
+            
+                std::cout << p_node << " -- " << lgdet << " -- " << 0.5 * lgdet + num_sites * log( stdev ) << " -- " << num_children << std::endl;
+                
+            } else {
+                
+                double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfPrecision(means, precision_matrices[active_matrix], these_contrasts, branch_length);
+                p_node = lnl_contrast + p_left + p_right;
+                
+                std::cout << p_node << std::endl;
+                
+            }
+            
             
         } // end for-loop over all children
         
@@ -390,11 +439,6 @@ void PhyloMultivariateBrownianProcessREML::recursivelyFlagNodeDirty( const Topol
 void PhyloMultivariateBrownianProcessREML::resetValue( void )
 {
     
-//    // re-transform data if necessary
-//    if (method == "transform") {
-//        transformCharacters();
-//    }
-
     // check if the vectors need to be resized
     partial_likelihoods = std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) );
     contrasts = std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) );
@@ -449,22 +493,40 @@ void PhyloMultivariateBrownianProcessREML::resetValue( void )
         changed_nodes[index] = true;
     }
     
+    // transform the characters for the contrasts
+    if (method == "transform")
+    {
+        
+        MatrixReal lower_factor = rate_matrix->getValue().getLowerCholeskyFactor();
+        lower_factor.setCholesky(true);
+        size_t n = lower_factor.getDim();
+        
+        MatrixReal upper_factor = lower_factor.getTranspose();
+        MatrixReal inv_upper_factor = MatrixReal(n, n, 0.0);
+        RbMath::matrixInverse(upper_factor, inv_upper_factor);
+        
+//        MatrixReal lower_factor = rate_matrix->getValue().getLowerCholeskyFactor();
+//        lower_factor.setCholesky(true);
+//        MatrixReal inv_upper_factor = lower_factor.getTranspose().computeInverse();
+        
+        inverse_upper_factor[0] = inv_upper_factor;
+        inverse_upper_factor[1] = inv_upper_factor;
+        
+        rate_matrix_log_det[0]  = rate_matrix->getValue().getLogDet();
+        rate_matrix_log_det[1]  = rate_matrix_log_det[0];
+        
+        transformCharacters();
+        contrasts[!active_matrix]           = contrasts[active_matrix];
+        rate_matrix_log_det[!active_matrix] = rate_matrix_log_det[active_matrix];
+        
+    }
+
+    
 }
 
 
 void PhyloMultivariateBrownianProcessREML::restoreSpecialization( DagNode* affecter )
 {
-    
-    // reset the precision matrix if necessary
-    if ( affecter == rate_matrix )
-    {
-        active_matrix = (active_matrix == 0 ? 1 : 0);
-        
-        if (method == "transform") {
-            // TODO: re-transform data
-        }
-
-    }
     
     // reset the flags
     for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
@@ -486,6 +548,14 @@ void PhyloMultivariateBrownianProcessREML::restoreSpecialization( DagNode* affec
         changed_nodes[index] = false;
     }
     
+    // reset the precision matrix if necessary
+    if ( affecter == rate_matrix )
+    {
+        
+        active_matrix = (active_matrix == 0 ? 1 : 0);
+        
+    }
+
 }
 
 
@@ -580,16 +650,41 @@ void PhyloMultivariateBrownianProcessREML::touchSpecialization( DagNode* affecte
     }
     else if ( affecter == rate_matrix )
     {
+        
         // compute the inverse variance-covariance matrix (the precision matrix)
         active_matrix = (active_matrix == 0 ? 1 : 0);
-        precision_matrices[active_matrix] = rate_matrix->getValue().computeInverse();
-        precision_matrices[active_matrix].setCholesky(true);
         
         // we need to recompute the likelihood
         touchAll = true;
         
-        if (method == "transform") {
-            transformCharacters();
+//        precision_matrices[active_matrix] = rate_matrix->getValue().computeInverse();
+//        precision_matrices[active_matrix].setCholesky(true);
+
+        if (method == "transform")
+        {
+
+            MatrixReal lower_factor = rate_matrix->getValue().getLowerCholeskyFactor();
+            lower_factor.setCholesky(true);
+            size_t n = lower_factor.getDim();
+            
+            MatrixReal upper_factor = lower_factor.getTranspose();
+            MatrixReal inv_upper_factor = MatrixReal(n, n, 0.0);
+            RbMath::matrixInverse(upper_factor, inv_upper_factor);
+
+//            rate_matrix->getValue().getCholeskyDecomposition();
+//            MatrixReal lower_factor = rate_matrix->getValue().getLowerCholeskyFactor();
+//            lower_factor.setCholesky(true);
+//            MatrixReal inv_upper_factor = lower_factor.getTranspose().computeInverse();
+            
+            inverse_upper_factor[active_matrix] = inv_upper_factor;
+            rate_matrix_log_det[active_matrix]  = rate_matrix->getValue().getLogDet();
+
+            
+        } else {
+            
+            precision_matrices[active_matrix] = rate_matrix->getValue().computeInverse();
+            precision_matrices[active_matrix].setCholesky(true);
+            
         }
         
     }
@@ -615,6 +710,11 @@ void PhyloMultivariateBrownianProcessREML::touchSpecialization( DagNode* affecte
             }
         }
         
+        if ( method == "transform" )
+        {
+            transformCharacters();
+        }
+        
     }
     
 }
@@ -632,15 +732,55 @@ void PhyloMultivariateBrownianProcessREML::swapParameterInternal(const DagNode *
     }
     if (oldP == this->rate_matrix)
     {
+        
         rate_matrix = static_cast<const TypedDagNode< MatrixReal >* >( newP );
         active_matrix = 0;
         precision_matrices[0] = rate_matrix->getValue().computeInverse();
         precision_matrices[0].setCholesky(true);
         precision_matrices[1] = rate_matrix->getValue().computeInverse();
         precision_matrices[1].setCholesky(true);
-        
-        if (method == "transform") {
+
+        if (method == "transform")
+        {
+            
+            
+//            MatrixReal inv_upper_factor = upper_factor.computeInverse();
+
+//            rate_matrix->getValue().getCholeskyDecomposition();
+//            MatrixReal lower_factor = rate_matrix->getValue().getLowerCholeskyFactor();
+//            lower_factor.setCholesky(true);
+//            MatrixReal inv_upper_factor = lower_factor.getTranspose().computeInverse();
+//            
+//            inverse_upper_factor[0] = inv_upper_factor;
+//            inverse_upper_factor[1] = inv_upper_factor;
+//            
+//            rate_matrix_log_det[0]  = rate_matrix->getValue().getLogDet();
+//            rate_matrix_log_det[1]  = rate_matrix_log_det[0];
+//
+//            transformCharacters();
+         
+            MatrixReal lower_factor = rate_matrix->getValue().getLowerCholeskyFactor();
+            lower_factor.setCholesky(true);
+            size_t n = lower_factor.getDim();
+            
+            MatrixReal upper_factor = lower_factor.getTranspose();
+            MatrixReal inv_upper_factor = MatrixReal(n, n, 0.0);
+            RbMath::matrixInverse(upper_factor, inv_upper_factor);
+
+//            MatrixReal lower_factor = rate_matrix->getValue().getLowerCholeskyFactor();
+//            lower_factor.setCholesky(true);
+//            MatrixReal inv_upper_factor = lower_factor.getTranspose().computeInverse();
+            
+            inverse_upper_factor[0] = inv_upper_factor;
+            inverse_upper_factor[1] = inv_upper_factor;
+            
+            rate_matrix_log_det[0]  = rate_matrix->getValue().getLogDet();
+            rate_matrix_log_det[1]  = rate_matrix_log_det[0];
+            
             transformCharacters();
+            contrasts[!active_matrix]           = contrasts[active_matrix];
+            rate_matrix_log_det[!active_matrix] = rate_matrix_log_det[active_matrix];
+
         }
 
     }

@@ -69,7 +69,8 @@ namespace RevBayesCore {
         std::vector<MatrixReal>                                             precision_matrices;
         
         std::string                                                         method;
-        std::vector<double>                                                 rate_matrix_det;
+        std::vector<double>                                                 rate_matrix_log_det;
+        std::vector<MatrixReal>                                             inverse_upper_factor;
         
     };
     
