@@ -5,7 +5,6 @@
 #include "DeterministicNode.h"
 #include "DistributionFunctionPdf.h"
 #include "Probability.h"
-#include "ProbabilityDensityFunction.h"
 #include "Real.h"
 #include "RevObject.h"
 #include "TypeSpec.h"
