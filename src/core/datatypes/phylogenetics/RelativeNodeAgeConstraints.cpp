@@ -1,10 +1,3 @@
-//
-//  RelativeNodeAgeConstraints.cpp
-//
-//  Created by Bastien Boussau on 4/8/15.
-//  Copyright (c) 2015 Bastien Boussau. All rights reserved.
-//
-
 #include "RelativeNodeAgeConstraints.h"
 #include "RelativeNodeAgeConstraintsReader.h"
 #include <sstream>

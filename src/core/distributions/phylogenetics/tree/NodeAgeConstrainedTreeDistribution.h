@@ -1,5 +1,5 @@
-#ifndef NodeOrderConstrainedTreeDistribution_H
-#define NodeOrderConstrainedTreeDistribution_H
+#ifndef NodeAgeConstrainedTreeDistribution_H
+#define NodeAgeConstrainedTreeDistribution_H
 
 #include "Tree.h"
 #include "TypedDagNode.h"
@@ -7,27 +7,27 @@
 #include "RelativeNodeAgeConstraints.h"
 
 namespace RevBayesCore {
-        
+    
     /**
      * @file
-     * This file contains the declaration of the random variable class for tree topology priors with node order constraints.
+     * This file contains the declaration of the random variable class for tree topology priors with node Age constraints.
      *
-     * @brief Declaration of the tree topology priors with node order constraints class.
+     * @brief Declaration of the tree topology priors with node Age constraints class.
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Bastien Boussau)
      * @since 2015-12-03, version 1.0
      *
      */
-    class NodeOrderConstrainedTreeDistribution : public TypedDistribution<Tree> {
+    class NodeAgeConstrainedTreeDistribution : public TypedDistribution<Tree> {
         
     public:
-        NodeOrderConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const RelativeNodeAgeConstraints &c);
-        NodeOrderConstrainedTreeDistribution(const NodeOrderConstrainedTreeDistribution &d);
+        NodeAgeConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const std::vector< RbVector<Clade> > &c);
+        NodeAgeConstrainedTreeDistribution(const NodeAgeConstrainedTreeDistribution &d);
         
-        virtual ~NodeOrderConstrainedTreeDistribution();
+        virtual ~NodeAgeConstrainedTreeDistribution();
         // pure virtual member functions
-        virtual NodeOrderConstrainedTreeDistribution*           clone(void) const;                                                                              //!< Create an independent clone
+        virtual NodeAgeConstrainedTreeDistribution*             clone(void) const;                                                                              //!< Create an independent clone
         
         
         // public member functions you may want to override
@@ -38,8 +38,7 @@ namespace RevBayesCore {
         
     protected:
         
-        //        // virtual methods that may be overwritten, but then the derived class should call this methods
-//        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                      //!< get affected nodes
+        // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                            keepSpecialization(DagNode* affecter);
         virtual void                                            restoreSpecialization(DagNode *restorer);
         virtual void                                            touchSpecialization(DagNode *toucher, bool touchAll);
@@ -50,19 +49,13 @@ namespace RevBayesCore {
         
         // helper functions
         bool                                                    matchesConstraints(void);
-        void                                                    updateMapOfNodeAges();
-        void                                                    updateSetOfConstrainedNodes();
-
-        // members
-        TypedDistribution<Tree>*   base_distribution;                                                           //!< Tree distribution.
-        RelativeNodeAgeConstraints                              constraints;                                        //!< Node age constraints.
-        std::set< std::pair < std::string, std::string > >      constrained_nodes;
-        std::map<std::pair<std::string, std::string>, double >  node_ages;
-
+//        void                                                    updateMapOfNodeAges();
+//        void                                                    updateSetOfConstrainedNodes();
         
-        // just for testing
-        bool                                                    owns_tree;
-
+        // members
+        TypedDistribution<Tree>*                                base_distribution;                                                           //!< Tree distribution.
+        std::vector< RbVector<Clade> >                          constraints;                                        //!< Node age constraints.
+        
     };
     
 }
