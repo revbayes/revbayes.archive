@@ -2,6 +2,7 @@
 #define ContinuousCharacterData_H
 
 #include "ContinuousTaxonData.h"
+#include "DistanceMatrix.h"
 #include "HomologousCharacterData.h"
 #include "MemberObject.h"
 #include "Printable.h"
@@ -58,11 +59,12 @@ namespace RevBayesCore {
         double                                          getMaxSpeciesDifference(size_t index) const;                                //!< Get the maximum difference between two observations
         double                                          getMeanDifference(size_t index) const;                                      //!< Get the mean of the differences between two observations
         double                                          getMeanSpeciesDifference(size_t index) const;                               //!< Get the mean of the differences between two observations
-        double                                          getMeanValue(size_t index) const;                                      //!< Get the mean of the differences between two observations
+        double                                          getMeanValue(size_t index) const;                                           //!< Get the mean of the differences between two observations
         double                                          getMinDifference(size_t index) const;                                       //!< Get the minimum difference between two observations
         double                                          getMinSpeciesDifference(size_t index) const;                                //!< Get the minimum difference between two observations
         size_t                                          getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                          getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
+        DistanceMatrix                                  getPairwiseSpeciesDifference( size_t char_index ) const;                    //!< Get the pairwise species distance matrix
         ContinuousTaxonData&                            getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const ContinuousTaxonData&                      getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         ContinuousTaxonData&                            getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
