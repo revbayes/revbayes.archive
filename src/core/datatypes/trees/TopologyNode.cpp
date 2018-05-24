@@ -1051,6 +1051,16 @@ const std::string& TopologyNode::getName( void ) const
 /**
  * Is the argument clade contained in the clade descending from this node?
  */
+TopologyNode* TopologyNode::getMrca(const Clade &c)
+{
+    
+    return getNode( c, false );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ */
 const TopologyNode* TopologyNode::getMrca(const Clade &c) const
 {
     

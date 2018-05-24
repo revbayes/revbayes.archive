@@ -76,6 +76,7 @@ namespace RevBayesCore {
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Boolean &rv) const;    //!< Map the member methods to internal function calls
         std::vector<Taxon>                                  getFossilTaxa() const;                                                                              //!< Get all the taxa in the tree
         const TopologyNode&                                 getMrca(const TopologyNode &n) const;
+        TopologyNode&                                       getMrca(const Clade &c);
         const TopologyNode&                                 getMrca(const Clade &c) const;
         const TopologyNode&                                 getMrca(const Clade &c, bool strict) const;
         std::string                                         getNewickRepresentation() const;                                                                    //!< Get the newick representation of this Tree

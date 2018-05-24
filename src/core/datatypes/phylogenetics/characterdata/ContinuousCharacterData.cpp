@@ -705,6 +705,92 @@ size_t ContinuousCharacterData::getNumberOfIncludedCharacters(void) const
     return 0;
 }
 
+/**
+ * Get the mean difference between any two species mean values.
+ *
+ * \return      The mean difference.
+ */
+DistanceMatrix ContinuousCharacterData::getPairwiseSpeciesDifference( size_t char_index ) const
+{
+    
+    std::map<std::string,size_t> species_to_index;
+    std::vector<std::string> species_names;
+    size_t num_species = 0;
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        const std::string &name = t.getSpeciesName();
+        if ( species_to_index.find( name ) == species_to_index.end() )
+        {
+            species_to_index.insert( std::pair<std::string, size_t>(name,num_species++) );
+            species_names.push_back(name);
+        }
+        
+    }
+    
+    // create some vectors for the number of samples per species and the species mean
+    std::vector<double> samples_per_species = std::vector<double>(num_species, 0.0);
+    std::vector<double> species_mean = std::vector<double>(num_species, 0.0);
+    
+    // now populate the vectors by iterating over all samples
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        const std::string &name = t.getSpeciesName();
+        size_t index = species_to_index[ name ];
+        
+        ++samples_per_species[index];
+        species_mean[index] += getTaxonData( t.getName() ).getCharacter( char_index );
+        
+    }
+    
+    DistanceMatrix diffs = DistanceMatrix(num_species);
+    
+    // we need to normalize the values to actually get the species means
+    for (size_t i=0; i<num_species; ++i)
+    {
+        Taxon t = Taxon( species_names[i] );
+        diffs.setTaxon( t, i );
+        
+        // sanity check that we had a least one sample for this species
+        if ( samples_per_species[i] > 0 )
+        {
+            species_mean[i] /= samples_per_species[i];
+        }
+        
+    }
+    
+    // now compute the pairwise difference
+    for (size_t i=0; i<(num_species-1); ++i)
+    {
+        
+        // sanity check that we had a least one sample for this species
+        if ( samples_per_species[i] > 0 )
+        {
+            
+            // now loop over the second species that we compare it to
+            for (size_t j=i+1; j<num_species; ++j)
+            {
+                
+                if ( samples_per_species[j] > 0 )
+                {
+                    diffs[i][j] = fabs(species_mean[i] - species_mean[j]);
+                    diffs[j][i] = fabs(species_mean[i] - species_mean[j]);
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    return diffs;
+    
+}
+
+
 
 /**
  * Get the taxon data object with index tn.

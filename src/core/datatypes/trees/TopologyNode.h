@@ -100,6 +100,7 @@ namespace RevBayesCore {
         void                                        getIndicesOfNodesInSubtree(bool countTips, std::vector<size_t>* indices) const;                                                               //!< Get index of node
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
         const std::string&                          getName() const;                                                                    //!< Get name of node
+        TopologyNode*                               getMrca(const Clade &c);
         const TopologyNode*                         getMrca(const Clade &c) const;
         const TopologyNode*                         getMrca(const Clade &c, bool strict) const;
         const TopologyNode*                         getMrca(const TopologyNode &n) const;
