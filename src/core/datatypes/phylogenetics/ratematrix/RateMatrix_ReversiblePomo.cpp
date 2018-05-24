@@ -326,7 +326,10 @@ void RateMatrix_ReversiblePomo::buildRateMatrix(void)
 
       //  computestateFreq();
 
+      std::vector< double > stationaryFrequencies = getStationaryFrequencies();
+
         // Code modified from IQ-tree
+        double tot_sum = 0.0;
         // Loop over rows (transition starting from state1).
         for (state1 = 0; state1 < num_states; state1++) {
             double row_sum = 0.0;
@@ -337,9 +340,15 @@ void RateMatrix_ReversiblePomo::buildRateMatrix(void)
                         ((*the_rate_matrix)[state1][state2] =
                          computeProbBoundaryMutation(state1, state2));
                 }
+            tot_sum += stationaryFrequencies[state1]*row_sum;
             (*the_rate_matrix)[state1][state1] = -(row_sum);
         }
-
+        // Normalize rate matrix such that one event happens per unit time.
+           for (state1 = 0; state1 < num_states; state1++) {
+               for (state2 = 0; state2 < num_states; state2++) {
+                   (*the_rate_matrix)[state1][state2] /= tot_sum;
+               }
+           }
 }
 
 
@@ -351,6 +360,8 @@ void RateMatrix_ReversiblePomo::calculateTransitionProbabilities(double startAge
       // Mayrose et al. 2010 also used this method for chromosome evolution (named the squaring and scaling method in Moler and Van Loan 2003).
   double t = rate * (startAge - endAge);
   exponentiateMatrixByScalingAndSquaring(t, P );
+
+  std::cout << "Transition probability matrix on branch of length "<<t<< " : " << P << std::endl;
 
   //
   //  // std::cout << "In calculatetransitionProbabilities: "<< t <<std::endl;
