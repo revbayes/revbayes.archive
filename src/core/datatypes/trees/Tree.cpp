@@ -355,6 +355,12 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     {
         rv = RevBayesCore::TreeUtilities::getGammaStatistic( *this );
     }
+    else if ( n == "meanInverseES" )
+    {
+        const TypedDagNode< AbstractHomologousDiscreteCharacterData >* c = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( args[0] );
+        size_t state_index = (size_t)static_cast<const TypedDagNode<int> *>( args[1] )->getValue();
+        rv = RevBayesCore::TreeUtilities::getMeanInverseES( *this, c->getValue(), state_index );
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");
@@ -411,6 +417,11 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     else if (n == "ntips")
     {
         rv = num_tips;
+    }
+    else if ( n == "fitchScore" )
+    {
+        const TypedDagNode< AbstractHomologousDiscreteCharacterData >* c = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( args[0] );
+        rv = RevBayesCore::TreeUtilities::getFitchScore( *this, c->getValue() );
     }
     else
     {
@@ -909,7 +920,6 @@ TopologyNode& Tree::getTipNodeWithName( const std::string &n )
 }
 
 
-
 /**
  * Get the tip node with the given name.
  * The name should correspond to the taxon name, not the species name.
@@ -922,6 +932,7 @@ const TopologyNode& Tree::getTipNodeWithName( const std::string &n ) const
 
     return *nodes[ index ];
 }
+
 
 
 /**

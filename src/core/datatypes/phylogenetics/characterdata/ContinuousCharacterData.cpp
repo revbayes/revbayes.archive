@@ -1063,6 +1063,138 @@ double ContinuousCharacterData::getVarSpeciesDifference( size_t char_index ) con
 }
 
 
+
+/**
+ * Get the mean between all differences between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getVarValue( size_t index ) const
+{
+    
+    double mean = getMeanValue(index);
+    
+    double var = 0.0;
+    double n_samples = 0.0;
+    for (size_t i=0; i<(taxa.size()-1); ++i )
+    {
+        
+        if ( isTaxonExcluded(i) == false )
+        {
+            
+            const ContinuousTaxonData& taxon_i = getTaxonData( i );
+            double a = taxon_i.getCharacter( index );
+            
+            var += ((a-mean)*(a-mean));
+            ++n_samples;
+            
+        }
+        
+    }
+    
+    var /= (n_samples-1);
+    
+    return var;
+}
+
+
+/**
+ * Get the mean between all differences between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getSpeciesMean(size_t species, size_t site) const
+{
+    
+    std::map<std::string,size_t> species_to_index;
+    size_t num_species = 0;
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        if ( species_to_index.find(t.getSpeciesName()) == species_to_index.end() )
+        {
+            species_to_index.insert( std::pair<std::string, size_t>(t.getSpeciesName(),num_species++) );
+        }
+        
+    }
+    
+    // create some vectors for the number of samples per species and the species mean
+    double samples_per_species  = 0.0;
+    double species_mean         = 0.0;
+    
+    // now populate the vectors by iterating over all samples
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        const std::string &name = t.getSpeciesName();
+        size_t index = species_to_index[ name ];
+        
+        if ( index == species )
+        {
+            ++samples_per_species;
+            species_mean += getTaxonData( t.getName() ).getCharacter( site );
+        }
+        
+    }
+    
+    
+    return species_mean / samples_per_species;
+}
+
+
+/**
+ * Get the mean between all differences between two observed values.
+ *
+ * \return      The max difference.
+ */
+double ContinuousCharacterData::getWithinSpeciesVariance(size_t species, size_t site) const
+{
+    
+    double mean = getSpeciesMean(species, site);
+    
+    std::map<std::string,size_t> species_to_index;
+    size_t num_species = 0;
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        if ( species_to_index.find(t.getSpeciesName()) == species_to_index.end() )
+        {
+            species_to_index.insert( std::pair<std::string, size_t>(t.getSpeciesName(),num_species++) );
+        }
+        
+    }
+    
+    // create some vectors for the number of samples per species and the species mean
+    double samples_per_species  = 0.0;
+    double species_var          = 0.0;
+    
+    // now populate the vectors by iterating over all samples
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        
+        const Taxon &t = taxa[i];
+        const std::string &name = t.getSpeciesName();
+        size_t index = species_to_index[ name ];
+        
+        if ( index == species )
+        {
+            ++samples_per_species;
+            double value = getTaxonData( t.getName() ).getCharacter( site );
+            species_var += (mean-value)*(mean-value);
+        }
+        
+    }
+
+    
+    species_var /= (samples_per_species-1);
+    
+    return species_var;
+}
+
+
 /**
  * Include a character.
  * Since we didn't actually deleted the character but marked it for exclusion

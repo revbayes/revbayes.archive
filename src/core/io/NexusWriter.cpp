@@ -68,8 +68,8 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
         for (size_t i = 0; i < labels.size(); ++i)
         {
             out_stream << labels[i];
-            if (i < (labels.size()-1))
-                out_stream<< " ";
+//            if (i < (labels.size()-1))
+//                out_stream<< " ";
             
         }
         out_stream << "\" ";

@@ -24,7 +24,7 @@ DelimitedCharacterDataWriter::DelimitedCharacterDataWriter( void )
  * \param[in]   data        The character data object which is written out.
  * \param[in]   del         The text character to delimit columns.
  */
-void DelimitedCharacterDataWriter::writeData(std::string const &fileName, const AbstractHomologousDiscreteCharacterData &data, char del)
+void DelimitedCharacterDataWriter::writeData(std::string const &fileName, const HomologousCharacterData &data, char del)
 {
     
     // the filestream object
@@ -43,7 +43,7 @@ void DelimitedCharacterDataWriter::writeData(std::string const &fileName, const 
         if ( data.isTaxonExcluded( it->getName() ) == false )
         {
             
-            const AbstractDiscreteTaxonData &taxon = data.getTaxonData( it->getName() );
+            const AbstractTaxonData &taxon = data.getTaxonData( it->getName() );
             
             outStream << it->getName() << del;
             
@@ -52,9 +52,9 @@ void DelimitedCharacterDataWriter::writeData(std::string const &fileName, const 
             {
                 if ( !data.isCharacterExcluded( i ) )
                 {
-                    const CharacterState &c = taxon.getCharacter( i );
-                    outStream << c.getStringValue();
+                    outStream << taxon.getStringRepresentation( i );
                 }
+                
             }
             outStream << std::endl;
         }

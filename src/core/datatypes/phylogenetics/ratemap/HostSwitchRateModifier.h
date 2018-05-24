@@ -1,13 +1,13 @@
 //
-//  PhylogeneticDistanceRateModifier.h
+//  HostSwitchRateModifier.h
 //  revbayes-branch-proj
 //
 //  Created by Michael Landis on 2/24/17.
 //  Copyright © 2017 Michael Landis. All rights reserved.
 //
 
-#ifndef PhylogeneticDistanceRateModifier_h
-#define PhylogeneticDistanceRateModifier_h
+#ifndef HostSwitchRateModifier_h
+#define HostSwitchRateModifier_h
 
 
 #include "CharacterHistoryRateModifier.h"
@@ -24,36 +24,37 @@ namespace RevBayesCore
     
     
     
-    class PhylogeneticDistanceRateModifier : public CharacterHistoryRateModifier
+    class HostSwitchRateModifier : public CharacterHistoryRateModifier
     {
     public:
-        PhylogeneticDistanceRateModifier(size_t ns, size_t nc);
-        PhylogeneticDistanceRateModifier(const PhylogeneticDistanceRateModifier& g);
+        HostSwitchRateModifier(size_t ns, size_t nc);
+        HostSwitchRateModifier(const HostSwitchRateModifier& g);
         
         
-        PhylogeneticDistanceRateModifier&   assign(const Assignable &m);
+        HostSwitchRateModifier&   assign(const Assignable &m);
         double                              computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0);
         double                              computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age=0.0);
         double                              computeSiteRateMultiplier(const TopologyNode& node, unsigned currState, unsigned newState, unsigned charIdx=0, double age=0.0);
         
         void                                setTree(const Tree& t);
-        void                                setScale(const double& s);
+        void                                setScale(const std::vector<double>& s);
         
         void                                update(void);
-        PhylogeneticDistanceRateModifier*   clone(void) const;
+        HostSwitchRateModifier*   clone(void) const;
         
     protected:
         
         
     private:
+        DistanceMatrix                      distance;
         Tree                                tau;
-        double                              scale;
+        std::vector<double>                 scale;
         size_t                              num_branches;
         std::vector<std::vector<double> >   node_phylo_adjacencies;
         std::vector<std::vector<double> >   node_phylo_distances;
     };
     
-    std::ostream& operator<<(std::ostream& o, const PhylogeneticDistanceRateModifier& x);
+    std::ostream& operator<<(std::ostream& o, const HostSwitchRateModifier& x);
 }
 
-#endif /* PhylogeneticDistanceRateModifier_h */
+#endif /* HostSwitchRateModifier_h */

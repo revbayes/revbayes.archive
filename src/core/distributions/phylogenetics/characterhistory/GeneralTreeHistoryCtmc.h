@@ -828,8 +828,8 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
             childState.push_back(new CharacterEventDiscrete(i, s, 1.0));
         }
         
+        // set parent states on the root's tail
         bh->setParentCharacters(parentState);
-        bh->setChildCharacters(childState);
         
     }
     else

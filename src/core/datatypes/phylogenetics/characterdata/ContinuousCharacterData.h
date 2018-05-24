@@ -65,12 +65,15 @@ namespace RevBayesCore {
         size_t                                          getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                          getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
         DistanceMatrix                                  getPairwiseSpeciesDifference( size_t char_index ) const;                    //!< Get the pairwise species distance matrix
+        double                                          getSpeciesMean( size_t species, size_t site ) const;                        //!< Get the mean value of the species for column 'i'
         ContinuousTaxonData&                            getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const ContinuousTaxonData&                      getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         ContinuousTaxonData&                            getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
         const ContinuousTaxonData&                      getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
         double                                          getVarDifference(size_t index) const;                                       //!< Get the variance of the differences between two observations
         double                                          getVarSpeciesDifference(size_t index) const;                                //!< Get the variance of the differences between two observations
+        double                                          getVarValue( size_t index ) const;                                          //!< Get the variance of the taxon values for column 'i'
+        double                                          getWithinSpeciesVariance( size_t species, size_t site ) const;              //!< Get the variance within the species for column 'i'
         void                                            includeCharacter(size_t i);                                                 //!< Include character
         bool                                            isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                            isCharacterResolved(size_t txIdx, size_t chIdx) const;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")

@@ -87,6 +87,7 @@
 #include "Move_ElementScale.h"
 #include "Move_ElementSlide.h"
 #include "Move_GMRFHyperpriorGibbs.h"
+#include "Move_MultipleElementScale.h"
 #include "Move_ShrinkExpand.h"
 #include "Move_SingleElementScale.h"
 #include "Move_SingleElementSlide.h"
@@ -162,6 +163,7 @@
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_AddRemoveTip.h"
+#include "Move_BurstEvent.h"
 #include "Move_BranchLengthScale.h"
 #include "Move_CollapseExpandFossilBranch.h"
 #include "Move_IndependentTopology.h"
@@ -177,6 +179,7 @@
 #include "Move_NodeTimeScale.h"
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideUniformAgeConstrained.h"
+#include "Move_NodeTimeSlidePathTruncatedNormal.h"
 #include "Move_NodeTimeSlideBeta.h"
 #include "Move_RateAgeBetaShift.h"
 #include "Move_RootTimeScaleBactrian.h"
@@ -239,6 +242,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ElementSwapSimplex() );
 
         /* Moves on vectors */
+        addTypeWithConstructor( new Move_MultipleElementScale() );
         addTypeWithConstructor( new Move_HSRFHyperpriorsGibbs() );
         addTypeWithConstructor( new Move_HSRFUnevenGridHyperpriorsGibbs() );
         addTypeWithConstructor( new Move_SingleElementSlide() );
@@ -337,6 +341,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor( new Move_AddRemoveTip()                     );
+        addTypeWithConstructor( new Move_BurstEvent()                       );
         addTypeWithConstructor( new Move_BranchLengthScale()                );
         addTypeWithConstructor( new Move_CollapseExpandFossilBranch()       );
         addTypeWithConstructor( new Move_IndependentTopology()              );
@@ -349,6 +354,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_NNINonclock()                      );
         addTypeWithConstructor( new Move_NodeRateTimeSlideUniform()         );
         addTypeWithConstructor( new Move_NodeTimeScale()                    );
+        addTypeWithConstructor( new Move_NodeTimeSlidePathTruncatedNormal() );
         addTypeWithConstructor( new Move_NodeTimeSlideUniform()             );
         addTypeWithConstructor( new Move_NodeTimeSlideUniformAgeConstrained());
         addTypeWithConstructor( new Move_NodeTimeSlideBeta()                );

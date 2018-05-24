@@ -105,6 +105,7 @@
 #include "Func_tmrca.h"
 #include "Func_treeAssembly.h"
 #include "Func_treePairwiseDistances.h"
+#include "Func_treePairwiseNodalDistances.h"
 #include "Func_treeScale.h"
 
 
@@ -161,7 +162,7 @@
 #include "Func_generalRateGeneratorSequence.h"
 #include "Func_rangeEvolutionRateModifier.h"
 #include "Func_siteRateModifier.h"
-#include "Func_phylogeneticDistanceRateModifier.h"
+#include "Func_hostSwitchRateModifier.h"
 
 
 /* Cladogeneic state prob function */
@@ -325,7 +326,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_biogeo_de() );
         addFunction( new Func_distanceRateModifier() );
         addFunction( new Func_generalRateGeneratorSequence() );
-        addFunction( new Func_phylogeneticDistanceRateModifier() );
+        addFunction( new Func_hostSwitchRateModifier() );
         addFunction( new Func_rangeEvolutionRateModifier() );
         addFunction( new Func_siteRateModifier() );
 
@@ -367,6 +368,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_symmetricDifference()                             );
         addFunction( new Func_tmrca()                                           );
         addFunction( new Func_treePairwiseDistances()                           );
+        addFunction( new Func_treePairwiseNodalDistances()                      );
         addFunction( new Func_treeAssembly()                                    );
         addFunction( new Func_treeScale()                                       );
 
