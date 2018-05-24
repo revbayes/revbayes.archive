@@ -127,6 +127,7 @@
 #include "Dist_CoalescentSkyline.h"
 #include "Dist_conditionedBirthDeathShiftProcessContinuous.h"
 #include "Dist_ConstrainedTopology.h"
+#include "Dist_ConstrainedNodeAge.h"
 #include "Dist_ConstrainedNodeOrder.h"
 #include "Dist_WeightedConstrainedNodeOrder.h"
 #include "Dist_FBDP.h"
@@ -314,6 +315,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentInverseGammaPrior() );
         AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentUniformPrior() );
         
+        // constrained node age distribution
+        AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeAge() );
+
         // constrained node order distribution
         AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeOrder() );
 
