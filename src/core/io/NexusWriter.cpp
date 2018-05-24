@@ -41,7 +41,7 @@ void NexusWriter::openStream(bool reopen)
     f.createDirectoryForFile();
     
     // open the stream to the file
-    out_stream.open( file_name.c_str(), std::fstream::out );
+    out_stream.open( f.getFullFileName().c_str(), std::fstream::out );
     
     // write header line
     out_stream << "#NEXUS" << std::endl;
