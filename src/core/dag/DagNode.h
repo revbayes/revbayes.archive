@@ -2,6 +2,7 @@
 #define DagNode_H
 
 #include "DagNodeMap.h"
+#include "MemberObject.h"
 #include "Parallelizable.h"
 #include "RbOrderedSet.h"
 
@@ -17,7 +18,7 @@ namespace RevBayesCore {
     class Move;
     class AbstractTrace;
 
-    class DagNode : public Parallelizable {
+    class DagNode : public Parallelizable, public MemberObject<double> {
     
     public:
         
@@ -51,6 +52,7 @@ namespace RevBayesCore {
         void                                                        clearTouchedElementIndices(void);
         DagNode*                                                    cloneDownstreamDag(std::map<const DagNode*, DagNode*> &nodesMap) const;                     //!< Clone the DAG which is downstream to this node (all children)
         size_t                                                      decrementReferenceCount(void) const;                                                        //!< Decrement the reference count for reference counting in smart pointers
+        void                                                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const; //!< Map the member methods to internal function calls
         void                                                        getAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
         const std::vector<DagNode*>&                                getChildren(void) const;                                                                    //!< Get the set of children
         DagNodeTypes                                                getDagNodeType(void) const;

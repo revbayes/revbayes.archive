@@ -108,7 +108,8 @@ RevLanguage::DistributionFunctionPdf<valueType>::~DistributionFunctionPdf( void 
 
 
 template <class valueType>
-RevLanguage::DistributionFunctionPdf<valueType>& RevLanguage::DistributionFunctionPdf<valueType>::operator=(const DistributionFunctionPdf &c) {
+RevLanguage::DistributionFunctionPdf<valueType>& RevLanguage::DistributionFunctionPdf<valueType>::operator=(const DistributionFunctionPdf &c)
+{
     
     if (this != &c)
     {
