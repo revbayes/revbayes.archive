@@ -24,7 +24,6 @@ position_(0),
 virtualPopulationSize_ ( 10 ),
 stringValue_ ("")
 {
-  std::cout << "IN CONSTRUCTOR 1" <<std::endl;
     setWeighted(true);
     weights_.assign(4 + 6 * (virtualPopulationSize_ - 1), 0.0);
 
@@ -42,7 +41,6 @@ position_(0),
 virtualPopulationSize_( vps ),
 stringValue_ ("")
 {
-  std::cout << "IN CONSTRUCTOR 2" <<std::endl;
 
     setWeighted(true);
     weights_.assign(4 + 6 * (virtualPopulationSize_ - 1), 0.0);
@@ -62,7 +60,6 @@ position_( 0 ),
 virtualPopulationSize_( 10 ),
 stringValue_ (s)
 {
-  std::cout << "IN CONSTRUCTOR 3" <<std::endl;
 
     //assert( s <= 15 );
     setWeighted(true);
@@ -84,14 +81,11 @@ position_( position ),
 virtualPopulationSize_( virtualPopulationSize ),
 stringValue_ (s)
 {
-  std::cout << "IN CONSTRUCTOR 4" <<std::endl;
 
     setWeighted(true);
     weights_.assign(4 + 6 * (virtualPopulationSize_ - 1), 0.0);
     setState(s);
-    std::cout << "in PomoState::COPY CONSTRUCTOR 4 END state: "<<this->getStringValue()<<" ; " << state <<std::endl;
 
-    std::cout << "in PomoState::COPY CONSTRUCTOR 4 END state.getNumberSetBits(): " << this->getStringValue()<<" ; " << state.getNumberSetBits() <<std::endl;
 }
 
 
@@ -107,35 +101,24 @@ position_( position ),
 virtualPopulationSize_( virtualPopulationSize ),
 stringValue_ (s)
 {
-  std::cout << "IN CONSTRUCTOR 5: " << stringValue_<<" ; " <<std::endl;
 
     setWeighted(true);
     weights_.assign(4 + 6 * (virtualPopulationSize_ - 1), 0.0);
     setState(s);
-    std::cout << "in PomoState::COPY CONSTRUCTOR 5 END state: "<< this->getStringValue()<<" ; " << state <<std::endl;
 
-    std::cout << "in PomoState::COPY CONSTRUCTOR 5 END state.getNumberSetBits(): " << this->getStringValue()<<" ; " << state.getNumberSetBits() <<std::endl;
 }
 
 
 /* Copy constructor */
 PomoState::PomoState(const PomoState& t) : DiscreteCharacterState( 4 + 6 * (t.virtualPopulationSize_ - 1) ), is_gap(t.is_gap), is_missing(t.is_missing), index_single_state(t.index_single_state), num_observed_states(t.num_observed_states), state(t.state), chromosome_(t.chromosome_), position_(t.position_), virtualPopulationSize_(t.virtualPopulationSize_), stringValue_(t.stringValue_)
  {
-   std::cout << "IN COPY CONSTRUCTOR 6: "<< stringValue_ <<std::endl;
 
    setWeighted (t.weighted_);
    weights_.clear();
    for (size_t i = 0; i < t.weights_.size() ; ++i) {
-     std::cout << "t.weights_.at(i): " << t.weights_.at(i) << std::endl;
      weights_.push_back(t.weights_.at(i));
-     std::cout << "weights_.at(i): " << weights_.at(i) << std::endl;
-
    }
    state = t.state;
-   std::cout << "in PomoState::COPY CONSTRUCTOR 6 END state: "<< this->getStringValue()<<" ; " << state <<std::endl;
-
-   std::cout << "in PomoState::COPY CONSTRUCTOR 6 END state.getNumberSetBits(): " << this->getStringValue()<<" ; " << state.getNumberSetBits() <<std::endl;
-
 
  }
 
@@ -153,40 +136,23 @@ void PomoState::populateWeightedStatesForMonoallelicState(int id1, int sum) {
   double n = (double)sum;
   double p = 1.0;
 
-  //weights_[id1] = RbStatistics::Binomial::pdf(n, p, (double)virtualPopulationSize_);
-  //State id1 can only generate state id1
-
-  std::cout << "BEFORE LOOP All weights: "<<std::endl;
-
-  for (int i = 0; i<weights_.size(); ++i) {
-    if (weights_[i] >0.0) {
-      std::cout << i<< " : "<< weights_[i] << std::endl ;
-    }
-  }
-  std::cout << "\n "<<std::endl;
-
-
   weights_[id1] = 1.0;
   state.set( id1 );
-  std::cout << "monoallelic weights_[id1]: "<< id1 << " : " << weights_[id1] <<std::endl;
-
-
   int virtMinus1 = virtualPopulationSize_ - 1;
 
 
-std::vector<double> nd (virtMinus1, 0.0);
-std::vector<double> id (virtMinus1, 0.0);
-for (size_t i = 0; i < virtMinus1; ++i) {
-  nd[i] = (double)(i + 1) / (double)virtualPopulationSize_;
-  id[i] = (double)(virtMinus1 - i) / (double)virtualPopulationSize_;
-}
+  std::vector<double> nd (virtMinus1, 0.0);
+  std::vector<double> id (virtMinus1, 0.0);
+  for (size_t i = 0; i < virtMinus1; ++i) {
+    nd[i] = (double)(i + 1) / (double)virtualPopulationSize_;
+    id[i] = (double)(virtMinus1 - i) / (double)virtualPopulationSize_;
+  }
 
   if (id1 == 0) {
     // A, AC, AG, AT weights will be non 0.
     for (size_t numid1 = 0; numid1< virtMinus1; ++numid1)
     {
       //A1C9 and subsequent
-//      std::cout << "RbStatistics::Binomial::pdf(n, p, (double)(numid1));: "<< RbStatistics::Binomial::pdf(n, p, (double)(numid1)) <<std::endl;
       weights_[ 4 + numid1 ] = pow(nd[numid1], (double)sum);//RbStatistics::Binomial::pdf(n, p, (double)(numid1));
       state.set( 4 + numid1 );
       //A1G9 and subsequent
@@ -246,16 +212,6 @@ for (size_t i = 0; i < virtMinus1; ++i) {
     throw RbException( "Pomo string state not correct. We found "+ id1  );
   }
 
-  std::cout << "\n "<<std::endl;
-  std::cout << "AFTER LOOP All weights: "<<std::endl;
-
-  for (int i = 0; i<weights_.size(); ++i) {
-    if (weights_[i] >0.0) {
-      std::cout << i<< " : " << weights_[i] << std::endl ;
-    }
-  }
-  std::cout << "\n "<<std::endl;
-
   return;
 }
 
@@ -268,7 +224,6 @@ void PomoState::setState(const std::string &symbol)
      0,1,4,0
      meaning 0 A, 1 C, 4 G, 0 T were sampled at that position.
      */
-    std::cout << "in PomoState::setState: " << symbol <<std::endl;
     size_t index = 0;
     size_t virtMinus1 = virtualPopulationSize_-1;
     //Checking if we have the preferred format, i.e. counts.
@@ -293,7 +248,6 @@ void PomoState::setState(const std::string &symbol)
         int num = 0;
         // Sum over elements and count non-zero elements.
         for (std::vector<int>::iterator i = vect.begin(); i != vect.end(); ++i) {
-          std::cout << "in PomoState::setState loop: " << *i <<std::endl;
             // `i` is an iterator object that points to some
             // element of `vect`.
             if (*i != 0) {
@@ -307,23 +261,17 @@ void PomoState::setState(const std::string &symbol)
                 else id2 = i - vect.begin();
                 count++;
                 sum += *i;
-                std::cout << "in PomoState::setState id1: " << id1 <<std::endl;
-                std::cout << "in PomoState::setState id2: " << id2 <<std::endl;
             }
         }
         if ( count == 1 ) // monoallelic state
         {
-          std::cout << "MONOALLELIC: " << id1 << " ; "<< id2 <<std::endl;
             index = id1 ; //+ 1;
-            //weights_[id1] = 1.0;
             state.clear();
             state.set(id1);
             populateWeightedStatesForMonoallelicState(id1, sum);
         }
         else if ( count == 2 ) //biallelic state
         {
-          std::cout << "BIALLELIC: " << id1 << " ; "<< id2 <<std::endl;
-          //          index = 3 + id1*virtualPopulationSize_ + id2 ;
           int basicIndex = 4;
           if (id1==0) {
             if (id2 == 1) {
@@ -364,7 +312,6 @@ void PomoState::setState(const std::string &symbol)
 
           size_t situation = (id1+1)*2+(id2+1);
 
-          std::cout <<"SITUATION "<<situation <<std::endl;
           state.clear();
           // index corresponds to the closest place where the pomo state is.
           // In case the virtual population size is inferior to the counts in the state,
@@ -386,7 +333,6 @@ void PomoState::setState(const std::string &symbol)
           else {
             index = basicIndex + virtualPopulationSize_ - num - 1;
           }
-          std::cout << "INDEX: " << index <<std::endl;
           //index = 3 + id1*virtualPopulationSize_ + id2 ;
           // Let's try Pomo state averaging.
           // Basically all cells in the weight matrix that contain only id1, only id2, or a combination of both should have a non-zero weight.
@@ -438,38 +384,6 @@ void PomoState::setState(const std::string &symbol)
           else {
             throw RbException( "Pomo string state not correct. We found "+ symbol  );
           }
-
-          /*
-          // only id1:
-          weights_[id1] = RbStatistics::Binomial::pdf(n, p, (double)virtualPopulationSize_);
-          state.set( id1 );
-          std::cout << "weights_[id1]: "<< id1 << " : " << weights_[id1] <<std::endl;
-          // only id2:
-          weights_[id2] = RbStatistics::Binomial::pdf(n, p, 0.0);
-          state.set( id2 );
-          std::cout << "weights_[id2]: "<< id2 << " : " << weights_[id2] <<std::endl;
-          // Mixtures of id1 and id2:
-          for (size_t numid1 = 1; numid1< virtualPopulationSize_; ++numid1)
-          {
-            weights_[basicIndex + virtualPopulationSize_ - numid1 - 1] = RbStatistics::Binomial::pdf(n, p, (double)(numid1));
-            state.set( basicIndex + virtualPopulationSize_ - numid1 - 1 );
-            std::cout << "weights_[basicIndex + virtualPopulationSize_ - numid1 - 1]: "<< basicIndex + virtualPopulationSize_ - numid1 - 1 << " : " << weights_[basicIndex + virtualPopulationSize_ - numid1 - 1] <<std::endl;
-          }
-          */
-          //          d.pdf(n, p, (double)virtualPopulationSize_);
-          std::cout << "INDEX: "<< index <<std::endl;
-          std::cout << "n: "<<n << " p:"<< p <<std::endl;
-
-          std::cout << "\n "<<std::endl;
-          std::cout << "AFTER LOOP All weights: "<<std::endl;
-
-          for (int i = 0; i<weights_.size(); ++i) {
-            if (weights_[i] >0.0) {
-              std::cout << i<< " : " << weights_[i] << std::endl ;
-            }
-          }
-          std::cout << "\n "<<std::endl;
-
         }
         else if ( count == 0 )
         {
@@ -480,30 +394,8 @@ void PomoState::setState(const std::string &symbol)
             throw RbException( "Pomo string state not correct. We found "+ symbol +", but only 2 states can be non-0." );
         }
       }
-
-    std::cout << "in PomoState::setState END index: " << index <<std::endl;
-
-    //state.clear();
-    //state.set( index );
     index_single_state = index;
-    std::cout << "in PomoState::setState END state: " << state <<std::endl;
-    std::cout << "in PomoState::setState END state.getNumberSetBits(): " << state.getNumberSetBits() <<std::endl;
-
-    std::cout << "in PomoState::setState END index_single_state: " << index_single_state <<std::endl;
-
     num_observed_states = 1;
-
-    std::cout << "\n "<<std::endl;
-    std::cout << "END of PomoState::setState All weights: "<<std::endl;
-
-    for (int i = 0; i<weights_.size(); ++i) {
-      if (weights_[i] >0.0) {
-        std::cout << i<< " : " << weights_[i] << std::endl ;
-      }
-    }
-    std::cout << "\n "<<std::endl;
-
-
 }
 
 
@@ -556,45 +448,6 @@ std::string PomoState::getStringValue(void) const
     }
 
     return stringValue_;
-    /*
-    int stepSize = 100 / virtualPopulationSize_ - 1;
-    size_t index = getStateIndex();
-    if (index < 4)
-    {
-        switch ( index )
-        {
-            case 0:
-                return "A";
-            case 1:
-                return "C";
-            case 2:
-                return "G";
-            case 3:
-                return "T";
-        }
-    }
-    int stateMinus4 = int(index) - 4;
-    int typeOfPomoState = stateMinus4 / stepSize;
-    int typeOfFrequency = stateMinus4 % stepSize +1;
-    int freqi = typeOfFrequency*virtualPopulationSize_;
-    int freqj = 100 - freqi;
-    switch ( typeOfPomoState )
-    {
-        case 0: //AC
-            return "A"+ boost::lexical_cast<std::string>(freqi) + "C" + boost::lexical_cast<std::string>(freqj) ;
-        case 1: //AG
-            return "A"+ boost::lexical_cast<std::string>(freqi) + "G" + boost::lexical_cast<std::string>(freqj) ;
-        case 2: //AT
-            return "A"+ boost::lexical_cast<std::string>(freqi) + "T" + boost::lexical_cast<std::string>(freqj) ;
-        case 3: //CG
-            return "C"+ boost::lexical_cast<std::string>(freqi) + "G" + boost::lexical_cast<std::string>(freqj) ;
-        case 4: //CT
-            return "C"+ boost::lexical_cast<std::string>(freqi) + "T" + boost::lexical_cast<std::string>(freqj) ;
-        case 5: //GT
-            return "G"+ boost::lexical_cast<std::string>(freqi) + "T" + boost::lexical_cast<std::string>(freqj) ;
-    }
-    throw RbException( "getStringValue called on a non-standard state." );
-    */
 }
 
 void PomoState::setVirtualPopulationSize(size_t populationSize)
@@ -628,26 +481,6 @@ const size_t PomoState::getPosition( void )
     return position_;
 }
 
-// const std::vector<double> PomoState::getWeights( void ) const
-// {
-//   std::cout << "USING getWeights" <<std::endl;
-//     return weights_;
-// }
-
-//
-// bool PomoState::isWeighted( void ) const
-// {
-//     return weighted_;
-// }
-//
-//
-// void PomoState::setWeighted( bool tf )
-// {
-//     weighted_ = tf;
-//     return;
-// }
-
-
 
 void PomoState::addState(const std::string &symbol)
 {
@@ -663,14 +496,10 @@ void PomoState::addState(const std::string &symbol)
 
 RbBitSet PomoState::getState(void) const
 {
-  std::cout << "in PomoState::getState1: " << stringValue_ << " "<< state << " and state.getNumberSetBits(): "<< state.getNumberSetBits() << std::endl;
     // we need to clear the bits first
-    RbBitSet bs = RbBitSet( state.size());
-std::cout << "in PomoState::getState2: index_single_state: " << index_single_state <<std::endl;
-    bs.set(index_single_state);
+//    RbBitSet bs = RbBitSet( state.size());
+  //  bs.set(index_single_state);
 
-    std::cout << "in PomoState::getState3: " << stringValue_ << " " << state<< " and state.getNumberSetBits(): "<< state.getNumberSetBits() <<std::endl;
-    std::cout << state <<std::endl;
     return state;
 //    return bs;
 }
