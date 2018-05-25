@@ -1,7 +1,11 @@
 #include "AVMVNProposal.h"
+#include "CholeskyDecomposition.h"
 #include "DirichletDistribution.h"
 #include "DistributionMultivariateNormal.h"
+#include "DistributionNormal.h"
+#include "EigenSystem.h"
 #include "MultivariateNormalDistribution.h"
+#include "NormalDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -21,7 +25,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-AVMVNProposal::AVMVNProposal( double s, double e, double n0, double c0 ) : Proposal(),
+AVMVNProposal::AVMVNProposal( double s, double e, double n0, double c0, double m ) : Proposal(),
     noTransformScalarVariables(  ),
     logTransformScalarVariables(  ),
 //    logitTransformScalarVariables(  ),
@@ -32,11 +36,12 @@ AVMVNProposal::AVMVNProposal( double s, double e, double n0, double c0 ) : Propo
     epsilon( e ),
     waitBeforeLearning( n0 ),
     waitBeforeUsing ( c0 ),
+    maxUpdates ( m ),
     nTried ( 0 ),
     updates ( 0 ),
     dim ( 0.0 ),
     C_emp(  ),
-    AVMVN_vcv(  ),
+    AVMVN_cholesky_L(  ),
     x_bar(  ),
     storedValues(  ),
     proposedValues(  )
@@ -274,6 +279,34 @@ void AVMVNProposal::setAVMVNMemberVariableValues( std::vector<double> x_prime, s
 }
 
 /**
+ * Draw from MVN given that we already have Cholesky decomposition
+ *
+ * \return The draws.
+ */
+std::vector<double> AVMVNProposal::rMVNCholesky( std::vector<double> mu, MatrixReal L, RandomNumberGenerator& rng, double scale )
+{
+    double sqrtScale = sqrt(scale);
+    size_t dimension = L.getDim();
+    
+    MatrixReal W(dimension, 1, 0.0);
+    for (size_t i = 0; i < dimension; ++i)
+    {
+        W[i][0] = RbStatistics::Normal::rv(0, sqrtScale, rng);
+    }
+
+    MatrixReal V = L * W;
+    std::vector<double> v = std::vector<double>(dim, 0.0);
+    for (size_t i = 0; i < dimension; ++i)
+    {
+        v[i] = mu[i] + V[i][0];
+    }
+    
+    return v;
+
+}
+
+
+/**
  * Perform the proposal.
  *
  * A scaling Proposal draws a random uniform number u ~ unif (-0.5,0.5)
@@ -317,7 +350,10 @@ double AVMVNProposal::doProposal( void )
         }
         
         C_emp = vcv;
-        AVMVN_vcv = vcv;
+        
+        vcv.setCholesky(true);
+        CholeskyDecomposition& cd = vcv.getCholeskyDecomposition();
+        AVMVN_cholesky_L = cd.getLowerCholeskyFactor();
     }
     else
     // Update empirical covariance matrix and averages
@@ -329,7 +365,7 @@ double AVMVNProposal::doProposal( void )
             storedValues[i] = x[i];
         }
         
-        if ( nTried > waitBeforeLearning)
+        if ( nTried > waitBeforeLearning && updates <= maxUpdates)
         {
             ++updates;
             
@@ -353,7 +389,7 @@ double AVMVNProposal::doProposal( void )
     }
     
     // Move
-    std::vector<double> x_prime = RbStatistics::MultivariateNormal::rvCovariance(x, AVMVN_vcv, *rng, sigma);
+    std::vector<double> x_prime = rMVNCholesky(x, AVMVN_cholesky_L, *rng, sigma);
     
     setAVMVNMemberVariableValues(x_prime, x);
     
@@ -539,7 +575,7 @@ void AVMVNProposal::tune( double rate )
         sigma = fmax(1/10000, sigma);
     }
     
-    // Update our move's precision matrix too
+    // Update our move's variance-covariance matrix too, then store the Cholesky decomposition
     MatrixReal vcv( dim );
     
     for (size_t i=0; i<dim; ++i)
@@ -566,7 +602,9 @@ void AVMVNProposal::tune( double rate )
         }
     }
     
-    AVMVN_vcv = vcv;
+    vcv.setCholesky(true);
+    CholeskyDecomposition& cd = vcv.getCholeskyDecomposition();
+    AVMVN_cholesky_L = cd.getLowerCholeskyFactor();
     
 }
 

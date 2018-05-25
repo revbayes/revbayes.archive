@@ -17,9 +17,9 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 NodeTimeSlidePathTruncatedNormalProposal::NodeTimeSlidePathTruncatedNormalProposal( StochasticNode<Tree> *n, double s, bool a ) : Proposal(),
-    variable( n ),
-    sigma( s ),
-    scaleByAge( a )
+variable( n ),
+sigma( s ),
+scaleByAge( a )
 {
     // tell the base class to add the node
     addNode( variable );
@@ -122,7 +122,7 @@ double NodeTimeSlidePathTruncatedNormalProposal::doProposal( void )
         {
             
             current_age = node->getAge();
-
+            
             tmpNode = &node->getParent();
             UB = tmpNode->getAge();
             
@@ -136,20 +136,27 @@ double NodeTimeSlidePathTruncatedNormalProposal::doProposal( void )
                 }
             }
             
-            prop_sd = scaleByAge == true ? sigma / 2 / exp(r * (ra - current_age)) : sigma;
+            prop_sd = scaleByAge == true ? sigma / 2 / exp(r * ((ra - (LB+UB)/2.0))) : sigma;
             
             my_new_age = RbStatistics::Normal::rv(current_age, prop_sd, LB, UB, *rng);
             
             tau.getNode(node->getIndex()).setAge( my_new_age );
             
             // q(x | x')
-            double new_prop_sd = scaleByAge == true ? sigma / 2 / exp(r * (ra - my_new_age)) : sigma;
-            lnHastingsRatio += RbStatistics::Normal::lnPdf(my_new_age, new_prop_sd, current_age, LB, UB);
+//            double new_prop_sd = scaleByAge == true ? sigma / 2 / exp(r * (ra - my_new_age)) : sigma;
+            lnHastingsRatio += RbStatistics::Normal::lnPdf(my_new_age, prop_sd, current_age, LB, UB);
             // q(x' | x)
             lnHastingsRatio -= RbStatistics::Normal::lnPdf(current_age, prop_sd, my_new_age, LB, UB);
             
             storedNodes.push_back(node);
             storedAges.push_back(current_age);
+            
+            if (my_new_age == LB || my_new_age == UB)
+            {
+                // Can't have node ages equal, reject move
+                return RbConstants::Double::neginf;
+            }
+
         }
         node = &node->getParent();
         ++path_index;
@@ -226,6 +233,7 @@ void NodeTimeSlidePathTruncatedNormalProposal::swapNodeInternal(DagNode *oldN, D
 void NodeTimeSlidePathTruncatedNormalProposal::tune( double rate )
 {
     
+    // Try tuning
     if ( rate > 0.44 )
     {
         sigma *= (1.0 + ((rate-0.44)/0.56) );
@@ -235,6 +243,16 @@ void NodeTimeSlidePathTruncatedNormalProposal::tune( double rate )
         sigma /= (2.0 - rate/0.44 );
     }
     
+    // Get scale of tree
+    double ra = variable->getValue().getRoot().getAge();
+    
+    // Avoid crazy operator values
+    if ( sigma > ra ) {
+        sigma = ra;
+    } else if ( sigma < ra/10000 ) {
+        sigma = sigma < ra/10000;
+    }
 
+    
 }
 

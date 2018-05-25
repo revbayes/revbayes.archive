@@ -52,6 +52,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   epsilon;                                                                                     //!< The tuning parameter
         RevPtr<const RevVariable>                   waitBeforeLearning;                                                                                     //!< The tuning parameter
         RevPtr<const RevVariable>                   waitBeforeUsing;                                                                                     //!< The tuning parameter
+        RevPtr<const RevVariable>                   maxUpdates;                                                                                     //!< The tuning parameter
         RevPtr<const RevVariable>                   tune;                                                                                       //!< The variable on which the move works
 
     };

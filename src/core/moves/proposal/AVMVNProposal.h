@@ -3,6 +3,8 @@
 
 #include "RbVector.h"
 #include "Proposal.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "StochasticNode.h"
 
 #include <ostream>
@@ -28,7 +30,7 @@ namespace RevBayesCore {
     class AVMVNProposal : public Proposal {
         
     public:
-        AVMVNProposal( double s, double e, double n0, double c0 );                                 //!< Constructor
+        AVMVNProposal( double s, double e, double n0, double c0, double m );                                 //!< Constructor
         
         void                                        addVariable(StochasticNode<double> *v, std::string& transform);                                    //!< Add an up-scaling variable
         void                                        addVariable(StochasticNode<RbVector<double> > *v, std::string& transform);                         //!< Add an up-scaling variable
@@ -58,13 +60,14 @@ namespace RevBayesCore {
         std::vector<StochasticNode<RbVector<double> > *>    logConstrainedSumTransformVectorVariables;
         
         MatrixReal                                          C_emp;                                                   //!< The empirical covariance matrix of the samples
-        MatrixReal                                          AVMVN_vcv;                                               //!< The variance-covariance matrix for the move
+        MatrixReal                                          AVMVN_cholesky_L;                                       //!< Lower diagonal of Cholesky decomposition of
 
         size_t                                              waitBeforeLearning;                                      //!< How long to wait before tracking empirical covariances
         size_t                                              waitBeforeUsing;                                         //!< How long to wait before using the empirical covariances
         size_t                                              nTried;                                                  //!< How many times has this move been used?
         size_t                                              updates;                                                 //!< How many updates have been tried?
-                
+        size_t                                              maxUpdates;                                              //!< How many updates until we stop monitoring the covariances?
+        
         double                                              sigma;                                                  //!< Variance of pre-learned (independent) normal proposal, also scales the MVN (proportional to variance, not SD)
         double                                              epsilon;                                                //!< Controls the weighting of the learned VCV and an Identity matrix ( eps * I + (1-eps) * empirical)
         double                                              dim;                                                    //!< Dimension of proposal
@@ -77,7 +80,7 @@ namespace RevBayesCore {
         // functions
         void                                                getAVMVNMemberVariableValues(std::vector<double> *x);
         void                                                setAVMVNMemberVariableValues(std::vector<double> x_prime, std::vector<double> x);
-        
+        std::vector<double>                                 rMVNCholesky(std::vector<double> mu, MatrixReal L, RandomNumberGenerator& rng, double scale);
         
         
     };
