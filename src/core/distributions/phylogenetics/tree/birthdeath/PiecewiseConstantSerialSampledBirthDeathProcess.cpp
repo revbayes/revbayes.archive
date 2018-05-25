@@ -321,7 +321,8 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     size_t num_initial_lineages = 0;
     TopologyNode* root = &value->getRoot();
 
-    if (use_origin) {
+    if ( use_origin == true )
+    {
         // If we are conditioning on survival from the origin,
         // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
         // TODO: Generalize AbstractBirthDeathProcess to allow conditioning on the origin
@@ -331,8 +332,10 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     else
     {
         if (root->getChild(0).isSampledAncestor() || root->getChild(1).isSampledAncestor())
+        {
             return RbConstants::Double::neginf;
-
+        }
+        
         num_initial_lineages = 2;
     }
     
@@ -368,7 +371,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         }
         else if ( n.isInternal() && !n.getChild(0).isSampledAncestor() && !n.getChild(1).isSampledAncestor() )
         {
-            if (!n.isRoot() || use_origin)
+            if ( n.isRoot() == false || use_origin == true )
             {
                 // node is bifurcation event (a "true" node)
                 internal_node_ages.push_back( n.getAge() );
@@ -388,7 +391,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         size_t index = l(t);
 
         // add the log probability for the serial sampling events
-        if (psi[index - 1] == 0.0)
+        if ( psi[index - 1] == 0.0 )
         {
             return RbConstants::Double::neginf;
             //std::stringstream ss;
@@ -417,7 +420,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         {
             const TopologyNode& n = value->getNode( i );
 
-            if( ascending )
+            if ( ascending )
             {
                 std::vector<double>::reverse_iterator it = std::find(rho_times.rbegin(), rho_times.rend(), n.getAge() );
 
