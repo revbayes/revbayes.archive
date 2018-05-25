@@ -314,6 +314,24 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
         // return a new RevVariable with the size of this container
         return RevPtr<RevVariable>( new RevVariable( new RlBoolean( false ), "" ) );
     }
+    else if ( name == "find" )
+    {
+        found = true;
+        
+        const rlType &rl_x = static_cast<const rlType&>( args[0].getVariable()->getRevObject() );
+        const typename rlType::valueType &x = rl_x.getValue();
+        const RevBayesCore::RbVector<typename rlType::valueType> &v = this->dag_node->getValue();
+        for (size_t i = 0; i < v.size(); ++i )
+        {
+            if ( v[i] == x )
+            {
+                return RevPtr<RevVariable>( new RevVariable( new Natural( i+1 ), "" ) );
+            }
+        }
+        
+        // return a new RevVariable with the size of this container
+        return RevPtr<RevVariable>( new RevVariable( new Natural( -1 ), "" ) );
+    }
     else if ( name == "size" )
     {
         found = true;
@@ -422,6 +440,9 @@ void ModelVector<rlType>::initMethods( void )
     contains_arg_rules->push_back( new ArgumentRule( "x", rlType::getClassTypeSpec(), "The element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "contains", RlBoolean::getClassTypeSpec(), contains_arg_rules ) );
 
+    ArgumentRules* find_arg_rules = new ArgumentRules();
+    find_arg_rules->push_back( new ArgumentRule( "x", rlType::getClassTypeSpec(), "The element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "find", RlBoolean::getClassTypeSpec(), find_arg_rules ) );
     
     ArgumentRules* sizeArgRules = new ArgumentRules();
     this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );

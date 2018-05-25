@@ -31,8 +31,8 @@ using namespace RevBayesCore;
 NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const RelativeNodeAgeConstraints &c) : TypedDistribution<Tree>( new Tree() ),
     base_distribution( base_dist ),
     constraints( c ),
-    constrainedNodes(),
-    nodeAges(),
+    constrained_nodes(),
+    node_ages(),
     owns_tree( false )
 {
     // add the parameters to our set (in the base class)
@@ -63,8 +63,8 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(Typed
 NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(const NodeOrderConstrainedTreeDistribution &d) : TypedDistribution<Tree>( d ),
     base_distribution( d.base_distribution->clone() ),
     constraints( d.constraints ),
-    constrainedNodes( d.constrainedNodes ),
-    nodeAges( d.nodeAges ),
+    constrained_nodes( d.constrained_nodes ),
+    node_ages( d.node_ages ),
     owns_tree( d.owns_tree )
 {
     // the copy constructor of the TypedDistribution creates a new copy of the value
@@ -151,14 +151,22 @@ bool NodeOrderConstrainedTreeDistribution::matchesConstraints( void )
     updateMapOfNodeAges();
     /*
     std::vector <std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> > > constra = constraints.getConstraints();
+    
+    for (size_t i = 0; i < constra.size() ; ++i)
+    {
+        constrained_nodes.insert(constra[i].first);
+        constrained_nodes.insert(constra[i].second);
+    }
 
     for (size_t i = 0; i < constra.size() ; ++i) {
-        constrainedNodes.insert(constra[i].first);
-        constrainedNodes.insert(constra[i].second);
+        constrained_nodes.insert(constra[i].first);
+        constrained_nodes.insert(constra[i].second);
     }*/
 
-    for (size_t i = 0; i < constra.size() ; ++i) {
-        if ( nodeAges.at(constra[i].first) <  nodeAges.at(constra[i].second) ) {
+    for (size_t i = 0; i < constra.size() ; ++i)
+    {
+        if ( node_ages.at(constra[i].first) <  node_ages.at(constra[i].second) )
+        {
             return false;
         }
     }
@@ -171,9 +179,10 @@ void NodeOrderConstrainedTreeDistribution::updateSetOfConstrainedNodes()
 {
     //std::vector <std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> > >
     constra = constraints.getConstraints();
-    for (size_t i = 0; i < constra.size() ; ++i) {
-        constrainedNodes.insert(constra[i].first);
-        constrainedNodes.insert(constra[i].second);
+    for (size_t i = 0; i < constra.size() ; ++i)
+    {
+        constrained_nodes.insert(constra[i].first);
+        constrained_nodes.insert(constra[i].second);
     }
     return;
 }
@@ -183,10 +192,10 @@ void NodeOrderConstrainedTreeDistribution::updateSetOfConstrainedNodes()
 void NodeOrderConstrainedTreeDistribution::updateMapOfNodeAges()
 {
 
-    nodeAges.clear();
-    for (std::set< std::pair < std::string, std::string > >::iterator elem=constrainedNodes.begin(); elem != constrainedNodes.end(); ++elem)
+    node_ages.clear();
+    for (std::set< std::pair < std::string, std::string > >::iterator elem=constrained_nodes.begin(); elem != constrained_nodes.end(); ++elem)
     {
-        nodeAges[(*elem)] = TreeUtilities::getAgeOfMRCA(*value, elem->first, elem->second);
+        node_ages[(*elem)] = TreeUtilities::getAgeOfMRCA(*value, elem->first, elem->second);
     }
 
 

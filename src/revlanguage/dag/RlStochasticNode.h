@@ -36,6 +36,7 @@ namespace RevLanguage {
 
 
 #include "RealPos.h"
+#include "RlDagMemberFunction.h"
 
 template<class valueType>
 RevLanguage::StochasticNode<valueType>::StochasticNode( const std::string& n, RevBayesCore::TypedDistribution<valueType>* dist, Distribution* rlDist ) :
@@ -53,9 +54,9 @@ RevLanguage::StochasticNode<valueType>::StochasticNode( const std::string& n, Re
     ArgumentRules* probArgRules = new ArgumentRules();
     this->methods.addFunction( new MemberProcedure( "probability", RealPos::getClassTypeSpec(), probArgRules) );
     
-    ArgumentRules* lnprobArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "lnProbability", Real::getClassTypeSpec(), lnprobArgRules) );
-    
+    ArgumentRules* lnprob_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new DagMemberFunction<Real>( "lnProbability", this, lnprob_arg_rules) );
+
     ArgumentRules* setValueArgRules = new ArgumentRules();
     setValueArgRules->push_back( new ArgumentRule("x", rlDistribution->getVariableTypeSpec(), "The value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "setValue", RlUtils::Void, setValueArgRules) );
