@@ -1,5 +1,7 @@
 #include "DistanceMatrix.h"
 #include "DistanceMatrixReader.h"
+#include "StringUtilities.h"
+
 #include <sstream>
 #include <string>
 
@@ -108,8 +110,18 @@ double& DistanceMatrix::getElement( size_t i, size_t j )
 }
 
 
+void DistanceMatrix::setTaxon(const RevBayesCore::Taxon &t, size_t i)
+{
+    if ( taxa.size() <= i )
+    {
+        throw RbException("Cannot set taxon object in distance matrix because of index '"+StringUtilities::to_string(i)+"' out of bounds.");
+    }
+    taxa[i] = t;
+}
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const DistanceMatrix& x) {
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const DistanceMatrix& x)
+{
 	
     std::stringstream s;
     
@@ -121,9 +133,11 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const DistanceMatrix& x)
     o << s.str();
 	std::vector<Taxon> taxa = x.getTaxa();
 
-	for ( size_t i = 0; i < x.getSize(); ++i ) {
+	for ( size_t i = 0; i < x.getSize(); ++i )
+    {
 		o << taxa[i] ;
-		for ( size_t j = 0; j < x.getSize(); ++j ) {
+		for ( size_t j = 0; j < x.getSize(); ++j )
+        {
         	o << "\t" << x.getMatrix()[i][j] ;
 		}
 		o << std::endl;

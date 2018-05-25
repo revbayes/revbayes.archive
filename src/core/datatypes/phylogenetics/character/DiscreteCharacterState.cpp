@@ -8,7 +8,9 @@ using namespace RevBayesCore;
 
 
 /** Constructor */
-DiscreteCharacterState::DiscreteCharacterState(size_t n) : CharacterState()
+DiscreteCharacterState::DiscreteCharacterState(size_t n) : CharacterState(),
+weighted_(false),
+weights_(std::vector<double>(n,1.0/n))
 {
 
 

@@ -40,9 +40,9 @@ namespace RevBayesCore {
 
         //        // virtual methods that may be overwritten, but then the derived class should call this methods
 //        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                      //!< get affected nodes
-        virtual void                                        keepSpecialization(DagNode* affecter);
-        virtual void                                        restoreSpecialization(DagNode *restorer);
-        virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
+        virtual void                                            keepSpecialization(DagNode* affecter);
+        virtual void                                            restoreSpecialization(DagNode *restorer);
+        virtual void                                            touchSpecialization(DagNode *toucher, bool touchAll);
 
         // Parameter management functions. You need to override both if you have additional parameters
         virtual void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
@@ -56,10 +56,9 @@ namespace RevBayesCore {
         // members
         TypedDistribution<Tree>*   base_distribution;                                                           //!< Tree distribution.
         RelativeNodeAgeConstraints                              constraints;                                        //!< Node age constraints.
-        std::set< std::pair < std::string, std::string > >      constrainedNodes;
+        std::set< std::pair < std::string, std::string > >      constrained_nodes;
         std::vector <std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> > > constra;
-
-        std::map<std::pair<std::string, std::string>, double >  nodeAges;
+        std::map<std::pair<std::string, std::string>, double >  node_ages;
 
 
         // just for testing

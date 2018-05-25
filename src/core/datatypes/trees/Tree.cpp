@@ -582,6 +582,13 @@ const TopologyNode& Tree::getInteriorNode( size_t indx ) const
 }
 
 
+TopologyNode& Tree::getMrca(const Clade &c)
+{
+    
+    return *(root->getMrca( c ));
+}
+
+
 const TopologyNode& Tree::getMrca(const Clade &c) const
 {
     
