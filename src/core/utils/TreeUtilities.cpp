@@ -163,6 +163,9 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t, bool
         nodes[i]->setAge( ages[i] );
     }
 
+    // copy the root edge
+    root->setBranchLength( bln.getBranchLength() );
+
     return tt;
 }
 
