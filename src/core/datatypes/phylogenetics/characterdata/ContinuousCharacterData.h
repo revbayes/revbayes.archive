@@ -2,6 +2,7 @@
 #define ContinuousCharacterData_H
 
 #include "ContinuousTaxonData.h"
+#include "DistanceMatrix.h"
 #include "HomologousCharacterData.h"
 #include "MemberObject.h"
 #include "Printable.h"
@@ -63,6 +64,7 @@ namespace RevBayesCore {
         double                                          getMinSpeciesDifference(size_t index) const;                                //!< Get the minimum difference between two observations
         size_t                                          getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                          getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
+        DistanceMatrix                                  getPairwiseSpeciesDifference( size_t char_index ) const;                    //!< Get the pairwise species distance matrix
         double                                          getSpeciesMean( size_t species, size_t site ) const;                        //!< Get the mean value of the species for column 'i'
         ContinuousTaxonData&                            getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const ContinuousTaxonData&                      getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix

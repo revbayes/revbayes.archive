@@ -1,3 +1,4 @@
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "MatrixReal.h"
 #include "RbBitSet.h"
 #include "RbException.h"
@@ -8,6 +9,7 @@
 #include <algorithm>
 #include <iostream>
 #include <limits>
+#include <set>
 
 using namespace RevBayesCore;
 
@@ -219,6 +221,8 @@ RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(con
 }
 
 
+
+
 size_t RevBayesCore::TreeUtilities::getMrcaIndex(const TopologyNode *left, const TopologyNode *right)
 {
     
@@ -344,6 +348,40 @@ void RevBayesCore::TreeUtilities::makeUltrametric(Tree *t)
         t->getTipNode( i ).setAge(0.0);
     }
     
+}
+
+
+int RevBayesCore::TreeUtilities::getNodalDistance(const TopologyNode *left, const TopologyNode *right)
+{
+    if ( left == right ) 
+    {
+        return -1;
+    }
+    else if ( left->getAge() < right->getAge() )
+    {
+        return 1 + RevBayesCore::TreeUtilities::getNodalDistance( &left->getParent(), right );
+    }
+    else
+    {
+        return 1 + RevBayesCore::TreeUtilities::getNodalDistance( left, &right->getParent() );
+    }
+}
+
+
+RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getNodalDistanceMatrix(const Tree& tree)
+{
+    RevBayesCore::MatrixReal matrix = MatrixReal( tree.getNumberOfTips() );
+
+    std::vector<Taxon> names = tree.getTaxa( ) ;
+    for (size_t i = 0; i < names.size(); i++)
+    {
+        for (size_t j = i + 1; j < names.size(); j++)
+        {
+            matrix[i][j] = matrix[j][i] = TreeUtilities::getNodalDistance(&tree.getTipNode(i), &tree.getTipNode(j));
+        }
+    }
+
+    return new DistanceMatrix(matrix, names);
 }
 
 
@@ -663,4 +701,187 @@ double RevBayesCore::TreeUtilities::getGammaStatistic(const Tree &t)
 
 
     return num/den;
+}
+
+
+/* 
+ * Algorithm from Fitch (1970) "Distinguishing Homologous from Analogous Proteins"
+ */
+int RevBayesCore::TreeUtilities::getFitchScore(const Tree &t, const AbstractHomologousDiscreteCharacterData &c)
+{
+    int score = 0;
+    for (size_t i = 0; i < c.getNumberOfCharacters(); i++)
+    {
+        recursivelyComputeFitch(t.getRoot(), c, i, score);
+    }
+    return score;
+}
+
+
+std::set<size_t> RevBayesCore::TreeUtilities::recursivelyComputeFitch(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, size_t site, int &score)
+{
+    if (node.isTip() == true)
+    {
+        std::set<size_t> tip_set;
+        std::string n = node.getName();
+        size_t state = c.getTaxonData(n).getCharacter(site).getStateIndex();
+        tip_set.insert( state );
+        return tip_set;
+    }
+    else
+    {
+        if ( node.getNumberOfChildren() != 2 )
+        {
+            throw RbException("Fitch score calculation is only implemented for binary trees.");
+        }
+        std::set<size_t> l = recursivelyComputeFitch(node.getChild(0), c, site, score);
+        std::set<size_t> r = recursivelyComputeFitch(node.getChild(1), c, site, score);
+
+        std::set<size_t> intersect;
+        set_intersection(l.begin(), l.end(), r.begin(), r.end(), std::inserter(intersect, intersect.begin()));
+
+        if (intersect.size() == 0)
+        {
+            score++;
+            std::set<size_t> union_set;
+            set_union(l.begin(), l.end(), r.begin(), r.end(), std::inserter(union_set, union_set.begin()));
+            return union_set;
+        }
+        return intersect;
+    }
+}
+
+
+/* 
+ *
+ * The mean inverse equal splits metric for tips in a single state as described in:
+ * Rabosky and Goldberg (2017) "FiSSE: A simple nonparametric test for the effects of a binary character on lineage diversiﬁcation rates"
+ *
+ * This metric is typically calculated for a single character at a time, but here it is extended over multiple characters.
+ *
+ */
+double RevBayesCore::TreeUtilities::getMeanInverseES(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index)
+{
+    if (t.isRooted() == false)
+    {
+        throw RbException("Mean inverse ES can only be calculated on rooted trees.");
+    }
+
+    std::vector<double> summed_inverse_es = std::vector<double>(c.getNumberOfCharacters(), 0);
+    std::vector<double> num_tips_in_state = std::vector<double>(c.getNumberOfCharacters(), 0);
+    std::vector<std::string> tip_names = t.getTipNames();
+
+    // calculate equal splits (ES) measure for each tip as necessary
+    for (size_t i = 0; i < tip_names.size(); i++)
+    {
+        bool calculated_for_tip = false;
+        double tip_es = 0;
+        size_t node_index = t.getTipNodeWithName( tip_names[i] ).getIndex();
+
+        for (size_t j = 0; j < c.getNumberOfCharacters(); j++)
+        {
+            size_t state = c.getTaxonData(tip_names[i]).getCharacter(j).getStateIndex();
+            if (state == state_index)
+            {
+                num_tips_in_state[j] += 1;
+                if (calculated_for_tip == true)
+                {
+                    if (tip_es != 0)
+                    {
+                        summed_inverse_es[j] += 1/tip_es;
+                    }
+                }
+                else
+                {
+                    // traverse from tip to root
+                    double depth = 1;
+                    while (true)
+                    {
+                        if (t.getNode(node_index).isRoot() == true)
+                        {
+                            break;
+                        }
+                        tip_es += t.getNode(node_index).getBranchLength() * (1 / pow(2, depth - 1));
+                        node_index = t.getNode(node_index).getParent().getIndex();
+                        depth++;
+                    }
+                    if (tip_es != 0)
+                    {
+                        summed_inverse_es[j] += 1/tip_es;
+                    }
+                    calculated_for_tip = true;
+                }
+            }
+        }
+    }
+
+    // calculate mean inverse ES for the character state
+    double mean_inverse_es = 0;
+    for (size_t i = 0; i < c.getNumberOfCharacters(); i++)
+    {
+        if (num_tips_in_state[i] != 0)
+        {
+            mean_inverse_es += (1/num_tips_in_state[i]) * summed_inverse_es[i];
+        }
+    }
+    return mean_inverse_es;
+}
+
+
+/* 
+ * Returns the Parsimoniously Same State Paths (PSSP). This is the set of branch lengths 
+ * from clades parsimoniously reconstructed to have the same state. Given (((A,B),C),(D,E)), if A, B, 
+ * D, and E are in state 0, then PSSP(0) will contain the four branch lengths in (A,B) and (D,E). Uses 
+ * Fitch's (1970) algorithm for parsimony ancestral state reconstruction.
+ */
+std::vector<double> RevBayesCore::TreeUtilities::getPSSP(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index)
+{
+    std::vector<double> branch_lengths;
+    if ( c.getNumberOfCharacters() != 1 )
+    {
+        throw RbException("getPSSP is only implemented for character alignments with a single site.");
+    }
+    recursivelyGetPSSP(t.getRoot(), c, branch_lengths, state_index);
+    return branch_lengths;
+}
+
+
+std::set<size_t> RevBayesCore::TreeUtilities::recursivelyGetPSSP(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, std::vector<double> &branch_lengths, size_t state_index)
+{
+    if (node.isTip() == true)
+    {
+        std::set<size_t> tip_set;
+        std::string n = node.getName();
+        size_t state = c.getTaxonData(n).getCharacter(0).getStateIndex();
+        tip_set.insert( state );
+        return tip_set;
+    }
+    else
+    {
+        if ( node.getNumberOfChildren() != 2 )
+        {
+            throw RbException("getPSSP is only implemented for binary trees.");
+        }
+        std::set<size_t> l = recursivelyGetPSSP(node.getChild(0), c, branch_lengths, state_index);
+        std::set<size_t> r = recursivelyGetPSSP(node.getChild(1), c, branch_lengths, state_index);
+
+        std::set<size_t> intersect;
+        set_intersection(l.begin(), l.end(), r.begin(), r.end(), std::inserter(intersect, intersect.begin()));
+
+        if (intersect.size() == 0)
+        {
+            std::set<size_t> union_set;
+            set_union(l.begin(), l.end(), r.begin(), r.end(), std::inserter(union_set, union_set.begin()));
+            return union_set;
+        }
+        if (intersect.size() == 1)
+        {
+            if (intersect.find(state_index) != intersect.end())
+            {
+                branch_lengths.push_back(node.getChild(0).getBranchLength());
+                branch_lengths.push_back(node.getChild(1).getBranchLength());
+            }
+        }
+        return intersect;
+    }
 }

@@ -48,14 +48,14 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
     size_t sim_pid_start = size_t(floor( (double(pid) / num_processes * n_samples ) ) );
     size_t sim_pid_end   = std::max( int(sim_pid_start), int(floor( (double(pid+1) / num_processes * n_samples ) ) - 1) );
     
-    size_t index_sample=sim_pid_start;
-    size_t current_pp_sim=sim_pid_start;
-    for ( ; index_sample<=sim_pid_end; ++current_pp_sim, index_sample+=thinning)
+    size_t index_sample = sim_pid_start;
+    size_t current_pp_sim = sim_pid_start;
+    for ( ; index_sample <= sim_pid_end; ++current_pp_sim, index_sample += thinning)
     {
         
         // create a new directory name for this simulation
         std::stringstream s;
-        s << directory << path_separator << "posterior_predictive_sim_" << (current_pp_sim+1);
+        s << directory << path_separator << "posterior_predictive_sim_" << (current_pp_sim + 1);
         std::string sim_directory_name = s.str();
         
         // now for the numerical parameters
@@ -71,7 +71,7 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                 if ( the_node->getName() == parameter_name )
                 {
                     // set the value for the variable with the i-th sample
-                    the_node->setValueFromString( traces[j].objectAt( j ) );
+                    the_node->setValueFromString( traces[j].objectAt( current_pp_sim ) );
                 }
             
             }

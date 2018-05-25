@@ -2,6 +2,7 @@
 #define DelimitedCharacterDataWriter_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
+#include "HomologousCharacterData.h"
 
 #include <iostream>
 #include <fstream>
@@ -24,8 +25,9 @@ namespace RevBayesCore {
     public:
         DelimitedCharacterDataWriter();
         
-        void                    writeData(const std::string& fn, const AbstractHomologousDiscreteCharacterData &d, char del='\t');
-        
+        void                    writeData(const std::string& fn, const HomologousCharacterData &d, char del='\t');
+//        void                    writeData(const std::string& fn, const Abstr &d, char del='\t');
+
         
     };
     

@@ -69,6 +69,7 @@ namespace RevBayesCore {
         std::string                                 getStateLabels(void);                                                       //!< Get the possible state labels
         std::string                                 getStateLabels(void) const;                                                 //!< Get the possible state labels
         void                                        includeTaxon(const std::string& s);                                         //!< Include taxon
+        size_t                                      indexOfTaxonWithName(const std::string& s) const;                           //!< Get the index of the taxon
         bool                                        isSequenceMissing(const std::string &n) const;                              //!< Returns whether the contains only missing data or has some actual observations
         bool                                        isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
         bool                                        isTaxonExcluded(const std::string& s) const;                                //!< Is the taxon excluded
@@ -90,10 +91,6 @@ namespace RevBayesCore {
                                                     AbstractCharacterData(const AbstractCharacterData &d);                      //!< Constructor requires character type
 
         AbstractCharacterData&                      operator=(const AbstractCharacterData &d);                                                                                      //!< Constructor requires character type
-
-
-        // Utility functions
-        size_t                                      indexOfTaxonWithName(const std::string& s) const;                           //!< Get the index of the taxon
         
         // Member variables
         std::set<size_t>                            deletedTaxa;                                                                //!< Set of deleted taxa

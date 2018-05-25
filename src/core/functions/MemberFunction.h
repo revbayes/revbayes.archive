@@ -85,7 +85,8 @@ RevBayesCore::MemberFunction<memberObjectType,valueType>* RevBayesCore::MemberFu
 
 
 template <class memberObjectType, class valueType>
-void RevBayesCore::MemberFunction<memberObjectType,valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::MemberFunction<memberObjectType,valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
     if ( the_member_variable == oldP )
     {
@@ -114,8 +115,8 @@ template <class memberObjectType, class valueType>
 void RevBayesCore::MemberFunction<memberObjectType,valueType>::update( void )
 {
     
-    const MemberObject<valueType>& theMemberObject = dynamic_cast<const MemberObject<valueType>& >( the_member_variable->getValue() );
-    theMemberObject.executeMethod(method_name,args,*this->value);
+    const MemberObject<valueType>& the_member_object = dynamic_cast<const MemberObject<valueType>& >( the_member_variable->getValue() );
+    the_member_object.executeMethod(method_name,args,*this->value);
     
 }
 

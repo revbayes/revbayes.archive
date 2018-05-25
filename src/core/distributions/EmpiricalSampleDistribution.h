@@ -223,7 +223,7 @@ double RevBayesCore::EmpiricalSampleDistribution<valueType>::computeLnProbabilit
     {
         if ( i >= sample_block_start && i < sample_block_end )
         {
-            ln_probs[i] = base_distribution_instances[i]->computeLnProbability();
+            ln_probs[i] = base_distribution_instances[i]->computeLnProbability() / num_samples;
         }
         
     }

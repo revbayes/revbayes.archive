@@ -7,6 +7,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlContinuousTaxonData.h"
+#include "RlDistanceMatrix.h"
 #include "RlString.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
@@ -210,6 +211,16 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
         
         return new RevVariable( new Real(min) );
     }
+    else if ( name == "getPairwiseSpeciesDifference" )
+    {
+        found = true;
+        
+        // get the argument for the index
+        long index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        RevBayesCore::DistanceMatrix pd = this->dag_node->getValue().getPairwiseSpeciesDifference( index );
+        
+        return new RevVariable( new DistanceMatrix(pd) );
+    }
     else if ( name == "varDifference" )
     {
         found = true;
@@ -312,6 +323,10 @@ void ContinuousCharacterData::initMethods( void )
     squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
     
+    ArgumentRules* pairwise_difference_arg_rules = new ArgumentRules();
+    pairwise_difference_arg_rules->push_back( new ArgumentRule( "charIndex" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "getPairwiseSpeciesDifference", DistanceMatrix::getClassTypeSpec(), pairwise_difference_arg_rules) );
+
     ArgumentRules* max_diff_arg_rules = new ArgumentRules();
     max_diff_arg_rules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "maxDifference", Real::getClassTypeSpec(), max_diff_arg_rules ) );
