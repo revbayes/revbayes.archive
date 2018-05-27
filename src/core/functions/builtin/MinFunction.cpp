@@ -4,7 +4,8 @@
 using namespace RevBayesCore;
 
 MinFunction::MinFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ),
-    matrix(false), vals( v )
+    matrix(false),
+    vals( v )
 {
     // add the parameters as parents
     this->addParameter( vals );
@@ -13,7 +14,8 @@ MinFunction::MinFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunct
 }
 
 MinFunction::MinFunction(const TypedDagNode< MatrixReal > *v) : TypedFunction<double>( new double(0.0) ),
-    matrix(true), vals( v )
+    matrix(true),
+    vals( v )
 {
     // add the parameters as parents
     this->addParameter( vals );
@@ -22,53 +24,65 @@ MinFunction::MinFunction(const TypedDagNode< MatrixReal > *v) : TypedFunction<do
 }
 
 
-MinFunction::~MinFunction( void ) {
+MinFunction::~MinFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-MinFunction* MinFunction::clone( void ) const {
+MinFunction* MinFunction::clone( void ) const
+{
     return new MinFunction( *this );
 }
 
 
-void MinFunction::update( void ) {
+void MinFunction::update( void )
+{
     
     double m;
-    if( matrix )
+    if( matrix == true )
     {
         const MatrixReal &v = dynamic_cast<const TypedDagNode< MatrixReal >* >(vals)->getValue();
         m = RbConstants::Double::inf;
 
-        for ( size_t row = 0; row < v.size(); row++) {
-            for ( size_t col = 0; col < v[row].size(); col++) {
+        for ( size_t row = 0; row < v.size(); row++)
+        {
+            for ( size_t col = 0; col < v[row].size(); col++)
+            {
                 if( v[row][col] < m )
+                {
                     m = v[row][col];
+                }
+                
             }
         }
     }
     else
     {
-        const std::vector<double> &v = dynamic_cast<const TypedDagNode< RbVector<double> >* >(vals)->getValue();
-        m = *(v.begin());
-        if (v.size() > 1)
+        const RbVector<double> &v = dynamic_cast<const TypedDagNode< RbVector<double> >* >(vals)->getValue();
+        m = RbConstants::Double::inf;
+        for ( size_t i=0; i<v.size(); ++i)
         {
-            for ( std::vector<double>::const_iterator it = v.begin()+1; it != v.end(); ++it) {
-                if (  *it < m) {
-                    m = *it;
-                }
+            if (  v[i] < m )
+            {
+                m = v[i];
             }
         }
+        
     }
+    
+    *value = m;
     
 }
 
 
 
-void MinFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void MinFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
-    if ( oldP == vals ) {
+    if ( oldP == vals )
+    {
         vals = newP;
     }
     
