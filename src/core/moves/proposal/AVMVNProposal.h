@@ -70,7 +70,7 @@ namespace RevBayesCore {
         
         double                                              sigma;                                                  //!< Variance of pre-learned (independent) normal proposal, also scales the MVN (proportional to variance, not SD)
         double                                              epsilon;                                                //!< Controls the weighting of the learned VCV and an Identity matrix ( eps * I + (1-eps) * empirical)
-        double                                              dim;                                                    //!< Dimension of proposal
+        size_t                                              dim;                                                    //!< Dimension of proposal
         double                                              lnHastingsratio;                                        //!< The Hastings ratio, so that helper functions can adjust as needed
         
         std::vector<double>                                 storedValues;                                           //!< The values before proposing the move, for resetting

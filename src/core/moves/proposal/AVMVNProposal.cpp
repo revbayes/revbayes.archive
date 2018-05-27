@@ -39,7 +39,7 @@ AVMVNProposal::AVMVNProposal( double s, double e, double n0, double c0, double m
     maxUpdates ( m ),
     nTried ( 0 ),
     updates ( 0 ),
-    dim ( 0.0 ),
+    dim ( 0 ),
     C_emp(  ),
     AVMVN_cholesky_L(  ),
     x_bar(  ),
@@ -589,7 +589,7 @@ void AVMVNProposal::tune( double rate )
         {
             for (size_t j=i; j<dim; ++j)
             {
-                vcv[i][j] = 1/dim * sigma * ((1 - epsilon) * C_emp[i][j] + epsilon * vcv[i][j]);
+                vcv[i][j] = 1.0/dim * sigma * ((1.0 - epsilon) * C_emp[i][j] + epsilon * vcv[i][j]);
                 vcv[j][i] = vcv[i][j];
             }
         }
@@ -598,7 +598,7 @@ void AVMVNProposal::tune( double rate )
     {
         for (size_t i=0; i<dim; ++i)
         {
-            vcv[i][i] = 1/dim * sigma;
+            vcv[i][i] = 1.0/dim * sigma;
         }
     }
     
