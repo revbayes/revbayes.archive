@@ -105,11 +105,12 @@ void Move_AVMVN::constructInternalObject( void )
     double e = static_cast<const Probability &>( epsilon->getRevObject() ).getValue();
     int n0   = static_cast<const Natural &>( waitBeforeLearning->getRevObject() ).getValue();
     int c0   = static_cast<const Natural &>( waitBeforeUsing->getRevObject() ).getValue();
+    int m    = static_cast<const Natural &>( maxUpdates->getRevObject() ).getValue();
     
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
     // finally create the internal move object
-    RevBayesCore::AVMVNProposal *prop = new RevBayesCore::AVMVNProposal(s, e, n0, c0);
+    RevBayesCore::AVMVNProposal *prop = new RevBayesCore::AVMVNProposal(s, e, n0, c0, m);
     
     value = new RevBayesCore::MetropolisHastingsMove(prop,w,t);
     
@@ -363,6 +364,7 @@ const MemberRules& Move_AVMVN::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule( "epsilon"             , RealPos::getClassTypeSpec()  , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(0.5) ) );
         memberRules.push_back( new ArgumentRule( "waitBeforeLearning"  , Natural::getClassTypeSpec()  , "The number of move attempts to wait before tracking the covariance of the variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(2500) ) );
         memberRules.push_back( new ArgumentRule( "waitBeforeUsing"     , Natural::getClassTypeSpec()  , "The number of move attempts to wait before using the learned covariance matrix.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(5000) ) );
+        memberRules.push_back( new ArgumentRule( "maxUpdates"          , Natural::getClassTypeSpec()  , "The maximum number of updates to the empirical covariance matrix.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10000) ) );
         memberRules.push_back( new ArgumentRule( "tune"                , RlBoolean::getClassTypeSpec(), "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
@@ -427,6 +429,10 @@ void Move_AVMVN::setConstParameter(const std::string& name, const RevPtr<const R
     else if ( name == "waitBeforeUsing" )
     {
         waitBeforeUsing = var;
+    }
+    else if ( name == "maxUpdates" )
+    {
+        maxUpdates = var;
     }
     else if ( name == "tune" )
     {
