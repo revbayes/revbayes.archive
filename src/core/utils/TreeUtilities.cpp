@@ -350,9 +350,9 @@ void RevBayesCore::TreeUtilities::makeUltrametric(Tree *t)
 
 int RevBayesCore::TreeUtilities::getNodalDistance(const TopologyNode *left, const TopologyNode *right)
 {
-    if ( left == right ) 
+    if ( left == right || &left->getParent() == right || left == &right->getParent() )
     {
-        return -1;
+        return 0;
     }
     else if ( left->getAge() < right->getAge() )
     {
@@ -882,3 +882,5 @@ std::set<size_t> RevBayesCore::TreeUtilities::recursivelyGetPSSP(const TopologyN
         return intersect;
     }
 }
+
+
