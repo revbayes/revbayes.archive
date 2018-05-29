@@ -361,6 +361,15 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         size_t state_index = (size_t)static_cast<const TypedDagNode<int> *>( args[1] )->getValue();
         rv = RevBayesCore::TreeUtilities::getMeanInverseES( *this, c->getValue(), state_index );
     }
+    else if ( n == "calculateNRI" )
+    {
+        const TypedDagNode< AbstractHomologousDiscreteCharacterData >* c = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( args[0] );
+        size_t state_index = (size_t)static_cast<const TypedDagNode<int> *>( args[1] )->getValue();
+        size_t site_index = (size_t)static_cast<const TypedDagNode<int> *>( args[2] )->getValue() - 1;
+        bool w = (bool)static_cast<const TypedDagNode<bool> *>( args[3] )->getValue();
+        size_t reps = (size_t)static_cast<const TypedDagNode<int> *>( args[4] )->getValue();
+        rv = RevBayesCore::TreeUtilities::calculateNRI(*this, c->getValue(), site_index, state_index, w, reps);
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");
