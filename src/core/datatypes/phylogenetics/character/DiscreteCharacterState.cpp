@@ -8,7 +8,9 @@ using namespace RevBayesCore;
 
 
 /** Constructor */
-DiscreteCharacterState::DiscreteCharacterState(size_t n) : CharacterState()
+DiscreteCharacterState::DiscreteCharacterState(size_t n) : CharacterState(),
+weighted_(false),
+weights_(std::vector<double>(n,1.0/n))
 {
 
 
@@ -63,12 +65,12 @@ void DiscreteCharacterState::operator++( void )
 
     size_t index = getStateIndex();
     ++index;
-    
+
     if ( index >= getNumberOfStates() )
     {
         throw RbException("Cannot increment character state any further; we are already at the last state.");
     }
-    
+
     // unset the current state
     setStateByIndex( index );
 //
@@ -88,16 +90,16 @@ void DiscreteCharacterState::operator++( int i )
     {
         throw RbException("Cannot increment an ambiguous character.");
     }
-    
+
     size_t index = getStateIndex();
     ++index;
-    
+
     if ( index >= getNumberOfStates() )
     {
         throw RbException("Cannot increment character state any further; we are already at the last state.");
     }
 
-    
+
     // unset the current state
     setStateByIndex( index );
 
@@ -110,7 +112,7 @@ void DiscreteCharacterState::operator+=( int i )
     {
         throw RbException("Cannot increment an ambiguous character.");
     }
-    
+
     size_t index = getStateIndex();
     index += i;
 
@@ -119,7 +121,7 @@ void DiscreteCharacterState::operator+=( int i )
         throw RbException("Cannot increment character state any further; we are already at the last state.");
     }
 
-    
+
     // unset the current state
     setStateByIndex( index );
 
@@ -141,17 +143,17 @@ void DiscreteCharacterState::operator--( void )
     {
         throw RbException("Cannot decrement an ambiguous character.");
     }
-    
-    
+
+
     size_t index = getStateIndex();
-    
+
     if ( index == 0 )
     {
         throw RbException("Cannot decrement character state any further; we are already at the first state.");
     }
 
     --index;
-    
+
     // unset the current state
     setStateByIndex( index );
 
@@ -165,17 +167,17 @@ void DiscreteCharacterState::operator--( int i )
     {
         throw RbException("Cannot decrement an ambiguous character.");
     }
-    
-    
+
+
     size_t index = getStateIndex();
-    
+
     if ( index == 0 )
     {
         throw RbException("Cannot decrement character state any further; we are already at the first state.");
     }
-    
+
     --index;
-    
+
     // unset the current state
     setStateByIndex( index );
 
@@ -188,16 +190,16 @@ void DiscreteCharacterState::operator-=( int i )
     {
         throw RbException("Cannot decrement an ambiguous character.");
     }
-    
+
     size_t index = getStateIndex();
-    
+
     if ( index < i )
     {
         throw RbException("Cannot decrement character state any further; we are already at the first state.");
     }
-    
+
     index -= i;
-    
+
     // unset the current state
     setStateByIndex( index );
 
@@ -213,13 +215,13 @@ std::string DiscreteCharacterState::getStateDescription(void) const
 std::vector<std::string> DiscreteCharacterState::getStateDescriptions(void) const
 {
     std::string state_labels = getStateLabels();
-    
+
     std::vector<std::string> state_descriptions(state_labels.size());
     for (size_t i = 0; i < state_labels.size(); i++)
     {
         state_descriptions[i] = state_labels[i];
     }
-    
+
     return state_descriptions;
 }
 
@@ -277,16 +279,24 @@ bool DiscreteCharacterState::isAmbiguous( void ) const
 bool DiscreteCharacterState::isStateSet(size_t index) const
 {
     RbBitSet bs = getState();
-    
+
     return bs.isSet(index);
 }
 
 
 bool DiscreteCharacterState::isWeighted( void ) const
 {
-    // @Bastien: Dummy function
-    return false;
+    return weighted_;
 }
+
+
+void DiscreteCharacterState::setWeighted( bool tf )
+{
+    weighted_ = tf;
+
+    return;
+}
+
 
 size_t DiscreteCharacterState::getStateIndex(void) const
 {
@@ -294,9 +304,9 @@ size_t DiscreteCharacterState::getStateIndex(void) const
     {
         throw RbException("Cannot get the index of an ambiguous state.");
     }
-    
+
     RbBitSet bs = getState();
-    
+
     return bs.getFirstSetBit();
 }
 
@@ -306,6 +316,7 @@ size_t DiscreteCharacterState::getStateIndex(void) const
 size_t DiscreteCharacterState::getNumberObservedStates(void) const
 {
     RbBitSet bs = getState();
+
     return bs.getNumberSetBits();
 }
 
@@ -320,7 +331,5 @@ size_t DiscreteCharacterState::getNumberOfStates(void) const
 
 const std::vector<double> DiscreteCharacterState::getWeights() const
 {
-    
-    // @Bastien: Change this function as needed!beta
-    return std::vector<double>(getNumberObservedStates(), 1.0);
+    return weights_;
 }

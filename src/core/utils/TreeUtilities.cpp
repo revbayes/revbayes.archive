@@ -1,5 +1,7 @@
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "MatrixReal.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "RbBitSet.h"
 #include "RbException.h"
 #include "StringUtilities.h"
@@ -165,6 +167,9 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t, bool
         nodes[i]->setAge( ages[i] );
     }
 
+    // copy the root edge
+    root->setBranchLength( bln.getBranchLength() );
+
     return tt;
 }
 
@@ -216,6 +221,8 @@ RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(con
 
     return distMat;
 }
+
+
 
 
 size_t RevBayesCore::TreeUtilities::getMrcaIndex(const TopologyNode *left, const TopologyNode *right)
@@ -343,6 +350,40 @@ void RevBayesCore::TreeUtilities::makeUltrametric(Tree *t)
         t->getTipNode( i ).setAge(0.0);
     }
     
+}
+
+
+int RevBayesCore::TreeUtilities::getNodalDistance(const TopologyNode *left, const TopologyNode *right)
+{
+    if ( left == right || &left->getParent() == right || left == &right->getParent() )
+    {
+        return 0;
+    }
+    else if ( left->getAge() < right->getAge() )
+    {
+        return 1 + RevBayesCore::TreeUtilities::getNodalDistance( &left->getParent(), right );
+    }
+    else
+    {
+        return 1 + RevBayesCore::TreeUtilities::getNodalDistance( left, &right->getParent() );
+    }
+}
+
+
+RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getNodalDistanceMatrix(const Tree& tree)
+{
+    RevBayesCore::MatrixReal matrix = MatrixReal( tree.getNumberOfTips() );
+
+    std::vector<Taxon> names = tree.getTaxa( ) ;
+    for (size_t i = 0; i < names.size(); i++)
+    {
+        for (size_t j = i + 1; j < names.size(); j++)
+        {
+            matrix[i][j] = matrix[j][i] = TreeUtilities::getNodalDistance(&tree.getTipNode(i), &tree.getTipNode(j));
+        }
+    }
+
+    return new DistanceMatrix(matrix, names);
 }
 
 
@@ -710,4 +751,375 @@ std::set<size_t> RevBayesCore::TreeUtilities::recursivelyComputeFitch(const Topo
         }
         return intersect;
     }
+}
+
+
+/* 
+ *
+ * The mean inverse equal splits metric for tips in a single state as described in:
+ * Rabosky and Goldberg (2017) "FiSSE: A simple nonparametric test for the effects of a binary character on lineage diversiﬁcation rates"
+ *
+ * This metric is typically calculated for a single character at a time, but here it is extended over multiple characters.
+ *
+ */
+double RevBayesCore::TreeUtilities::getMeanInverseES(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index)
+{
+    if (t.isRooted() == false)
+    {
+        throw RbException("Mean inverse ES can only be calculated on rooted trees.");
+    }
+
+    std::vector<double> summed_inverse_es = std::vector<double>(c.getNumberOfCharacters(), 0);
+    std::vector<double> num_tips_in_state = std::vector<double>(c.getNumberOfCharacters(), 0);
+    std::vector<std::string> tip_names = t.getTipNames();
+
+    // calculate equal splits (ES) measure for each tip as necessary
+    for (size_t i = 0; i < tip_names.size(); i++)
+    {
+        bool calculated_for_tip = false;
+        double tip_es = 0;
+        size_t node_index = t.getTipNodeWithName( tip_names[i] ).getIndex();
+
+        for (size_t j = 0; j < c.getNumberOfCharacters(); j++)
+        {
+            size_t state = c.getTaxonData(tip_names[i]).getCharacter(j).getStateIndex();
+            if (state == state_index)
+            {
+                num_tips_in_state[j] += 1;
+                if (calculated_for_tip == true)
+                {
+                    if (tip_es != 0)
+                    {
+                        summed_inverse_es[j] += 1/tip_es;
+                    }
+                }
+                else
+                {
+                    // traverse from tip to root
+                    double depth = 1;
+                    while (true)
+                    {
+                        if (t.getNode(node_index).isRoot() == true)
+                        {
+                            break;
+                        }
+                        tip_es += t.getNode(node_index).getBranchLength() * (1 / pow(2, depth - 1));
+                        node_index = t.getNode(node_index).getParent().getIndex();
+                        depth++;
+                    }
+                    if (tip_es != 0)
+                    {
+                        summed_inverse_es[j] += 1/tip_es;
+                    }
+                    calculated_for_tip = true;
+                }
+            }
+        }
+    }
+
+    // calculate mean inverse ES for the character state
+    double mean_inverse_es = 0;
+    for (size_t i = 0; i < c.getNumberOfCharacters(); i++)
+    {
+        if (num_tips_in_state[i] != 0)
+        {
+            mean_inverse_es += (1/num_tips_in_state[i]) * summed_inverse_es[i];
+        }
+    }
+    return mean_inverse_es;
+}
+
+
+/* 
+ * Returns the Parsimoniously Same State Paths (PSSP). This is the set of branch lengths 
+ * from clades parsimoniously reconstructed to have the same state. Given (((A,B),C),(D,E)), if A, B, 
+ * D, and E are in state 0, then PSSP(0) will contain the four branch lengths in (A,B) and (D,E). Uses 
+ * Fitch's (1970) algorithm for parsimony ancestral state reconstruction.
+ */
+std::vector<double> RevBayesCore::TreeUtilities::getPSSP(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index)
+{
+    std::vector<double> branch_lengths;
+    if ( c.getNumberOfCharacters() != 1 )
+    {
+        throw RbException("getPSSP is only implemented for character alignments with a single site.");
+    }
+    recursivelyGetPSSP(t.getRoot(), c, branch_lengths, state_index);
+    return branch_lengths;
+}
+
+
+std::set<size_t> RevBayesCore::TreeUtilities::recursivelyGetPSSP(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, std::vector<double> &branch_lengths, size_t state_index)
+{
+    if (node.isTip() == true)
+    {
+        std::set<size_t> tip_set;
+        std::string n = node.getName();
+        size_t state = c.getTaxonData(n).getCharacter(0).getStateIndex();
+        tip_set.insert( state );
+        return tip_set;
+    }
+    else
+    {
+        if ( node.getNumberOfChildren() != 2 )
+        {
+            throw RbException("getPSSP is only implemented for binary trees.");
+        }
+        std::set<size_t> l = recursivelyGetPSSP(node.getChild(0), c, branch_lengths, state_index);
+        std::set<size_t> r = recursivelyGetPSSP(node.getChild(1), c, branch_lengths, state_index);
+
+        std::set<size_t> intersect;
+        set_intersection(l.begin(), l.end(), r.begin(), r.end(), std::inserter(intersect, intersect.begin()));
+
+        if (intersect.size() == 0)
+        {
+            std::set<size_t> union_set;
+            set_union(l.begin(), l.end(), r.begin(), r.end(), std::inserter(union_set, union_set.begin()));
+            return union_set;
+        }
+        if (intersect.size() == 1)
+        {
+            if (intersect.find(state_index) != intersect.end())
+            {
+                branch_lengths.push_back(node.getChild(0).getBranchLength());
+                branch_lengths.push_back(node.getChild(1).getBranchLength());
+            }
+        }
+        return intersect;
+    }
+}
+
+
+/* 
+ *
+ * Calculate the Net Relatedness Index (NRI; Webb 2000) for taxa with a certain observed character state.
+ *
+ * This function optionally calculates a weighted version of NRI that utilizes branch lengths.
+ *
+ */
+double RevBayesCore::TreeUtilities::calculateNRI(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool weighted, size_t num_randomizations)
+{
+    
+    DistanceMatrix* d = getNodalDistanceMatrix(t);
+    DistanceMatrix* d_w;
+    if (weighted == true)
+    {
+        d_w = getDistanceMatrix(t);
+    }
+
+    // get mean nodal distances for all taxa in the observed state
+    double total_dist = 0.0;
+    double num_dist = 0.0;
+    size_t num_taxa_in_state = 0;
+    std::vector<std::string> tip_names = t.getTipNames();
+    for (size_t i = 0; i < tip_names.size(); ++i)
+    {
+        std::string name1 = d->getTaxa()[i].getName();
+        size_t state1 = c.getTaxonData(name1).getCharacter(site_index).getStateIndex();
+        if (state1 == state_index)
+        {
+            num_taxa_in_state += 1;
+            for (size_t j = i + 1; j < tip_names.size(); ++j)
+            {
+                if (j != i)
+                {
+                    std::string name2 = d->getTaxa()[j].getName();
+                    size_t state2 = c.getTaxonData(name2).getCharacter(site_index).getStateIndex();
+                    if (state2 == state_index)
+                    {
+                        if (weighted == true)
+                        {
+                            total_dist += d->getMatrix()[i][j] * d_w->getMatrix()[i][j];
+                        }
+                        else
+                        {
+                            total_dist += d->getMatrix()[i][j];
+                        }
+                        num_dist += 1.0;
+                    }
+                }
+            }
+        }   
+    }
+    double mean_nodal_distance = total_dist/num_dist;
+    
+    // randomizations to approximate maximum mean nodal distance
+    double mean_nodal_distance_max = mean_nodal_distance;
+    for (size_t k = 0; k < num_randomizations; ++k)
+    {
+        double total_dist = 0.0;
+        double num_dist = 0.0;
+        std::vector<std::string> new_tip_names;
+
+        // pick random taxa
+        while (new_tip_names.size() < num_taxa_in_state)
+        {
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            size_t u = rng->uniform01() * tip_names.size();
+            std::string new_name = tip_names[u];
+            if (std::find(new_tip_names.begin(), new_tip_names.end(), new_name) == new_tip_names.end())
+            {
+                new_tip_names.push_back(new_name);
+            }
+        }
+        
+        // calculate mean nodal distance for random taxa
+        for (size_t i = 0; i < tip_names.size(); ++i)
+        {
+            std::string name1 = d->getTaxa()[i].getName();
+            if (std::find(new_tip_names.begin(), new_tip_names.end(), name1) != new_tip_names.end())
+            {
+                for (size_t j = i + 1; j < tip_names.size(); ++j)
+                {
+                    if (j != i)
+                    {
+                        std::string name2 = d->getTaxa()[j].getName();
+                        if (std::find(new_tip_names.begin(), new_tip_names.end(), name2) != new_tip_names.end())
+                        {
+                            if (weighted == true)
+                            {
+                                total_dist += d->getMatrix()[i][j] * d_w->getMatrix()[i][j];
+                            }
+                            else
+                            {
+                                total_dist += d->getMatrix()[i][j];
+                            }
+                            num_dist += 1.0;
+                        }
+                    }
+                }
+            }   
+        }
+        double temp_mean_nodal_distance = total_dist/num_dist;
+        if (temp_mean_nodal_distance > mean_nodal_distance_max)
+        {
+            mean_nodal_distance_max = temp_mean_nodal_distance;
+        } 
+    }
+
+    return 1 - (mean_nodal_distance/mean_nodal_distance_max);
+}
+
+
+/* 
+ *
+ * Calculate the Nearest Taxa Index (NTI; Webb 2000) for taxa with a certain observed character state.
+ *
+ * This function optionally calculates a weighted version of NTI that utilizes branch lengths.
+ *
+ */
+double RevBayesCore::TreeUtilities::calculateNTI(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool weighted, size_t num_randomizations)
+{
+    
+    DistanceMatrix* d = getNodalDistanceMatrix(t);
+    DistanceMatrix* d_w;
+    if (weighted == true)
+    {
+        d_w = getDistanceMatrix(t);
+    }
+
+    // get the nodal distances of the closest relative of all taxa in the observed state
+    double total_dist = 0.0;
+    double num_dist = 0.0;
+    size_t num_taxa_in_state = 0;
+    std::vector<std::string> tip_names = t.getTipNames();
+    for (size_t i = 0; i < tip_names.size(); ++i)
+    {
+        std::string name1 = d->getTaxa()[i].getName();
+        size_t state1 = c.getTaxonData(name1).getCharacter(site_index).getStateIndex();
+        if (state1 == state_index)
+        {
+            num_taxa_in_state += 1;
+            double min_dist = 0.0;
+            for (size_t j = 0; j < tip_names.size(); ++j)
+            {
+                if (j != i)
+                {
+                    std::string name2 = d->getTaxa()[j].getName();
+                    size_t state2 = c.getTaxonData(name2).getCharacter(site_index).getStateIndex();
+                    if (state2 == state_index)
+                    {
+                        double this_dist = 0.0;
+                        if (weighted == true)
+                        {
+                            this_dist = d->getMatrix()[i][j] * d_w->getMatrix()[i][j];
+                        }
+                        else
+                        {
+                            this_dist = d->getMatrix()[i][j];
+                        }
+                        if (this_dist < min_dist || min_dist == 0.0)
+                        {
+                            min_dist = this_dist;
+                        }
+                    }
+                }
+            }
+            total_dist += min_dist;
+            num_dist += 1.0;
+        }   
+    }
+    double mean_nodal_distance = total_dist/num_dist;
+    
+    // randomizations to approximate the maximum mean nodal distance to nearest relative
+    double mean_nodal_distance_max = mean_nodal_distance;
+    for (size_t k = 0; k < num_randomizations; ++k)
+    {
+        double total_dist = 0.0;
+        double num_dist = 0.0;
+        std::vector<std::string> new_tip_names;
+
+        // pick random taxa
+        while (new_tip_names.size() < num_taxa_in_state)
+        {
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            size_t u = rng->uniform01() * tip_names.size();
+            std::string new_name = tip_names[u];
+            if (std::find(new_tip_names.begin(), new_tip_names.end(), new_name) == new_tip_names.end())
+            {
+                new_tip_names.push_back(new_name);
+            }
+        }
+        
+        // calculate mean nodal distance for random taxa
+        for (size_t i = 0; i < tip_names.size(); ++i)
+        {
+            std::string name1 = d->getTaxa()[i].getName();
+            if (std::find(new_tip_names.begin(), new_tip_names.end(), name1) != new_tip_names.end())
+            {
+                double min_dist = 0.0;
+                for (size_t j = i + 1; j < tip_names.size(); ++j)
+                {
+                    if (j != i)
+                    {
+                        std::string name2 = d->getTaxa()[j].getName();
+                        if (std::find(new_tip_names.begin(), new_tip_names.end(), name2) != new_tip_names.end())
+                        {
+                            double this_dist = 0.0;
+                            if (weighted == true)
+                            {
+                                this_dist = d->getMatrix()[i][j] * d_w->getMatrix()[i][j];
+                            }
+                            else
+                            {
+                                this_dist = d->getMatrix()[i][j];
+                            }
+                            if (this_dist < min_dist || min_dist == 0.0)
+                            {
+                                min_dist = this_dist;
+                            }
+                        }
+                    }
+                }
+                total_dist += min_dist;
+                num_dist += 1.0;
+            }   
+        }
+        double temp_mean_nodal_distance = total_dist/num_dist;
+        if (temp_mean_nodal_distance > mean_nodal_distance_max)
+        {
+            mean_nodal_distance_max = temp_mean_nodal_distance;
+        } 
+    }
+
+    return 1 - (mean_nodal_distance/mean_nodal_distance_max);
 }

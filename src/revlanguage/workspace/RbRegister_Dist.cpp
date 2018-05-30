@@ -122,11 +122,13 @@
 /* Tree priors (in folder "distributions/phylogenetics/tree") */
 #include "Dist_bdp.h"
 #include "Dist_bdp_complete.h"
+#include "Dist_BirthDeathBurstProcess.h"
 #include "Dist_CharacterDependentBirthDeathProcess.h"
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
 #include "Dist_conditionedBirthDeathShiftProcessContinuous.h"
 #include "Dist_ConstrainedTopology.h"
+#include "Dist_ConstrainedNodeAge.h"
 #include "Dist_ConstrainedNodeOrder.h"
 #include "Dist_WeightedConstrainedNodeOrder.h"
 #include "Dist_FBDP.h"
@@ -276,6 +278,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // constant rate birth-death process
         AddDistribution< TimeTree                   >( new Dist_bdp());
         AddDistribution< TimeTree                   >( new Dist_bdp_complete());
+        
+        AddDistribution< TimeTree                   >( new Dist_BirthDeathBurstProcess());
 
         AddDistribution< TimeTree                   >( new Dist_CharacterDependentBirthDeathProcess() );
         AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
@@ -314,6 +318,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentInverseGammaPrior() );
         AddDistribution< TimeTree                   >( new Dist_multispeciesCoalescentUniformPrior() );
         
+        // constrained node age distribution
+        AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeAge() );
+
         // constrained node order distribution
         AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeOrder() );
 

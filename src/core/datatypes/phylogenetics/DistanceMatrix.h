@@ -34,6 +34,7 @@ namespace RevBayesCore {
         RbVector<double>&                       		operator[](size_t index);
         const RbVector<double>&                 		operator[](size_t index) const;
         double& 										getElement( size_t i, size_t j ) ;
+        void                                            setTaxon(const Taxon &t, size_t i);
         size_t 											size(void) const;
     
     protected:

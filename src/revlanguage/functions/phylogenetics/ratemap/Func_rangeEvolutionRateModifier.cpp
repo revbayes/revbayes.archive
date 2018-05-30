@@ -45,9 +45,13 @@ RevBayesCore::TypedFunction< RevBayesCore::CharacterHistoryRateModifier >* Func_
     RevBayesCore::TypedDagNode<double>* gf = static_cast<const Real&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* lf = static_cast<const Real&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* c = NULL;
-    if ( this->args[2].getVariable()->getRevObject().isType( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() ) )
+    if ( this->args[2].getVariable()->getRevObject().isType( ModelVector<ModelVector<Real> >::getClassTypeSpec() ) )
     {
-        c = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+        c = static_cast<const ModelVector<ModelVector<Real> > &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+    }
+    else
+    {
+        throw RbException("Failed to type cast `matrix` argument!");
     }
     size_t nc = static_cast<const Natural&>( this->args[3].getVariable()->getRevObject() ).getValue();
     

@@ -9,6 +9,7 @@
 #include "BiogeographicCladoEvent.h"
 #include "DistributionExponential.h"
 #include "RateMatrix.h"
+#include "RbBitSet.h"
 #include "RbException.h"
 #include "RbVector.h"
 #include "Simplex.h"
@@ -26,6 +27,7 @@ namespace RevBayesCore {
     class PhyloCTMCClado : public AbstractPhyloCTMCSiteHomogeneous<charType> {
 
     public:
+//        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false, bool internal = false, bool gapmatch = true );
         PhyloCTMCClado(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal, bool gapmatch);
         PhyloCTMCClado(const PhyloCTMCClado &n);
         virtual                                            ~PhyloCTMCClado(void);                                                                   //!< Virtual destructor
@@ -107,8 +109,10 @@ namespace RevBayesCore {
 #include <map>
 #include <vector>
 
+//        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false, bool internal = false, bool gapmatch = true );
+
 template<class charType>
-RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal, bool gapmatch) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb ),
+RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal, bool gapmatch) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb, false, false, true ),
 
     cladoPartialLikelihoods(NULL),
     cladoMarginalLikelihoods(NULL),
@@ -396,7 +400,6 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
                     
                     p_clado_site_mixture[c1] += pl * pr * pcl;
                 }
-
             }
             
             // no cladogenetic probs for sampled ancestors
@@ -604,106 +607,135 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeMarginalRootLikelihood( void
 }
 
 
-
 template<class charType>
 void RevBayesCore::PhyloCTMCClado<charType>::computeTipLikelihood(const TopologyNode &node, size_t node_index)
 {
+    
     double* p_node = this->partialLikelihoods + this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset;
     
-    const std::vector<bool> &gap_node = this->gap_matrix[node_index];
-    const std::vector<unsigned long> &char_node = this->char_matrix[node_index];
-    
+    // get the current correct tip index in case the whole tree change (after performing an empiricalTree Proposal)
+    size_t data_tip_index = this->taxon_name_2_tip_index_map[ node.getName() ];
+    const std::vector<bool> &gap_node = this->gap_matrix[data_tip_index];
+    const std::vector<unsigned long> &char_node = this->char_matrix[data_tip_index];
+    const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[data_tip_index];
+
     // compute the transition probabilities
     this->updateTransitionProbabilities( node_index, node.getBranchLength() );
-    double* p_mixture = p_node;
+
+    double*   p_mixture      = p_node;
     
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        const double* tp_begin = this->transition_prob_matrices[mixture].theMatrix;
-        
+        const double*                       tp_begin    = this->transition_prob_matrices[mixture].theMatrix;
+
         // get the pointer to the likelihoods for this site and mixture category
-        double* p_site_mixture = p_mixture;
+        double*     p_site_mixture      = p_mixture;
         
         // iterate over all sites
-        for (size_t site = 0; site != this->num_patterns; ++site)
+        for (size_t site = 0; site != this->pattern_block_size; ++site)
         {
-
             // is this site a gap?
             if ( gap_node[site] )
             {
                 // since this is a gap we need to assume that the actual state could have been any state
-
+                
                 // iterate over all initial states for the transitions
                 for (size_t c1 = 0; c1 < this->num_chars; ++c1)
                 {
-
+                    
                     // store the likelihood
                     p_site_mixture[c1] = 1.0;
-
+                    
                 }
             }
             else // we have observed a character
             {
-
-                // get the original character
-                unsigned long org_val = char_node[site];
-
+                
                 // iterate over all possible initial states
                 for (size_t c1 = 0; c1 < this->num_chars; ++c1)
                 {
                     
-                    if ( this->using_ambiguous_characters )
+                    if ( this->using_ambiguous_characters == true && this->using_weighted_characters == false)
                     {
                         // compute the likelihood that we had a transition from state c1 to the observed state org_val
                         // note, the observed state could be ambiguous!
-                        unsigned long val = org_val;
-
+                        const RbBitSet &val = amb_char_node[site];
+                        
                         // get the pointer to the transition probabilities for the terminal states
                         const double* d  = tp_begin+(this->num_chars*c1);
                         
                         double tmp = 0.0;
-
-                        while ( val != 0 ) // there are still observed states left
+                        
+                        for ( size_t i=0; i<val.size(); ++i )
                         {
                             // check whether we observed this state
-                            if ( (val & 1) == 1 )
+                            if ( val.isSet(i) == true )
                             {
                                 // add the probability
                                 tmp += *d;
                             }
-
-                            // remove this state from the observed states
-                            val >>= 1;
-
+                            
                             // increment the pointer to the next transition probability
                             ++d;
                         } // end-while over all observed states for this character
-
+                        
                         // store the likelihood
                         p_site_mixture[c1] = tmp;
-
+                        
+                    }
+                    else if ( this->using_weighted_characters == true )
+                    {
+                        // compute the likelihood that we had a transition from state c1 to the observed state org_val
+                        // note, the observed state could be ambiguous!
+                        const RbBitSet &val = amb_char_node[site];
+                        
+                        // get the pointer to the transition probabilities for the terminal states
+                        const double* d  = tp_begin+(this->num_chars*c1);
+                        
+                        double tmp = 0.0;
+                        std::vector< double > weights = this->value->getCharacter(node_index, site).getWeights();
+                        for ( size_t i=0; i<val.size(); ++i )
+                        {
+                            // check whether we observed this state
+                            if ( val.isSet(i) == true )
+                            {
+                                // add the probability
+                                tmp += *d * weights[i] ;
+                            }
+                            
+                            // increment the pointer to the next transition probability
+                            ++d;
+                        } // end-while over all observed states for this character
+                        
+                        // store the likelihood
+                        p_site_mixture[c1] = tmp;
+                        
                     }
                     else // no ambiguous characters in use
                     {
+                        unsigned long org_val = char_node[site];
+                        
                         // store the likelihood
                         p_site_mixture[c1] = tp_begin[c1*this->num_chars+org_val];
+                        
                     }
-
+                    
                 } // end-for over all possible initial character for the branch
-
+                
             } // end-if a gap state
-
+            
             // increment the pointers to next site
             p_site_mixture+=this->siteOffset;
-
+            
         } // end-for over all sites/patterns in the sequence
-
+        
         // increment the pointers to next mixture category
         p_mixture+=this->mixtureOffset;
-
+        
     } // end-for over all mixture categories
+    
 }
 
 

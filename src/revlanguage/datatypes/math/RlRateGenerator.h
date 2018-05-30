@@ -39,4 +39,4 @@ namespace RevLanguage {
 
 }
 
-#endif /* defined(__revbayes_proj__RlRateGenerator__) */
+#endif /* defined(RlRateGenerator_H) */
