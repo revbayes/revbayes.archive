@@ -66,6 +66,7 @@ namespace RevBayesCore {
         std::vector<double>     getPSSP(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index);
         std::set<size_t>        recursivelyGetPSSP(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, std::vector<double> &branch_lengths, size_t state_index);
         double                  calculateNRI(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool weighted, size_t num_randomizations);
+        double                  calculateNTI(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool weighted, size_t num_randomizations);
 
 
     }
