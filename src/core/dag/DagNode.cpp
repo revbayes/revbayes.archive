@@ -216,6 +216,21 @@ size_t DagNode::decrementReferenceCount( void ) const
 }
 
 
+void DagNode::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const
+{
+    
+    if ( n == "lnProbability" )
+    {
+        rv = const_cast<DagNode *>(this)->getLnProbability();
+    }
+    else
+    {
+        throw RbException("A DAG node does not have a member method called '" + n + "'.");
+    }
+    
+}
+
+
 /**
  * Get all affected nodes this DAGNode.
  * This means we call getAffected() of all children. getAffected() is pure virtual.

@@ -290,6 +290,22 @@ void Tree::initMethods( void )
     meanInverseESArgRules->push_back( new ArgumentRule( "characters", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character alignment from which to compute the mean inverse ES metric.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     meanInverseESArgRules->push_back( new ArgumentRule( "stateIndex", Natural::getClassTypeSpec(), "The state index.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<Tree, RealPos>( "meanInverseES", this, meanInverseESArgRules ) );
+    
+    ArgumentRules* nriArgRules = new ArgumentRules();
+    nriArgRules->push_back( new ArgumentRule( "characters", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character alignment from which to compute the Net Relatedness Index.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    nriArgRules->push_back( new ArgumentRule( "stateIndex", Natural::getClassTypeSpec(), "The state index.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    nriArgRules->push_back( new ArgumentRule( "site", Natural::getClassTypeSpec(), "The index of the site in the alignment to compute NRI.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+    nriArgRules->push_back( new ArgumentRule( "weighted", RlBoolean::getClassTypeSpec(), "Should NRI be weighted by branch lengths?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    nriArgRules->push_back( new ArgumentRule( "randomizations", Natural::getClassTypeSpec(),  "How many randomizations should be performed to find the max mean nodal distance?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1000) ) );
+    methods.addFunction( new MemberFunction<Tree, RealPos>( "calculateNRI", this, nriArgRules ) );
+    
+    ArgumentRules* ntiArgRules = new ArgumentRules();
+    ntiArgRules->push_back( new ArgumentRule( "characters", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character alignment from which to compute the Nearest Taxa Index.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    ntiArgRules->push_back( new ArgumentRule( "stateIndex", Natural::getClassTypeSpec(), "The state index.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    ntiArgRules->push_back( new ArgumentRule( "site", Natural::getClassTypeSpec(), "The index of the site in the alignment to compute NTI.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+    ntiArgRules->push_back( new ArgumentRule( "weighted", RlBoolean::getClassTypeSpec(), "Should NTI be weighted by branch lengths?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    ntiArgRules->push_back( new ArgumentRule( "randomizations", Natural::getClassTypeSpec(),  "How many randomizations should be performed to find the max mean nodal distance?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1000) ) );
+    methods.addFunction( new MemberFunction<Tree, RealPos>( "calculateNTI", this, ntiArgRules ) );
 
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );

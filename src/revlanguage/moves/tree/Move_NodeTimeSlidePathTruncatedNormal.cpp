@@ -41,13 +41,13 @@ void Move_NodeTimeSlidePathTruncatedNormal::constructInternalObject( void )
     // now allocate a new move
     RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *tau = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
+
+    double s = static_cast<const RealPos &>( sigma->getRevObject() ).getValue();
     
+    bool a = static_cast<const RlBoolean &>( scaleByAge->getRevObject() ).getValue();
+
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     
-    double s = static_cast<const RealPos &>( sigma->getRevObject() ).getValue();
-
-    bool a = static_cast<const RealPos &>( scaleByAge->getRevObject() ).getValue();
-
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
 
     RevBayesCore::Proposal *p = new RevBayesCore::NodeTimeSlidePathTruncatedNormalProposal( tau, s, a );
@@ -99,8 +99,8 @@ const MemberRules& Move_NodeTimeSlidePathTruncatedNormal::getParameterRules(void
     {
         
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        memberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec()  , "The strength of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos(1.0) ) );
-        memberRules.push_back( new ArgumentRule( "scaleByAge"  , RlBoolean::getClassTypeSpec(), "Should we scale the proposal variance accounting for the age of the node?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
+        memberRules.push_back( new ArgumentRule( "sigma", TimeTree::getClassTypeSpec(), "The sd of the proposal.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, new RealPos( 1.0 )) );
+        memberRules.push_back( new ArgumentRule( "scaleByAge"  , RlBoolean::getClassTypeSpec(), "Should we additionally use age of node to adjust sd?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         memberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec(), "Should we tune sigma during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
 
         /* Inherit weight from Move, put it after variable */

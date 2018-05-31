@@ -86,6 +86,7 @@
 #include "Func_CladeSpecificHierarchicalBranchRate.h"
 #include "Func_concatenateFromVector.h"
 #include "Func_constructRootedTripletDistribution.h"
+#include "Func_earlyBurstRates.h"
 #include "Func_extantTree.h"
 #include "Func_formatDiscreteCharacterData.h"
 #include "Func_maximumTree.h"
@@ -351,6 +352,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_concatenateFromVector()                           );
         addFunction( new Func_constructRootedTripletDistribution()              );
         addFunction( new Func_formatDiscreteCharacterData()                     );
+        addFunction( new Func_EarlyBurstRates()                                 );
         addFunction( new Func_extantTree()                                      );
         addFunction( new Func_maximumTree()                                     );
         addFunction( new Func_mrcaIndex()                                       );

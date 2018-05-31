@@ -1,4 +1,5 @@
 #include "NewickConverter.h"
+#include "RlBoolean.h"
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathLogic.h"
@@ -361,6 +362,36 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         size_t state_index = (size_t)static_cast<const TypedDagNode<int> *>( args[1] )->getValue();
         rv = RevBayesCore::TreeUtilities::getMeanInverseES( *this, c->getValue(), state_index );
     }
+    else if ( n == "calculateNRI" )
+    {
+        const TypedDagNode< AbstractHomologousDiscreteCharacterData >* c = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( args[0] );
+        size_t state_index = (size_t)static_cast<const TypedDagNode<int> *>( args[1] )->getValue();
+        size_t site_index = (size_t)static_cast<const TypedDagNode<int> *>( args[2] )->getValue() - 1;
+        // why doesn't this work?
+        //bool weighted = static_cast<const TypedDagNode<bool> *>( args[3] )->getValue();
+        bool weighted = false;
+        if (args[3]->getValueAsString() == "TRUE")
+        {
+            weighted = true;
+        }
+        size_t reps = (size_t)static_cast<const TypedDagNode<int> *>( args[4] )->getValue();
+        rv = RevBayesCore::TreeUtilities::calculateNRI(*this, c->getValue(), site_index, state_index, weighted, reps);
+    }
+    else if ( n == "calculateNTI" )
+    {
+        const TypedDagNode< AbstractHomologousDiscreteCharacterData >* c = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( args[0] );
+        size_t state_index = (size_t)static_cast<const TypedDagNode<int> *>( args[1] )->getValue();
+        size_t site_index = (size_t)static_cast<const TypedDagNode<int> *>( args[2] )->getValue() - 1;
+        // why doesn't this work?
+        //bool weighted = static_cast<const TypedDagNode<bool> *>( args[3] )->getValue();
+        bool weighted = false;
+        if (args[3]->getValueAsString() == "TRUE")
+        {
+            weighted = true;
+        }
+        size_t reps = (size_t)static_cast<const TypedDagNode<int> *>( args[4] )->getValue();
+        rv = RevBayesCore::TreeUtilities::calculateNTI(*this, c->getValue(), site_index, state_index, weighted, reps);
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");
@@ -579,6 +610,13 @@ const TopologyNode& Tree::getInteriorNode( size_t indx ) const
         throw RbException("Cannot acces interior node '" + StringUtilities::to_string(indx) + "' for a tree with " + StringUtilities::to_string(n) + " tips.");
     }
     return *nodes[ indx + getNumberOfTips() ];
+}
+
+
+TopologyNode& Tree::getMrca(const Clade &c)
+{
+    
+    return *(root->getMrca( c ));
 }
 
 

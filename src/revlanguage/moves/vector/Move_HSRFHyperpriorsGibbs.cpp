@@ -75,7 +75,7 @@ void Move_HSRFHyperpriorsGibbs::constructInternalObject( void )
         }
         else
         {
-            throw RbException("Could not create a mvGMRFHyperpriorGibbs because \"normals\" isn't a vector of stochastic nodes.");
+            throw RbException("Could not create a mvHSRFHyperpriorGibbs because \"normals\" isn't a vector of stochastic nodes.");
         }
     }
     
