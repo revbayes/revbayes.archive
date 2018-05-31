@@ -163,8 +163,6 @@ void PhyloMultivariateBrownianProcessREML::transformCharacters( void )
         }
     }
 
-//    double dummy;
-
     
 }
 
@@ -292,7 +290,10 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
             for (size_t i = 0; i < this->num_sites; ++i)
             {
                 these_contrasts[i] = mu_left[i] - mu_right[i];
-                mu_node[i] = (mu_left[i] * t_right + mu_right[i] * t_left) / (t_left + t_right);
+                if ( j == 1 )
+                {
+                    mu_node[i] = (mu_left[i] * t_right + mu_right[i] * t_left) / (t_left + t_right);
+                }
             }
             
             if ( method == "transform" )
@@ -302,6 +303,7 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
                 double stdev = sqrt(t_left + t_right);
                 p_node       = p_left + p_right;
                 
+                double lnl_contrast = 0.0;
                 // calculate the univariate standard normal
                 for (int i=0; i<this->num_sites; i++)
                 {
@@ -312,15 +314,22 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
                     // compute the probability for the contrasts at this node
                     double lnl_node = RbStatistics::Normal::lnPdf(0, 1, contrast / stdev);
 
+//                    if ( j == 2 )
+//                    {
+//                        std::cout << contrast << " -- " << stdev << " -- " << lnl_node << std::endl;
+//                    }
+                    
                     // sum up the probabilities of the contrasts
-                    p_node += lnl_node;
+                    lnl_contrast += lnl_node;
                     
                 } // end for-loop over all sites
                 
                 // add in the logdet from the transformation
-                p_node -= 0.5 * lgdet + num_sites * log( stdev );
+                lnl_contrast -= 0.5 * lgdet + num_sites * log( stdev );
             
-                std::cout << p_node << " -- " << lgdet << " -- " << 0.5 * lgdet + num_sites * log( stdev ) << " -- " << num_children << std::endl;
+                p_node += lnl_contrast;
+                
+//                std::cout << lnl_contrast << " -- " << stdev << " -- " << lgdet << " -- " << 0.5 * lgdet + num_sites * log( stdev ) << " -- " << num_children << std::endl;
                 
             }
             else
@@ -329,7 +338,7 @@ void PhyloMultivariateBrownianProcessREML::recursiveComputeLnProbability( const 
                 double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfPrecision(means, precision_matrices[active_matrix], these_contrasts, branch_length);
                 p_node = lnl_contrast + p_left + p_right;
                 
-                std::cout << p_node << std::endl;
+//                std::cout << lnl_contrast << std::endl;
                 
             }
             
@@ -504,10 +513,6 @@ void PhyloMultivariateBrownianProcessREML::resetValue( void )
         MatrixReal upper_factor = lower_factor.getTranspose();
         MatrixReal inv_upper_factor = MatrixReal(n, n, 0.0);
         RbMath::matrixInverse(upper_factor, inv_upper_factor);
-        
-//        MatrixReal lower_factor = rate_matrix->getValue().getLowerCholeskyFactor();
-//        lower_factor.setCholesky(true);
-//        MatrixReal inv_upper_factor = lower_factor.getTranspose().computeInverse();
         
         inverse_upper_factor[0] = inv_upper_factor;
         inverse_upper_factor[1] = inv_upper_factor;
