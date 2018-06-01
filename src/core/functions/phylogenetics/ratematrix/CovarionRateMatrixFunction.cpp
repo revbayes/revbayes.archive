@@ -16,8 +16,9 @@ using namespace RevBayesCore;
 
 CovarionRateMatrixFunction::CovarionRateMatrixFunction(const TypedDagNode< RbVector<RateGenerator> > *rm,
                                                        const TypedDagNode< RateGenerator > *sr,
-                                                       const TypedDagNode< RbVector<double> > *cr) :
-TypedFunction<RateGenerator>( new RateMatrix_Covarion( rm->getValue()[0].size(), cr->getValue().size() ) ),
+                                                       const TypedDagNode< RbVector<double> > *cr,
+                                                       bool rescaled) :
+TypedFunction<RateGenerator>( new RateMatrix_Covarion( rm->getValue()[0].size(), cr->getValue().size(), rescaled ) ),
 rate_matrices( rm ),
 clock_rates( cr ),
 switch_rates( sr )
