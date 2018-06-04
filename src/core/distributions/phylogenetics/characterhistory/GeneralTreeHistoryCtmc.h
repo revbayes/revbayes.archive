@@ -2,6 +2,7 @@
 #define GeneralTreeHistoryCtmc_H
 
 #include "TreeHistoryCtmc.h"
+#include "CladogeneticProbabilityMatrix.h"
 #include "ConstantNode.h"
 #include "DiscreteCharacterState.h"
 #include "HomologousDiscreteCharacterData.h"
@@ -37,9 +38,13 @@ namespace RevBayesCore {
         virtual void                                        redrawValue(void);
         virtual void                                        simulate(void);
         
+        
+        
         virtual bool                                        samplePathStart(const TopologyNode& node);
         virtual bool                                        samplePathEnd(const TopologyNode& node);
         virtual bool                                        samplePathHistory(const TopologyNode& node);
+        
+        void                                                setCladogeneticProbabilityMatrix(const TypedDagNode< CladogeneticProbabilityMatrix>* cp );
         
         void                                                setRateGenerator(const TypedDagNode< RateGeneratorSequence > *rm);
         void                                                setRateGenerator(const TypedDagNode< RbVector< RateGeneratorSequence > > *rm);
@@ -63,12 +68,14 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< RateGeneratorSequence >*                homogeneousRateGenerator;
         const TypedDagNode< RbVector< RateGeneratorSequence > >*    heterogeneousRateGenerator;
+        const TypedDagNode< CladogeneticProbabilityMatrix >*        homogeneousCladogeneticProbabilityMatrix;
         const TypedDagNode< Simplex >*                              rootFrequencies;
         const TypedDagNode< RbVector< double > >*                   siteRates;
         
         // flags specifying which model variants we use
         bool                                                branchHeterogeneousSubstitutionMatrices;
         bool                                                rateVariationAcrossSites;
+        bool                                                useCladogeneticEvents;
         
         virtual void                                        simulate(const TopologyNode& node, BranchHistory* bh, std::vector< DiscreteTaxonData< charType > >& taxa);
         void                                                simulateHistory(const TopologyNode& node, BranchHistory* bh);
@@ -94,10 +101,12 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Typ
     heterogeneousRateGenerator  = NULL;
     rootFrequencies             = new ConstantNode<Simplex>("rootFrequencies", new Simplex(nChars, 1.0/nChars));
     siteRates                   = NULL;
+    homogeneousCladogeneticProbabilityMatrix = NULL;
     
     // flags specifying which model variants we use
     branchHeterogeneousSubstitutionMatrices     = false;
     rateVariationAcrossSites                    = false;
+    useCladogeneticEvents                       = false;
     
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -108,6 +117,7 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Typ
     this->addParameter( heterogeneousRateGenerator );
     this->addParameter( rootFrequencies );
     this->addParameter( siteRates );
+    this->addParameter( homogeneousCladogeneticProbabilityMatrix );
     
     this->useDirtyNodes = true;
     
@@ -121,6 +131,7 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Gen
 //<<<<<<< HEAD
     homogeneousRateGenerator    = d.homogeneousRateGenerator;
     heterogeneousRateGenerator  = d.heterogeneousRateGenerator;
+    homogeneousCladogeneticProbabilityMatrix = d.homogeneousCladogeneticProbabilityMatrix;
     rootFrequencies             = d.rootFrequencies;
     siteRates                   = d.siteRates;
     
@@ -275,6 +286,12 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     // lnL that nothing else happens
     lnL -= sr * (current_age - end_age);
 
+    
+    if (useCladogeneticEvents)
+    {
+        const CladogeneticProbabilityMatrix& cp = homogeneousCladogeneticProbabilityMatrix->getValue();
+    }
+    
     return lnL;
 }
 
@@ -566,6 +583,36 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathStart(const Topol
     }
     
     return true;
+}
+
+template<class charType>
+void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setCladogeneticProbabilityMatrix(const TypedDagNode< CladogeneticProbabilityMatrix > *cp) {
+    
+    // remove the old parameter first
+    if ( homogeneousCladogeneticProbabilityMatrix != NULL )
+    {
+        this->removeParameter( homogeneousCladogeneticProbabilityMatrix );
+        homogeneousCladogeneticProbabilityMatrix = NULL;
+    }
+//    else if (heterogeneousCladogeneticProbabilityMatrix != NULL)
+//    {
+//        this->removeParameter( heterogeneousCladogeneticProbabilityMatrix );
+//        heterogeneousCladogeneticProbabilityMatrix = NULL;
+//    }
+    
+    // set the value
+    useCladogeneticEvents = true;
+    homogeneousCladogeneticProbabilityMatrix = cp;
+    
+    // add the new parameter
+    this->addParameter( homogeneousCladogeneticProbabilityMatrix );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+    
 }
 
 template<class charType>
@@ -887,6 +934,10 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::swapParameterInternal( cons
     else if (oldP == heterogeneousRateGenerator)
     {
         heterogeneousRateGenerator = static_cast<const TypedDagNode< RbVector< RateGeneratorSequence > >* >( newP );
+    }
+    else if (oldP == homogeneousCladogeneticProbabilityMatrix)
+    {
+        homogeneousCladogeneticProbabilityMatrix = static_cast<const TypedDagNode< CladogeneticProbabilityMatrix >* >( newP );
     }
     else if (oldP == rootFrequencies)
     {

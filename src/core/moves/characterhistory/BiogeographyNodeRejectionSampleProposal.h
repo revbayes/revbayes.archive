@@ -13,6 +13,7 @@
 #include "RandomNumberGenerator.h"
 #include "RateGeneratorSequence.h"
 #include "RbException.h"
+#include "RbMathCombinatorialFunctions.h"
 #include "StochasticNode.h"
 //#include "TransitionProbability.h"
 #include "TreeChangeEventMessage.h"
@@ -71,7 +72,6 @@ namespace RevBayesCore {
         void                                                        undoProposal(void);                                             //!< Reject the proposal
         
     protected:
-        
         void                                                        swapNodeInternal(DagNode *oldN, DagNode *newN);                 //!< Swap the DAG nodes on which the Proposal is working on
         
         // parameters
@@ -90,6 +90,7 @@ namespace RevBayesCore {
         TopologyNode*                                               node;
         double                                                      storedLnProb;
         double                                                      proposedLnProb;
+        double                                                      cladoEventLnProb;
         
         PathRejectionSampleProposal<charType>*                      nodeProposal;
         PathRejectionSampleProposal<charType>*                      leftProposal;
@@ -173,10 +174,9 @@ void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::assignNod
 
 
 template<class charType>
-double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::computeLnProposal(void)
+double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::computeAnagenesisLnProposal(void)
 {
     double lnP = 0.0;
-    
     if ( node->isTip() == false )
     {
         TreeHistoryCtmc<charType>* c = dynamic_cast< TreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
@@ -199,7 +199,6 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
         double right_rate = c->getBranchRate( right_child.getIndex() );
         
         // get transition probs
-        //        const RateGenerator& rm = q_map_site->getValue();
         const RateGenerator& rm = ( q_map_sequence != NULL ? q_map_sequence->getValue() : q_map_site->getValue() );
         rm.calculateTransitionProbabilities(node_age, left_age,  left_rate, leftTpMatrix);
         rm.calculateTransitionProbabilities(node_age, right_age, right_rate, rightTpMatrix);
@@ -268,12 +267,250 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
                 lnP += log(state_probs[s]/sum);
                 
             }
-            
         }
-        
     }
     
     return lnP;
+}
+
+
+template<class charType>
+double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::computeCladogenesisLnProposal(void)
+{
+    
+    double p = 1.0;
+    
+    if (node->isTip()) {
+        return 0.0;
+    }
+    
+    TreeHistoryCtmc<charType>* c = dynamic_cast< TreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
+    if ( ctmc == NULL )
+    {
+        throw RbException("Failed cast.");
+    }
+    
+    std::vector<BranchHistory*> histories = c->getHistories();
+    
+    // states for conditional sampling probs
+    const std::vector<CharacterEvent*>& leftParentState  = histories[node->getChild(0).getIndex()]->getParentCharacters();
+    const std::vector<CharacterEvent*>& rightParentState = histories[node->getChild(1).getIndex()]->getParentCharacters();
+    const std::vector<CharacterEvent*>& nodeChildState  = histories[node->getIndex()]->getChildCharacters();
+    
+    // determine the cladogenetic state based on un/shared areas
+    size_t n_n_on = 0;
+    size_t n_l_on = 0;
+    size_t n_r_on = 0;
+    size_t n_nlr_off = 0;
+    size_t n_lr_mismatch = 0;
+    size_t n_nlr_on = 0;
+    size_t n_jump_mismatch = 0;
+    for (size_t i = 0; i < nodeChildState.size(); i++)
+    {
+        size_t sn = static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
+        size_t sl = static_cast<CharacterEventDiscrete*>(leftParentState[i])->getState();
+        size_t sr = static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
+        
+        n_n_on += sn;
+        n_l_on += sl;
+        n_r_on += sr;
+        
+        // copy sympatry
+        if (sn == 1 && sl == 1 && sr == 1)
+        {
+            n_nlr_on += 1;
+        }
+    
+        // jump dispersal
+        if ( (sn==0&&sr==1&&sl==0) || (sn==0&&sr==0&&sl==1) )
+        {
+            n_jump_mismatch += 1;
+        }
+        
+        // allopatry
+        if ( (sn==1&&sl==1&&sr==0) || (sn==1&&sl==0&&sr==1) )
+        {
+            n_lr_mismatch += 1;
+        }
+        
+        if (sn==0&&sr==1&&sl==0) {
+            n_nlr_off += 1;
+        }
+        
+    }
+    if (n_nlr_on > 1) {
+        throw RbException("unknown cladogenetic state");
+    }
+    
+    
+    std::string clado_type = "";
+    if (n_nlr_on == 1 && n_nlr_off == (numCharacters-1))
+    {
+        clado_type = "singleton";
+    }
+    else if (n_nlr_on == n_lr_mismatch)
+    {
+        clado_type = "allopatry";
+    }
+    else if (n_jump_mismatch == 1)
+    {
+        clado_type = "jump_dispersal";
+    }
+    else if (n_nlr_on == 1 && n_lr_mismatch==(n_n_on-n_nlr_on))
+    {
+        clado_type = "sympatry";
+    }
+    else
+    {
+        throw RbException("Unknown cladogenetic event type!");
+    }
+    
+    
+    // the proposal prob
+    double p_allopatry = 0.5;
+    double p_sympatry = 0.5;
+    double p_jump_dispersal = 0.0;
+    double p_sum = p_allopatry + p_sympatry + p_jump_dispersal;
+    
+    if ( clado_type == "singleton" )
+    {
+        p = 1.0;
+    }
+    else if ( clado_type == "allopatry" )
+    {
+        // Any combination of bits for one range (with the sister having its complement)
+        // excluding the all-zero range and the all-one range (hence, -2)
+        p = (p_allopatry / p_sum) * (1.0 / (std::pow(2, n_n_on) - 2));
+    }
+    else if ( clado_type == "sympatry" )
+    {
+        // Any single ancestral bit may be set across the two daughter ranges
+        p = (p_sympatry / p_sum) * (1.0 / (2 * n_n_on));
+    }
+    else if ( clado_type == "jump_dispersal" )
+    {
+        // Any single non-ancestral bit may be set across the two daughter ranges
+        p = (p_jump_dispersal / p_sum) * (1.0 / (2 * (numCharacters - n_n_on)));
+    }
+    
+    double lnP = log(p);
+    
+    return lnP;
+}
+
+template<class charType>
+double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::computeNodeLnProposal(void)
+{
+    
+    double lnP = 0.0;
+    
+    TreeHistoryCtmc<charType>* c = dynamic_cast< TreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
+    if ( ctmc == NULL )
+    {
+        throw RbException("Failed cast.");
+    }
+    
+    std::vector<BranchHistory*> histories = c->getHistories();
+    
+    TopologyNode &left_child  = node->getChild(0);
+    TopologyNode &right_child = node->getChild(1);
+    
+    double node_age   = node->getAge();
+    double left_age   = left_child.getAge();
+    double right_age  = right_child.getAge();
+    
+    double node_rate  = c->getBranchRate( node->getIndex() );
+    double left_rate  = c->getBranchRate( left_child.getIndex() );
+    double right_rate = c->getBranchRate( right_child.getIndex() );
+    
+    // get transition probs
+    const RateGenerator& rm = ( q_map_sequence != NULL ? q_map_sequence->getValue() : q_map_site->getValue() );
+    rm.calculateTransitionProbabilities(node_age, left_age,  left_rate, leftTpMatrix);
+    rm.calculateTransitionProbabilities(node_age, right_age, right_rate, rightTpMatrix);
+    
+    // states for conditional sampling probs
+    const std::vector<CharacterEvent*>& leftChildState  = histories[node->getChild(0).getIndex()]->getChildCharacters();
+    const std::vector<CharacterEvent*>& rightChildState = histories[node->getChild(1).getIndex()]->getChildCharacters();
+    
+    // states to update
+    const std::vector<CharacterEvent*>& nodeChildState  = histories[node->getIndex()]->getChildCharacters();
+    
+    
+    if ( node->isRoot() == false )
+    {
+        double parent_age = node->getParent().getAge();
+        rm.calculateTransitionProbabilities(parent_age, node_age, node_rate, nodeTpMatrix);
+        
+        const std::vector<CharacterEvent*>& nodeParentState = histories[node->getIndex()]->getParentCharacters();
+        
+        std::set<size_t>::iterator it_s;
+        //            for (size_t site_index = 0; site_index < num_sites; ++site_index)
+        for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
+        {
+            size_t site_index = *it_s;
+            size_t ancS  = static_cast<CharacterEventDiscrete*>(nodeParentState[site_index])->getState();
+            size_t desS1 = static_cast<CharacterEventDiscrete*>(leftChildState[site_index])->getState();
+            size_t desS2 = static_cast<CharacterEventDiscrete*>(rightChildState[site_index])->getState();
+            
+            std::vector<double> state_probs(numStates,0.0);
+            double sum = 0.0;
+            for ( size_t i=0; i<numStates; ++i )
+            {
+                double p = nodeTpMatrix[ancS][i] * leftTpMatrix[i][desS1] * rightTpMatrix[i][desS2];
+                sum += p;
+                state_probs[i] = p;
+            }
+            
+            // get the probability of the sampled state *before* cladogenesis
+            size_t s = static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->getState();
+            lnP += log(state_probs[s]/sum);
+        }
+        
+    }
+    else
+    {
+        
+        std::vector<double> rf = c->getRootFrequencies();
+        
+        std::set<size_t>::iterator it_s;
+        //            for (size_t site_index = 0; site_index < num_sites; ++site_index)
+        for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
+        {
+            size_t site_index = *it_s;
+            size_t desS1 = static_cast<CharacterEventDiscrete*>(leftChildState[site_index])->getState();
+            size_t desS2 = static_cast<CharacterEventDiscrete*>(rightChildState[site_index])->getState();
+            
+            
+            std::vector<double> state_probs(numStates,0.0);
+            double sum = 0.0;
+            for ( size_t i=0; i<numStates; ++i )
+            {
+                double p = rf[i] * leftTpMatrix[i][desS1] * rightTpMatrix[i][desS2];
+                sum += p;
+                state_probs[i] = p;
+            }
+            
+            size_t s = static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->getState();
+            lnP += log(state_probs[s]/sum);
+            
+        }
+    }
+    
+    return lnP;
+}
+
+template<class charType>
+double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::computeLnProposal(void)
+{
+
+    double lnP_node  = computeNodeLnProposal();
+    double lnP_clado = computeCladogenesisLnProposal();
+    double lnP_ana   = computeAnagenesisLnProposal();
+    
+    double lnP = lnP_node + lnP_clado + lnP_ana;
+    
+    return lnP;
+
 }
 
 
@@ -344,6 +581,7 @@ void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::preparePr
     
     storedLnProb = 0.0;
     proposedLnProb = 0.0;
+    cladoEventLnProb = 0.0;
     
     const Tree& tree = p->getTree();
     std::vector<TopologyNode*> nds = tree.getNodes();

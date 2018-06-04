@@ -1,9 +1,9 @@
 #include "AminoAcidState.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "BiogeographicTreeHistoryCtmc.h"
+//#include "BiogeographicTreeHistoryCtmc.h"
 #include "BiogeographyNodeRejectionSampleProposal.h"
-#include "BiogeographyPathRejectionSampleProposal.h"
+//#include "BiogeographyPathRejectionSampleProposal.h"
 #include "NodeRejectionSampleProposal.h"
 #include "PathUniformizationSampleProposal.h"
 #include "NodeUniformizationSampleProposal.h"
@@ -198,6 +198,18 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
             }
             p = tmp_p;
         }
+        else if (gt == "cladogenetic" && pt == "rejection")
+        {
+            RevBayesCore::BiogeographicNodeRejectionSampleProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::BiogeographicNodeRejectionSampleProposal<RevBayesCore::StandardState>(ctmc_sn, l, r);
+            //            tmp_p->setRateGenerator( qmap_tdn );
+            if (use_site) {
+                tmp_p->setRateGenerator( qmap_site_tdn );
+            } else if (use_seq) {
+                tmp_p->setRateGenerator( qmap_seq_tdn );
+            }
+            p = tmp_p;
+        }
+
         else if (gt == "branch" && pt == "rejection")
         {
             RevBayesCore::PathRejectionSampleProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::PathRejectionSampleProposal<RevBayesCore::StandardState>(ctmc_sn, l, r);
@@ -295,6 +307,7 @@ const MemberRules& RevLanguage::Move_CharacterHistory::getParameterRules(void) c
         std::vector<std::string> optionsGraph;
         optionsGraph.push_back( "node" );
         optionsGraph.push_back( "branch" );
+        optionsGraph.push_back( "cladogenetic" );
         nodeChrsMoveMemberRules.push_back( new OptionRule( "graph", new RlString("node"), optionsGraph, "" ) );
         
         std::vector<std::string> optionsProposal;
