@@ -29,6 +29,10 @@ namespace RevBayesCore {
         
         // public member functions
         ChromosomesCladogenicStateFunction*                         clone(void) const;
+        double computeDataAugmentedCladogeneticLnProbability(const std::vector<BranchHistory*>& histories,
+                                                                                      size_t node_index,
+                                                                                      size_t left_index,
+                                                                                      size_t right_index ) const;
         std::map< std::vector<unsigned>, double >                      getEventMap(double t=0.0);
         const std::map< std::vector<unsigned>, double >&                getEventMap(double t=0.0) const;
         

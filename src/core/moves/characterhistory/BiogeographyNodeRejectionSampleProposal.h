@@ -1061,6 +1061,7 @@ void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::undoPropo
         size_t desSA = storedNodeState[site_index];
         size_t srcS1 = storedLeftState[site_index];
         size_t srcS2 = storedRightState[site_index];
+        
         static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->setState(desSA);
         static_cast<CharacterEventDiscrete*>(leftParentState[site_index])->setState(srcS1);
         static_cast<CharacterEventDiscrete*>(rightParentState[site_index])->setState(srcS2);

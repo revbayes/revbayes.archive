@@ -2,6 +2,8 @@
 
 #include "DECCladogeneticStateFunction.h"
 #include "BiogeographicCladoEvent.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbMathCombinatorialFunctions.h"
 
@@ -561,6 +563,284 @@ DECCladogeneticStateFunction* DECCladogeneticStateFunction::clone( void ) const
 {
     return new DECCladogeneticStateFunction( *this );
 }
+
+double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbability( const std::vector<BranchHistory*>& histories,
+                                                             size_t node_index,
+                                                             size_t left_index,
+                                                             size_t right_index ) const
+{
+    double lnP = 0.0;
+    double p = 1.0;
+    
+    std::vector<CharacterEvent*>& nodeChildState = histories[ node_index ]->getChildCharacters();
+    std::vector<CharacterEvent*>& leftParentState = histories[ left_index ]->getParentCharacters();
+    std::vector<CharacterEvent*>& rightParentState = histories[ right_index ]->getParentCharacters();
+
+    // determine what type of cladogenetic event it is
+    // determine the cladogenetic state based on un/shared areas
+    size_t n_n_on = 0;
+    size_t n_l_on = 0;
+    size_t n_r_on = 0;
+    size_t n_nlr_off = 0;
+    size_t n_lr_mismatch = 0;
+    size_t n_nlr_on = 0;
+    size_t n_jump_mismatch = 0;
+    for (size_t i = 0; i < nodeChildState.size(); i++)
+    {
+        size_t sn = static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
+        size_t sl = static_cast<CharacterEventDiscrete*>(leftParentState[i])->getState();
+        size_t sr = static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
+        
+        n_n_on += sn;
+        n_l_on += sl;
+        n_r_on += sr;
+        
+        // copy sympatry
+        if (sn == 1 && sl == 1 && sr == 1)
+        {
+            n_nlr_on += 1;
+        }
+        
+        // jump dispersal
+        if ( (sn==0&&sr==1&&sl==0) || (sn==0&&sr==0&&sl==1) )
+        {
+            n_jump_mismatch += 1;
+        }
+        
+        // allopatry
+        if ( (sn==1&&sl==1&&sr==0) || (sn==1&&sl==0&&sr==1) )
+        {
+            n_lr_mismatch += 1;
+        }
+        
+        if (sn==0&&sr==1&&sl==0) {
+            n_nlr_off += 1;
+        }
+        
+    }
+    if (n_nlr_on > 1) {
+        throw RbException("unknown cladogenetic state");
+    }
+    
+    
+    std::string clado_type = "";
+    if (n_nlr_on == 1 && n_nlr_off == (numCharacters-1))
+    {
+        clado_type = "singleton";
+    }
+    else if (n_nlr_on == n_lr_mismatch)
+    {
+        clado_type = "allopatry";
+    }
+    else if (n_jump_mismatch == 1)
+    {
+        clado_type = "jump_dispersal";
+    }
+    else if (n_nlr_on == 1 && n_lr_mismatch==(n_n_on-n_nlr_on))
+    {
+        clado_type = "sympatry";
+    }
+    else
+    {
+        throw RbException("Unknown cladogenetic event type!");
+    }
+    
+    // get the information from the arguments for reading the file
+    const std::vector<double>& ep = eventProbs->getValue();
+    
+    // get the probability for each clado event type
+    std::map<std::string, double> probs;
+//    std::vector<double> probs(numEventTypes, 0.0);
+    for (size_t i = 0; i < eventTypes.size(); i++)
+    {
+        std::map<std::string, unsigned>::const_iterator it = eventStringToStateMap.find( eventTypes[i] );
+        probs[ eventTypes[i] ] = ep[ it->second ];
+    }
+    
+    // the proposal prob
+    if ( clado_type == "singleton" )
+    {
+        p = probs["s"];
+    }
+    else if ( clado_type == "allopatry" )
+    {
+        // Any combination of bits for one range (with the sister having its complement)
+        // excluding the all-zero range and the all-one range (hence, -2)
+        p = probs["a"] * (1.0 / (pow(2, n_n_on) - 2));
+    }
+    else if ( clado_type == "sympatry" )
+    {
+        // Any single ancestral bit may be set across the two daughter ranges
+        p = probs["s"] * (1.0 / (2 * n_n_on));
+    }
+    else if ( clado_type == "jump_dispersal" )
+    {
+        // Any single non-ancestral bit may be set across the two daughter ranges
+        p = probs["j"] * (1.0 / (2 * (numCharacters - n_n_on)));
+    }
+    
+    lnP = log(p);
+    // compute the probability of that event type
+    
+    return lnP;
+    
+}
+
+
+void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::vector<BranchHistory*>& histories,
+                                                                          size_t node_index, size_t left_index, size_t right_index) const
+                                                                          
+{
+    // get the information from the arguments for reading the file
+    const std::vector<double>& ep = eventProbs->getValue();
+    
+    // get the probability for each clado event type
+    std::map<std::string, double> probs;
+    
+    double u = GLOBAL_RNG->uniform01();
+    std::string event_type = "";
+    for (size_t i = 0; i < eventTypes.size(); i++)
+    {
+        event_type = eventTypes[i];
+        std::map<std::string, unsigned>::const_iterator it = eventStringToStateMap.find( eventTypes[i] );
+        probs[ event_type ] = ep[ it->second ];
+        u -= probs[ eventTypes[i] ];
+        if (u <= 0.0)
+        {
+            break;
+        }
+    }
+    
+    // get ranges
+    std::vector<CharacterEvent*>& nodeChildState = histories[ node_index ]->getChildCharacters();
+    std::vector<CharacterEvent*>& leftParentState = histories[ left_index ]->getParentCharacters();
+    std::vector<CharacterEvent*>& rightParentState = histories[ right_index ]->getParentCharacters();
+    
+    // get indices that are on/off for nodeChildState
+    std::vector<size_t> node_child_on;
+    std::vector<size_t> node_child_off;
+    
+    // initialize daughter states to zero
+    for (size_t site_index = 0; site_index < numCharacters; ++site_index)
+    {
+        static_cast<CharacterEventDiscrete*>( leftParentState[site_index] )->setState(0);
+        static_cast<CharacterEventDiscrete*>( rightParentState[site_index] )->setState(0);
+        size_t s = static_cast<CharacterEventDiscrete*>( nodeChildState[site_index] )->getState();
+        if (s == 0) {
+            node_child_off.push_back(site_index);
+        }
+        else {
+            node_child_on.push_back(site_index);
+        }
+    }
+    
+    
+    // sample cladogenetic state
+    if ( node_child_on.size() <= 2) {
+        size_t s = *( node_child_on.begin() );
+        static_cast<CharacterEventDiscrete*>( leftParentState[s] )->setState(1);
+        static_cast<CharacterEventDiscrete*>( rightParentState[s] )->setState(1);
+    }
+    else
+    {
+        if (event_type == "s")
+        {
+            // choose the area inherited by the right node
+            std::random_shuffle( node_child_on.begin(), node_child_on.end() );
+            size_t area_idx = node_child_on[0];
+            
+            if (GLOBAL_RNG->uniform01() < 0.5)
+            {
+                
+                // one area inherited by the right node
+                static_cast<CharacterEventDiscrete*>( rightParentState[ area_idx ] )->setState(1);
+                // all areas inherited by the left node
+                for (std::vector<size_t>::iterator it = node_child_on.begin(); it != node_child_on.end(); it++)
+                {
+                    static_cast<CharacterEventDiscrete*>( leftParentState[ *it ] )->setState(1);
+                }
+            }
+            else
+            {
+                // one area inherited by the left node
+                static_cast<CharacterEventDiscrete*>( leftParentState[ area_idx ] )->setState(1);
+                // all areas inherited by the left node
+                for (std::vector<size_t>::iterator it = node_child_on.begin(); it != node_child_on.end(); it++)
+                {
+                    static_cast<CharacterEventDiscrete*>( rightParentState[ *it ] )->setState(1);
+                }
+            }
+            
+        }
+        else if (event_type == "a")
+        {
+            // choose the area inherited by the right node
+            std::random_shuffle( node_child_on.begin(), node_child_on.end() );
+            size_t area_left_idx = node_child_on[0];
+            size_t area_right_idx = node_child_on[1];
+            
+            static_cast<CharacterEventDiscrete*>( rightParentState[ area_left_idx ] )->setState(1);
+            static_cast<CharacterEventDiscrete*>( leftParentState[ area_left_idx ] )->setState(0);
+            static_cast<CharacterEventDiscrete*>( rightParentState[ area_right_idx ] )->setState(0);
+            static_cast<CharacterEventDiscrete*>( leftParentState[ area_right_idx ] )->setState(1);
+            
+            for (size_t i = 2; i < node_child_on.size(); i++)
+            {
+                size_t j = node_child_on[i];
+                if (GLOBAL_RNG->uniform01() < 0.5) {
+                    static_cast<CharacterEventDiscrete*>( rightParentState[ j ] )->setState(0);
+                    static_cast<CharacterEventDiscrete*>( leftParentState[ j ] )->setState(1);
+                }
+                else {
+                    static_cast<CharacterEventDiscrete*>( leftParentState[ j ] )->setState(0);
+                    static_cast<CharacterEventDiscrete*>( rightParentState[ j ] )->setState(1);
+                }
+            }
+        }
+        else if (event_type == "j")
+        {
+            // choose the area inherited by the right node
+            std::random_shuffle( node_child_off.begin(), node_child_off.end() );
+            size_t area_idx = node_child_off[0];
+            
+            if (GLOBAL_RNG->uniform01() < 0.5)
+            {
+                
+                // one area inherited by the right node
+                static_cast<CharacterEventDiscrete*>( rightParentState[ area_idx ] )->setState(1);
+                // all areas inherited by the left node
+                for (std::vector<size_t>::iterator it = node_child_on.begin(); it != node_child_on.end(); it++)
+                {
+                    static_cast<CharacterEventDiscrete*>( leftParentState[ *it ] )->setState(1);
+                }
+            }
+            else
+            {
+                // one area inherited by the left node
+                static_cast<CharacterEventDiscrete*>( leftParentState[ area_idx ] )->setState(1);
+                // all areas inherited by the left node
+                for (std::vector<size_t>::iterator it = node_child_on.begin(); it != node_child_on.end(); it++)
+                {
+                    static_cast<CharacterEventDiscrete*>( rightParentState[ *it ] )->setState(1);
+                }
+            }
+
+        }
+        else
+        {
+            throw RbException("Unknown cladogenetic event type sampled");
+        }
+    }
+    
+    // update histories element?
+    // get ranges
+//    std::vector<CharacterEvent*>& nodeChildState = histories[ node_index ]->getChildCharacters();
+//    std::vector<CharacterEvent*>& leftParentState = histories[ left_index ]->getParentCharacters();
+//    std::vector<CharacterEvent*>& rightParentState = histories[ right_index ]->getParentCharacters();
+
+    
+}
+
 
 size_t DECCladogeneticStateFunction::computeNumStates(size_t numAreas, size_t maxRangeSize)
 {
