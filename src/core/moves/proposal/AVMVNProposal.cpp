@@ -1,6 +1,5 @@
 #include "AVMVNProposal.h"
 #include "CholeskyDecomposition.h"
-#include "DirichletDistribution.h"
 #include "DistributionMultivariateNormal.h"
 #include "DistributionNormal.h"
 #include "EigenSystem.h"
@@ -11,7 +10,6 @@
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathLogic.h"
-#include "ScaledDirichletDistribution.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
 
@@ -28,7 +26,7 @@ using namespace RevBayesCore;
 AVMVNProposal::AVMVNProposal( double s, double e, double n0, double c0, double m ) : Proposal(),
     noTransformScalarVariables(  ),
     logTransformScalarVariables(  ),
-//    logitTransformScalarVariables(  ),
+    logitTransformScalarVariables(  ),
     noTransformVectorVariables(  ),
     logConstrainedSumTransformVectorVariables(  ),
     lnHastingsratio( 0.0 ),
@@ -56,76 +54,51 @@ AVMVNProposal::AVMVNProposal( double s, double e, double n0, double c0, double m
 /**
  * Add a variable.
  */
-void AVMVNProposal::addVariable( StochasticNode<double> *v, std::string& transform)
+void AVMVNProposal::addUntransformedScalar( StochasticNode<double> *v )
 {
-    
-    
     // add it to the nodes vector
     addNode( v );
     
-    // add it to my internal vector
-    // Is this a transformed variable?
-    if ( transform == "none" )
-    {
-        noTransformScalarVariables.push_back( v );
-    }
-    else if ( transform == "log" )
-    {
-        logTransformScalarVariables.push_back( v );
-    }
-    // TODO: figure out how to integrate logit transform.
-    //       Must be able to easily access lower and upper bounds on distributions.
-    //       Must be valid for variables with bounds that can change
-//    else if ( transform == "logit" )
-//    {
-//    }
-    else
-    {
-        throw(RbException("Unrecognized scalar transform choice for AVMVN. For scalars, choose \"none\"|\"log\""));
-    }
-    
+    noTransformScalarVariables.push_back( v );
 }
 
+void AVMVNProposal::addLogScalar( StochasticNode<double> *v )
+{
+    // add it to the nodes vector
+    addNode( v );
+    
+    logTransformScalarVariables.push_back( v );
+}
+
+void AVMVNProposal::addLogitScalar( ContinuousStochasticNode *v )
+{
+    // add it to the nodes vector
+    addNode( v );
+    
+    logitTransformScalarVariables.push_back( v );
+}
 
 /**
  * Add a variable.
  */
-void AVMVNProposal::addVariable( StochasticNode<RbVector<double> > *v, std::string& transform)
+
+void AVMVNProposal::addUntransformedVector( StochasticNode<RbVector<double> > *v)
 {
-    
-    
     // add it to the nodes vector
     addNode( v );
     
-    // add it to my internal vector
-    // Is this a transformed variable?
-    if ( transform == "none" )
-    {
-        noTransformVectorVariables.push_back( v );
-    }
-    else if ( transform == "multivariateLogistic" )
-    {
-        // Check that this is a simplexed-distribution
-        DirichletDistribution* dist = dynamic_cast<DirichletDistribution *>( &v->getDistribution() );
-        bool found = dist != NULL ? true : false;
-        
-        if ( !found )
-        {
-            ScaledDirichletDistribution* dist = dynamic_cast<ScaledDirichletDistribution *>( &v->getDistribution() );
-            found = dist != NULL ? true : false;
-        }
-        
-        if ( !found )
-        {
-            throw(RbException("Unrecognized vector distribution to AVMVN. Option \"multivariateLogistic\" is for simplexed distributions."));
-        }
-        
-        logConstrainedSumTransformVectorVariables.push_back( v );
-    } else
-    {
-        throw(RbException("Unrecognized vector transform choice for AVMVN. For vectors, choose \"none\"|\"multivariateLogistic\""));
-    }
+    noTransformVectorVariables.push_back( v );
 }
+
+void AVMVNProposal::addLogConstrainedSumVector( StochasticNode<Simplex> *v)
+{
+    // add it to the nodes vector
+    addNode( v );
+    
+    logConstrainedSumTransformVectorVariables.push_back( v );
+
+}
+
 
 
 /**
@@ -178,22 +151,24 @@ void AVMVNProposal::getAVMVNMemberVariableValues( std::vector<double> *x )
         x->push_back( log(logTransformScalarVariables[i]->getValue()) );
     }
     
-//    for (size_t i = 0; i < logitTransformScalarVariables.size(); ++i)
-//    {
-//        double y = logitTransformScalarVariables[i]->getValue();
-//        double lb = logitTransformScalarVariables[i]->getDistribution().getMin();
-//        double ub = logitTransformScalarVariables[i]->getDistribution().getMax();
-//        double p = (y - lb) / (ub - lb);
-//        x->push_back( log(p / (1 - p)) );
-//    }
+    for (size_t i = 0; i < logitTransformScalarVariables.size(); ++i)
+    {
+        double y = logitTransformScalarVariables[i]->getValue();
+        double lb = logitTransformScalarVariables[i]->getMin();
+        double ub = logitTransformScalarVariables[i]->getMax();
+        double p = (y - lb) / (ub - lb);
+        x->push_back( log(p / (1 - p)) );
+        
+    }
     
     for (size_t i = 0; i < noTransformVectorVariables.size(); ++i)
     {
+        
         std::vector<double> tmp = noTransformVectorVariables[i]->getValue();
         
-        for (size_t i=0; i < tmp.size(); ++i)
+        for (size_t j=0; j < tmp.size(); ++j)
         {
-            x->push_back( tmp[i] );
+            x->push_back( tmp[j] );
         }
     }
     
@@ -201,9 +176,9 @@ void AVMVNProposal::getAVMVNMemberVariableValues( std::vector<double> *x )
     {
         std::vector<double> tmp = logConstrainedSumTransformVectorVariables[i]->getValue();
         
-        for (size_t i=0; i < tmp.size(); ++i)
+        for (size_t j=0; j < tmp.size(); ++j)
         {
-            x->push_back( log(tmp[i]) );
+            x->push_back( log(tmp[j]) );
         }
     }
 }
@@ -229,17 +204,18 @@ void AVMVNProposal::setAVMVNMemberVariableValues( std::vector<double> x_prime, s
         ++index;
     }
     
-//    for (std::vector< StochasticNode<double> *>::const_iterator it = logitTransformScalarVariables.begin(); it != logitTransformScalarVariables.end(); it++)
-//    for (size_t i = 0; i < logitTransformScalarVariables.size(); ++i)
-//    {
-//        double p = 1 / (1 + exp(-x_prime[index]));
-//        double lb = logitTransformScalarVariables[i]->getDistribution().getMin();
-//        double ub = logitTransformScalarVariables[i]->getDistribution().getMax();
-//        logitTransformScalarVariables[i]->getValue() = p * (ub - lb) + lb;
-//        
-//        lnHastingsratio += ( -log(1.0 - x[index]) - log(x[index]) ) - ( -log(1.0 - x_prime[index]) - log(x_prime[index]) );
-//        ++index;
-//    }
+    for (size_t i = 0; i < logitTransformScalarVariables.size(); ++i)
+    {
+        double p_old = 1 / (1 + exp(-x[index]));
+        double p_proposed = 1 / (1 + exp(-x_prime[index]));
+        
+        double lb = logitTransformScalarVariables[i]->getMin();
+        double ub = logitTransformScalarVariables[i]->getMax();
+        
+        logitTransformScalarVariables[i]->getValue() = p_proposed * (ub - lb) + lb;
+        lnHastingsratio += ( -log(1.0 - p_old) - log(p_old) ) - ( -log(1.0 - p_proposed) - log(p_proposed) );
+        ++index;
+    }
     
     for (size_t i = 0; i < noTransformVectorVariables.size(); ++i)
     {
@@ -247,7 +223,7 @@ void AVMVNProposal::setAVMVNMemberVariableValues( std::vector<double> x_prime, s
         
         for (size_t j=0; j < noTransformVectorVariables[i]->getValue().size(); ++j)
         {
-            tmp[j] = x_prime[index];
+            tmp.push_back( x_prime[index] );
             ++index;
         }
         noTransformVectorVariables[i]->getValue() = tmp;
@@ -259,14 +235,13 @@ void AVMVNProposal::setAVMVNMemberVariableValues( std::vector<double> x_prime, s
         std::vector<double> tmp;
         double sum = 0.0;
         
-        for (size_t j=0; i < old_sum_constrained.size(); ++j)
+        for (size_t j=0; j < old_sum_constrained.size(); ++j)
         {
-            tmp[j] = x_prime[index];
-            sum += x_prime[index];
+            tmp.push_back( exp(x_prime[index]) );
+            sum += tmp[j];
             ++index;
         }
-        
-        for (size_t j=0; i < old_sum_constrained.size(); ++j)
+        for (size_t j=0; j < old_sum_constrained.size(); ++j)
         {
             tmp[j] /= sum;
             lnHastingsratio += -log(old_sum_constrained[j]) + log(tmp[j]);
@@ -275,7 +250,6 @@ void AVMVNProposal::setAVMVNMemberVariableValues( std::vector<double> x_prime, s
         logConstrainedSumTransformVectorVariables[i]->getValue() = tmp;
         
     }
-
 }
 
 /**
@@ -390,9 +364,9 @@ double AVMVNProposal::doProposal( void )
     
     // Move
     std::vector<double> x_prime = rMVNCholesky(x, AVMVN_cholesky_L, *rng, sigma);
-    
+
     setAVMVNMemberVariableValues(x_prime, x);
-    
+
     return lnHastingsratio;
 
 }
@@ -427,57 +401,52 @@ void AVMVNProposal::printParameterSummary(std::ostream &o) const
 /**
  * Remove a variable.
  */
-void AVMVNProposal::removeVariable( StochasticNode<double> *v, std::string& transform)
+void AVMVNProposal::removeUntransformedScalar( StochasticNode<double> *v )
 {
-    
     
     // add it to the nodes vector
     removeNode( v );
     
-    // add it to my internal vector
-    if ( transform == "none" )
-    {
-        noTransformScalarVariables.erase(std::remove(noTransformScalarVariables.begin(), noTransformScalarVariables.end(), v), noTransformScalarVariables.end());
-    }
-    else if ( transform == "log" )
-    {
-        logTransformScalarVariables.erase(std::remove(logTransformScalarVariables.begin(), logTransformScalarVariables.end(), v), logTransformScalarVariables.end());
-    }
-//    else if ( transform == "logit" )
-//    {
-//        logitTransformScalarVariables.erase(std::remove(logitTransformScalarVariables.begin(), logitTransformScalarVariables.end(), v), logitTransformScalarVariables.end());
-//    }
-    else
-    {
-        throw(RbException("AVMVN attempting to remove a scalar variable it cannot have added."));
-    }
+    noTransformScalarVariables.erase(std::remove(noTransformScalarVariables.begin(), noTransformScalarVariables.end(), v), noTransformScalarVariables.end());
+}
+
+void AVMVNProposal::removeLogScalar( StochasticNode<double> *v )
+{
+    
+    // add it to the nodes vector
+    removeNode( v );
+    
+    logTransformScalarVariables.erase(std::remove(logTransformScalarVariables.begin(), logTransformScalarVariables.end(), v), logTransformScalarVariables.end());
+}
+
+void AVMVNProposal::removeLogitScalar( ContinuousStochasticNode *v )
+{
+    
+    // add it to the nodes vector
+    removeNode( v );
+    
+    logitTransformScalarVariables.erase(std::remove(logitTransformScalarVariables.begin(), logitTransformScalarVariables.end(), v), logitTransformScalarVariables.end());
 }
 
 
 /**
  * Remove a variable.
  */
-void AVMVNProposal::removeVariable( StochasticNode<RbVector<double> > *v, std::string& transform)
+void AVMVNProposal::removeUntransformedVector( StochasticNode<RbVector<double> > *v)
 {
-    
     
     // add it to the nodes vector
     removeNode( v );
     
-    // add it to my internal vector
-    // Is this a transformed variable?
-    if ( transform == "none" )
-    {
-        noTransformVectorVariables.erase(std::remove(noTransformVectorVariables.begin(), noTransformVectorVariables.end(), v), noTransformVectorVariables.end());
-    }
-    else if ( transform == "multivariateLogistic")
-    {
-        logConstrainedSumTransformVectorVariables.erase(std::remove(logConstrainedSumTransformVectorVariables.begin(), logConstrainedSumTransformVectorVariables.end(), v), logConstrainedSumTransformVectorVariables.end());
-    }
-    else
-    {
-        throw(RbException("AVMVN attempting to remove a vector variable it cannot have added."));
-    }
+    noTransformVectorVariables.erase(std::remove(noTransformVectorVariables.begin(), noTransformVectorVariables.end(), v), noTransformVectorVariables.end());
+}
+
+void AVMVNProposal::removeLogConstrainedSumVector( StochasticNode<Simplex> *v)
+{
+    // add it to the nodes vector
+    removeNode( v );
+    
+    logConstrainedSumTransformVectorVariables.erase(std::remove(logConstrainedSumTransformVectorVariables.begin(), logConstrainedSumTransformVectorVariables.end(), v), logConstrainedSumTransformVectorVariables.end());
     
 }
 
@@ -491,7 +460,6 @@ void AVMVNProposal::removeVariable( StochasticNode<RbVector<double> > *v, std::s
  */
 void AVMVNProposal::undoProposal( void )
 {
-    
     setAVMVNMemberVariableValues(storedValues, storedValues);
     
 }
@@ -522,13 +490,13 @@ void AVMVNProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
-//    for (size_t i = 0; i < logitTransformScalarVariables.size(); ++i)
-//    {
-//        if ( logitTransformScalarVariables[i] == oldN )
-//        {
-//            logitTransformScalarVariables[i] = static_cast<StochasticNode<double> *>(newN);
-//        }
-//    }
+    for (size_t i = 0; i < logitTransformScalarVariables.size(); ++i)
+    {
+        if ( logitTransformScalarVariables[i] == oldN )
+        {
+            logitTransformScalarVariables[i] = static_cast<ContinuousStochasticNode *>(newN);
+        }
+    }
     
     for (size_t i = 0; i < noTransformVectorVariables.size(); ++i)
     {
@@ -542,7 +510,7 @@ void AVMVNProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     {
         if ( logConstrainedSumTransformVectorVariables[i] == oldN )
         {
-            logConstrainedSumTransformVectorVariables[i] = static_cast<StochasticNode<RbVector<double> > *>(newN);
+            logConstrainedSumTransformVectorVariables[i] = static_cast<StochasticNode<Simplex> *>(newN);
         }
     }
 

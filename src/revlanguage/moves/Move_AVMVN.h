@@ -40,15 +40,16 @@ namespace RevLanguage {
         const MemberRules&                          getParameterRules(void) const;                                                              //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                    //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                          //!< Print value (for user)
-        
+
         // Member method functions
         virtual RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);         //!< Map member methods to internal functions
         
     protected:
+        std::vector<std::string>                    getHelpDescription(void) const;                                                         //!< Get the description for this function
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);           //!< Set member variable
         
-        RevPtr<const RevVariable>                   sigma;                                                                                     //!< The tuning parameter
+        RevPtr<const RevVariable>                   sigmaSquared;                                                                                     //!< The tuning parameter
         RevPtr<const RevVariable>                   epsilon;                                                                                     //!< The tuning parameter
         RevPtr<const RevVariable>                   waitBeforeLearning;                                                                                     //!< The tuning parameter
         RevPtr<const RevVariable>                   waitBeforeUsing;                                                                                     //!< The tuning parameter
