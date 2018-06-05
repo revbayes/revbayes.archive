@@ -289,7 +289,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     
     if (useCladogeneticEvents)
     {
-        const CladogeneticProbabilityMatrix& cp = homogeneousCladogeneticProbabilityMatrix->getValue();
+        ; //const CladogeneticProbabilityMatrix& cp = homogeneousCladogeneticProbabilityMatrix->getValue();
     }
     
     return lnL;
