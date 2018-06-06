@@ -5,6 +5,8 @@
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "Simplex.h"
+#include "ContinuousStochasticNode.h"
 #include "StochasticNode.h"
 
 #include <ostream>
@@ -32,16 +34,22 @@ namespace RevBayesCore {
     public:
         AVMVNProposal( double s, double e, double n0, double c0, double m );                                 //!< Constructor
         
-        void                                        addVariable(StochasticNode<double> *v, std::string& transform);                                    //!< Add an up-scaling variable
-        void                                        addVariable(StochasticNode<RbVector<double> > *v, std::string& transform);                         //!< Add an up-scaling variable
+        void                                        addUntransformedScalar(StochasticNode<double> *v);                                    //!< Add an up-scaling variable
+        void                                        addLogScalar(StochasticNode<double> *v);                                    //!< Add an up-scaling variable
+        void                                        addLogitScalar(ContinuousStochasticNode *v);                                    //!< Add an up-scaling variable
+        void                                        addUntransformedVector(StochasticNode<RbVector<double> > *v);                         //!< Add an up-scaling variable
+        void                                        addLogConstrainedSumVector(RevBayesCore::StochasticNode<RevBayesCore::Simplex> *v);                         //!< Add an up-scaling variable
         void                                        cleanProposal(void);                                                                //!< Clean up proposal
         AVMVNProposal*                              clone(void) const;                                                                  //!< Clone object
         double                                      doProposal(void);                                                                   //!< Perform proposal
         const std::string&                          getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                        printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                                        prepareProposal(void);                                                              //!< Prepare the proposal
-        void                                        removeVariable(StochasticNode<double> *v, std::string& transform);                                 //!< Add an up-scaling variable
-        void                                        removeVariable(StochasticNode<RbVector<double> > *v, std::string& transform);                      //!< Add an up-scaling variable
+        void                                        removeUntransformedScalar(StochasticNode<double> *v);                                    //!< Add an up-scaling variable
+        void                                        removeLogScalar(StochasticNode<double> *v);                                    //!< Add an up-scaling variable
+        void                                        removeLogitScalar(ContinuousStochasticNode *v);                                    //!< Add an up-scaling variable
+        void                                        removeUntransformedVector(StochasticNode<RbVector<double> > *v);                         //!< Add an up-scaling variable
+        void                                        removeLogConstrainedSumVector(RevBayesCore::StochasticNode<RevBayesCore::Simplex> *v);                         //!< Add an up-scaling variable
         void                                        tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                        undoProposal(void);                                                                 //!< Reject the proposal
         
@@ -55,9 +63,9 @@ namespace RevBayesCore {
         
         std::vector<StochasticNode<double> *>               noTransformScalarVariables;
         std::vector<StochasticNode<double> *>               logTransformScalarVariables;
-//        std::vector<StochasticNode<double> *>               logitTransformScalarVariables;
+        std::vector<ContinuousStochasticNode *>             logitTransformScalarVariables;
         std::vector<StochasticNode<RbVector<double> > *>    noTransformVectorVariables;
-        std::vector<StochasticNode<RbVector<double> > *>    logConstrainedSumTransformVectorVariables;
+        std::vector<StochasticNode<Simplex> *>              logConstrainedSumTransformVectorVariables;
         
         MatrixReal                                          C_emp;                                                   //!< The empirical covariance matrix of the samples
         MatrixReal                                          AVMVN_cholesky_L;                                       //!< Lower diagonal of Cholesky decomposition of
