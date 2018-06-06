@@ -131,6 +131,8 @@ rightTpMatrix(2),
 lambda(1.0) // for now, lambda always == 1.0
 {
     
+    GLOBAL_RNG->setSeed(1);
+    
     addNode( ctmc );
     
     nodeProposal = new PathRejectionSampleProposal<charType>(n, l, r);
@@ -294,7 +296,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
         n_r_on += sr;
         
         // copy sympatry
-        if (sn == 1 && sl == 1 && sr == 1)
+        if (sn==1&&sl==1&&sr==1)
         {
             n_nlr_on += 1;
         }
@@ -311,12 +313,30 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
             n_lr_mismatch += 1;
         }
         
-        if (sn==0&&sr==1&&sl==0) {
+        if (sn==0&&sr==0&&sl==0) {
             n_nlr_off += 1;
         }
         
     }
+    
+//    for (size_t i = 0; i < numCharacters; i++) {
+//        std::cout << static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
+//    }
+//    std::cout << " -> ";
+//    
+//    for (size_t i = 0; i < numCharacters; i++) {
+//        std::cout << static_cast<CharacterEventDiscrete*>(leftParentState[i])->getState();
+//    }
+//    std::cout << " | ";
+//    
+//    for (size_t i = 0; i < numCharacters; i++) {
+//        std::cout << static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
+//    }
+//    std::cout << "\n";
+
+    
     if (n_nlr_on > 1) {
+        
         throw RbException("unknown cladogenetic state");
     }
     
@@ -326,7 +346,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
     {
         clado_type = "singleton";
     }
-    else if (n_nlr_on == n_lr_mismatch)
+    else if (n_n_on == n_lr_mismatch)
     {
         clado_type = "allopatry";
     }
@@ -340,6 +360,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
     }
     else
     {
+        
         throw RbException("Unknown cladogenetic event type!");
     }
     
@@ -414,7 +435,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
     const std::vector<CharacterEvent*>& nodeChildState  = histories[node->getIndex()]->getChildCharacters();
     
     double parent_age = 0.0;
-    if ( node->isRoot() == false )
+    if ( node->isRoot() )
     {
         parent_age = node->getAge() * 10;
     }
@@ -555,11 +576,15 @@ void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::preparePr
     storedLeftState.clear();
     storedRightState.clear();
     
+    const TopologyNode& left_node = node->getChild(0);
+    const TopologyNode& right_node = node->getChild(1);
     const std::vector<CharacterEvent*>& nodeChildState = p->getHistory(*node).getChildCharacters();
-    const std::vector<CharacterEvent*>& leftParentState = p->getHistory((*node).getChild(0)).getParentCharacters();
-    const std::vector<CharacterEvent*>& rightParentState = p->getHistory((*node).getChild(1)).getParentCharacters();
+    const std::vector<CharacterEvent*>& leftParentState = p->getHistory(left_node).getParentCharacters();
+    const std::vector<CharacterEvent*>& rightParentState = p->getHistory(right_node).getParentCharacters();
     size_t num_sites = p->getNumberOfSites();
     storedNodeState.resize(num_sites,0);
+    storedLeftState.resize(num_sites,0);
+    storedRightState.resize(num_sites,0);
     for (size_t site_index = 0; site_index < num_sites; ++site_index)
     {
         size_t desSA = static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->getState();
@@ -645,7 +670,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleN
     std::vector<CharacterEvent*>& rightParentState = histories[right_child.getIndex()]->getParentCharacters();
     
     double parent_age = 0.0;
-    if ( node->isRoot()  == false )
+    if ( node->isRoot() )
     {
         parent_age = node->getAge() * 10;
     }
@@ -773,8 +798,8 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
     TopologyNode &right_child = node->getChild(1);
 
     // states for conditional sampling probs
-    const std::vector<CharacterEvent*>& leftChildState  = histories[left_child.getIndex()]->getChildCharacters();
-    const std::vector<CharacterEvent*>& rightChildState = histories[right_child.getIndex()]->getChildCharacters();
+//    const std::vector<CharacterEvent*>& leftChildState  = histories[left_child.getIndex()]->getChildCharacters();
+//    const std::vector<CharacterEvent*>& rightChildState = histories[right_child.getIndex()]->getChildCharacters();
     
     // states to update
     std::vector<CharacterEvent*>& nodeChildState   = histories[node->getIndex()]->getChildCharacters();
@@ -800,6 +825,13 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
     // if the ancestral node has 0 or 1 areas, then that range is inherited
     // identically by both daughter lineages
     size_t n_anc_1 = idx_on.size();
+    
+    
+//    std::cout << "node_child_state   : ";
+//    for (size_t i = 0; i < numCharacters; i++) {
+//        std::cout << static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
+//    }
+//    std::cout << "\n";
     
     // null range is inherited exactly
     if (n_anc_1 == 0)
@@ -829,8 +861,8 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
         bool left_branch_is_trunk = GLOBAL_RNG->uniform01() < 0.5;
         
         // which characters are inherited by the branch?
-        std::set<size_t> bud_char_idx;
-        bud_char_idx.insert( (size_t)(GLOBAL_RNG->uniform01() * idx_on.size() ) );
+        std::vector<size_t> bud_char_idx;
+        bud_char_idx.push_back( (size_t)(GLOBAL_RNG->uniform01() * idx_on.size() ) );
         
         // sample the cladogenetic state depending on bud/trunk and character indices
         if (left_branch_is_trunk) {
@@ -838,9 +870,10 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
                 size_t j = idx_on[i];
                 static_cast<CharacterEventDiscrete*>(rightParentState[j])->setState(0);
             }
-            for (std::set<size_t>::iterator it = bud_char_idx.begin(); it != bud_char_idx.end(); it++)
+            for (std::vector<size_t>::iterator it = bud_char_idx.begin(); it != bud_char_idx.end(); it++)
             {
-                static_cast<CharacterEventDiscrete*>(rightParentState[*it])->setState(1);
+                size_t j = idx_on[*it];
+                static_cast<CharacterEventDiscrete*>(rightParentState[j])->setState(1);
             }
         }
         else {
@@ -848,9 +881,10 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
                 size_t j = idx_on[i];
                 static_cast<CharacterEventDiscrete*>(leftParentState[j])->setState(0);
             }
-            for (std::set<size_t>::iterator it = bud_char_idx.begin(); it != bud_char_idx.end(); it++)
+            for (std::vector<size_t>::iterator it = bud_char_idx.begin(); it != bud_char_idx.end(); it++)
             {
-                static_cast<CharacterEventDiscrete*>(leftParentState[*it])->setState(1);
+                size_t j = idx_on[*it];
+                static_cast<CharacterEventDiscrete*>(leftParentState[j])->setState(1);
             }
         }
         
@@ -861,14 +895,16 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
     {
         // sample how left/right characters will be divided
         std::random_shuffle(idx_on.begin(), idx_on.end());
-        int n_child1_on = (size_t)(GLOBAL_RNG->uniform01() * (idx_on.size()-1) ) + 1;
+        int n_child1_on = (int)(GLOBAL_RNG->uniform01() * (idx_on.size()-1) ) + 1;
+        
+        std::cout << n_child1_on << "\n";
         
         // set the left/right child states
         for (size_t i = 0; i < idx_on.size(); i++) {
             
             size_t j = idx_on[i];
 
-            if (n_child1_on >= 0) {
+            if (n_child1_on > 0) {
                 static_cast<CharacterEventDiscrete*>(leftParentState[j])->setState(0);
                 static_cast<CharacterEventDiscrete*>(rightParentState[j])->setState(1);
             } else {
@@ -912,6 +948,24 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
     {
         throw RbException(clado_type + " not a recognized cladogenetic event type!");
     }
+    
+//    std::cout << "clado_type = " << clado_type << "\n";
+//    
+//    for (size_t i = 0; i < numCharacters; i++) {
+//        std::cout << static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
+//    }
+//    std::cout << " -> ";
+//    
+//    for (size_t i = 0; i < numCharacters; i++) {
+//        std::cout << static_cast<CharacterEventDiscrete*>(leftParentState[i])->getState();
+//    }
+//    std::cout << " | ";
+//    
+//    for (size_t i = 0; i < numCharacters; i++) {
+//        std::cout << static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
+//    }
+//    std::cout << "\n";
+    
     
     return lnP;
 }

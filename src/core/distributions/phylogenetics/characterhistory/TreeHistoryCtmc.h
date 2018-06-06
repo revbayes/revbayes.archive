@@ -276,6 +276,7 @@ double RevBayesCore::TreeHistoryCtmc<charType>::computeLnProbability( void )
         size_t nodeIndex = nd.getIndex();
         fillLikelihoodVector(nd);
         double nodeLnProb = historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex];
+        
         this->lnProb += nodeLnProb;
     }
 

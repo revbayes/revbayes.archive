@@ -576,6 +576,30 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
     std::vector<CharacterEvent*>& leftParentState = histories[ left_index ]->getParentCharacters();
     std::vector<CharacterEvent*>& rightParentState = histories[ right_index ]->getParentCharacters();
 
+    std::cout << "nodeChildState   : ";
+    for (size_t i = 0; i < nodeChildState.size(); i++)
+    {
+        std::cout << static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
+    }
+    std::cout << "\n";
+    
+    std::cout << "leftParentState  : ";
+    for (size_t i = 0; i < leftParentState.size(); i++)
+    {
+        std::cout << static_cast<CharacterEventDiscrete*>(leftParentState[i])->getState();
+    }
+    std::cout << "\n";
+    
+    
+    std::cout << "rightParentState : ";
+    for (size_t i = 0; i < rightParentState.size(); i++)
+    {
+        std::cout << static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
+    }
+    std::cout << "\n";
+    
+    histories[ node_index ]->print();
+    
     // determine what type of cladogenetic event it is
     // determine the cladogenetic state based on un/shared areas
     size_t n_n_on = 0;
@@ -613,22 +637,26 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
             n_lr_mismatch += 1;
         }
         
-        if (sn==0&&sr==1&&sl==0) {
+        if (sn==0&&sr==0&&sl==0) {
             n_nlr_off += 1;
         }
         
     }
     if (n_nlr_on > 1) {
+        
         throw RbException("unknown cladogenetic state");
     }
     
     
     std::string clado_type = "";
-    if (n_nlr_on == 1 && n_nlr_off == (numCharacters-1))
-    {
-        clado_type = "singleton";
+    if (n_n_on == 0) {
+        clado_type = "null_copy";
     }
-    else if (n_nlr_on == n_lr_mismatch)
+    else if (n_nlr_on == 1 && n_nlr_off == (numCharacters-1))
+    {
+        clado_type = "sympatry_copy";
+    }
+    else if (n_n_on == n_lr_mismatch)
     {
         clado_type = "allopatry";
     }
@@ -638,10 +666,11 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
     }
     else if (n_nlr_on == 1 && n_lr_mismatch==(n_n_on-n_nlr_on))
     {
-        clado_type = "sympatry";
+        clado_type = "sympatry_subset";
     }
     else
     {
+        
         throw RbException("Unknown cladogenetic event type!");
     }
     
@@ -650,17 +679,19 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
     
     // get the probability for each clado event type
     std::map<std::string, double> probs;
-//    std::vector<double> probs(numEventTypes, 0.0);
     for (size_t i = 0; i < eventTypes.size(); i++)
     {
-        std::map<std::string, unsigned>::const_iterator it = eventStringToStateMap.find( eventTypes[i] );
-        probs[ eventTypes[i] ] = ep[ it->second ];
+        probs[ eventTypes[i] ] = ep[ i ];
     }
     
     // the proposal prob
-    if ( clado_type == "singleton" )
+    if ( clado_type == "null_range" )
     {
-        p = probs["s"];
+        p = 1.0;
+    }
+    else if ( clado_type == "sympatry_copy")
+    {
+        p = 1.0; // probs["s"];
     }
     else if ( clado_type == "allopatry" )
     {
@@ -668,7 +699,7 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
         // excluding the all-zero range and the all-one range (hence, -2)
         p = probs["a"] * (1.0 / (pow(2, n_n_on) - 2));
     }
-    else if ( clado_type == "sympatry" )
+    else if ( clado_type == "sympatry_subset" )
     {
         // Any single ancestral bit may be set across the two daughter ranges
         p = probs["s"] * (1.0 / (2 * n_n_on));
@@ -736,8 +767,11 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
     
     
     // sample cladogenetic state
-    if ( node_child_on.size() <= 2) {
-        size_t s = *( node_child_on.begin() );
+    if (node_child_on.size() == 0) {
+        ; // do nothing
+    }
+    else if ( node_child_on.size() == 1) {
+        size_t s = node_child_on[0];
         static_cast<CharacterEventDiscrete*>( leftParentState[s] )->setState(1);
         static_cast<CharacterEventDiscrete*>( rightParentState[s] )->setState(1);
     }
@@ -828,6 +862,7 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
         }
         else
         {
+            
             throw RbException("Unknown cladogenetic event type sampled");
         }
     }
