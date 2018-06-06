@@ -176,7 +176,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         // GeneralTreeHistoryCtmc<charType>* q = static_cast<GeneralTreeHistoryCtmc<charType>* >(p);
         // @MJL: fix this
 //        int cladoState = q->getCladogenicState(*n);
-        int cladoState = 0;
+        int cladoState = -1;
 
         if (cladoState == BiogeographicCladoEvent::SYMPATRY_NARROW)
             ss << "n";

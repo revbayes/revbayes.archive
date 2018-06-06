@@ -39,6 +39,7 @@ namespace RevBayesCore {
         virtual std::vector<double>                         getRootFrequencies(void) const;
         double                                              getSubrootAge(void) const;
         virtual void                                        redrawValue(void);
+        virtual void                                        reInitialized(void);
         virtual void                                        simulate(void);
         
         virtual bool                                        samplePathStart(const TopologyNode& node);
@@ -144,6 +145,7 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Gen
     // flags specifying which model variants we use
     branchHeterogeneousSubstitutionMatrices     = d.branchHeterogeneousSubstitutionMatrices;
     rateVariationAcrossSites                    = d.rateVariationAcrossSites;
+    useCladogeneticEvents                       = d.useCladogeneticEvents;
     
 }
 
@@ -205,10 +207,10 @@ template<class charType>
 double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikelihood(const TopologyNode &node)
 {
     
-    if ( node.isRoot() == true )
-    {
-        return 0.0;
-    }
+//    if ( node.isRoot() == true )
+//    {
+//        return 0.0;
+//    }
     
     size_t node_index = node.getIndex();
     double branch_rate = this->getBranchRate(node_index);
@@ -257,7 +259,14 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     
     // stepwise events
     double lnL = 0.0;
-    double current_age = node.getParent().getAge();
+    double current_age = 0.0;
+    if (node.isRoot()) {
+        current_age = subrootAge;
+    }
+    else {
+        current_age = node.getParent().getAge();
+    }
+    
     double end_age = node.getAge();
     double event_age;
     double sr = rm.getSumOfRates(curr_state, current_age, branch_rate);
@@ -411,16 +420,16 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
        // double branch_lnL = computeInternalNodeLikelihood(*nd);
         
     }
-    std::cout << "----\n";
-    std::cout << "Init\n";
-    std::cout << "----\n";
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        TopologyNode* nd = nodes[i];
-        this->histories[ nd->getIndex() ]->print( nd );
-    }
-    
-    std::cout << "----\n";
+//    std::cout << "----\n";
+//    std::cout << "Init\n";
+//    std::cout << "----\n";
+//    for (size_t i = 0; i < nodes.size(); i++)
+//    {
+//        TopologyNode* nd = nodes[i];
+//        this->histories[ nd->getIndex() ]->print( nd );
+//    }
+//    
+//    std::cout << "----\n";
     
     double lnL = this->computeLnProbability();
     
@@ -519,7 +528,13 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::redrawValue( void )
     
 }
 
-
+template<class charType>
+void RevBayesCore::GeneralTreeHistoryCtmc<charType>::reInitialized( void ) {
+    
+    // redraw the internal history states
+    drawInitValue();
+    
+}
 
 template<class charType>
 bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathEnd(const TopologyNode& node)
@@ -960,7 +975,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
         taxa[node_index].addCharacter( c );
     }
     
-    bh->print( &node );
+    // bh->print( &node );
     
     if ( node.isTip() == true )
     {

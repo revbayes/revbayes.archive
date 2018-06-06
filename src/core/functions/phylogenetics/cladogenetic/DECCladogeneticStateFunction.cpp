@@ -576,29 +576,29 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
     std::vector<CharacterEvent*>& leftParentState = histories[ left_index ]->getParentCharacters();
     std::vector<CharacterEvent*>& rightParentState = histories[ right_index ]->getParentCharacters();
 
-    std::cout << "nodeChildState   : ";
-    for (size_t i = 0; i < nodeChildState.size(); i++)
-    {
-        std::cout << static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
-    }
-    std::cout << "\n";
+//    std::cout << "nodeChildState   : ";
+//    for (size_t i = 0; i < nodeChildState.size(); i++)
+//    {
+//        std::cout << static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
+//    }
+//    std::cout << "\n";
+//    
+//    std::cout << "leftParentState  : ";
+//    for (size_t i = 0; i < leftParentState.size(); i++)
+//    {
+//        std::cout << static_cast<CharacterEventDiscrete*>(leftParentState[i])->getState();
+//    }
+//    std::cout << "\n";
+//    
+//    
+//    std::cout << "rightParentState : ";
+//    for (size_t i = 0; i < rightParentState.size(); i++)
+//    {
+//        std::cout << static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
+//    }
+//    std::cout << "\n";
     
-    std::cout << "leftParentState  : ";
-    for (size_t i = 0; i < leftParentState.size(); i++)
-    {
-        std::cout << static_cast<CharacterEventDiscrete*>(leftParentState[i])->getState();
-    }
-    std::cout << "\n";
-    
-    
-    std::cout << "rightParentState : ";
-    for (size_t i = 0; i < rightParentState.size(); i++)
-    {
-        std::cout << static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
-    }
-    std::cout << "\n";
-    
-    histories[ node_index ]->print();
+//    histories[ node_index ]->print();
     
     // determine what type of cladogenetic event it is
     // determine the cladogenetic state based on un/shared areas
@@ -867,6 +867,30 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
         }
     }
     
+//    std::cout << "nodeChildState   : ";
+//    for (size_t i = 0; i < nodeChildState.size(); i++)
+//    {
+//        std::cout << static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
+//    }
+//    std::cout << "\n";
+//    
+//    std::cout << "leftParentState  : ";
+//    for (size_t i = 0; i < leftParentState.size(); i++)
+//    {
+//        std::cout << static_cast<CharacterEventDiscrete*>(leftParentState[i])->getState();
+//    }
+//    std::cout << "\n";
+//    
+//    
+//    std::cout << "rightParentState : ";
+//    for (size_t i = 0; i < rightParentState.size(); i++)
+//    {
+//        std::cout << static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
+//    }
+//    std::cout << "\n";
+
+
+    return;
     // update histories element?
     // get ranges
 //    std::vector<CharacterEvent*>& nodeChildState = histories[ node_index ]->getChildCharacters();

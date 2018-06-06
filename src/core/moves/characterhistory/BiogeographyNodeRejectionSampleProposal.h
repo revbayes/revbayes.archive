@@ -131,8 +131,6 @@ rightTpMatrix(2),
 lambda(1.0) // for now, lambda always == 1.0
 {
     
-    GLOBAL_RNG->setSeed(1);
-    
     addNode( ctmc );
     
     nodeProposal = new PathRejectionSampleProposal<charType>(n, l, r);
@@ -896,8 +894,6 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
         // sample how left/right characters will be divided
         std::random_shuffle(idx_on.begin(), idx_on.end());
         int n_child1_on = (int)(GLOBAL_RNG->uniform01() * (idx_on.size()-1) ) + 1;
-        
-        std::cout << n_child1_on << "\n";
         
         // set the left/right child states
         for (size_t i = 0; i < idx_on.size(); i++) {
