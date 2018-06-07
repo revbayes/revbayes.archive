@@ -941,6 +941,10 @@ double RevBayesCore::TreeUtilities::calculateNRI(const Tree &t, const AbstractHo
         }   
     }
     double mean_nodal_distance = total_dist/num_dist;
+    if (num_dist == 0)
+    {
+        mean_nodal_distance = 0;
+    }
     
     // randomizations to approximate maximum mean nodal distance
     double mean_nodal_distance_max = mean_nodal_distance;
@@ -990,13 +994,20 @@ double RevBayesCore::TreeUtilities::calculateNRI(const Tree &t, const AbstractHo
             }   
         }
         double temp_mean_nodal_distance = total_dist/num_dist;
+        if (num_dist == 0)
+        {
+            temp_mean_nodal_distance = 0;
+        }
         if (temp_mean_nodal_distance > mean_nodal_distance_max)
         {
             mean_nodal_distance_max = temp_mean_nodal_distance;
         } 
     }
-
-    return 1 - (mean_nodal_distance/mean_nodal_distance_max);
+    if (mean_nodal_distance_max != 0.0)
+    {
+        return 1 - (mean_nodal_distance/mean_nodal_distance_max);
+    }
+    return 1;
 }
 
 
@@ -1059,6 +1070,10 @@ double RevBayesCore::TreeUtilities::calculateNTI(const Tree &t, const AbstractHo
         }   
     }
     double mean_nodal_distance = total_dist/num_dist;
+    if (num_dist == 0)
+    {
+        mean_nodal_distance = 0;
+    }
     
     // randomizations to approximate the maximum mean nodal distance to nearest relative
     double mean_nodal_distance_max = mean_nodal_distance;
@@ -1115,11 +1130,18 @@ double RevBayesCore::TreeUtilities::calculateNTI(const Tree &t, const AbstractHo
             }   
         }
         double temp_mean_nodal_distance = total_dist/num_dist;
+        if (num_dist == 0)
+        {
+            temp_mean_nodal_distance = 0;
+        }
         if (temp_mean_nodal_distance > mean_nodal_distance_max)
         {
             mean_nodal_distance_max = temp_mean_nodal_distance;
         } 
     }
-
-    return 1 - (mean_nodal_distance/mean_nodal_distance_max);
+    if (mean_nodal_distance_max != 0.0)
+    {
+        return 1 - (mean_nodal_distance/mean_nodal_distance_max);
+    }
+    return 1;
 }
