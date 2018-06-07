@@ -46,7 +46,7 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     
-    // add the parameters of the distribution
+    // add the parameters of the base distribution
     const std::vector<const DagNode*>& pars = base_distribution->getParameters();
     for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
     {
@@ -93,6 +93,15 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(const T
     value = &base_distribution->getValue();
     
     value->getTreeChangeEventHandler().addListener( this );
+    
+    
+    // add the parameters of the base distribution
+    const std::vector<const DagNode*>& pars = base_distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
+    {
+        this->addParameter( *it );
+    }
+    
 }
 
 
@@ -110,6 +119,43 @@ TopologyConstrainedTreeDistribution::~TopologyConstrainedTreeDistribution()
     // our base class, the TypedDistribution thinks that it owns the value and thus deletes it
     value = NULL;
     
+}
+
+
+
+TopologyConstrainedTreeDistribution& TopologyConstrainedTreeDistribution::operator=(const TopologyConstrainedTreeDistribution &d)
+{
+    
+    if ( this != &d )
+    {
+        TypedDistribution<Tree>::operator=( d );
+        
+        delete base_distribution;
+        
+        active_backbone_clades          = d.active_backbone_clades;
+        active_clades                   = d.active_clades;
+        backbone_constraints            = d.backbone_constraints;
+        backbone_mask                   = d.backbone_mask;
+        backbone_topology               = d.backbone_topology;
+        backbone_topologies             = d.backbone_topologies;
+        base_distribution               = d.base_distribution->clone();
+        dirty_nodes                     = d.dirty_nodes;
+        monophyly_constraints           = d.monophyly_constraints;
+        stored_backbone_clades          = d.stored_backbone_clades;
+        stored_clades                   = d.stored_clades;
+        num_backbones                   = d.num_backbones;
+        use_multiple_backbones          = d.use_multiple_backbones;
+
+        // add the parameters of the base distribution
+        const std::vector<const DagNode*>& pars = base_distribution->getParameters();
+        for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
+        {
+            this->addParameter( *it );
+        }
+        
+    }
+    
+    return *this;
 }
 
 
@@ -227,6 +273,18 @@ void TopologyConstrainedTreeDistribution::fireTreeChangeEvent(const TopologyNode
         
         recursivelyFlagNodesDirty(n);
     }
+}
+
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void TopologyConstrainedTreeDistribution::getAffected(RbOrderedSet<RevBayesCore::DagNode *> &affected, RevBayesCore::DagNode *affecter)
+{
+    
+    // delegate to the base distribution
+    base_distribution->getAffected(affected, affecter);
 }
 
 
@@ -851,6 +909,7 @@ void TopologyConstrainedTreeDistribution::swapParameterInternal( const DagNode *
     }
     
 }
+
 
 /**
  * Touch the current value and reset some internal flags.
