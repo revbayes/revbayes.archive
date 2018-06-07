@@ -597,7 +597,7 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
 //        std::cout << static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
 //    }
 //    std::cout << "\n";
-    
+//    
 //    histories[ node_index ]->print();
     
     // determine what type of cladogenetic event it is
@@ -683,6 +683,7 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
     {
         probs[ eventTypes[i] ] = ep[ i ];
     }
+    
     
     // the proposal prob
     if ( clado_type == "null_range" )

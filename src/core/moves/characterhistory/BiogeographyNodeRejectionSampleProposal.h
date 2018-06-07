@@ -211,12 +211,12 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
     rm.calculateTransitionProbabilities(node_age, right_age, right_rate, rightTpMatrix);
     
     // states for conditional sampling probs
+    const std::vector<CharacterEvent*>& nodeChildState  = histories[node->getIndex()]->getChildCharacters();
     const std::vector<CharacterEvent*>& leftChildState  = histories[node->getChild(0).getIndex()]->getChildCharacters();
     const std::vector<CharacterEvent*>& rightChildState = histories[node->getChild(1).getIndex()]->getChildCharacters();
+    const std::vector<CharacterEvent*>& nodeParentState = histories[node->getIndex()]->getParentCharacters();
     const std::vector<CharacterEvent*>& leftParentState  = histories[node->getChild(0).getIndex()]->getParentCharacters();
     const std::vector<CharacterEvent*>& rightParentState = histories[node->getChild(1).getIndex()]->getParentCharacters();
-    const std::vector<CharacterEvent*>& nodeChildState  = histories[node->getIndex()]->getChildCharacters();
-    const std::vector<CharacterEvent*>& nodeParentState = histories[node->getIndex()]->getParentCharacters();
     
     double parent_age = 0.0;
     if ( node->isRoot() )
@@ -340,9 +340,12 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
     
     
     std::string clado_type = "";
-    if (n_nlr_on == 1 && n_nlr_off == (numCharacters-1))
+    if (n_n_on == 0) {
+        clado_type = "null_copy";
+    }
+    else if (n_nlr_on == 1 && n_nlr_off == (numCharacters-1))
     {
-        clado_type = "singleton";
+        clado_type = "sympatry_copy";
     }
     else if (n_n_on == n_lr_mismatch)
     {
@@ -354,7 +357,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
     }
     else if (n_nlr_on == 1 && n_lr_mismatch==(n_n_on-n_nlr_on))
     {
-        clado_type = "sympatry";
+        clado_type = "symapatry_subset";
     }
     else
     {
@@ -369,7 +372,10 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
     double p_jump_dispersal = 0.0;
     double p_sum = p_allopatry + p_sympatry + p_jump_dispersal;
     
-    if ( clado_type == "singleton" )
+    if ( clado_type == "null_copy") {
+        p = 1.0;
+    }
+    else if ( clado_type == "sympatry_copy" )
     {
         p = 1.0;
     }
@@ -379,7 +385,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
         // excluding the all-zero range and the all-one range (hence, -2)
         p = (p_allopatry / p_sum) * (1.0 / (std::pow(2, n_n_on) - 2));
     }
-    else if ( clado_type == "sympatry" )
+    else if ( clado_type == "sympatry_subset" )
     {
         // Any single ancestral bit may be set across the two daughter ranges
         p = (p_sympatry / p_sum) * (1.0 / (2 * n_n_on));
@@ -605,6 +611,8 @@ void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::preparePr
     storedLnProb += computeNodeLnProposal();
     storedLnProb += computeCladogenesisLnProposal();
     storedLnProb += computeAnagenesisConditionLnProposal();
+    
+    return;
 }
 
 
