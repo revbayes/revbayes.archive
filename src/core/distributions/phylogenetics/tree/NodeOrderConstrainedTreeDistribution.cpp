@@ -84,6 +84,14 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(const
         // otherwise we simply use the same pointer
         value = &base_distribution->getValue();
     }
+    
+    
+    // add the parameters of the base distribution
+    const std::vector<const DagNode*>& pars = base_distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
+    {
+        this->addParameter( *it );
+    }
 
 }
 
@@ -136,6 +144,18 @@ double NodeOrderConstrainedTreeDistribution::computeLnProbability( void )
     double lnProb = base_distribution->computeLnProbability();
 
     return lnProb;
+}
+
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void NodeOrderConstrainedTreeDistribution::getAffected(RbOrderedSet<RevBayesCore::DagNode *> &affected, RevBayesCore::DagNode *affecter)
+{
+    
+    // delegate to the base distribution
+    base_distribution->getAffected(affected, affecter);
 }
 
 
