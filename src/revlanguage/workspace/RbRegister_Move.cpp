@@ -66,6 +66,7 @@
 #include "Move_BetaProbability.h"
 
 /* Compound Moves on Real Values */
+#include "Move_AVMVN.h"
 #include "Move_UpDownSlide.h"
 #include "Move_UpDownSlideBactrian.h"
 #include "Move_UpDownTreeScale.h"
@@ -223,6 +224,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 
         /* compound moves */
 //        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
+        addTypeWithConstructor( new Move_AVMVN() );
         addTypeWithConstructor( new Move_UpDownTreeScale() );
         addTypeWithConstructor( new Move_UpDownSlide() );
         addTypeWithConstructor( new Move_UpDownSlideBactrian() );

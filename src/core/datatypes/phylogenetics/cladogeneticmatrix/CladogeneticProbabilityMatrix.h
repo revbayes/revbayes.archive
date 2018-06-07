@@ -32,7 +32,7 @@ namespace RevBayesCore {
         virtual bool                        operator<(const CladogeneticProbabilityMatrix &rm) const { return this < &rm; }
         virtual bool                        operator<=(const CladogeneticProbabilityMatrix &rm) const { return operator<(rm) || operator==(rm); }
         
-        // pure virtual methods
+        // virtual methods
         virtual CladogeneticProbabilityMatrix&              assign(const Assignable &m);
         virtual CladogeneticProbabilityMatrix*              clone(void) const;
         virtual void                                        initFromString( const std::string &s );

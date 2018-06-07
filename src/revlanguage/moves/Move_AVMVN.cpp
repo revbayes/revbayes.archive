@@ -6,9 +6,11 @@
 #include "AVMVNProposal.h"
 #include "Probability.h"
 #include "RbException.h"
+#include "RbMathLogic.h"
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlBoolean.h"
+#include "RlSimplex.h"
 #include "RlString.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -29,43 +31,29 @@ Move_AVMVN::Move_AVMVN() : Move()
     
     // first, the argument rules
     ArgumentRules* addScalarArgRules                = new ArgumentRules();
+    ArgumentRules* addSimplexArgRules               = new ArgumentRules();
     ArgumentRules* addModelVectorArgRules           = new ArgumentRules();
-    ArgumentRules* addCompositeVectorArgRules       = new ArgumentRules();
-    ArgumentRules* addCompositeVectorPosArgRules    = new ArgumentRules();
     ArgumentRules* removeScalarArgRules             = new ArgumentRules();
+    ArgumentRules* removeSimplexArgRules            = new ArgumentRules();
     ArgumentRules* removeModelVectorArgRules        = new ArgumentRules();
-    ArgumentRules* removeCompositeVectorArgRules    = new ArgumentRules();
-    ArgumentRules* removeCompositeVectorPosArgRules = new ArgumentRules();
     
     
     // next, set the specific arguments
-    addScalarArgRules->push_back(                   new ArgumentRule( "var"        , Real::getClassTypeSpec(),                 "The variable to move"          , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-    addScalarArgRules->push_back(                   new ArgumentRule( "transform"  , RlString::getClassTypeSpec(),             "How to transform the variable?", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
-    addModelVectorArgRules->push_back(              new ArgumentRule( "var"        , ModelVector<Real>::getClassTypeSpec(),    "The variable to move"          , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-    addModelVectorArgRules->push_back(              new ArgumentRule( "transform"  , RlString::getClassTypeSpec(),             "How to transform the variable?", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
-    addCompositeVectorArgRules->push_back(          new ArgumentRule( "var"        , ModelVector<Real>::getClassTypeSpec(),    "The variable to move"          , ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-    addCompositeVectorArgRules->push_back(          new ArgumentRule( "transform"  , RlString::getClassTypeSpec(),             "How to transform the variable?", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
-    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "var"        , ModelVector<RealPos>::getClassTypeSpec(), "The variable to move"          , ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "transform"  , RlString::getClassTypeSpec(),             "How to transform the variable?", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
-    removeScalarArgRules->push_back(                new ArgumentRule( "var"        , Real::getClassTypeSpec(),                 "How to transform the variable?", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-    removeScalarArgRules->push_back(                new ArgumentRule( "transform"  , RlString::getClassTypeSpec(),             "The variable to move"          , ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
-    removeModelVectorArgRules->push_back(           new ArgumentRule( "var"        , ModelVector<Real>::getClassTypeSpec(),    "How to transform the variable?", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-    removeModelVectorArgRules->push_back(           new ArgumentRule( "transform"  , RlString::getClassTypeSpec(),             "The variable to move"          , ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
-    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "var"        , ModelVector<Real>::getClassTypeSpec(),    "How to transform the variable?", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "transform"  , RlString::getClassTypeSpec(),             "The variable to move"          , ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "var"        , ModelVector<RealPos>::getClassTypeSpec(), "How to transform the variable?", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "transform"  , RlString::getClassTypeSpec(),             "The variable to move"          , ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    addScalarArgRules->push_back(                   new ArgumentRule( "var"        , Real::getClassTypeSpec(),                 "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    addSimplexArgRules->push_back(                  new ArgumentRule( "var"        , Simplex::getClassTypeSpec(),              "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    addModelVectorArgRules->push_back(              new ArgumentRule( "var"        , ModelVector<Real>::getClassTypeSpec(),    "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    removeScalarArgRules->push_back(                new ArgumentRule( "var"        , Real::getClassTypeSpec(),                 "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    removeSimplexArgRules->push_back(               new ArgumentRule( "var"        , Simplex::getClassTypeSpec(),              "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    removeModelVectorArgRules->push_back(           new ArgumentRule( "var"        , ModelVector<Real>::getClassTypeSpec(),    "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
     
     
     // finally, create the methods
-    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addScalarArgRules) );
-    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addModelVectorArgRules) );
-    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addCompositeVectorArgRules) );
-    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addCompositeVectorPosArgRules) );
+    methods.addFunction( new MemberProcedure( "addVariable",    RlUtils::Void, addScalarArgRules) );
+    methods.addFunction( new MemberProcedure( "addVariable",    RlUtils::Void, addSimplexArgRules) );
+    methods.addFunction( new MemberProcedure( "addVariable",    RlUtils::Void, addModelVectorArgRules) );
     methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeScalarArgRules) );
+    methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeSimplexArgRules) );
     methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeModelVectorArgRules) );
-    methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeCompositeVectorArgRules) );
-    methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeCompositeVectorPosArgRules) );
     
 }
 
@@ -100,7 +88,7 @@ void Move_AVMVN::constructInternalObject( void )
     delete value;
     
     // now allocate a new up-down-scale move
-    double s = static_cast<const RealPos &>( sigma->getRevObject() ).getValue();
+    double s = static_cast<const RealPos &>( sigmaSquared->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double e = static_cast<const Probability &>( epsilon->getRevObject() ).getValue();
     int n0   = static_cast<const Natural &>( waitBeforeLearning->getRevObject() ).getValue();
@@ -124,24 +112,57 @@ RevPtr<RevVariable> Move_AVMVN::executeMethod(const std::string& name, const std
         found = true;
         
         Real* uReal = dynamic_cast<Real *>( &args[0].getVariable()->getRevObject() );
+        Real* upReal = dynamic_cast<RealPos *>( &args[0].getVariable()->getRevObject() );
+        Simplex* sim = dynamic_cast<Simplex *>( &args[0].getVariable()->getRevObject() );
         ModelVector<Real>* uVector = dynamic_cast<ModelVector<Real> *>( &args[0].getVariable()->getRevObject() );
-        ModelVector<RealPos>* upVector = dynamic_cast<ModelVector<RealPos> *>( &args[0].getVariable()->getRevObject() );
-        std::string  transform = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-
-        if ( uReal != NULL )
+        
+        // Handle scalar variables with possible transforms
+        if ( upReal != NULL )
         {
-            RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< RevBayesCore::StochasticNode<double> * >( uReal->getDagNode() );
             RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
             RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
             
-            if ( the_node != NULL )
+            // Logit-transform or log-transform?
+            RevBayesCore::ContinuousStochasticNode *n = dynamic_cast<RevBayesCore::ContinuousStochasticNode *>( upReal->getDagNode() );
+            if ( n != NULL && RevBayesCore::RbMath::isFinite(n->getMin()) && RevBayesCore::RbMath::isFinite(n->getMax()) )
             {
-                prop.addVariable( the_node, transform );
+                prop.addLogitScalar(n);
             }
             else
             {
-                throw RbException("Could not add the node because it isn't a stochastic nodes.");
+                RevBayesCore::StochasticNode<double> *n2 = dynamic_cast<RevBayesCore::StochasticNode<double> *>( upReal->getDagNode() );
+                prop.addLogScalar(n2);
+                
             }
+            
+        }
+        else if ( uReal != NULL )
+        {
+            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
+            RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
+            
+            // Logit-transform?
+            RevBayesCore::ContinuousStochasticNode *n = dynamic_cast<RevBayesCore::ContinuousStochasticNode *>( uReal->getDagNode() );
+            if ( n != NULL && RevBayesCore::RbMath::isFinite(n->getMin()) && RevBayesCore::RbMath::isFinite(n->getMax()) )
+            {
+                prop.addLogitScalar(n);
+            }
+            else
+            {
+                RevBayesCore::StochasticNode<double> *n2 = dynamic_cast<RevBayesCore::StochasticNode<double> *>( uReal->getDagNode() );
+                prop.addUntransformedScalar(n2);
+                
+            }
+
+        }
+        else if ( sim != NULL )
+        {
+            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
+            RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
+            
+            RevBayesCore::StochasticNode<RevBayesCore::Simplex> *n = dynamic_cast<RevBayesCore::StochasticNode<RevBayesCore::Simplex > *>( sim->getDagNode() );
+            prop.addLogConstrainedSumVector(n);
+            
         }
         else if ( uVector != NULL && uVector->getDagNode()->isStochastic() == true )
         {
@@ -151,56 +172,12 @@ RevPtr<RevVariable> Move_AVMVN::executeMethod(const std::string& name, const std
             
             if ( the_node != NULL )
             {
-                prop.addVariable( the_node, transform );
+                prop.addUntransformedVector( the_node );
             }
             else
             {
                 throw RbException("Could not add the node because it isn't a stochastic nodes.");
             }
-        }
-        else if ( uVector != NULL && uVector->getDagNode()->isStochastic() == false )
-        {
-            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
-            RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
-            
-            RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* deterministic_vector = uVector->getDagNode();
-            std::vector<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
-            for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
-            {
-                const RevBayesCore::DagNode *tmp_node = *it;
-                const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( tmp_node );
-                if ( the_node != NULL )
-                {
-                    prop.addVariable( const_cast<RevBayesCore::StochasticNode<double> *>( the_node ), transform );
-                }
-                else
-                {
-                    throw RbException("Could not add the node because it isn't a vector of stochastic nodes.");
-                }
-            }
-            
-        }
-        else if ( upVector != NULL && upVector->getDagNode()->isStochastic() == false )
-        {
-            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
-            RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
-            
-            RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* deterministic_vector = upVector->getDagNode();
-            std::vector<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
-            for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
-            {
-                const RevBayesCore::DagNode *tmp_node = *it;
-                const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( tmp_node );
-                if ( the_node != NULL )
-                {
-                    prop.addVariable( const_cast<RevBayesCore::StochasticNode<double> *>( the_node ), transform );
-                }
-                else
-                {
-                    throw RbException("Could not add the node because it isn't a vector of stochastic nodes.");
-                }
-            }
-            
         }
         else
         {
@@ -214,24 +191,63 @@ RevPtr<RevVariable> Move_AVMVN::executeMethod(const std::string& name, const std
         found = true;
         
         Real* uReal = dynamic_cast<Real *>( &args[0].getVariable()->getRevObject() );
+        Real* upReal = dynamic_cast<RealPos *>( &args[0].getVariable()->getRevObject() );
+        Simplex* sim = dynamic_cast<Simplex *>( &args[0].getVariable()->getRevObject() );
         ModelVector<Real>* uVector = dynamic_cast<ModelVector<Real> *>( &args[0].getVariable()->getRevObject() );
-        ModelVector<RealPos>* upVector = dynamic_cast<ModelVector<RealPos> *>( &args[0].getVariable()->getRevObject() );
-        std::string  transform = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
         
-        if ( uReal != NULL )
+        // Handle scalar variables with possible transforms
+        if ( upReal != NULL )
         {
-            RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< RevBayesCore::StochasticNode<double> * >( uReal->getDagNode() );
+            
             RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
             RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
             
-            if ( the_node != NULL )
+            // Logit-transform or log-transform?
+            RevBayesCore::ContinuousStochasticNode *n = dynamic_cast<RevBayesCore::ContinuousStochasticNode *>( upReal );
+            if ( n != NULL && RevBayesCore::RbMath::isFinite(n->getMin()) && RevBayesCore::RbMath::isFinite(n->getMax()) )
             {
-                prop.removeVariable( the_node, transform );
+                prop.removeLogitScalar(n);
             }
             else
             {
-                throw RbException("Could not add the node because it isn't a stochastic nodes.");
+                RevBayesCore::StochasticNode<double> *n2 = dynamic_cast<RevBayesCore::StochasticNode<double> *>( upReal );
+                prop.removeLogScalar(n2);
+                
             }
+            
+        }
+        else if ( uReal != NULL )
+        {
+            
+            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
+            RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
+            
+            // Logit-transform?
+            RevBayesCore::ContinuousStochasticNode *n = dynamic_cast<RevBayesCore::ContinuousStochasticNode *>( uReal );
+            if ( n != NULL && RevBayesCore::RbMath::isFinite(n->getMin()) && RevBayesCore::RbMath::isFinite(n->getMax()) )
+            {
+                prop.removeLogitScalar(n);
+            }
+            else
+            {
+                RevBayesCore::StochasticNode<double> *n2 = dynamic_cast<RevBayesCore::StochasticNode<double> *>( uReal );
+                prop.removeUntransformedScalar(n2);
+                
+            }
+            
+        }
+        else if ( sim != NULL )
+        {
+            
+            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
+            RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
+            
+//            RevBayesCore::TypedDagNode< RevBayesCore::Simplex >* tmp = static_cast<const Simplex &>( args[0].getVariable()->getRevObject() ).getDagNode();
+//            RevBayesCore::StochasticNode< RevBayesCore::Simplex > *n2 = static_cast<RevBayesCore::StochasticNode< RevBayesCore::Simplex > *>( tmp );
+
+            RevBayesCore::StochasticNode<RevBayesCore::Simplex> *n = dynamic_cast<RevBayesCore::StochasticNode<RevBayesCore::Simplex > *>( sim->getDagNode() );
+            prop.removeLogConstrainedSumVector(n);
+            
         }
         else if ( uVector != NULL && uVector->getDagNode()->isStochastic() == true )
         {
@@ -241,58 +257,16 @@ RevPtr<RevVariable> Move_AVMVN::executeMethod(const std::string& name, const std
             
             if ( the_node != NULL )
             {
-                prop.removeVariable( the_node, transform );
+                prop.addUntransformedVector( the_node );
             }
             else
             {
-                throw RbException("Could not add the node because it isn't a stochastic nodes.");
+                throw RbException("Could not remove the node because it isn't a stochastic nodes.");
             }
-        }
-        else if ( uVector != NULL && uVector->getDagNode()->isStochastic() == false )
-        {
-            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
-            RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
-            
-            RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* deterministic_vector = uVector->getDagNode();
-            std::vector<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
-            for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
-            {
-                const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( *it );
-                if ( the_node != NULL )
-                {
-                    prop.removeVariable( const_cast<RevBayesCore::StochasticNode<double> *>( the_node ), transform );
-                }
-                else
-                {
-                    throw RbException("Could not remove the node because it isn't a vector of stochastic nodes.");
-                }
-            }
-            
-        }
-        else if ( upVector != NULL && upVector->getDagNode()->isStochastic() == false )
-        {
-            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
-            RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
-            
-            RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* deterministic_vector = upVector->getDagNode();
-            std::vector<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
-            for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
-            {
-                const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( *it );
-                if ( the_node != NULL )
-                {
-                    prop.removeVariable( const_cast<RevBayesCore::StochasticNode<double> *>( the_node ), transform );
-                }
-                else
-                {
-                    throw RbException("Could not remove the node because it isn't a vector of stochastic nodes.");
-                }
-            }
-            
         }
         else
         {
-            throw RbException("A problem occured when trying to add " + args[0].getVariable()->getName() + " to the move.");
+            throw RbException("A problem occured when trying to remove " + args[0].getVariable()->getName() + " from the move.");
         }
         
         return NULL;
@@ -329,6 +303,36 @@ const TypeSpec& Move_AVMVN::getClassTypeSpec(void)
     return rev_type_spec;
 }
 
+/**
+ * Get the more detailed description of the function
+ */
+std::vector<std::string> Move_AVMVN::getHelpDescription(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> details;
+    
+    std::string details_1 = "The adaptive variance multivariate-normal proposal of Baele et al. 2017, uses MCMC samples to fit covariance matrix to parameters.";
+    
+    details.push_back( details_1 );
+
+    std::string details_2 = "After user-defined waiting time, proposes using covariance matrix epsilon * I + (1 - epsilon) * sigmaSquared * empirical_matrix.";
+    
+    details.push_back( details_2 );
+    
+    std::string details_3 = "Internally transforms variables based on whether variables are (finitely) bounded, strictly positive, or simplexed.";
+    
+    details.push_back( details_3 );
+
+    std::string details_4 = "Non-simplex-valued vector random variables are untransformed.";
+    
+    details.push_back( details_4 );
+
+    std::string details_5 = "Add random variables to the move directly (e.g. branch_rates[1], not branch_rates).";
+    
+    details.push_back( details_5 );
+    
+    return details;
+}
 
 /**
  * Get the Rev name for the constructor function.
@@ -360,11 +364,11 @@ const MemberRules& Move_AVMVN::getParameterRules(void) const
     
     if ( !rules_set )
     {
-        memberRules.push_back( new ArgumentRule( "sigma"               , RealPos::getClassTypeSpec()  , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
-        memberRules.push_back( new ArgumentRule( "epsilon"             , RealPos::getClassTypeSpec()  , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(0.5) ) );
+        memberRules.push_back( new ArgumentRule( "sigmaSquared"        , RealPos::getClassTypeSpec()  , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
+        memberRules.push_back( new ArgumentRule( "epsilon"             , RealPos::getClassTypeSpec()  , "The mixture weight of the post-learning move on a simple identity matrix.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(0.05) ) );
         memberRules.push_back( new ArgumentRule( "waitBeforeLearning"  , Natural::getClassTypeSpec()  , "The number of move attempts to wait before tracking the covariance of the variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(2500) ) );
         memberRules.push_back( new ArgumentRule( "waitBeforeUsing"     , Natural::getClassTypeSpec()  , "The number of move attempts to wait before using the learned covariance matrix.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(5000) ) );
-        memberRules.push_back( new ArgumentRule( "maxUpdates"          , Natural::getClassTypeSpec()  , "The maximum number of updates to the empirical covariance matrix.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10000) ) );
+        memberRules.push_back( new ArgumentRule( "maxUpdates"          , Natural::getClassTypeSpec()  , "The maximum number of updates to the empirical covariance matrix (matrix is only updated when MCMC tunes).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10000) ) );
         memberRules.push_back( new ArgumentRule( "tune"                , RlBoolean::getClassTypeSpec(), "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
@@ -397,7 +401,7 @@ void Move_AVMVN::printValue(std::ostream &o) const
 {
     
     o << "Move_AVMVN(?)";
-    
+
 }
 
 
@@ -414,9 +418,9 @@ void Move_AVMVN::printValue(std::ostream &o) const
 void Move_AVMVN::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "sigma" )
+    if ( name == "sigmaSquared" )
     {
-        sigma = var;
+        sigmaSquared = var;
     }
     else if ( name == "epsilon" )
     {

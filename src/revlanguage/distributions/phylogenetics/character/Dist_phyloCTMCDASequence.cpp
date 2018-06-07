@@ -1,10 +1,12 @@
 #include "Dist_phyloCTMCDASequence.h"
+#include "CladogeneticProbabilityMatrix.h"
 #include "GeneralTreeHistoryCtmc.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RevNullObject.h"
 #include "RlAminoAcidState.h"
 #include "RlBoolean.h"
+#include "RlCladogeneticProbabilityMatrix.h"
 #include "RlDnaState.h"
 #include "RlDistributionMemberFunction.h"
 #include "RlRateGeneratorSequence.h"
@@ -376,6 +378,17 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setRateGenerator( rm );
         }
         
+        // set cladogenetic transiiton probs
+        RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp_tdn = NULL;
+        RevBayesCore::DeterministicNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp_dn = NULL;
+        if ( clado_probs != NULL && clado_probs->getRevObject() != RevNullObject::getInstance() )
+        {
+
+            cp_tdn = static_cast<const CladogeneticProbabilityMatrix &>( clado_probs->getRevObject() ).getDagNode();
+            cp_dn  = static_cast<RevBayesCore::DeterministicNode<RevBayesCore::CladogeneticProbabilityMatrix>*>( cp_tdn );
+            dist->setCladogeneticProbabilityMatrix( cp_dn );
+        }
+        
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( siteRatesNode );
@@ -535,11 +548,18 @@ const MemberRules& Dist_phyloCTMCDASequence::getParameterRules(void) const
     {
         distMemberRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The tree along which the process evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
+        //
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateGeneratorSequence::getClassTypeSpec() );
         rateMatrixTypes.push_back( ModelVector<RateGeneratorSequence>::getClassTypeSpec() );
         distMemberRules.push_back( new ArgumentRule( "Q", rateMatrixTypes, "The global or branch-specific rate matrices.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
+        // cladogenetic transition probabilities
+        std::vector<TypeSpec> cladoMtxTypes;
+        cladoMtxTypes.push_back( CladogeneticProbabilityMatrix::getClassTypeSpec() );
+//        cladoMtxTypes.push_back( ModelVector<CladogeneticProbabilityMatrix>::getClassTypeSpec() );
+        distMemberRules.push_back( new ArgumentRule( "cladoProbs", cladoMtxTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL) );
+
         // optional argument for the root frequencies
         distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec(), "The root specific frequencies of the characters, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
@@ -641,6 +661,10 @@ void Dist_phyloCTMCDASequence::setConstParameter(const std::string& name, const 
     else if ( name == "Q" )
     {
         q = var;
+    }
+    else if ( name == "cladoProbs" )
+    {
+        clado_probs = var;
     }
     else if ( name == "rootFrequencies" )
     {
