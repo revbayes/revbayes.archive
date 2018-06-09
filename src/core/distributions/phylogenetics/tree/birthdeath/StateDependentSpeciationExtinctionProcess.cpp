@@ -1634,9 +1634,17 @@ double StateDependentSpeciationExtinctionProcess::pSurvival(double start, double
  */
 void StateDependentSpeciationExtinctionProcess::redrawValue( void )
 {
-    
-    simulateTree();
-    
+    size_t attempts = 0;    
+    while (attempts < 100000)
+    {
+        bool success = simulateTree(attempts);
+        if (success == true)
+        {
+            return;
+        }
+        ++attempts;
+    }
+    throw RbException("After 100000 attempts a character-dependent birth death tree could not be simulated. Try changing minNumLineages or maxNumLineages.");
 }
 
 
@@ -1878,7 +1886,7 @@ std::vector<double> StateDependentSpeciationExtinctionProcess::calculateTotalAna
 /**
  *
  */
-void StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
+bool StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
 {
     if ( use_origin == true )
     {
@@ -1886,11 +1894,8 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
         // if rootAge is set we start with two lineages and their speciation event
         throw RbException("Simulations are currently only implemented when rootAge is set. You set the originAge.");
     }
-
-    if ( attempts == 1000 )
-    {
-        throw RbException("After 1000 attempts a character-dependent birth death tree could not be simulated. Try changing minNumLineages or maxNumLineages.");
-    }
+    
+    RandomNumberGenerator* rng = GLOBAL_RNG;
 
     // a vector keeping track of the lineages currently surviving in each state
     // as we simulate forward in time
@@ -1976,7 +1981,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
     
     if (sample_probs_sum == 0)
     {
-        RandomNumberGenerator* rng = GLOBAL_RNG;
         size_t u = rng->uniform01() * sample_probs.size();
         size_t v = 0;
         for (it = sample_probs.begin(); it != sample_probs.end(); it++)
@@ -1993,7 +1997,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
     }
     else
     {
-        RandomNumberGenerator* rng = GLOBAL_RNG;
         double u = rng->uniform01() * sample_probs_sum;
         
         for (it = sample_probs.begin(); it != sample_probs.end(); it++)
@@ -2037,9 +2040,8 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
         {
             total_rate += total_rate_for_state[i] * lineages_in_state[i].size();    
         }
-
+        
         // draw the time to next event
-        RandomNumberGenerator* rng = GLOBAL_RNG;
         double dt = RbStatistics::Exponential::rv( total_rate, *rng );
         t = t - dt;
       
@@ -2068,8 +2070,8 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
         if (num_lineages > max_num_lineages)
         {
             nodes.clear();
-            simulateTree(++attempts);
-            return;
+            delete tip_data;
+            return false;
         }
 
         // stop if we reached the present
@@ -2229,7 +2231,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
             
             if (sample_probs_sum == 0)
             {
-                RandomNumberGenerator* rng = GLOBAL_RNG;
                 size_t u = rng->uniform01() * sample_probs.size();
                 size_t v = 0;
                 for (it = sample_probs.begin(); it != sample_probs.end(); it++)
@@ -2246,7 +2247,6 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
             }
             else
             {
-                RandomNumberGenerator* rng = GLOBAL_RNG;
                 double u = rng->uniform01() * sample_probs_sum;
                 
                 for (it = sample_probs.begin(); it != sample_probs.end(); it++)
@@ -2305,9 +2305,10 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
     }
     if (num_lineages < min_num_lineages)
     {
+        delete tip_data;
+        nodes.clear();
         delete psi;
-        simulateTree(++attempts);
-        return;
+        return false;
     }
   
     // prune extinct lineage if necessary
@@ -2353,6 +2354,7 @@ void StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
     value->getTreeChangeEventHandler().addListener( this );
     static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
     static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
+    return true;
     
 }
 
