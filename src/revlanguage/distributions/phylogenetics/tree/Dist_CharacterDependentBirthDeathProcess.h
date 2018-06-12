@@ -53,6 +53,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                                   min_lineages;
         RevPtr<const RevVariable>                                   max_lineages;
         RevPtr<const RevVariable>                                   prune_extinct_lineages;
+        RevPtr<const RevVariable>                                   condition_on_tips;
         std::string                                                 start_condition;                                                                     //!< The start condition of the process (rootAge/originAge)
 
     };

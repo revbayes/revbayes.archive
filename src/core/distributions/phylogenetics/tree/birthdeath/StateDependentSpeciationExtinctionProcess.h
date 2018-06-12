@@ -44,7 +44,8 @@ namespace RevBayesCore {
                                                   bool uo,
                                                   size_t min_lineages,
                                                   size_t max_lineages,
-                                                  bool prune);
+                                                  bool prune,
+                                                  bool condition);
         
         // pure virtual member functions
         virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
@@ -96,6 +97,7 @@ namespace RevBayesCore {
         virtual double                                                  pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         void                                                            recursivelyFlagNodeDirty(const TopologyNode& n);
         bool                                                            simulateTree(size_t attempts = 0);
+        bool                                                            simulateTreeConditionedOnTips(size_t attempts = 0);
         std::vector<double>                                             calculateTotalAnageneticRatePerState(void);
         std::vector<double>                                             calculateTotalSpeciationRatePerState(void);
         void                                                            computeNodeProbability(const TopologyNode &n, size_t nIdx) const;
@@ -135,6 +137,7 @@ namespace RevBayesCore {
         size_t                                                          min_num_lineages;
         size_t                                                          max_num_lineages;
         bool                                                            prune_extinct_lineages;
+        bool                                                            simulate_conditioned_on_tips;
         double                                                          NUM_TIME_SLICES;
     };
     
