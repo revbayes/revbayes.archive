@@ -45,6 +45,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    bool uo,
                                                                                    size_t min_lineages,
                                                                                    size_t max_lineages,
+                                                                                   double max_t,
                                                                                    bool prune,
                                                                                    bool condition) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     condition( cdt ),
@@ -74,6 +75,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     Q_default( ext->getValue().size() ),
     min_num_lineages( min_lineages ),
     max_num_lineages( max_lineages ),
+    max_time( max_t ),
     prune_extinct_lineages( prune ),
     simulate_conditioned_on_tips( condition ),
     NUM_TIME_SLICES( 500.0 )
@@ -1898,11 +1900,17 @@ std::vector<double> StateDependentSpeciationExtinctionProcess::calculateTotalAna
 bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( size_t attempts )
 {
 
-    if ( use_origin == true )
+    if ( use_cladogenetic_events == true )
     {
-        // if originAge is set we start with one lineage
-        // if rootAge is set we start with two lineages and their speciation event
-        throw RbException("Simulations are currently only implemented when rootAge is set. You set the originAge.");
+        throw RbException("Simulations conditioned on the tip states are not yet implemented for cladogenetic SSE models.");
+    }
+    if ( num_states != 2 )
+    {
+        throw RbException("Simulations conditioned on the tip states are currently only implemented for binary SSE models.");
+    }
+    if ( prune_extinct_lineages == false )
+    {
+        throw RbException("Simulations conditioned on the tip states are currently implemented only when pruneExtinctLineages set to false.");
     }
     
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -1914,33 +1922,23 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
 
     // CharacterData object to hold the tip states
     const AbstractHomologousDiscreteCharacterData& tip_data = static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
+    if ( tip_data.getNumberOfTaxa() == 0 )
+    {
+        throw RbException("Simulations conditioned on the tip states require at least one extant lineage.");
+    }
 
     // vectors keeping track of the total rate of all
     // cladogenetic/anagenetic/extinction events for each state
     std::vector<double> extinction_rates = mu->getValue();
     std::vector<double> total_speciation_rates = calculateTotalSpeciationRatePerState();
     std::vector<double> total_anagenetic_rates = calculateTotalAnageneticRatePerState();
-    std::vector<double> total_rate_for_state = std::vector<double>(num_states, 0);
+    std::vector<double> r = std::vector<double>(num_states, 0);
     for (size_t i = 0; i < num_states; i++)
     {
-        total_rate_for_state[i] = extinction_rates[i] + total_speciation_rates[i] + total_anagenetic_rates[i];
+        r[i] = extinction_rates[i] + total_speciation_rates[i] + total_anagenetic_rates[i];
     }
 
-    // get the speciation rates, extinction rates, and Q matrix
-    std::map<std::vector<unsigned>, double> eventMap;
-    std::vector<double> speciation_rates;
-    std::map<std::vector<unsigned>, double>::iterator it;
-    if ( use_cladogenetic_events == true )
-    {
-        eventMap = cladogenesis_matrix->getValue().getEventMap();
-    }
-    else
-    {
-        speciation_rates = lambda->getValue();
-    }
-    const RateGenerator *rate_matrix = &getEventRateMatrix();
-
-    // a vector of all nodes in our simulated tree
+    // create a vector of nodes for our simulated tree
     std::vector<TopologyNode*> nodes;
     Tree *psi = new Tree();
     
@@ -1964,15 +1962,12 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
         // calculate c and g from Hua and Bromham 2016
         double g = 0;
         double c = 0;
-        std::vector<double> r = std::vector<double>(num_states, 0);
         for (size_t i = 0; i < num_states; i++)
         {
-            //if (lineages_in_state[i].size() > 1)
-                r[i] += total_speciation_rates[i];
-            //if (lineages_in_state[i].size() > 0)
-                r[i] += total_anagenetic_rates[i] + extinction_rates[i];
             if (lineages_in_state[i].size() > 0)
+            {
                 g += r[i] * (lineages_in_state[i].size() - 1);    
+            }
             c += r[i] * (lineages_in_state[i].size());    
         }
         if (g == 0)
@@ -2010,7 +2005,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
                     {
                         total_rate_spec += r[j] * lineages_in_state[j].size();
                         total_rate_ext += r[j] * lineages_in_state[j].size();
-                        total_rate_ana += r[j] * (lineages_in_state[j].size() - 1); // TODO this is only correct for binary models
+                        total_rate_ana += r[j] * (lineages_in_state[j].size() - 1); // TODO this is correct only for binary models
                     }
                 }
                 if (lineages_in_state[i].size() > 1)
@@ -2018,7 +2013,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
                     prob_speciation[i] = total_speciation_rates[i] * (lineages_in_state[i].size() - 1) * exp(-1 * dt * total_rate_spec);
                 }
                 prob_extinction[i] = extinction_rates[i] * (lineages_in_state[i].size() + 1) * exp(-1 * dt * total_rate_ext);
-                if ( (i == 0 && lineages_in_state[1].size() > 0) || (i == 1 && lineages_in_state[0].size() > 0) ) // TODO this is only correct for binary models
+                if ( (i == 0 && lineages_in_state[1].size() > 0) || (i == 1 && lineages_in_state[0].size() > 0) ) // TODO this is correct only for binary models
                 {
                     prob_transition[i] = total_anagenetic_rates[i] * (lineages_in_state[i].size() + 1) * exp(-1 * dt * total_rate_ana);
                 }
@@ -2036,11 +2031,12 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
         t = t + dt;
 
         // stop and retry if lineages didn't coalesce in time
-//        if (t > max_t)
-//        {
-//            nodes.clear();
-//            return false;
-//        }
+        if (t > max_time)
+        {
+            delete psi;
+            nodes.clear();
+            return false;
+        }
       
         // extend all surviving branches to the new time
         size_t num_lineages = 0;
@@ -2049,8 +2045,6 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
             for (size_t j = 0; j < lineages_in_state[i].size(); j++)
             {
                 size_t idx = lineages_in_state[i][j];
-                //nodes[idx]->setAge(t);
-                nodes[idx]->setBranchLength( nodes[idx]->getBranchLength() + dt );
                 num_lineages++;
                 std::vector<double> state_times = nodes[idx]->getTimeInStates();
                 state_times[i] += dt;
@@ -2115,7 +2109,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
         
         if (event_type == "anagenetic")
         {
-            // TODO this is only correct for binary models 
+            // TODO this is correct only for binary models 
             size_t new_state = 0;
             if (event_state == 0)
                 new_state = 1;
@@ -2223,7 +2217,6 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
     static_cast<TreeDiscreteCharacterData *>(this->value)->setTree( *psi );
     delete psi;
     value->getTreeChangeEventHandler().addListener( this );
-//    static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
     static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
     return true;
     

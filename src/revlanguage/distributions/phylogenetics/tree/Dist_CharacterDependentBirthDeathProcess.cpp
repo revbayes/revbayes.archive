@@ -98,9 +98,10 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     
     size_t prune = static_cast<const RlBoolean &>( prune_extinct_lineages->getRevObject() ).getValue();
     size_t cond_tips = static_cast<const RlBoolean &>( condition_on_tips->getRevObject() ).getValue();
+    double max_t = static_cast<const RealPos &>( max_time->getRevObject() ).getValue();
     
     // finally make the distribution 
-    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, uo, min_l, max_l, prune, cond_tips );
+    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, uo, min_l, max_l, max_t, prune, cond_tips );
    
     // set speciation/cladogenetic event rates
     if (speciation_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ))
@@ -253,6 +254,7 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
         memberRules.push_back( new ArgumentRule( "minNumLineages", Natural::getClassTypeSpec(),  "The minimum number of lineages to simulate.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new Natural() ) );
         memberRules.push_back( new ArgumentRule( "maxNumLineages", Natural::getClassTypeSpec(),  "The maximum number of lineages to simulate.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new Natural(500) ) );
         memberRules.push_back( new ArgumentRule( "conditionOnTips", RlBoolean::getClassTypeSpec(),  "Should simulations condition on the number of tips in each state?",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RlBoolean(false) ) );
+        memberRules.push_back( new ArgumentRule( "maxTime", RealPos::getClassTypeSpec(),  "Maximum time for lineages to coalesce when simulating conditioned on tip states.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RealPos(1000.0) ) );
         memberRules.push_back( new ArgumentRule( "pruneExtinctLineages", RlBoolean::getClassTypeSpec(),  "When simulating should extinct lineages be pruned off?",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RlBoolean(true) ) );
 
         rules_set = true;
@@ -323,6 +325,10 @@ void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::stri
     else if ( name == "maxNumLineages" )
     {
         max_lineages = var;
+    }
+    else if ( name == "maxTime" )
+    {
+        max_time = var;
     }
     else if ( name == "pruneExtinctLineages" )
     {
