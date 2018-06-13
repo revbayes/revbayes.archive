@@ -1331,6 +1331,13 @@ const TopologyNode& TopologyNode::getParent(void) const
 }
 
 
+std::string TopologyNode::getIndividualName() const
+{
+    std::string name = taxon.getSpeciesName();
+    return name;
+}
+
+
 std::string TopologyNode::getSpeciesName() const
 {
     std::string name = taxon.getSpeciesName();

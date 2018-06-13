@@ -131,6 +131,7 @@
 #include "Dist_ConstrainedNodeAge.h"
 #include "Dist_ConstrainedNodeOrder.h"
 #include "Dist_WeightedConstrainedNodeOrder.h"
+#include "Dist_DuplicationLoss.h"
 #include "Dist_FBDP.h"
 #include "Dist_FBDPRange.h"
 #include "Dist_constPopMultispCoal.h"
@@ -312,6 +313,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 //
 //        // heterochronously sampled coalescent (skyline population sizes)
         AddDistribution< TimeTree                   >( new Dist_HeterochronousCoalescentSkyline() );
+        
+        // duplication loss process
+        AddDistribution< TimeTree                   >( new Dist_DuplicationLoss() );
         
         // multispecies coalescent (per branch constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_constPopMultispCoal() );
