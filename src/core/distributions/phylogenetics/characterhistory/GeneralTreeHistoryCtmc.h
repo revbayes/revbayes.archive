@@ -35,7 +35,7 @@ namespace RevBayesCore {
         
         GeneralTreeHistoryCtmc*                             clone(void) const;                                                           //!< Create an independent clone
         virtual void                                        initializeTipValues(void);
-        virtual void                                        drawInitValue(void);
+        virtual bool                                        drawInitValue(void);
         virtual std::vector<double>                         getRootFrequencies(void) const;
         virtual void                                        redrawValue(void);
         virtual void                                        reInitialized(void);
@@ -352,7 +352,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeTipLikelihood(cons
 //}
 
 template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
+bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
 {
     
     // convert the tip values of the data matrix into branch history objects
@@ -404,13 +404,19 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
         TopologyNode* nd = nodes[i];
         
         int samplePathHistoryCount = 0;
-        do
+        
+        bool valid_sample = false;
+        bool valid_likelihood = false;
+        
+        while ( !(valid_sample && valid_likelihood) && samplePathHistoryCount < 100)
         {
-            ++samplePathHistoryCount;
-        } while (samplePathHistory(*nd) == false && samplePathHistoryCount < 100);
-        
-       // double branch_lnL = computeInternalNodeLikelihood(*nd);
-        
+            samplePathHistoryCount++;
+            valid_sample = samplePathHistory(*nd);
+            double branch_lnL = computeInternalNodeLikelihood(*nd);
+            
+            valid_likelihood = branch_lnL != RbConstants::Double::neginf;
+            
+        }
     }
 //    std::cout << "----\n";
 //    std::cout << "Init\n";
@@ -431,11 +437,11 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
         {
             this->fireTreeChangeEvent(*nodes[i]);
         }
-        drawInitValue();
+        return false;
     }
     
 
-    return;
+    return true;
     
 }
 

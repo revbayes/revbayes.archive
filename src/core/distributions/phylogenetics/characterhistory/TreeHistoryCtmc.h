@@ -37,7 +37,7 @@ namespace RevBayesCore {
         // pure virtual
         virtual TreeHistoryCtmc*                                            clone(void) const = 0;                                              //!< Create an independent clone
         virtual void                                                        redrawValue(void) = 0;
-        virtual void                                                        drawInitValue(void) = 0;
+        virtual bool                                                        drawInitValue(void) = 0;
         virtual void                                                        initializeTipValues(void) = 0;
         void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<long> &rv) const;     //!< Map the member methods to internal function calls
         void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Simplex &rv) const;     //!< Map the member methods to internal function calls
@@ -282,7 +282,6 @@ double RevBayesCore::TreeHistoryCtmc<charType>::computeLnProbability( void )
         size_t nodeIndex = nd.getIndex();
         fillLikelihoodVector(nd);
         double nodeLnProb = historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex];
-        
         this->lnProb += nodeLnProb;
     }
 
@@ -796,7 +795,11 @@ void RevBayesCore::TreeHistoryCtmc<charType>::setValue(AbstractHomologousDiscret
     this->num_sites = v->getNumberOfCharacters();
     initializeHistoriesVector();
 
-    drawInitValue();
+    bool valid_draw = false;
+    while (!valid_draw) {
+        valid_draw = drawInitValue();
+    }
+    
 
     if ( this->dag_node != NULL )
     {
