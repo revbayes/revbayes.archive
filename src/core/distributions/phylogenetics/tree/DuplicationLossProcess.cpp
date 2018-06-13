@@ -439,6 +439,73 @@ void DuplicationLossProcess::setValue(Tree *v, bool f )
 
 
 
+void DuplicationLossProcess::setDuplicationRate(TypedDagNode<RbVector<double> >* d)
+{
+    
+    removeParameter( duplication_rate );
+    removeParameter( duplication_rates );
+
+    duplication_rate  = NULL;
+    duplication_rates = d;
+    
+    addParameter( duplication_rates );
+    
+}
+
+
+void DuplicationLossProcess::setDuplicationRate(TypedDagNode<double>* d)
+{
+    
+    removeParameter( duplication_rate );
+    removeParameter( duplication_rates );
+    
+    duplication_rate  = d;
+    duplication_rates = NULL;
+    
+    addParameter( duplication_rate );
+}
+
+
+void DuplicationLossProcess::setLossRate(TypedDagNode<RbVector<double> >* l)
+{
+    
+    removeParameter( loss_rate );
+    removeParameter( loss_rates );
+    
+    loss_rate  = NULL;
+    loss_rates = l;
+    
+    addParameter( loss_rates );
+}
+
+
+void DuplicationLossProcess::setLossRate(TypedDagNode<double>* l)
+{
+    
+    removeParameter( loss_rate );
+    removeParameter( loss_rates );
+    
+    loss_rate = l;
+    loss_rates = NULL;
+    
+    addParameter( loss_rate );
+
+}
+
+
+void DuplicationLossProcess::setGeneSamplingProbability(TypedDagNode<RbVector<double> >* s)
+{
+    
+    removeParameter( gene_sampling_probability );
+    
+    gene_sampling_probability = s;
+    
+    addParameter( gene_sampling_probability );
+    
+}
+
+
+
 
 void DuplicationLossProcess::simulateTree( void )
 {
@@ -513,7 +580,7 @@ void DuplicationLossProcess::simulateTree( void )
         }
         
         std::vector<TopologyNode*> initial_individuals_at_branch = individuals_per_branch[sp_node];
-        double branch_ne = drawNe( sp_node->getIndex() );
+        double branch_ne = 1.0;
         
         double theta = 1.0 / branch_ne;
         
