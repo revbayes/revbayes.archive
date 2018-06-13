@@ -55,6 +55,7 @@ namespace RevBayesCore {
         std::vector<BranchHistory*>                                         getHistories(void);
         const std::vector<BranchHistory*>&                                  getHistories(void) const;
         size_t                                                              getNumberOfSites(void) const;
+        const double                                                        getRootBranchLength(void) const;
         const Tree&                                                         getTree(void) const;
         void                                                                setHistory(const BranchHistoryDiscrete& bh, const TopologyNode& nd);
         void                                                                setHistories(const std::vector<BranchHistory*>& bh);
@@ -123,6 +124,9 @@ namespace RevBayesCore {
 
         charType                                                            template_state;                                 //!< Template state used for ancestral state estimation. This makes sure that the state labels are preserved.
 
+        // helper variables
+        double                                                              rootBranchLengthMultiplier;
+        
     private:
         
         // members
@@ -158,7 +162,8 @@ RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TypedDagNode<Tree
     treatUnknownAsGap( true ),
     treatAmbiguousAsGaps( true ),
     tipsInitialized( false ),
-    useDirtyNodes(false)
+    useDirtyNodes(false),
+    rootBranchLengthMultiplier(1)
 {
     // initialize with default parameters
     homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
@@ -207,7 +212,8 @@ RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TreeHistoryCtmc &
     treatUnknownAsGap( n.treatUnknownAsGap ),
     treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
     tipsInitialized( n.tipsInitialized ),
-    template_state( n.template_state )
+    template_state( n.template_state ),
+    rootBranchLengthMultiplier( n.rootBranchLengthMultiplier )
 {
     
     homogeneousClockRate        = n.homogeneousClockRate;
@@ -500,11 +506,23 @@ size_t RevBayesCore::TreeHistoryCtmc<charType>::getNumberOfSites( void ) const
 
 
 template<class charType>
+const double RevBayesCore::TreeHistoryCtmc<charType>::getRootBranchLength(void) const
+{
+    double root_branch_length = tau->getValue().getRoot().getBranchLength();
+    if (root_branch_length == 0.0) {
+        return tau->getValue().getRoot().getAge() * rootBranchLengthMultiplier;
+    }
+    else {
+        return root_branch_length;
+    }
+}
+
+
+template<class charType>
 const std::vector<std::vector<double> >& RevBayesCore::TreeHistoryCtmc<charType>::getTipProbs(void)
 {
     return tipProbs;
 }
-
 
 template<class charType>
 const std::vector<double>& RevBayesCore::TreeHistoryCtmc<charType>::getTipProbs(const TopologyNode& nd)

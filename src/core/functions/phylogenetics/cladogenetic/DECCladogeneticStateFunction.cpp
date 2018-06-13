@@ -42,17 +42,20 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< S
     addParameter( eventProbs );
     addParameter( connectivityGraph );
     addParameter( vicarianceGraph );
-    
-    buildBits();
-    buildRanges(beforeRanges, connectivityGraph, false);
-    buildRanges(afterRanges, vicarianceGraph, false);
-    
-    numRanges = (unsigned)beforeRanges.size();
-    numRanges++; // add one for the null range
-    
-    buildEventMap();
+    if (numCharacters <= 10)
+    {
+        buildBits();
+        buildRanges(beforeRanges, connectivityGraph, false);
+        buildRanges(afterRanges, vicarianceGraph, false);
+        
+        numRanges = (unsigned)beforeRanges.size();
+        numRanges++; // add one for the null range
+        
+        buildEventMap();
+    }
     
     update();
+   
 }
 
 DECCladogeneticStateFunction::~DECCladogeneticStateFunction( void ) {
@@ -940,6 +943,7 @@ void DECCladogeneticStateFunction::update( void )
         probs[ eventStringToStateMap[eventTypes[i]] ] = ep[i];
     }
 
+    if (numCharacters > 10) return;
    
     if (eventProbsAsWeightedAverages)
     {
