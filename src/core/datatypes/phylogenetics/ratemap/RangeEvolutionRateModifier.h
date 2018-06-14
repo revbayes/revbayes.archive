@@ -65,6 +65,7 @@ namespace RevBayesCore
         double                               loss_factor;
         
         bool                                 forbid_extinction;
+        bool                                 is_null_range_absorbing;
     
     };
     

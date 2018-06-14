@@ -32,7 +32,7 @@ namespace RevBayesCore {
 
         GeneralTreeHistoryCtmcSiteIID*                      clone(void) const;                                                           //!< Create an independent clone
         void                                                initializeTipValues(void);
-        void                                                drawInitValue(void);
+        bool                                                drawInitValue(void);
         std::vector<double>                                 getRootFrequencies(void) const;
         void                                                redrawValue(void);
         virtual void                                        simulate(void);
@@ -285,7 +285,7 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeTipLikeliho
 }
 
 template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::drawInitValue( void )
+bool RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::drawInitValue( void )
 {
 
     if ( this->tipsInitialized == false )
@@ -335,9 +335,10 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::drawInitValue( void 
         {
             this->fireTreeChangeEvent(*nodes[i]);
         }
-        drawInitValue();
+        return false;
     }
 
+    return true;
 }
 
 template<class charType>
