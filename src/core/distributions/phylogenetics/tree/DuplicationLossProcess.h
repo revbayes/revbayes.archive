@@ -13,7 +13,7 @@ namespace RevBayesCore {
     class DuplicationLossProcess : public TypedDistribution<Tree> {
         
     public:
-        DuplicationLossProcess(const TypedDagNode<Tree> *st, const std::vector<Taxon> &t);
+        DuplicationLossProcess(const TypedDagNode<Tree> *it, const std::vector<Taxon> &t);
         virtual                                            ~DuplicationLossProcess(void);                                                                       //!< Virtual destructor
         
         // public member functions
@@ -32,18 +32,20 @@ namespace RevBayesCore {
     protected:
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
-        virtual double                                      drawNe(size_t index);
         
         // helper functions
         void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
+        double                                              computeD(double dt, double e);
+        double                                              computeE(double dt, double e);
+        double                                              computeLnDuplicationLossProbability(size_t k, const std::vector<double> &t, double a, double b, const TopologyNode &n, bool f);
         double                                              recursivelyComputeLnProbability(const TopologyNode &n);
         void                                                resetTipAllocations(void);
         void                                                simulateTree(void);
         
         // members
         std::vector<Taxon>                                  taxa;
-        const TypedDagNode<Tree>*                           genealogy;
+        const TypedDagNode<Tree>*                           individual_tree;
         size_t                                              num_taxa;
         double                                              log_tree_topology_prob;
 
@@ -53,8 +55,10 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                         loss_rate;
         const TypedDagNode<RbVector<double> >*              gene_sampling_probability;
 
-        std::vector< std::set< const TopologyNode* > >      individuals_per_branch;
-        
+        std::vector< std::set< const TopologyNode* > >      genes_per_branch_recent;
+        std::vector< std::set< const TopologyNode* > >      genes_per_branch_ancient;
+        std::vector< double >                               extinction_probs;                               // extinction probabilities at start (older/ancient end) of individual branch;
+
     };
     
 }

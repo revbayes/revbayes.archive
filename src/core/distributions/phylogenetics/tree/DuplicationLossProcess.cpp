@@ -13,22 +13,19 @@
 
 using namespace RevBayesCore;
 
-DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *sp, const std::vector<Taxon> &t) : TypedDistribution<Tree>( NULL ),
+
+
+
+DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, const std::vector<Taxon> &t) : TypedDistribution<Tree>( NULL ),
     taxa(t),
-    genealogy( sp ),
+    individual_tree( it ),
     num_taxa( taxa.size() ),
     log_tree_topology_prob (0.0)
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
-    addParameter( genealogy );
-    
-    std::set<std::string> species_names;
-    for (std::vector<Taxon>::const_iterator it=taxa.begin(); it!=taxa.end(); ++it)
-    {
-        species_names.insert( it->getName() );
-    }
+    addParameter( individual_tree );
     
     double ln_fact = RbMath::lnFactorial((int)(num_taxa));
     
@@ -132,9 +129,9 @@ double DuplicationLossProcess::computeLnProbability( void )
     // variable declarations and initialization
     double ln_prob_coal = 0;
     
-    const Tree &g = genealogy->getValue();
+    const Tree &it = individual_tree->getValue();
     
-    ln_prob_coal = recursivelyComputeLnProbability( g.getRoot() );
+    ln_prob_coal = recursivelyComputeLnProbability( it.getRoot() );
     
     
     return ln_prob_coal; // + logTreeTopologyProb;
@@ -142,98 +139,219 @@ double DuplicationLossProcess::computeLnProbability( void )
 }
 
 
-double DuplicationLossProcess::drawNe( size_t index )
+double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_genes_recent, const std::vector<double> &dupl_ages, double age_recent, double age_ancient, const TopologyNode &node_individual, bool f)
 {
     
-    return 1.0;
+    double ln_prob = 0.0;
+    
+    size_t index_individual = node_individual.getIndex();
+    double dupl_rate = duplication_rate->getValue();
+    
+    double current_age = age_recent;
+    double current_ext_prob = 0.0;
+    
+    // if this is a tip
+    if ( node_individual.isTip() )
+    {
+        current_ext_prob = 1.0 - gene_sampling_probability->getValue()[index_individual];
+    }
+    else
+    {
+        size_t index_left = node_individual.getChild(0).getIndex();
+        size_t index_right = node_individual.getChild(1).getIndex();
+        
+        double ext_prob_left  = extinction_probs[index_left];
+        double ext_prob_right = extinction_probs[index_right];
+        
+        current_ext_prob = ext_prob_left * ext_prob_right;
+    }
+
+    for ( size_t i=0; i<dupl_ages.size(); ++i )
+    {
+        
+        double this_dupl_age = dupl_ages[i];
+        double dt = this_dupl_age - current_age;
+        
+        ln_prob += (num_genes_recent-i) * log( computeD(dt, current_ext_prob) );
+        ln_prob += log( dupl_rate );
+        ln_prob += log( num_genes_recent - i - 1 );
+        
+        current_age = this_dupl_age;
+        current_ext_prob = computeE( dt, current_ext_prob );
+        
+    }
+    
+    // final branch segment before coalescent of individual tree
+    // i.e., there are no more duplications
+    double dt = age_ancient - current_age;
+    ln_prob += (num_genes_recent-dupl_ages.size()) * log( computeD(dt, current_ext_prob) );
+
+    extinction_probs[index_individual] = computeE( dt, current_ext_prob );
+    
+    return ln_prob;
+}
+
+double DuplicationLossProcess::computeD(double dt, double e)
+{
+    // TODO: Some more testing and cleaning up @Dominik
+    double lambda = duplication_rate->getValue();
+    double mu = loss_rate->getValue();
+
+    double A = lambda - mu;
+    double B = ( (1.0 - 2*e)*lambda+mu ) / A;
+    
+    double et = exp(-A * dt);
+    
+    double D = 4.0 * et;
+    D /= (1.0+B+et*(1-B));
+    D /= (1.0+B+et*(1-B));
+
+    return D;
+}
+
+double DuplicationLossProcess::computeE(double dt, double e)
+{
+    // TODO: Some more testing and cleaning up @Dominik
+    double lambda = duplication_rate->getValue();
+    double mu = loss_rate->getValue();
+    
+    double A = lambda - mu;
+    double B = ( (1.0 - 2*e)*lambda+mu ) / A;
+    
+    double et = exp(A * dt);
+    
+    double E = lambda + mu - A *(1.0+B-et*(1.0-B))/(1.0+B+et*(1.0-B));
+    E /= (2*lambda);
+    
+    return E;
 }
 
 
-double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCore::TopologyNode &species_node )
+
+double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCore::TopologyNode &individual_node )
 {
     
-    double ln_prob_coal = 0;
+    double ln_prob_dupl_loss = 0;
     
-    if ( species_node.isTip() == false )
+    double individual_age = individual_node.getAge();
+    double parent_individual_age = RbConstants::Double::inf;
+    
+    if ( individual_node.isRoot() == false )
     {
-        individuals_per_branch[ species_node.getIndex() ].clear();
+        const TopologyNode &individual_parent_node = individual_node.getParent();
+        parent_individual_age = individual_parent_node.getAge();
+    }
+    
+    if ( individual_node.isTip() == false )
+    {
+        genes_per_branch_recent[ individual_node.getIndex() ].clear();
         
-        for (size_t i=0; i<species_node.getNumberOfChildren(); ++i)
+        for (size_t i=0; i<individual_node.getNumberOfChildren(); ++i)
         {
-            ln_prob_coal += recursivelyComputeLnProbability( species_node.getChild(i) );
+            ln_prob_dupl_loss += recursivelyComputeLnProbability( individual_node.getChild(i) );
         }
     }
-    
-    //    const TopologyNode *species_parent_node = NULL;
-    double species_age = species_node.getAge();
-    double parent_species_age = RbConstants::Double::inf;
-    
-    //        double branchLength = RbConstants::Double::inf;
-    if ( species_node.isRoot() == false )
+    else
     {
-        const TopologyNode &species_parent_node = species_node.getParent();
-        parent_species_age = species_parent_node.getAge();
+        size_t left_index  = individual_node.getChild(0).getIndex();
+        size_t right_index = individual_node.getChild(1).getIndex();
+        std::set< const TopologyNode* > &genes_for_this_individual = genes_per_branch_recent[ individual_node.getIndex() ];
+        const std::set< const TopologyNode* > &genes_for_left_descendant  = genes_per_branch_ancient[ left_index ];
+//        const std::set< const TopologyNode* > &genes_for_right_descendant = genes_per_branch_ancient[ right_index ];
+        for (std::set<const TopologyNode*>::iterator it=genes_for_this_individual.begin(); it!=genes_for_this_individual.end(); ++it)
+        {
+            const TopologyNode *this_gene_node = *it;
+            double this_age = this_gene_node->getParent().getAge();
+            if ( fabs( this_age - individual_age) < 1E-10 )
+            {
+                // coalescent event
+            }
+            else
+            {
+                // check if this gene comes from the left or right descendant
+                if ( genes_for_left_descendant.find(this_gene_node) != genes_for_left_descendant.end() )
+                {
+                    // found in the left descendant
+                    // multiply with probability of loss in right descendant
+                    ln_prob_dupl_loss += log(extinction_probs[right_index]);
+                }
+                else
+                {
+                    // not found in the left descendant
+                    // multiply with probability of loss in left descendant
+                    ln_prob_dupl_loss += log(extinction_probs[left_index]);
+                }
+                
+            }
+        }
+        //
+        
     }
     
-    // create a local copy of the individuals per branch
-    const std::set<const TopologyNode*> &initial_individuals = individuals_per_branch[species_node.getIndex()];
-    std::set<const TopologyNode*> remaining_individuals = initial_individuals;
     
-    // get all coalescent events among the individuals
-    std::vector<double> coal_times;
+    // create a local copy of the genes per branch
+    const std::set<const TopologyNode*> &initial_genes = genes_per_branch_recent[individual_node.getIndex()];
+    std::set<const TopologyNode*> remaining_genes = initial_genes;
+    
+    // get all duplication events among the genes
+    std::vector<double> duplication_times;
     
     
-    std::map<double, const TopologyNode *> coal_times_2_nodes;
-    for ( std::set<const TopologyNode*>::iterator it = remaining_individuals.begin(); it != remaining_individuals.end(); ++it)
+    std::map<double, const TopologyNode *> dupl_times_2_nodes;
+    for ( std::set<const TopologyNode*>::iterator it = remaining_genes.begin(); it != remaining_genes.end(); ++it)
     {
         const TopologyNode *ind = (*it);
         if ( ind->isRoot() == false )
         {
             const TopologyNode &parent = ind->getParent();
             double parent_age = parent.getAge();
-            coal_times_2_nodes[ parent_age ] = &parent;
+            dupl_times_2_nodes[ parent_age ] = &parent;
         }
     }
     
-    double current_time = species_age;
-    while ( current_time < parent_species_age && coal_times_2_nodes.size() > 0 )
+    double current_time = individual_age;
+    while ( current_time < parent_individual_age && dupl_times_2_nodes.size() > 0 )
     {
         
-        const TopologyNode *parent = coal_times_2_nodes.begin()->second;
+        const TopologyNode *parent = dupl_times_2_nodes.begin()->second;
         double parent_age = parent->getAge();
         current_time = parent_age;
         
-        if ( parent_age < parent_species_age )
-        { //Coalescence in the species tree branch
+        if ( parent_age < parent_individual_age )
+        { //Duplication in the individual tree branch
             
             // get the left and right child of the parent
             const TopologyNode *left = &parent->getChild( 0 );
             const TopologyNode *right = &parent->getChild( 1 );
-            if ( remaining_individuals.find( left ) == remaining_individuals.end() || remaining_individuals.find( right ) == remaining_individuals.end() )
+            if ( remaining_genes.find( left ) == remaining_genes.end() || remaining_genes.find( right ) == remaining_genes.end() )
             {
-                // one of the children does not belong to this species tree branch
+                // one of the children/genes does not belong to this individual tree branch
                 return RbConstants::Double::neginf;
             }
             
-            //We remove the coalescent event and the coalesced lineages
-            coal_times_2_nodes.erase( coal_times_2_nodes.begin() );
-            remaining_individuals.erase( remaining_individuals.find( left ) );
-            remaining_individuals.erase( remaining_individuals.find( right ) );
+            // We remove the coalescent event and the coalesced lineages
+            dupl_times_2_nodes.erase( dupl_times_2_nodes.begin() );
+            remaining_genes.erase( remaining_genes.find( left ) );
+            remaining_genes.erase( remaining_genes.find( right ) );
             
-            //We insert the parent in the vector of lineages in this branch
-            remaining_individuals.insert( parent );
+            // We insert the parent in the vector of lineages in this branch
+            remaining_genes.insert( parent );
             if ( parent->isRoot() == false )
             {
                 const TopologyNode *grand_parent = &parent->getParent();
-                coal_times_2_nodes[ grand_parent->getAge() ] = grand_parent;
+                dupl_times_2_nodes[ grand_parent->getAge() ] = grand_parent;
             }
             
-            coal_times.push_back( parent_age );
+            if ( fabs( parent_age - individual_age) > 1E-10 )
+            {
+                duplication_times.push_back( parent_age );
+            }
+
             
             
-        } //End if coalescence in the species tree branch
+        } //End if duplication in the individual tree branch
         else
-        { //No more coalescences in this species tree branch
+        { //No more duplication in this individual tree branch
             
             // jump out of the while loop
             //                currentTime = speciesAge;
@@ -243,20 +361,25 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
         
     } // end of while loop
     
-    if ( initial_individuals.size() > 1 )
+    if ( initial_genes.size() > 1 )
     {
-//        ln_prob_coal += computeLnCoalescentProbability(initial_individuals.size(), coal_times, species_age, parent_species_age, species_node.getIndex(), species_node.isRoot() == false);
+        ln_prob_dupl_loss += computeLnDuplicationLossProbability(initial_genes.size(), duplication_times, individual_age, parent_individual_age, individual_node.getIndex(), individual_node.isRoot() == false);
     }
     
     
     // merge the two sets of individuals that go into the next species
-    if ( species_node.isRoot() == false )
+    if ( individual_node.isRoot() == false )
     {
-        std::set<const TopologyNode *> &incoming_lineages = individuals_per_branch[ species_node.getParent().getIndex() ];
-        incoming_lineages.insert( remaining_individuals.begin(), remaining_individuals.end());
+        std::set<const TopologyNode *> &genes = genes_per_branch_recent[ individual_node.getParent().getIndex() ];
+        genes.insert( remaining_genes.begin(), remaining_genes.end());
     }
+
     
-    return ln_prob_coal;
+    std::set<const TopologyNode *> &outgoing_genes = genes_per_branch_ancient[ individual_node.getIndex() ];
+    outgoing_genes.clear();
+    outgoing_genes.insert( remaining_genes.begin(), remaining_genes.end());
+    
+    return ln_prob_dupl_loss;
 }
 
 
@@ -271,29 +394,30 @@ void DuplicationLossProcess::redrawValue( void )
 void DuplicationLossProcess::resetTipAllocations( void )
 {
     
-    const Tree &sp = genealogy->getValue();
-    const std::vector< TopologyNode* > &species_tree_nodes = sp.getNodes();
+    const Tree &ind_tree = individual_tree->getValue();
+    const std::vector< TopologyNode* > &individual_tree_nodes = ind_tree.getNodes();
     
-    // first let's create a map from species names to the nodes of the species tree
-    std::map<std::string, TopologyNode * > species_names_2_species_nodes;
-    for (std::vector< TopologyNode *>::const_iterator it = species_tree_nodes.begin(); it != species_tree_nodes.end(); ++it)
+    // first let's create a map from individual names to the nodes of the individual tree
+    std::map<std::string, TopologyNode * > individual_names_2_individual_nodes;
+    for (std::vector< TopologyNode *>::const_iterator it = individual_tree_nodes.begin(); it != individual_tree_nodes.end(); ++it)
     {
-        if ( (*it)->isTip() )
+        TopologyNode *this_node = (*it);
+        if ( this_node->isTip() )
         {
-            const std::string &name = (*it)->getName();
-            species_names_2_species_nodes[name] = *it;
+            const std::string &name = this_node->getName();
+            individual_names_2_individual_nodes[name] = *it;
         }
     }
     
     // create a map for the individuals to branches
-    individuals_per_branch = std::vector< std::set< const TopologyNode* > >(sp.getNumberOfNodes(), std::set< const TopologyNode* >() );
+    genes_per_branch_recent  = std::vector< std::set< const TopologyNode* > >(ind_tree.getNumberOfNodes(), std::set< const TopologyNode* >() );
+    genes_per_branch_ancient = std::vector< std::set< const TopologyNode* > >(ind_tree.getNumberOfNodes(), std::set< const TopologyNode* >() );
     for (size_t i=0; i<num_taxa; ++i)
     {
-        //        const std::string &tip_name = it->getName();
         const TopologyNode &n = value->getNode( i );
-        const std::string &species_name = n.getSpeciesName();
-        TopologyNode *species_node = species_names_2_species_nodes[species_name];
-        individuals_per_branch[ species_node->getIndex() ].insert( &n );
+        const std::string &individual_name = n.getSpeciesName();
+        TopologyNode *individual_node = individual_names_2_individual_nodes[individual_name];
+        genes_per_branch_recent[ individual_node->getIndex() ].insert( &n );
     }
     
     
@@ -315,14 +439,83 @@ void DuplicationLossProcess::setValue(Tree *v, bool f )
 
 
 
+void DuplicationLossProcess::setDuplicationRate(TypedDagNode<RbVector<double> >* d)
+{
+    
+    removeParameter( duplication_rate );
+    removeParameter( duplication_rates );
+
+    duplication_rate  = NULL;
+    duplication_rates = d;
+    
+    addParameter( duplication_rates );
+    
+}
+
+
+void DuplicationLossProcess::setDuplicationRate(TypedDagNode<double>* d)
+{
+    
+    removeParameter( duplication_rate );
+    removeParameter( duplication_rates );
+    
+    duplication_rate  = d;
+    duplication_rates = NULL;
+    
+    addParameter( duplication_rate );
+}
+
+
+void DuplicationLossProcess::setLossRate(TypedDagNode<RbVector<double> >* l)
+{
+    
+    removeParameter( loss_rate );
+    removeParameter( loss_rates );
+    
+    loss_rate  = NULL;
+    loss_rates = l;
+    
+    addParameter( loss_rates );
+}
+
+
+void DuplicationLossProcess::setLossRate(TypedDagNode<double>* l)
+{
+    
+    removeParameter( loss_rate );
+    removeParameter( loss_rates );
+    
+    loss_rate = l;
+    loss_rates = NULL;
+    
+    addParameter( loss_rate );
+
+}
+
+
+void DuplicationLossProcess::setGeneSamplingProbability(TypedDagNode<RbVector<double> >* s)
+{
+    
+    removeParameter( gene_sampling_probability );
+    
+    gene_sampling_probability = s;
+    
+    addParameter( gene_sampling_probability );
+    
+}
+
+
+
 
 void DuplicationLossProcess::simulateTree( void )
 {
     
+    // TODO: Need to implement a correct way to simulate the gene-tree under the process @Dominik
+    
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    const Tree &sp = genealogy->getValue();
+    const Tree &sp = individual_tree->getValue();
     const std::vector< TopologyNode* > &species_tree_nodes = sp.getNodes();
     // first let's create a map from species names to the nodes of the species tree
     std::map<std::string, TopologyNode * > species_names_2_nodes;
@@ -387,7 +580,7 @@ void DuplicationLossProcess::simulateTree( void )
         }
         
         std::vector<TopologyNode*> initial_individuals_at_branch = individuals_per_branch[sp_node];
-        double branch_ne = drawNe( sp_node->getIndex() );
+        double branch_ne = 1.0;
         
         double theta = 1.0 / branch_ne;
         
@@ -471,9 +664,9 @@ void DuplicationLossProcess::simulateTree( void )
 void DuplicationLossProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if ( oldP == genealogy )
+    if ( oldP == individual_tree )
     {
-        genealogy = static_cast<const TypedDagNode< Tree >* >( newP );
+        individual_tree = static_cast<const TypedDagNode< Tree >* >( newP );
     }
     
     if ( oldP == duplication_rate )

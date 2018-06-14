@@ -42,17 +42,20 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< S
     addParameter( eventProbs );
     addParameter( connectivityGraph );
     addParameter( vicarianceGraph );
-    
-    buildBits();
-    buildRanges(beforeRanges, connectivityGraph, false);
-    buildRanges(afterRanges, vicarianceGraph, false);
-    
-    numRanges = (unsigned)beforeRanges.size();
-    numRanges++; // add one for the null range
-    
-    buildEventMap();
+    if (numCharacters <= 10)
+    {
+        buildBits();
+        buildRanges(beforeRanges, connectivityGraph, false);
+        buildRanges(afterRanges, vicarianceGraph, false);
+        
+        numRanges = (unsigned)beforeRanges.size();
+        numRanges++; // add one for the null range
+        
+        buildEventMap();
+    }
     
     update();
+   
 }
 
 DECCladogeneticStateFunction::~DECCladogeneticStateFunction( void ) {
@@ -597,7 +600,7 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
 //        std::cout << static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
 //    }
 //    std::cout << "\n";
-    
+//    
 //    histories[ node_index ]->print();
     
     // determine what type of cladogenetic event it is
@@ -683,6 +686,7 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
     {
         probs[ eventTypes[i] ] = ep[ i ];
     }
+    
     
     // the proposal prob
     if ( clado_type == "null_range" )
@@ -939,6 +943,7 @@ void DECCladogeneticStateFunction::update( void )
         probs[ eventStringToStateMap[eventTypes[i]] ] = ep[i];
     }
 
+    if (numCharacters > 10) return;
    
     if (eventProbsAsWeightedAverages)
     {
