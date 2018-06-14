@@ -1904,10 +1904,6 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
     {
         throw RbException("Simulations conditioned on the tip states are not yet implemented for cladogenetic SSE models.");
     }
-    if ( num_states != 2 )
-    {
-        throw RbException("Simulations conditioned on the tip states are currently only implemented for binary SSE models.");
-    }
     if ( prune_extinct_lineages == false )
     {
         throw RbException("Simulations conditioned on the tip states are currently implemented only when pruneExtinctLineages set to false.");
@@ -1922,13 +1918,14 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
 
     // CharacterData object to hold the tip states
     const AbstractHomologousDiscreteCharacterData& tip_data = static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
-    if ( tip_data.getNumberOfTaxa() == 0 )
+    if ( tip_data.getNumberOfTaxa() < 2 )
     {
-        throw RbException("Simulations conditioned on the tip states require at least one extant lineage.");
+        throw RbException("Simulations conditioned on the tip states require at least two extant lineages.");
     }
 
     // vectors keeping track of the total rate of all
-    // cladogenetic/anagenetic/extinction events for each state
+    // speciation/anagenetic/extinction events for each state
+    const RateGenerator *rate_matrix = &getEventRateMatrix();
     std::vector<double> extinction_rates = mu->getValue();
     std::vector<double> total_speciation_rates = calculateTotalSpeciationRatePerState();
     std::vector<double> total_anagenetic_rates = calculateTotalAnageneticRatePerState();
@@ -1955,7 +1952,6 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
         nodes.push_back(tip_node);
     }
     
-    
     // simulate moving backwards in time
     while (true) {
 
@@ -1979,7 +1975,8 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
         double dt = 0.0;
         std::vector<double> prob_speciation = std::vector<double>(num_states, 0);
         std::vector<double> prob_extinction = std::vector<double>(num_states, 0);
-        std::vector<double> prob_transition = std::vector<double>(num_states, 0);
+        std::vector< std::vector<double> > prob_transition = std::vector< std::vector<double> >(num_states, std::vector<double>(num_states, 0));
+        std::vector<double> prob_transition_sum = std::vector<double>(num_states, 0);
         std::vector<double> prob_state = std::vector<double>(num_states, 0);
         double prob_sum = 0.0;
         while (true) 
@@ -1992,20 +1989,32 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
             {
                 double total_rate_spec = 0.0;
                 double total_rate_ext = 0.0;
-                double total_rate_ana = 0.0;
+                std::vector<double> total_rate_ana = std::vector<double>(num_states, 0);
                 for (size_t j = 0; j < num_states; ++j)
                 {
                     if (i == j)
                     {
                         total_rate_spec += r[j] * (lineages_in_state[j].size() - 1);
                         total_rate_ext += r[j] * (lineages_in_state[j].size() + 1);
-                        total_rate_ana += r[j] * (lineages_in_state[j].size() + 1);
                     }
                     else
                     {
                         total_rate_spec += r[j] * lineages_in_state[j].size();
                         total_rate_ext += r[j] * lineages_in_state[j].size();
-                        total_rate_ana += r[j] * (lineages_in_state[j].size() - 1); // TODO this is correct only for binary models
+
+                        // the total rates for the transition from i into j
+                        total_rate_ana[j] += r[i] * (lineages_in_state[i].size() + 1);
+                        for (size_t k = 0; k < num_states; ++k)
+                        {
+                            if (j == k)
+                            {
+                                total_rate_ana[j] += r[k] * (lineages_in_state[k].size() - 1);
+                            }
+                            else if (j != i)
+                            {
+                                total_rate_ana[j] += r[k] * lineages_in_state[k].size();
+                            }
+                        }
                     }
                 }
                 if (lineages_in_state[i].size() > 1)
@@ -2013,11 +2022,15 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
                     prob_speciation[i] = total_speciation_rates[i] * (lineages_in_state[i].size() - 1) * exp(-1 * dt * total_rate_spec);
                 }
                 prob_extinction[i] = extinction_rates[i] * (lineages_in_state[i].size() + 1) * exp(-1 * dt * total_rate_ext);
-                if ( (i == 0 && lineages_in_state[1].size() > 0) || (i == 1 && lineages_in_state[0].size() > 0) ) // TODO this is correct only for binary models
+
+                for (size_t j = 0; j < num_states; ++j)
                 {
-                    prob_transition[i] = total_anagenetic_rates[i] * (lineages_in_state[i].size() + 1) * exp(-1 * dt * total_rate_ana);
+                    if (i != j && lineages_in_state[j].size() > 0)
+                    prob_transition[i][j] = rate_matrix->getRate(i, j, 0.0, getEventRate()) * (lineages_in_state[i].size() + 1) * exp(-1 * dt * total_rate_ana[j]);
+                    prob_transition_sum[i] += prob_transition[i][j];
                 }
-                prob_state[i] = prob_speciation[i] + prob_extinction[i] + prob_transition[i];
+
+                prob_state[i] = prob_speciation[i] + prob_extinction[i] + prob_transition_sum[i];
                 prob_sum += prob_state[i];
             }
 
@@ -2081,7 +2094,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
                 event_type = "speciation";
                 break;
             }
-            u = u - prob_transition[event_state];
+            u = u - prob_transition_sum[event_state];
             if (u < 0) 
             {
                 event_type = "anagenetic";
@@ -2109,14 +2122,22 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
         
         if (event_type == "anagenetic")
         {
-            // TODO this is correct only for binary models 
-            size_t new_state = 0;
-            if (event_state == 0)
-                new_state = 1;
-            
+            // sample new state to transition to 
+            size_t new_state = 0; 
+            double u = rng->uniform01() * prob_transition_sum[event_state];
+            for (size_t i = 0; i < num_states; i++)
+            {
+                u -= prob_transition[event_state][i];
+                if (u < 0)
+                {
+                    new_state = i;
+                    break;
+                }
+            }
+
             // determine which lineage gets the event
             size_t event_index = 0;
-            double u = rng->uniform01() * static_cast<double>(lineages_in_state[new_state].size());
+            u = rng->uniform01() * static_cast<double>(lineages_in_state[new_state].size());
             event_index = lineages_in_state[new_state][floor(u)];
             
             // remove this lineage from the new state and add it to old state
