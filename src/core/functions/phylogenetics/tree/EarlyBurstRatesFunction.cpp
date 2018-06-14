@@ -35,6 +35,7 @@ EarlyBurstRatesFunction* EarlyBurstRatesFunction::clone( void ) const
 void EarlyBurstRatesFunction::update( void )
 {
     const Tree &tree = tau->getValue();
+    double root_age = tree.getRoot().getAge();
     double s = sigma->getValue();
     double l = lambda->getValue();
 
@@ -49,12 +50,14 @@ void EarlyBurstRatesFunction::update( void )
             double parent_age = node.getParent().getAge();
             if ( l == 0 )
             {
-                (*value)[i]  = s * ( exp(l*parent_age) * parent_age - exp(l*my_age) * my_age ) / (parent_age-my_age);
+//                (*value)[i]  = s * ( exp(l*parent_age) * parent_age - exp(l*my_age) * my_age ) / (parent_age-my_age);
+                (*value)[i]  = s;
             }
             else
             {
 //                (*value)[i]  = s*s * ( exp(l*parent_age) * parent_age - exp(l*my_age) * my_age )  / l / (parent_age-my_age);
-                (*value)[i]  = s * ( exp(l*parent_age) * parent_age - exp(l*my_age) * my_age ) / (parent_age-my_age);
+//                (*value)[i]  = s * ( exp(l*parent_age) * parent_age - exp(l*my_age) * my_age ) / (parent_age-my_age);
+                (*value)[i]  = s/l * ( exp( (parent_age-root_age)*l ) - exp( (my_age-root_age)*l ) ) / (parent_age-my_age);
             }
             
         }
