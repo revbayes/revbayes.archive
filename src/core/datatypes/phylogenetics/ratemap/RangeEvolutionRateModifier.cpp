@@ -12,7 +12,7 @@ RangeEvolutionRateModifier::RangeEvolutionRateModifier(size_t nc) : CharacterHis
     gain_factor(0.0),
     loss_factor(0.0),
     context_matrix( std::vector<std::vector<adjacency> >() ),
-    forbid_extinction(false),
+    forbid_extinction(true),
     is_null_range_absorbing(true)
 {
     ;
@@ -59,10 +59,12 @@ double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEv
         {
             // cannot enter the null range (conditions on survival)
             r = 0.0;
+            return r;
         }
         else
         {
             r = 1.0;
+            return r;
         }
     }
     // gain event
@@ -72,6 +74,7 @@ double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEv
         {
             // cannot leave the null range
             r = 0.0;
+            return r;
         }
         else
         {
