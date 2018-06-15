@@ -53,7 +53,7 @@ TimeVaryingStateDependentSpeciationExtinctionProcess::TimeVaryingStateDependentS
     dirty_nodes( std::vector<bool>(5, true) ),
     node_partial_likelihoods( std::vector<std::vector<std::vector<double> > >(5, std::vector<std::vector<double> >(2,std::vector<double>(2*ext->getValue().size(),0))) ),
     extinction_probabilities( std::vector<std::vector<double> >( 500.0, std::vector<double>( ext->getValue().size(), 0) ) ),
-    num_states( ext->getValue().size() ),
+    num_states( p->getValue().size() ),
     scaling_factors( std::vector<std::vector<double> >(5, std::vector<double>(2,0.0) ) ),
     use_cladogenetic_events( false ),
     use_origin( uo ),
@@ -2562,14 +2562,17 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::numericallyIntegrateP
 
     double current_begin_age = begin_age;
     
+    const RbVector< RbVector<double> > &extinction_rate_values = mu->getValue();
+
     for ( size_t index_epoch=index_epoch_begin; index_epoch<=index_epoch_end; ++index_epoch )
     {
         
         double epoch_end = computeEpochEnd( index_epoch );
         double current_end_age = (end_age < epoch_end ? end_age : epoch_end );
         
-        const std::vector<double> &extinction_rates = mu->getValue()[index_epoch];
-        SSE_ODE ode = SSE_ODE(extinction_rates, &getEventRateMatrix(), getEventRate(), backward_time, extinction_only);
+        const RbVector<double> &extinction_rates = extinction_rate_values[index_epoch];
+        const RateGenerator &rg = getEventRateMatrix( current_begin_age );
+        SSE_ODE ode = SSE_ODE(extinction_rates, &rg, getEventRate(), backward_time, extinction_only);
         if ( use_cladogenetic_events == true )
         {
             cladogenesis_matrix->getValue(); // we must call getValue() to update the speciation and extinction rates in the event map
@@ -2581,13 +2584,13 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::numericallyIntegrateP
         }
         else
         {
-            const std::vector<double> &speciation_rates = lambda->getValue()[index_epoch];
+            const RbVector<double> &speciation_rates = lambda->getValue()[index_epoch];
             ode.setSpeciationRate( speciation_rates );
         }
     
         if ( phi != NULL )
         {
-            const std::vector<double> &serial_sampling_rates = phi->getValue()[index_epoch];
+            const RbVector<double> &serial_sampling_rates = phi->getValue()[index_epoch];
             ode.setSerialSamplingRate( serial_sampling_rates );
         }
     

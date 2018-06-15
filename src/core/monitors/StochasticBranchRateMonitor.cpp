@@ -111,11 +111,11 @@ void StochasticBranchRateMonitor::printFileHeader()
     std::vector<double> speciation = sse->getAverageSpeciationRatePerBranch();
     std::vector<double> extinction = sse->getAverageExtinctionRatePerBranch();
     
-    for (int i = 0; i < time_in_states.size(); i++)
-    {
-        out_stream << separator;
-        out_stream << i + 1;
-    }
+//    for (int i = 0; i < time_in_states.size(); i++)
+//    {
+//        out_stream << separator;
+//        out_stream << i + 1;
+//    }
     
     for (int i = 0; i < speciation.size(); i++)
     {
