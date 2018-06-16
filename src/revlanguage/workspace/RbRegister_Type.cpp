@@ -149,6 +149,8 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         addTypeWithConstructor( new Taxon() );
 
         
+        addFunction( new Func_workspaceVector<Model>() );
+        
         //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
 //        addFunction( new Func_workspaceVector<AbstractModelObject>() );
 
