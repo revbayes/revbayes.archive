@@ -239,7 +239,7 @@ const MemberRules& Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::ge
         flabels.push_back("psi");
         flabels.push_back("phi");
         memberRules.push_back( new ArgumentRule( flabels     , ModelVector< ModelVector<RealPos> >::getClassTypeSpec() , "The vector of serial sampling rates."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "epochs"    , ModelVector< RealPos >::getClassTypeSpec()        , "The times when the rates change.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "epochs"    , ModelVector< RealPos >::getClassTypeSpec()        , "The time intervals when the diversification and transition rates change.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "Q"         , ModelVector< RateGenerator >::getClassTypeSpec()        , "The rate matrix of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "delta"     , RealPos::getClassTypeSpec()              , "The rate-factor of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, new RealPos(1.0) ) );
         memberRules.push_back( new ArgumentRule( "pi"        , Simplex::getClassTypeSpec()              , "State frequencies at the root."              , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );

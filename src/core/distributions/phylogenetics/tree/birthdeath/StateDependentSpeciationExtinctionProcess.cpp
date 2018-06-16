@@ -1511,6 +1511,18 @@ double StateDependentSpeciationExtinctionProcess::getOriginAge( void ) const
 }
 
 
+std::vector<double> StateDependentSpeciationExtinctionProcess::getAverageExtinctionRatePerBranch( void ) const
+{
+    return average_extinction;
+}
+
+
+std::vector<double> StateDependentSpeciationExtinctionProcess::getAverageSpeciationRatePerBranch( void ) const
+{
+    return average_speciation;
+}
+
+
 std::vector<double> StateDependentSpeciationExtinctionProcess::getTimeInStates( void ) const
 {
     return time_in_states;
