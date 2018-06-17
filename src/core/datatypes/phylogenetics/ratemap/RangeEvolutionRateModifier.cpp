@@ -13,7 +13,7 @@ RangeEvolutionRateModifier::RangeEvolutionRateModifier(size_t nc) : CharacterHis
     loss_factor(0.0),
     context_matrix( std::vector<std::vector<adjacency> >() ),
     forbid_extinction(true),
-    is_null_range_absorbing(true)
+    is_null_range_absorbing(!true)
 {
     ;
 }
@@ -64,6 +64,7 @@ double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEv
         else
         {
             r = 1.0;
+//            r = 1 * exp( - ratio );
             return r;
         }
     }
@@ -83,7 +84,6 @@ double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEv
                 size_t from_site = *it;
                 r += context_matrix[from_site][to_site].weight;
             }
-
         }
     }
 
