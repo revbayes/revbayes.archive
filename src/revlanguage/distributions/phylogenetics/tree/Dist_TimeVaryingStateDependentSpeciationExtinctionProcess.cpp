@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "Dist_CharacterDependentBirthDeathProcess.h"
+#include "Dist_TimeVaryingStateDependentSpeciationExtinctionProcess.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "ModelVector.h"
 #include "Natural.h"
@@ -19,33 +19,33 @@
 #include "RlString.h"
 #include "RlTaxon.h"
 #include "RlTimeTree.h"
-#include "StateDependentSpeciationExtinctionProcess.h"
+#include "TimeVaryingStateDependentSpeciationExtinctionProcess.h"
 #include "StochasticNode.h"
 
 using namespace RevLanguage;
 
 
-Dist_CharacterDependentBirthDeathProcess::Dist_CharacterDependentBirthDeathProcess() : TypedDistribution<TimeTree>()
+Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::Dist_TimeVaryingStateDependentSpeciationExtinctionProcess() : TypedDistribution<TimeTree>()
 {
     
 }
 
 
-Dist_CharacterDependentBirthDeathProcess::~Dist_CharacterDependentBirthDeathProcess()
+Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::~Dist_TimeVaryingStateDependentSpeciationExtinctionProcess()
 {
     
 }
 
 
 
-Dist_CharacterDependentBirthDeathProcess* Dist_CharacterDependentBirthDeathProcess::clone( void ) const
+Dist_TimeVaryingStateDependentSpeciationExtinctionProcess* Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::clone( void ) const
 {
     
-    return new Dist_CharacterDependentBirthDeathProcess( *this );
+    return new Dist_TimeVaryingStateDependentSpeciationExtinctionProcess( *this );
 }
 
 
-RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirthDeathProcess::createDistribution( void ) const
+RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::createDistribution( void ) const
 {
     
     // get process start age
@@ -53,41 +53,44 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     
     // condition off origin age or root age?
     bool uo = ( start_condition == "originAge" ? true : false );
-   
+    
     // extinction rates
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ex  = static_cast<const ModelVector<RealPos> &>( extinction_rates->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector< RevBayesCore::RbVector<double> > >* ex  = static_cast<const ModelVector< ModelVector<RealPos> > &>( extinction_rates->getRevObject() ).getDagNode();
     
     // get speciation rates or cladogenetic speciation rate event map
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sp;
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector< RevBayesCore::RbVector<double> > >* sp;
     RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticSpeciationRateMatrix>* cp;
-    if ( speciation_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( speciation_rates->getRevObject().isType( ModelVector< ModelVector<RealPos> >::getClassTypeSpec() ) )
     {
-        sp  = static_cast<const ModelVector<RealPos> &>( speciation_rates->getRevObject() ).getDagNode();
+        sp  = static_cast<const ModelVector< ModelVector<RealPos> > &>( speciation_rates->getRevObject() ).getDagNode();
     }
     else if ( speciation_rates->getRevObject().isType( CladogeneticSpeciationRateMatrix::getClassTypeSpec() ) )
     {
         cp = static_cast<const CladogeneticSpeciationRateMatrix &>( speciation_rates->getRevObject() ).getDagNode();
-    } 
-        
+    }
+    
     // rate matrix
-    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* q      = NULL;
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* q      = NULL;
     if ( event_rate_matrix->getRevObject() != RevNullObject::getInstance() )
     {
-        q = static_cast<const RateGenerator &>( event_rate_matrix->getRevObject() ).getDagNode();
+        q = static_cast<const ModelVector< RateGenerator > &>( event_rate_matrix->getRevObject() ).getDagNode();
     }
+    
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* epochs  = static_cast<const ModelVector<RealPos> &>( epoch_times->getRevObject() ).getDagNode();
 
+    
     RevBayesCore::TypedDagNode<double>* r = NULL;
     if ( event_rate->getRevObject() != RevNullObject::getInstance() )
     {
         r = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
     }
-
+    
     RevBayesCore::TypedDagNode<RevBayesCore::Simplex >* bf = NULL;
     if ( root_frequencies->getRevObject() != RevNullObject::getInstance() )
     {
         bf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     }
-
+    
     RevBayesCore::TypedDagNode<double>* rh   = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     
     // condition
@@ -97,51 +100,49 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     size_t min_l = static_cast<const Integer &>( min_lineages->getRevObject() ).getValue();
     
     size_t prune = static_cast<const RlBoolean &>( prune_extinct_lineages->getRevObject() ).getValue();
-    size_t cond_tips = static_cast<const RlBoolean &>( condition_on_tips->getRevObject() ).getValue();
-    double max_t = static_cast<const RealPos &>( max_time->getRevObject() ).getValue();
     
-    // finally make the distribution 
-    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, uo, min_l, max_l, max_t, prune, cond_tips );
-   
+    // finally make the distribution
+    RevBayesCore::TimeVaryingStateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::TimeVaryingStateDependentSpeciationExtinctionProcess( ra, ex, q, epochs, r, bf, rh, cond, uo, min_l, max_l, prune );
+    
     // set speciation/cladogenetic event rates
-    if (speciation_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ))
+    if (speciation_rates->getRevObject().isType( ModelVector< ModelVector<RealPos> >::getClassTypeSpec() ))
     {
         d->setSpeciationRates( sp );
     }
     else if (speciation_rates->getRevObject().isType( CladogeneticSpeciationRateMatrix::getClassTypeSpec() ))
     {
         d->setCladogenesisMatrix( cp );
-    } 
+    }
     
     // set the number of time slices for the numeric ODE
     double n = static_cast<const RealPos &>( num_time_slices->getRevObject() ).getValue();
     d->setNumberOfTimeSlices( n );
     
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ps = NULL;
-    if ( psi->getRevObject() != RevNullObject::getInstance() )
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector< RevBayesCore::RbVector<double> > >* ps = NULL;
+    if ( phi->getRevObject() != RevNullObject::getInstance() )
     {
-        ps  = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
-
+        ps  = static_cast<const ModelVector< ModelVector<RealPos> > &>( phi->getRevObject() ).getDagNode();
+        
         d->setSerialSamplingRates( ps );
     }
-
+    
     return d;
 }
 
 
 
 /* Get Rev type of object */
-const std::string& Dist_CharacterDependentBirthDeathProcess::getClassType(void)
+const std::string& Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::getClassType(void)
 {
     
-    static std::string rev_type = "Dist_CharacterDependentBirthDeathProcess";
+    static std::string rev_type = "Dist_TimeVaryingStateDependentSpeciationExtinctionProcess";
     
     return rev_type;
 }
 
 
 /* Get class type spec describing type of object. TODO: Check if the correct parent is TypedDistribution or Distribution */
-const TypeSpec& Dist_CharacterDependentBirthDeathProcess::getClassTypeSpec(void)
+const TypeSpec& Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
@@ -157,10 +158,10 @@ const TypeSpec& Dist_CharacterDependentBirthDeathProcess::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_CharacterDependentBirthDeathProcess::getDistributionFunctionName( void ) const
+std::string Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "CDBDP";
+    std::string d_name = "TimeVaryingStateDependentSpeciationExtinction";
     
     return d_name;
 }
@@ -171,48 +172,45 @@ std::string Dist_CharacterDependentBirthDeathProcess::getDistributionFunctionNam
  *
  * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Dist_CharacterDependentBirthDeathProcess::getDistributionFunctionAliases( void ) const
+std::vector<std::string> Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::getDistributionFunctionAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    a_names.push_back( "CDSSBDP" );
-    a_names.push_back( "CDFBDP" );
-    a_names.push_back( "BirthDeathMultiRate" );
-    a_names.push_back( "CDCladoBDP" );
-
+    a_names.push_back( "TVSSE" );
+    
     return a_names;
 }
 
 
-MethodTable Dist_CharacterDependentBirthDeathProcess::getDistributionMethods( void ) const
+MethodTable Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::getDistributionMethods( void ) const
 {
     MethodTable methods = TypedDistribution<TimeTree>::getDistributionMethods();
     
     ArgumentRules* clampCharDataArgRules = new ArgumentRules();
     clampCharDataArgRules->push_back( new ArgumentRule( "value", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "clampCharData", RlUtils::Void, clampCharDataArgRules ) );
-   
+    
     ArgumentRules* getCharDataArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getCharData", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), getCharDataArgRules ) ); 
+    methods.addFunction( new MemberProcedure( "getCharData", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), getCharDataArgRules ) );
     
     ArgumentRules* getCharHistoryArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "getCharHistory", RlString::getClassTypeSpec(), getCharHistoryArgRules   ) );
     
     ArgumentRules* avgSpeciationArgRules = new ArgumentRules();
-    methods.addFunction( new DistributionMemberFunction<Dist_CharacterDependentBirthDeathProcess, ModelVector<RealPos> >( "averageSpeciationRate", variable, avgSpeciationArgRules   ) );
-
+    methods.addFunction( new DistributionMemberFunction<Dist_TimeVaryingStateDependentSpeciationExtinctionProcess, ModelVector<RealPos> >( "averageSpeciationRate", variable, avgSpeciationArgRules   ) );
+    
     ArgumentRules* avgExtinctionArgRules = new ArgumentRules();
-    methods.addFunction( new DistributionMemberFunction<Dist_CharacterDependentBirthDeathProcess, ModelVector<RealPos> >( "averageExtinctionRate", variable, avgExtinctionArgRules   ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_TimeVaryingStateDependentSpeciationExtinctionProcess, ModelVector<RealPos> >( "averageExtinctionRate", variable, avgExtinctionArgRules   ) );
     
     ArgumentRules* timeInStateArgRules = new ArgumentRules();
-    methods.addFunction( new DistributionMemberFunction<Dist_CharacterDependentBirthDeathProcess, ModelVector<RealPos> >( "getTimeInState", variable, timeInStateArgRules   ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_TimeVaryingStateDependentSpeciationExtinctionProcess, ModelVector<RealPos> >( "getTimeInState", variable, timeInStateArgRules   ) );
     
     return methods;
 }
 
 
 /* Return member rules */
-const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(void) const
+const MemberRules& Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -231,17 +229,18 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
         slabels.push_back("cladoEventMap");
         std::vector<TypeSpec> speciationTypes;
         speciationTypes.push_back( CladogeneticSpeciationRateMatrix::getClassTypeSpec() );
-        speciationTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
+        speciationTypes.push_back( ModelVector< ModelVector<RealPos> >::getClassTypeSpec() );
         memberRules.push_back( new ArgumentRule( slabels     , speciationTypes ,                          "The vector of speciation rates (for anagenetic-only models), or the map of speciation rates to cladogenetic event types."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         std::vector<std::string> elabels;
         elabels.push_back("extinctionRates");
         elabels.push_back("mu");
-        memberRules.push_back( new ArgumentRule( elabels     , ModelVector<RealPos>::getClassTypeSpec() , "The vector of extinction rates."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( elabels     , ModelVector< ModelVector<RealPos> >::getClassTypeSpec() , "The vector of extinction rates."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         std::vector<std::string> flabels;
         flabels.push_back("psi");
         flabels.push_back("phi");
-        memberRules.push_back( new ArgumentRule( flabels     , ModelVector<RealPos>::getClassTypeSpec() , "The vector of serial sampling rates."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "Q"         , RateGenerator::getClassTypeSpec()        , "The rate matrix of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( flabels     , ModelVector< ModelVector<RealPos> >::getClassTypeSpec() , "The vector of serial sampling rates."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "epochs"    , ModelVector< RealPos >::getClassTypeSpec()        , "The time intervals when the diversification and transition rates change.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "Q"         , ModelVector< RateGenerator >::getClassTypeSpec()        , "The rate matrix of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "delta"     , RealPos::getClassTypeSpec()              , "The rate-factor of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, new RealPos(1.0) ) );
         memberRules.push_back( new ArgumentRule( "pi"        , Simplex::getClassTypeSpec()              , "State frequencies at the root."              , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "rho"       , Probability::getClassTypeSpec()          , "The taxon sampling probability."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, new RealPos(1.0) ) );
@@ -253,10 +252,8 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
         memberRules.push_back( new ArgumentRule( "nTimeSlices",RealPos::getClassTypeSpec(),      "The number of time slices for the numeric ODE.",           ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RealPos(500.0) ) );
         memberRules.push_back( new ArgumentRule( "minNumLineages", Natural::getClassTypeSpec(),  "The minimum number of lineages to simulate.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new Natural() ) );
         memberRules.push_back( new ArgumentRule( "maxNumLineages", Natural::getClassTypeSpec(),  "The maximum number of lineages to simulate.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new Natural(500) ) );
-        memberRules.push_back( new ArgumentRule( "conditionOnTips", RlBoolean::getClassTypeSpec(),  "Should simulations condition on the number of tips in each state?",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RlBoolean(false) ) );
-        memberRules.push_back( new ArgumentRule( "maxTime", RealPos::getClassTypeSpec(),  "Maximum time for lineages to coalesce when simulating conditioned on tip states.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RealPos(1000.0) ) );
         memberRules.push_back( new ArgumentRule( "pruneExtinctLineages", RlBoolean::getClassTypeSpec(),  "When simulating should extinct lineages be pruned off?",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RlBoolean(true) ) );
-
+        
         rules_set = true;
     }
     
@@ -264,7 +261,7 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
 }
 
 
-const TypeSpec& Dist_CharacterDependentBirthDeathProcess::getTypeSpec( void ) const
+const TypeSpec& Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -274,7 +271,7 @@ const TypeSpec& Dist_CharacterDependentBirthDeathProcess::getTypeSpec( void ) co
 
 
 /** Set a member variable */
-void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Dist_TimeVaryingStateDependentSpeciationExtinctionProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "rootAge" || name == "originAge" )
@@ -296,7 +293,11 @@ void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::stri
     }
     else if ( name == "psi" || name == "phi" || name == "psi/phi" )
     {
-        psi = var;
+        phi = var;
+    }
+    else if ( name == "epochs" )
+    {
+        epoch_times = var;
     }
     else if ( name == "Q" )
     {
@@ -326,17 +327,9 @@ void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::stri
     {
         max_lineages = var;
     }
-    else if ( name == "maxTime" )
-    {
-        max_time = var;
-    }
     else if ( name == "pruneExtinctLineages" )
     {
         prune_extinct_lineages = var;
-    }
-    else if ( name == "conditionOnTips" )
-    {
-        condition_on_tips = var;
     }
     else
     {

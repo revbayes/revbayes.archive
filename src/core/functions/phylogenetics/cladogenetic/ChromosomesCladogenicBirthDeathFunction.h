@@ -33,6 +33,11 @@ namespace RevBayesCore {
         const static unsigned DEMIPOLYPLOIDIZATION                  = 4;         // N -> N * 1.5
         
         // public member functions
+        virtual double computeDataAugmentedCladogeneticLnProbability( const std::vector<BranchHistory*>& histories,
+                                                                     size_t node_index,
+                                                                     size_t left_index,
+                                                                     size_t right_index ) const;
+
         ChromosomesCladogenicBirthDeathFunction*                    clone(void) const;
         std::map< std::vector<unsigned>, double >                   getEventMap(double t=0.0);
         const std::map< std::vector<unsigned>, double >&            getEventMap(double t=0.0) const;

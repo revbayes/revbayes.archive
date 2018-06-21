@@ -86,6 +86,13 @@ NodeOrderWeightedConstrainedTreeDistribution::NodeOrderWeightedConstrainedTreeDi
         // otherwise we simply use the same pointer
         value = &base_distribution->getValue();
     }
+    
+    // add the parameters of the base distribution
+    const std::vector<const DagNode*>& pars = base_distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
+    {
+        this->addParameter( *it );
+    }
 
 }
 

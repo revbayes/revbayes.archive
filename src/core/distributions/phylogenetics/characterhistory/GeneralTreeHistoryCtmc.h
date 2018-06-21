@@ -2,8 +2,10 @@
 #define GeneralTreeHistoryCtmc_H
 
 #include "TreeHistoryCtmc.h"
+#include "AbstractCladogenicStateFunction.h"
 #include "CladogeneticProbabilityMatrix.h"
 #include "ConstantNode.h"
+#include "DeterministicNode.h"
 #include "DiscreteCharacterState.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "RandomNumberFactory.h"
@@ -17,6 +19,8 @@
 
 #include <cmath>
 #include <cstring>
+#include <set>
+#include <vector>
 
 namespace RevBayesCore {
     
@@ -33,18 +37,17 @@ namespace RevBayesCore {
         
         GeneralTreeHistoryCtmc*                             clone(void) const;                                                           //!< Create an independent clone
         virtual void                                        initializeTipValues(void);
-        virtual void                                        drawInitValue(void);
+        virtual bool                                        drawInitValue(void);
         virtual std::vector<double>                         getRootFrequencies(void) const;
         virtual void                                        redrawValue(void);
+        virtual void                                        reInitialized(void);
         virtual void                                        simulate(void);
-        
-        
         
         virtual bool                                        samplePathStart(const TopologyNode& node);
         virtual bool                                        samplePathEnd(const TopologyNode& node);
         virtual bool                                        samplePathHistory(const TopologyNode& node);
         
-        void                                                setCladogeneticProbabilityMatrix(const TypedDagNode< CladogeneticProbabilityMatrix>* cp );
+        void                                                setCladogeneticProbabilityMatrix(const DeterministicNode< CladogeneticProbabilityMatrix>* cp );
         
         void                                                setRateGenerator(const TypedDagNode< RateGeneratorSequence > *rm);
         void                                                setRateGenerator(const TypedDagNode< RbVector< RateGeneratorSequence > > *rm);
@@ -65,10 +68,15 @@ namespace RevBayesCore {
         
     private:
         
+        virtual void                                        simulate(const TopologyNode& node, BranchHistory* bh, std::vector< DiscreteTaxonData< charType > >& taxa);
+        void                                                simulateHistory(const TopologyNode& node, BranchHistory* bh);
+        std::vector<size_t>                                 computeCounts(const std::vector<CharacterEvent*>& s);
+        std::vector<std::set< size_t> >                     computeSitesWithStates(const std::vector<CharacterEvent*>& s);
+        
         // members
         const TypedDagNode< RateGeneratorSequence >*                homogeneousRateGenerator;
         const TypedDagNode< RbVector< RateGeneratorSequence > >*    heterogeneousRateGenerator;
-        const TypedDagNode< CladogeneticProbabilityMatrix >*        homogeneousCladogeneticProbabilityMatrix;
+        const DeterministicNode< CladogeneticProbabilityMatrix >*   homogeneousCladogeneticProbabilityMatrix;
         const TypedDagNode< Simplex >*                              rootFrequencies;
         const TypedDagNode< RbVector< double > >*                   siteRates;
         
@@ -76,10 +84,6 @@ namespace RevBayesCore {
         bool                                                branchHeterogeneousSubstitutionMatrices;
         bool                                                rateVariationAcrossSites;
         bool                                                useCladogeneticEvents;
-        
-        virtual void                                        simulate(const TopologyNode& node, BranchHistory* bh, std::vector< DiscreteTaxonData< charType > >& taxa);
-        void                                                simulateHistory(const TopologyNode& node, BranchHistory* bh);
-        std::vector<size_t>                                 computeCounts(const std::vector<CharacterEvent*>& s);
         
     };
     
@@ -128,7 +132,6 @@ template<class charType>
 RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const GeneralTreeHistoryCtmc &d) : TreeHistoryCtmc<charType>( d )
 {
     // initialize with default parameters
-//<<<<<<< HEAD
     homogeneousRateGenerator    = d.homogeneousRateGenerator;
     heterogeneousRateGenerator  = d.heterogeneousRateGenerator;
     homogeneousCladogeneticProbabilityMatrix = d.homogeneousCladogeneticProbabilityMatrix;
@@ -138,6 +141,7 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Gen
     // flags specifying which model variants we use
     branchHeterogeneousSubstitutionMatrices     = d.branchHeterogeneousSubstitutionMatrices;
     rateVariationAcrossSites                    = d.rateVariationAcrossSites;
+    useCladogeneticEvents                       = d.useCladogeneticEvents;
     
 }
 
@@ -170,13 +174,27 @@ std::vector<size_t> RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeCount
 }
 
 template<class charType>
+std::vector<std::set<size_t> > RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeSitesWithStates(const std::vector<CharacterEvent*>& s)
+{
+    std::vector<std::set<size_t> > sites_with_states(this->num_states, std::set<size_t>() );
+    
+    for (size_t i = 0; i < s.size(); i++)
+    {
+        sites_with_states[ static_cast<CharacterEventDiscrete*>(s[i])->getState() ].insert( static_cast<CharacterEventDiscrete*>(s[i])->getSiteIndex() );
+        //counts[  ] += 1;
+    }
+    
+    return sites_with_states;
+}
+
+template<class charType>
 double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeRootLikelihood(const TopologyNode &n)
 {
     
     double lnP = 0.0;
     
     BranchHistory* bh = this->histories[n.getIndex()];
-    const std::vector<CharacterEvent*> rootState = bh->getChildCharacters();
+    const std::vector<CharacterEvent*> rootState = bh->getParentCharacters();
     
     // get counts per state
     std::vector<int> counts(this->num_states, 0);
@@ -191,7 +209,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeRootLikelihood(con
     {
         lnP += counts[i] * log( rf[i] );
     }
-    
+
     return lnP;
 }
 
@@ -199,51 +217,43 @@ template<class charType>
 double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikelihood(const TopologyNode &node)
 {
     
-    if ( node.isRoot() == true )
-    {
-        return 0.0;
-    }
-    
+
     size_t node_index = node.getIndex();
     double branch_rate = this->getBranchRate(node_index);
     const RateGeneratorSequence& rm = homogeneousRateGenerator->getValue();
     
     // get the branch history
     BranchHistory* bh = this->histories[node_index];
-    
+    std::vector<CharacterEvent*> curr_state = bh->getParentCharacters();
+    std::vector<CharacterEvent*> end_state  = bh->getChildCharacters();
+
     // check that node ages are consistent with character event ages
     if ( bh->areEventTimesValid(node) == false )
     {
-        //        std::cerr << "Rejecting (invalid times)." << std::endl;
         return RbConstants::Double::neginf;
     }
     
     // check parent and child states to make sure they match with the
     // ancestral and descendant branches; otherwise, return -Inf
-    std::vector<CharacterEvent*> curr_state = bh->getParentCharacters();
-    std::vector<CharacterEvent*> end_state  = bh->getChildCharacters();
-    for (size_t i = 0; i < node.getNumberOfChildren(); ++i)
-    {
-        const TopologyNode &child = node.getChild(i);
-        size_t child_index = child.getIndex();
-        BranchHistory* child_bh = this->histories[child_index];
-        std::vector<CharacterEvent*> child_state = child_bh->getParentCharacters();
-        for (size_t j = 0; j < this->num_sites; ++j)
+    if (!useCladogeneticEvents) {
+        for (size_t i = 0; i < node.getNumberOfChildren(); ++i)
         {
-            if ( static_cast<CharacterEventDiscrete*>(end_state[j])->getState() != static_cast<CharacterEventDiscrete*>(child_state[j])->getState() )
+            const TopologyNode &child = node.getChild(i);
+            size_t child_index = child.getIndex();
+            BranchHistory* child_bh = this->histories[child_index];
+            std::vector<CharacterEvent*> child_state = child_bh->getParentCharacters();
+            for (size_t j = 0; j < this->num_sites; ++j)
             {
-                //                std::cerr << "Rejecting: " << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
-                return RbConstants::Double::neginf;
+                if (static_cast<CharacterEventDiscrete*>(end_state[j])->getState() != static_cast<CharacterEventDiscrete*>(child_state[j])->getState() )
+                {
+                    return RbConstants::Double::neginf;
+                }
             }
-//            else
-//            {
-//                std::cerr << "Not rejecting: " << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
-//            }
         }
     }
     
     // we need the counts for faster computation
-    std::vector<size_t> counts = computeCounts(curr_state);
+    std::vector<std::set<size_t> > sites_with_states = computeSitesWithStates(curr_state);
     
     // get branch history set and iterator
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
@@ -251,10 +261,17 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     
     // stepwise events
     double lnL = 0.0;
-    double current_age = node.getParent().getAge();
+    double current_age = 0.0;
+    if (node.isRoot()) {
+        current_age = node.getAge() + this->getRootBranchLength();
+    }
+    else {
+        current_age = node.getParent().getAge();
+    }
+    
     double end_age = node.getAge();
     double event_age;
-    double sr = rm.getSumOfRates(curr_state, current_age, branch_rate);
+    double sr = rm.getSumOfRates(curr_state, sites_with_states, current_age, branch_rate);
 
     for (it_h = history.rbegin(); it_h != history.rend(); ++it_h)
     {
@@ -266,30 +283,36 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         size_t s = char_event->getState();
         
         // lnL for stepwise events for p(x->y)
-        double tr = rm.getRate(curr_state, char_event, current_age, branch_rate);
+        double tr = rm.getRate(curr_state, char_event, sites_with_states, current_age, branch_rate);
         lnL += log(tr) - sr * (current_age - event_age);
-        
-        // update sum of rates
-        double sr_diff = rm.getSumOfRatesDifferential(curr_state, char_event, event_age, branch_rate);
-        sr += sr_diff;
+
+        // path history is -Inf if any step is -Inf
+        if (lnL == RbConstants::Double::neginf) return lnL;
         
         // update counts
-        counts[static_cast<CharacterEventDiscrete*>(curr_state[idx])->getState()] -= 1;
-        counts[s] += 1;
+        sites_with_states[ static_cast<CharacterEventDiscrete*>(curr_state[idx])->getState() ].erase( idx );
+        sites_with_states[ s ].insert( idx );
         
         // update time and state
         curr_state[idx] = char_event;
         current_age = event_age;
+        
+        // update sum of rates
+        sr = rm.getSumOfRates(curr_state, sites_with_states, current_age, branch_rate);
 
     }
     
     // lnL that nothing else happens
     lnL -= sr * (current_age - end_age);
 
-    
-    if (useCladogeneticEvents)
+    // account for the cladogenetic transition probabilites, if applicable
+    if (useCladogeneticEvents && !node.isTip())
     {
-        ; //const CladogeneticProbabilityMatrix& cp = homogeneousCladogeneticProbabilityMatrix->getValue();
+        const AbstractCladogenicStateFunction* cf = dynamic_cast<const AbstractCladogenicStateFunction* >( &homogeneousCladogeneticProbabilityMatrix->getFunction() );
+        size_t left_index = node.getChild(0).getIndex();
+        size_t right_index = node.getChild(1).getIndex();
+        lnL += cf->computeDataAugmentedCladogeneticLnProbability( this->histories, node_index, left_index, right_index );
+        
     }
     
     return lnL;
@@ -338,7 +361,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeTipLikelihood(cons
 //}
 
 template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
+bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
 {
     
     // convert the tip values of the data matrix into branch history objects
@@ -367,20 +390,53 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
         
     }
     
+    // apply cladogenetic events, if applicable
+    if (useCladogeneticEvents)
+    {
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+            TopologyNode* nd = nodes[i];
+            if (nd->isTip() == false) {
+                const AbstractCladogenicStateFunction* cf = dynamic_cast<const AbstractCladogenicStateFunction* >( &homogeneousCladogeneticProbabilityMatrix->getFunction() );
+                size_t node_index = nd->getIndex();
+                size_t left_index = nd->getChild(0).getIndex();
+                size_t right_index = nd->getChild(1).getIndex();
+                cf->simulateDataAugmentedCladogeneticState( this->histories, node_index, left_index, right_index );
+            }
+        }
+    }
+    
+    
     // sample paths
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         TopologyNode* nd = nodes[i];
         
         int samplePathHistoryCount = 0;
-        do
+        
+        bool valid_sample = false;
+        bool valid_likelihood = false;
+        
+        while ( !(valid_sample && valid_likelihood) && samplePathHistoryCount < 100)
         {
-            ++samplePathHistoryCount;
-        } while (samplePathHistory(*nd) == false && samplePathHistoryCount < 100);
-        
-       // double branch_lnL = computeInternalNodeLikelihood(*nd);
-        
+            samplePathHistoryCount++;
+            valid_sample = samplePathHistory(*nd);
+            double branch_lnL = computeInternalNodeLikelihood(*nd);
+            
+            valid_likelihood = branch_lnL != RbConstants::Double::neginf;
+            
+        }
     }
+//    std::cout << "----\n";
+//    std::cout << "Init\n";
+//    std::cout << "----\n";
+//    for (size_t i = 0; i < nodes.size(); i++)
+//    {
+//        TopologyNode* nd = nodes[i];
+//        this->histories[ nd->getIndex() ]->print( nd );
+//    }
+//    
+//    std::cout << "----\n";
     
     double lnL = this->computeLnProbability();
     
@@ -390,8 +446,11 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
         {
             this->fireTreeChangeEvent(*nodes[i]);
         }
-        drawInitValue();
+        return false;
     }
+    
+
+    return true;
     
 }
 
@@ -469,7 +528,13 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::redrawValue( void )
     
 }
 
-
+template<class charType>
+void RevBayesCore::GeneralTreeHistoryCtmc<charType>::reInitialized( void ) {
+    
+    // redraw the internal history states
+    drawInitValue();
+    
+}
 
 template<class charType>
 bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathEnd(const TopologyNode& node)
@@ -502,6 +567,7 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathEnd(const Topolog
         
         // to update
         std::vector<CharacterEvent*> nodeChildState = this->histories[node.getIndex()]->getChildCharacters();
+        std::vector<CharacterEvent*> nodeParentState = this->histories[node.getIndex()]->getParentCharacters();
         for (size_t site_index=0; site_index<this->num_sites; ++site_index)
         {
             
@@ -529,6 +595,7 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathEnd(const Topolog
             }
             
             static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->setState(s);
+            static_cast<CharacterEventDiscrete*>(nodeParentState[site_index])->setState(s);
         }
         
     }
@@ -586,7 +653,7 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathStart(const Topol
 }
 
 template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setCladogeneticProbabilityMatrix(const TypedDagNode< CladogeneticProbabilityMatrix > *cp) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setCladogeneticProbabilityMatrix(const DeterministicNode< CladogeneticProbabilityMatrix > *cp) {
     
     // remove the old parameter first
     if ( homogeneousCladogeneticProbabilityMatrix != NULL )
@@ -594,11 +661,6 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setCladogeneticProbabilityM
         this->removeParameter( homogeneousCladogeneticProbabilityMatrix );
         homogeneousCladogeneticProbabilityMatrix = NULL;
     }
-//    else if (heterogeneousCladogeneticProbabilityMatrix != NULL)
-//    {
-//        this->removeParameter( heterogeneousCladogeneticProbabilityMatrix );
-//        heterogeneousCladogeneticProbabilityMatrix = NULL;
-//    }
     
     // set the value
     useCladogeneticEvents = true;
@@ -760,9 +822,17 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
     const RateGeneratorSequence& rm = homogeneousRateGenerator->getValue();
     
     // get the start and end times
-    double branch_length = node.getBranchLength();
+    
     double end_age = node.getAge();
-    double start_age = end_age + branch_length;
+    double start_age = 0.0;
+    
+    if (node.isRoot()) {
+        start_age = node.getAge() + this->getRootBranchLength();
+    }
+    else {
+        start_age = node.getParent().getAge();
+    }
+    double branch_length = start_age - end_age;
     
     // get parent BranchHistory state
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
@@ -850,7 +920,16 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
 
     // get the sequence of this node
     size_t node_index = node.getIndex();
+    double end_age = node.getAge();
+    double start_age = 0.0;
+    if (node.isRoot()) {
+        start_age = node.getAge() + this->getRootBranchLength();
+    }
+    else {
+        start_age = node.getParent().getAge();
+    }
     
+
     // if root, set tail state
     if ( node.isRoot() == true )
     {
@@ -871,12 +950,14 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
                 
             }
             
-            parentState.push_back(new CharacterEventDiscrete(i, s, 0.0));
-            childState.push_back(new CharacterEventDiscrete(i, s, 1.0));
+            parentState.push_back(new CharacterEventDiscrete(i, s, start_age ));
+            childState.push_back(new CharacterEventDiscrete(i, s, end_age ));
         }
         
         // set parent states on the root's tail
         bh->setParentCharacters(parentState);
+        
+        simulateHistory(node, bh);
         
     }
     else
@@ -894,6 +975,8 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
         taxa[node_index].addCharacter( c );
     }
     
+    // bh->print( &node );
+    
     if ( node.isTip() == true )
     {
         taxa[node_index].setTaxon( node.getTaxon() );
@@ -901,13 +984,23 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
     else
     {
         const std::vector<TopologyNode*>& children = node.getChildren();
-        for (size_t i = 0; i < children.size(); ++i)
-        {
-            this->histories[ children[i]->getIndex() ] = new BranchHistoryDiscrete(this->num_sites, this->num_states, children[i]->getIndex() );
-            std::vector<CharacterEvent*> childParentCharacters = this->histories[children[i]->getIndex()]->getParentCharacters();
-            for (size_t j = 0; j < this->num_sites; ++j)
+
+        // simulate a cladogenetic state
+        if (useCladogeneticEvents) {
+            const AbstractCladogenicStateFunction* cf = dynamic_cast<const AbstractCladogenicStateFunction* >( &homogeneousCladogeneticProbabilityMatrix->getFunction() );
+            size_t left_index = node.getChild(0).getIndex();
+            size_t right_index = node.getChild(1).getIndex();
+            cf->simulateDataAugmentedCladogeneticState( this->histories, node_index, left_index, right_index );
+        }
+        else {
+            for (size_t i = 0; i < children.size(); ++i)
             {
-                static_cast<CharacterEventDiscrete*>(childParentCharacters[j])->setState( static_cast<CharacterEventDiscrete*>(childState[j])->getState() );
+                this->histories[ children[i]->getIndex() ] = new BranchHistoryDiscrete(this->num_sites, this->num_states, children[i]->getIndex() );
+                std::vector<CharacterEvent*> childParentCharacters = this->histories[children[i]->getIndex()]->getParentCharacters();
+                for (size_t j = 0; j < this->num_sites; ++j)
+                {
+                    static_cast<CharacterEventDiscrete*>(childParentCharacters[j])->setState( static_cast<CharacterEventDiscrete*>(childState[j])->getState() );
+                }
             }
         }
         
@@ -937,7 +1030,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::swapParameterInternal( cons
     }
     else if (oldP == homogeneousCladogeneticProbabilityMatrix)
     {
-        homogeneousCladogeneticProbabilityMatrix = static_cast<const TypedDagNode< CladogeneticProbabilityMatrix >* >( newP );
+        homogeneousCladogeneticProbabilityMatrix = static_cast<const DeterministicNode< CladogeneticProbabilityMatrix >* >( newP );
     }
     else if (oldP == rootFrequencies)
     {

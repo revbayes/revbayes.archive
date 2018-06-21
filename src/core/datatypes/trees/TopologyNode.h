@@ -98,6 +98,7 @@ namespace RevBayesCore {
         Clade                                       getClade(void) const;                                                               //!< Get the clade this node represents
         size_t                                      getIndex(void) const;                                                               //!< Get index of node
         void                                        getIndicesOfNodesInSubtree(bool countTips, std::vector<size_t>* indices) const;                                                               //!< Get index of node
+        std::string                                 getIndividualName() const;                                                             //!< Get the species name for the node
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
         const std::string&                          getName() const;                                                                    //!< Get name of node
         TopologyNode*                               getMrca(const Clade &c);

@@ -379,13 +379,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
         
         // set cladogenetic transiiton probs
-//        RevBayesCore::TypedDagNode< double >* pInvNode = NULL;
-        RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp = NULL;
+        RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp_tdn = NULL;
+        RevBayesCore::DeterministicNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp_dn = NULL;
         if ( clado_probs != NULL && clado_probs->getRevObject() != RevNullObject::getInstance() )
         {
 
-            cp = static_cast<const CladogeneticProbabilityMatrix &>( clado_probs->getRevObject() ).getDagNode();
-            dist->setCladogeneticProbabilityMatrix( cp );
+            cp_tdn = static_cast<const CladogeneticProbabilityMatrix &>( clado_probs->getRevObject() ).getDagNode();
+            cp_dn  = static_cast<RevBayesCore::DeterministicNode<RevBayesCore::CladogeneticProbabilityMatrix>*>( cp_tdn );
+            dist->setCladogeneticProbabilityMatrix( cp_dn );
         }
         
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )

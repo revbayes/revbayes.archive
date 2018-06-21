@@ -35,7 +35,7 @@ namespace RevBayesCore {
         // pure virtual
         virtual AbstractTreeHistoryCtmc*                                    clone(void) const = 0;                                              //!< Create an independent clone
         virtual void                                                        redrawValue(void) = 0;
-        virtual void                                                        drawInitValue(void) = 0;
+        virtual bool                                                        drawInitValue(void) = 0;
         virtual void                                                        initializeTipValues(void) = 0;
         virtual bool                                                        samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         virtual bool                                                        samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
@@ -84,7 +84,7 @@ namespace RevBayesCore {
         const size_t                                                        num_chars;
         size_t                                                              num_sites;
         size_t                                                              num_site_rates;
-        const TypedDagNode<Tree>*                                       tau;
+        const TypedDagNode<Tree>*                                           tau;
         
         // the likelihoods
         std::vector<size_t>                                                 activeLikelihood;
@@ -221,7 +221,7 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType>::computeLnProbability( vo
         size_t node_index = nd.getIndex();
         fillLikelihoodVector(nd);
         double nodeLnProb = historyLikelihoods[ activeLikelihood[node_index] ][node_index];
-        std::cout << nodeLnProb << "\n";
+//        std::cout << nodeLnProb << "\n";
         this->lnProb += nodeLnProb;
     }
 
