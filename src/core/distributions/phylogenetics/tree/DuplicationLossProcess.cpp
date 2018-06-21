@@ -312,156 +312,154 @@ double DuplicationLossProcess::computeE(double dt, double p_e)
 
 double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCore::TopologyNode &individual_node )
 {
+  double ln_prob_dupl_loss = 0;
+  double individual_age = individual_node.getAge();
+  double parent_individual_age = RbConstants::Double::inf;
 
-    double ln_prob_dupl_loss = 0;
-
-    double individual_age = individual_node.getAge();
-    double parent_individual_age = RbConstants::Double::inf;
-
-    if ( individual_node.isRoot() == false )
+  if ( individual_node.isRoot() == false )
     {
-        const TopologyNode &individual_parent_node = individual_node.getParent();
-        parent_individual_age = individual_parent_node.getAge();
+      const TopologyNode &individual_parent_node = individual_node.getParent();
+      parent_individual_age = individual_parent_node.getAge();
     }
 
-    if ( individual_node.isTip() == false )
+  if ( individual_node.isTip() == false )
     {
-        genes_per_branch_recent[ individual_node.getIndex() ].clear();
+      genes_per_branch_recent[ individual_node.getIndex() ].clear();
 
-        for (size_t i=0; i<individual_node.getNumberOfChildren(); ++i)
+      for (size_t i=0; i<individual_node.getNumberOfChildren(); ++i)
         {
-            ln_prob_dupl_loss += recursivelyComputeLnProbability( individual_node.getChild(i) );
+          ln_prob_dupl_loss += recursivelyComputeLnProbability( individual_node.getChild(i) );
         }
     }
-    else
+  else
     {
-        size_t left_index  = individual_node.getChild(0).getIndex();
-        size_t right_index = individual_node.getChild(1).getIndex();
-        std::set< const TopologyNode* > &genes_for_this_individual = genes_per_branch_recent[ individual_node.getIndex() ];
-        const std::set< const TopologyNode* > &genes_for_left_descendant  = genes_per_branch_ancient[ left_index ];
-//        const std::set< const TopologyNode* > &genes_for_right_descendant = genes_per_branch_ancient[ right_index ];
-        for (std::set<const TopologyNode*>::iterator it=genes_for_this_individual.begin(); it!=genes_for_this_individual.end(); ++it)
+      size_t left_index  = individual_node.getChild(0).getIndex();
+      size_t right_index = individual_node.getChild(1).getIndex();
+      std::set< const TopologyNode* > &genes_for_this_individual = genes_per_branch_recent[ individual_node.getIndex() ];
+      const std::set< const TopologyNode* > &genes_for_left_descendant  = genes_per_branch_ancient[ left_index ];
+      //        const std::set< const TopologyNode* > &genes_for_right_descendant = genes_per_branch_ancient[ right_index ];
+      for (std::set<const TopologyNode*>::iterator it=genes_for_this_individual.begin(); it!=genes_for_this_individual.end(); ++it)
         {
-            const TopologyNode *this_gene_node = *it;
-            double this_age = this_gene_node->getParent().getAge();
-            if ( fabs( this_age - individual_age) < 1E-10 )
+          const TopologyNode *this_gene_node = *it;
+          double this_age = this_gene_node->getParent().getAge();
+          if ( fabs( this_age - individual_age) < 1E-10 )
             {
-                // coalescent event
+              // coalescent event
             }
-            else
+          else
             {
-                // check if this gene comes from the left or right descendant
-                if ( genes_for_left_descendant.find(this_gene_node) != genes_for_left_descendant.end() )
+              // check if this gene comes from the left or right descendant
+              if ( genes_for_left_descendant.find(this_gene_node) != genes_for_left_descendant.end() )
                 {
-                    // found in the left descendant
-                    // multiply with probability of loss in right descendant
-                    ln_prob_dupl_loss += log(extinction_probs[right_index]);
+                  // found in the left descendant
+                  // multiply with probability of loss in right descendant
+                  ln_prob_dupl_loss += log(extinction_probs[right_index]);
                 }
-                else
+              else
                 {
-                    // not found in the left descendant
-                    // multiply with probability of loss in left descendant
-                    ln_prob_dupl_loss += log(extinction_probs[left_index]);
+                  // not found in the left descendant
+                  // multiply with probability of loss in left descendant
+                  ln_prob_dupl_loss += log(extinction_probs[left_index]);
                 }
 
             }
         }
-        //
+      //
 
     }
 
 
-    // create a local copy of the genes per branch
-    const std::set<const TopologyNode*> &initial_genes = genes_per_branch_recent[individual_node.getIndex()];
-    std::set<const TopologyNode*> remaining_genes = initial_genes;
+  // create a local copy of the genes per branch
+  const std::set<const TopologyNode*> &initial_genes = genes_per_branch_recent[individual_node.getIndex()];
+  std::set<const TopologyNode*> remaining_genes = initial_genes;
 
-    // get all duplication events among the genes
-    std::vector<double> duplication_times;
+  // get all duplication events among the genes
+  std::vector<double> duplication_times;
 
 
-    std::map<double, const TopologyNode *> dupl_times_2_nodes;
-    for ( std::set<const TopologyNode*>::iterator it = remaining_genes.begin(); it != remaining_genes.end(); ++it)
+  std::map<double, const TopologyNode *> dupl_times_2_nodes;
+  for ( std::set<const TopologyNode*>::iterator it = remaining_genes.begin(); it != remaining_genes.end(); ++it)
     {
-        const TopologyNode *ind = (*it);
-        if ( ind->isRoot() == false )
+      const TopologyNode *ind = (*it);
+      if ( ind->isRoot() == false )
         {
-            const TopologyNode &parent = ind->getParent();
-            double parent_age = parent.getAge();
-            dupl_times_2_nodes[ parent_age ] = &parent;
+          const TopologyNode &parent = ind->getParent();
+          double parent_age = parent.getAge();
+          dupl_times_2_nodes[ parent_age ] = &parent;
         }
     }
 
-    double current_time = individual_age;
-    while ( current_time < parent_individual_age && dupl_times_2_nodes.size() > 0 )
+  double current_time = individual_age;
+  while ( current_time < parent_individual_age && dupl_times_2_nodes.size() > 0 )
     {
 
-        const TopologyNode *parent = dupl_times_2_nodes.begin()->second;
-        double parent_age = parent->getAge();
-        current_time = parent_age;
+      const TopologyNode *parent = dupl_times_2_nodes.begin()->second;
+      double parent_age = parent->getAge();
+      current_time = parent_age;
 
-        if ( parent_age < parent_individual_age )
+      if ( parent_age < parent_individual_age )
         { //Duplication in the individual tree branch
 
-            // get the left and right child of the parent
-            const TopologyNode *left = &parent->getChild( 0 );
-            const TopologyNode *right = &parent->getChild( 1 );
-            if ( remaining_genes.find( left ) == remaining_genes.end() || remaining_genes.find( right ) == remaining_genes.end() )
+          // get the left and right child of the parent
+          const TopologyNode *left = &parent->getChild( 0 );
+          const TopologyNode *right = &parent->getChild( 1 );
+          if ( remaining_genes.find( left ) == remaining_genes.end() || remaining_genes.find( right ) == remaining_genes.end() )
             {
-                // one of the children/genes does not belong to this individual tree branch
-                return RbConstants::Double::neginf;
+              // one of the children/genes does not belong to this individual tree branch
+              return RbConstants::Double::neginf;
             }
 
-            // We remove the coalescent event and the coalesced lineages
-            dupl_times_2_nodes.erase( dupl_times_2_nodes.begin() );
-            remaining_genes.erase( remaining_genes.find( left ) );
-            remaining_genes.erase( remaining_genes.find( right ) );
+          // We remove the coalescent event and the coalesced lineages
+          dupl_times_2_nodes.erase( dupl_times_2_nodes.begin() );
+          remaining_genes.erase( remaining_genes.find( left ) );
+          remaining_genes.erase( remaining_genes.find( right ) );
 
-            // We insert the parent in the vector of lineages in this branch
-            remaining_genes.insert( parent );
-            if ( parent->isRoot() == false )
+          // We insert the parent in the vector of lineages in this branch
+          remaining_genes.insert( parent );
+          if ( parent->isRoot() == false )
             {
-                const TopologyNode *grand_parent = &parent->getParent();
-                dupl_times_2_nodes[ grand_parent->getAge() ] = grand_parent;
+              const TopologyNode *grand_parent = &parent->getParent();
+              dupl_times_2_nodes[ grand_parent->getAge() ] = grand_parent;
             }
 
-            if ( fabs( parent_age - individual_age) > 1E-10 )
+          if ( fabs( parent_age - individual_age) > 1E-10 )
             {
-                duplication_times.push_back( parent_age );
+              duplication_times.push_back( parent_age );
             }
 
 
 
         } //End if duplication in the individual tree branch
-        else
+      else
         { //No more duplication in this individual tree branch
 
-            // jump out of the while loop
-            //                currentTime = speciesAge;
-            break;
+          // jump out of the while loop
+          //                currentTime = speciesAge;
+          break;
         }
 
 
     } // end of while loop
 
-    if ( initial_genes.size() > 1 )
+  if ( initial_genes.size() > 1 )
     {
-        ln_prob_dupl_loss += computeLnDuplicationLossProbability(initial_genes.size(), duplication_times, individual_age, parent_individual_age, individual_node.getIndex(), individual_node.isRoot() == false);
+      ln_prob_dupl_loss += computeLnDuplicationLossProbability(initial_genes.size(), duplication_times, individual_age, parent_individual_age, individual_node.getIndex(), individual_node.isRoot() == false);
     }
 
 
-    // merge the two sets of individuals that go into the next species
-    if ( individual_node.isRoot() == false )
+  // merge the two sets of individuals that go into the next species
+  if ( individual_node.isRoot() == false )
     {
-        std::set<const TopologyNode *> &genes = genes_per_branch_recent[ individual_node.getParent().getIndex() ];
-        genes.insert( remaining_genes.begin(), remaining_genes.end());
+      std::set<const TopologyNode *> &genes = genes_per_branch_recent[ individual_node.getParent().getIndex() ];
+      genes.insert( remaining_genes.begin(), remaining_genes.end());
     }
 
 
-    std::set<const TopologyNode *> &outgoing_genes = genes_per_branch_ancient[ individual_node.getIndex() ];
-    outgoing_genes.clear();
-    outgoing_genes.insert( remaining_genes.begin(), remaining_genes.end());
+  std::set<const TopologyNode *> &outgoing_genes = genes_per_branch_ancient[ individual_node.getIndex() ];
+  outgoing_genes.clear();
+  outgoing_genes.insert( remaining_genes.begin(), remaining_genes.end());
 
-    return ln_prob_dupl_loss;
+  return ln_prob_dupl_loss;
 }
 
 
