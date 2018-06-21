@@ -19,6 +19,8 @@
 
 #include <cmath>
 #include <cstring>
+#include <set>
+#include <vector>
 
 namespace RevBayesCore {
     
@@ -35,9 +37,8 @@ namespace RevBayesCore {
         
         GeneralTreeHistoryCtmc*                             clone(void) const;                                                           //!< Create an independent clone
         virtual void                                        initializeTipValues(void);
-        virtual void                                        drawInitValue(void);
+        virtual bool                                        drawInitValue(void);
         virtual std::vector<double>                         getRootFrequencies(void) const;
-        double                                              getSubrootAge(void) const;
         virtual void                                        redrawValue(void);
         virtual void                                        reInitialized(void);
         virtual void                                        simulate(void);
@@ -70,6 +71,7 @@ namespace RevBayesCore {
         virtual void                                        simulate(const TopologyNode& node, BranchHistory* bh, std::vector< DiscreteTaxonData< charType > >& taxa);
         void                                                simulateHistory(const TopologyNode& node, BranchHistory* bh);
         std::vector<size_t>                                 computeCounts(const std::vector<CharacterEvent*>& s);
+        std::vector<std::set< size_t> >                     computeSitesWithStates(const std::vector<CharacterEvent*>& s);
         
         // members
         const TypedDagNode< RateGeneratorSequence >*                homogeneousRateGenerator;
@@ -82,10 +84,6 @@ namespace RevBayesCore {
         bool                                                branchHeterogeneousSubstitutionMatrices;
         bool                                                rateVariationAcrossSites;
         bool                                                useCladogeneticEvents;
-        
-        // subroot age
-        double                                              subrootAge;
-
         
     };
     
@@ -108,7 +106,6 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Typ
     rootFrequencies             = new ConstantNode<Simplex>("rootFrequencies", new Simplex(nChars, 1.0/nChars));
     siteRates                   = NULL;
     homogeneousCladogeneticProbabilityMatrix = NULL;
-    subrootAge                  = tau->getValue().getRoot().getAge() * 5;
     
     // flags specifying which model variants we use
     branchHeterogeneousSubstitutionMatrices     = false;
@@ -140,7 +137,6 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Gen
     homogeneousCladogeneticProbabilityMatrix = d.homogeneousCladogeneticProbabilityMatrix;
     rootFrequencies             = d.rootFrequencies;
     siteRates                   = d.siteRates;
-    subrootAge                  = d.subrootAge;
     
     // flags specifying which model variants we use
     branchHeterogeneousSubstitutionMatrices     = d.branchHeterogeneousSubstitutionMatrices;
@@ -178,6 +174,20 @@ std::vector<size_t> RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeCount
 }
 
 template<class charType>
+std::vector<std::set<size_t> > RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeSitesWithStates(const std::vector<CharacterEvent*>& s)
+{
+    std::vector<std::set<size_t> > sites_with_states(this->num_states, std::set<size_t>() );
+    
+    for (size_t i = 0; i < s.size(); i++)
+    {
+        sites_with_states[ static_cast<CharacterEventDiscrete*>(s[i])->getState() ].insert( static_cast<CharacterEventDiscrete*>(s[i])->getSiteIndex() );
+        //counts[  ] += 1;
+    }
+    
+    return sites_with_states;
+}
+
+template<class charType>
 double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeRootLikelihood(const TopologyNode &n)
 {
     
@@ -207,51 +217,43 @@ template<class charType>
 double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikelihood(const TopologyNode &node)
 {
     
-//    if ( node.isRoot() == true )
-//    {
-//        return 0.0;
-//    }
-    
+
     size_t node_index = node.getIndex();
     double branch_rate = this->getBranchRate(node_index);
     const RateGeneratorSequence& rm = homogeneousRateGenerator->getValue();
     
     // get the branch history
     BranchHistory* bh = this->histories[node_index];
-    
+    std::vector<CharacterEvent*> curr_state = bh->getParentCharacters();
+    std::vector<CharacterEvent*> end_state  = bh->getChildCharacters();
+
     // check that node ages are consistent with character event ages
     if ( bh->areEventTimesValid(node) == false )
     {
-        //        std::cerr << "Rejecting (invalid times)." << std::endl;
         return RbConstants::Double::neginf;
     }
     
     // check parent and child states to make sure they match with the
     // ancestral and descendant branches; otherwise, return -Inf
-    std::vector<CharacterEvent*> curr_state = bh->getParentCharacters();
-    std::vector<CharacterEvent*> end_state  = bh->getChildCharacters();
-    for (size_t i = 0; i < node.getNumberOfChildren(); ++i)
-    {
-        const TopologyNode &child = node.getChild(i);
-        size_t child_index = child.getIndex();
-        BranchHistory* child_bh = this->histories[child_index];
-        std::vector<CharacterEvent*> child_state = child_bh->getParentCharacters();
-        for (size_t j = 0; j < this->num_sites; ++j)
+    if (!useCladogeneticEvents) {
+        for (size_t i = 0; i < node.getNumberOfChildren(); ++i)
         {
-            if ( !useCladogeneticEvents && static_cast<CharacterEventDiscrete*>(end_state[j])->getState() != static_cast<CharacterEventDiscrete*>(child_state[j])->getState() )
+            const TopologyNode &child = node.getChild(i);
+            size_t child_index = child.getIndex();
+            BranchHistory* child_bh = this->histories[child_index];
+            std::vector<CharacterEvent*> child_state = child_bh->getParentCharacters();
+            for (size_t j = 0; j < this->num_sites; ++j)
             {
-                //                std::cerr << "Rejecting: " << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
-                return RbConstants::Double::neginf;
+                if (static_cast<CharacterEventDiscrete*>(end_state[j])->getState() != static_cast<CharacterEventDiscrete*>(child_state[j])->getState() )
+                {
+                    return RbConstants::Double::neginf;
+                }
             }
-//            else
-//            {
-//                std::cerr << "Not rejecting: " << end_state[j]->getState() << " -- " << child_state[j]->getState() << std::endl;
-//            }
         }
     }
     
     // we need the counts for faster computation
-    std::vector<size_t> counts = computeCounts(curr_state);
+    std::vector<std::set<size_t> > sites_with_states = computeSitesWithStates(curr_state);
     
     // get branch history set and iterator
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
@@ -261,7 +263,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     double lnL = 0.0;
     double current_age = 0.0;
     if (node.isRoot()) {
-        current_age = subrootAge;
+        current_age = node.getAge() + this->getRootBranchLength();
     }
     else {
         current_age = node.getParent().getAge();
@@ -269,7 +271,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     
     double end_age = node.getAge();
     double event_age;
-    double sr = rm.getSumOfRates(curr_state, current_age, branch_rate);
+    double sr = rm.getSumOfRates(curr_state, sites_with_states, current_age, branch_rate);
 
     for (it_h = history.rbegin(); it_h != history.rend(); ++it_h)
     {
@@ -281,20 +283,22 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         size_t s = char_event->getState();
         
         // lnL for stepwise events for p(x->y)
-        double tr = rm.getRate(curr_state, char_event, current_age, branch_rate);
+        double tr = rm.getRate(curr_state, char_event, sites_with_states, current_age, branch_rate);
         lnL += log(tr) - sr * (current_age - event_age);
-        
-        // update sum of rates
-        double sr_diff = rm.getSumOfRatesDifferential(curr_state, char_event, event_age, branch_rate);
-        sr += sr_diff;
+
+        // path history is -Inf if any step is -Inf
+        if (lnL == RbConstants::Double::neginf) return lnL;
         
         // update counts
-        counts[static_cast<CharacterEventDiscrete*>(curr_state[idx])->getState()] -= 1;
-        counts[s] += 1;
+        sites_with_states[ static_cast<CharacterEventDiscrete*>(curr_state[idx])->getState() ].erase( idx );
+        sites_with_states[ s ].insert( idx );
         
         // update time and state
         curr_state[idx] = char_event;
         current_age = event_age;
+        
+        // update sum of rates
+        sr = rm.getSumOfRates(curr_state, sites_with_states, current_age, branch_rate);
 
     }
     
@@ -302,16 +306,13 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     lnL -= sr * (current_age - end_age);
 
     // account for the cladogenetic transition probabilites, if applicable
-    if (useCladogeneticEvents)
+    if (useCladogeneticEvents && !node.isTip())
     {
         const AbstractCladogenicStateFunction* cf = dynamic_cast<const AbstractCladogenicStateFunction* >( &homogeneousCladogeneticProbabilityMatrix->getFunction() );
+        size_t left_index = node.getChild(0).getIndex();
+        size_t right_index = node.getChild(1).getIndex();
+        lnL += cf->computeDataAugmentedCladogeneticLnProbability( this->histories, node_index, left_index, right_index );
         
-        if (!node.isTip())
-        {
-            size_t left_index = node.getChild(0).getIndex();
-            size_t right_index = node.getChild(1).getIndex();
-            lnL += cf->computeDataAugmentedCladogeneticLnProbability( this->histories, node_index, left_index, right_index );
-        }
     }
     
     return lnL;
@@ -360,7 +361,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeTipLikelihood(cons
 //}
 
 template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
+bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
 {
     
     // convert the tip values of the data matrix into branch history objects
@@ -412,13 +413,19 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
         TopologyNode* nd = nodes[i];
         
         int samplePathHistoryCount = 0;
-        do
+        
+        bool valid_sample = false;
+        bool valid_likelihood = false;
+        
+        while ( !(valid_sample && valid_likelihood) && samplePathHistoryCount < 100)
         {
-            ++samplePathHistoryCount;
-        } while (samplePathHistory(*nd) == false && samplePathHistoryCount < 100);
-        
-       // double branch_lnL = computeInternalNodeLikelihood(*nd);
-        
+            samplePathHistoryCount++;
+            valid_sample = samplePathHistory(*nd);
+            double branch_lnL = computeInternalNodeLikelihood(*nd);
+            
+            valid_likelihood = branch_lnL != RbConstants::Double::neginf;
+            
+        }
     }
 //    std::cout << "----\n";
 //    std::cout << "Init\n";
@@ -439,11 +446,11 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
         {
             this->fireTreeChangeEvent(*nodes[i]);
         }
-        drawInitValue();
+        return false;
     }
     
 
-    return;
+    return true;
     
 }
 
@@ -469,13 +476,6 @@ std::vector<double> RevBayesCore::GeneralTreeHistoryCtmc<charType>::getRootFrequ
     }
     
 }
-
-template<class charType>
-double RevBayesCore::GeneralTreeHistoryCtmc<charType>::getSubrootAge( void ) const
-{
-    return subrootAge;
-}
-
 
 
 template<class charType>
@@ -827,7 +827,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
     double start_age = 0.0;
     
     if (node.isRoot()) {
-        start_age = subrootAge;
+        start_age = node.getAge() + this->getRootBranchLength();
     }
     else {
         start_age = node.getParent().getAge();
@@ -923,7 +923,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
     double end_age = node.getAge();
     double start_age = 0.0;
     if (node.isRoot()) {
-        start_age = subrootAge;
+        start_age = node.getAge() + this->getRootBranchLength();
     }
     else {
         start_age = node.getParent().getAge();

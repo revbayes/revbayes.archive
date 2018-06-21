@@ -864,6 +864,9 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirp
         closedir( dir );
     }
     
+    // make sure that the file names are sorted
+    std::sort(sv.begin(), sv.end());
+    
     return true;
 }
 

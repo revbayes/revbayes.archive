@@ -113,7 +113,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         found = true;
         
         double tree_CI         = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
-        bool verbose           = static_cast<const RlBoolean &>( args[2].getVariable()->getRevObject() ).getValue();
+        bool verbose           = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
         
         std::vector<double> distances = this->value->computePairwiseRFDistance(tree_CI, verbose);
         

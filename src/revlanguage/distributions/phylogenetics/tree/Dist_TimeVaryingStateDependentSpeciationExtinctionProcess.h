@@ -1,5 +1,5 @@
-#ifndef Dist_CharacterDependentBirthDeathProcess_H
-#define Dist_CharacterDependentBirthDeathProcess_H
+#ifndef Dist_TimeVaryingStateDependentSpeciationExtinctionProcess_H
+#define Dist_TimeVaryingStateDependentSpeciationExtinctionProcess_H
 
 #include "RlTimeTree.h"
 #include "RlTypedDistribution.h"
@@ -13,14 +13,14 @@ namespace RevLanguage {
      *
      * @author Sebastian Hoehna
      */
-    class Dist_CharacterDependentBirthDeathProcess : public TypedDistribution<TimeTree> {
+    class Dist_TimeVaryingStateDependentSpeciationExtinctionProcess : public TypedDistribution<TimeTree> {
         
     public:
-        Dist_CharacterDependentBirthDeathProcess( void );        //!< Constructor
-        virtual ~Dist_CharacterDependentBirthDeathProcess();             //!< Virtual destructor
+        Dist_TimeVaryingStateDependentSpeciationExtinctionProcess( void );        //!< Constructor
+        virtual ~Dist_TimeVaryingStateDependentSpeciationExtinctionProcess();             //!< Virtual destructor
         
         // Basic utility functions
-        Dist_CharacterDependentBirthDeathProcess*                   clone(void) const;                                                                      //!< Clone the object
+        Dist_TimeVaryingStateDependentSpeciationExtinctionProcess*  clone(void) const;                                                                      //!< Clone the object
         static const std::string&                                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                      getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::vector<std::string>                                    getDistributionFunctionAliases(void) const;
@@ -44,19 +44,18 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                                   root_frequencies;
         RevPtr<const RevVariable>                                   speciation_rates;
         RevPtr<const RevVariable>                                   extinction_rates;
-        RevPtr<const RevVariable>                                   psi;
+        RevPtr<const RevVariable>                                   phi;
         RevPtr<const RevVariable>                                   event_rate_matrix;
         RevPtr<const RevVariable>                                   event_rate;
+        RevPtr<const RevVariable>                                   epoch_times;
         RevPtr<const RevVariable>                                   rho;
         RevPtr<const RevVariable>                                   condition;                                                                              //!< The condition of the process (none/survival/#Taxa)
         RevPtr<const RevVariable>                                   num_time_slices;
         RevPtr<const RevVariable>                                   min_lineages;
         RevPtr<const RevVariable>                                   max_lineages;
-        RevPtr<const RevVariable>                                   max_time;
         RevPtr<const RevVariable>                                   prune_extinct_lineages;
-        RevPtr<const RevVariable>                                   condition_on_tips;
         std::string                                                 start_condition;                                                                     //!< The start condition of the process (rootAge/originAge)
-
+        
     };
     
 }
