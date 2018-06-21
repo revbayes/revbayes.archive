@@ -43,3 +43,7 @@ projects/xcode/revbayes.xcodeproj
 .history
 history.txt
 .ycm_extra_conf.py
+/.dir-locals.el
+/GPATH
+/GRTAGS
+/GTAGS

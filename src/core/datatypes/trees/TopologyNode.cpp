@@ -1331,6 +1331,9 @@ const TopologyNode& TopologyNode::getParent(void) const
 }
 
 
+// At the moment, the 'Taxon' class only offers a species name which is
+// returned. In the future, an individual name may be added to 'Taxon'; or, we
+// could remove the classifier (species_name -> name).
 std::string TopologyNode::getIndividualName() const
 {
     std::string name = taxon.getSpeciesName();
