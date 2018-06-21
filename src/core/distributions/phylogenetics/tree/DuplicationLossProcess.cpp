@@ -191,15 +191,23 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
     return ln_prob;
 }
 
-double DuplicationLossProcess::computeD(double dt, double e)
+double DuplicationLossProcess::computeD(double dt, double E0)
 {
     double la = duplication_rate->getValue();
     double mu = loss_rate->getValue();
 
     // Formula from Sebastian. This formula is SIMILAR BUT NOT THE SAME to the
-    // one from below. // Notably, there is a difference in B (+mu instead of
-    // -mu). Also, an 'e' is missing in the nominator. Is this an error, or did
-    // we copy the wrong formulas?
+    // one below. Notably, there is a difference in B (+mu instead of -mu, so
+    // that 'B = -c' from below!). Also, an 'G0 = 1- E0' is missing in the
+    // nominator and E0 is used instead of G0 in the calculation of B. Is this
+    // an error, or did we copy the wrong formulas?
+
+    // However, this formula fits apart from a missing G[0] in the nominator
+    // with the one from Wandrille (see mail from Gergely 2018-05-16
+    // "probabilities for birth death on a tree").
+
+    // TODO: @Dominik. Total confusion :-). Have to check with Gergely,
+    // Sebastian and Wandrille.
 
     // double A = la - mu;
     // double B = ( (1.0 - 2*e)*la+mu ) / A;
@@ -212,30 +220,44 @@ double DuplicationLossProcess::computeD(double dt, double e)
     // Eq. (2) with psi=0 in Stadler, T. (2010). Sampling-through-time in
     // birth-death trees. Journal of Theoretical Biology, 267(3), 396–404.
     // http://doi.org/10.1016/j.jtbi.2010.09.010
+    double G0  = 1 - E0;
     double d  = la - mu;
-    double c  = ( (1.0 - 2*e)*la - mu ) / d;
+    double c  = ( (1.0 - 2*G0)*la - mu ) / d;
     double et = exp(-d * dt);
-    double G  = 4.0 * e * et;
+    double G  = 4.0 * G0 * et;
     double dn = ( (1.0 + c) + (1 - c)*et );
     G /= dn;
     G /= dn;
     return G;
 }
 
-double DuplicationLossProcess::computeE(double dt, double e)
+double DuplicationLossProcess::computeE(double dt, double E0)
 {
-    // TODO: Some more testing and cleaning up @Dominik
-    double lambda = duplication_rate->getValue();
+    double la = duplication_rate->getValue();
     double mu = loss_rate->getValue();
 
-    double A = lambda - mu;
-    double B = ( (1.0 - 2*e)*lambda+mu ) / A;
+    // Formula from Sebastian. Again, this is SIMILAR BUT NOT THE SAME to the
+    // one below. Possible sign error before the large fraction in the
+    // nominator. I am not sure what's the correct formula.
 
-    double et = exp(A * dt);
+    // double A = la - mu;
+    // double B = ( (1.0 - 2*e)*la+mu ) / A;
+    // double et = exp(A * dt);
+    // double E = la + mu - A *(1.0+B-et*(1.0-B))/(1.0+B+et*(1.0-B));
+    // E /= (2*la);
 
-    double E = lambda + mu - A *(1.0+B-et*(1.0-B))/(1.0+B+et*(1.0-B));
-    E /= (2*lambda);
+    // Ee[t] -> ( mu + (la - mu)/(1 + (E^((la - mu) t) la (-1 + p))/(mu - la p)))/la
 
+    // Eq. (1) with psi=0 in Stadler, T. (2010). Sampling-through-time in
+    // birth-death trees. Journal of Theoretical Biology, 267(3), 396–404.
+    // http://doi.org/10.1016/j.jtbi.2010.09.010
+    double G0  = 1 - E0;
+    double d  = la - mu;
+    double c  = ( (1.0 - 2*G0)*la - mu ) / d;
+    double et = exp(-d * dt);
+    double nom = ( et*(1.0-c) - (1.0+c) ) / ( et*(1.0-c) + (1.0+c) );
+    double E = la + mu + d*nom;
+    E /= (2*la);
     return E;
 }
 
