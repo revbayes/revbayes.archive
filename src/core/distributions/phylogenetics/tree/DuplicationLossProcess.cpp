@@ -167,19 +167,21 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
 
   for ( size_t i=0; i<dupl_ages.size(); ++i )
     {
-
       double this_dupl_age = dupl_ages[i];
       double dt = this_dupl_age - current_age;
 
-      // TODO @Dominik. Check the combinatorial factors.
+      // Walk up dt to the next duplication on the branch of the individual tree.
+      // It contains 'N = num_genes_recent-i' genes.
       ln_prob += (num_genes_recent-i) * log( computeD(dt, current_ext_prob) );
-      // TODO @Dominik. Doesn't this mean that the duplication rate is multiplied twice?
+      // Have a duplication.
       ln_prob += log( dupl_rate );
+      // Combinatorial factor. The duplication can happen on any of the 'N-1'
+      // branches before the duplication, but we require it to happen on a
+      // specific branch.
       ln_prob += log( num_genes_recent - i - 1 );
 
       current_age = this_dupl_age;
       current_ext_prob = computeE( dt, current_ext_prob );
-
     }
 
   // final branch segment before coalescent of individual tree
