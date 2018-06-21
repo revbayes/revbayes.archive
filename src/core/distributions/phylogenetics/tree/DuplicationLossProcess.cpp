@@ -308,8 +308,7 @@ double DuplicationLossProcess::computeE(double dt, double p_e)
   return p_te;
 }
 
-
-
+// TODO @Dominik. Understand this function.
 double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCore::TopologyNode &individual_node )
 {
   double ln_prob_dupl_loss = 0;
@@ -322,17 +321,17 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
       parent_individual_age = individual_parent_node.getAge();
     }
 
+  // Not a leaf/tip; also add the ln_prob from all children.
   if ( individual_node.isTip() == false )
     {
       genes_per_branch_recent[ individual_node.getIndex() ].clear();
-
       for (size_t i=0; i<individual_node.getNumberOfChildren(); ++i)
-        {
           ln_prob_dupl_loss += recursivelyComputeLnProbability( individual_node.getChild(i) );
-        }
     }
+  // Leaf/tip;
   else
     {
+      // TODO @Dominik @Sebastian. If we are at a tip, why do we even access children?
       size_t left_index  = individual_node.getChild(0).getIndex();
       size_t right_index = individual_node.getChild(1).getIndex();
       std::set< const TopologyNode* > &genes_for_this_individual = genes_per_branch_recent[ individual_node.getIndex() ];
@@ -364,10 +363,7 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
 
             }
         }
-      //
-
     }
-
 
   // create a local copy of the genes per branch
   const std::set<const TopologyNode*> &initial_genes = genes_per_branch_recent[individual_node.getIndex()];
@@ -375,7 +371,6 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
 
   // get all duplication events among the genes
   std::vector<double> duplication_times;
-
 
   std::map<double, const TopologyNode *> dupl_times_2_nodes;
   for ( std::set<const TopologyNode*>::iterator it = remaining_genes.begin(); it != remaining_genes.end(); ++it)
@@ -392,7 +387,6 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
   double current_time = individual_age;
   while ( current_time < parent_individual_age && dupl_times_2_nodes.size() > 0 )
     {
-
       const TopologyNode *parent = dupl_times_2_nodes.begin()->second;
       double parent_age = parent->getAge();
       current_time = parent_age;
@@ -427,33 +421,22 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
               duplication_times.push_back( parent_age );
             }
 
-
-
-        } //End if duplication in the individual tree branch
-      else
-        { //No more duplication in this individual tree branch
-
-          // jump out of the while loop
-          //                currentTime = speciesAge;
-          break;
         }
-
-
-    } // end of while loop
-
-  if ( initial_genes.size() > 1 )
-    {
-      ln_prob_dupl_loss += computeLnDuplicationLossProbability(initial_genes.size(), duplication_times, individual_age, parent_individual_age, individual_node.getIndex(), individual_node.isRoot() == false);
+      // No more duplication in this branch of the individual tree. Jump out of
+      // the while loop.
+      else
+          break;
     }
 
+  if ( initial_genes.size() > 1 )
+      ln_prob_dupl_loss += computeLnDuplicationLossProbability(initial_genes.size(), duplication_times, individual_age, parent_individual_age, individual_node.getIndex(), individual_node.isRoot() == false);
 
-  // merge the two sets of individuals that go into the next species
+  // Merge the two sets of individuals that go into the next species.
   if ( individual_node.isRoot() == false )
     {
       std::set<const TopologyNode *> &genes = genes_per_branch_recent[ individual_node.getParent().getIndex() ];
       genes.insert( remaining_genes.begin(), remaining_genes.end());
     }
-
 
   std::set<const TopologyNode *> &outgoing_genes = genes_per_branch_ancient[ individual_node.getIndex() ];
   outgoing_genes.clear();
