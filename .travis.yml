@@ -14,8 +14,9 @@ script:
 # safelist
 branches:
   only:
-  - duploss
+  - master
+  - development
   
 # notifications
 notifications:
-  slack: revbayes:enRjNT5LvxKnYi8brNipOTR0
+  slack: revbayes:bQO6VTun0Orhx2NiKktVPDsS
