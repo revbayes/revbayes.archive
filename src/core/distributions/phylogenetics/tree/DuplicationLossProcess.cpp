@@ -172,7 +172,9 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
         double this_dupl_age = dupl_ages[i];
         double dt = this_dupl_age - current_age;
 
+        // TODO @Dominik: Check the combinatorial factors.
         ln_prob += (num_genes_recent-i) * log( computeD(dt, current_ext_prob) );
+        // TODO @Dominik: Doesn't this mean that the duplication rate is multiplied twice?
         ln_prob += log( dupl_rate );
         ln_prob += log( num_genes_recent - i - 1 );
 
@@ -252,11 +254,12 @@ double DuplicationLossProcess::computeD(double dt, double p_e)
     // It turns out that g(t,e) only depends on dt and on p_e, and not on the actual time t.
 
     // Technically, we also need to know g(t, f) and g(t, h), where f and h are the daughter branches of branch e. See the variable d_{i,e} in Stadlers paper.
-    // TODO: How do we get d_ie?
-    double d_ie        = 1.0;
+    // However, since this is only a multiplicative factor, we can also apply it when calculating the likelihood. See 'DuplicationLossProcess::computeLnDuplicationLossProbability'.
+    // double d_ie        = 1.0;
     double d           = la - mu;
     double et          = exp(-d * dt);
-    double nominator   = d_ie * d * d *et;
+    // double nominator   = d_ie * d * d *et;
+    double nominator   = d * d *et;
     double denominator = la*(p_e - 1.0) + (mu - p_e*la)*et;
     double g_te        = nominator / denominator / denominator;
     return g_te;
