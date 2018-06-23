@@ -86,14 +86,15 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r, std::string method) : Gener
 
 
 /** Copy constructor */
-RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m ),
-    singleStepMatrix(num_states)
+RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m )
 {
     
     rescale               = m.rescale;
     my_method             = m.my_method;
     
-    matrixProducts        = new std::vector<MatrixReal>();
+    matrixProducts        = new std::vector<MatrixReal>( *m.matrixProducts );
+    singleStepMatrix      = m.singleStepMatrix;
+    maxRate               = m.maxRate;
     
     theEigenSystem        = new EigenSystem( *m.theEigenSystem );
     c_ijk                 = m.c_ijk;
@@ -120,6 +121,14 @@ RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
         GeneralRateMatrix::operator=( r );
        
         delete theEigenSystem;
+        delete matrixProducts;
+        
+        rescale               = r.rescale;
+        my_method             = r.my_method;
+        
+        matrixProducts        = new std::vector<MatrixReal>( *r.matrixProducts );
+        singleStepMatrix      = r.singleStepMatrix;
+        maxRate               = r.maxRate;
         
         theEigenSystem       = new EigenSystem( *r.theEigenSystem );
         c_ijk                = r.c_ijk;
@@ -130,6 +139,21 @@ RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
     }
     
     return *this;
+}
+
+
+RateMatrix_FreeK& RateMatrix_FreeK::assign(const Assignable &m)
+{
+    const RateMatrix_FreeK *rm = dynamic_cast<const RateMatrix_FreeK*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
+    
 }
 
 

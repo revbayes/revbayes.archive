@@ -112,6 +112,20 @@ RateMatrix_Covarion& RateMatrix_Covarion::operator=(const RateMatrix_Covarion &r
 }
 
 
+RateMatrix_Covarion& RateMatrix_Covarion::assign(const Assignable &m)
+{
+    const RateMatrix_Covarion *rm = dynamic_cast<const RateMatrix_Covarion*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
+    
+}
+
 
 /** Do precalculations on eigenvectors */
 void RateMatrix_Covarion::calculateCijk(void)

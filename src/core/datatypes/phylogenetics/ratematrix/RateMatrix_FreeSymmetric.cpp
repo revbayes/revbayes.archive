@@ -93,7 +93,9 @@ RateMatrix_FreeSymmetric::RateMatrix_FreeSymmetric(const RateMatrix_FreeSymmetri
     rescale               = m.rescale;
     my_method             = m.my_method;
     
-    matrixProducts        = new std::vector<MatrixReal>();
+    matrixProducts        = new std::vector<MatrixReal>( *m.matrixProducts );
+    singleStepMatrix      = m.singleStepMatrix;
+    maxRate               = m.maxRate;
     
     theEigenSystem        = new EigenSystem( *m.theEigenSystem );
     c_ijk                 = m.c_ijk;
@@ -120,6 +122,14 @@ RateMatrix_FreeSymmetric& RateMatrix_FreeSymmetric::operator=(const RateMatrix_F
         GeneralRateMatrix::operator=( r );
         
         delete theEigenSystem;
+        delete matrixProducts;
+        
+        rescale               = r.rescale;
+        my_method             = r.my_method;
+        
+        matrixProducts        = new std::vector<MatrixReal>( *r.matrixProducts );
+        singleStepMatrix      = r.singleStepMatrix;
+        maxRate               = r.maxRate;
         
         theEigenSystem       = new EigenSystem( *r.theEigenSystem );
         c_ijk                = r.c_ijk;
@@ -130,6 +140,21 @@ RateMatrix_FreeSymmetric& RateMatrix_FreeSymmetric::operator=(const RateMatrix_F
     }
     
     return *this;
+}
+
+
+RateMatrix_FreeSymmetric& RateMatrix_FreeSymmetric::assign(const Assignable &m)
+{
+    const RateMatrix_FreeSymmetric *rm = dynamic_cast<const RateMatrix_FreeSymmetric*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
+    
 }
 
 
