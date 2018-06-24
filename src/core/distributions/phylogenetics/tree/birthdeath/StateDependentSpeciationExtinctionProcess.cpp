@@ -1942,10 +1942,6 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
     std::vector<double> total_speciation_rates = calculateTotalSpeciationRatePerState();
     std::vector<double> total_anagenetic_rates = calculateTotalAnageneticRatePerState();
     std::vector<double> r = std::vector<double>(num_states, 0);
-    for (size_t i = 0; i < num_states; ++i)
-    {
-        r[i] = extinction_rates[i] + total_speciation_rates[i] + total_anagenetic_rates[i];
-    }
 
     // create a vector of nodes for our simulated tree
     std::vector<TopologyNode*> nodes;
@@ -1969,6 +1965,18 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
     while (true) {
 
         // calculate c and g from Hua and Bromham 2016
+        for (size_t i = 0; i < num_states; ++i)
+        {
+            r[i] = 0.0;
+            if (lineages_in_state[i].size() > 1)
+            {
+                r[i] += total_speciation_rates[i];
+            }
+            if (lineages_in_state[i].size() > 0)
+            {
+                r[i] += extinction_rates[i] + total_anagenetic_rates[i];
+            }
+        }
         double g = 0;
         double c = 0;
         for (size_t i = 0; i < num_states; ++i)
@@ -1994,6 +2002,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
         double prob_sum = 0.0;
         while (true) 
         {
+        
             // propose a new time from proposal distribution g
             dt = RbStatistics::Exponential::rv( g, *rng );
 
@@ -2033,6 +2042,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
                         }
                     }
                 }
+
                 if (lineages_in_state[i].size() > 1)
                 {
                     prob_speciation[i] = total_speciation_rates[i] * (lineages_in_state[i].size() - 1) * exp(-1 * dt * total_rate_spec);
@@ -2054,7 +2064,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
 
             // check if we accept the new time
             double u = rng->uniform01();
-            if (u <= prob_sum/c)
+            if (u <= prob_sum / (c * exp(-1 * dt * g)))
             {
                 break;
             }
