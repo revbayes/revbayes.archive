@@ -53,6 +53,7 @@ namespace RevBayesCore {
     double                                              recursivelyComputeLnProbability(const TopologyNode &n);
     void                                                resetTipAllocations(void);
     void                                                simulateTree(void);
+    void                                                simulateTreeRejectionSampling(void);
 
     // members
     std::vector<Taxon>                                  taxa;
