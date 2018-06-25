@@ -608,6 +608,16 @@ std::vector<Taxon> Tree::getFossilTaxa() const
     return taxa;
 }
 
+std::vector<size_t> Tree::getFossilLeavesIdxs() {
+  std::vector<size_t> fossilized_leaves_idxs;
+  for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+      TopologyNode *n = &getTipNode(i);
+      if (n->isFossil())
+        fossilized_leaves_idxs.push_back(n->getIndex());
+    }
+  return fossilized_leaves_idxs;
+}
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
  This version assumes that the root is always the last and the tips the first in the nodes vector. */
