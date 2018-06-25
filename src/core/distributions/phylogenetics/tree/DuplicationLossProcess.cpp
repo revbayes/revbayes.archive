@@ -138,7 +138,6 @@ double DuplicationLossProcess::computeLnProbability( void )
 
 }
 
-// TODO @Dominik. Do we need to handle the root in a special way?
 double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_genes_recent, const std::vector<double> &dupl_ages, double age_recent, double age_ancient, const TopologyNode &node_individual, bool is_root)
 {
   double ln_prob = 0.0;
@@ -149,7 +148,7 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
   double current_age = age_recent;
   double current_ext_prob = 0.0;
 
-  // if this is a tip
+  // Get extinction probability at the bottom of this branch.
   if ( node_individual.isTip() )
     {
       current_ext_prob = 1.0 - gene_sampling_probability->getValue()[index_individual];
@@ -165,6 +164,10 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
       current_ext_prob = ext_prob_left * ext_prob_right;
     }
 
+  if (dupl_ages.size() >= num_genes_recent)
+    throw std::length_error("There are more duplication events than branches on this branch of the individual tree.");
+
+  // Handle duplications.
   for ( size_t i=0; i<dupl_ages.size(); ++i )
     {
       double this_dupl_age = dupl_ages[i];
@@ -176,23 +179,31 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
       // Have a duplication.
       ln_prob += log( dupl_rate );
       // Combinatorial factor. The duplication can happen on any of the 'N-1'
-      // branches before the duplication, but we require it to happen on a
-      // specific branch.
+      // branches existing earlier (i.e., before the duplication happens when
+      // going forwards in time), but we require it to happen on a specific
+      // branch.
       ln_prob += log( num_genes_recent - i - 1 );
 
       current_age = this_dupl_age;
       current_ext_prob = computeE( dt, current_ext_prob );
     }
 
-  // Final branch segment before coalescent of individual tree, i.e., there are
+  // Final branch segment before coalescence on individual tree, i.e., there are
   // no more duplications.
-  // TODO: What happens when we are at the root? dt will be infinite?
-  double dt = age_ancient - current_age;
-  ln_prob += (num_genes_recent-dupl_ages.size()) * log( computeD(dt, current_ext_prob) );
-
-  extinction_probs[index_individual] = computeE( dt, current_ext_prob );
-
-  return ln_prob;
+  if (is_root)
+    {
+      // What happens when we are at the root? dt=inf -> D=0 -> log(D)=-inf; certainly not what we want.
+      // throw std::exception("At root, should we handle this in a special way?");
+      // Assume that we are done.
+      return ln_prob;
+    }
+  else
+    {
+      double dt = age_ancient - current_age;
+      ln_prob += (num_genes_recent-dupl_ages.size()) * log( computeD(dt, current_ext_prob) );
+      extinction_probs[index_individual] = computeE( dt, current_ext_prob );
+      return ln_prob;
+    }
 }
 
 double DuplicationLossProcess::computeD(double dt, double p_e)
@@ -324,26 +335,31 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
 
   //////////////////////////////////////////////////
   // 1. Handle node.
+
   if ( ! individual_node.isTip() )
     {
-      // Add likelihood from children.
+      // The genes at inner nodes (genes_per_branch_recent) will be set when
+      // traversing the children (using their respective
+      // genes_per_branch_ancient). At the leaves, the genes have to be set a
+      // priori, e.g., during the simulation.
       genes_per_branch_recent[ individual_node.getIndex() ].clear();
+      // Add likelihood from children.
       for (size_t i=0; i<individual_node.getNumberOfChildren(); ++i)
           ln_prob_dupl_loss += recursivelyComputeLnProbability( individual_node.getChild(i) );
-      // Handle coalescence of individual on gene tree. I.e., if genes are
+      // Handle coalescence of individuals on gene tree. I.e., if genes are
       // merging at the same time, consider this event being part of the
       // coalescence. If, on the other hand, they do not join, a loss must have
-      // happend.
+      // happened (and also a duplication at a previous time point). Here we
+      // assume that the tree BIFURCATING.
       size_t left_index  = individual_node.getChild(0).getIndex();
       size_t right_index = individual_node.getChild(1).getIndex();
       std::set< const TopologyNode* > &genes_for_this_individual = genes_per_branch_recent[ individual_node.getIndex() ];
       const std::set< const TopologyNode* > &genes_for_left_descendant  = genes_per_branch_ancient[ left_index ];
-      //        const std::set< const TopologyNode* > &genes_for_right_descendant = genes_per_branch_ancient[ right_index ];
       for (std::set<const TopologyNode*>::iterator it=genes_for_this_individual.begin(); it!=genes_for_this_individual.end(); ++it)
         {
           const TopologyNode *this_gene_node = *it;
           double this_age = this_gene_node->getParent().getAge();
-          if ( fabs( this_age - individual_age) < 1E-10 )
+          if ( fabs( this_age - individual_age) < EPS_COAL )
             {
               // Coalescent event; likelihood unchanged.
             }
@@ -371,8 +387,8 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
   // 2. Handle branch attached to node.
 
   // Create a local copy of the genes per branch.
-  // initial_genes   :: Genes present at the bottom of the branch (more recent to the precent).
-  // remaining_genes :: Genes that remain at the top of the individual branch (may be less because of duplication events).
+  // initial_genes   :: Genes present at the bottom of the branch (more recent to the present, 'genes_per_branch_recent').
+  // remaining_genes :: Genes that remain at the top of the individual branch (may be less because of duplication events, will be 'genes_per_branch_ancient').
   const std::set<const TopologyNode*> &initial_genes = genes_per_branch_recent[individual_node.getIndex()];
   std::set<const TopologyNode*> remaining_genes = initial_genes;
 
@@ -382,20 +398,22 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
   std::map<double, const TopologyNode *> branching_times_to_nodes;
   for ( std::set<const TopologyNode*>::iterator it = initial_genes.begin(); it != initial_genes.end(); ++it)
     {
-      const TopologyNode *ind = (*it);
-      if ( ! ind->isRoot() )
-        // Add the previous (earlier) coalescence of the individual branch.
+      const TopologyNode *gene = (*it);
+      if ( ! gene->isRoot() )
+        // Add the previous branching event on the gene tree.
         {
-          const TopologyNode &parent = ind->getParent();
+          const TopologyNode &parent = gene->getParent();
           double parent_age = parent.getAge();
           branching_times_to_nodes[ parent_age ] = &parent;
         }
     }
   double current_time = individual_age;
-  // Iteration ends at the previous (earlier)coalescence of the individual
-  // branch (or when there are no more branching events).
+  // Iteration ends at the previous coalescence of the individual branch (or
+  // when there are no more branching events).
   while ( current_time < parent_individual_age && branching_times_to_nodes.size() > 0 )
     {
+      // Maps are sorted by their key, so this will give as the next branching
+      // event up on the gene tree.
       const TopologyNode *parent = branching_times_to_nodes.begin()->second;
       double parent_age = parent->getAge();
       current_time = parent_age;
@@ -418,13 +436,14 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
 
           // Insert the parent into vector of genes in this branch.
           remaining_genes.insert( parent );
-         // TODO @Dominik. Why do we bother about the grandparent here?
-          if ( ! parent->isRoot() )
-            {
-              const TopologyNode *grand_parent = &parent->getParent();
-              branching_times_to_nodes[ grand_parent->getAge() ] = grand_parent;
-            }
-          if ( fabs( parent_age - individual_age) > 1E-10 )
+         // // TODO @Dominik. Why do we bother about the grandparent here?
+         //  if ( ! parent->isRoot() )
+         //    {
+         //      const TopologyNode *grand_parent = &parent->getParent();
+         //      branching_times_to_nodes[ grand_parent->getAge() ] = grand_parent;
+         //    }
+          if ( (fabs( parent_age - individual_age) > EPS_COAL) &&       // The branching event didn't happen close to the bottom of the individual branch (which would be a coalescence).
+               (fabs( parent_age - parent_individual_age) > EPS_COAL) ) // Nor did it happen close to the top of the individual branch (which would also be a coalescence).
             {
               duplication_times.push_back( parent_age );
             }
@@ -436,20 +455,21 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
     }
 
   // TODO @Dominik. What about one gene? Don't we also need to take the probability into account?
-  if ( initial_genes.size() > 1 )
+  // if ( initial_genes.size() > 1 )
+  if ( initial_genes.size() >= 1 )
       ln_prob_dupl_loss += computeLnDuplicationLossProbability(initial_genes.size(), duplication_times, individual_age, parent_individual_age, individual_node.getIndex(), individual_node.isRoot());
 
-  // Merge the two sets of individuals that go into the next species.
+  // Merge the two sets of genes that go into the next individual.
   if ( ! individual_node.isRoot() )
     {
-      std::set<const TopologyNode *> &genes = genes_per_branch_recent[ individual_node.getParent().getIndex() ];
-      // Do not clear the genes here, because both daughter branches will insert genes.
-      genes.insert( remaining_genes.begin(), remaining_genes.end());
+      std::set<const TopologyNode *> &genes_parent_branch_recent = genes_per_branch_recent[ individual_node.getParent().getIndex() ];
+      // Do not clear the genes here, because both daughter branches will insert genes and the other branch may already have inserted its genes.
+      genes_parent_branch_recent.insert( remaining_genes.begin(), remaining_genes.end());
     }
 
-  std::set<const TopologyNode *> &outgoing_genes = genes_per_branch_ancient[ individual_node.getIndex() ];
-  outgoing_genes.clear();
-  outgoing_genes.insert( remaining_genes.begin(), remaining_genes.end());
+  std::set<const TopologyNode *> &genes_this_branch_ancient = genes_per_branch_ancient[ individual_node.getIndex() ];
+  genes_this_branch_ancient.clear();
+  genes_this_branch_ancient.insert( remaining_genes.begin(), remaining_genes.end());
 
   return ln_prob_dupl_loss;
 }
