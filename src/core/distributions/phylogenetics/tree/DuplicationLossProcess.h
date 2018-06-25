@@ -54,6 +54,7 @@ namespace RevBayesCore {
     void                                                resetTipAllocations(void);
     void                                                simulateTree(void);
     void                                                simulateTreeRejectionSampling(void);
+    void                                                recursivelySimulateTreeForward(double age_begin, const TopologyNode *i_node, std::vector<TopologyNode *> genes);
 
     // members
     std::vector<Taxon>                                  taxa;

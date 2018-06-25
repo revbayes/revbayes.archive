@@ -594,14 +594,15 @@ void DuplicationLossProcess::setGeneSamplingProbability(TypedDagNode<RbVector<do
 
 }
 
-// time_begin :: Age at the top of the considered branch.
-// i_node :: Pointer to individual node at the bottom of the branch.
-// genes  :: A vector of pointers to the gene nodes at the top of the branch.
-// nodes_to_ages :: A map from nodes to ages on the gene tree.
-void simulateTreeForward(double age_begin, const TopologyNode *i_node, std::vector<TopologyNode *> genes, double la, double mu) {
+// age_begin :: Age at the top of the considered branch.
+// i_node    :: Pointer to individual node at the bottom of the branch.
+// genes     :: A vector of pointers to the gene nodes at the top of the branch.
+void DuplicationLossProcess::recursivelySimulateTreeForward(double age_begin, const TopologyNode *i_node, std::vector<TopologyNode *> genes) {
   RandomNumberGenerator* rng = GLOBAL_RNG;
   double age_end = i_node->getAge();
-  double ra = la + mu;
+  const double la = duplication_rate->getValue();
+  const double mu = loss_rate->getValue();
+  const double ra = la + mu;
 
   // Handle branch.
   double current_age = age_begin;
@@ -635,7 +636,7 @@ void simulateTreeForward(double age_begin, const TopologyNode *i_node, std::vect
       genes.push_back(right);
     }
     else {
-      // An extinction. Gene has already been removed.
+      // An extinction. Gene has already been removed from vector.
     }
   }
 
@@ -660,20 +661,23 @@ void simulateTreeForward(double age_begin, const TopologyNode *i_node, std::vect
     // Handle next coalescence.
     const TopologyNode *i_left = &(i_node->getChild(0));
     const TopologyNode *i_right = &(i_node->getChild(1));
-    simulateTreeForward(age_end, i_left, genes_left, la, mu);
-    simulateTreeForward(age_end, i_right, genes_right, la, mu);
+    recursivelySimulateTreeForward(age_end, i_left, genes_left);
+    recursivelySimulateTreeForward(age_end, i_right, genes_right);
   }
   else {
-    double age = i_node->getAge();
     // Handle tip.
+    double age = i_node->getAge();
+    if (age != 0.0) throw RbException("Uhh, call a maintainer.");
     for (std::vector<TopologyNode *>::iterator it = genes.begin(); it != genes.end(); it++) {
       TopologyNode *g_node = *it;
       g_node->setAge(age);
     }
+    // Set the extant genes (genes_per_branch_recent) at extant branches.
+    // std::vector< std::set< const TopologyNode* > > genes_per_branch_recent;
+    genes_per_branch_recent[i_node->getIndex()].insert( genes.begin(), genes.end());
     return;
   }
   return;
-  // throw RbException("Ups, contact maintainer.");
 }
 
 // For a given individual tree, walk down from the root and simulate a birth and
@@ -682,25 +686,20 @@ void simulateTreeForward(double age_begin, const TopologyNode *i_node, std::vect
 // likely take a looong time.
 void DuplicationLossProcess::simulateTreeRejectionSampling(void)
 {
-  // TODO @Dominik. Genes recent have to be assigned at tips.
-
-  const double la = duplication_rate->getValue();
-  const double mu = loss_rate->getValue();
-
   const Tree &ind = individual_tree->getValue();
-  const std::vector< TopologyNode* > &individual_tree_nodes = ind.getNodes();
 
-  // TODO: Do I need this?
-  // Create a map from individual names to the nodes of the individual tree.
-  std::map<std::string, TopologyNode * > individual_names_to_nodes;
-  for (std::vector< TopologyNode *>::const_iterator it = individual_tree_nodes.begin(); it != individual_tree_nodes.end(); ++it)
-    {
-      if ( (*it)->isTip() == true )
-        {
-          const std::string &name = (*it)->getName();
-          individual_names_to_nodes[name] = *it;
-        }
-    }
+  // // TODO: Do I need this?
+  // const std::vector< TopologyNode* > &individual_tree_nodes = ind.getNodes();
+  // // Create a map from individual names to the nodes of the individual tree.
+  // std::map<std::string, TopologyNode * > individual_names_to_nodes;
+  // for (std::vector< TopologyNode *>::const_iterator it = individual_tree_nodes.begin(); it != individual_tree_nodes.end(); ++it)
+  //   {
+  //     if ( (*it)->isTip() == true )
+  //       {
+  //         const std::string &name = (*it)->getName();
+  //         individual_names_to_nodes[name] = *it;
+  //       }
+  //   }
 
   // A map from an individual node to the genes that are present at that node.
   std::map< const TopologyNode *, std::vector< TopologyNode* > > genes_per_branch;
@@ -733,7 +732,7 @@ void DuplicationLossProcess::simulateTreeRejectionSampling(void)
     const TopologyNode *i_root = &ind.getRoot();
     double root_age = i_root->getAge();
     root->setAge(root_age);
-    simulateTreeForward(root_age, i_root, genes, la, mu);
+    recursivelySimulateTreeForward(root_age, i_root, genes);
 
     // Create the tree object.
     psi = new Tree();
