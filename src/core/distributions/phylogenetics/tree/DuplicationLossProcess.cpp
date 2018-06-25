@@ -195,6 +195,7 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
       // What happens when we are at the root? dt=inf -> D=0 -> log(D)=-inf; certainly not what we want.
       // throw std::exception("At root, should we handle this in a special way?");
       // Assume that we are done.
+      // TODO @Sebastian. Is this OK?
       return ln_prob;
     }
   else
@@ -601,154 +602,151 @@ void DuplicationLossProcess::setGeneSamplingProbability(TypedDagNode<RbVector<do
 
 void DuplicationLossProcess::simulateTree( void )
 {
-  // I guess.
+  RandomNumberGenerator* rng = GLOBAL_RNG;
 
-    // TODO @Dominik. Need to implement a correct way to simulate the gene-tree under the process.
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-
-    // TODO: species -> individual.
-    const Tree &sp = individual_tree->getValue();
-    const std::vector< TopologyNode* > &species_tree_nodes = sp.getNodes();
-    // first let's create a map from species names to the nodes of the species tree
-    std::map<std::string, TopologyNode * > species_names_2_nodes;
-    for (std::vector< TopologyNode *>::const_iterator it = species_tree_nodes.begin(); it != species_tree_nodes.end(); ++it)
+  // TODO: species -> individual.
+  const Tree &sp = individual_tree->getValue();
+  const std::vector< TopologyNode* > &species_tree_nodes = sp.getNodes();
+  // first let's create a map from species names to the nodes of the species tree
+  std::map<std::string, TopologyNode * > species_names_2_nodes;
+  for (std::vector< TopologyNode *>::const_iterator it = species_tree_nodes.begin(); it != species_tree_nodes.end(); ++it)
     {
-        if ( (*it)->isTip() == true )
+      if ( (*it)->isTip() == true )
         {
-            const std::string &name = (*it)->getName();
-            species_names_2_nodes[name] = *it;
+          const std::string &name = (*it)->getName();
+          species_names_2_nodes[name] = *it;
         }
     }
 
 
-    std::map< const TopologyNode *, std::vector< TopologyNode* > > individuals_per_branch;
+  std::map< const TopologyNode *, std::vector< TopologyNode* > > individuals_per_branch;
 
-    for (std::vector< Taxon >::iterator it = taxa.begin(); it != taxa.end(); ++it)
+  for (std::vector< Taxon >::iterator it = taxa.begin(); it != taxa.end(); ++it)
     {
-        TopologyNode *n = new TopologyNode( *it );
-        const std::string &species_name = n->getSpeciesName();
+      TopologyNode *n = new TopologyNode( *it );
+      const std::string &species_name = n->getSpeciesName();
 
-        if ( species_name == "" )
+      if ( species_name == "" )
         {
-            throw RbException("Cannot match a taxon without species to a tip in the species tree. The taxon map is probably wrong.");
+          throw RbException("Cannot match a taxon without species to a tip in the species tree. The taxon map is probably wrong.");
         }
 
-        TopologyNode *species_node = species_names_2_nodes[species_name];
+      TopologyNode *species_node = species_names_2_nodes[species_name];
 
-        if ( species_node == NULL )
+      if ( species_node == NULL )
         {
-            throw RbException("Could not match a taxon with name" + species_name + " to any of the tips in the species tree.");
+          throw RbException("Could not match a taxon with name" + species_name + " to any of the tips in the species tree.");
         }
 
-        n->setAge( 0.0 );
-        std::vector< TopologyNode * > &nodes_at_node = individuals_per_branch[ species_node ];
-        nodes_at_node.push_back( n );
+      n->setAge( 0.0 );
+      std::vector< TopologyNode * > &nodes_at_node = individuals_per_branch[ species_node ];
+      nodes_at_node.push_back( n );
     }
 
 
-    /*   for (std::map<std::string,std::string>::iterator it = gene2species.begin(); it != gene2species.end(); ++it)
-     {
-     const std::string &tipName = it->first;
-     TopologyNode *n = new TopologyNode( tipName );
-     const std::string &speciesName = it->second;
-     TopologyNode *speciesNode = speciesNames2Nodes[speciesName];
-     std::vector< TopologyNode * > &nodesAtNode = individualsPerBranch[ speciesNode ];
-     nodesAtNode.push_back( n );
-     }
-     */
+  /*   for (std::map<std::string,std::string>::iterator it = gene2species.begin(); it != gene2species.end(); ++it)
+       {
+       const std::string &tipName = it->first;
+       TopologyNode *n = new TopologyNode( tipName );
+       const std::string &speciesName = it->second;
+       TopologyNode *speciesNode = speciesNames2Nodes[speciesName];
+       std::vector< TopologyNode * > &nodesAtNode = individualsPerBranch[ speciesNode ];
+       nodesAtNode.push_back( n );
+       }
+  */
 
-    std::map<TopologyNode *, double> nodes_2_ages;
-    TopologyNode *root = NULL;
-    // we loop over the nodes of the species tree in phylogenetic traversal
-    for (std::vector<TopologyNode *>::const_iterator it = species_tree_nodes.begin(); it != species_tree_nodes.end(); ++it)
+  std::map<TopologyNode *, double> nodes_2_ages;
+  TopologyNode *root = NULL;
+  // we loop over the nodes of the species tree in phylogenetic traversal
+  for (std::vector<TopologyNode *>::const_iterator it = species_tree_nodes.begin(); it != species_tree_nodes.end(); ++it)
     {
-        TopologyNode *sp_node = *it;
-        const TopologyNode *sp_parent_node = NULL;
-        double branch_length = RbConstants::Double::inf;
-        if ( sp_node->isRoot() == false )
+      TopologyNode *sp_node = *it;
+      const TopologyNode *sp_parent_node = NULL;
+      double branch_length = RbConstants::Double::inf;
+      if ( sp_node->isRoot() == false )
         {
-            sp_parent_node = &sp_node->getParent();
-            branch_length = sp_parent_node->getAge() - sp_node->getAge();
+          sp_parent_node = &sp_node->getParent();
+          branch_length = sp_parent_node->getAge() - sp_node->getAge();
         }
 
-        std::vector<TopologyNode*> initial_individuals_at_branch = individuals_per_branch[sp_node];
-        double branch_ne = 1.0;
+      std::vector<TopologyNode*> initial_individuals_at_branch = individuals_per_branch[sp_node];
+      double branch_ne = 1.0;
 
-        double theta = 1.0 / branch_ne;
+      double theta = 1.0 / branch_ne;
 
-        double prev_coalescent_time = 0.0;
+      double prev_coalescent_time = 0.0;
 
-        size_t j = initial_individuals_at_branch.size();
-        double n_pairs = j * (j-1) / 2.0;
-        double lambda = n_pairs * theta;
-        double u = RbStatistics::Exponential::rv( lambda, *rng);
-        double next_coalescent_time = prev_coalescent_time + u;
+      size_t j = initial_individuals_at_branch.size();
+      double n_pairs = j * (j-1) / 2.0;
+      double lambda = n_pairs * theta;
+      double u = RbStatistics::Exponential::rv( lambda, *rng);
+      double next_coalescent_time = prev_coalescent_time + u;
 
-        while ( next_coalescent_time < branch_length && j > 1 )
+      while ( next_coalescent_time < branch_length && j > 1 )
         {
-            // randomly coalesce two lineages
-            size_t index = static_cast<size_t>( floor(rng->uniform01()*initial_individuals_at_branch.size()) );
-            TopologyNode *left = initial_individuals_at_branch[index];
-            initial_individuals_at_branch.erase( initial_individuals_at_branch.begin() + index);
+          // randomly coalesce two lineages
+          size_t index = static_cast<size_t>( floor(rng->uniform01()*initial_individuals_at_branch.size()) );
+          TopologyNode *left = initial_individuals_at_branch[index];
+          initial_individuals_at_branch.erase( initial_individuals_at_branch.begin() + index);
 
-            index = static_cast<size_t>( floor(rng->uniform01()*initial_individuals_at_branch.size()) );
-            TopologyNode *right = initial_individuals_at_branch[index];
-            initial_individuals_at_branch.erase( initial_individuals_at_branch.begin() + index);
+          index = static_cast<size_t>( floor(rng->uniform01()*initial_individuals_at_branch.size()) );
+          TopologyNode *right = initial_individuals_at_branch[index];
+          initial_individuals_at_branch.erase( initial_individuals_at_branch.begin() + index);
 
-            TopologyNode *new_parent = new TopologyNode();
-            new_parent->addChild(left);
-            left->setParent(new_parent);
-            new_parent->addChild(right);
-            right->setParent(new_parent);
+          TopologyNode *new_parent = new TopologyNode();
+          new_parent->addChild(left);
+          left->setParent(new_parent);
+          new_parent->addChild(right);
+          right->setParent(new_parent);
 
-            root = new_parent;
+          root = new_parent;
 
-            if ( root == NULL )
+          if ( root == NULL )
             {
-                std::cerr << "Oh, the root is NULL :(" << std::endl;
+              std::cerr << "Oh, the root is NULL :(" << std::endl;
             }
 
-            initial_individuals_at_branch.push_back( new_parent );
+          initial_individuals_at_branch.push_back( new_parent );
 
-            nodes_2_ages[new_parent] = next_coalescent_time + sp_node->getAge();
+          nodes_2_ages[new_parent] = next_coalescent_time + sp_node->getAge();
 
 
-            prev_coalescent_time = next_coalescent_time;
-            j--;
-            n_pairs = j * (j-1) / 2.0;
-            lambda = n_pairs * theta ;
-            u = RbStatistics::Exponential::rv( lambda, *rng);
-            next_coalescent_time = prev_coalescent_time + u;
+          prev_coalescent_time = next_coalescent_time;
+          j--;
+          n_pairs = j * (j-1) / 2.0;
+          lambda = n_pairs * theta ;
+          u = RbStatistics::Exponential::rv( lambda, *rng);
+          next_coalescent_time = prev_coalescent_time + u;
         }
 
-        if ( sp_parent_node != NULL )
+      if ( sp_parent_node != NULL )
         {
-            std::vector<TopologyNode *> &incoming_lineages = individuals_per_branch[sp_parent_node];
-            incoming_lineages.insert(incoming_lineages.end(), initial_individuals_at_branch.begin(), initial_individuals_at_branch.end());
+          std::vector<TopologyNode *> &incoming_lineages = individuals_per_branch[sp_parent_node];
+          incoming_lineages.insert(incoming_lineages.end(), initial_individuals_at_branch.begin(), initial_individuals_at_branch.end());
         }
 
 
     }
 
-    // the time tree object (topology + times)
-    Tree *psi = new Tree();
+  // the time tree object (topology + times)
+  Tree *psi = new Tree();
 
-    // internally we treat unrooted topologies the same as rooted
-    psi->setRooted( true );
+  // internally we treat unrooted topologies the same as rooted
+  psi->setRooted( true );
 
-    // initialize the topology by setting the root
-    psi->setRoot(root, true);
+  // initialize the topology by setting the root
+  psi->setRoot(root, true);
 
-    for ( std::map<TopologyNode*, double>::iterator it = nodes_2_ages.begin(); it != nodes_2_ages.end(); ++it)
+  for ( std::map<TopologyNode*, double>::iterator it = nodes_2_ages.begin(); it != nodes_2_ages.end(); ++it)
     {
-        TopologyNode *node = it->first;
-        node->setAge( it->second );
+      TopologyNode *node = it->first;
+      node->setAge( it->second );
     }
 
-    // finally store the new value
-    value = psi;
+  // finally store the new value
+  value = psi;
 
-    resetTipAllocations();
+  resetTipAllocations();
 }
 
 
