@@ -7,7 +7,7 @@
 //
 
 #include "Func_stateCountRateModifier.h"
-#include "stateCountRateModifierFunction.h"
+#include "StateCountRateModifierFunction.h"
 #include "CharacterHistoryRateModifier.h"
 #include "ModelVector.h"
 #include "RbVector.h"
