@@ -722,10 +722,14 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
 }
 
 
-void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::vector<BranchHistory*>& histories,
+std::string DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::vector<BranchHistory*>& histories,
                                                                           size_t node_index, size_t left_index, size_t right_index) const
-                                                                          
+
 {
+    
+    // what we will return
+    std::string clado_state = "";
+    
     // get the information from the arguments for reading the file
     const std::vector<double>& ep = eventProbs->getValue();
     
@@ -772,12 +776,15 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
     
     // sample cladogenetic state
     if (node_child_on.size() == 0) {
+        clado_state = "null_copy";
+
         ; // do nothing
     }
     else if ( node_child_on.size() == 1) {
         size_t s = node_child_on[0];
         static_cast<CharacterEventDiscrete*>( leftParentState[s] )->setState(1);
         static_cast<CharacterEventDiscrete*>( rightParentState[s] )->setState(1);
+        clado_state = "sympatry_copy";
     }
     else
     {
@@ -809,6 +816,8 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
                 }
             }
             
+            clado_state = "sympatry_subset";
+            
         }
         else if (event_type == "a")
         {
@@ -834,6 +843,7 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
                     static_cast<CharacterEventDiscrete*>( rightParentState[ j ] )->setState(1);
                 }
             }
+            clado_state = "allopatry";
         }
         else if (event_type == "j")
         {
@@ -862,6 +872,7 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
                     static_cast<CharacterEventDiscrete*>( rightParentState[ *it ] )->setState(1);
                 }
             }
+            clado_state = "jump_dispersal";
 
         }
         else
@@ -871,36 +882,7 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
         }
     }
     
-//    std::cout << "nodeChildState   : ";
-//    for (size_t i = 0; i < nodeChildState.size(); i++)
-//    {
-//        std::cout << static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
-//    }
-//    std::cout << "\n";
-//    
-//    std::cout << "leftParentState  : ";
-//    for (size_t i = 0; i < leftParentState.size(); i++)
-//    {
-//        std::cout << static_cast<CharacterEventDiscrete*>(leftParentState[i])->getState();
-//    }
-//    std::cout << "\n";
-//    
-//    
-//    std::cout << "rightParentState : ";
-//    for (size_t i = 0; i < rightParentState.size(); i++)
-//    {
-//        std::cout << static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
-//    }
-//    std::cout << "\n";
-
-
-    return;
-    // update histories element?
-    // get ranges
-//    std::vector<CharacterEvent*>& nodeChildState = histories[ node_index ]->getChildCharacters();
-//    std::vector<CharacterEvent*>& leftParentState = histories[ left_index ]->getParentCharacters();
-//    std::vector<CharacterEvent*>& rightParentState = histories[ right_index ]->getParentCharacters();
-
+    return clado_state;
     
 }
 
