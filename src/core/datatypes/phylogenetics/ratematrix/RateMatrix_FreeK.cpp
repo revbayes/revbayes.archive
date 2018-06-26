@@ -86,14 +86,15 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r, std::string method) : Gener
 
 
 /** Copy constructor */
-RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m ),
-    singleStepMatrix(num_states)
+RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m )
 {
     
     rescale               = m.rescale;
     my_method             = m.my_method;
     
-    matrixProducts        = new std::vector<MatrixReal>();
+    matrixProducts        = new std::vector<MatrixReal>( *m.matrixProducts );
+    singleStepMatrix      = m.singleStepMatrix;
+    maxRate               = m.maxRate;
     
     theEigenSystem        = new EigenSystem( *m.theEigenSystem );
     c_ijk                 = m.c_ijk;
@@ -120,6 +121,14 @@ RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
         GeneralRateMatrix::operator=( r );
        
         delete theEigenSystem;
+        delete matrixProducts;
+        
+        rescale               = r.rescale;
+        my_method             = r.my_method;
+        
+        matrixProducts        = new std::vector<MatrixReal>( *r.matrixProducts );
+        singleStepMatrix      = r.singleStepMatrix;
+        maxRate               = r.maxRate;
         
         theEigenSystem       = new EigenSystem( *r.theEigenSystem );
         c_ijk                = r.c_ijk;
@@ -130,6 +139,21 @@ RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
     }
     
     return *this;
+}
+
+
+RateMatrix_FreeK& RateMatrix_FreeK::assign(const Assignable &m)
+{
+    const RateMatrix_FreeK *rm = dynamic_cast<const RateMatrix_FreeK*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
+    
 }
 
 
@@ -218,32 +242,37 @@ void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double 
 }
 
 
-void RateMatrix_FreeK::checkMatrixIrreducible(double tolerance, TransitionProbabilityMatrix &P)const
+void RateMatrix_FreeK::checkMatrixIrreducible(double tolerance, TransitionProbabilityMatrix &P) const
 {
     // check if the Q matrix is irreducible by checking if there is any element in the P matrix
-    // that is smaller than some prior specified tolerance
+    // that is smaller than some specified tolerance
     // and if that's the case, fill in the P matrix with all zeros
     // so that the current proposal will certainly get rejected
     // here we assume that all the states in the Q matrix exist in the observed data
     bool irreducible = true;
     
-    for (size_t i=0; i<num_states-1; ++i)
+    for (size_t i = 0; i < num_states - 1; ++i)
     {
-        for (size_t j=i+1; j<num_states; ++j)
+        for (size_t j = i + 1; j < num_states; ++j)
         {
             if (P[i][j] < tolerance && P[j][i] < tolerance)
             {
                 irreducible = false;
+                break;
             }
+        }
+        if (irreducible == false)
+        {
+            break;
         }
     }
     
     if (irreducible == false)
     {
-        for (size_t i=0; i<num_states; ++i)
+        for (size_t i = 0; i < num_states; ++i)
         {
             P[i][i] = 1.0;
-            for (size_t j=i+1; j<num_states; ++j)
+            for (size_t j = i + 1; j < num_states; ++j)
             {
                 P[i][j] = 0.0;
                 P[j][i] = 0.0;
@@ -526,8 +555,8 @@ void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
         
     }
     
-    double tol = RbSettings::userSettings().getTolerance();
-    checkMatrixIrreducible(tol, P);
+//    double tol = RbSettings::userSettings().getTolerance();
+//    checkMatrixIrreducible(tol, P);
 
 }
 
@@ -564,8 +593,8 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
         }
     }
     
-    double tol = RbSettings::userSettings().getTolerance();
-    checkMatrixIrreducible(tol, P);
+//    double tol = RbSettings::userSettings().getTolerance();
+//    checkMatrixIrreducible(tol, P);
     
 }
 
@@ -611,8 +640,12 @@ void RateMatrix_FreeK::tiProbsScalingAndSquaring(double t, TransitionProbability
             P[i][j] = (result[i][j] < 0.0) ? 0.0 : result[i][j];
         }
     }
-    
-    checkMatrixIrreducible(tol, P);
+
+// Probably we should not make the assumption that the Q matrix should be irreducible as the probability could still be positive
+// under reducible Q matrix if not all the states of the Q matrix appear at the tip, so it probably makes more sense just let 
+// the likelihood take care of the reducibility, despite of the somewhat tiny possibility of numerical instability.
+// Jiansi Gao 06/22/2018   
+//    checkMatrixIrreducible(tol, P);
 
 }
 
@@ -663,7 +696,7 @@ void RateMatrix_FreeK::tiProbsUniformization(double t, TransitionProbabilityMatr
         }
     }
     
-    checkMatrixIrreducible(tol, P);
+//    checkMatrixIrreducible(tol, P);
     
 }
 

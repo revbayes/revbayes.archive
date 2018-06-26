@@ -224,7 +224,7 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
     // Run slice loop (Murray steps 4-10, with automatic termination after 200 steps)
     std::vector<double> f_prime = std::vector<double>(variables.size(),0.0);
     size_t loop_iterations = 0;
-    for (size_t i=0;i<200;++i)
+    for (size_t i=0;i<1000;++i)
     {
         ++loop_iterations;
         // step 4
@@ -254,8 +254,8 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
         cos_theta = std::cos(theta);
     }
     
-    if ( loop_iterations == 200 ) {
-        std::abort();
+    if ( loop_iterations == 1000 ) {
+        throw(RbException("mvEllipticalSliceSamplingSimple has iterated 1000 times without success. This should not be possible, something may be wrong."));
     }
         
     total_movement += cos_theta;
