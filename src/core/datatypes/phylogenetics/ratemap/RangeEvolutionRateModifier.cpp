@@ -13,7 +13,7 @@ RangeEvolutionRateModifier::RangeEvolutionRateModifier(size_t nc) : CharacterHis
     loss_factor(0.0),
     context_matrix( std::vector<std::vector<adjacency> >() ),
     forbid_extinction(true),
-    is_null_range_absorbing(!true)
+    is_null_range_absorbing(true)
 {
     ;
 }
@@ -23,10 +23,10 @@ RangeEvolutionRateModifier::RangeEvolutionRateModifier(const RangeEvolutionRateM
     
     if (&g != this)
     {
-        gain_factor       = g.gain_factor;
-        loss_factor       = g.loss_factor;
-        context_matrix    = g.context_matrix;
-        forbid_extinction = g.forbid_extinction;
+        gain_factor                = g.gain_factor;
+        loss_factor                = g.loss_factor;
+        context_matrix             = g.context_matrix;
+        forbid_extinction          = g.forbid_extinction;
         is_null_range_absorbing    = g.is_null_range_absorbing;
     }
 }
@@ -64,7 +64,6 @@ double RangeEvolutionRateModifier::computeRateMultiplier(std::vector<CharacterEv
         else
         {
             r = 1.0;
-//            r = 1 * exp( - ratio );
             return r;
         }
     }
