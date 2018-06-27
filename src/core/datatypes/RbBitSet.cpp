@@ -204,7 +204,9 @@ void RbBitSet::set(size_t i)
 
     if ( i >= value.size() )
     {
-        throw RbException("Index out of bounds in bitset. This will likely cause unexpected behavior.");
+        std::ostringstream ss;
+        ss << i;
+        throw RbException("Index " + ss.str() +" out of bounds in bitset. This will likely cause unexpected behavior.");
     }
 
     if (value[i] == false)
