@@ -17,6 +17,8 @@
 
 seed(12345)
 
+my_rv = rnorm(1,0,1)[1]
+print("1. my_rv = " + my_rv)
 
 # helper vars
 mvi = 1
@@ -80,6 +82,8 @@ P_seq := fnDECCladoProbs( numCharacters=n_chars,
                           eventProbs=event_probs,
                           eventTypes=event_types )
 
+my_rv = rnorm(1,0,1)[1]
+print("2. my_rv = " + my_rv)
 
 # character evolution
 seq ~ dnPhyloCTMCDASequence(tree=phy,
@@ -89,13 +93,23 @@ seq ~ dnPhyloCTMCDASequence(tree=phy,
                             type="Standard",
                             nSites=n_chars)
 
-# sample histories
-mv[mvi++] = mvCharacterHistory(ctmc=seq, qmap_seq=Q_seq, graph="cladogenetic", proposal="rejection", weight=1, lambda=1.0, tuneTarget=0.3)
-
+my_rv = rnorm(1,0,1)[1]
+print("3. my_rv = " + my_rv)
 
 # read and clamp data
 dat_sim = readDiscreteCharacterData(biogeo_fn)
 seq.clamp(dat_sim)
+
+my_rv = rnorm(1,0,1)[1]
+print("4. my_rv = " + my_rv)
+
+# sample histories
+mv[mvi++] = mvCharacterHistory(ctmc=seq, qmap_seq=Q_seq, graph="cladogenetic", proposal="rejection", weight=1, lambda=1.0, tuneTarget=0.3)
+
+
+my_rv = rnorm(1,0,1)[1]
+print("5. my_rv = " + my_rv)
+
 
 # monitors
 mn[mni++] = mnScreen(clock_biogeo, printgen=sample_freq)
@@ -109,11 +123,20 @@ mn[mni++] = mnCharHistoryNewick(filename="output/mcmc_DEC_DA.ch.tre",
 # model
 mdl = model(phy)
 
+my_rv = rnorm(1,0,1)[1]
+print("6. my_rv = " + my_rv)
+
 # mcmc
 ch = mcmc(mv, mn, mdl)
 
+my_rv = rnorm(1,0,1)[1]
+print("7. my_rv = " + my_rv)
+
 # run
 ch.run(n_gens)
+
+my_rv = rnorm(1,0,1)[1]
+print("8. my_rv = " + my_rv)
 
 # done
 quit()
