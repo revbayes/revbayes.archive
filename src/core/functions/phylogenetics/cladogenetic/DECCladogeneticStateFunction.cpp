@@ -730,21 +730,24 @@ std::string DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState
     // what we will return
     std::string clado_state = "";
     
-    // get the information from the arguments for reading the file
+    // get containers for probabilities
     const std::vector<double>& ep = eventProbs->getValue();
-    
-    // get the probability for each clado event type
-    std::map<std::string, double> probs;
-    
+    std::vector<double> probs(numEventTypes, 0.0);
+
+    // sample cladogenetic state
     double u = GLOBAL_RNG->uniform01();
     std::string event_type = "";
     for (size_t i = 0; i < eventTypes.size(); i++)
     {
         event_type = eventTypes[i];
-        std::map<std::string, unsigned>::const_iterator it = eventStringToStateMap.find( eventTypes[i] );
-        probs[ event_type ] = ep[ it->second ];
-        u -= probs[ eventTypes[i] ];
-        if (u <= 0.0)
+        std::map<std::string, unsigned>::const_iterator it = eventStringToStateMap.find( event_type );
+        if (it == eventStringToStateMap.end()) {
+            throw RbException("can't find clado event type");
+        }
+        unsigned clado_idx = it->second;
+        probs[clado_idx] = ep[i];
+        u -= probs[clado_idx];
+        if (u < 0.0)
         {
             break;
         }
