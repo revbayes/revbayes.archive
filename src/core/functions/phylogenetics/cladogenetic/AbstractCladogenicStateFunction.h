@@ -27,8 +27,8 @@ namespace RevBayesCore {
                                                                       size_t node_index,
                                                                       size_t left_index,
                                                                       size_t right_index ) const { return 0.0; };
-        virtual void simulateDataAugmentedCladogeneticState(std::vector<BranchHistory*>& histories,
-                                                            size_t node_index, size_t left_index, size_t right_index) const { return; };
+        virtual std::string simulateDataAugmentedCladogeneticState(std::vector<BranchHistory*>& histories,
+                                                            size_t node_index, size_t left_index, size_t right_index) const { return ""; };
 //                std::map< std::vector<unsigned>, double >                       getEventMap(double t=0.0);
 //                const std::map< std::vector<unsigned>, double >&                getEventMap(double t=0.0) const;
 //        virtual std::vector<std::map< std::vector<unsigned>, double > >&        getEventMap(void) = 0;

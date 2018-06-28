@@ -93,6 +93,7 @@ namespace RevBayesCore {
 
         bool                                                        useTail;
         bool                                                        node_assigned;
+        bool                                                        sampled_characters_assigned;
         double                                                      lambda;
         std::set<size_t>                                            sampledCharacters;
         std::set<size_t>                                            allCharacters;
@@ -119,6 +120,7 @@ RevBayesCore::PathRejectionSampleProposal<charType>::PathRejectionSampleProposal
     numCharacters(n->getValue().getNumberOfCharacters()),
     useTail(ut),
     node_assigned(false),
+    sampled_characters_assigned(false),
     lambda(l)
 {
 
@@ -171,6 +173,9 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::cleanProposal( void )
 
     storedHistory.clear();
     sampledCharacters.clear();
+    
+    sampled_characters_assigned = false;
+    node_assigned = false;
 
 }
 
@@ -312,7 +317,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
     for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
     {
         size_t site_index = *it_s;
-        std::set<CharacterEvent*> tmpHistory;
+        std::set<CharacterEvent*,CharacterEventCompare> tmpHistory;
         size_t currState = static_cast<CharacterEventDiscrete*>(parent_states[site_index])->getState();
         size_t endState  = static_cast<CharacterEventDiscrete*>(child_states[site_index])->getState();
         do
@@ -363,7 +368,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                 }
                 else if (currState != endState)
                 {
-                    for (std::set<CharacterEvent*>::reverse_iterator it_h = tmpHistory.rbegin(); it_h != tmpHistory.rend(); it_h++)
+                    for (std::set<CharacterEvent*,CharacterEventCompare>::reverse_iterator it_h = tmpHistory.rbegin(); it_h != tmpHistory.rend(); it_h++)
                     {
                         delete *it_h;
                     }
@@ -375,7 +380,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
         }
         while (currState != endState);
         
-        for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
+        for (std::set<CharacterEvent*,CharacterEventCompare>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
         {
             proposed_histories.insert(*it);
         }
@@ -472,7 +477,9 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::prepareProposal( void 
     storedHistory = history;
 
     // determine sampled characters
-    sampledCharacters = sampleCharacters(lambda);
+    if (!sampled_characters_assigned) {
+        sampledCharacters = sampleCharacters(lambda);
+    }
     
     // flag node as dirty
     const_cast<TopologyNode*>(node)->fireTreeChangeEvent(RevBayesCore::TreeChangeEventMessage::CHARACTER_HISTORY);
@@ -545,6 +552,7 @@ template<class charType>
 void RevBayesCore::PathRejectionSampleProposal<charType>::setSampledCharacters(const std::set<size_t>& s)
 {
     sampledCharacters = s;
+    sampled_characters_assigned = true;
 }
 
 
@@ -643,6 +651,11 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::undoProposal( void )
     // clear old histories
     proposed_history.clear();
     storedHistory.clear();
+    sampledCharacters.clear();
+    
+    sampled_characters_assigned = false;
+    node_assigned = false;
+
     
     
 }
