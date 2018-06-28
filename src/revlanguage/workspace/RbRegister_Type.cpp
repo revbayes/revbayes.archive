@@ -84,6 +84,7 @@
 #include "RlTaxon.h"
 
 /* Inference types (in folder "analysis") */
+#include "RlAdaptivePowerPosteriorAnalysis.h"
 #include "RlBootstrapAnalysis.h"
 #include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlHillClimber.h"
@@ -183,6 +184,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 //        addType( new MatrixReal()                                               );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
+        addTypeWithConstructor( new AdaptivePowerPosteriorAnalysis()                );
         addTypeWithConstructor( new BootstrapAnalysis()                             );
         addTypeWithConstructor( new BurninEstimationConvergenceAssessment()         );
         addTypeWithConstructor( new HillClimber()                                   );
