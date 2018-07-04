@@ -107,7 +107,7 @@ double TreeScaleProposal::doProposal( void )
     }
     
     // compute the Hastings ratio
-    double lnHastingsratio = log( scaling_factor ) * tau.getNumberOfInteriorNodes();
+    double lnHastingsratio = log( scaling_factor ) * (tau.getNumberOfNodes() - tau.getNumberOfTips());
     
     return lnHastingsratio;
 }

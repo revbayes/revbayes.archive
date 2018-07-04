@@ -1,7 +1,8 @@
 #ifndef NodeTimeSlideUniformCharacterHistoryProposal_H
 #define NodeTimeSlideUniformCharacterHistoryProposal_H
 
-#include "BranchHistory.h"
+#include "BranchHistoryDiscrete.h"
+#include "CharacterEventDiscrete.h"
 #include "DistributionUniform.h"
 #include "PathRejectionSampleProposal.h"
 #include "Proposal.h"
@@ -233,7 +234,7 @@ double RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::doP
     stored_node_states.resize(num_sites, 0);
     for (size_t site_index = 0; site_index < num_sites; ++site_index)
     {
-        size_t s = node_states[site_index]->getState();
+        size_t s = static_cast<CharacterEventDiscrete*>(node_states[site_index])->getState();
         stored_node_states[site_index] = s;
     }
 
@@ -326,9 +327,9 @@ void RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::undoP
     for (size_t site_index = 0; site_index < num_sites; ++site_index)
     {
         size_t s = stored_node_states[site_index];
-        node_child_state[site_index]->setState(s);
-        left_parent_state[site_index]->setState(s);
-        right_parent_state[site_index]->setState(s);
+        static_cast<CharacterEventDiscrete*>(node_child_state[site_index])->setState(s);
+        static_cast<CharacterEventDiscrete*>(left_parent_state[site_index])->setState(s);
+        static_cast<CharacterEventDiscrete*>(right_parent_state[site_index])->setState(s);
     }
 
     // restore path state
@@ -386,9 +387,9 @@ void RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::sampl
             
             for (size_t site_index = 0; site_index < num_sites; ++site_index)
             {
-                size_t ancS  = nodeParentState[site_index]->getState();
-                size_t desS1 = leftChildState[site_index]->getState();
-                size_t desS2 = rightChildState[site_index]->getState();
+                size_t ancS  = static_cast<CharacterEventDiscrete*>(nodeParentState[site_index])->getState();
+                size_t desS1 = static_cast<CharacterEventDiscrete*>(leftChildState[site_index])->getState();
+                size_t desS2 = static_cast<CharacterEventDiscrete*>(rightChildState[site_index])->getState();
                 
                 double u = GLOBAL_RNG->uniform01();
                 
@@ -413,9 +414,9 @@ void RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::sampl
                     ++s;
                 }
                 
-                nodeChildState[site_index]->setState(s);
-                leftParentState[site_index]->setState(s);
-                rightParentState[site_index]->setState(s);
+                static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(leftParentState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(rightParentState[site_index])->setState(s);
             }
             
         }
@@ -426,8 +427,8 @@ void RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::sampl
             
             for (size_t site_index = 0; site_index < num_sites; ++site_index)
             {
-                size_t desS1 = leftChildState[site_index]->getState();
-                size_t desS2 = rightChildState[site_index]->getState();
+                size_t desS1 = static_cast<CharacterEventDiscrete*>(leftChildState[site_index])->getState();
+                size_t desS2 = static_cast<CharacterEventDiscrete*>(rightChildState[site_index])->getState();
                 
                 double u = GLOBAL_RNG->uniform01();
                 
@@ -452,9 +453,9 @@ void RevBayesCore::NodeTimeSlideUniformCharacterHistoryProposal<charType>::sampl
                     ++s;
                 }
                 
-                nodeChildState[site_index]->setState(s);
-                leftParentState[site_index]->setState(s);
-                rightParentState[site_index]->setState(s);
+                static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(leftParentState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(rightParentState[site_index])->setState(s);
                 
             }
             

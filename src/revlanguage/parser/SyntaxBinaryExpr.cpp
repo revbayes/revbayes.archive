@@ -116,15 +116,15 @@ RevPtr<RevVariable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dy
     args.push_back( Argument( right, "" ) );
     
     // Get function and create deterministic DAG node
-    std::string funcName = "";
+    std::string func_name = "";
     
     if ( operation != Range && operation != Exp)
     {
-        funcName += "_";
+        func_name += "_";
     }
     
-    funcName += opCode[ operation ];
-    Function* the_function = Workspace::globalWorkspace().getFunction( funcName, args, false ).clone();
+    func_name += opCode[ operation ];
+    Function* the_function = Workspace::globalWorkspace().getFunction( func_name, args, false ).clone();
     the_function->processArguments( args, !dynamic );
     
     RevPtr<RevVariable> the_return_value = the_function->execute();

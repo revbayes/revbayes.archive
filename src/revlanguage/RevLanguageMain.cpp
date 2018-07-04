@@ -15,7 +15,7 @@
 #include <mpi.h>
 #endif
 
-RevLanguageMain::RevLanguageMain(void)
+RevLanguageMain::RevLanguageMain(bool b) : batch_mode(b)
 {
 
 }
@@ -78,6 +78,17 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
         if (result == 2)
         {
             result = 0;
+
+            if( batch_mode == true )
+            {
+#ifdef RB_MPI
+                MPI_Finalize();
+#endif
+                RevLanguage::Workspace::userWorkspace().clear();
+                RevLanguage::Workspace::globalWorkspace().clear();
+
+                exit(1);
+            }
         }
         
     }

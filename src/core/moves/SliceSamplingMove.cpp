@@ -283,9 +283,9 @@ void SliceSamplingMove::performMcmcMove( double prHeat, double lHeat, double pHe
 
   numPr += g.get_num_evals();
 
-  if (auto_tuning and num_tried > 3)
+  if (auto_tuning and num_tried_total > 3)
   {
-    double predicted_window = 4.0*total_movement/num_tried;
+    double predicted_window = 4.0*total_movement/num_tried_total;
     window = 0.95*window + 0.05*predicted_window;
   }
     
@@ -337,24 +337,24 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
     
     // print the number of tries
     int t_length = 9;
-    if (num_tried > 0) t_length -= (int)log10(num_tried);
+    if (num_tried_total > 0) t_length -= (int)log10(num_tried_total);
     for (int i = 0; i < t_length; ++i) {
         o << " ";
     }
-    o << num_tried;
+    o << num_tried_total;
     o << " ";
     
     // print the average distance moved
     o<<"\n";
-    if (num_tried > 0)
+    if (num_tried_total > 0)
     {
-      o<<"  Ave. |x2-x1| = "<<total_movement/num_tried<<std::endl;
+      o<<"  Ave. |x2-x1| = "<<total_movement/num_tried_total<<std::endl;
     }
 
     // print the average distance moved
-    if (num_tried > 0)
+    if (num_tried_total > 0)
     {
-      o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried<<std::endl;
+      o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried_total<<std::endl;
     }
 
     //    proposal->printParameterSummary( o );
@@ -375,7 +375,7 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
 void SliceSamplingMove::resetMoveCounters( void )
 {
     total_movement = 0.0;
-    num_tried = 0;
+    num_tried_current_period = 0;
     numPr = 0;
 }
 
@@ -405,9 +405,9 @@ void SliceSamplingMove::setMoveTuningParameter(double tp)
  */
 void SliceSamplingMove::tune( void ) 
 {
-  double predicted_window = 4.0*total_movement/num_tried;
+  double predicted_window = 4.0*total_movement/num_tried_current_period;
 
-  double p = exp(-double(num_tried)*0.5);
+  double p = exp(-double(num_tried_current_period)*0.5);
   window = p*window + (1.0-p)*predicted_window;
 }
 

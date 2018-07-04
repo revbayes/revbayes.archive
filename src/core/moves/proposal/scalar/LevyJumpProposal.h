@@ -21,7 +21,7 @@ namespace RevBayesCore {
     class LevyJumpProposal : public Proposal {
         
     public:
-        LevyJumpProposal( ContinuousStochasticNode *n, double d);                                                                      //!<  constructor
+        LevyJumpProposal( ContinuousStochasticNode *n, double d);                                                                   //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
@@ -29,7 +29,7 @@ namespace RevBayesCore {
         double                                  doProposal(void);                                                                   //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         double                                  getProposalTuningParameter(void) const;
-        void                                    printParameterSummary(std::ostream &o, bool name_only) const;                                       //!< Print the parameter summary
+        void                                    printParameterSummary(std::ostream &o, bool name_only) const;                       //!< Print the parameter summary
         void                                    prepareProposal(void);                                                              //!< Prepare the proposal
         void                                    setProposalTuningParameter(double tp);
         void                                    tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
@@ -43,7 +43,7 @@ namespace RevBayesCore {
         
         ContinuousStochasticNode*               variable;                                                                           //!< The variable the Proposal is working on
         double                                  storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
-        double                                  delta;                                                                             //!< The value we propose.
+        double                                  delta;                                                                              //!< The value we propose.
     };
     
 }

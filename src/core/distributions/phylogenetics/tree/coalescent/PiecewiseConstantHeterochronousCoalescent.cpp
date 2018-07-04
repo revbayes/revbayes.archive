@@ -104,16 +104,11 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
         do
         {
             nextAge = ages[atAge];
-            if (nextIntervalStart <= nextAge && nextIntervalStart <= nextSerialTime) {
-                // theta change
-                combinedEventTimes.push_back(nextIntervalStart);
-                combinedEventTypes.push_back(0);
-                ++atIntervalStart;
-                if (atIntervalStart < intervals.size()) {
-                    nextIntervalStart = intervals[atIntervalStart];
-                } else {
-                    nextIntervalStart = RbConstants::Double::inf;
-                }
+            if (nextAge <= nextSerialTime && nextAge <= nextIntervalStart) {
+                // coalescence
+                combinedEventTimes.push_back(nextAge);
+                combinedEventTypes.push_back(-1);
+                ++atAge;
             } else if (nextSerialTime <= nextAge && nextSerialTime <= nextIntervalStart) {
                 // serial sample
                 combinedEventTimes.push_back(nextSerialTime);
@@ -125,10 +120,15 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
                     nextSerialTime = RbConstants::Double::inf;
                 }
             } else {
-                // coalescence
-                combinedEventTimes.push_back(nextAge);
-                combinedEventTypes.push_back(-1);
-                ++atAge;
+                // theta change
+                combinedEventTimes.push_back(nextIntervalStart);
+                combinedEventTypes.push_back(0);
+                ++atIntervalStart;
+                if (atIntervalStart < intervals.size()) {
+                    nextIntervalStart = intervals[atIntervalStart];
+                } else {
+                    nextIntervalStart = RbConstants::Double::inf;
+                }
             }
         } while (atAge < ages.size());
 
@@ -169,23 +169,24 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
 
     for (size_t i = 0; i < combinedEventTimes.size(); ++i)
     {
+        
         double theta = popSizes[currentInterval];
         double nPairs = j * (j-1) / 2.0;
-
+        
         double deltaAge = combinedEventTimes[i] - windowStart;
 
-        if (combinedEventTypes[i] == 0) {
-            // theta change
-            lnProbTimes -= nPairs * deltaAge / theta ;
-            ++currentInterval;
+        if (combinedEventTypes[i] == -1) {
+            // coalescence
+            lnProbTimes += log( 1.0 / theta ) - nPairs * deltaAge / theta;
+            --j;
         } else if (combinedEventTypes[i] == 1) {
             // sampled ancestor
             lnProbTimes -= nPairs * deltaAge / theta ;
             ++j;
         } else {
-            // coalescence
-            lnProbTimes += log( 1.0 / theta ) - nPairs * deltaAge / theta;
-            --j;
+            // theta change
+            lnProbTimes -= nPairs * deltaAge / theta ;
+            ++currentInterval;
         }
 
         windowStart = combinedEventTimes[i];
@@ -389,7 +390,7 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
         
         // create master list of event times and types
         // pre-defined events are either a sample (lineage size up) or theta changepoint (lineage size constant)
-        size_t nEvents = 0;
+        // size_t nEvents = 0;
         size_t nTotalEvents = intervals.size() + serialTimes.size();
         for (size_t nEvents = 0; nEvents < nTotalEvents; ++nEvents)
         {

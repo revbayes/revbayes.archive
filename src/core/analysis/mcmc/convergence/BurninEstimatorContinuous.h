@@ -2,17 +2,17 @@
 #define BurninEstimatorContinuous_H
 
 #include "Cloneable.h"
-#include "TraceAnalysisContinuous.h"
+#include "TraceNumeric.h"
 
 #include <vector>
 
 namespace RevBayesCore {
     
     /**
-     * @brief Interface for burnin estimation of continuous traits.
+     * @brief Interface for burnin estimation of continuous variables.
      *
      * This interface specifies the function used to estimate the optimal burn-in for continuous variables.
-     * That is, a class that implementents this interface can be used to estimate the optimal burn-in automatically
+     * That is, a class that implements this interface can be used to estimate the optimal burn-in automatically
      * so that no user input is needed.
      *
      *
@@ -24,16 +24,11 @@ namespace RevBayesCore {
     class BurninEstimatorContinuous : public Cloneable {
     
     public:
-        BurninEstimatorContinuous();
+        //BurninEstimatorContinuous(){};
         virtual                                ~BurninEstimatorContinuous() {}
     
         virtual BurninEstimatorContinuous*      clone(void) const = 0;                                              //!< Clone function. This is similar to the copy constructor but useful in inheritance.
-        virtual std::size_t                     estimateBurnin(const std::vector<double>& values) = 0;
-    
-    protected:
-    
-        TraceAnalysisContinuous                 analysis;
-    
+        virtual std::size_t                     estimateBurnin(const TraceNumeric& trace) = 0;
     };
     
 }

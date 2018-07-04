@@ -20,7 +20,7 @@
 
 using namespace RevBayesCore;
 
-Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt, bool th, double tht, std::string sm, std::string smo) : MonteCarloSampler( ),
+Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt, size_t ntries, bool th, double tht, std::string sm, std::string smo) : MonteCarloSampler( ),
 num_chains(nc),
 schedule_type(sT),
 current_generation(0),
@@ -45,8 +45,8 @@ swap_mode(smo)
     heat_ranks.resize(num_chains, 0);
     heat_temps.resize(num_chains, 0.0);
     
-    numAttemptedSwaps = std::vector< std::vector<unsigned long> > (num_chains, std::vector<unsigned long> (num_chains, 0));
-    numAcceptedSwaps = std::vector< std::vector<unsigned long> > (num_chains, std::vector<unsigned long> (num_chains, 0));
+    num_attempted_swaps = std::vector< std::vector<unsigned long> > (num_chains, std::vector<unsigned long> (num_chains, 0));
+    num_accepted_swaps = std::vector< std::vector<unsigned long> > (num_chains, std::vector<unsigned long> (num_chains, 0));
     
     chain_moves_tuningInfo = std::vector< std::vector<Mcmc::tuningInfo> > (num_chains);
     
@@ -68,7 +68,7 @@ swap_mode(smo)
 
     
     // assign chains to processors, instantiate Mcmc objects
-    base_chain = new Mcmc(m, mv, mn);
+    base_chain = new Mcmc(m, mv, mn, ntries);
     
     
     // initialize the individual chains
@@ -95,8 +95,8 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
     schedule_type       = m.schedule_type;
     pid_per_chain       = m.pid_per_chain;
     
-    numAttemptedSwaps   = m.numAttemptedSwaps;
-    numAcceptedSwaps    = m.numAcceptedSwaps;
+    num_attempted_swaps = m.num_attempted_swaps;
+    num_accepted_swaps  = m.num_accepted_swaps;
     generation          = m.generation;
     
     
@@ -195,7 +195,7 @@ void Mcmcmc::disableScreenMonitor( bool all, size_t rep )
 /**
  * Start the monitors at the beginning of a run which will simply delegate this call to each chain.
  */
-void Mcmcmc::finishMonitors( size_t n_reps )
+void Mcmcmc::finishMonitors( size_t n_reps, MonteCarloAnalysisOptions::TraceCombinationTypes tc )
 {
     
     // Monitor
@@ -204,7 +204,7 @@ void Mcmcmc::finishMonitors( size_t n_reps )
         
         if ( chains[i] != NULL )
         {
-            chains[i]->finishMonitors( n_reps );
+            chains[i]->finishMonitors( n_reps, tc );
         }
     }
     
@@ -551,30 +551,30 @@ void Mcmcmc::printMoveSummary(std::ostream &o, size_t chainId, size_t moveId, Mo
     
     // print the number of tries
     int t_length = 9;
-    const size_t num_tried = chain_moves_tuningInfo[chainId][moveId].num_tried;
-    if (num_tried > 0) t_length -= (int)log10(num_tried);
+    const size_t num_tried_current_period = chain_moves_tuningInfo[chainId][moveId].num_tried_current_period;
+    if (num_tried_current_period > 0) t_length -= (int)log10(num_tried_current_period);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << num_tried;
+    o << num_tried_current_period;
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
-    const size_t num_accepted = chain_moves_tuningInfo[chainId][moveId].num_accepted;
-    if (num_accepted > 0) a_length -= (int)log10(num_accepted);
+    const size_t num_accepted_current_period = chain_moves_tuningInfo[chainId][moveId].num_accepted_current_period;
+    if (num_accepted_current_period > 0) a_length -= (int)log10(num_accepted_current_period);
     
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << num_accepted;
+    o << num_accepted_current_period;
     o << " ";
     
     // print the acceptance ratio
-    double ratio = num_accepted / (double)num_tried;
-    if (num_tried == 0) ratio = 0;
+    double ratio = num_accepted_current_period / (double)num_tried_current_period;
+    if (num_tried_current_period == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)
@@ -782,27 +782,27 @@ void Mcmcmc::printSwapSummaryPair(std::ostream &o, const size_t &row, const size
     
     // print the number of tries
     int t_length = 6;
-    if (numAttemptedSwaps[row][col] > 0) t_length -= (int)log10(numAttemptedSwaps[row][col]);
+    if (num_attempted_swaps[row][col] > 0) t_length -= (int)log10(num_attempted_swaps[row][col]);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << numAttemptedSwaps[row][col];
+    o << num_attempted_swaps[row][col];
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
-    if (numAcceptedSwaps[row][col] > 0) a_length -= (int)log10(numAcceptedSwaps[row][col]);
+    if (num_accepted_swaps[row][col] > 0) a_length -= (int)log10(num_accepted_swaps[row][col]);
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << numAcceptedSwaps[row][col];
+    o << num_accepted_swaps[row][col];
     o << " ";
     
     // print the acceptance ratio
-    double ratio = numAcceptedSwaps[row][col] / (double)numAttemptedSwaps[row][col];
-    if (numAttemptedSwaps[row][col] == 0) ratio = 0;
+    double ratio = num_accepted_swaps[row][col] / (double)num_attempted_swaps[row][col];
+    if (num_attempted_swaps[row][col] == 0) ratio = 0;
     
     int r_length = 6;
     for (int i = 0; i < r_length; ++i)
@@ -908,9 +908,9 @@ void Mcmcmc::resetCounters( void )
     {
         for (size_t j = 0; j < num_chains; ++j)
         {
-            numAttemptedSwaps[i][j] = 0;
-            numAcceptedSwaps[i][j] = 0;
-//            std::cout << "numAttemptedSwaps[" << i << "][" << j << "]=" << numAttemptedSwaps[i][j] << ", numAcceptedSwaps[" << i << "][" << j << "]=" << numAcceptedSwaps[i][j] << "; ";
+            num_attempted_swaps[i][j] = 0;
+            num_accepted_swaps[i][j] = 0;
+//            std::cout << "num_attempted_swaps[" << i << "][" << j << "]=" << num_attempted_swaps[i][j] << ", num_accepted_swaps[" << i << "][" << j << "]=" << num_accepted_swaps[i][j] << "; ";
         }
     }
 //    std::cout << std::endl;
@@ -976,6 +976,7 @@ void Mcmcmc::setModel( Model *m, bool redraw )
     delete m;
     
 }
+
 
 void Mcmcmc::setActivePIDSpecialized(size_t i, size_t n)
 {
@@ -1338,15 +1339,25 @@ void Mcmcmc::swapMovesTuningInfo(RbVector<Move> &mvsj, RbVector<Move> &mvsk)
             throw RbException( "The two moves whose tuning information is attempted to be swapped are not the same move as their names do not match." );
         }
         
-        size_t tmp_numTriedj = itj->getNumberTried();
-        size_t tmp_numTriedk = itk->getNumberTried();
-        itj->setNumberTried(tmp_numTriedk);
-        itk->setNumberTried(tmp_numTriedj);
+        size_t tmp_numTriedCurrentPeriodj = itj->getNumberTriedCurrentPeriod();
+        size_t tmp_numTriedCurrentPeriodk = itk->getNumberTriedCurrentPeriod();
+        itj->setNumberTriedCurrentPeriod(tmp_numTriedCurrentPeriodk);
+        itk->setNumberTriedCurrentPeriod(tmp_numTriedCurrentPeriodj);
         
-        size_t tmp_numAcceptedj = itj->getNumberAccepted();
-        size_t tmp_numAcceptedk = itk->getNumberAccepted();
-        itj->setNumberAccepted(tmp_numAcceptedk);
-        itk->setNumberAccepted(tmp_numAcceptedj);
+        size_t tmp_numTriedTotalj = itj->getNumberTriedTotal();
+        size_t tmp_numTriedTotalk = itk->getNumberTriedTotal();
+        itj->setNumberTriedTotal(tmp_numTriedTotalk);
+        itk->setNumberTriedTotal(tmp_numTriedTotalj);
+        
+        size_t tmp_numAcceptedCurrentPeriodj = itj->getNumberAcceptedCurrentPeriod();
+        size_t tmp_numAcceptedCurrentPeriodk = itk->getNumberAcceptedCurrentPeriod();
+        itj->setNumberAcceptedCurrentPeriod(tmp_numAcceptedCurrentPeriodk);
+        itk->setNumberAcceptedCurrentPeriod(tmp_numAcceptedCurrentPeriodj);
+        
+        size_t tmp_numAcceptedTotalj = itj->getNumberAcceptedTotal();
+        size_t tmp_numAcceptedTotalk = itk->getNumberAcceptedTotal();
+        itj->setNumberAcceptedTotal(tmp_numAcceptedTotalk);
+        itk->setNumberAcceptedTotal(tmp_numAcceptedTotalj);
         
         double tmp_tuningParameterj = itj->getMoveTuningParameter();
         double tmp_tuningParameterk = itk->getMoveTuningParameter();
@@ -1391,7 +1402,7 @@ void Mcmcmc::swapNeighborChains(void)
     size_t heat_rankj = std::find(tmp_chain_heats.begin(), tmp_chain_heats.end(), chain_heats[j]) - tmp_chain_heats.begin();
     size_t heat_rankk = std::find(tmp_chain_heats.begin(), tmp_chain_heats.end(), chain_heats[k]) - tmp_chain_heats.begin();
     
-    ++numAttemptedSwaps[heat_rankj][heat_rankk];
+    ++num_attempted_swaps[heat_rankj][heat_rankk];
     
     // compute exchange ratio
     double bj = chain_heats[j];
@@ -1443,7 +1454,7 @@ void Mcmcmc::swapNeighborChains(void)
     // on accept, swap beta values and active chains
     if (accept == true )
     {
-        ++numAcceptedSwaps[heat_rankj][heat_rankk];
+        ++num_accepted_swaps[heat_rankj][heat_rankk];
         
         // swap active chain
         if (active_chain_index == j)
@@ -1526,7 +1537,7 @@ void Mcmcmc::swapRandomChains(void)
     size_t heat_rankj = std::find(tmp_chain_heats.begin(), tmp_chain_heats.end(), chain_heats[j]) - tmp_chain_heats.begin();
     size_t heat_rankk = std::find(tmp_chain_heats.begin(), tmp_chain_heats.end(), chain_heats[k]) - tmp_chain_heats.begin();
     
-    ++numAttemptedSwaps[heat_rankj][heat_rankk];
+    ++num_attempted_swaps[heat_rankj][heat_rankk];
     
     // compute exchange ratio
     double bj = chain_heats[j];
@@ -1579,7 +1590,7 @@ void Mcmcmc::swapRandomChains(void)
     // on accept, swap beta values and active chains
     if (accept == true )
     {
-        ++numAcceptedSwaps[heat_rankj][heat_rankk];
+        ++num_attempted_swaps[heat_rankj][heat_rankk];
         
         // swap active chain
         if (active_chain_index == j)
@@ -1656,14 +1667,14 @@ void Mcmcmc::tune( void )
         
         for (size_t i = 1; i < num_chains; ++i)
         {
-//            std::cout << ", numAcceptedSwaps[" << i - 1 << "][" << i << "]=" << numAcceptedSwaps[i - 1][i] << ", numAcceptedSwaps[" << i << "][" << i - 1 << "]=" << numAcceptedSwaps[i][i - 1] << std::endl;
-//            std::cout << ", numAttemptedSwaps[" << i - 1 << "][" << i << "]=" << numAttemptedSwaps[i - 1][i] << ", numAttemptedSwaps[" << i << "][" << i - 1 << "]=" << numAttemptedSwaps[i][i - 1] << std::endl;
+//            std::cout << ", num_accepted_swaps[" << i - 1 << "][" << i << "]=" << num_accepted_swaps[i - 1][i] << ", num_accepted_swaps[" << i << "][" << i - 1 << "]=" << num_accepted_swaps[i][i - 1] << std::endl;
+//            std::cout << ", num_attempted_swaps[" << i - 1 << "][" << i << "]=" << num_attempted_swaps[i - 1][i] << ", num_attempted_swaps[" << i << "][" << i - 1 << "]=" << num_attempted_swaps[i][i - 1] << std::endl;
             
-            size_t numAttemptedSwapsPairwise = numAttemptedSwaps[i - 1][i] + numAttemptedSwaps[i][i - 1];
-            if ( numAttemptedSwapsPairwise > 2 ) {
+            size_t num_attempted_swaps_neighbor = num_attempted_swaps[i - 1][i] + num_attempted_swaps[i][i - 1];
+            if ( num_attempted_swaps_neighbor > 2 ) {
                 
-                size_t numAcceptedSwapsPairwise = numAcceptedSwaps[i - 1][i] + numAcceptedSwaps[i][i - 1];
-                double rate = numAcceptedSwapsPairwise / (double)numAttemptedSwapsPairwise;
+                size_t num_accepted_swaps_neighbor = num_accepted_swaps[i - 1][i] + num_accepted_swaps[i][i - 1];
+                double rate = num_accepted_swaps_neighbor / (double)num_attempted_swaps_neighbor;
                 
                 if ( rate > tune_heat_target )
                 {

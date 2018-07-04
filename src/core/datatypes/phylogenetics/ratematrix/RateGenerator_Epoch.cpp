@@ -226,6 +226,13 @@ bool RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
     
     bool success = false;
 
+    // Trees may have branches of zero length, e.g. sampled ancestors under FBDP
+    // These branches always have start states that match end states.
+    if (startAge == endAge)
+    {
+        transition_times.push_back(0.0);
+        return true;
+    }
 
     // compute the breakpoint times
     std::vector<double> breakpoint_times;
@@ -292,6 +299,7 @@ bool RateGenerator_Epoch::simulateStochasticMapping(double startAge, double endA
             save_times[prev_idx] += transition_times[i];
         }
     }
+    
     transition_states = save_states;
     transition_times = save_times;
 

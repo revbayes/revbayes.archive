@@ -155,6 +155,18 @@ ChromosomesCladogenicStateFunction* ChromosomesCladogenicStateFunction::clone( v
     return new ChromosomesCladogenicStateFunction( *this );
 }
 
+double ChromosomesCladogenicStateFunction::computeDataAugmentedCladogeneticLnProbability(const std::vector<BranchHistory*>& histories,
+                                                                                              size_t node_index,
+                                                                                              size_t left_index,
+                                                                                              size_t right_index ) const
+{
+    throw RbException("ChromosomesCladogenicStateFunction::computeDataAugmentedCladogeneticLnProbability is not currently implemented.");
+    double lnP = 0.0;
+    return lnP;
+    
+}
+
+
 std::map< std::vector<unsigned>, double >  ChromosomesCladogenicStateFunction::getEventMap(double t)
 {
     return eventMapProbs;

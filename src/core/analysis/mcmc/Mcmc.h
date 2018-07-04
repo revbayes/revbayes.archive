@@ -23,15 +23,17 @@ namespace RevBayesCore {
     class Mcmc : public MonteCarloSampler {
     
     public:
-        Mcmc(const Model &m, const RbVector<Move> &moves, const RbVector<Monitor> &mons);
+        Mcmc(const Model &m, const RbVector<Move> &moves, const RbVector<Monitor> &mons, size_t ntries=1000);
         Mcmc(const Mcmc &m);
         virtual                                            ~Mcmc(void);                                                                             //!< Virtual destructor
         
         Mcmc&                                               operator=(const Mcmc &m);                                                               //!< Overloaded assignment operator
         
         struct tuningInfo {
-            size_t                                          num_tried;
-            size_t                                          num_accepted;
+            size_t                                          num_tried_current_period;
+            size_t                                          num_tried_total;
+            size_t                                          num_accepted_current_period;
+            size_t                                          num_accepted_total;
             double                                          tuning_parameter;
         };
         
@@ -40,7 +42,7 @@ namespace RevBayesCore {
         void                                                addMonitor(const Monitor &m);
         void                                                disableScreenMonitor(bool all, size_t rep);                                             //!< Disable/remove all screen monitors
         Mcmc*                                               clone(void) const;
-        void                                                finishMonitors(size_t n);                                                               //!< Finish the monitors
+        void                                                finishMonitors(size_t n, MonteCarloAnalysisOptions::TraceCombinationTypes ct);                 //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         double                                              getChainPriorHeat(void) const;
@@ -92,6 +94,7 @@ namespace RevBayesCore {
         RbVector<Monitor>                                   monitors;
         RbVector<Move>                                      moves;
         std::vector<tuningInfo>                             moves_tuningInfo;
+        size_t                                              num_init_attempts;
         MoveSchedule*                                       schedule;
         std::string                                         schedule_type;                                                                           //!< Type of move schedule to be used
 

@@ -39,7 +39,7 @@ using namespace RevBayesCore;
  * \param[in]    mvs  The vector of moves.
  * \param[in]    mons The vector of monitors.
  */
-Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &mons) : MonteCarloSampler(),
+Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &mons, size_t ntries) : MonteCarloSampler(),
     chain_active( true ),
     chain_likelihood_heat( 1.0 ),
     chain_posterior_heat( 1.0 ),
@@ -48,6 +48,7 @@ Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &m
     model( m.clone() ),
     monitors( mons ),
     moves( mvs ),
+    num_init_attempts(ntries),
     schedule(NULL),
     schedule_type("random")
 {
@@ -55,15 +56,19 @@ Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &m
     replaceDag(mvs,mons);
     
     tuningInfo ti;
-    ti.num_tried = 0;
-    ti.num_accepted = 0;
+    ti.num_tried_current_period = 0;
+    ti.num_tried_total = 0;
+    ti.num_accepted_current_period = 0;
+    ti.num_accepted_total = 0;
     ti.tuning_parameter = RbConstants::Double::neginf;
     
     moves_tuningInfo = std::vector<tuningInfo> (moves.size(), ti);
     for (size_t i = 0; i < moves.size(); ++i)
     {
-        moves_tuningInfo[i].num_tried = moves[i].getNumberTried();
-        moves_tuningInfo[i].num_accepted = moves[i].getNumberAccepted();
+        moves_tuningInfo[i].num_tried_current_period = moves[i].getNumberTriedCurrentPeriod();
+        moves_tuningInfo[i].num_tried_total = moves[i].getNumberTriedTotal();
+        moves_tuningInfo[i].num_accepted_current_period = moves[i].getNumberAcceptedCurrentPeriod();
+        moves_tuningInfo[i].num_accepted_total = moves[i].getNumberAcceptedTotal();
         moves_tuningInfo[i].tuning_parameter = moves[i].getMoveTuningParameter();
     }
     
@@ -87,6 +92,7 @@ Mcmc::Mcmc(const Mcmc &m) : MonteCarloSampler(m),
     model( m.model->clone() ),
     monitors( m.monitors ),
     moves( m.moves ),
+    num_init_attempts( m.num_init_attempts ),
     schedule( NULL ),
     schedule_type( m.schedule_type )
 {
@@ -211,7 +217,7 @@ Mcmc* Mcmc::clone( void ) const
 /**
  * Finish the monitors which will close the output streams.
  */
-void Mcmc::finishMonitors( size_t n_reps )
+void Mcmc::finishMonitors( size_t n_reps, MonteCarloAnalysisOptions::TraceCombinationTypes tc )
 {
     
     // iterate over all monitors
@@ -226,7 +232,7 @@ void Mcmc::finishMonitors( size_t n_reps )
             // combine results if we used more than one replicate
             if ( n_reps > 1 )
             {
-                monitors[i].combineReplicates( n_reps );
+                monitors[i].combineReplicates( n_reps, tc );
             }
             
         }
@@ -348,8 +354,10 @@ std::vector<Mcmc::tuningInfo> Mcmc::getMovesTuningInfo(void)
     // iterate over the moves
     for (size_t i = 0; i < moves.size(); ++i)
     {
-        moves_tuningInfo[i].num_tried = moves[i].getNumberTried();
-        moves_tuningInfo[i].num_accepted = moves[i].getNumberAccepted();
+        moves_tuningInfo[i].num_tried_current_period = moves[i].getNumberTriedCurrentPeriod();
+        moves_tuningInfo[i].num_tried_total = moves[i].getNumberTriedTotal();
+        moves_tuningInfo[i].num_accepted_current_period = moves[i].getNumberAcceptedCurrentPeriod();
+        moves_tuningInfo[i].num_accepted_total = moves[i].getNumberAcceptedTotal();
         
         double tmp_tuningParameter = moves[i].getMoveTuningParameter();
         
@@ -469,9 +477,8 @@ void Mcmc::initializeSampler( bool prior_only )
     
     
     int num_tries     = 0;
-    int max_num_tries = 100000;
     double ln_probability = 0.0;
-    for ( ; num_tries < max_num_tries; ++num_tries )
+    for ( ; num_tries < num_init_attempts; ++num_tries )
     {
         // a flag if we failed to find a valid starting value
         bool failed = false;
@@ -539,7 +546,7 @@ void Mcmc::initializeSampler( bool prior_only )
         
     }
     
-    if ( num_tries == max_num_tries )
+    if ( num_tries == num_init_attempts )
     {
         std::stringstream msg;
         msg << "Unable to find a starting state with computable probability";
@@ -934,8 +941,10 @@ void Mcmc::setMovesTuningInfo(const std::vector<tuningInfo> &mvs_ti)
     
     for (size_t i = 0; i < moves.size(); ++i)
     {
-        moves[i].setNumberTried(moves_tuningInfo[i].num_tried);
-        moves[i].setNumberAccepted(moves_tuningInfo[i].num_accepted);
+        moves[i].setNumberTriedCurrentPeriod(moves_tuningInfo[i].num_tried_current_period);
+        moves[i].setNumberTriedTotal(moves_tuningInfo[i].num_tried_total);
+        moves[i].setNumberAcceptedCurrentPeriod(moves_tuningInfo[i].num_accepted_current_period);
+        moves[i].setNumberAcceptedTotal(moves_tuningInfo[i].num_accepted_total);
         
         double tmp_tuningParameter = moves[i].getMoveTuningParameter();
         

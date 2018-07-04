@@ -26,25 +26,21 @@ namespace RevBayesCore {
     public:
         // constructors and destructor
         DistributionMemberFunction(const std::string &n, const StochasticNode<distributionType> *o, const std::vector<const DagNode* > &a);
-        //        DistributionMemberFunction(const DistributionMemberFunction &f);
-        virtual                                    ~DistributionMemberFunction(void);
-        
-        // overloaded operators
-        //        DistributionMemberFunction&                             operator=(const DistributionMemberFunction &d);
+        virtual                                                    ~DistributionMemberFunction(void);
         
         // pure virtual public methors
-        DistributionMemberFunction<distributionType,valueType>* clone(void) const;                                                              //!< Clone the function
-        void                                        update(void);                                                                   //!< Update the value of the function
+        DistributionMemberFunction<distributionType,valueType>*     clone(void) const;                                                              //!< Clone the function
+        void                                                        update(void);                                                                   //!< Update the value of the function
         
     protected:
         
-        void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
+        void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
         
     private:
         
-        std::string                                 methodName;
-        const StochasticNode<distributionType>*     the_member_variable;
-        std::vector<const DagNode* >                args;
+        std::string                                                 method_name;
+        const StochasticNode<distributionType>*                     the_member_variable;
+        std::vector<const DagNode* >                                args;
     };
     
 }
@@ -56,7 +52,7 @@ namespace RevBayesCore {
 
 template <class distributionType, class valueType>
 RevBayesCore::DistributionMemberFunction<distributionType,valueType>::DistributionMemberFunction(const std::string &n, const StochasticNode<distributionType> *o, const std::vector<const DagNode* > &a) : TypedFunction<valueType>( new valueType() ),
-    methodName( n ),
+    method_name( n ),
     the_member_variable( o ),
     args( a )
 {
@@ -117,7 +113,7 @@ void RevBayesCore::DistributionMemberFunction<distributionType,valueType>::updat
     
     const TypedDistribution<distributionType>& the_distribution = dynamic_cast<const TypedDistribution<distributionType>& >( the_member_variable->getDistribution() );
     const MemberObject<valueType> &member_object = dynamic_cast<const MemberObject<valueType>& >( the_distribution );
-    member_object.executeMethod(methodName,args,*this->value);
+    member_object.executeMethod(method_name,args,*this->value);
     
 }
 

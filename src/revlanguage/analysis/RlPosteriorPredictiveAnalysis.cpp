@@ -63,7 +63,7 @@ RevPtr<RevVariable> PosteriorPredictiveAnalysis::executeMethod(std::string const
         found = true;
         
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         value->runAll( size_t(gen) );
         
         return NULL;

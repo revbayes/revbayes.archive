@@ -42,33 +42,37 @@ FreeKRateMatrixFunction* FreeKRateMatrixFunction::clone( void ) const
 void FreeKRateMatrixFunction::update( void )
 {
     // get the information from the arguments for reading the file
-    if (transition_rates != NULL && transition_rates_flat == NULL) {
+    if (transition_rates != NULL && transition_rates_flat == NULL)
+    {
         const RbVector<RbVector<double> >& r = transition_rates->getValue();
         
         size_t n = r.size();
         std::vector<double> r_flat( n * (n-1) );
         size_t k = 0;
-        for (size_t i = 0; i < n; i++) {
-            for (size_t j = 0; j < n; j++) {
-                if (i != j) {
+        for (size_t i = 0; i < n; i++)
+        {
+            for (size_t j = 0; j < n; j++)
+            {
+                if (i != j)
+                {
                     r_flat[k++] = r[i][j];
                 }
+                
             }
+            
         }
 
         // set the flattened rates
         static_cast< RateMatrix_FreeK* >(value)->setTransitionRates(r_flat);
     }
-    
-    else if (transition_rates == NULL && transition_rates_flat != NULL) {
+    else if (transition_rates == NULL && transition_rates_flat != NULL)
+    {
         const std::vector<double>& r = transition_rates_flat->getValue();
         
         // set the flattened rates
         static_cast< RateMatrix_FreeK* >(value)->setTransitionRates(r);
     }
 
-
-    
     value->update();
 }
 

@@ -144,9 +144,9 @@ double CorrelationMatrixProposal::doProposal( void ) {
     std::cout << v << std::endl;
     exit(1);
 
-    
-    variable->addTouchedElementIndex(idxA);
-    variable->addTouchedElementIndex(idxB);
+    // this code is commented out because it the exit(1) command ensures it is never called
+    // variable->addTouchedElementIndex(idxA);
+    // variable->addTouchedElementIndex(idxB);
     
     // this is a symmetric proposal so the hasting ratio is 0.0
     return 0.0;

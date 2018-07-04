@@ -103,6 +103,7 @@
    and other essential services. */
 
 #include "Func_append.h"
+#include "Func_appendVector.h"
 #include "Func_clear.h"
 #include "Func_exists.h"
 #include "Func_getOption.h"
@@ -267,6 +268,12 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_append<RealPos>()             );
         addFunction( new Func_append<RlString>()            );
         addFunction( new Func_append<RlBoolean>()           );
+        addFunction( new Func_appendVector<Integer>()       );
+        addFunction( new Func_appendVector<Real>()          );
+        addFunction( new Func_appendVector<Natural>()       );
+        addFunction( new Func_appendVector<RealPos>()       );
+        addFunction( new Func_appendVector<RlString>()      );
+        addFunction( new Func_appendVector<RlBoolean>()     );
         addFunction( new Func_clear()                       );
         addFunction( new Func_exists()                      );
         addFunction( new Func_getwd()                       );
@@ -355,21 +362,25 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__uminus<RealPos, Real>()     );
 
         // addition (e.g. a+b )
-        addFunction( new Func__add< Natural                , Natural               , Natural               >(  )   );
-        addFunction( new Func__add< Integer                , Integer               , Integer               >(  )   );
-        addFunction( new Func__add< Real                   , Real                  , Real                  >(  )   );
-        addFunction( new Func__add< RealPos                , RealPos               , RealPos               >(  )   );
-        addFunction( new Func__add< RlString               , RlString              , RlString              >(  )   );
-        addFunction( new Func__add< RlString               , Real                  , RlString              >(  )   );
-        addFunction( new Func__add< RlString               , Integer               , RlString              >(  )   );
-        addFunction( new Func__add< ModelVector<Natural>   , ModelVector<Natural>  , ModelVector<Natural>       >(  )   );
-        addFunction( new Func__add< ModelVector<Integer>   , ModelVector<Integer>  , ModelVector<Integer>       >(  )   );
-        addFunction( new Func__add< ModelVector<RealPos>   , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
-        addFunction( new Func__add< ModelVector<Real>      , ModelVector<Real>     , ModelVector<Real>          >(  )   );
-        addFunction( new Func__scalarVectorAdd<Natural     , ModelVector<Natural>  , ModelVector<Natural>       >(  )   );
-        addFunction( new Func__scalarVectorAdd<Integer     , ModelVector<Integer>  , ModelVector<Integer>       >(  )   );
-        addFunction( new Func__scalarVectorAdd<Real        , ModelVector<Real>     , ModelVector<Real>          >(  )   );
-        addFunction( new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
+        addFunction( new Func__add< Natural                , Natural                , Natural                   >(  )   );
+        addFunction( new Func__add< Integer                , Integer                , Integer                   >(  )   );
+        addFunction( new Func__add< Real                   , Real                   , Real                      >(  )   );
+        addFunction( new Func__add< RealPos                , RealPos                , RealPos                   >(  )   );
+        addFunction( new Func__add< RlString               , RlString               , RlString                  >(  )   );
+        addFunction( new Func__add< RlString               , Real                   , RlString                  >(  )   );
+        addFunction( new Func__add< RlString               , Integer                , RlString                  >(  )   );
+        addFunction( new Func__add< RlString               , ModelVector<Natural>   , RlString                  >(  )   );
+        addFunction( new Func__add< RlString               , ModelVector<Integer>   , RlString                  >(  )   );
+        addFunction( new Func__add< RlString               , ModelVector<RealPos>   , RlString                  >(  )   );
+        addFunction( new Func__add< RlString               , ModelVector<Real>      , RlString                  >(  )   );
+        addFunction( new Func__add< ModelVector<Natural>   , ModelVector<Natural>   , ModelVector<Natural>      >(  )   );
+        addFunction( new Func__add< ModelVector<Integer>   , ModelVector<Integer>   , ModelVector<Integer>      >(  )   );
+        addFunction( new Func__add< ModelVector<RealPos>   , ModelVector<RealPos>   , ModelVector<RealPos>      >(  )   );
+        addFunction( new Func__add< ModelVector<Real>      , ModelVector<Real>      , ModelVector<Real>         >(  )   );
+        addFunction( new Func__scalarVectorAdd<Natural     , ModelVector<Natural>   , ModelVector<Natural>      >(  )   );
+        addFunction( new Func__scalarVectorAdd<Integer     , ModelVector<Integer>   , ModelVector<Integer>      >(  )   );
+        addFunction( new Func__scalarVectorAdd<Real        , ModelVector<Real>      , ModelVector<Real>         >(  )   );
+        addFunction( new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>   , ModelVector<RealPos>      >(  )   );
 
         // division
         addFunction( new Func__div< RealPos                            , Natural               , RealPos                   >(  )  );

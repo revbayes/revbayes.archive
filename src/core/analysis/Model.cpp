@@ -29,7 +29,7 @@ Model::Model(const DagNode *source) : Parallelizable()
  * The entire model graph is copied and a map between the pointers to the original DAG nodes and
  * the copied DAG nodes is created for convenient access.
  *
- * \param[in]    sources    The set of DAG nodes from which the model graph is extracted.
+ * \param[in]    s    The set of DAG nodes from which the model graph is extracted.
  */
 Model::Model(const std::set<const DagNode*> &s) : Parallelizable(),
     sources() 
@@ -107,7 +107,7 @@ Model::~Model( void )
  * \todo Check that this copy constructor is good or if we should use a different mechanism for the map between the
  * original DAG nodes and the copied DAG nodes.
  *
- * \param[in]    m    The model object to copy.
+ * \param[in]    x    The model object to copy.
  */
 Model& Model::operator=(const Model &x) 
 {

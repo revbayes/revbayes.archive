@@ -22,6 +22,10 @@ namespace RevBayesCore {
         
     public:
         ReversibleJumpMixtureProposal( StochasticNode<mixtureType> *n);                                                                    //!<  constructor
+        ReversibleJumpMixtureProposal( const ReversibleJumpMixtureProposal &p );
+        virtual ~ReversibleJumpMixtureProposal();
+        
+        ReversibleJumpMixtureProposal&      operator=(const ReversibleJumpMixtureProposal& p);
         
         // Basic utility functions
         void                                cleanProposal(void);                                                                //!< Clean up proposal
@@ -44,8 +48,8 @@ namespace RevBayesCore {
         // parameters
         
         StochasticNode<mixtureType>*        variable;                                                                           //!< The variable the Proposal is working on
-        mixtureType*                        storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
-        size_t                              storedIndex;
+        mixtureType*                        stored_value;                                                                        //!< The stored value of the Proposal used for rejections.
+        size_t                              stored_index;
 
     };
     
@@ -71,14 +75,47 @@ namespace RevBayesCore {
 template <class mixtureType>
 RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::ReversibleJumpMixtureProposal( StochasticNode<mixtureType> *n ) : Proposal(),
     variable( n ),
-    storedValue( NULL ),
-    storedIndex( 0 )
+    stored_value( NULL ),
+    stored_index( 0 )
 {
     // tell the base class to add the node
     addNode( variable );
     
 }
 
+
+/**
+ * Constructor
+ *
+ * Here we simply allocate and initialize the Proposal object.
+ */
+template <class mixtureType>
+RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::ReversibleJumpMixtureProposal( const ReversibleJumpMixtureProposal &p ) : Proposal(),
+    variable( p.variable ),
+    stored_value( NULL ),
+    stored_index( p.stored_index )
+{
+    // tell the base class to add the node
+    addNode( variable );
+    
+    if ( p.stored_value != NULL )
+    {
+        Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( *p.stored_value );
+    }
+    
+}
+
+
+/**
+ * Destructor
+ *
+ */
+template <class mixtureType>
+RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::~ReversibleJumpMixtureProposal( )
+{
+    delete stored_value;
+    
+}
 
 /**
  * The cleanProposal function may be called to clean up memory allocations after AbstractMove
@@ -89,7 +126,38 @@ template <class mixtureType>
 void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::cleanProposal( void )
 {
     
-    delete storedValue;
+    delete stored_value;
+    stored_value = NULL;
+}
+
+
+/**
+ * Constructor
+ *
+ * Here we simply allocate and initialize the Proposal object.
+ */
+template <class mixtureType>
+RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>& RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::operator=( const ReversibleJumpMixtureProposal &p )
+{
+    
+    if ( this != &p )
+    {
+        Proposal::Cloneable::operator=( p );
+        
+        delete stored_value;
+        
+        stored_value    = NULL;
+        variable        = p.variable;
+        stored_index    = p.stored_index;
+
+        if ( p.stored_value != NULL )
+        {
+            Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( *p.stored_value );
+        }
+        
+    }
+    
+    return *this;
 }
 
 /**
@@ -144,12 +212,12 @@ double RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::doProposal( voi
     ReversibleJumpMixtureConstantDistribution<mixtureType> &d = static_cast< ReversibleJumpMixtureConstantDistribution<mixtureType>& >( variable->getDistribution() );
     
     // copy value
-    storedValue = Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( v );
-    storedIndex = d.getCurrentIndex();
+    stored_value = Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( v );
+    stored_index = d.getCurrentIndex();
     
     double lnHastingsratio = 0.0;
     
-    if ( storedIndex == 0 )
+    if ( stored_index == 0 )
     {
         // draw the new value
         d.redrawValueByIndex( 1 );
@@ -215,11 +283,11 @@ void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::undoProposal( voi
 {
     
     // swap current value and stored value
-    variable->setValue( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( *storedValue ) );
+    variable->setValue( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( *stored_value ) );
     
     // also reset the index
     ReversibleJumpMixtureConstantDistribution<mixtureType> &d = static_cast< ReversibleJumpMixtureConstantDistribution<mixtureType>& >( variable->getDistribution() );
-    d.setCurrentIndex( storedIndex );
+    d.setCurrentIndex( stored_index );
 }
 
 

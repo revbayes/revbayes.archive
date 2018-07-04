@@ -312,8 +312,8 @@ bool HillClimber::hasConverged(double min_acceptance_ratio)
     
     for (size_t i=0; i<moves.size() && converged == true; ++i)
     {
-        size_t num_tried    = moves[i].getNumberTried();
-        size_t num_accepted = moves[i].getNumberAccepted();
+        size_t num_tried    = moves[i].getNumberTriedCurrentPeriod();
+        size_t num_accepted = moves[i].getNumberAcceptedCurrentPeriod();
         
         if ( num_tried > 0)
         {

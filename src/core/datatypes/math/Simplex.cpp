@@ -1,5 +1,7 @@
 #include "Simplex.h"
+#include "TypedDagNode.h"
 
+#include <iomanip>
 
 using namespace RevBayesCore;
 
@@ -97,6 +99,22 @@ Simplex* Simplex::clone( void ) const
     return new Simplex(*this);
 }
 
+
+void Simplex::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
+{
+    
+    if ( n == "[]" )
+    {
+        long index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
+        rv = this->operator[](index);
+    }
+    else
+    {
+        throw RbException("A simplex object does not have a member method called '" + n + "'.");
+    }
+    
+}
+
 void Simplex::initFromString( const std::string &s )
 {
     this->clear();
@@ -130,4 +148,35 @@ void Simplex::normalize( void )
     {
          this->operator[](i) /= sum;
     }
+}
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const Simplex& x)
+{
+    
+    std::streamsize previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    o << "[ ";
+    o << std::fixed;
+    o << std::setprecision(4);
+    
+    // print the RbMatrix with each column of equal width and each column centered on the decimal
+    for (size_t i=0; i < x.size(); i++)
+    {
+        if (i > 0)
+            o << ",  ";
+        
+        o << x[i];
+        
+        if (i == x.size()-1)
+            o << " ]";
+        
+    }
+    
+    o.setf(previousFlags);
+    o.precision(previousPrecision);
+    
+    return o;
+
 }

@@ -12,6 +12,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
+#include "RlMatrixReal.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -39,8 +40,12 @@ Func_min* Func_min::clone( void ) const
 RevBayesCore::TypedFunction<double>* Func_min::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* arg = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::MinFunction* f = new RevBayesCore::MinFunction( arg );
+    RevBayesCore::DagNode* node = this->args[0].getVariable()->getRevObject().getDagNode();
+
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* arg_vector = dynamic_cast<RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >*>(node);
+    RevBayesCore::TypedDagNode< RevBayesCore::MatrixReal >* arg_matrix = dynamic_cast<RevBayesCore::TypedDagNode< RevBayesCore::MatrixReal >*>(node);
+
+    RevBayesCore::MinFunction* f = arg_vector != NULL ? new RevBayesCore::MinFunction( arg_vector ) : new RevBayesCore::MinFunction( arg_matrix );
     
     return f;
 }
@@ -55,8 +60,10 @@ const ArgumentRules& Func_min::getArgumentRules( void ) const
     
     if ( !rules_set )
     {
-        
-        argumentRules.push_back( new ArgumentRule( "x", ModelVector<Real>::getClassTypeSpec(), "A vector of values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        std::vector<TypeSpec> paramTypes;
+        paramTypes.push_back( ModelVector<Real>::getClassTypeSpec() );
+        paramTypes.push_back( MatrixReal::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "x", paramTypes, "A vector of values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }

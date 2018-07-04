@@ -3,7 +3,6 @@
 
 #include <string>
 
-#include "EmpiricalTreeDistribution.h"
 #include "Proposal.h"
 #include "StochasticNode.h"
 #include "Tree.h"
@@ -22,7 +21,9 @@ namespace RevBayesCore {
     class IndependentTopologyProposal : public Proposal {
         
     public:
-        IndependentTopologyProposal( StochasticNode<Tree> *n, TypedDistribution<Tree>* dist, Clade og = Clade() );                                               //!<  constructor
+        IndependentTopologyProposal( StochasticNode<Tree> *n, TypedDistribution<Tree>* d, StochasticNode< RbVector<double> > *r = NULL, Clade og = Clade() );                                               //!<  constructor
+        IndependentTopologyProposal( StochasticNode<Tree> *n, TypedDistribution<Tree>* d, std::vector<StochasticNode<double>* > r, Clade og = Clade() );                                               //!<  constructor
+
         
         // Basic utility functions
         void                                    cleanProposal(void);                                             //!< Clean up proposal
@@ -45,12 +46,16 @@ namespace RevBayesCore {
         
         Clade                                   outgroup;
         TypedDistribution<Tree>*                proposal_distribution;
+        StochasticNode< RbVector<double> >*     rates_node;
+        std::vector<StochasticNode<double>* >   rates_vector;
         StochasticNode<Tree>*                   variable;
 
         double                                  proposal_ln_num_rankings;
         double                                  stored_ln_num_rankings;
+        std::vector<double>                     stored_rates;
         Tree                                    stored_tree;
         
+        bool                                    init;
     };
     
 }

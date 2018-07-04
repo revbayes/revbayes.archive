@@ -95,6 +95,6 @@ void RateGenerator::initMethods(void) {
 void RateGenerator::printValue( std::ostream& o, bool user ) const
 {
 
-    this->getDagNode()->printValue( o, ",", -1, true, user, true );
+    this->getDagNode()->printValue( o, ",", -1, true, user, false );
 
 }

@@ -1,6 +1,7 @@
 #ifndef StateDependentSpeciationExtinctionProcess_H
 #define StateDependentSpeciationExtinctionProcess_H
 
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "TreeDiscreteCharacterData.h"
 #include "CladogeneticSpeciationRateMatrix.h"
 #include "RateMatrix.h"
@@ -11,6 +12,9 @@
 #include "Tree.h"
 #include "TreeChangeEventListener.h"
 #include "TypedDagNode.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlString.h"
 
 
 #include <vector>
@@ -27,7 +31,7 @@ namespace RevBayesCore {
      * Will Freyman 6/22/16
      *
      */
-    class StateDependentSpeciationExtinctionProcess : public TypedDistribution<Tree>, public TreeChangeEventListener {
+    class StateDependentSpeciationExtinctionProcess : public TypedDistribution<Tree>, public TreeChangeEventListener, public MemberObject< RbVector<double> > {
         
     public:
         StateDependentSpeciationExtinctionProcess(const TypedDagNode<double> *root,
@@ -37,8 +41,12 @@ namespace RevBayesCore {
                                                   const TypedDagNode<Simplex>* p,
                                                   const TypedDagNode<double> *rh,
                                                   const std::string &cdt,
-                                                  const std::vector<Taxon> &tn,
-                                                  bool uo);
+                                                  bool uo,
+                                                  size_t min_lineages,
+                                                  size_t max_lineages,
+                                                  double max_t,
+                                                  bool prune,
+                                                  bool condition);
         
         // pure virtual member functions
         virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
@@ -48,6 +56,9 @@ namespace RevBayesCore {
         void                                                            fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                                 //!< The tree has changed and we want to know which part.
         const AbstractHomologousDiscreteCharacterData&                  getCharacterData() const;
         double                                                          getOriginAge(void) const;
+        std::vector<double>                                             getAverageExtinctionRatePerBranch(void) const;
+        std::vector<double>                                             getAverageSpeciationRatePerBranch(void) const;
+        std::vector<double>                                             getTimeInStates(void) const;
         double                                                          getRootAge(void) const;
         virtual void                                                    redrawValue(void);
         void                                                            setCladogenesisMatrix(const TypedDagNode< CladogeneticSpeciationRateMatrix > *r);
@@ -62,6 +73,7 @@ namespace RevBayesCore {
         void                                                            drawStochasticCharacterMap(std::vector<std::string*>& character_histories);
         void                                                            recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories);
         void                                                            numericallyIntegrateProcess(state_type &likelihoods, double begin_age, double end_age, bool use_backward, bool extinction_only) const; //!< Wrapper function for the ODE time stepper function.
+        void                                                            resizeVectors(size_t num_nodes);
         
     protected:
         
@@ -79,21 +91,24 @@ namespace RevBayesCore {
 
         // Parameter management functions. You need to override both if you have additional parameters
         virtual void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
-        void                                                            executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found);
+        void                                                            executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;  
+        RevLanguage::RevPtr<RevLanguage::RevVariable>                   executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found);
         
         // helper functions
         void                                                            buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         std::vector<double>                                             pExtinction(double start, double end) const;                                                        //!< Compute the probability of extinction of the process (without incomplete taxon sampling).
         virtual double                                                  pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         void                                                            recursivelyFlagNodeDirty(const TopologyNode& n);
-        void                                                            simulateTree(void);
+        bool                                                            simulateTree(size_t attempts = 0);
+        bool                                                            simulateTreeConditionedOnTips(size_t attempts = 0);
+        std::vector<double>                                             calculateTotalAnageneticRatePerState(void);
+        std::vector<double>                                             calculateTotalSpeciationRatePerState(void);
         void                                                            computeNodeProbability(const TopologyNode &n, size_t nIdx) const;
         double                                                          computeRootLikelihood() const;
         
         // members
         std::string                                                     condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
         double                                                          dt;                                                                                                 //!< The size of the time slices used by the ODE for numerical integration.
-        std::vector<Taxon>                                              taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
         std::vector<bool>                                               active_likelihood;
         mutable std::vector<bool>                                       changed_nodes;
         mutable std::vector<bool>                                       dirty_nodes;
@@ -105,6 +120,10 @@ namespace RevBayesCore {
         bool                                                            use_cladogenetic_events;                                                                            //!< do we use the speciation rates from the cladogenetic event map?
         bool                                                            use_origin;
         bool                                                            sample_character_history;                                                                           //!< are we sampling the character history along branches?
+        std::vector<double>                                             average_speciation;
+        std::vector<double>                                             average_extinction;
+        std::vector<double>                                             time_in_states;
+        std::string                                                     simmap;
         
         // parameters
         const TypedDagNode< CladogeneticSpeciationRateMatrix >*         cladogenesis_matrix;
@@ -118,6 +137,11 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                                     rho;                                                                                                //!< Sampling probability of each species.
         
         RateMatrix_JC                                                   Q_default;
+        size_t                                                          min_num_lineages;
+        size_t                                                          max_num_lineages;
+        double                                                          max_time;
+        bool                                                            prune_extinct_lineages;
+        bool                                                            simulate_conditioned_on_tips;
         double                                                          NUM_TIME_SLICES;
     };
     

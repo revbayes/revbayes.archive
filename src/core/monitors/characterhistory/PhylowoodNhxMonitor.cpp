@@ -1,4 +1,5 @@
 #include "PhylowoodNhxMonitor.h"
+#include "CharacterEventDiscrete.h"
 #include "DagNode.h"
 #include "Model.h"
 #include "Monitor.h"
@@ -66,19 +67,19 @@ std::string PhylowoodNhxMonitor::buildExtendedNewick( void )
 
 void PhylowoodNhxMonitor::updateCharacterCounts(TopologyNode* n, std::string brEnd)
 {
-    BranchHistory bh = branchHistories[n->getIndex()]->getValue();
+    const BranchHistory &bh = branchHistories[n->getIndex()]->getValue();
     std::vector<CharacterEvent*> characters;
     if (brEnd=="child")
     {
         characters = bh.getChildCharacters();
         for (size_t i = 0; i < characters.size(); i++)
-            childCharacterCounts[n->getIndex()][i] += characters[i]->getState();
+            childCharacterCounts[n->getIndex()][i] += static_cast<CharacterEventDiscrete*>(characters[i])->getState();
     }
     else if (brEnd=="parent")
     {
         characters = bh.getParentCharacters();
         for (size_t i = 0; i < characters.size(); i++)
-            parentCharacterCounts[n->getIndex()][i] += characters[i]->getState();
+            parentCharacterCounts[n->getIndex()][i] += static_cast<CharacterEventDiscrete*>(characters[i])->getState();
     }
     
 }
@@ -86,7 +87,7 @@ void PhylowoodNhxMonitor::updateCharacterCounts(TopologyNode* n, std::string brE
 std::string PhylowoodNhxMonitor::buildCharacterHistoryString(TopologyNode* n, std::string brEnd)
 {
     size_t nd_idx = n->getIndex();
-    BranchHistory bh = branchHistories[nd_idx]->getValue();
+    const BranchHistory &bh = branchHistories[nd_idx]->getValue();
     std::vector<CharacterEvent*> characters;
     std::stringstream ss;
     

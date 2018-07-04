@@ -1,3 +1,4 @@
+#include "CharacterEventDiscrete.h"
 #include "MatrixReal.h"
 #include "RateGeneratorSequenceUsingMatrix.h"
 #include "RateMatrix.h"
@@ -102,6 +103,21 @@ RateGeneratorSequenceUsingMatrix* RateGeneratorSequenceUsingMatrix::clone(void) 
 }
 
 
+
+std::set<size_t> RateGeneratorSequenceUsingMatrix::getAffectedSites(CharacterEventDiscrete* to) const
+{
+    size_t s_init[] = { to->getSiteIndex() };
+    std::set<size_t> s( s_init, s_init+1 );
+
+    for (size_t i = 0; i < rateModifiers->size(); i++) {
+        std::set<size_t> tmp = (*rateModifiers)[i].getAffectedSites(to);
+        s.insert( tmp.begin(), tmp.end() );
+    }
+    
+    return s;
+    
+}
+
 double RateGeneratorSequenceUsingMatrix::getRate(size_t from, size_t to, double age, double rate) const
 {
 
@@ -115,9 +131,9 @@ double RateGeneratorSequenceUsingMatrix::getRate(size_t from, size_t to, double 
 }
 
 
-double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double age, double rate) const
+double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, double age, double rate) const
 {
-    size_t from_state = from[ to->getSiteIndex() ]->getState();
+    size_t from_state = static_cast<CharacterEventDiscrete*>(from[ to->getSiteIndex() ])->getState();
     size_t to_state = to->getState();
 
     const RateGenerator* rm = rateMatrix;
@@ -135,9 +151,9 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
 
 
 
-double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age, double rate) const
+double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, unsigned* counts, double age, double rate) const
 {
-    size_t from_state = from[ to->getSiteIndex() ]->getState();
+    size_t from_state = static_cast<CharacterEventDiscrete*>(from[ to->getSiteIndex() ])->getState();
     size_t to_state = to->getState();
     
     const RateGenerator* rm = rateMatrix;
@@ -153,14 +169,24 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
 
 }
 
-double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, std::vector<std::set<size_t> > sites_with_states, double age, double rate) const
+double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, std::vector<std::set<size_t> > sites_with_states, double age, double rate) const
 {
-    double r = 0.0;
+    size_t from_state = static_cast<CharacterEventDiscrete*>(from[ to->getSiteIndex() ])->getState();
+    size_t to_state = to->getState();
+    
+    const RateGenerator* rm = rateMatrix;
+    
+    double r = rm->getRate(from_state, to_state, age, rate);
+    
+    for (size_t i = 0; i < rateModifiers->size(); i++)
+    {
+        r *= (*rateModifiers)[i].computeRateMultiplier(from, to, sites_with_states, age);
+    }
     
     return r;
 }
 
-double RateGeneratorSequenceUsingMatrix::getSiteRate(CharacterEvent* from, CharacterEvent* to, double age, double rate) const
+double RateGeneratorSequenceUsingMatrix::getSiteRate(CharacterEventDiscrete* from, CharacterEventDiscrete* to, double age, double rate) const
 {
 
     const RateGenerator* rm = rateMatrix;
@@ -206,10 +232,11 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
     // for each site in the starting sequence
     for (size_t i = 0; i < from.size(); i++)
     {
-        size_t from_state = from[i]->getState();
+        size_t from_state = static_cast<CharacterEventDiscrete*>(from[i])->getState();
         
         // look at all outgoing states
-        for (size_t to_state = 0; to_state < this->num_states; to_state++) {
+        for (size_t to_state = 0; to_state < this->num_states; to_state++)
+        {
             
             // ignore virtual events (where states match)
             if (from_state == to_state)
@@ -219,7 +246,7 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
             double r = rm->getRate(from_state, to_state, age, 1.0);
             
             // get modified rate
-            CharacterEvent to(i, to_state, age);
+            CharacterEventDiscrete to(i, to_state, age);
             for (size_t k = 0; k < rateModifiers->size(); k++)
             {
                 CharacterHistoryRateModifier& chrm = (*rateModifiers)[k];
@@ -242,9 +269,13 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
 
     std::vector<std::set<size_t> > sites_with_states(this->num_states);
     
-    for (size_t i = 0; i < from.size(); i++)
+    bool use_site_state_patterns = true;
+    if (use_site_state_patterns)
     {
-        sites_with_states[ from[i]->getState() ].insert(i);
+        for (size_t i = 0; i < from.size(); i++)
+        {
+            sites_with_states[ static_cast<CharacterEventDiscrete*>(from[i])->getState() ].insert(i);
+        }
     }
 
     return getSumOfRates( from, sites_with_states, age, rate);
@@ -262,10 +293,11 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
     // for each site in the starting sequence
     for (size_t i = 0; i < from.size(); i++)
     {
-        size_t from_state = from[i]->getState();
+        size_t from_state = static_cast<CharacterEventDiscrete*>(from[i])->getState();
         
         // look at all outgoing states
-        for (size_t to_state = 0; to_state < this->num_states; to_state++) {
+        for (size_t to_state = 0; to_state < this->num_states; to_state++)
+        {
             
             // ignore virtual events (where states match)
             if (from_state == to_state)
@@ -275,7 +307,7 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
             double r = rm->getRate(from_state, to_state, age, 1.0);
             
             // get modified rate
-            CharacterEvent to(i, to_state, age);
+            CharacterEventDiscrete to(i, to_state, age);
             for (size_t k = 0; k < rateModifiers->size(); k++)
             {
                 CharacterHistoryRateModifier& chrm = (*rateModifiers)[k];
@@ -295,32 +327,44 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
 }
 
 
-double RateGeneratorSequenceUsingMatrix::getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEvent* to, std::vector<std::set<size_t> > sites_with_states, double age, double rate) const
+double RateGeneratorSequenceUsingMatrix::getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, std::vector<std::set<size_t> > sites_with_states, double age, double rate) const
 {
     double r = 0.0;
     
     size_t index = to->getSiteIndex();
-    size_t old_state = from[ index ]->getState();
+    size_t old_state = static_cast<CharacterEventDiscrete*>(from[ index ])->getState();
     size_t new_state = to->getState();
     
-    CharacterEvent* possible_event = new CharacterEvent(*to);
+    CharacterEventDiscrete* possible_event = new CharacterEventDiscrete(*to);
+    
+    std::set<size_t> affected_sites = getAffectedSites(to);
+    
+//    std::vector<std::set<size_t> > old_sites_with_states = sites_with_states;
+    std::vector<std::set<size_t> > new_sites_with_states = sites_with_states;
+    new_sites_with_states[ old_state ].erase( index );
+    new_sites_with_states[ new_state ].insert( index );
     
     for (size_t s = 0; s < num_states; s++)
     {
         possible_event->setState(s);
         
         // subtract the contribution of rates leaving the old state
-        if (s != old_state) {
+        if (s != old_state)
+        {
             r -= getRate(from, possible_event, sites_with_states, age, rate);
         }
         
-        from[ index ]->setState( new_state );
+        // prepare for new state
+        static_cast<CharacterEventDiscrete*>(from[ index ])->setState( new_state );
+        
         // add the contribution of rates leaving the new state
-        if (s != new_state) {
-            r += getRate(from, possible_event, sites_with_states, age, rate);
+        if (s != new_state)
+        {
+            r += getRate(from, possible_event, new_sites_with_states, age, rate);
         }
         
-        from[ index ]->setState( old_state );
+        // revert to old state
+        static_cast<CharacterEventDiscrete*>(from[ index ])->setState( old_state );
     }
     
     delete possible_event;
@@ -328,36 +372,60 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRatesDifferential(std::vector<C
     return r;
 }
 
-double RateGeneratorSequenceUsingMatrix::getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEvent* to, double age, double rate) const
+double RateGeneratorSequenceUsingMatrix::getSumOfRatesDifferential(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, double age, double rate) const
 {
+    // this will return the rate differential
     double r = 0.0;
+
     
-    size_t index = to->getSiteIndex();
-    size_t old_state = from[ index ]->getState();
-    size_t new_state = to->getState();
+    // get the old and new states for the transition
+    size_t to_index = to->getSiteIndex();
+    size_t old_to_state = static_cast<CharacterEventDiscrete*>(from[ to->getSiteIndex() ])->getState();
+    size_t new_to_state = to->getState();
     
-    CharacterEvent* possible_event = new CharacterEvent(*to);
+    // collect the sites affected by the transition
+    std::set<size_t> affected_sites = getAffectedSites(to);
     
-    for (size_t s = 0; s < num_states; s++)
-    {
-        possible_event->setState(s);
+    // subtract the sum of rates contribution leaving the old from state
+    for (std::set<size_t>::iterator it = affected_sites.begin(); it != affected_sites.end(); it++) {
         
-        // subtract the contribution of rates leaving the old state
-        if (s != old_state) {
-            r -= getRate(from, possible_event, age, rate);
+        // index of affected site
+        size_t index = *it;
+        
+        // create a dummy event for the affected site
+        CharacterEventDiscrete* possible_event = new CharacterEventDiscrete( *(static_cast<CharacterEventDiscrete*>(from[index])) );
+        
+        // first subtract the sum of rates leaving each old site-state
+        size_t old_from_state = static_cast<CharacterEventDiscrete*>(from[index])->getState();
+        for (size_t s = 0; s < num_states; s++) {
+            if (s != old_from_state)
+            {
+                possible_event->setState(s);
+                r -= getRate(from, possible_event, age, rate);
+            }
         }
         
-        from[ index ]->setState( new_state );
-        // add the contribution of rates leaving the new state
-        if (s != new_state) {
-            r += getRate(from, possible_event, age, rate);
+        // apply the new to-state
+        static_cast<CharacterEventDiscrete*>(from[to_index])->setState(new_to_state);
+        
+        // then add the sum of rates leaving each new site-state
+        size_t new_from_state = static_cast<CharacterEventDiscrete*>(from[index])->getState();
+        for (size_t s = 0; s < num_states; s++) {
+            if (s != new_from_state)
+            {
+                possible_event->setState(s);
+                r += getRate(from, possible_event, age, rate);
+            }
         }
         
-        from[ index ]->setState( old_state );
+        // restore the old to-state
+        static_cast<CharacterEventDiscrete*>(from[to_index])->setState(old_to_state);
+        
+        // free memory for the dummy state
+        delete possible_event;
     }
     
-    delete possible_event;
-    
+    // return the rate differential
     return r;
 }
 

@@ -35,7 +35,7 @@ MarginalLikelihoodEstimator::MarginalLikelihoodEstimator(const std::string &fn, 
         bool hasHeaderBeenRead = false;
         
         // Open file
-        std::ifstream inFile( fn.c_str() );
+        std::ifstream inFile( myFileManager.getFullFileName().c_str() );
         
         if ( !inFile )
         {
@@ -58,7 +58,7 @@ MarginalLikelihoodEstimator::MarginalLikelihoodEstimator(const std::string &fn, 
             
             // Read a line
             std::string line;
-            getline( inFile, line );
+            myFileManager.safeGetline( inFile, line );
             
             // skip empty lines
             if (line.length() == 0)
@@ -85,11 +85,11 @@ MarginalLikelihoodEstimator::MarginalLikelihoodEstimator(const std::string &fn, 
                 
                     if ( columns[j] == pn )
                     {
-                        powerColumnIndex = j;
+                        powerColumnIndex = (int)j;
                     }
                     else if ( columns[j] == ln )
                     {
-                        likelihoodColumnIndex = j;
+                        likelihoodColumnIndex = (int)j;
                     }
                 
                 }

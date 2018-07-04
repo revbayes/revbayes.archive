@@ -75,7 +75,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false, bool internal = false );
+        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false, bool internal = false, bool gapmatch = true );
         AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n);                                                                                          //!< Copy constructor
         virtual                                                            ~AbstractPhyloCTMCSiteHomogeneous(void);                                                              //!< Virtual destructor
         
@@ -232,6 +232,7 @@ namespace RevBayesCore {
         size_t                                                              pattern_block_size;
         
         bool                                                                store_internal_nodes;
+        bool                                                                gap_match_clamped;
         
         charType                                                            template_state;                                 //!< Template state used for ancestral state estimation. This makes sure that the state labels are preserved.
         
@@ -270,7 +271,7 @@ namespace RevBayesCore {
 
 
 template<class charType>
-RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb, bool internal, bool wd) :
+RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool internal, bool gapmatch, bool wd) :
 TypedDistribution< AbstractHomologousDiscreteCharacterData >(  NULL ),
 lnProb( 0.0 ),
 storedLnProb( 0.0 ),
@@ -311,6 +312,7 @@ pattern_block_start( 0 ),
 pattern_block_end( num_patterns ),
 pattern_block_size( num_patterns ),
 store_internal_nodes( internal ),
+gap_match_clamped( gapmatch ),
 template_state()
 {
     
@@ -401,6 +403,7 @@ pattern_block_start( n.pattern_block_start ),
 pattern_block_end( n.pattern_block_end ),
 pattern_block_size( n.pattern_block_size ),
 store_internal_nodes( n.store_internal_nodes ),
+gap_match_clamped( n.gap_match_clamped ),
 template_state( n.template_state )
 {
     
@@ -704,6 +707,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 {
                     // we use the index of the state
                     char_matrix[node_index][patternIndex] = c.getStateIndex();
+                    if ( c.getStateIndex() >= this->num_chars )
+                        throw RbException("Problem with state index in PhyloCTMC!");
                 }
                 else
                 {
@@ -1290,18 +1295,10 @@ bool RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
     size_t node_index = node.getIndex();
     size_t start_state = start_states[node_index][site].getStateIndex();
     size_t end_state = start_state;
-    bool ambiguous_end_state = false;
-    
-    // check whether we should simulate the end state
-    if ( end_states[node_index][site].isAmbiguous() == true )
-    {
-        ambiguous_end_state = true;
-    }
-    else
-    {
-        end_state = end_states[node_index][site].getStateIndex();
-    }
-    
+
+    // NOTE: ambiguous tip states are sampled along with internal node states
+    end_state = end_states[node_index][site].getStateIndex();
+       
     // set up vectors to hold the character transition events
     std::vector<size_t> transition_states;
     std::vector<double> transition_times;
@@ -1365,6 +1362,7 @@ bool RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
         start_age = branch_length;
         end_age = 0.0;
     }
+    
     
     // simulate stochastic map
     transition_states.push_back(end_state);
@@ -1697,11 +1695,68 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointCondi
     
     // ideally sample ambiguous tip states given the underlying process and ancestral state
     // for now, always sample the clamped character
+    
+    // sample characters conditioned on start states, going to end states
     std::vector<double> p(this->num_chars, 0.0);
     for (size_t i = 0; i < this->num_sites; i++)
     {
+        
         charType c = td.getCharacter(i);
-        endStates[node_index][i] = c;
+        
+        
+        if (!c.isAmbiguous())
+        {
+            // we know the tip state for unambiguous characters
+            endStates[node_index][i] = c;
+        }
+        else
+        {
+            // we sample the tip state for ambiguous characters
+            size_t cat = sampledSiteRates[i];
+            size_t k = startStates[node_index][i].getStateIndex();
+            
+            // sum to sample
+            double sum = 0.0;
+            
+            // if the matrix is compressed use the pattern for this site
+            size_t pattern = i;
+            if ( compressed == true )
+            {
+                pattern = site_pattern[i];
+            }
+            
+            // get the ambiguous character's bitset for the tip taxon
+            RbBitSet bs = td.getCharacter(i).getState();
+            
+            // iterate over possible end states for each site given start state
+            for (size_t j = 0; j < this->num_chars; j++)
+            {
+                double tp_kj = this->transition_prob_matrices[cat][k][j] * bs[j];
+                p[j] = tp_kj;
+                sum += p[j];
+            }
+            
+            // sample char from p
+            charType c = charType( template_state );
+            double u = GLOBAL_RNG->uniform01() * sum;
+            for (size_t state = 0; state < this->num_chars; state++)
+            {
+                u -= p[state];
+                if (u < 0.0)
+                {
+                    endStates[node_index][i] = c;
+                    break;
+                }
+                if (c.getStateIndex() + 1 >= c.getNumberOfStates())
+                {
+                    c.setToFirstState();
+                }
+                else
+                {
+                    c++;
+                }
+            }
+        }
     }
     
     // no further recursion
@@ -1909,7 +1964,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::keepSpecializatio
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n ) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n )
+{
     
     // we need to flag this node and all ancestral nodes for recomputation
     size_t index = n.getIndex();
@@ -1965,7 +2021,7 @@ template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void )
 {
     
-    bool do_mask = this->dag_node != NULL && this->dag_node->isClamped();
+    bool do_mask = this->dag_node != NULL && this->dag_node->isClamped() && gap_match_clamped;
     std::vector<std::vector<bool> > mask_gap        = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
     std::vector<std::vector<bool> > mask_missing    = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
     // we cannot use the stored gap matrix because it uses the pattern compression
@@ -2295,7 +2351,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
             
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = -log(max);
             
-            
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
@@ -2360,7 +2415,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
             
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] - log(max);
             
-            
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
@@ -2424,7 +2478,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
             }
             
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[middle]][middle][site] - log(max);
-            
             
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
@@ -2709,7 +2762,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setPInv(const Typ
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RateGenerator > *rm) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RateGenerator > *rm)
+{
     
     // remove the old parameter first
     if ( homogeneous_rate_matrix != NULL )
@@ -2749,7 +2803,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(con
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm)
+{
     
     // remove the old parameter first
     if ( homogeneous_rate_matrix != NULL )
@@ -2894,10 +2949,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseMarginalLik
 }
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrices(bool use_sm, const TypedDagNode< Simplex > *s)
 {
     
-    if ( sm == false && s != NULL)
+    if ( use_sm == false && s != NULL)
     {
         throw(RbException("Provided site matrix probs but not using site matrix mixture."));
     }
@@ -2909,7 +2964,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrice
         site_matrix_probs = NULL;
     }
     
-    if ( sm )
+    if ( use_sm == true )
     {
         // set the value
         site_matrix_probs = s;
@@ -2918,7 +2973,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseSiteMatrice
     // add the new parameter
     this->addParameter( site_matrix_probs );
     
-    this->branch_heterogeneous_substitution_matrices = !sm;
+    this->branch_heterogeneous_substitution_matrices = !use_sm;
     
     this->resizeLikelihoodVectors();
     

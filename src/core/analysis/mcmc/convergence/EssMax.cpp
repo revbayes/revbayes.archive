@@ -34,7 +34,7 @@ EssMax* EssMax::clone( void ) const
     return new EssMax( *this );
 }
 
-size_t EssMax::estimateBurnin(const std::vector<double>& values)
+size_t EssMax::estimateBurnin(const TraceNumeric& trace)
 {
     
     // init
@@ -42,15 +42,13 @@ size_t EssMax::estimateBurnin(const std::vector<double>& values)
     size_t  best_burnin = 0;
     
     // iterate over possible burnins
-    for (size_t i=0; i<(frac*values.size()); i+=blockSize) {
-        // make mean invalid for recalculation
-        analysis.analyseMean(values, i);
+    for (size_t i=0; i<frac*trace.size(); i+=blockSize) {
         // analyse trace for this burnin
-        analysis.analyseCorrelation(values,i);
+        double ess = trace.getESS(i, trace.size());
         
         // check if the new ess is better than any previous ones
-        if (RbMath::isFinite(analysis.getEss()) && max_ess < analysis.getEss()) {
-            max_ess = analysis.getEss();
+        if (RbMath::isFinite(ess) && max_ess < ess) {
+            max_ess = ess;
             best_burnin = i;
         }
     }

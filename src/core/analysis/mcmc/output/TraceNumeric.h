@@ -3,103 +3,70 @@
 
 #include "Trace.h"
 
-#include <string>
 #include <vector>
 
 namespace RevBayesCore {
 
-#define FAILED 0
-#define PASSED 1
-#define NOT_CHECKED 2
-
-    class TraceNumeric : public Trace {
-
+    class TraceNumeric : public Trace<double> {
+    
     public:
-    
-        TraceNumeric(void);
-        
-        virtual                     ~TraceNumeric(void) {}
-        
-        bool                        operator==(const TraceNumeric &t) const                { return this == &t; }
-        bool                        operator!=(const TraceNumeric &t) const                { return !this->operator==( t ); }
-        bool                        operator<(const TraceNumeric &t) const                 { return this < &t; }
-        
-        // overloaded functions from RbObject
-        TraceNumeric*               clone(void) const;                                              //!< Clone object
-    
-        void                        addValueFromString(const std::string &s);
-        void                        addObject(double d);
-        void                        computeStatistics(void);
-        bool                        isCoveredInInterval(const std::string &v, double i, bool verbose) const;
-        double                      objectAt(size_t index)                          { return values.at(index); }
-        void                        removeLastObject();
-        void                        removeObjectAtIndex(int index);
-        size_t                      size() const { return values.size(); }
-    
-    
-        // getters and setters
-        size_t                      getBurnin()                                     { return burnin; }
-        double                      getEss()                                        { return ess; }
-        double                      getMean()                                       { return mean; }
-        double                      getMedian()                                     { return median; }
-        size_t                      getSamples()                                    { return values.size(); }
-        double                      getSem()                                        { return sem; }
-        size_t                      getStepSize()                                   { return stepSize; }
-        std::vector<double>         getValues()                                     { return values; }
-        const std::vector<double>&  getValues() const                               { return values; }
-        int                         hasConverged()                                  { return converged; }
-        int                         hasPassedEssThreshold()                         { return passedEssThreshold; }
-        int                         hasPassedGelmanRubinTest()                      { return passedGelmanRubinTest; }
-        int                         hasPassedGewekeTest()                           { return passedGewekeTest; }
-        int                         hasPassedIidBetweenChainsStatistic()            { return passedIidBetweenChainsStatistic; }
-        int                         hasPassedSemThreshold()                         { return passedSemThreshold; }
-        int                         hasPassedStationarityTest()                     { return passedStationarityTest; }
-    
-        void                        setBurnin(size_t b)                             { burnin = b; }
-        void                        setEss(double e)                                { ess = e; }
-        void                        setMean(double m)                               { mean = m; }
-        void                        setMedian(double m)                             { median = m; }
-        void                        setSem(double s)                                { sem = s; }
-        void                        setStepSize( size_t s)                          { stepSize = s; }
-        void                        setValues(std::vector<double> v)                { values = v; }
-        void                        setConverged(bool c)                            { converged = c; }
-        void                        setPassedEssThreshold(int p)                    { passedEssThreshold = p; }
-        void                        setPassedGelmanRubinTest(int p)                 { passedGelmanRubinTest = p; }
-        void                        setPassedGewekeTest(int p)                      { passedGewekeTest = p; }
-        void                        setPassedIidBetweenChainsStatistic(int p)       { passedIidBetweenChainsStatistic = p; }
-        void                        setPassedSemThreshold(int p)                    { passedSemThreshold = p; }
-        void                        setPassedStationarityTest(int p)                { passedStationarityTest = p; }
-    
-    protected:
-    
-        void                        invalidate();
-    
+        TraceNumeric();
+        virtual ~TraceNumeric(){};
 
-    private:
-    
-        std::vector<double>         values;                                     //!< the values of this TraceNumeric
-    
-        int                         burnin;
-        double                      ess;                                        //!< the effective sample saize for this TraceNumeric
-        double                      mean;                                       //!< the mean value for this TraceNumeric
-        double                      median;                                     //!< the median of the TraceNumeric
-        double                      sem;                                        //!< the standard error of the mean
-        size_t                      stepSize;                                   //!< the step size between samples
-    
-        int                         converged;                                  //!< Whether this parameter in itself has converged.
-        int                         passedStationarityTest;                     //!< Whether this parameter passed the stationarity test.
-        int                         passedGewekeTest;                           //!< Whether this parameter passed the Geweke statistic.
-//        int                     passedHeidelbergerWelcheStatistic;          //!< Whether this parameter passed the Heidelberger-Welch statistic.
-        int                         passedEssThreshold;                         //!< Whether this parameter passed the threshold for the ESS.
-        int                         passedSemThreshold;                         //!< Whether this parameter passed the threshold for the SEM.
-        int                         passedIidBetweenChainsStatistic;            //!< Whether this parameter passed the iid test of chains.
-        int                         passedGelmanRubinTest;                      //!< Whether this parameter passed the Gelman-Rubin statistic.
+        virtual TraceNumeric*   clone(void) const;                              //!< Clone object
+
+        double                  getMean() const;                                //!< compute the mean for the trace
+        double                  getESS() const;                                 //!< compute the effective sample size
+        double                  getSEM() const;                                 //!< compute the standard error of the mean
+
+        double                  getMean(long begin, long end) const;            //!< compute the mean for the trace with begin and end indices of the values
+        double                  getESS(long begin, long end) const;             //!< compute the effective sample size with begin and end indices of the values
+        double                  getSEM(long begin, long end) const;             //!< compute the effective sample size with begin and end indices of the values
+
+        void                    computeStatistics(void);
+
+        //int                     hasConverged() const                            { return converged; }
+        int                     hasPassedGewekeTest() const                     { return passedGewekeTest; }
+        int                     hasPassedStationarityTest() const               { return passedStationarityTest; }
+        //int                     hasPassedEssThreshold() const                   { return passedEssThreshold; }
+        //int                     hasPassedSemThreshold() const                   { return passedSemThreshold; }
+        //int                     hasPassedIidBetweenChainsStatistic() const      { return passedIidBetweenChainsStatistic; }
+        //int                     hasPassedGelmanRubinTest() const                { return passedGelmanRubinTest; }
+
+    protected:
+
+        void                    update() const;                                 //!< compute the correlation statistics (act,ess,sem,...)
+        void                    update(long begin, long end) const;             //!< compute the correlation statistics (act,ess,sem,...)
+
+        // variable holding the data
+        mutable double          ess;                                            //!< effective sample size
+        mutable double          mean;                                           //!< mean of trace
+        mutable double          sem;                                            //!< standard error of mean
+
+        mutable long            begin;
+        mutable long            end;
+
+        // variable holding the data
+        mutable double          essw;                                            //!< effective sample size
+        mutable double          meanw;                                           //!< mean of trace
+        mutable double          semw;                                            //!< standard error of mean
+
+        //int                     converged;                                      //!< Whether this parameter in itself has converged.
+        int                     passedStationarityTest;                         //!< Whether this parameter passed the stationarity test.
+        int                     passedGewekeTest;                               //!< Whether this parameter passed the Geweke statistic.
+        //int                     passedEssThreshold;                             //!< Whether this parameter passed the threshold for the ESS.
+        //int                     passedSemThreshold;                             //!< Whether this parameter passed the threshold for the SEM.
+        //int                     passedIidBetweenChainsStatistic;                //!< Whether this parameter passed the iid test of chains.
+        //int                     passedGelmanRubinTest;                          //!< Whether this parameter passed the Gelman-Rubin statistic.
+
+        mutable bool            stats_dirty;
+        mutable bool            statsw_dirty;
     
     };
-    
-    // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const TraceNumeric& x);                                //!< Overloaded output operator
 
 }
 
 #endif
+
+
+

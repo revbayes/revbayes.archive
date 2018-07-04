@@ -135,11 +135,11 @@ double ConstantRateCompleteBirthDeathProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
     // so we convert to the probability of a (ranked) non-oriented tree with labeled extant tips
-    // by multiplying by 2^{n-1} / (n-m)!
-    // where n is the number of tips and m is the number of extinct tips
+    // by multiplying by 2^{n-1} / n!
+    // where n is the number of tips
 
-    size_t n = value->getNumberOfTips();
-    size_t m = value->getNumberOfExtinctTips();
+    int n = (int)value->getNumberOfTips();
+    int m = (int)value->getNumberOfExtinctTips();
 
     // condition on survival
     if (n == m)
@@ -147,7 +147,7 @@ double ConstantRateCompleteBirthDeathProcess::lnProbTreeShape(void) const
         return RbConstants::Double::neginf;
     }
 
-    return (n - 1) * RbConstants::LN2 - RbMath::lnFactorial(n - m) - RbMath::lnFactorial(m);
+    return (n - 1) * RbConstants::LN2 - RbMath::lnFactorial(n - m);
 }
 
 
@@ -178,7 +178,7 @@ double ConstantRateCompleteBirthDeathProcess::simulateDivergenceTime(double orig
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
-    double age = present - origin;
+    double age = origin - present;
     double b = speciation->getValue();
     double d = extinction->getValue();
     double r = 1.0;
@@ -188,18 +188,18 @@ double ConstantRateCompleteBirthDeathProcess::simulateDivergenceTime(double orig
 
     
     // compute the time for this draw
+    // see Hartmann et al. 2010 and Stadler 2011
     double t = 0.0;
     if ( b > d )
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     }
     else
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     }
     
-//    return present - t;
-    return origin + t;
+    return present + t;
 }
 
 

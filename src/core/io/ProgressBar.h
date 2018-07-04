@@ -1,8 +1,6 @@
 #ifndef ProgressBar_H
 #define ProgressBar_H
 
-#include "ModelTrace.h"
-
 #include <vector>
 #include <string>
 

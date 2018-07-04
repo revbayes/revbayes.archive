@@ -91,7 +91,7 @@ RevBayesCore::UniformPartitioningDistribution<valueType>::UniformPartitioningDis
     this->addParameter( parameter_values );
     
     // calculate the number of partitions
-    int num_elements = parameter_values->getValue().size();
+    int num_elements = (int)parameter_values->getValue().size();
     if ( include_zero == false )
     {
         num_partitions = RbMath::bell( num_elements ); 
@@ -124,7 +124,7 @@ RevBayesCore::UniformPartitioningDistribution<valueType>::UniformPartitioningDis
     this->addParameter( parameter_values );
     
     // calculate the number of partitions
-    int num_elements = parameter_values->getValue().size();
+    int num_elements = (int)parameter_values->getValue().size();
     if ( include_zero == false )
     {
         num_partitions = RbMath::bell( num_elements ); 
@@ -144,7 +144,7 @@ template <class valueType>
 RevBayesCore::RbVector<valueType>* RevBayesCore::UniformPartitioningDistribution<valueType>::assignValues( void )
 {
     
-    int num_elements = parameter_values->getValue().size();
+    int num_elements = (int)parameter_values->getValue().size();
     RbVector<valueType>* rv = new RbVector<valueType>();
     RbVector<valueType>& temp = *rv;
     
@@ -227,7 +227,7 @@ const std::vector<valueType>& RevBayesCore::UniformPartitioningDistribution<valu
 template <class valueType>
 RevBayesCore::RbVector<valueType>* RevBayesCore::UniformPartitioningDistribution<valueType>::getPartition( void )
 {
-    int num_elements = parameter_values->getValue().size(); 
+    int num_elements = (int)parameter_values->getValue().size();
 
     if ( include_zero == true )
     {

@@ -3,6 +3,8 @@
 #include "NexusWriter.h"
 #include "RbFileManager.h"
 
+#include <iomanip>
+
 using namespace RevBayesCore;
 
 
@@ -13,7 +15,7 @@ using namespace RevBayesCore;
  * \param[in]   fileName    The name of the file into which the objects is to be written.
  */
 NexusWriter::NexusWriter( const std::string &fn ) :
-    fileName( fn )
+    file_name( fn )
 {
     
 }
@@ -26,7 +28,7 @@ void NexusWriter::closeStream( void )
 {
     
     // close the stream
-    outStream.close();
+    out_stream.close();
 }
 
 
@@ -35,14 +37,14 @@ void NexusWriter::closeStream( void )
  */
 void NexusWriter::openStream(bool reopen) 
 {
-    RbFileManager f = RbFileManager(fileName);
+    RbFileManager f = RbFileManager(file_name);
     f.createDirectoryForFile();
     
     // open the stream to the file
-    outStream.open( fileName.c_str(), std::fstream::out );
+    out_stream.open( f.getFullFileName().c_str(), std::fstream::out );
     
     // write header line
-    outStream << "#NEXUS" << std::endl;
+    out_stream << "#NEXUS" << std::endl;
     
 }
 
@@ -52,19 +54,28 @@ void NexusWriter::openStream(bool reopen)
  *
  * \param[in]   data        The discrete character data object which is written out.
  */
-void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData &data) 
+void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData &data)
 {
     // write initial lines of the character block
-    outStream << std::endl;
-    outStream << "Begin data;" << std::endl;
-    outStream << "Dimensions ntax=" << data.getNumberOfIncludedTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
-    outStream << "Format datatype=" << data.getDataType() << " ";
+    out_stream << std::endl;
+    out_stream << "Begin data;" << std::endl;
+    out_stream << "Dimensions ntax=" << data.getNumberOfIncludedTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
+    out_stream << "Format datatype=" << data.getDataType() << " ";
     if ( data.getDataType() == "Standard" )
     {
-        outStream << "symbols=\"" << data.getTaxonData(0).getCharacter(0).getStateLabels() << "\" ";
+        std::string labels = data.getTaxonData(0).getCharacter(0).getStateLabels();
+        out_stream << "symbols=\"";
+        for (size_t i = 0; i < labels.size(); ++i)
+        {
+            out_stream << labels[i];
+//            if (i < (labels.size()-1))
+//                out_stream<< " ";
+            
+        }
+        out_stream << "\" ";
     }
-    outStream << "missing=? gap=-;" << std::endl;
-    outStream << "Matrix" << std::endl;
+    out_stream << "missing=? gap=-;" << std::endl;
+    out_stream << "Matrix" << std::endl;
 
     // get the taxon vector
     std::vector<Taxon> taxa = data.getTaxa();
@@ -77,7 +88,7 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
         
         if ( !data.isTaxonExcluded( it->getName() ) )
         {
-            outStream << it->getName() << "   ";
+            out_stream << it->getName() << "   ";
             const AbstractDiscreteTaxonData &taxon = data.getTaxonData( it->getName() );
             size_t nChars = taxon.getNumberOfCharacters();
             
@@ -88,19 +99,19 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
                 if ( !data.isCharacterExcluded( i ) )
                 {
                     const CharacterState &c = taxon.getCharacter( i );
-                    outStream << c.getStringValue();
+                    out_stream << c.getStringValue();
                     ++count;
                 }
             }
         
-            outStream << std::endl;
+            out_stream << std::endl;
         }
         
     }
     
-    outStream << ";" << std::endl;
-    outStream << "End;" << std::endl;
-    outStream << std::endl;
+    out_stream << ";" << std::endl;
+    out_stream << "End;" << std::endl;
+    out_stream << std::endl;
     
 }
 
@@ -113,13 +124,18 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
 void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
 {
     
+    std::streamsize previousPrecision = out_stream.precision();
+    std::ios_base::fmtflags previousFlags = out_stream.flags();
+    
+    out_stream << std::fixed;
+    
     // write initial lines of the character block
-    outStream << std::endl;
-    outStream << "Begin data;" << std::endl;
-    outStream << "Dimensions ntax=" << data.getNumberOfIncludedTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
-    outStream << "Format datatype=" << data.getDataType() << " ";
-    outStream << "missing=? gap=-;" << std::endl;
-    outStream << "Matrix" << std::endl;
+    out_stream << std::endl;
+    out_stream << "Begin data;" << std::endl;
+    out_stream << "Dimensions ntax=" << data.getNumberOfIncludedTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
+    out_stream << "Format datatype=" << data.getDataType() << " ";
+    out_stream << "missing=? gap=-;" << std::endl;
+    out_stream << "Matrix" << std::endl;
     
     
     
@@ -133,7 +149,7 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
     {
         if ( !data.isTaxonExcluded( it->getName() ) )
         {
-            outStream << it->getName() << "   ";
+            out_stream << it->getName() << "   ";
             const ContinuousTaxonData &taxon = data.getTaxonData( it->getName() );
             size_t nChars = taxon.getNumberOfCharacters();
             for (size_t i = 0; i < nChars; ++i)
@@ -141,41 +157,43 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
                 if ( !data.isCharacterExcluded( i ) )
                 {
                     const double &c = taxon.getCharacter( i );
-                    outStream << c << " ";
+                    out_stream << c << " ";
                 }
             }
         
-            outStream << std::endl;
+            out_stream << std::endl;
         }
     }
 
-    outStream << ";" << std::endl;
-    outStream << "End;" << std::endl;
-    outStream << std::endl;
+    out_stream << ";" << std::endl;
+    out_stream << "End;" << std::endl;
+    out_stream << std::endl;
     
+    out_stream.setf(previousFlags);
+    out_stream.precision(previousPrecision);
 }
 
 
 /**
  * This method simply writes a taxon-block into a file in Nexus format.
  *
- * \param[in]   clade        The clade object from which the taxa are taken.
+ * \param[in]   c        The clade object from which the taxa are taken.
  */
 void NexusWriter::writeNexusBlock(const Clade &c) 
 {
     
     const std::vector<Taxon>& labels = c.getTaxa();
     
-    outStream << std::endl;
-    outStream << "\tBegin taxa;" << std::endl;
-    outStream << "\tDimensions ntax=" << c.size() << ";" << std::endl;;
-    outStream << "\tTaxlabels" << std::endl;
+    out_stream << std::endl;
+    out_stream << "\tBegin taxa;" << std::endl;
+    out_stream << "\tDimensions ntax=" << c.size() << ";" << std::endl;;
+    out_stream << "\tTaxlabels" << std::endl;
     for (std::vector<Taxon>::const_iterator it = labels.begin(); it != labels.end(); ++it)
     {
-        outStream << "\t\t" << it->getName() << std::endl;
+        out_stream << "\t\t" << it->getName() << std::endl;
     }
-    outStream << "\t\t;" << std::endl;
-    outStream << "End;" << std::endl;
+    out_stream << "\t\t;" << std::endl;
+    out_stream << "End;" << std::endl;
     
 }
 
@@ -188,10 +206,10 @@ void NexusWriter::writeNexusBlock(const Clade &c)
 void NexusWriter::writeNexusBlock(const Tree &tree) 
 {
     
-    outStream << std::endl; 
-    outStream << "Begin trees;" << std::endl;
-    outStream << "tree TREE1 = " << (tree.isRooted() ? "[&R]" : "[&U]") << tree << std::endl;
-    outStream << "End;" << std::endl;
+    out_stream << std::endl;
+    out_stream << "Begin trees;" << std::endl;
+    out_stream << "tree TREE1 = " << (tree.isRooted() ? "[&R]" : "[&U]") << tree << std::endl;
+    out_stream << "End;" << std::endl;
     
     
 }
@@ -205,13 +223,13 @@ void NexusWriter::writeNexusBlock(const Tree &tree)
 void NexusWriter::writeNexusBlock(const std::vector<Tree> &trees) 
 {
     
-    outStream << std::endl; 
-    outStream << "Begin trees;" << std::endl;
+    out_stream << std::endl;
+    out_stream << "Begin trees;" << std::endl;
     for (size_t i = 0; i < trees.size(); ++i)
     {
-        outStream << "tree TREE" << (i+1) << " = " << (trees[i].isRooted() ? "[&R]" : "[&U]") << trees[i] << ";" << std::endl;
+        out_stream << "tree TREE" << (i+1) << " = " << (trees[i].isRooted() ? "[&R]" : "[&U]") << trees[i] << ";" << std::endl;
     }
-    outStream << "End;" << std::endl;
+    out_stream << "End;" << std::endl;
 
     
 }

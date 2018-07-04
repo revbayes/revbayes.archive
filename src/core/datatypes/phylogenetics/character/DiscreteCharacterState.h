@@ -33,8 +33,8 @@ namespace RevBayesCore {
         virtual size_t                          getNumberOfStates(void) const;                      //!< Get the number of discrete states for the character
         virtual size_t                          getStateIndex(void) const;                          //!< Get the state index
         virtual bool                            isStateSet(size_t index) const;                     //!< Is the discrete observation
-        
-        
+
+
         virtual DiscreteCharacterState*         clone(void) const = 0;                              //!< Get a copy of this object
 
 
@@ -46,12 +46,14 @@ namespace RevBayesCore {
 
         // Discrete character observation functions
         virtual std::string                     getStateLabels(void) const = 0;                     //!< Get valid state labels
-        virtual const std::vector<double>       getWeights() const ;                                //!< Get the weights of the state
+        const std::vector<double>               getWeights() const ;                                //!< Get the weights of the state
         bool                                    isWeighted() const ;                                //!< Is the state weighted?
+        void                                    setWeighted( bool tf )  ;                                //!< Sets whether the state is weighted or not
 
     protected:
                                                 DiscreteCharacterState(size_t n);                   //!< Constructor
-
+        bool                                    weighted_;
+        std::vector <double>                    weights_;
     };
 
 }

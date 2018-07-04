@@ -85,7 +85,7 @@ double DiscreteEventCategoryRandomWalkProposal::getProposalTuningParameter( void
 double DiscreteEventCategoryRandomWalkProposal::doProposal( void )
 {
     
-    CharacterHistory &history = distribution->getCharacterHistory();
+    CharacterHistoryDiscrete &history = distribution->getCharacterHistory();
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
     
@@ -99,7 +99,7 @@ double DiscreteEventCategoryRandomWalkProposal::doProposal( void )
         
         // pick a random event
         size_t branch_index = 0;
-        CharacterEvent *event = history.pickRandomEvent( branch_index );
+        CharacterEventDiscrete *event = history.pickRandomEvent( branch_index );
         
         // store the event
         stored_value = event;

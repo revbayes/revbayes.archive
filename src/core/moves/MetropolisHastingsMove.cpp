@@ -23,7 +23,8 @@ using namespace RevBayesCore;
  * \param[in]    t   If auto tuning should be used.
  */
 MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) : AbstractMove(p->getNodes(), w, t),
-    num_accepted( 0 ),
+    num_accepted_current_period( 0 ),
+    num_accepted_total( 0 ),
     proposal( p )
 {
     
@@ -40,7 +41,8 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
  *
  */
 MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) : AbstractMove(m),
-    num_accepted( m.num_accepted ),
+    num_accepted_current_period( m.num_accepted_current_period ),
+    num_accepted_total( m.num_accepted_current_period ),
     proposal( m.proposal->clone() )
 {
     
@@ -74,8 +76,9 @@ MetropolisHastingsMove& MetropolisHastingsMove::operator=(const RevBayesCore::Me
         // free memory
         delete proposal;
         
-        num_accepted    = m.num_accepted;
-        proposal        = m.proposal->clone();
+        num_accepted_current_period     = m.num_accepted_current_period;
+        num_accepted_total              = m.num_accepted_total;
+        proposal                        = m.proposal->clone();
         
         proposal->setMove( this );
         
@@ -119,10 +122,20 @@ double MetropolisHastingsMove::getMoveTuningParameter( void ) const
 /**
  * How often was the move accepted
  */
-size_t MetropolisHastingsMove::getNumberAccepted( void ) const
+size_t MetropolisHastingsMove::getNumberAcceptedCurrentPeriod( void ) const
 {
     
-    return num_accepted;
+    return num_accepted_current_period;
+}
+
+
+/**
+ * How often was the move accepted
+ */
+size_t MetropolisHastingsMove::getNumberAcceptedTotal( void ) const
+{
+    
+    return num_accepted_total;
 }
 
 
@@ -207,8 +220,6 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
     
     if ( RbMath::isAComputableNumber(ln_posterior_ratio) == false || ln_posterior_ratio < 0.0 )
     {
-        //        std::cerr << "Reject.\n";
-        
         
         proposal->undoProposal();
         
@@ -223,7 +234,8 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
     else
     {
         
-        num_accepted++;
+        num_accepted_total++;
+        num_accepted_current_period++;
             
         // call accept for each node
         for (size_t i = 0; i < nodes.size(); ++i)
@@ -250,16 +262,26 @@ void MetropolisHastingsMove::performMcmcMove( double prHeat, double lHeat, doubl
     proposal->prepareProposal();
     double ln_hastings_ratio = proposal->doProposal();
     
+    
+    // Identify nodes that proposal touches
+    std::vector<DagNode*> touched_nodes = nodes; //proposal->identifyNodesToTouch();
+    
     // first we touch all the nodes
     // that will set the flags for recomputation
-    for (size_t i = 0; i < nodes.size(); ++i)
+    for (size_t i = 0; i < touched_nodes.size(); ++i)
     {
         
         // get the pointer to the current node
-        DagNode* the_node = nodes[i];
+        DagNode* the_node = touched_nodes[i];
+        
+//        // should this node be touched?
+//        std::vector<DagNode*>::iterator it = std::find( nodes_left_untouched.begin(), nodes_left_untouched.end(), the_node );
+//        bool touch_node = (it == nodes_left_untouched.end());
         
         // flag for recomputation
+//        if (touch_node) {
         the_node->touch();
+//        }
     }
     
     double ln_prior_ratio = 0.0;
@@ -267,10 +289,10 @@ void MetropolisHastingsMove::performMcmcMove( double prHeat, double lHeat, doubl
 
     
     // compute the probability of the current value for each node
-    for (size_t i = 0; i < nodes.size(); ++i)
+    for (size_t i = 0; i < touched_nodes.size(); ++i)
     {
         // get the pointer to the current node
-        DagNode* the_node = nodes[i];
+        DagNode* the_node = touched_nodes[i];
         
         if ( RbMath::isAComputableNumber(ln_prior_ratio) && RbMath::isAComputableNumber(ln_likelihood_ratio) && RbMath::isAComputableNumber(ln_hastings_ratio) )
         {
@@ -319,10 +341,10 @@ void MetropolisHastingsMove::performMcmcMove( double prHeat, double lHeat, doubl
         proposal->undoProposal();
             
         // call restore for each node
-        for (size_t i = 0; i < nodes.size(); ++i)
+        for (size_t i = 0; i < touched_nodes.size(); ++i)
         {
             // get the pointer to the current node
-            DagNode* the_node = nodes[i];
+            DagNode* the_node = touched_nodes[i];
             the_node->restore();
         }
 	}
@@ -336,13 +358,14 @@ void MetropolisHastingsMove::performMcmcMove( double prHeat, double lHeat, doubl
         {
 
             
-            num_accepted++;
+            num_accepted_total++;
+            num_accepted_current_period++;
         
             // call accept for each node
-            for (size_t i = 0; i < nodes.size(); ++i)
+            for (size_t i = 0; i < touched_nodes.size(); ++i)
             {
                 // get the pointer to the current node
-                DagNode* the_node = nodes[i];
+                DagNode* the_node = touched_nodes[i];
                 the_node->keep();
             }
         
@@ -355,10 +378,10 @@ void MetropolisHastingsMove::performMcmcMove( double prHeat, double lHeat, doubl
             proposal->undoProposal();
         
             // call restore for each node
-            for (size_t i = 0; i < nodes.size(); ++i)
+            for (size_t i = 0; i < touched_nodes.size(); ++i)
             {
                 // get the pointer to the current node
-                DagNode* the_node = nodes[i];
+                DagNode* the_node = touched_nodes[i];
                 the_node->restore();
             }
         }
@@ -370,13 +393,14 @@ void MetropolisHastingsMove::performMcmcMove( double prHeat, double lHeat, doubl
             if (u < r)
             {
                 
-                num_accepted++;
+                num_accepted_total++;
+                num_accepted_current_period++;
             
                 // call accept for each node
-                for (size_t i = 0; i < nodes.size(); ++i)
+                for (size_t i = 0; i < touched_nodes.size(); ++i)
                 {
                     // get the pointer to the current node
-                    DagNode* the_node = nodes[i];
+                    DagNode* the_node = touched_nodes[i];
                     the_node->keep();
                 }
             
@@ -389,10 +413,10 @@ void MetropolisHastingsMove::performMcmcMove( double prHeat, double lHeat, doubl
                 proposal->undoProposal();
             
                 // call restore for each node
-                for (size_t i = 0; i < nodes.size(); ++i)
+                for (size_t i = 0; i < touched_nodes.size(); ++i)
                 {
                     // get the pointer to the current node
-                    DagNode* the_node = nodes[i];
+                    DagNode* the_node = touched_nodes[i];
                     the_node->restore();
                 }
                 
@@ -453,28 +477,28 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     
     // print the number of tries
     int t_length = 9;
-    if (num_tried > 0) t_length -= (int)log10(num_tried);
+    if (num_tried_total > 0) t_length -= (int)log10(num_tried_total);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << num_tried;
+    o << num_tried_total;
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
-    if (num_accepted > 0) a_length -= (int)log10(num_accepted);
+    if (num_accepted_total > 0) a_length -= (int)log10(num_accepted_total);
     
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << num_accepted;
+    o << num_accepted_total;
     o << " ";
     
     // print the acceptance ratio
-    double ratio = num_accepted / (double)num_tried;
-    if (num_tried == 0) ratio = 0;
+    double ratio = num_accepted_total / (double)num_tried_total;
+    if (num_tried_total == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)
@@ -500,7 +524,7 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
  */
 void MetropolisHastingsMove::resetMoveCounters( void )
 {
-    num_accepted = 0;
+    num_accepted_current_period = 0;
 }
 
 
@@ -524,9 +548,15 @@ void MetropolisHastingsMove::setMoveTuningParameter(double tp)
 }
 
 
-void MetropolisHastingsMove::setNumberAccepted( size_t na )
+void MetropolisHastingsMove::setNumberAcceptedCurrentPeriod( size_t na )
 {
-    num_accepted = na;
+    num_accepted_current_period = na;
+}
+
+
+void MetropolisHastingsMove::setNumberAcceptedTotal( size_t na )
+{
+    num_accepted_total = na;
 }
 
 
@@ -537,9 +567,9 @@ void MetropolisHastingsMove::setNumberAccepted( size_t na )
 void MetropolisHastingsMove::tune( void )
 {
     
-    if ( num_tried > 2 )
+    if ( num_tried_current_period > 2 )
     {
-        double rate = num_accepted / double(num_tried);
+        double rate = num_accepted_current_period / double(num_tried_current_period);
     
         proposal->tune( rate );
     }

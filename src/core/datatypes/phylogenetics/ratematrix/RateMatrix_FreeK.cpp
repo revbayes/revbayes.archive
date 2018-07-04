@@ -1,11 +1,3 @@
-//
-//  RateMatrix_FreeK.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/4/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "DistributionPoisson.h"
 #include "EigenSystem.h"
 #include "MatrixComplex.h"
@@ -27,11 +19,7 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ),
     rescale(true),
-    useScalingAndSquaring(true),
-    useScalingAndSquaringPade(false),
-    useScalingAndSquaringTaylor(false),
-    useUniformization(false),
-    useEigen(false)
+    my_method( EIGEN )
 {
     
     theEigenSystem       = new EigenSystem(the_rate_matrix);
@@ -46,11 +34,7 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ),
 
 RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r) : GeneralRateMatrix( n ),
     rescale(r),
-    useScalingAndSquaring(true),
-    useScalingAndSquaringPade(false),
-    useScalingAndSquaringTaylor(false),
-    useUniformization(false),
-    useEigen(false)
+    my_method( EIGEN )
 {
     
     theEigenSystem       = new EigenSystem(the_rate_matrix);
@@ -65,33 +49,29 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r) : GeneralRateMatrix( n ),
 
 RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r, std::string method) : GeneralRateMatrix( n ),
     rescale(r),
-    useScalingAndSquaring(false),
-    useScalingAndSquaringPade(false),
-    useScalingAndSquaringTaylor(false),
-    useUniformization(false),
-    useEigen(false)
+    my_method( EIGEN )
 {
     
     // determine the type of matrix exponentiation
     if (method == "scalingAndSquaring")
     {
-        useScalingAndSquaring = true;
+        my_method = SCALING_AND_SQUARING;
     }
     else if (method == "scalingAndSquaringPade")
     {
-        useScalingAndSquaringPade = true;
+        my_method = SCALING_AND_SQUARING_PADE;
     }
     else if (method == "scalingAndSquaringTaylor")
     {
-        useScalingAndSquaringTaylor = true;
+        my_method = SCALING_AND_SQUARING_TAYLOR;
     }
     else if (method == "uniformization")
     {
-        useUniformization = true;
+        my_method = UNIFORMIZATION;
     }
     else if (method == "eigen")
     {
-        useEigen = true;
+        my_method = EIGEN;
     }
     
     // create the eigen system so the destructor has something to delete
@@ -106,18 +86,15 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r, std::string method) : Gener
 
 
 /** Copy constructor */
-RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m ),
-    singleStepMatrix(num_states)
+RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m )
 {
     
     rescale               = m.rescale;
-    useScalingAndSquaring = m.useScalingAndSquaring;
-    useScalingAndSquaringPade = m.useScalingAndSquaringPade;
-    useScalingAndSquaringTaylor = m.useScalingAndSquaringTaylor;
-    useUniformization     = m.useUniformization;
-    useEigen              = m.useEigen;
+    my_method             = m.my_method;
     
-    matrixProducts        = new std::vector<MatrixReal>();
+    matrixProducts        = new std::vector<MatrixReal>( *m.matrixProducts );
+    singleStepMatrix      = m.singleStepMatrix;
+    maxRate               = m.maxRate;
     
     theEigenSystem        = new EigenSystem( *m.theEigenSystem );
     c_ijk                 = m.c_ijk;
@@ -144,6 +121,14 @@ RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
         GeneralRateMatrix::operator=( r );
        
         delete theEigenSystem;
+        delete matrixProducts;
+        
+        rescale               = r.rescale;
+        my_method             = r.my_method;
+        
+        matrixProducts        = new std::vector<MatrixReal>( *r.matrixProducts );
+        singleStepMatrix      = r.singleStepMatrix;
+        maxRate               = r.maxRate;
         
         theEigenSystem       = new EigenSystem( *r.theEigenSystem );
         c_ijk                = r.c_ijk;
@@ -154,6 +139,21 @@ RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
     }
     
     return *this;
+}
+
+
+RateMatrix_FreeK& RateMatrix_FreeK::assign(const Assignable &m)
+{
+    const RateMatrix_FreeK *rm = dynamic_cast<const RateMatrix_FreeK*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
+    
 }
 
 
@@ -215,19 +215,19 @@ void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double 
     // The eigensystem code was returning NaN likelihood values when transition rates
     // were close to 0.0, so now we use the scaling and squaring method.
     double t = rate * (startAge - endAge);
-    if (useScalingAndSquaring == true)
+    if (my_method == SCALING_AND_SQUARING)
     {
         exponentiateMatrixByScalingAndSquaring(t, P);
     }
-    else if (useScalingAndSquaringPade == true || useScalingAndSquaringTaylor == true)
+    else if (my_method == SCALING_AND_SQUARING_PADE || my_method == SCALING_AND_SQUARING_TAYLOR)
     {
         tiProbsScalingAndSquaring(t, P);
     }
-    else if (useUniformization == true)
+    else if (my_method == UNIFORMIZATION)
     {
         tiProbsUniformization(t, P);
     }
-    else if (useEigen == true)
+    else if (my_method == EIGEN)
     {
         if ( theEigenSystem->isComplex() == false )
         {
@@ -242,32 +242,37 @@ void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double 
 }
 
 
-void RateMatrix_FreeK::checkMatrixIrreducible(double tolerance, TransitionProbabilityMatrix &P)const
+void RateMatrix_FreeK::checkMatrixIrreducible(double tolerance, TransitionProbabilityMatrix &P) const
 {
     // check if the Q matrix is irreducible by checking if there is any element in the P matrix
-    // that is smaller than some prior specified tolerance
+    // that is smaller than some specified tolerance
     // and if that's the case, fill in the P matrix with all zeros
     // so that the current proposal will certainly get rejected
     // here we assume that all the states in the Q matrix exist in the observed data
     bool irreducible = true;
     
-    for (size_t i=0; i<num_states-1; ++i)
+    for (size_t i = 0; i < num_states - 1; ++i)
     {
-        for (size_t j=i+1; j<num_states; ++j)
+        for (size_t j = i + 1; j < num_states; ++j)
         {
             if (P[i][j] < tolerance && P[j][i] < tolerance)
             {
                 irreducible = false;
+                break;
             }
+        }
+        if (irreducible == false)
+        {
+            break;
         }
     }
     
     if (irreducible == false)
     {
-        for (size_t i=0; i<num_states; ++i)
+        for (size_t i = 0; i < num_states; ++i)
         {
             P[i][i] = 1.0;
-            for (size_t j=i+1; j<num_states; ++j)
+            for (size_t j = i + 1; j < num_states; ++j)
             {
                 P[i][j] = 0.0;
                 P[j][i] = 0.0;
@@ -550,8 +555,8 @@ void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
         
     }
     
-    double tol = RbSettings::userSettings().getTolerance();
-    checkMatrixIrreducible(tol, P);
+//    double tol = RbSettings::userSettings().getTolerance();
+//    checkMatrixIrreducible(tol, P);
 
 }
 
@@ -588,8 +593,8 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
         }
     }
     
-    double tol = RbSettings::userSettings().getTolerance();
-    checkMatrixIrreducible(tol, P);
+//    double tol = RbSettings::userSettings().getTolerance();
+//    checkMatrixIrreducible(tol, P);
     
 }
 
@@ -607,7 +612,7 @@ void RateMatrix_FreeK::tiProbsScalingAndSquaring(double t, TransitionProbability
     MatrixReal result(num_states);
     double tol = RbSettings::userSettings().getTolerance();
     
-    if (useScalingAndSquaringPade == true)
+    if (my_method == SCALING_AND_SQUARING_PADE)
     {
         // the value of truncation computed by findPadeQValue is 5 under RevBayes default tolerance (1e-9)
         // which seems a bit too generous comparing with the value given in Table 1 of Moler and Van Loan, 2003
@@ -622,7 +627,7 @@ void RateMatrix_FreeK::tiProbsScalingAndSquaring(double t, TransitionProbability
         }
         RbMath::expMatrixPade(m, result, truncation);
     }
-    else if (useScalingAndSquaringTaylor == true)
+    else if (my_method == SCALING_AND_SQUARING_TAYLOR)
     {
         expMatrixTaylor(m, result, tol);
     }
@@ -635,8 +640,12 @@ void RateMatrix_FreeK::tiProbsScalingAndSquaring(double t, TransitionProbability
             P[i][j] = (result[i][j] < 0.0) ? 0.0 : result[i][j];
         }
     }
-    
-    checkMatrixIrreducible(tol, P);
+
+// Probably we should not make the assumption that the Q matrix should be irreducible as the probability could still be positive
+// under reducible Q matrix if not all the states of the Q matrix appear at the tip, so it probably makes more sense just let 
+// the likelihood take care of the reducibility, despite of the somewhat tiny possibility of numerical instability.
+// Jiansi Gao 06/22/2018   
+//    checkMatrixIrreducible(tol, P);
 
 }
 
@@ -687,7 +696,7 @@ void RateMatrix_FreeK::tiProbsUniformization(double t, TransitionProbabilityMatr
         }
     }
     
-    checkMatrixIrreducible(tol, P);
+//    checkMatrixIrreducible(tol, P);
     
 }
 
@@ -760,12 +769,12 @@ void RateMatrix_FreeK::update( void )
         }
 
         // update the uniformization system if necessary
-        if (useUniformization == true)
+        if (my_method == UNIFORMIZATION)
         {
             updateUniformization();
         }
         // update the eigensystem if necessary
-        if (useEigen == true)
+        if (my_method == EIGEN)
         {
             updateEigenSystem();
         }

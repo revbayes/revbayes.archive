@@ -47,7 +47,7 @@ double RbStatistics::Laplace::pdf(double x)
  */
 double RbStatistics::Laplace::pdf(double mu, double scale, double x) 
 {
-	double y = ( x - mu ) / scale;
+	double y = fabs(( x - mu ) / scale);
 	return exp( -y )  / ( 2 * scale );
 }
 

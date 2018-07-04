@@ -17,11 +17,7 @@
 ###### This just defines a single model for all sites #######
 
 ### Read in sequence data for both genes
-
-#data <- readDiscreteCharacterData("data/test_inv.nex")
-data <- readDiscreteCharacterData("data/primates_cytb_inv.nex")
-#data <- readDiscreteCharacterData("data/primates_cytb_small.nex")
-#data <- readDiscreteCharacterData("data/test_large.nex")
+data <- readDiscreteCharacterData("data/primates_cytb_small.nex")
 
 # Get some useful variables from the data. We need these later on.
 taxa <- data.taxa()
@@ -47,7 +43,8 @@ Q <- fnJC(4)
 
 # the probability of a site being invariable, +I
 p_inv ~ dnBeta(1,1)
-moves[++mvi] = mvBetaProbability(p_inv, weight=2.0)
+#moves[++mvi] = mvBetaProbability(p_inv, weight=2.0)
+moves[++mvi] = mvSlide(p_inv, weight=2.0)
 
 
 
@@ -56,8 +53,7 @@ moves[++mvi] = mvBetaProbability(p_inv, weight=2.0)
 ##############
 
 
-#psi <- simTree(30,"caterpillar")
-psi <- readTrees( "data/primates_inv.tree" )[1]
+psi <- readTrees( "data/primates_small.tre" )[1]
 
 
 
@@ -97,7 +93,7 @@ monitors[2] = mnFile(filename="output/primates_cytb_JC.trees",printgen=10, separ
 mymcmc = mcmc(mymodel, monitors, moves)
 
 
-validation = validationAnalysis( mymcmc, 100 )
+validation = validationAnalysis( mymcmc, 1000 )
 validation.burnin(generations=500,tuningInterval=250)
 validation.run(generations=1000)
 validation.summarize()

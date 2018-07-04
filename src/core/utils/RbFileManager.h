@@ -39,7 +39,9 @@ namespace RevBayesCore {
         const std::string&      getFullFileName(void) const;
         std::string             getFullFilePath(void) const;                                                                                            //!< Returns the name of the path
         std::string             getLastPathComponent(void);
+        const std::string&      getNewLine(void) const;                                                                                           //!< Returns the path separator
         const std::string&      getPathSeparator(void) const;                                                                                           //!< Returns the path separator
+        std::istream&           safeGetline(std::istream& is, std::string& t);
         std::string             getStringByDeletingLastPathComponent(const std::string& s);
         bool                    isDirectory(void) const;                                                                                                //!< Is this a directory
         bool                    isFile(void) const;                                                                                                     //!< Is this a file
@@ -64,10 +66,11 @@ namespace RevBayesCore {
         bool                    makeDirectory(const std::string &dn);
         bool                    parsePathFileNames(const std::string &s);                                                                               //!< Divides a string into the file path and file name
     
-        std::string             fileName;                                                                                                               //!< string with file name
-        std::string             filePath;                                                                                                               //!< string with file path
-        std::string             fullFileName;
-        std::string             pathSeparator;
+        std::string             file_name;                                                                                                               //!< string with file name
+        std::string             file_path;                                                                                                               //!< string with file path
+        std::string             full_file_name;
+        std::string             path_separator;
+        std::string             new_line;
     };
     
 }

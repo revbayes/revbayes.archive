@@ -12,6 +12,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
+#include "RlMatrixReal.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -37,9 +38,12 @@ Func_max* Func_max::clone( void ) const
 
 RevBayesCore::TypedFunction<double>* Func_max::createFunction( void ) const
 {
+    RevBayesCore::DagNode* node = this->args[0].getVariable()->getRevObject().getDagNode();
+
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* arg_vector = dynamic_cast<RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >*>(node);
+    RevBayesCore::TypedDagNode< RevBayesCore::MatrixReal >* arg_matrix = dynamic_cast<RevBayesCore::TypedDagNode< RevBayesCore::MatrixReal >*>(node);
     
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* arg = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::MaxFunction* f = new RevBayesCore::MaxFunction( arg );
+    RevBayesCore::MaxFunction* f = arg_vector != NULL ? new RevBayesCore::MaxFunction( arg_vector ) : new RevBayesCore::MaxFunction( arg_matrix );
     
     return f;
 }
@@ -54,8 +58,10 @@ const ArgumentRules& Func_max::getArgumentRules( void ) const
     
     if ( !rules_set )
     {
-        
-        argumentRules.push_back( new ArgumentRule( "x", ModelVector<Real>::getClassTypeSpec(), "A vector of numbers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        std::vector<TypeSpec> paramTypes;
+        paramTypes.push_back( ModelVector<Real>::getClassTypeSpec() );
+        paramTypes.push_back( MatrixReal::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "x", paramTypes, "A vector/matrix of numbers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }

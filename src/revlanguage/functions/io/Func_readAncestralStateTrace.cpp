@@ -21,7 +21,6 @@
 #include "RlAncestralStateTrace.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "AncestralStateTrace.h"
 #include "TreeUtilities.h"
 #include "WorkspaceVector.h"
 
@@ -182,7 +181,8 @@ std::vector<RevBayesCore::AncestralStateTrace> Func_readAncestralStateTrace::rea
 		
 		// Read a line
 		std::string line;
-		getline( inFile, line );
+        RevBayesCore::RbFileManager reader = RevBayesCore::RbFileManager();
+        reader.safeGetline(inFile, line);
 		
 		// skip empty lines
 		if (line.length() == 0)

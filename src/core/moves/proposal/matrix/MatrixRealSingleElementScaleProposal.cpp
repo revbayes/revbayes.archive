@@ -109,7 +109,8 @@ double MatrixRealSingleElementScaleProposal::doProposal( void )
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
-    double scalingFactor = exp( lambda * ( u - 0.5 ) );
+    double m = lambda * ( u - 0.5 );
+    double scalingFactor = exp(m);
     
     if (array != NULL)
     {
@@ -151,7 +152,7 @@ double MatrixRealSingleElementScaleProposal::doProposal( void )
     }
     
     // this is a symmetric proposal so the hasting ratio is 0.0
-    return log(scalingFactor);
+    return m;
 }
 
 

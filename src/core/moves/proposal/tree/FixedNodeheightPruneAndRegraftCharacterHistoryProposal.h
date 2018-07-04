@@ -1,7 +1,7 @@
 #ifndef FixedNodeheightPruneAndRegraftCharacterHistoryProposal_H
 #define FixedNodeheightPruneAndRegraftCharacterHistoryProposal_H
 
-#include "BranchHistory.h"
+#include "BranchHistoryDiscrete.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "PathRejectionSampleProposal.h"
 #include "Proposal.h"
@@ -308,7 +308,7 @@ double RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<char
 //    std::cout << "Initial states one: ";
     for (size_t site_index = 0; site_index < num_sites; ++site_index)
     {
-        size_t s = node_states_one[site_index]->getState();
+        size_t s = static_cast<CharacterEventDiscrete*>(node_states_one[site_index])->getState();
         stored_node_states_one[site_index] = s;
 //        std::cout << s << " ";
     }
@@ -320,7 +320,7 @@ double RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<char
 //    std::cout << "Initial states two: ";
     for (size_t site_index = 0; site_index < num_sites; ++site_index)
     {
-        size_t s = node_states_two[site_index]->getState();
+        size_t s = static_cast<CharacterEventDiscrete*>(node_states_two[site_index])->getState();
         stored_node_states_two[site_index] = s;
 //        std::cout << s << " ";
     }
@@ -332,7 +332,7 @@ double RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<char
 //    std::cout << "Initial states three: ";
     for (size_t site_index = 0; site_index < num_sites; ++site_index)
     {
-        size_t s = node_states_three[site_index]->getState();
+        size_t s = static_cast<CharacterEventDiscrete*>(node_states_three[site_index])->getState();
         stored_node_states_three[site_index] = s;
 //        std::cout << s << " ";
     }
@@ -579,9 +579,9 @@ void RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charTy
         for (size_t site_index = 0; site_index < num_sites; ++site_index)
         {
             size_t s = stored_node_states_one[site_index];
-            node_states_one[site_index]->setState(s);
-            left_states_one[site_index]->setState(s);
-            right_states_one[site_index]->setState(s);
+            static_cast<CharacterEventDiscrete*>(node_states_one[site_index])->setState(s);
+            static_cast<CharacterEventDiscrete*>(left_states_one[site_index])->setState(s);
+            static_cast<CharacterEventDiscrete*>(right_states_one[site_index])->setState(s);
 //            std::cout << s << " ";
         }
 //        std::cout << std::endl;
@@ -590,9 +590,9 @@ void RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charTy
         for (size_t site_index = 0; site_index < num_sites; ++site_index)
         {
             size_t s = stored_node_states_two[site_index];
-            node_states_two[site_index]->setState(s);
-            left_states_two[site_index]->setState(s);
-            right_states_two[site_index]->setState(s);
+            static_cast<CharacterEventDiscrete*>(node_states_two[site_index])->setState(s);
+            static_cast<CharacterEventDiscrete*>(left_states_two[site_index])->setState(s);
+            static_cast<CharacterEventDiscrete*>(right_states_two[site_index])->setState(s);
 //            std::cout << s << " ";
         }
 //        std::cout << std::endl;
@@ -601,9 +601,9 @@ void RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charTy
         for (size_t site_index = 0; site_index < num_sites; ++site_index)
         {
             size_t s = stored_node_states_three[site_index];
-            node_states_three[site_index]->setState(s);
-            left_states_three[site_index]->setState(s);
-            right_states_three[site_index]->setState(s);
+            static_cast<CharacterEventDiscrete*>(node_states_three[site_index])->setState(s);
+            static_cast<CharacterEventDiscrete*>(left_states_three[site_index])->setState(s);
+            static_cast<CharacterEventDiscrete*>(right_states_three[site_index])->setState(s);
 //            std::cout << s << " ";
         }
 //        std::cout << std::endl;
@@ -700,9 +700,9 @@ void RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charTy
             
             for (size_t site_index = 0; site_index < num_sites; ++site_index)
             {
-                size_t ancS  = nodeParentState[site_index]->getState();
-                size_t desS1 = leftChildState[site_index]->getState();
-                size_t desS2 = rightChildState[site_index]->getState();
+                size_t ancS  = static_cast<CharacterEventDiscrete*>(nodeParentState[site_index])->getState();
+                size_t desS1 = static_cast<CharacterEventDiscrete*>(leftChildState[site_index])->getState();
+                size_t desS2 = static_cast<CharacterEventDiscrete*>(rightChildState[site_index])->getState();
                 
                 double u = GLOBAL_RNG->uniform01();
                 
@@ -727,9 +727,9 @@ void RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charTy
                     ++s;
                 }
                 
-                nodeChildState[site_index]->setState(s);
-                leftParentState[site_index]->setState(s);
-                rightParentState[site_index]->setState(s);
+                static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(leftParentState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(rightParentState[site_index])->setState(s);
             }
             
         }
@@ -740,8 +740,8 @@ void RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charTy
             
             for (size_t site_index = 0; site_index < num_sites; ++site_index)
             {
-                size_t desS1 = leftChildState[site_index]->getState();
-                size_t desS2 = rightChildState[site_index]->getState();
+                size_t desS1 = static_cast<CharacterEventDiscrete*>(leftChildState[site_index])->getState();
+                size_t desS2 = static_cast<CharacterEventDiscrete*>(rightChildState[site_index])->getState();
                 
                 double u = GLOBAL_RNG->uniform01();
                 
@@ -766,9 +766,9 @@ void RevBayesCore::FixedNodeheightPruneAndRegraftCharacterHistoryProposal<charTy
                     ++s;
                 }
                 
-                nodeChildState[site_index]->setState(s);
-                leftParentState[site_index]->setState(s);
-                rightParentState[site_index]->setState(s);
+                static_cast<CharacterEventDiscrete*>(nodeChildState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(leftParentState[site_index])->setState(s);
+                static_cast<CharacterEventDiscrete*>(rightParentState[site_index])->setState(s);
                 
             }
             

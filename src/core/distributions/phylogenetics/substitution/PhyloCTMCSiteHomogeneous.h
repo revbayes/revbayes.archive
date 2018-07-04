@@ -15,7 +15,7 @@ namespace RevBayesCore {
     class PhyloCTMCSiteHomogeneous : public AbstractPhyloCTMCSiteHomogeneous<charType> {
 
     public:
-        PhyloCTMCSiteHomogeneous(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal);
+        PhyloCTMCSiteHomogeneous(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal, bool gapmatch);
         virtual                                            ~PhyloCTMCSiteHomogeneous(void);                                                                   //!< Virtual destructor
 
         // public member functions
@@ -51,7 +51,7 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class charType>
-RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::PhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb, internal )
+RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::PhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, bool internal, bool gapmatch) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb, internal, gapmatch )
 {
 
 }
@@ -164,6 +164,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeRootLikelihood( si
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
+        
         // get the root frequencies
         const std::vector<double> &f                    = ff[mixture % ff.size()];
         std::vector<double>::const_iterator f_end       = f.end();
@@ -250,6 +251,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
 
                 } // end-for over all distination character
 
+                
                 // store the likelihood for this starting state
                 p_site_mixture[c1] = sum;
 
@@ -311,7 +313,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
                     sum += p_site_mixture_left[c2] * p_site_mixture_middle[c2] * p_site_mixture_right[c2] * tp_a[c2];
 
                 } // end-for over all distination character
-
+                
                 // store the likelihood for this starting state
                 p_site_mixture[c1] = sum;
 
@@ -344,6 +346,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
     const std::vector<unsigned long> &char_node = this->char_matrix[data_tip_index];
     const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[data_tip_index];
 
+    size_t char_data_node_index = this->value->indexOfTaxonWithName(node.getName());
+    
     // compute the transition probabilities
     this->updateTransitionProbabilities( node_index, node.getBranchLength() );
 
@@ -421,7 +425,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
                       const double* d  = tp_begin+(this->num_chars*c1);
 
                       double tmp = 0.0;
-                      std::vector< double > weights = this->value->getCharacter(node_index, site).getWeights();
+                      std::vector< double > weights = this->value->getCharacter(char_data_node_index, site).getWeights();
                       for ( size_t i=0; i<val.size(); ++i )
                       {
                           // check whether we observed this state

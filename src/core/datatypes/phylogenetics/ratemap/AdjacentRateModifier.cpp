@@ -1,25 +1,20 @@
-//
-//  AdjacentRateModifier.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 8/8/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
 #include <iomanip>
 #include <cmath>
-#include "CharacterEvent.h"
+#include "CharacterEventDiscrete.h"
 #include "AdjacentRateModifier.h"
 #include "RbConstants.h"
 
 using namespace RevBayesCore;
 
 AdjacentRateModifier::AdjacentRateModifier(size_t ns, size_t nc) : CharacterHistoryRateModifier(ns, nc),
-  width(1),
-  gain_factor(0.0),
-  loss_factor(0.0),
-  context_matrix( std::vector<std::vector<adjacency> >() ),
-  context_type("width")
+    width(1),
+    gain_factor(0.0),
+    loss_factor(0.0),
+    context_matrix( std::vector<std::vector<adjacency> >() ),
+    context_set( std::vector<std::set<size_t> >() ),
+    context_type("width"),
+    exp_gain_factors( std::vector<double>(nc,1.0) ),
+    exp_loss_factors( std::vector<double>(nc,1.0) )
 {
     ;
 }
@@ -33,7 +28,10 @@ AdjacentRateModifier::AdjacentRateModifier(const AdjacentRateModifier& g) : Char
         gain_factor = g.gain_factor;
         loss_factor = g.loss_factor;
         context_matrix = g.context_matrix;
+        context_set = g.context_set;
         context_type = g.context_type;
+        exp_gain_factors = g.exp_gain_factors;
+        exp_loss_factors = g.exp_loss_factors;
     }
 }
 
@@ -51,11 +49,12 @@ AdjacentRateModifier& AdjacentRateModifier::assign(const Assignable &m)
     }
 }
 
-double AdjacentRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double AdjacentRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEventDiscrete* newState, double age)
 {
     
     
-    if (context_type=="width") {
+    if (context_type=="width")
+    {
         return computeRateMultiplierUsingWidth(currState, newState, age);
     }
     else if (context_type=="matrix")
@@ -72,7 +71,7 @@ double AdjacentRateModifier::computeRateMultiplier(std::vector<CharacterEvent *>
 }
 
 
-double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age)
+double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age)
 {
     std::vector<double> match(2, 0.0);
     
@@ -86,7 +85,7 @@ double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<Charact
     {
         if (i == to_index)
             continue;
-        else if (currState[i]->getState() == to_state)
+        else if ( static_cast<CharacterEventDiscrete*>(currState[i])->getState() == to_state)
         {
             match[1] += 1.0;
         }
@@ -98,29 +97,28 @@ double AdjacentRateModifier::computeRateMultiplierUsingWidth(std::vector<Charact
     }
     
 //    double r = exp(num_match * factor);
-    double r = exp(gain_factor * match[1] + loss_factor * match[0]);
+    double r = exp_gain_factors[ match[1] ] * exp_loss_factors[ match[0] ];
+    //exp(gain_factor * match[1] + loss_factor * match[0]);
     
     return r;
 }
 
-double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age)
+double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age)
 {
     std::vector<double> match(2, 0.0);
     
     size_t i = newState->getSiteIndex();
     size_t s = newState->getState();
     
-//    for (size_t i = 0; i < context_matrix.size(); i++)
-//    {
     
     for (size_t j = 0; j < context_matrix[i].size(); j++)
     {
         const adjacency& edge = context_matrix[i][j];
-        if (i == j)
+        if (edge.from == edge.to)
         {
             continue;
         }
-        else if (currState[edge.to]->getState() == s)
+        else if ( static_cast<CharacterEventDiscrete*>(currState[edge.to])->getState() == s)
         {
             match[1] += edge.weight;
         }
@@ -130,13 +128,14 @@ double AdjacentRateModifier::computeRateMultiplierUsingMatrix(std::vector<Charac
         }
     }
     
-    double r = exp(gain_factor * match[1] + loss_factor * match[0]);
+//    double r = exp(gain_factor * match[1] + loss_factor * match[0]);
+    double r = exp_gain_factors[ match[1] ] * exp_loss_factors[ match[0] ];
     
     return r;
 }
 
 
-double AdjacentRateModifier::computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
+double AdjacentRateModifier::computeSiteRateMultiplier(const TopologyNode& node, CharacterEventDiscrete* currState, CharacterEventDiscrete* newState, double age)
 {
     return 1.0;
 }
@@ -152,19 +151,47 @@ AdjacentRateModifier* AdjacentRateModifier::clone(void) const
     return new AdjacentRateModifier(*this);
 }
 
-void AdjacentRateModifier::update(void)
+std::set<size_t> AdjacentRateModifier::getAffectedSites(CharacterEventDiscrete* newState) const
 {
-    ; // do nothing
+    std::set<size_t> s = context_set[ newState->getSiteIndex() ];
+    
+    return s;
 }
+
+
 
 void AdjacentRateModifier::setGainFactor(double f)
 {
+    // update factor
     gain_factor = f;
+    
+    // get exponent factor
+    double m = exp(f);
+    
+    // reset factor vector
+    exp_gain_factors = std::vector<double>( num_characters, 1.0 );
+    exp_gain_factors[0] = 1.0;
+    for (size_t i = 1; i < num_characters; i++)
+    {
+        exp_gain_factors[i] = exp_gain_factors[i-1] * m;
+    }
 }
 
 void AdjacentRateModifier::setLossFactor(double f)
 {
+    // update factor
     loss_factor = f;
+    
+    // get exponent factor
+    double m = exp(f);
+    
+    // reset factor vector
+    exp_loss_factors = std::vector<double>( num_characters, 1.0 );
+    exp_loss_factors[0] = 1.0;
+    for (size_t i = 1; i < num_characters; i++)
+    {
+        exp_loss_factors[i] = exp_loss_factors[i-1] * m;
+    }
 }
 
 
@@ -174,11 +201,12 @@ void AdjacentRateModifier::setWidth(size_t w)
     width = w;
 }
 
-void AdjacentRateModifier::setContextMatrix(const RbVector<RbVector<double> >& c)
+void AdjacentRateModifier::setContextMatrix(const RbVector<RbVector<long> >& c)
 {
 
-    context_type = "matrix";
+    context_type = "array";
     context_matrix = std::vector<std::vector<adjacency> >(this->num_characters);
+    context_set = std::vector<std::set<size_t> >(this->num_characters);
     
     for (size_t i = 0; i < this->num_characters; i++)
     {
@@ -186,15 +214,56 @@ void AdjacentRateModifier::setContextMatrix(const RbVector<RbVector<double> >& c
         {
             if (c[i][j] != 0.0)
             {
+                // add adjacency
                 adjacency v;
                 v.from = i;
                 v.to = j;
                 v.weight = c[i][j];
                 context_matrix[i].push_back(v);
+                
+                // add dependent context set -- site j whose rate depends on the state of site i
+                context_set[i].insert(j);
             }
+            
         }
+        context_set[i].insert(i);
     }
 }
+
+void AdjacentRateModifier::setContextMatrix(const MatrixReal& c)
+{
+    
+    context_type = "matrix";
+    context_matrix = std::vector<std::vector<adjacency> >(this->num_characters);
+    context_set = std::vector<std::set<size_t> >(this->num_characters);
+    
+    for (size_t i = 0; i < this->num_characters; i++)
+    {
+        for (size_t j = 0; j < this->num_characters; j++)
+        {
+            if (c[i][j] != 0.0)
+            {
+                // add adjacency
+                adjacency v;
+                v.from = i;
+                v.to = j;
+                v.weight = c[i][j];
+                context_matrix[i].push_back(v);
+                
+                // add dependent context set -- site j whose rate depends on the state of site i
+                context_set[i].insert(j);
+            }
+            
+        }
+        context_set[i].insert(i);
+    }
+}
+
+void AdjacentRateModifier::update(void)
+{
+    ; // do nothing
+}
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const AdjacentRateModifier& x)
 {

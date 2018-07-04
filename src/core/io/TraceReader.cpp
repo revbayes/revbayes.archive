@@ -43,7 +43,7 @@ std::vector<ModelTrace> TraceReader::readStochasticVariableTrace( const std::str
             
         // Read a line
         std::string line;
-        getline( inFile, line );
+        myFileManager.safeGetline( inFile, line );
         
         // skip empty lines
         //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];

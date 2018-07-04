@@ -1,175 +1,274 @@
-#include "GewekeTest.h"
-#include "RbConstants.h"
-#include "StationarityTest.h"
 #include "TraceNumeric.h"
-#include "TraceAnalysisContinuous.h"
+#include "DistributionNormal.h"
+#include "RbConstants.h"
+#include "RbMathLogic.h"
 
-#include "RbUtil.h"
+#include "GewekeTest.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
+#include "StationarityTest.h"
 
-#include <sstream>
-#include <string>
-#include <vector>
+#include <cmath>
+#include <math.h>
 
 using namespace RevBayesCore;
+using namespace std;
 
-TraceNumeric::TraceNumeric()
-{
-    invalidate();
-}
+#define MAX_LAG 1000
 
-
-void TraceNumeric::addObject(double d)
-{
-    values.push_back(d);
-    
-    // invalidate for recalculation of meta data
-    invalidate();
-}
-
-
-void TraceNumeric::addValueFromString(const std::string &s)
-{
-    
-    double *d = new double( 0.0 );
-    Serializer<double, IsDerivedFrom<double, Serializable>::Is >::ressurectFromString( d, s );
-    
-    addObject( *d );
-    
-    // free memory
-    delete d;
-    
-}
-
-void TraceNumeric::computeStatistics( void )
+/**
+ * 
+ */
+TraceNumeric::TraceNumeric() :
+    ess( 0 ),
+    mean( RbConstants::Double::nan ),
+    sem( RbConstants::Double::nan ),
+    begin( 0 ),
+    end( 0 ),
+    essw( 0 ),
+    meanw( RbConstants::Double::nan ),
+    semw( RbConstants::Double::nan ),
+    passedStationarityTest( false ),
+    passedGewekeTest( false ),
+    stats_dirty( true ),
+    statsw_dirty( true )
 {
     
-    // check if we need to set the burnin
-    if ( burnin == -1 )
-    {
-        burnin = (size_t)(burnin * 0.1);
-    }
-    
-    TraceAnalysisContinuous* analysis = new TraceAnalysisContinuous();
-    analysis->analyseCorrelation(values, burnin);
-    ess = analysis->getEss();
-    mean = analysis->getMean();
-    sem = analysis->getStdErrorOfMean();
-    
-    
-    
-    // test stationarity within chain
-    size_t nBlocks = 10;
-    StationarityTest testS = StationarityTest(nBlocks, 0.01);
-    passedStationarityTest = testS.assessConvergenceSingleChain(values, burnin);
-    
-    // Geweke's test for convergence within a chain
-    GewekeTest testG = GewekeTest(0.01);
-    passedGewekeTest = testG.assessConvergenceSingleChain(values, burnin);
-        
 }
 
 
 /** Clone function */
-TraceNumeric* TraceNumeric::clone() const {
-    
+TraceNumeric* TraceNumeric::clone() const
+{
+
     return new TraceNumeric(*this);
 }
 
 
-void TraceNumeric::invalidate() {
-    // set values to defaults and mark for recalculation
-    burnin                          = -1;
-    ess                             = -1;
-    mean                            = 0.0;
-    median                          = 0.0;
-    sem                             = -1;
-    stepSize                        = 1;
-    
-    converged                       = NOT_CHECKED;
-    passedStationarityTest          = NOT_CHECKED;
-    passedGewekeTest                = NOT_CHECKED;
-    //    passedHeidelbergerWelchStatistic = NOT_CHECKED;
-    //    passedRafteryLewisStatistic = NOT_CHECKED;
-    passedEssThreshold              = NOT_CHECKED;
-    passedSemThreshold              = NOT_CHECKED;
-    passedIidBetweenChainsStatistic = NOT_CHECKED;
-    passedGelmanRubinTest           = NOT_CHECKED;
-    
-    
+void TraceNumeric::computeStatistics( void )
+{
+
+    // test stationarity within chain
+    size_t nBlocks = 10;
+    StationarityTest testS = StationarityTest(nBlocks, 0.01);
+    passedStationarityTest = testS.assessConvergence(*this);
+
+    // Geweke's test for convergence within a chain
+    GewekeTest testG = GewekeTest(0.01);
+    passedGewekeTest = testG.assessConvergence(*this);
+
 }
 
 
-bool TraceNumeric::isCoveredInInterval(const std::string &v, double alpha, bool verbose) const
+double TraceNumeric::getMean() const
 {
-    
-    double sample = atof( v.c_str() );
-    
-    double smaller_values_count = 0;
-    double equal_values_count   = 0;
-    for (size_t j=0; j<values.size(); ++j)
+    if( isDirty() == false ) return mean;
+
+    double m = 0;
+    size_t size = values.size();
+    for (size_t i=burnin; i<size; i++)
     {
-        
-        if ( values[j] < sample )
-        {
-            ++smaller_values_count;
-        }
-        else if ( values[j] == sample )
-        {
-            ++equal_values_count;
-        }
-        
+        m += values.at(i);
     }
     
-    double quantile = (smaller_values_count + 0.5*equal_values_count) / double(values.size());
-    double lower = (1.0 - alpha) / 2.0;
-    double upper = 1.0 - lower;
-    bool covered = ( quantile >= lower && quantile <= upper );
-    
-    return covered;
+    mean = m/double(size-burnin);
+
+    dirty = false;
+
+    stats_dirty = true;
+
+    return mean;
 }
 
 
-void TraceNumeric::removeObjectAtIndex (int index)
+double TraceNumeric::getMean(long inbegin, long inend) const
 {
-    // create a iterator for the vector
-    std::vector<double>::iterator it = values.begin();
-    
-    //jump to the position to remove
-    it += index;
-    
-    // remove the element
-    values.erase(it);
-    
-    // invalidate for recalculation of meta data
-    invalidate();
-}
+    if( begin != inbegin || end != inend)
+    {
+        begin = inbegin;
+        end = inend;
 
-void TraceNumeric::removeLastObject()
-{
-    // remove object from list
-    values.pop_back();
-    
-    // invalidate for recalculation of meta data
-    invalidate();
-}
-
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const TraceNumeric& x) {
-    o << x.getParameterName();
-    o << " (";
-    const std::vector<double>& values = x.getValues();
-    for (std::vector<double>::const_iterator it = values.begin(); it != values.end(); ++it) {
-        if ( it != values.begin() ) {
-            o << ", ";
+        double m = 0;
+        for (size_t i=begin; i<end; i++)
+        {
+            m += values.at(i);
         }
-        o << *it;
+
+        meanw = m/(end-begin);
+
+        statsw_dirty = true;
     }
-    o << ")";
-    
-    return o;
+
+    return meanw;
 }
 
 
+/**
+ * Compute the effective sample size within a range of values
+ *
+ * @param begin     begin index for analysis
+ * @param end       end index for analysis
+ *
+ */
+double TraceNumeric::getESS(long begin, long end) const
+{
+
+    update(begin, end);
+    
+    return essw;
+}
 
 
+/**
+ * @return the ESS
+ */
+double TraceNumeric::getESS() const
+{
+    update();
+    
+    return ess;
+}
 
+
+/**
+ * Compute the standard error of the mean within a range of values
+ *
+ * @param begin     begin index for analysis
+ * @param end       end index for analysis
+ *
+ */
+double TraceNumeric::getSEM(long begin, long end) const
+{
+
+    update(begin, end);
+
+    return semw;
+}
+
+
+/**
+ * @return the standard error of the mean
+ */
+double TraceNumeric::getSEM() const
+{
+    update();
+    
+    return sem;
+}
+
+
+/**
+ * Analyze trace
+ *
+ */
+void TraceNumeric::update() const
+{
+    // if we have not yet calculated the mean, do this now
+
+    getMean();
+
+    if( stats_dirty == false ) return;
+
+    size_t samples = values.size() - burnin;
+    size_t maxLag = (samples - 1 < MAX_LAG ? samples - 1 : MAX_LAG);
+
+    double* gammaStat = new double[maxLag];
+    // setting values to 0
+    for (size_t i=0; i<maxLag; i++)
+    {
+        gammaStat[i] = 0;
+    }
+    double varStat = 0.0;
+
+    for (size_t lag = 0; lag < maxLag; lag++) {
+        for (size_t j = 0; j < samples - lag; j++) {
+            double del1 = values.at(burnin + j) - mean;
+            double del2 = values.at(burnin + j + lag) - mean;
+            gammaStat[lag] += (del1 * del2);
+        }
+
+        gammaStat[lag] /= ((double) (samples - lag));
+
+        if (lag == 0) {
+            varStat = gammaStat[0];
+        } else if (lag % 2 == 0) {
+            // fancy stopping criterion :)
+            if (gammaStat[lag - 1] + gammaStat[lag] > 0) {
+                varStat += 2.0 * (gammaStat[lag - 1] + gammaStat[lag]);
+            }
+            // stop
+            else
+                maxLag = lag;
+        }
+    }
+
+    // standard error of mean
+    sem = sqrt(varStat / samples);
+
+    // auto correlation time
+    double act = varStat / gammaStat[0];
+
+    // effective sample size
+    ess = samples / act;
+
+    stats_dirty = false;
+
+    delete[] gammaStat;
+}
+
+/**
+ * Analyze trace within a range of values
+ *
+ */
+void TraceNumeric::update(long inbegin, long inend) const
+{
+    // if we have not yet calculated the mean, do this now
+    getMean(inbegin, inend);
+
+    if( statsw_dirty == false ) return;
+
+    size_t samples = end - begin;
+    size_t maxLag = (samples - 1 < MAX_LAG ? samples - 1 : MAX_LAG);
+
+    double* gammaStat = new double[maxLag];
+    // setting values to 0
+    for (size_t i=0; i<maxLag; i++) {
+        gammaStat[i] = 0;
+    }
+    double varStat = 0.0;
+
+    for (size_t lag = 0; lag < maxLag; lag++) {
+        for (size_t j = 0; j < samples - lag; j++) {
+            double del1 = values.at(begin + j) - meanw;
+            double del2 = values.at(begin + j + lag) - meanw;
+            gammaStat[lag] += (del1 * del2);
+        }
+
+        gammaStat[lag] /= ((double) (samples - lag));
+
+        if (lag == 0) {
+            varStat = gammaStat[0];
+        } else if (lag % 2 == 0) {
+            // fancy stopping criterion :)
+            if (gammaStat[lag - 1] + gammaStat[lag] > 0) {
+                varStat += 2.0 * (gammaStat[lag - 1] + gammaStat[lag]);
+            }
+            // stop
+            else
+                maxLag = lag;
+        }
+    }
+
+    // standard error of mean
+    semw = sqrt(varStat / samples);
+
+    // auto correlation time
+    double act = varStat / gammaStat[0];
+
+    // effective sample size
+    essw = samples / act;
+
+    delete[] gammaStat;
+
+    statsw_dirty = false;
+}

@@ -1,4 +1,5 @@
 #include "BranchHistory.h"
+#include "CharacterEventDiscrete.h"
 #include "RateGeneratorSequence_Biogeography.h"
 #include <cmath>
 
@@ -219,11 +220,11 @@ RateGeneratorSequence_Biogeography* RateGeneratorSequence_Biogeography::clone(vo
 //}
 
 
-double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* count, double age, double r) const
+double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, unsigned* count, double age, double r) const
 {
     size_t s = to->getState();
 
-    if (from[ to->getSiteIndex() ]->getState() == to->getState())
+    if (static_cast<CharacterEventDiscrete*>(from[ to->getSiteIndex() ])->getState() == to->getState())
     {
 //        std::cout << count[0] << " " << count[1] << "\n";
 //        std::cout << node.getIndex() << " problem...\n";
@@ -256,7 +257,7 @@ double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> 
 
 }
 
-double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double age, double r) const
+double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEventDiscrete* to, double age, double r) const
 {
     unsigned n1 = (unsigned)numOn(from);
     unsigned n0 = (unsigned)(num_characters - n1);
@@ -275,7 +276,7 @@ double RateGeneratorSequence_Biogeography::getRate(size_t from, size_t to, doubl
     return 0.0;
 }
 
-double RateGeneratorSequence_Biogeography::getSiteRate(CharacterEvent* from, CharacterEvent* to, double age, double r) const
+double RateGeneratorSequence_Biogeography::getSiteRate(CharacterEventDiscrete* from, CharacterEventDiscrete* to, double age, double r) const
 {
     double rate = 0.0;
     size_t s = to->getState();
@@ -326,10 +327,10 @@ double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterE
         return getUnnormalizedSumOfRates( from, counts, age);
 
     // get rate away away from currState
-    unsigned n0 = counts[0];
+    unsigned n0 = (unsigned)counts[0];
 //    if (useDistanceRateModifier)
 //        n0 = distanceRateModifier->getNumAvailableAreas(node, from, age);
-    unsigned n1 = counts[1];
+    unsigned n1 = (unsigned)counts[1];
 
     // forbid extinction events
 //    if (counts[1] == 1 && forbidExtinction)
@@ -408,7 +409,7 @@ double RateGeneratorSequence_Biogeography::getUnnormalizedSumOfRates( std::vecto
     double sum = 0.0;
     for (size_t i = 0; i < from.size(); i++)
     {
-        size_t s = from[i]->getState();
+        size_t s = static_cast<CharacterEventDiscrete*>(from[i])->getState();
         double v = availableAreaVector[ epochIdx * this->num_characters + i ];
 
         if (forbidExtinction && s == 1 && counts[1] == 0)
@@ -499,14 +500,14 @@ const std::set<size_t> RateGeneratorSequence_Biogeography::getRangeAndFrontierSe
 //    std::set<size_t>
     for (size_t i = 0; i < from.size(); i++)
     {
-        if (from[i]->getState() == 1)
+        if (static_cast<CharacterEventDiscrete*>(from[i])->getState() == 1)
         {
             ret.insert(i);
             const std::set<size_t> adj = adjacentAreaSet[epochIdx*from.size() + i];
             std::set<size_t>::const_iterator it_adj;
             for (it_adj = adj.begin(); it_adj != adj.end(); it_adj++)
             {
-                if (from[*it_adj]->getState() == 0)
+                if (static_cast<CharacterEventDiscrete*>(from[*it_adj])->getState() == 0)
                 {
                     ret.insert(*it_adj);
                 }
@@ -526,7 +527,7 @@ size_t RateGeneratorSequence_Biogeography::numOn(const std::vector<CharacterEven
 {
     size_t n = 0;
     for (size_t i = 0; i < s.size(); i++)
-        if (s[i]->getState() == 1)
+        if (static_cast<CharacterEventDiscrete*>(s[i])->getState() == 1)
             n++;
     return n;
 }

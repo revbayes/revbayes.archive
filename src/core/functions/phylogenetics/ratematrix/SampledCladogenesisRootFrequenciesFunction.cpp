@@ -146,8 +146,8 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         
         // get root history information
         const AbstractCharacterHistoryBirthDeathProcess* dist = dynamic_cast<const AbstractCharacterHistoryBirthDeathProcess* >( &tree->getDistribution() );
-        CharacterHistory tree_history = dist->getCharacterHistory();
-        BranchHistory branch_history = tree_history[root.getIndex()];
+        const CharacterHistoryDiscrete& tree_history = static_cast<const CharacterHistoryDiscrete&>(dist->getCharacterHistory());
+        const BranchHistory& branch_history = tree_history[root.getIndex()];
         const std::multiset<CharacterEvent*,CharacterEventCompare>& events = branch_history.getHistory();
         
         // for each interval between events, go from present to past
@@ -159,8 +159,8 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         double dt = 0.0;
         double prev_age = startAge;
         double event_age = prev_age;
-        std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
-        for (it = events.begin(); it != events.end(); it++)
+        std::multiset<CharacterEvent*,CharacterEventCompare>::reverse_iterator it;
+        for (it = events.rbegin(); it != events.rend(); it++)
         {
             
             prev_age = event_age;

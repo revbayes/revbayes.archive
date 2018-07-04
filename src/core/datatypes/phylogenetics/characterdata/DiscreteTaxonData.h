@@ -316,9 +316,9 @@ charType& RevBayesCore::DiscreteTaxonData<charType>::getCharacter(size_t index)
 /**
  * Get-operator for convenience access.
  *
- * \param[in]    i    The position of the character.
+ * \param[in]    index  The position of the character.
  *
- * \return            A non-const reference to the character
+ * \return              A non-const reference to the character
  */
 template<class charType>
 const charType& RevBayesCore::DiscreteTaxonData<charType>::getCharacter(size_t index) const
@@ -461,7 +461,6 @@ void RevBayesCore::DiscreteTaxonData<charType>::removeCharacters(const std::set<
 /**
  * Determines whether the sequences completely missing.
  *
- * \return            True (missing) or false (observed).
  */
 template<class charType>
 void RevBayesCore::DiscreteTaxonData<charType>::setAllCharactersMissing( void )

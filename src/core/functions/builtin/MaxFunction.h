@@ -20,6 +20,7 @@
 #ifndef MaxFunction_H
 #define MaxFunction_H
 
+#include "MatrixReal.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -31,6 +32,7 @@ namespace RevBayesCore {
         
     public:
         MaxFunction(const TypedDagNode< RbVector<double> > * v);
+        MaxFunction(const TypedDagNode< MatrixReal > * v);
         virtual                                            ~MaxFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -43,7 +45,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< RbVector<double> >*             vals;
+        bool                                                matrix;
+        const DagNode*                                      vals;
         
     };
     

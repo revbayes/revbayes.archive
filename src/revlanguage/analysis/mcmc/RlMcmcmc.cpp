@@ -60,17 +60,19 @@ void Mcmcmc::constructInternalObject( void )
         mvs.push_back( ws_vec_mvs[i].getValue() );
     }
     const std::string &                                     sched   = static_cast<const RlString &>( moveschedule->getRevObject() ).getValue();
-    long                                                    nchains = static_cast<const Natural &>( num_chains->getRevObject() ).getValue();
-    long                                                    si      = static_cast<const Natural &>( swap_interval->getRevObject() ).getValue();
+    int                                                     nchains = (int)static_cast<const Natural &>( num_chains->getRevObject() ).getValue();
+    int                                                     si      = (int)static_cast<const Natural &>( swap_interval->getRevObject() ).getValue();
     double                                                  delta   = static_cast<const RealPos &>( delta_heat->getRevObject() ).getValue();
+    int                                                     nreps   = (int)static_cast<const Natural &>( num_runs->getRevObject() ).getValue();
+    const std::string &                                     comb    = static_cast<const RlString &>( combine_traces->getRevObject() ).getValue();
+    int                                                     ntries  = (int)static_cast<const Natural &>( num_init_attempts->getRevObject() ).getValue();
     
-    long                                                    nreps   = static_cast<const Natural &>( num_runs->getRevObject() ).getValue();
     bool                                                    th      = static_cast<const RlBoolean &>( tune_heat->getRevObject() ).getValue();
     double                                                  tht     = static_cast<const RealPos &>( tune_heat_target->getRevObject() ).getValue();
     const std::string &                                     sm      = static_cast<const RlString &>( swap_method->getRevObject() ).getValue();
     const std::string &                                     smo     = static_cast<const RlString &>( swap_mode->getRevObject() ).getValue();
     
-    RevBayesCore::Mcmcmc *m = new RevBayesCore::Mcmcmc(mdl, mvs, mntr, sched, nchains, si, delta, th, tht, sm, smo);
+    RevBayesCore::Mcmcmc *m = new RevBayesCore::Mcmcmc(mdl, mvs, mntr, sched, nchains, si, delta, ntries, th, tht, sm, smo);
     
     if (heat_temps->getRevObject() != RevNullObject::getInstance())
     {
@@ -107,7 +109,21 @@ void Mcmcmc::constructInternalObject( void )
     }
     
     
-    value = new RevBayesCore::MonteCarloAnalysis(m,nreps);
+    RevBayesCore::MonteCarloAnalysisOptions::TraceCombinationTypes ct = RevBayesCore::MonteCarloAnalysisOptions::SEQUENTIAL;
+    if ( comb == "sequential" )
+    {
+        ct = RevBayesCore::MonteCarloAnalysisOptions::SEQUENTIAL;
+    }
+    else if ( comb == "mixed" )
+    {
+        ct = RevBayesCore::MonteCarloAnalysisOptions::MIXED;
+    }
+    else if ( comb == "none" )
+    {
+        ct = RevBayesCore::MonteCarloAnalysisOptions::NONE;
+    }
+    
+    value = new RevBayesCore::MonteCarloAnalysis(m,nreps,ct);
     
 }
 

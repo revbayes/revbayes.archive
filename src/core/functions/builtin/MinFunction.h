@@ -20,7 +20,7 @@
 #ifndef MinFunction_H
 #define MinFunction_H
 
-#include "RbVector.h"
+#include "MatrixReal.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -32,6 +32,7 @@ namespace RevBayesCore {
         
     public:
         MinFunction(const TypedDagNode< RbVector<double> > * v);
+        MinFunction(const TypedDagNode< MatrixReal > * v);
         virtual                                            ~MinFunction(void);                                                          //!< Virtual destructor
         
         // public member functions
@@ -44,7 +45,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< RbVector<double> >*             vals;
+        bool                                                matrix;
+        const DagNode*                                      vals;
         
     };
     

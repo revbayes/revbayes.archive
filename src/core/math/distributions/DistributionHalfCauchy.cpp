@@ -49,13 +49,13 @@ double RbStatistics::HalfCauchy::pdf(double location, double scale, double x)
 
 double RbStatistics::HalfCauchy::lnPdf(double x)
 {
-    return ( std::log(2) - std::log(RbConstants::PI) - std::log(1.0 + x * x) );
+    return ( RbConstants::LN2 - std::log(RbConstants::PI) - std::log(1.0 + x * x) );
 }
 
 double RbStatistics::HalfCauchy::lnPdf(double location, double scale, double x)
 {
     double y = (x - location) / scale;
-    return ( std::log(2) - std::log(RbConstants::PI) - std::log(scale) - std::log(1.0 + y * y) );
+    return ( RbConstants::LN2 - std::log(RbConstants::PI) - std::log(scale) - std::log(1.0 + y * y) );
 }
 
 double RbStatistics::HalfCauchy::cdf(double x)

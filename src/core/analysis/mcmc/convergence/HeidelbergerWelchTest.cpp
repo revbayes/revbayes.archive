@@ -14,30 +14,28 @@ HeidelbergerWelchTest::HeidelbergerWelchTest(double f, double f1, double f2) : C
     
 }
 
-bool HeidelbergerWelchTest::assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin)
+bool HeidelbergerWelchTest::assessConvergence(const TraceNumeric& trace)
 {
     // get the sample size
-    size_t sampleSize = values.size() - burnin;
+    size_t sampleSize = trace.size(true);
     
     // set the indices for start and end of the first window
-    size_t startwindow1    = burnin;
-    size_t endWindow1      = size_t(sampleSize * frac1) + burnin;
+    size_t startwindow1    = trace.getBurnin();
+    size_t endWindow1      = size_t(sampleSize * frac1) + trace.getBurnin();
     
     // get mean and variance of the first window
-    analysis.analyseMean(values, startwindow1, endWindow1);
-    double meanWindow1  = analysis.getMean();
-    analysis.analyseCorrelation(values, startwindow1, endWindow1);
-    double varWindow1   = analysis.getStdErrorOfMean()*analysis.getStdErrorOfMean();
+    double meanWindow1  = trace.getMean(startwindow1, endWindow1);
+    double varWindow1   = trace.getSEM(startwindow1, endWindow1);
+    varWindow1 *= varWindow1;
     
     // set the indices for start and end of the second window
-    size_t startwindow2    = values.size() - size_t(sampleSize * frac2);
-    size_t endWindow2      = values.size();
+    size_t startwindow2    = trace.size() - size_t(sampleSize * frac2);
+    size_t endWindow2      = trace.size();
     
     // get mean and variance of the second window
-    analysis.analyseMean(values, startwindow2, endWindow2);
-    double meanWindow2  = analysis.getMean();
-    analysis.analyseCorrelation(values, startwindow2, endWindow2);
-    double varWindow2   = analysis.getStdErrorOfMean()*analysis.getStdErrorOfMean();
+    double meanWindow2  = trace.getMean(startwindow2, endWindow2);
+    double varWindow2   = trace.getSEM(startwindow2, endWindow2);
+    varWindow2 *= varWindow2;
     
     // get z
     double z            = (meanWindow1 - meanWindow2)/sqrt(varWindow1 + varWindow2);
