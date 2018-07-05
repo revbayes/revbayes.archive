@@ -42,9 +42,13 @@ namespace RevBayesCore {
                                                   const TypedDagNode<double> *rh,
                                                   const std::string &cdt,
                                                   bool uo,
-                                                  size_t min_lineages,
-                                                  size_t max_lineages,
-                                                  bool prune);
+                                                  size_t min_num_lineages,
+                                                  size_t max_num_lineages,
+                                                  size_t exact_num_lineages,
+                                                  double max_t,
+                                                  bool prune,
+                                                  bool condition_on_tip_states,
+                                                  bool condition_on_num_tips);
         
         // pure virtual member functions
         virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
@@ -54,6 +58,8 @@ namespace RevBayesCore {
         void                                                            fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                                 //!< The tree has changed and we want to know which part.
         const AbstractHomologousDiscreteCharacterData&                  getCharacterData() const;
         double                                                          getOriginAge(void) const;
+        std::vector<double>                                             getAverageExtinctionRatePerBranch(void) const;
+        std::vector<double>                                             getAverageSpeciationRatePerBranch(void) const;
         std::vector<double>                                             getTimeInStates(void) const;
         double                                                          getRootAge(void) const;
         virtual void                                                    redrawValue(void);
@@ -95,7 +101,8 @@ namespace RevBayesCore {
         std::vector<double>                                             pExtinction(double start, double end) const;                                                        //!< Compute the probability of extinction of the process (without incomplete taxon sampling).
         virtual double                                                  pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         void                                                            recursivelyFlagNodeDirty(const TopologyNode& n);
-        void                                                            simulateTree(size_t attempts = 0);
+        bool                                                            simulateTree(size_t attempts = 0);
+        bool                                                            simulateTreeConditionedOnTips(size_t attempts = 0);
         std::vector<double>                                             calculateTotalAnageneticRatePerState(void);
         std::vector<double>                                             calculateTotalSpeciationRatePerState(void);
         void                                                            computeNodeProbability(const TopologyNode &n, size_t nIdx) const;
@@ -134,7 +141,11 @@ namespace RevBayesCore {
         RateMatrix_JC                                                   Q_default;
         size_t                                                          min_num_lineages;
         size_t                                                          max_num_lineages;
+        size_t                                                          exact_num_lineages;
+        double                                                          max_time;
         bool                                                            prune_extinct_lineages;
+        bool                                                            condition_on_tip_states;
+        bool                                                            condition_on_num_tips;
         double                                                          NUM_TIME_SLICES;
     };
     

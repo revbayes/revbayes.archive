@@ -26,7 +26,7 @@ namespace RevBayesCore {
         virtual ~RangeEvolutionRateModifierFunction(void);                                                                                                  //!< Virtual destructor
         
         // public member functions
-        RangeEvolutionRateModifierFunction*                                     clone(void) const;                                                          //!< Create an independent clone
+        RangeEvolutionRateModifierFunction*                               clone(void) const;                                                          //!< Create an independent clone
         void                                                              update(void);
         
     protected:

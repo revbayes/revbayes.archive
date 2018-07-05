@@ -42,17 +42,20 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< S
     addParameter( eventProbs );
     addParameter( connectivityGraph );
     addParameter( vicarianceGraph );
-    
-    buildBits();
-    buildRanges(beforeRanges, connectivityGraph, false);
-    buildRanges(afterRanges, vicarianceGraph, false);
-    
-    numRanges = (unsigned)beforeRanges.size();
-    numRanges++; // add one for the null range
-    
-    buildEventMap();
+    if (numCharacters <= 10)
+    {
+        buildBits();
+        buildRanges(beforeRanges, connectivityGraph, false);
+        buildRanges(afterRanges, vicarianceGraph, false);
+        
+        numRanges = (unsigned)beforeRanges.size();
+        numRanges++; // add one for the null range
+        
+        buildEventMap();
+    }
     
     update();
+   
 }
 
 DECCladogeneticStateFunction::~DECCladogeneticStateFunction( void ) {
@@ -597,7 +600,7 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
 //        std::cout << static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
 //    }
 //    std::cout << "\n";
-    
+//    
 //    histories[ node_index ]->print();
     
     // determine what type of cladogenetic event it is
@@ -684,6 +687,7 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
         probs[ eventTypes[i] ] = ep[ i ];
     }
     
+    
     // the proposal prob
     if ( clado_type == "null_range" )
     {
@@ -718,25 +722,32 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
 }
 
 
-void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::vector<BranchHistory*>& histories,
+std::string DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::vector<BranchHistory*>& histories,
                                                                           size_t node_index, size_t left_index, size_t right_index) const
-                                                                          
+
 {
-    // get the information from the arguments for reading the file
+    
+    // what we will return
+    std::string clado_state = "";
+    
+    // get containers for probabilities
     const std::vector<double>& ep = eventProbs->getValue();
-    
-    // get the probability for each clado event type
-    std::map<std::string, double> probs;
-    
+    std::vector<double> probs(numEventTypes, 0.0);
+
+    // sample cladogenetic state
     double u = GLOBAL_RNG->uniform01();
     std::string event_type = "";
     for (size_t i = 0; i < eventTypes.size(); i++)
     {
         event_type = eventTypes[i];
-        std::map<std::string, unsigned>::const_iterator it = eventStringToStateMap.find( eventTypes[i] );
-        probs[ event_type ] = ep[ it->second ];
-        u -= probs[ eventTypes[i] ];
-        if (u <= 0.0)
+        std::map<std::string, unsigned>::const_iterator it = eventStringToStateMap.find( event_type );
+        if (it == eventStringToStateMap.end()) {
+            throw RbException("can't find clado event type");
+        }
+        unsigned clado_idx = it->second;
+        probs[clado_idx] = ep[i];
+        u -= probs[clado_idx];
+        if (u < 0.0)
         {
             break;
         }
@@ -768,12 +779,15 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
     
     // sample cladogenetic state
     if (node_child_on.size() == 0) {
+        clado_state = "null_copy";
+
         ; // do nothing
     }
     else if ( node_child_on.size() == 1) {
         size_t s = node_child_on[0];
         static_cast<CharacterEventDiscrete*>( leftParentState[s] )->setState(1);
         static_cast<CharacterEventDiscrete*>( rightParentState[s] )->setState(1);
+        clado_state = "sympatry_copy";
     }
     else
     {
@@ -805,6 +819,8 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
                 }
             }
             
+            clado_state = "sympatry_subset";
+            
         }
         else if (event_type == "a")
         {
@@ -830,6 +846,7 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
                     static_cast<CharacterEventDiscrete*>( rightParentState[ j ] )->setState(1);
                 }
             }
+            clado_state = "allopatry";
         }
         else if (event_type == "j")
         {
@@ -858,6 +875,7 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
                     static_cast<CharacterEventDiscrete*>( rightParentState[ *it ] )->setState(1);
                 }
             }
+            clado_state = "jump_dispersal";
 
         }
         else
@@ -867,36 +885,7 @@ void DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState(std::v
         }
     }
     
-//    std::cout << "nodeChildState   : ";
-//    for (size_t i = 0; i < nodeChildState.size(); i++)
-//    {
-//        std::cout << static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
-//    }
-//    std::cout << "\n";
-//    
-//    std::cout << "leftParentState  : ";
-//    for (size_t i = 0; i < leftParentState.size(); i++)
-//    {
-//        std::cout << static_cast<CharacterEventDiscrete*>(leftParentState[i])->getState();
-//    }
-//    std::cout << "\n";
-//    
-//    
-//    std::cout << "rightParentState : ";
-//    for (size_t i = 0; i < rightParentState.size(); i++)
-//    {
-//        std::cout << static_cast<CharacterEventDiscrete*>(rightParentState[i])->getState();
-//    }
-//    std::cout << "\n";
-
-
-    return;
-    // update histories element?
-    // get ranges
-//    std::vector<CharacterEvent*>& nodeChildState = histories[ node_index ]->getChildCharacters();
-//    std::vector<CharacterEvent*>& leftParentState = histories[ left_index ]->getParentCharacters();
-//    std::vector<CharacterEvent*>& rightParentState = histories[ right_index ]->getParentCharacters();
-
+    return clado_state;
     
 }
 
@@ -939,6 +928,7 @@ void DECCladogeneticStateFunction::update( void )
         probs[ eventStringToStateMap[eventTypes[i]] ] = ep[i];
     }
 
+    if (numCharacters > 10) return;
    
     if (eventProbsAsWeightedAverages)
     {

@@ -891,67 +891,63 @@ std::set<size_t> RevBayesCore::TreeUtilities::recursivelyGetPSSP(const TopologyN
 
 /* 
  *
- * Calculate the Net Relatedness Index (NRI; Webb 2000) for taxa with a certain observed character state.
- *
- * This function optionally calculates a weighted version of NRI that utilizes branch lengths.
+ * Calculate the Mean Pairwise Distance (MPD; Webb 2000; Webb et al 2002) for taxa with a certain observed character state.
+ * The z-score of the MPD (optionally calculated using randomizations) is equivalent to the Net Relatedness Index (NRI; Webb 2000).
  *
  */
-double RevBayesCore::TreeUtilities::calculateNRI(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool weighted, size_t num_randomizations)
+double RevBayesCore::TreeUtilities::calculateMPD(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool zscore, bool branch_lengths, size_t num_randomizations)
 {
-    
-    DistanceMatrix* d = getNodalDistanceMatrix(t);
-    DistanceMatrix* d_w;
-    if (weighted == true)
+ 
+    // use either pairwise branch length or nodal distances
+    DistanceMatrix* distances;
+    if (branch_lengths == true)
     {
-        d_w = getDistanceMatrix(t);
+        distances = getDistanceMatrix(t);
+    }
+    else
+    {
+        distances = getNodalDistanceMatrix(t);
     }
 
-    // get mean nodal distances for all taxa in the observed state
+    // get the mean pairwise distances of all taxa in the observed state
     double total_dist = 0.0;
     double num_dist = 0.0;
     size_t num_taxa_in_state = 0;
     std::vector<std::string> tip_names = t.getTipNames();
     for (size_t i = 0; i < tip_names.size(); ++i)
     {
-        std::string name1 = d->getTaxa()[i].getName();
+        std::string name1 = distances->getTaxa()[i].getName();
         size_t state1 = c.getTaxonData(name1).getCharacter(site_index).getStateIndex();
         if (state1 == state_index)
         {
             num_taxa_in_state += 1;
             for (size_t j = i + 1; j < tip_names.size(); ++j)
             {
-                if (j != i)
+                std::string name2 = distances->getTaxa()[j].getName();
+                size_t state2 = c.getTaxonData(name2).getCharacter(site_index).getStateIndex();
+                if (state2 == state_index)
                 {
-                    std::string name2 = d->getTaxa()[j].getName();
-                    size_t state2 = c.getTaxonData(name2).getCharacter(site_index).getStateIndex();
-                    if (state2 == state_index)
-                    {
-                        if (weighted == true)
-                        {
-                            total_dist += d->getMatrix()[i][j] * d_w->getMatrix()[i][j];
-                        }
-                        else
-                        {
-                            total_dist += d->getMatrix()[i][j];
-                        }
-                        num_dist += 1.0;
-                    }
+                    total_dist += distances->getMatrix()[i][j];
+                    num_dist += 1.0;
                 }
             }
         }   
     }
-    double mean_nodal_distance = total_dist/num_dist;
-    if (num_dist == 0)
+    double obs_mean_distance = 0.0;
+    if (num_dist != 0)
     {
-        mean_nodal_distance = 0;
+        obs_mean_distance = total_dist/num_dist;
     }
-    
-    // randomizations to approximate maximum mean nodal distance
-    double mean_nodal_distance_max = mean_nodal_distance;
+   
+    if (zscore == false)
+    {
+        return obs_mean_distance;
+    }
+
+    // randomizations to calculate z-score (NRI)
+    std::vector<double> random_mean_distances;
     for (size_t k = 0; k < num_randomizations; ++k)
     {
-        double total_dist = 0.0;
-        double num_dist = 0.0;
         std::vector<std::string> new_tip_names;
 
         // pick random taxa
@@ -966,76 +962,90 @@ double RevBayesCore::TreeUtilities::calculateNRI(const Tree &t, const AbstractHo
             }
         }
         
-        // calculate mean nodal distance for random taxa
+        // calculate mean pairwise distances for the random taxa
+        double total_dist = 0.0;
+        double num_dist = 0.0;
         for (size_t i = 0; i < tip_names.size(); ++i)
         {
-            std::string name1 = d->getTaxa()[i].getName();
+            std::string name1 = distances->getTaxa()[i].getName();
             if (std::find(new_tip_names.begin(), new_tip_names.end(), name1) != new_tip_names.end())
             {
                 for (size_t j = i + 1; j < tip_names.size(); ++j)
                 {
-                    if (j != i)
+                    std::string name2 = distances->getTaxa()[j].getName();
+                    if (std::find(new_tip_names.begin(), new_tip_names.end(), name2) != new_tip_names.end())
                     {
-                        std::string name2 = d->getTaxa()[j].getName();
-                        if (std::find(new_tip_names.begin(), new_tip_names.end(), name2) != new_tip_names.end())
-                        {
-                            if (weighted == true)
-                            {
-                                total_dist += d->getMatrix()[i][j] * d_w->getMatrix()[i][j];
-                            }
-                            else
-                            {
-                                total_dist += d->getMatrix()[i][j];
-                            }
-                            num_dist += 1.0;
-                        }
+                        total_dist += distances->getMatrix()[i][j];
+                        num_dist += 1.0;
                     }
                 }
             }   
         }
-        double temp_mean_nodal_distance = total_dist/num_dist;
-        if (num_dist == 0)
+        
+        double temp_mean_distance = 0.0;
+        if (num_dist != 0)
         {
-            temp_mean_nodal_distance = 0;
+            temp_mean_distance = total_dist/num_dist;
         }
-        if (temp_mean_nodal_distance > mean_nodal_distance_max)
-        {
-            mean_nodal_distance_max = temp_mean_nodal_distance;
-        } 
+        random_mean_distances.push_back(temp_mean_distance); 
     }
-    if (mean_nodal_distance_max != 0.0)
+
+    // zscore = (mpd_obs - mpd_rand_mean) / mpd_rand_sd
+    double random_mean = 0.0;
+    for (size_t i = 0; i < random_mean_distances.size(); ++i)
     {
-        return 1 - (mean_nodal_distance/mean_nodal_distance_max);
+        random_mean += random_mean_distances[i];
     }
-    return 1;
+    if (random_mean_distances.size() != 0)
+    {
+        random_mean /= random_mean_distances.size();
+    }
+    double random_stdv = 0.0;
+    for (size_t i = 0; i < random_mean_distances.size(); ++i)
+    {
+        random_stdv += pow(random_mean_distances[i] - random_mean, 2);
+    }
+    if (random_mean_distances.size() != 0)
+    {
+        random_stdv /= random_mean_distances.size();
+    }
+    random_stdv = sqrt(random_stdv);
+    if (random_stdv != 0.0)
+    {
+        return (obs_mean_distance - random_mean) / random_stdv;
+    }
+    return 0.0;
 }
 
 
 /* 
  *
- * Calculate the Nearest Taxa Index (NTI; Webb 2000) for taxa with a certain observed character state.
- *
- * This function optionally calculates a weighted version of NTI that utilizes branch lengths.
+ * Calculate the Mean Nearest Taxon Distance (MNTD; Webb 2000; Webb et al 2002) for taxa with a certain observed character state.
+ * The z-score of the MNTD (optionally calculated using randomizations) is equivalent to the Nearest Taxa Index (NTI; Webb 2000).
  *
  */
-double RevBayesCore::TreeUtilities::calculateNTI(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool weighted, size_t num_randomizations)
+double RevBayesCore::TreeUtilities::calculateMNTD(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool zscore, bool branch_lengths, size_t num_randomizations)
 {
-    
-    DistanceMatrix* d = getNodalDistanceMatrix(t);
-    DistanceMatrix* d_w;
-    if (weighted == true)
+ 
+    // use either pairwise branch length or nodal distances
+    DistanceMatrix* distances;
+    if (branch_lengths == true)
     {
-        d_w = getDistanceMatrix(t);
+        distances = getDistanceMatrix(t);
+    }
+    else
+    {
+        distances = getNodalDistanceMatrix(t);
     }
 
-    // get the nodal distances of the closest relative of all taxa in the observed state
+    // get the distances of the closest relative of all taxa in the observed state
     double total_dist = 0.0;
     double num_dist = 0.0;
     size_t num_taxa_in_state = 0;
     std::vector<std::string> tip_names = t.getTipNames();
     for (size_t i = 0; i < tip_names.size(); ++i)
     {
-        std::string name1 = d->getTaxa()[i].getName();
+        std::string name1 = distances->getTaxa()[i].getName();
         size_t state1 = c.getTaxonData(name1).getCharacter(site_index).getStateIndex();
         if (state1 == state_index)
         {
@@ -1045,19 +1055,11 @@ double RevBayesCore::TreeUtilities::calculateNTI(const Tree &t, const AbstractHo
             {
                 if (j != i)
                 {
-                    std::string name2 = d->getTaxa()[j].getName();
+                    std::string name2 = distances->getTaxa()[j].getName();
                     size_t state2 = c.getTaxonData(name2).getCharacter(site_index).getStateIndex();
                     if (state2 == state_index)
                     {
-                        double this_dist = 0.0;
-                        if (weighted == true)
-                        {
-                            this_dist = d->getMatrix()[i][j] * d_w->getMatrix()[i][j];
-                        }
-                        else
-                        {
-                            this_dist = d->getMatrix()[i][j];
-                        }
+                        double this_dist = distances->getMatrix()[i][j];
                         if (this_dist < min_dist || min_dist == 0.0)
                         {
                             min_dist = this_dist;
@@ -1069,14 +1071,19 @@ double RevBayesCore::TreeUtilities::calculateNTI(const Tree &t, const AbstractHo
             num_dist += 1.0;
         }   
     }
-    double mean_nodal_distance = total_dist/num_dist;
-    if (num_dist == 0)
+    double obs_mean_distance = 0.0;
+    if (num_dist != 0)
     {
-        mean_nodal_distance = 0;
+        obs_mean_distance = total_dist/num_dist;
     }
-    
-    // randomizations to approximate the maximum mean nodal distance to nearest relative
-    double mean_nodal_distance_max = mean_nodal_distance;
+   
+    if (zscore == false)
+    {
+        return obs_mean_distance;
+    }
+
+    // randomizations to calculate z-score (NTI)
+    std::vector<double> random_mean_distances;
     for (size_t k = 0; k < num_randomizations; ++k)
     {
         double total_dist = 0.0;
@@ -1095,29 +1102,21 @@ double RevBayesCore::TreeUtilities::calculateNTI(const Tree &t, const AbstractHo
             }
         }
         
-        // calculate mean nodal distance for random taxa
+        // calculate mean nearest taxon distance for the random taxa
         for (size_t i = 0; i < tip_names.size(); ++i)
         {
-            std::string name1 = d->getTaxa()[i].getName();
+            std::string name1 = distances->getTaxa()[i].getName();
             if (std::find(new_tip_names.begin(), new_tip_names.end(), name1) != new_tip_names.end())
             {
                 double min_dist = 0.0;
-                for (size_t j = i + 1; j < tip_names.size(); ++j)
+                for (size_t j = 0; j < tip_names.size(); ++j)
                 {
                     if (j != i)
                     {
-                        std::string name2 = d->getTaxa()[j].getName();
+                        std::string name2 = distances->getTaxa()[j].getName();
                         if (std::find(new_tip_names.begin(), new_tip_names.end(), name2) != new_tip_names.end())
                         {
-                            double this_dist = 0.0;
-                            if (weighted == true)
-                            {
-                                this_dist = d->getMatrix()[i][j] * d_w->getMatrix()[i][j];
-                            }
-                            else
-                            {
-                                this_dist = d->getMatrix()[i][j];
-                            }
+                            double this_dist = distances->getMatrix()[i][j];
                             if (this_dist < min_dist || min_dist == 0.0)
                             {
                                 min_dist = this_dist;
@@ -1129,19 +1128,38 @@ double RevBayesCore::TreeUtilities::calculateNTI(const Tree &t, const AbstractHo
                 num_dist += 1.0;
             }   
         }
-        double temp_mean_nodal_distance = total_dist/num_dist;
-        if (num_dist == 0)
+        
+        double temp_mean_distance = 0.0;
+        if (num_dist != 0)
         {
-            temp_mean_nodal_distance = 0;
+            temp_mean_distance = total_dist/num_dist;
         }
-        if (temp_mean_nodal_distance > mean_nodal_distance_max)
-        {
-            mean_nodal_distance_max = temp_mean_nodal_distance;
-        } 
+        random_mean_distances.push_back(temp_mean_distance); 
     }
-    if (mean_nodal_distance_max != 0.0)
+
+    // zscore = (mntd_obs - mntd_rand_mean) / mntd_rand_sd
+    double random_mean = 0.0;
+    for (size_t i = 0; i < random_mean_distances.size(); ++i)
     {
-        return 1 - (mean_nodal_distance/mean_nodal_distance_max);
+        random_mean += random_mean_distances[i];
     }
-    return 1;
+    if (random_mean_distances.size() != 0)
+    {
+        random_mean /= random_mean_distances.size();
+    }
+    double random_stdv = 0.0;
+    for (size_t i = 0; i < random_mean_distances.size(); ++i)
+    {
+        random_stdv += pow(random_mean_distances[i] - random_mean, 2);
+    }
+    if (random_mean_distances.size() != 0)
+    {
+        random_stdv /= random_mean_distances.size();
+    }
+    random_stdv = sqrt(random_stdv);
+    if (random_stdv != 0.0)
+    {
+        return (obs_mean_distance - random_mean) / random_stdv;
+    }
+    return 0.0;
 }

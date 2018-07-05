@@ -108,7 +108,7 @@ HSRFUnevenGridHyperpriorsGibbsMove::HSRFUnevenGridHyperpriorsGibbsMove( Stochast
         if (round(100000 * sd->getValue()) != round(100000 * zeta * global_scale->getValue() * local_scales[i]->getValue() * sqrt(grid->getValue()[i])) ) {
             std::cout << "zeta, global_scale, and local_scale[i] are " << zeta << "," << global_scale->getValue() << "," << local_scales[i]->getValue()<< std::endl;
             std::cout << "sd is " << sd->getValue() << std::endl;
-            throw(RbException("HSRFUnevenGridHyperpriorsGibbsMove move only works when children are Normal(0,local_scale*global_scale*zeta) Distributions"));
+            throw(RbException("HSRFUnevenGridHyperpriorsGibbsMove move only works when children are Normal(0,local_scale*global_scale*zeta*sqrt(grid[i])) Distributions"));
         }
         
         addNode( normals[i] );

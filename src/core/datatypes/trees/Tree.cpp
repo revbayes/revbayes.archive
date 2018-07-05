@@ -362,35 +362,45 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         size_t state_index = (size_t)static_cast<const TypedDagNode<int> *>( args[1] )->getValue();
         rv = RevBayesCore::TreeUtilities::getMeanInverseES( *this, c->getValue(), state_index );
     }
-    else if ( n == "calculateNRI" )
+    else if ( n == "calculateMPD" )
     {
         const TypedDagNode< AbstractHomologousDiscreteCharacterData >* c = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( args[0] );
         size_t state_index = (size_t)static_cast<const TypedDagNode<int> *>( args[1] )->getValue();
         size_t site_index = (size_t)static_cast<const TypedDagNode<int> *>( args[2] )->getValue() - 1;
         // why doesn't this work?
-        //bool weighted = static_cast<const TypedDagNode<bool> *>( args[3] )->getValue();
-        bool weighted = false;
+        //bool zscore = static_cast<const TypedDagNode<bool> *>( args[3] )->getValue();
+        bool zscore = false;
         if (args[3]->getValueAsString() == "TRUE")
         {
-            weighted = true;
+            zscore = true;
         }
-        size_t reps = (size_t)static_cast<const TypedDagNode<int> *>( args[4] )->getValue();
-        rv = RevBayesCore::TreeUtilities::calculateNRI(*this, c->getValue(), site_index, state_index, weighted, reps);
+        bool branch_lengths = false;
+        if (args[4]->getValueAsString() == "TRUE")
+        {
+            branch_lengths = true;
+        }
+        size_t reps = (size_t)static_cast<const TypedDagNode<int> *>( args[5] )->getValue();
+        rv = RevBayesCore::TreeUtilities::calculateMPD(*this, c->getValue(), site_index, state_index, zscore, branch_lengths, reps);
     }
-    else if ( n == "calculateNTI" )
+    else if ( n == "calculateMNTD" )
     {
         const TypedDagNode< AbstractHomologousDiscreteCharacterData >* c = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( args[0] );
         size_t state_index = (size_t)static_cast<const TypedDagNode<int> *>( args[1] )->getValue();
         size_t site_index = (size_t)static_cast<const TypedDagNode<int> *>( args[2] )->getValue() - 1;
         // why doesn't this work?
-        //bool weighted = static_cast<const TypedDagNode<bool> *>( args[3] )->getValue();
-        bool weighted = false;
+        //bool zscore = static_cast<const TypedDagNode<bool> *>( args[3] )->getValue();
+        bool zscore = false;
         if (args[3]->getValueAsString() == "TRUE")
         {
-            weighted = true;
+            zscore = true;
         }
-        size_t reps = (size_t)static_cast<const TypedDagNode<int> *>( args[4] )->getValue();
-        rv = RevBayesCore::TreeUtilities::calculateNTI(*this, c->getValue(), site_index, state_index, weighted, reps);
+        bool branch_lengths = false;
+        if (args[4]->getValueAsString() == "TRUE")
+        {
+            branch_lengths = true;
+        }
+        size_t reps = (size_t)static_cast<const TypedDagNode<int> *>( args[5] )->getValue();
+        rv = RevBayesCore::TreeUtilities::calculateMNTD(*this, c->getValue(), site_index, state_index, zscore, branch_lengths, reps);
     }
     else
     {

@@ -158,7 +158,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
 
         for (size_t i = 0; i < characters.size(); i++)
         {
-//            if (i != 0) ss << ",";
+            if (i != 0) ss << ",";
             ss << static_cast<CharacterEventDiscrete*>(characters[i])->getState();
         }
     }
@@ -167,7 +167,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         std::vector<CharacterEvent*> characters = bh.getParentCharacters();
         for (size_t i = 0; i < characters.size(); i++)
         {
-//            if (i != 0) ss << ",";
+            if (i != 0) ss << ",";
             ss << static_cast<CharacterEventDiscrete*>(characters[i])->getState();
         }
     }
@@ -270,19 +270,38 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
             ndAge = n->getParent().getAge();
         double brLen = n->getBranchLength();
 
+        std::stringstream index_ss;
+        std::stringstream state_ss;
+        std::stringstream age_ss;
+        
+        index_ss << "evt_index={";
+        state_ss << "evt_state={";
+        age_ss << "evt_age={";
         for (it = evts.rbegin(); it != evts.rend(); it++)
         {
             if (it != evts.rbegin())
-                ss << ",";
+            {
+                index_ss << ",";
+                state_ss << ",";
+                age_ss << ",";
+            }
 
-            ss << "{";
-            ss << "t:" << (*it)->getAge() << ",";
-            ss << "a:" << ndAge - brLen * (*it)->getAge() << ",";
-            ss << "s:" << static_cast<CharacterEventDiscrete*>(*it)->getState() << ",";
-            ss << "i:" << (*it)->getSiteIndex() << "";
-            ss << "}";
+            index_ss << (*it)->getSiteIndex();
+            state_ss << static_cast<CharacterEventDiscrete*>(*it)->getState();
+            age_ss << (*it)->getAge();
+            
+//            ss << "{";
+//            ss << "t:" <<  << ",";
+//            ss << "a:" << << ",";
+//            ss << "s:" <<  << ",";
+//            ss << "i:" <<  << "";
+//            ss << "}";
 
         }
+        index_ss << "}";
+        state_ss << "}";
+        age_ss << "}";
+        ss << index_ss.str() << "," << state_ss.str() << "," << age_ss.str();
     }
 
     return ss.str();
@@ -309,15 +328,15 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildExtend
         characterStream << "index=" << n->getIndex();
 
         // character history
-        characterStream << ";nd=" << buildCharacterHistoryString(n,"child") << "";
-        characterStream << ";pa=" << buildCharacterHistoryString(n,"parent") << "";
+        characterStream << ",nd={" << buildCharacterHistoryString(n,"child") << "}";
+        characterStream << ",pa={" << buildCharacterHistoryString(n,"parent") << "}";
         if (!n->isTip())
         {
-            characterStream << ";ch0=" << buildCharacterHistoryString(&n->getChild(0),"parent") << "";
-            characterStream << ";ch1=" << buildCharacterHistoryString(&n->getChild(1),"parent") << "";
+            characterStream << ",ch0={" << buildCharacterHistoryString(&n->getChild(0),"parent") << "}";
+            characterStream << ",ch1={" << buildCharacterHistoryString(&n->getChild(1),"parent") << "}";
 
-            characterStream << ";cs=" << buildCharacterHistoryString(&n->getChild(0),"clado_state");
-            characterStream << ";bn=" << buildCharacterHistoryString(&n->getChild(0),"bud_state");
+//            characterStream << ",&cs=" << buildCharacterHistoryString(&n->getChild(0),"clado_state");
+//            characterStream << ",&bs=" << buildCharacterHistoryString(&n->getChild(0),"bud_state");
         }
 
         // # events
@@ -325,7 +344,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildExtend
 //        characterStream << ",sb={" << buildCharacterHistoryString(n,"state_betw") << "}";
 
         // event history
-        characterStream << ";ev={" << buildCharacterHistoryString(n,"events") << "}";
+        characterStream << "," << buildCharacterHistoryString(n,"events");
 
         // ... whatever else
         characterStream << "]";
@@ -552,7 +571,7 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::monitor(unsigned l
 
         }
 
-        outStream << std::endl;
+        outStream << ";" << std::endl;
 
     }
 }
