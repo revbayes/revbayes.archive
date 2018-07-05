@@ -48,6 +48,7 @@ namespace RevBayesCore {
         
         // overloaded operators
         RateMatrix_Covarion&                operator=(const RateMatrix_Covarion& r);
+        virtual RateMatrix_Covarion&        assign(const Assignable &m);
         
         // RateMatrix functions
         void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
