@@ -17,7 +17,8 @@ RateAgeBetaShift::RateAgeBetaShift(StochasticNode<Tree> *tr, std::vector<Stochas
     storedNode( NULL ),
     storedAge( 0.0 ),
     storedRates( rates.size(), 0.0 ),
-    numAccepted( 0 )
+    num_accepted_current_period( 0 ),
+    num_accepted_total( 0 )
 {
     
     addNode( tree );
@@ -67,6 +68,18 @@ const std::string& RateAgeBetaShift::getMoveName( void ) const
 double RateAgeBetaShift::getMoveTuningParameter( void ) const
 {
     return delta;
+}
+
+
+size_t RateAgeBetaShift::getNumberAcceptedCurrentPeriod( void ) const
+{
+    return num_accepted_current_period;
+}
+
+
+size_t RateAgeBetaShift::getNumberAcceptedTotal( void ) const
+{
+    return num_accepted_total;
 }
 
 
@@ -210,7 +223,8 @@ void RateAgeBetaShift::performMcmcMove( double prHeat, double lHeat, double pHea
     
     if (ln_acceptance_ratio >= 0.0)
     {
-        numAccepted++;
+        num_accepted_total++;
+        num_accepted_current_period++;
         
         tree->keep();
         rates[nodeIdx]->keep();
@@ -238,7 +252,8 @@ void RateAgeBetaShift::performMcmcMove( double prHeat, double lHeat, double pHea
         double u = GLOBAL_RNG->uniform01();
         if (u < r)
         {
-            numAccepted++;
+            num_accepted_total++;
+            num_accepted_current_period++;
             
             //keep
             tree->keep();
@@ -305,28 +320,28 @@ void RateAgeBetaShift::printSummary(std::ostream &o) const
     
     // print the number of tries
     int t_length = 9;
-    if (num_tried_total > 0) t_length -= (int)log10(num_tried_total);
+    if (num_tried_current_period > 0) t_length -= (int)log10(num_tried_current_period);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << num_tried_total;
+    o << num_tried_current_period;
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
-    if (numAccepted > 0) a_length -= (int)log10(numAccepted);
+    if (num_accepted_current_period > 0) a_length -= (int)log10(num_accepted_current_period);
     
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << numAccepted;
+    o << num_accepted_current_period;
     o << " ";
     
     // print the acceptance ratio
-    double ratio = numAccepted / (double)num_tried_total;
-    if (num_tried_total == 0) ratio = 0;
+    double ratio = num_accepted_current_period / (double)num_tried_current_period;
+    if (num_tried_current_period == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)
@@ -378,7 +393,7 @@ void RateAgeBetaShift::reject( void )
  */
 void RateAgeBetaShift::resetMoveCounters( void )
 {
-    numAccepted = 0;
+    num_accepted_current_period = 0;
 }
 
 
@@ -409,9 +424,15 @@ void RateAgeBetaShift::setMoveTuningParameter(double tp)
 }
 
 
-void RateAgeBetaShift::setNumberAccepted( size_t na )
+void RateAgeBetaShift::setNumberAcceptedCurrentPeriod( size_t na )
 {
-    numAccepted = na;
+    num_accepted_current_period = na;
+}
+
+
+void RateAgeBetaShift::setNumberAcceptedTotal( size_t na )
+{
+    num_accepted_total = na;
 }
 
 

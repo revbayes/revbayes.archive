@@ -87,17 +87,17 @@ namespace RevBayesCore {
         std::string                             schedule_type;
         size_t                                  current_generation;
         size_t                                  burnin_generation;
-        size_t                                  swap_interval;
-        size_t                                  swap_interval2;
+        size_t                                  swap_interval;                                      // the interval at which swaps (between neighbor chains if the swap method is neighbor or both, or between chains chosen randomly if the swap method is random) will be attempted.
+        size_t                                  swap_interval2;                                     // the interval at which swaps between randomly chosen chains will be attempted (if the swapMethod is specified as both; otherwise it would be the same as swapInterval if not provided).
         
         size_t                                  active_chain_index;                                 // index of coldest chain, i.e. which one samples the posterior
         double                                  delta;                                              // delta-T, temperature increment for computeBeta
-        std::vector<double>                     heat_temps;
-        bool                                    tune_heat;
-        double                                  tune_heat_target;
+        std::vector<double>                     heat_temps;                                         // chain temperature vector, could be specified directly by user at the beginning, determined by delta, or changed during the burn-in by tuning
+        bool                                    tune_heat;                                          // if the temperatures would be tuned
+        double                                  tune_heat_target;                                   // the tuning target on the acceptance ratio of neighbor chain swaps
         bool                                    useNeighborSwapping;
         bool                                    useRandomSwapping;
-        std::string                             swap_mode;
+        std::string                             swap_mode;                                          // whether making a single attempt per swap interval or attempt multiple (= nchains or nchains^2 for neighbor or random swaps, respectively) times.
         
         Mcmc*                                   base_chain;
         

@@ -1211,15 +1211,17 @@ void Mcmcmc::synchronizeTuningInfo(void)
     
 #ifdef RB_MPI
     // create MPI type
-    const int num_items = 3;
-    int block_lengths[num_items] = {1, 1, 1};
-    MPI_Datatype types[num_items] = {MPI_UNSIGNED_LONG, MPI_UNSIGNED_LONG, MPI_DOUBLE};
+    const int num_items = 5;
+    int block_lengths[num_items] = {1, 1, 1, 1, 1};
+    MPI_Datatype types[num_items] = {MPI_UNSIGNED_LONG, MPI_UNSIGNED_LONG, MPI_UNSIGNED_LONG, MPI_UNSIGNED_LONG, MPI_DOUBLE};
     MPI_Datatype tmp_mvs_ti_types, mvs_ti_types;
     MPI_Aint offsets[num_items];
     
-    offsets[0] = offsetof(Mcmc::tuningInfo, num_tried);
-    offsets[1] = offsetof(Mcmc::tuningInfo, num_accepted);
-    offsets[2] = offsetof(Mcmc::tuningInfo, tuning_parameter);
+    offsets[0] = offsetof(Mcmc::tuningInfo, num_tried_current_period);
+    offsets[1] = offsetof(Mcmc::tuningInfo, num_tried_total);
+    offsets[2] = offsetof(Mcmc::tuningInfo, num_accepted_current_period);
+    offsets[3] = offsetof(Mcmc::tuningInfo, num_accepted_total);
+    offsets[4] = offsetof(Mcmc::tuningInfo, tuning_parameter);
     
     MPI_Type_create_struct(num_items, block_lengths, offsets, types, &tmp_mvs_ti_types);
     

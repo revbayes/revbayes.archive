@@ -23,9 +23,12 @@ namespace RevBayesCore {
         CorrelationMatrixReparameterizationMove*   clone(void) const;                                                                  //!< Clone object
         const std::string&                         getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         double                                     getMoveTuningParameter(void) const;
+        size_t                                     getNumberAcceptedCurrentPeriod(void) const;                         //!< Get update weight of InferenceMove
+        size_t                                     getNumberAcceptedTotal(void) const;
         void                                       printSummary(std::ostream &o) const;                                                //!< Print the move summary
         void                                       setMoveTuningParameter(double tp);
-        void                                       setNumberAccepted(size_t na);
+        void                                       setNumberAcceptedCurrentPeriod(size_t na);
+        void                                       setNumberAcceptedTotal(size_t na);
         
     protected:
         void                                       performMcmcMove(double prHeat, double lHeat, double pHeat);                                        //!< Perform move
@@ -45,7 +48,8 @@ namespace RevBayesCore {
         // stored objects to undo proposal
         MatrixReal                                 stored_matrix;
         
-        size_t                                     numAccepted;
+        size_t                                     num_accepted_current_period;
+        size_t                                     num_accepted_total;
         
     };
     

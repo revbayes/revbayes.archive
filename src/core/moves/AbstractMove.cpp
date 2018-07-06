@@ -504,13 +504,13 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
 
 void AbstractMove::setNumberAcceptedCurrentPeriod( size_t na )
 {
-//    num_tried_current_period = na;
+    num_tried_current_period = na;
 }
 
 
 void AbstractMove::setNumberAcceptedTotal( size_t na )
 {
-//    num_tried_total = na;
+    num_tried_total = na;
 }
 
 
