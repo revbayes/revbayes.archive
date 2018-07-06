@@ -293,6 +293,23 @@ void NodeOrderConstrainedTreeDistribution::redrawValue( void )
 
 
 /**
+ * Set the DAG node.
+ */
+void NodeOrderConstrainedTreeDistribution::setStochasticNode( StochasticNode<Tree> *n )
+{
+    
+    // delegate to base class first
+    TypedDistribution<Tree>::setStochasticNode( n );
+    
+    if ( base_distribution != NULL )
+    {
+        base_distribution->setStochasticNode( n );
+    }
+    
+}
+
+
+/**
  * Set the current value.
  */
 void NodeOrderConstrainedTreeDistribution::setValue(Tree *v, bool f )
