@@ -174,6 +174,10 @@ void MultivariateNormalDistribution::swapParameterInternal(const DagNode *oldP, 
     {
         precision = static_cast<const TypedDagNode<MatrixReal >* >( newP );
     }
+    if (oldP == scale)
+    {
+        scale = static_cast<const TypedDagNode< double >* >( newP );
+    }
     
 }
 
