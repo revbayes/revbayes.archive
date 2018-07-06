@@ -42,7 +42,7 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
  */
 MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) : AbstractMove(m),
     num_accepted_current_period( m.num_accepted_current_period ),
-    num_accepted_total( m.num_accepted_current_period ),
+    num_accepted_total( m.num_accepted_total ),
     proposal( m.proposal->clone() )
 {
     
@@ -477,28 +477,28 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     
     // print the number of tries
     int t_length = 9;
-    if (num_tried_total > 0) t_length -= (int)log10(num_tried_total);
+    if (num_tried_current_period > 0) t_length -= (int)log10(num_tried_current_period);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << num_tried_total;
+    o << num_tried_current_period;
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
-    if (num_accepted_total > 0) a_length -= (int)log10(num_accepted_total);
+    if (num_accepted_current_period > 0) a_length -= (int)log10(num_accepted_current_period);
     
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << num_accepted_total;
+    o << num_accepted_current_period;
     o << " ";
     
     // print the acceptance ratio
-    double ratio = num_accepted_total / (double)num_tried_total;
-    if (num_tried_total == 0) ratio = 0;
+    double ratio = num_accepted_current_period / (double)num_tried_current_period;
+    if (num_tried_current_period == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)
