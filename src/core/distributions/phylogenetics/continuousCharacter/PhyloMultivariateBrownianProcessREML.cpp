@@ -420,7 +420,7 @@ void PhyloMultivariateBrownianProcessREML::recursivelyDrawJointConditionalAncest
             double delta                  = this->contrast_uncertainty[this->active_likelihood[child_index]][child_index];
             
             // get the branch length for this child
-            double branch_length = computeBranchTime(node_index, child.getBranchLength());
+            double branch_length = computeBranchTime(child_index, child.getBranchLength());
             
             // get the states for this node
             ContinuousTaxonData &child_states_start = startStates[ child_index ];
