@@ -43,11 +43,13 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    const TypedDagNode<double> *rh,
                                                                                    const std::string &cdt,
                                                                                    bool uo,
-                                                                                   size_t min_lineages,
-                                                                                   size_t max_lineages,
+                                                                                   size_t min_num_lineages,
+                                                                                   size_t max_num_lineages,
+                                                                                   size_t exact_num_lineages,
                                                                                    double max_t,
                                                                                    bool prune,
-                                                                                   bool condition) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
+                                                                                   bool condition_on_tip_states,
+                                                                                   bool condition_on_num_tips) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     condition( cdt ),
     active_likelihood( std::vector<bool>(5, 0) ),
     changed_nodes( std::vector<bool>(5, false) ),
@@ -73,11 +75,13 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     rate( r ),
     rho( rh ),
     Q_default( ext->getValue().size() ),
-    min_num_lineages( min_lineages ),
-    max_num_lineages( max_lineages ),
+    min_num_lineages( min_num_lineages ),
+    max_num_lineages( max_num_lineages ),
+    exact_num_lineages( exact_num_lineages ),
     max_time( max_t ),
     prune_extinct_lineages( prune ),
-    simulate_conditioned_on_tips( condition ),
+    condition_on_tip_states( condition_on_tip_states ),
+    condition_on_num_tips( condition_on_num_tips ),
     NUM_TIME_SLICES( 500.0 )
 {
     addParameter( mu );
@@ -1655,7 +1659,7 @@ void StateDependentSpeciationExtinctionProcess::redrawValue( void )
     {
         bool success = false;
 
-        if ( simulate_conditioned_on_tips == true && static_cast<TreeDiscreteCharacterData *>(this->value)->hasCharacterData() == true )
+        if ( condition_on_tip_states == true && static_cast<TreeDiscreteCharacterData *>(this->value)->hasCharacterData() == true )
         {
             success = simulateTreeConditionedOnTips(attempts);
         }
@@ -1942,10 +1946,6 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
     std::vector<double> total_speciation_rates = calculateTotalSpeciationRatePerState();
     std::vector<double> total_anagenetic_rates = calculateTotalAnageneticRatePerState();
     std::vector<double> r = std::vector<double>(num_states, 0);
-    for (size_t i = 0; i < num_states; ++i)
-    {
-        r[i] = extinction_rates[i] + total_speciation_rates[i] + total_anagenetic_rates[i];
-    }
 
     // create a vector of nodes for our simulated tree
     std::vector<TopologyNode*> nodes;
@@ -1956,8 +1956,48 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
     for (size_t i = 0; i < tip_data.getNumberOfTaxa(); ++i)
     {
         TopologyNode* tip_node = new TopologyNode(i);
-        tip_node->setName(tip_data.getTaxa()[i].getName());
-        size_t state_index = tip_data.getTaxonData( tip_data.getTaxa()[i].getName() )[0].getStateIndex();
+        std::string tip_name = tip_data.getTaxa()[i].getName();
+        tip_node->setName(tip_name);
+        size_t state_index = 0;
+        if (tip_data.getTaxonData(tip_name)[0].isAmbiguous() == false)
+        {
+            state_index = tip_data.getTaxonData(tip_name)[0].getStateIndex();
+        }
+        else
+        {
+            // state is ambigious so sample one of the observed states randomly
+            double num_observed_states = tip_data.getTaxonData(tip_name)[0].getNumberObservedStates();
+            if (num_observed_states > 0)
+            {
+                double u = rng->uniform01() * num_observed_states;
+                for (size_t j = 0; j < num_states; ++j)
+                {
+                    if (tip_data.getTaxonData(tip_name)[0].isStateSet(j) == true)
+                    {
+                        --u;
+                        if (u < 0)
+                        {
+                            state_index = j;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                double u = rng->uniform01() * num_states;
+                for (size_t j = 0; j < num_states; ++j)
+                {
+                    --u;
+                    if (u < 0)
+                    {
+                        state_index = j;
+                        break;
+                    }
+                }
+            }
+        }
+        
         tip_node->setAge(t);
         tip_node->setNodeType(true, false, false);
         tip_node->setTimeInStates(std::vector<double>(num_states, 0.0));
@@ -1969,6 +2009,18 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
     while (true) {
 
         // calculate c and g from Hua and Bromham 2016
+        for (size_t i = 0; i < num_states; ++i)
+        {
+            r[i] = 0.0;
+            if (lineages_in_state[i].size() > 1)
+            {
+                r[i] += total_speciation_rates[i];
+            }
+            if (lineages_in_state[i].size() > 0)
+            {
+                r[i] += extinction_rates[i] + total_anagenetic_rates[i];
+            }
+        }
         double g = 0;
         double c = 0;
         for (size_t i = 0; i < num_states; ++i)
@@ -1994,6 +2046,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
         double prob_sum = 0.0;
         while (true) 
         {
+        
             // propose a new time from proposal distribution g
             dt = RbStatistics::Exponential::rv( g, *rng );
 
@@ -2033,6 +2086,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
                         }
                     }
                 }
+
                 if (lineages_in_state[i].size() > 1)
                 {
                     prob_speciation[i] = total_speciation_rates[i] * (lineages_in_state[i].size() - 1) * exp(-1 * dt * total_rate_spec);
@@ -2054,7 +2108,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
 
             // check if we accept the new time
             double u = rng->uniform01();
-            if (u <= prob_sum/c)
+            if (u <= prob_sum / (c * exp(-1 * dt * g)))
             {
                 break;
             }
@@ -2276,11 +2330,16 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
 bool StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
 {
 
-    if ( use_origin == true )
+    if ( use_origin == true && condition_on_num_tips == false )
     {
         // if originAge is set we start with one lineage
         // if rootAge is set we start with two lineages and their speciation event
         throw RbException("Simulations are currently only implemented when rootAge is set. You set the originAge.");
+    }
+    
+    if (exact_num_lineages < 2 && condition_on_num_tips == true) 
+    {
+        throw RbException("When simulating conditioned on the number of tips exactNumLineages must be 2 or more.");
     }
     
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -2324,6 +2383,10 @@ bool StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
     // initialize the root node
     TopologyNode* root = new TopologyNode(0);
     double t = process_age->getValue();
+    if (condition_on_num_tips == true)
+    {
+        t = 0.0;
+    }
     root->setAge(t);
     root->setNodeType(false, true, true);
     root->setTimeInStates(std::vector<double>(num_states, 0.0));
@@ -2431,9 +2494,16 @@ bool StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
         
         // draw the time to next event
         double dt = RbStatistics::Exponential::rv( total_rate, *rng );
-        t = t - dt;
-      
-        if (t < 0)
+        if (condition_on_num_tips == true)
+        {
+            t = t + dt;
+        }
+        else
+        {
+            t = t - dt;
+        }
+
+        if (t < 0 and condition_on_num_tips == false)
         {
             dt = dt - (0 - t);
             t = 0;
@@ -2455,15 +2525,23 @@ bool StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
         }
 
         // stop and retry if we have too many surviving lineages
-        if (num_lineages > max_num_lineages)
+        if (num_lineages > max_num_lineages && condition_on_num_tips == false)
+        {
+            nodes.clear();
+            delete tip_data;
+            return false;
+        }
+        
+        // stop and retry if we reached the max time
+        if (t > max_time && condition_on_num_tips == true)
         {
             nodes.clear();
             delete tip_data;
             return false;
         }
 
-        // stop if we reached the present
-        if (t == 0) 
+        // stop if we reached the present when conditioning on root age
+        if (t == 0 && condition_on_num_tips == false) 
         {
             for (size_t i = 0; i < nodes.size(); i++)
             {
@@ -2507,7 +2585,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
                 }
             }
             break;
-        }
+        } 
 
         // determine the state for the event that occurred
         size_t event_state = 0; 
@@ -2587,6 +2665,62 @@ bool StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
         
         if (event_type == "speciation")
         {
+
+            // stop if we reached the right number of lineages when conditioning on num tips
+            if (num_lineages == exact_num_lineages && condition_on_num_tips == true) 
+            {
+                // TODO trim off uniformly distributed time since last speciation event
+                
+                for (size_t i = 0; i < nodes.size(); i++)
+                {
+                    if (nodes[i]->getAge() == t) 
+                    {
+                        std::stringstream ss;
+                        ss << "sp" << i;
+                        std::string name = ss.str();
+                        nodes[i]->setName(name);
+                        nodes[i]->setNodeType(true, false, false);
+                    }
+                }
+                
+                // shift node times back so root starts at 0.0
+                for (size_t i = 0; i < nodes.size(); i++)
+                {
+                    nodes[i]->setAge( t - nodes[i]->getAge() );
+                }
+                
+                // set CharacterData object for each tip state
+                for (size_t i = 0; i < num_states; i++)
+                {
+                    for (size_t j = 0; j < lineages_in_state[i].size(); j++)
+                    {
+                        size_t this_node = lineages_in_state[i][j];
+                        if (nodes[this_node]->isTip() == true)
+                        {
+                            DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(nodes[this_node]->getName());
+                            NaturalNumbersState state = NaturalNumbersState(i, num_states);
+                            this_tip_data.addCharacter(state);
+                            tip_data->addTaxonData(this_tip_data);
+                        }
+                    }
+                    if (prune_extinct_lineages == false)
+                    {
+                        for (size_t j = 0; j < extinct_lineages_in_state[i].size(); j++)
+                        {
+                            size_t this_node = extinct_lineages_in_state[i][j];
+                            if (nodes[this_node]->isTip() == true)
+                            {
+                                DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(nodes[this_node]->getName());
+                                NaturalNumbersState state = NaturalNumbersState(i, num_states);
+                                this_tip_data.addCharacter(state);
+                                tip_data->addTaxonData(this_tip_data);
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+
             // gather the probabilities for each type of cladogenetic event
             std::map<std::vector<unsigned>, double> sample_probs;
             double sample_probs_sum = 0.0;
@@ -2688,7 +2822,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTree( size_t attempts )
     {
         num_lineages += lineages_in_state[i].size();
     }
-    if (num_lineages < min_num_lineages)
+    if (num_lineages < min_num_lineages and condition_on_num_tips == false)
     {
         delete tip_data;
         nodes.clear();

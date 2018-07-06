@@ -42,11 +42,13 @@ namespace RevBayesCore {
                                                   const TypedDagNode<double> *rh,
                                                   const std::string &cdt,
                                                   bool uo,
-                                                  size_t min_lineages,
-                                                  size_t max_lineages,
+                                                  size_t min_num_lineages,
+                                                  size_t max_num_lineages,
+                                                  size_t exact_num_lineages,
                                                   double max_t,
                                                   bool prune,
-                                                  bool condition);
+                                                  bool condition_on_tip_states,
+                                                  bool condition_on_num_tips);
         
         // pure virtual member functions
         virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
@@ -139,9 +141,11 @@ namespace RevBayesCore {
         RateMatrix_JC                                                   Q_default;
         size_t                                                          min_num_lineages;
         size_t                                                          max_num_lineages;
+        size_t                                                          exact_num_lineages;
         double                                                          max_time;
         bool                                                            prune_extinct_lineages;
-        bool                                                            simulate_conditioned_on_tips;
+        bool                                                            condition_on_tip_states;
+        bool                                                            condition_on_num_tips;
         double                                                          NUM_TIME_SLICES;
     };
     

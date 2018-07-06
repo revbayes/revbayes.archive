@@ -92,16 +92,32 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     
     // condition
     const std::string& cond                  = static_cast<const RlString &>( condition->getRevObject() ).getValue();
+   
+    // condition for simulating under
+    const std::string& simulate_cond                  = static_cast<const RlString &>( simulation_condition->getRevObject() ).getValue();
+    
+    bool cond_tip_states = false;
+    bool cond_num_tips = false;
+    if (simulate_cond == "tipStates")
+    {
+        cond_tip_states = true;
+        cond_num_tips = false;
+    }
+    if (simulate_cond == "numTips")
+    {
+        cond_tip_states = false;
+        cond_num_tips = true;
+    }
     
     size_t max_l = static_cast<const Integer &>( max_lineages->getRevObject() ).getValue();
     size_t min_l = static_cast<const Integer &>( min_lineages->getRevObject() ).getValue();
-    
-    size_t prune = static_cast<const RlBoolean &>( prune_extinct_lineages->getRevObject() ).getValue();
-    size_t cond_tips = static_cast<const RlBoolean &>( condition_on_tips->getRevObject() ).getValue();
+    size_t exact_l = static_cast<const Integer &>( exact_lineages->getRevObject() ).getValue();
     double max_t = static_cast<const RealPos &>( max_time->getRevObject() ).getValue();
     
+    size_t prune = static_cast<const RlBoolean &>( prune_extinct_lineages->getRevObject() ).getValue();
+    
     // finally make the distribution 
-    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, uo, min_l, max_l, max_t, prune, cond_tips );
+    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, uo, min_l, max_l, exact_l, max_t, prune, cond_tip_states, cond_num_tips );
    
     // set speciation/cladogenetic event rates
     if (speciation_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ))
@@ -250,12 +266,17 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
         optionsCondition.push_back( "time" );
         optionsCondition.push_back( "survival" );
         memberRules.push_back( new OptionRule( "condition"    , new RlString("time"), optionsCondition, "The condition of the birth-death process." ) );
-        memberRules.push_back( new ArgumentRule( "nTimeSlices",RealPos::getClassTypeSpec(),      "The number of time slices for the numeric ODE.",           ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RealPos(500.0) ) );
-        memberRules.push_back( new ArgumentRule( "minNumLineages", Natural::getClassTypeSpec(),  "The minimum number of lineages to simulate.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new Natural() ) );
-        memberRules.push_back( new ArgumentRule( "maxNumLineages", Natural::getClassTypeSpec(),  "The maximum number of lineages to simulate.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new Natural(500) ) );
-        memberRules.push_back( new ArgumentRule( "conditionOnTips", RlBoolean::getClassTypeSpec(),  "Should simulations condition on the number of tips in each state?",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RlBoolean(false) ) );
-        memberRules.push_back( new ArgumentRule( "maxTime", RealPos::getClassTypeSpec(),  "Maximum time for lineages to coalesce when simulating conditioned on tip states.",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RealPos(1000.0) ) );
-        memberRules.push_back( new ArgumentRule( "pruneExtinctLineages", RlBoolean::getClassTypeSpec(),  "When simulating should extinct lineages be pruned off?",       ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("nTimeSlices", RealPos::getClassTypeSpec(), "The number of time slices for the numeric ODE.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(500.0) ) );
+        std::vector<std::string> optionsSimulateCondition;
+        optionsSimulateCondition.push_back("startTime");
+        optionsSimulateCondition.push_back("numTips");
+        optionsSimulateCondition.push_back("tipStates");
+        memberRules.push_back( new OptionRule("simulateCondition", new RlString("startTime"), optionsSimulateCondition, "The conditions under which to simulate." ) );
+        memberRules.push_back( new ArgumentRule("minNumLineages", Natural::getClassTypeSpec(), "The minimum number of lineages to simulate; applied under the startTime condition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural() ) );
+        memberRules.push_back( new ArgumentRule("maxNumLineages", Natural::getClassTypeSpec(), "The maximum number of lineages to simulate; applied under the startTime condition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(500) ) );
+        memberRules.push_back( new ArgumentRule("exactNumLineages", Natural::getClassTypeSpec(), "The exact number of lineages to simulate; applied under the numTips condition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
+        memberRules.push_back( new ArgumentRule("maxTime", RealPos::getClassTypeSpec(), "Maximum time for lineages to coalesce when simulating; applied under the numTips and tipStates condition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1000.0) ) );
+        memberRules.push_back( new ArgumentRule("pruneExtinctLineages", RlBoolean::getClassTypeSpec(), "When simulating should extinct lineages be pruned off?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
 
         rules_set = true;
     }
@@ -326,6 +347,10 @@ void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::stri
     {
         max_lineages = var;
     }
+    else if ( name == "exactNumLineages" )
+    {
+        exact_lineages = var;
+    }
     else if ( name == "maxTime" )
     {
         max_time = var;
@@ -334,9 +359,9 @@ void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::stri
     {
         prune_extinct_lineages = var;
     }
-    else if ( name == "conditionOnTips" )
+    else if ( name == "simulateCondition" )
     {
-        condition_on_tips = var;
+        simulation_condition = var;
     }
     else
     {

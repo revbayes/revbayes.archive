@@ -162,6 +162,7 @@
 #include "Func_distanceRateModifier.h"
 #include "Func_generalRateGeneratorSequence.h"
 #include "Func_rangeEvolutionRateModifier.h"
+#include "Func_stateCountRateModifier.h"
 #include "Func_siteRateModifier.h"
 #include "Func_hostSwitchRateModifier.h"
 
@@ -329,6 +330,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_generalRateGeneratorSequence() );
         addFunction( new Func_hostSwitchRateModifier() );
         addFunction( new Func_rangeEvolutionRateModifier() );
+        addFunction( new Func_stateCountRateModifier() );
         addFunction( new Func_siteRateModifier() );
 
         /* cladogenic probs used for e.g. DEC models (in folder "functions/phylogenetics") */

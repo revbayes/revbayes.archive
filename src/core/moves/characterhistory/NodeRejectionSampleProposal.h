@@ -153,11 +153,6 @@ template<class charType>
 std::set<size_t> RevBayesCore::NodeRejectionSampleProposal<charType>::chooseCharactersToSample(double p)
 {
     
-    if (p == 1.0)
-    {
-        return allCharacters;
-    }
-    
     std::set<size_t> s;
     s.insert(GLOBAL_RNG->uniform01() * numCharacters);
     for (size_t i = 0; i < numCharacters; i++)
