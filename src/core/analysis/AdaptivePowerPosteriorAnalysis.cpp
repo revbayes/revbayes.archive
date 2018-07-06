@@ -206,7 +206,7 @@ void AdaptivePowerPosteriorAnalysis::runAll(size_t gen, size_t bg, size_t ti)
     
     if( gen < sampleFreq )
     {
-        throw(RbException("Trying to run power posterior analysis for fewer generations than sampleFreq, no samples will be stored"));
+        throw(RbException("Trying to run adaptive power posterior analysis for fewer generations than sampleFreq, no samples will be stored"));
     }
 
     // disable the screen monitor(s) if any
@@ -216,10 +216,11 @@ void AdaptivePowerPosteriorAnalysis::runAll(size_t gen, size_t bg, size_t ti)
     if ( process_active == true )
     {
         std::cout << std::endl;
-        std::cout << "Running power posterior analysis ..." << std::endl;
+        std::cout << "Running adaptive power posterior analysis ..." << std::endl;
     }
     
     double new_marginal_likelihood = 0.0;
+    bool first = true;
     while ( true ) {
         
         // run the analysis for each dirty stone
@@ -229,8 +230,6 @@ void AdaptivePowerPosteriorAnalysis::runAll(size_t gen, size_t bg, size_t ti)
             // get the power for this stone
             double b = powers.at(i);
             
-//            std::cout << b << " -- " << dirty_stones.find(b)->second << std::endl;
-            
             // if the stone is dirty, run the sampler on this stone
             if (dirty_stones.find(b)->second == true)
             {
@@ -239,45 +238,51 @@ void AdaptivePowerPosteriorAnalysis::runAll(size_t gen, size_t bg, size_t ti)
             
         }
         
+        if ( first == true )
+        {
+            
+            // compute the marginal likelihood with the trapezoid rule
+            // for the "first" estimate of the marginal likelihood
+            
+            double a = powers.at(0);
+            double b = powers.at(2);
+            double c = powers.at(1);
+            
+            double fa = average_likelihoods.find(a)->second;
+            double fb = average_likelihoods.find(b)->second;
+            double fc = average_likelihoods.find(c)->second;
+            
+            old_marginal_likelihood = trapezoidRule(fa, fc, a, c) + trapezoidRule(fc, fb, c, b);
+            
+            first = false;
+            
+        }
+        
         // compute the new estimate of the marginal likelihood
         // and determine placement of new stones
-        std::cout << std::endl << "Adapting power posterior analysis ..." << std::endl;
         new_marginal_likelihood = adapt();
         
-        std::cout << old_marginal_likelihood << " -- " << new_marginal_likelihood << " -- " << fabs(new_marginal_likelihood - old_marginal_likelihood) << std::endl;
+        double diff = fabs(new_marginal_likelihood - old_marginal_likelihood);
+        
+//        std::cout << old_marginal_likelihood << " -- " << new_marginal_likelihood << " -- " << fabs(new_marginal_likelihood - old_marginal_likelihood) << std::endl;
+        
+        std::cout << "\t" << diff << std::endl;
         
         // check for convergence of the marginal likelihood
-        if ( fabs(new_marginal_likelihood - old_marginal_likelihood) < tolerance ) {
+        if ( diff < tolerance ) {
+            std::cout << std::endl;
             break;
         }
         
+        // add the new stones
+//        std::cout << std::endl << "Adapting power posterior analysis ..." << std::endl;
+
         addStones();
         
         // update the marginal likelihood estimate
         old_marginal_likelihood = new_marginal_likelihood;
         
     }
-    
-//    // compute which block of the data this process needs to compute
-////    size_t stone_block_start = size_t(floor( (double(pid)   / num_processes ) * powers.size()) );
-////    size_t stone_block_end   = size_t(floor( (double(pid+1) / num_processes ) * powers.size()) );
-//    
-//    size_t stone_block_start =  floor( ( floor( pid   /double(processors_per_likelihood)) / (double(num_processes) / processors_per_likelihood) ) * powers.size() );
-//    size_t stone_block_end   =  floor( ( ceil( (pid+1)/double(processors_per_likelihood)) / (double(num_processes) / processors_per_likelihood) ) * powers.size() );
-//    
-//    // Run the chain
-//    for (size_t i = stone_block_start; i < stone_block_end; ++i)
-//    {
-//    
-//        // run the i-th stone
-//        runStone(i, gen);
-//        
-//    }
-//    
-//#ifdef RB_MPI
-//    // wait until all chains complete
-//    MPI_Barrier(MPI_COMM_WORLD);
-//#endif
     
     if ( process_active == true )
     {
@@ -325,7 +330,8 @@ void AdaptivePowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg,
         {
             std::cout << " ";
         }
-        std::cout << index << ", power = " << beta;
+//        std::cout << index << ", power = " << beta;
+        std::cout << index;
         std::cout << "\t\t";
     }
     
@@ -414,7 +420,16 @@ void AdaptivePowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg,
     
     this_average_likelihood = total_likelihood / num_sampled_likelihoods;
     
-    if ( process_active == true )
+    int num_dirty = 0;
+    for(int i = 0; i < powers.size(); ++i)
+    {
+        if( dirty_stones.find(powers.at(i))->second == true ) {
+            num_dirty++;
+        }
+    }
+    bool last_stone = num_dirty == 1;
+    
+    if ( process_active == true & last_stone == false )
     {
         std::cout << std::endl;
     }
@@ -435,8 +450,7 @@ double AdaptivePowerPosteriorAnalysis::adapt( void )
     double new_lnl = 0.0;
     
     double worst_fit = RbConstants::Double::neginf;
-//    size_t worst_stone = 1;
-    
+
     // compute the integral
     // and figure out where the fit is the worst
     double a, b, c, fa, fb, fc;
@@ -452,7 +466,7 @@ double AdaptivePowerPosteriorAnalysis::adapt( void )
         fb = average_likelihoods.find(b)->second;
         fc = average_likelihoods.find(c)->second;
         
-        this_trap = trapezoidRule(fa, fb, a, b);
+        this_trap = trapezoidRule(fa, fc, a, c) + trapezoidRule(fc, fb, c, b);
         this_simp = simpsonsRule(fa, fb, fc, a, b, c);
         
         fit = fabs(this_trap - this_simp);
@@ -510,10 +524,33 @@ double AdaptivePowerPosteriorAnalysis::trapezoidRule(double fa, double fb, doubl
 double AdaptivePowerPosteriorAnalysis::simpsonsRule(double fa, double fb, double fc, double a, double b, double c)
 {
 
-    double h = fabs(b - a) / 6.0;
-    double s = h * (fa + 4.0 * fc + fb);
-    return s;
+//    double h = fabs(b - a) / 6.0;
+//    double s = h * (fa + 4.0 * fc + fb);
+//    return s;
 
+    // simpson's rule for non-equal intervals
+    // otherwise, use the generalized simpson's rule
+    double x0 = b;
+    double x1 = c;
+    double x2 = a;
+    
+    double y0 = fb;
+    double y1 = fc;
+    double y2 = fa;
+    
+//    double x0 = powers[i+1];
+//    double x1 = powers[i];
+//    double x2 = powers[i-1];
+//    
+//    double y0 = pathValues[i+1];
+//    double y1 = pathValues[i];
+//    double y2 = pathValues[i-1];
+//    
+    double s = (x2 - x0) * (y0 + ( (x2 - x0) / (x1 - x0) ) * (y1 - y0) / 2 );
+    s += (2.0 * x2 * x2 - x0 * x2 - x0 * x0 + 3 * x0 * x1 - 3 * x1 * x2 ) * ( ((y2 - y1) / (x2 - x1)) - ((y1 - y0) / (x1 - x0)) ) / 6.0 ;
+
+    return s;
+    
 }
 
 void AdaptivePowerPosteriorAnalysis::summarizeStones( void )

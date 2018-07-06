@@ -59,7 +59,9 @@ namespace RevBayesCore {
         std::map<double, size_t>                indices;
         double                                  tolerance;
         double                                  old_marginal_likelihood;
+        
         size_t                                  worst_stone;
+        double                                  new_beta;
         
         MonteCarloSampler*                      sampler;
         size_t                                  sampleFreq;                                                                     //!< The rate of the distribution
