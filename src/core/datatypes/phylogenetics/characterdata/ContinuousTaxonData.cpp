@@ -199,7 +199,7 @@ double ContinuousTaxonData::getPercentageMissing( void ) const
     double numMissing = 0.0;
     for (size_t i = 0; i < sequence.size(); ++i)
     {
-        if ( sequence[i] == RbConstants::Double::nan )
+        if ( RevBayesCore::RbMath::isNan(sequence[i]) )
         {
             ++numMissing;
         }
@@ -251,7 +251,7 @@ bool ContinuousTaxonData::isSequenceMissing( void ) const
     
     for (size_t i = 0; i < sequence.size(); ++i)
     {
-        if ( sequence[i] != RbConstants::Double::nan )
+        if ( RevBayesCore::RbMath::isNan(sequence[i]) == false )
         {
             return false;
         }

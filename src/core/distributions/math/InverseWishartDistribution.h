@@ -39,7 +39,7 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
         
-        int                                                 getDF() const {return df->getValue();}
+        int                                                 getDF() const {return (int)df->getValue();}
         
         const TypedDagNode<MatrixReal>*                     getSigma0() const {return sigma0;}
         const TypedDagNode<RbVector<double> >*              getKappaVector() const {return kappaVector;}

@@ -87,8 +87,7 @@ namespace RevLanguage {
 #include <cmath>
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject() :
-    AbstractModelObject(),
+RevLanguage::ModelObject<rbType>::ModelObject() : AbstractModelObject(),
     dag_node( NULL )
 {
 }
@@ -96,8 +95,7 @@ RevLanguage::ModelObject<rbType>::ModelObject() :
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
-    AbstractModelObject(),
+RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) : AbstractModelObject(),
     dag_node( new ConstantNode<rbType>("",v) )
 {
     // increment the reference count to the value
@@ -108,8 +106,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) :
-    AbstractModelObject(),
+RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) : AbstractModelObject(),
     dag_node( v )
 {
     // increment the reference count to the value
@@ -137,6 +134,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
         
         // increment the reference count to the value
         dag_node->incrementReferenceCount();
+    
     }
     
 }
@@ -185,6 +183,7 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
             
             // increment the reference count to the value
             dag_node->incrementReferenceCount();
+        
         }
     }
     
@@ -196,13 +195,25 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
 template <typename rbType>
 RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
+    
+    if ( name == "methods" )
+    {
+        found = true;
+        
+        // just print the method names (including inherited methods)
+        const MethodTable &m = getMethods();
+        m.printValue(std::cout, true);
+        
+        return NULL;
+    }
+    
     RevMemberObject * rmo = dynamic_cast<RevMemberObject *>( dag_node );
     
     if ( rmo != NULL )
     {
         RevPtr<RevVariable> retVal = rmo->executeMethod(name, args, found);
 
-        if( found == true)
+        if ( found == true)
         {
             return retVal;
         }

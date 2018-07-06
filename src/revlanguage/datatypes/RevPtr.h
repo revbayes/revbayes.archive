@@ -36,7 +36,7 @@ public:
     static void                                 incrementCountForAddress(ptrType* qPtr);
     
 private:
-    size_t                                      countForAddress(const ptrType* qPtr);
+    //size_t                                      countForAddress(const ptrType* qPtr);
     void                                        finalizePointer(void);
     void                                        initializePointer(ptrType* inPtr);
     
@@ -125,18 +125,19 @@ ptrType& RevLanguage::RevPtr<ptrType>::operator*(void) const
 }
 
 
-template <typename ptrType>
+/*template <typename ptrType>
 size_t RevLanguage::RevPtr<ptrType>::countForAddress(const ptrType* qPtr)
 {
     
     // check if we got the NULL pointer
     if (qPtr == 0)
     {
+        // size_t cannot be nan (WP)
         return RbConstants::Size_t::nan;
     }
     
     return qPtr->getReferenceCount();
-}
+}*/
 
 
 template <typename ptrType>

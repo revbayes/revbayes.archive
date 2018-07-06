@@ -32,8 +32,7 @@ void AddContinuousDistribution( RevLanguage::ContinuousDistribution *dist)
 
 /**
  * Generic function
- * @param value
- * @return
+ * @param dist The distribution that we are going to add
  */
 template <typename T>
 void AddContinuousDistribution( RevLanguage::PositiveContinuousDistribution *dist)

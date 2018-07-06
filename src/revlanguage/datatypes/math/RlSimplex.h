@@ -35,6 +35,7 @@ namespace RevLanguage {
         virtual                                    ~Simplex(void);                                                      //!< Destructor        
 
         // Basic utility functions you have to override
+        virtual RevObject*                          convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         virtual Simplex*                            clone(void) const;                                                  //!< Clone object
         RevPtr<RevVariable>                         executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found );
         static const std::string&                   getClassType(void);                                                 //!< Get Rev type

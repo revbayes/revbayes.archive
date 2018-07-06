@@ -58,7 +58,11 @@
 #include "ModelVector.h"
 #include "WorkspaceVector.h"
 
+/* Container types (in folder "distributions/phylogenetics") */
+#include "Dist_bdp.h"
+
 /* Evolution types (in folder "datatypes/phylogenetics") */
+#include "RlDistanceMatrix.h"
 
 /* Character state types (in folder "datatypes/phylogenetics/character") */
 #include "RlAminoAcidState.h"
@@ -69,6 +73,7 @@
 /* Character data types (in folder "datatypes/phylogenetics/datamatrix") */
 #include "RlAbstractCharacterData.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
+#include "RlContinuousCharacterData.h"
 
 /* Tree types (in folder "datatypes/phylogenetics/trees") */
 #include "RlClade.h"
@@ -127,23 +132,30 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
         AddWorkspaceVectorType<CladogeneticProbabilityMatrix,3>::addTypeToWorkspace( *this, new CladogeneticProbabilityMatrix() );
         AddWorkspaceVectorType<CladogeneticSpeciationRateMatrix,3>::addTypeToWorkspace( *this, new CladogeneticSpeciationRateMatrix() );
+        AddWorkspaceVectorType<DistanceMatrix,3>::addTypeToWorkspace( *this, new DistanceMatrix() );
         AddWorkspaceVectorType<MatrixReal,3>::addTypeToWorkspace( *this, new MatrixReal() );
         AddWorkspaceVectorType<MatrixRealPos,3>::addTypeToWorkspace( *this, new MatrixRealPos() );
         AddWorkspaceVectorType<MatrixRealSymmetric,3>::addTypeToWorkspace( *this, new MatrixRealSymmetric() );
         AddWorkspaceVectorType<AbstractHomologousDiscreteCharacterData,3>::addTypeToWorkspace( *this, new AbstractHomologousDiscreteCharacterData() );
+        AddWorkspaceVectorType<ContinuousCharacterData,3>::addTypeToWorkspace( *this, new ContinuousCharacterData() );
         AddWorkspaceVectorType<CharacterHistoryRateModifier,3>::addTypeToWorkspace( *this, new CharacterHistoryRateModifier() );
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
         AddWorkspaceVectorType<Tree,3>::addTypeToWorkspace( *this, new Tree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
+//        AddWorkspaceVectorType<Dist_bdp,3>::addTypeToWorkspace( *this, new Dist_bdp() );
 
         addTypeWithConstructor( new Clade() );
         addTypeWithConstructor( new Taxon() );
 
         
+        addFunction( new Func_workspaceVector<Model>() );
+        
         //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
 //        addFunction( new Func_workspaceVector<AbstractModelObject>() );
-        
+
+//        addFunction( new Func_workspaceVector<Dist_bdp>() );
+        addFunction( new Func_workspaceVector<TypedDistribution<TimeTree> >() );
 		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
 
 //        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );

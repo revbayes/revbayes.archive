@@ -47,10 +47,10 @@ namespace RevLanguage {
     protected:
         
         std::list<SyntaxElement*>*      code;                                                   //!< The list of statements
-        std::string                     functionName;                                           //!< The name of the function
-        std::list<SyntaxFormal*>*       formalArgs;                                             //!< The formal arguments
-        TypeSpec                        returnType;                                             //!< The return type specification of the function
-        bool                            isProcedureDef;                                         //!< Is this a procedure definition?
+        std::string                     function_name;                                          //!< The name of the function
+        std::list<SyntaxFormal*>*       formal_args;                                            //!< The formal arguments
+        TypeSpec                        return_type;                                            //!< The return type specification of the function
+        bool                            is_procedure_def;                                       //!< Is this a procedure definition?
         
     };
     

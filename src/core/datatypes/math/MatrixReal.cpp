@@ -1,11 +1,3 @@
-//
-//  MatrixReal.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 11/17/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "CholeskyDecomposition.h"
 #include "EigenSystem.h"
 #include "MatrixReal.h"
@@ -178,7 +170,7 @@ void MatrixReal::executeMethod(const std::string &n, const std::vector<const Dag
     
     if ( n == "[]" )
     {
-        int index = static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
+        int index = (int)static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         rv = elements[index];
     }
     else
@@ -213,13 +205,13 @@ RbVector<double> MatrixReal::getColumn( size_t columnIndex ) const
 RbVector<double> MatrixReal::getDiagonal( void ) const
 {
     
-    if( isDiagonal() == false ) {
+    if ( isDiagonal() == false ) {
         throw RbException("MatrixReal: Can only get the diagonal elements of a diagonal matrix.");
     }
     
     RbVector<double> diagonal_elements(n_rows, 0.0);
     
-    for(size_t i = 0; i < n_rows; ++i)
+    for (size_t i = 0; i < n_rows; ++i)
     {
         diagonal_elements[i] = elements[i][i];
     }
@@ -286,7 +278,7 @@ double MatrixReal::getDet() const
         // update the decomposition if necessary
         update();
         
-        if( use_cholesky_decomp == true)
+        if ( use_cholesky_decomp == true)
         {
             logDet = cholesky_decomp->computeLogDet();
         }
@@ -329,7 +321,7 @@ double MatrixReal::getLogDet() const
         update();
         
         double tot = 0.0;
-        if( use_cholesky_decomp == true)
+        if ( use_cholesky_decomp == true)
         {
             tot = cholesky_decomp->computeLogDet();
         }
@@ -417,9 +409,9 @@ MatrixReal MatrixReal::getTranspose( void )
 {
     
     MatrixReal T(n_cols, n_rows, 0);
-    for(size_t i = 0; i < n_rows; ++i)
+    for (size_t i = 0; i < n_rows; ++i)
     {
-        for(size_t j = 0; j < n_cols; ++j)
+        for (size_t j = 0; j < n_cols; ++j)
         {
             T[j][i] = elements[i][j];
         }
@@ -432,16 +424,16 @@ MatrixReal MatrixReal::getTranspose( void )
 RbVector<double> MatrixReal::getUpperTriangle( void ) const
 {
     
-    if( isDiagonal() == false ) {
-        throw RbException("MatrixReal: Can only get the diagonal elements of a diagonal matrix.");
+    if ( !isSquareMatrix() ) {
+        throw RbException("MatrixReal: Can only get the upper triangle elements of a square matrix.");
     }
     
     RbVector<double> upper_triangle_elements(n_rows * (n_rows - 1) / 2, 0.0);
     
     size_t k = 0;
-    for(size_t i = 0; i < n_rows; ++i)
+    for (size_t i = 0; i < n_rows; ++i)
     {
-        for(size_t j = i + 1; j < n_cols; ++j)
+        for (size_t j = i + 1; j < n_cols; ++j)
         {
             upper_triangle_elements[k++] = elements[i][j];
         }
@@ -497,6 +489,22 @@ bool MatrixReal::isSquareMatrix( void ) const
     return n_rows == n_cols;
 }
 
+bool MatrixReal::isSymmetric( void ) const
+{
+    bool symm = true;
+    for (int i = 0; i < n_rows; ++i)
+    {
+        for (int j = i + 1; j < n_cols; ++j)
+        {
+            if (elements[i][j] != elements[j][i])
+            {
+                return false;
+            }
+        }
+    }
+    
+    return symm;
+}
 
 void MatrixReal::resize(size_t r, size_t c)
 {

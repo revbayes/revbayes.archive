@@ -83,6 +83,21 @@ const TypeSpec& Move_RateAgeBetaShift::getClassTypeSpec(void)
 
 
 /**
+ * Get the Rev aliases for the constructor function.
+ *
+ * \return Rev aliasses of constructor function.
+ */
+std::vector<std::string> Move_RateAgeBetaShift::getMoveAliases(void) const
+{
+    std::vector<std::string> aliases;
+
+    aliases.push_back("NodeRateTimeSlideBeta");
+
+    return aliases;
+}
+
+
+/**
  * Get the Rev name for the constructor function.
  *
  * \return Rev name of constructor function.

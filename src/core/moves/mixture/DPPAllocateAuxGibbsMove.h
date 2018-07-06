@@ -151,7 +151,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void )
         }
         
         // try element i at other auxillary (new) tables
-        for(size_t j = 0; j < num_aux_cat; ++j)
+        for (size_t j = 0; j < num_aux_cat; ++j)
         {
             base_distribution->redrawValue();
             valueType new_value = base_distribution->getValue();
@@ -168,22 +168,24 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void )
         // choose new table for element i
         double u = rng->uniform01();
         int new_table = findElementNewTable(u, ln_probs);
-
-        const valueType &final_value = temp_tables[new_table];
-        element_values[i] = final_value;
-        variable->touch();
-        int tID = findTableIDForVal(table_values, final_value);
-        if (tID == -1)
+        if (new_table != -1)
         {
-            // add i to a new table
-            num_tables += 1;
-            num_allocated_to_table.push_back(1);
-            table_values.push_back(final_value);
-        }
-        else
-        {
-            // add i to an existing table
-            num_allocated_to_table[tID] += 1;
+            const valueType &final_value = temp_tables[new_table];
+            element_values[i] = final_value;
+            variable->touch();
+            int tID = findTableIDForVal(table_values, final_value);
+            if (tID == -1)
+            {
+                // add i to a new table
+                num_tables += 1;
+                num_allocated_to_table.push_back(1);
+                table_values.push_back(final_value);
+            }
+            else
+            {
+                // add i to an existing table
+                num_allocated_to_table[tID] += 1;
+            }
         }
         variable->keep();
         ln_probs.clear();
@@ -231,7 +233,7 @@ int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findTableIDForVal(std::vec
     
     for (size_t j=0; j<tvs.size(); j++)
     {
-        if(tvs[j] == val)
+        if (tvs[j] == val)
         {
             // this is an existing table
             return int(j);
@@ -264,7 +266,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::normalizeVector(std::vect
     double sum = 0.0;
     for (size_t i = 0; i < n; i++)
     {
-        if ( v[i] < -300.0 || isnan(v[i]) )
+        if ( v[i] < -300.0 || RbMath::isNan(v[i]) )
         {
             v[i] = 0.0;
         }
@@ -277,14 +279,11 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::normalizeVector(std::vect
 
     if (sum == 0.0)
     {
-        throw RbException("Could not calculate valid probabilities in mvDPPAllocateAuxGibbs.");
-    }
-    
-    for (size_t i=0; i<n; ++i)
-    {
-        v[i] /= sum;
-    }
-    
+        for (size_t i=0; i<n; ++i)
+        {
+            v[i] /= sum;
+        }
+    }    
 }
 
 
@@ -292,8 +291,6 @@ template <class valueType>
 int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findElementNewTable(double u, const std::vector<double> &prob)
 {
     
-    double org_u = u;
-
     for (size_t j = 0; j < prob.size(); ++j)
     {
         u -= prob[j];
@@ -302,17 +299,8 @@ int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findElementNewTable(double
             return int(j);
         }
     }
-    
-    std::cerr << "Original u = " << org_u << std::endl;
-    std::cerr << "Probs = [ " << prob[0];
-    for (size_t j = 1; j < prob.size(); ++j)
-    {
-        std::cerr << ", " << prob[j];
-    }
-    std::cerr << " ]" << std::endl;
-    
-    throw RbException("Could not find a new table for DPP.");
-    
+   
+    // could not find new table for element
     return -1;
     
 }

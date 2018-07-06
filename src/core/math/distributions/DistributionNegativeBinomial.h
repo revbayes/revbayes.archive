@@ -26,12 +26,12 @@ namespace RevBayesCore {
     
         namespace NegativeBinomial {
         
-            double                      pdf(double n, double p, double x);                                    /*!< NegativeBinomial(n,p) probability density */
-            double                      pdf(double n, double p, double q, double x, bool log);                /*!< NegativeBinomial(n,p) probability density */
-            double                      lnPdf(double n, double p, double x);                                  /*!< NegativeBinomial(n,p) log_e probability density */
-            double                      cdf(double n, double p, double x);                                    /*!< NegativeBinomial(n,p) cumulative probability */
-            double                      quantile(double n, double p, double q);                               /*!< NegativeBinomial(n,p) quantile */
-            int                         rv(double n, double p, RandomNumberGenerator& rng);             /*!< NegativeBinomial(n,p) random variable */
+            double                      pdf(double r, double p, double x);                                    /*!< NegativeBinomial(r,p) probability density */
+            double                      pdf(double r, double p, double q, double x, bool log);                /*!< NegativeBinomial(r,p) probability density */
+            double                      lnPdf(double r, double p, double x);                                  /*!< NegativeBinomial(r,p) log_e probability density */
+            double                      cdf(double r, double p, double x);                                    /*!< NegativeBinomial(r,p) cumulative probability */
+            double                      quantile(double r, double p, double q);                               /*!< NegativeBinomial(r,p) quantile */
+            int                         rv(double r, double p, RandomNumberGenerator& rng);                   /*!< NegativeBinomial(r,p) random variable */
 	        }
     }
 }

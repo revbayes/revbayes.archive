@@ -54,6 +54,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                               fossil_counts;                                                                          //!< The fossil counts
         RevPtr<const RevVariable>                               taxa;                                                                                   //!< The taxa
         RevPtr<const RevVariable>                               condition;                                                                              //!< The condition of the process
+        RevPtr<const RevVariable>                               presence_absence;
     };
     
 }

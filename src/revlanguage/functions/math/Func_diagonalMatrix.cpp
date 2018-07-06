@@ -27,7 +27,7 @@ Func_diagonalMatrix* Func_diagonalMatrix::clone( void ) const
 RevPtr<RevVariable> Func_diagonalMatrix::execute( void )
 {
     
-    int n = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+    int n = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
     RevBayesCore::MatrixReal *m = new RevBayesCore::MatrixReal(n, n, 0.0);
     for (size_t i = 0; i < n; ++i)
     {
@@ -192,6 +192,6 @@ const TypeSpec& Func_diagonalMatrix::getTypeSpec( void ) const
 const TypeSpec& Func_diagonalMatrix::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = MatrixRealSymmetric::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = MatrixRealSymmetric::getClassTypeSpec();
+    return return_typeSpec;
 }

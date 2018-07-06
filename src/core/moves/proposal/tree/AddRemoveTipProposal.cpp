@@ -39,7 +39,7 @@ AddRemoveTipProposal::AddRemoveTipProposal( StochasticNode<Tree> *n, bool exa, b
  */
 void AddRemoveTipProposal::cleanProposal( void )
 {
-    if(removed)
+    if (removed)
     {
         removed = false;
         delete &storedTip->getParent();
@@ -101,16 +101,17 @@ double AddRemoveTipProposal::doProposal( void )
     {
         TopologyNode* node = &t.getNode(i);
 
-        if( node->isTip() == true && node->getParent().isRoot() == false )
+        if ( node->isTip() == true && node->getParent().isRoot() == false )
         {
-            if( ( extinct == true && node->isFossil() == true && node->isSampledAncestor() == sampled_ancestors ) ||
+            if ( ( extinct == true && node->isFossil() == true && node->isSampledAncestor() == sampled_ancestors ) ||
                 (  extant == true && node->isFossil() == false ) )
             {
-                tips.push_back(node);
+                if( ( node->isSampledAncestor() == false && node->getParent().isSampledAncestor(true) == true ) == false )
+                    tips.push_back(node);
             }
         }
 
-        if( node->isRoot() == false && node->isSampledAncestor() == false )
+        if ( node->isRoot() == false && node->isSampledAncestor() == false )
         {
             siblings.push_back(node);
         }
@@ -127,9 +128,9 @@ double AddRemoveTipProposal::doProposal( void )
     bool both = (extinct == extant == true);
 
     // pick a random tip node to remove
-    if(u < 0.5)
+    if (u < 0.5)
     {
-        if(tips.empty())
+        if (tips.empty())
         {
             failed = true;
             return 0.0;
@@ -201,7 +202,7 @@ double AddRemoveTipProposal::addTip(TopologyNode *n)
     // unless lnProbTreeShape is incorrect for all birth death processes
     double hr = 0;
 
-    if( extinct == extant == true )
+    if ( extinct == extant == true )
     {
         u = rng->uniform01();
     }
@@ -210,9 +211,9 @@ double AddRemoveTipProposal::addTip(TopologyNode *n)
         u = extant;
     }
 
-    if( u < 0.5 )
+    if ( u < 0.5 )
     {
-        if( sampled_ancestors == false )
+        if ( sampled_ancestors == false )
         {
             double v = rng->uniform01();
 
@@ -229,7 +230,7 @@ double AddRemoveTipProposal::addTip(TopologyNode *n)
             storedTip->setSampledAncestor(true);
         }
 
-        hr = log( t.getNumberOfExtinctTips() );
+        //hr = log( t.getNumberOfExtinctTips() );
     }
     else
     {
@@ -280,13 +281,14 @@ double AddRemoveTipProposal::removeTip(TopologyNode *n)
     // unless lnProbTreeShape is incorrect for all birth death processes
     double hr = 0;
 
-    if( storedTip->getAge() > 0.0 )
+    if ( storedTip->getAge() > 0.0 )
     {
-        if( sampled_ancestors == false )
+        if ( sampled_ancestors == false )
         {
             lnJacobian -= log(parent->getAge());
         }
-        hr = - log( t.getNumberOfExtinctTips() + 1 );
+
+        //hr = - log( t.getNumberOfExtinctTips() + 1 );
     }
     else
     {
@@ -330,7 +332,7 @@ void AddRemoveTipProposal::printParameterSummary(std::ostream &o) const
  */
 void AddRemoveTipProposal::undoProposal( void )
 {
-    if( failed == true )
+    if ( failed == true )
         return;
 
     Tree &t = tau->getValue();

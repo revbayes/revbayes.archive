@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class PhyloCTMCSiteHomogeneousBinary : public PhyloCTMCSiteHomogeneousConditional<BinaryState> {
 
         public:
-            PhyloCTMCSiteHomogeneousBinary(const TypedDagNode< Tree > *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding cod = BinaryAscertainmentBias::ALL, bool internal = false);
+            PhyloCTMCSiteHomogeneousBinary(const TypedDagNode< Tree > *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding cod = BinaryAscertainmentBias::ALL, bool internal = false, bool gapmatch = true);
 
             // public member functions
             PhyloCTMCSiteHomogeneousBinary*                     clone(void) const;

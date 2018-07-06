@@ -18,7 +18,7 @@ using namespace RevBayesCore;
 /** Default constructor (interior node, no name). Give the node an optional index ID */
 TopologyNode::TopologyNode(size_t indx) :
     age( RbConstants::Double::nan ),
-    branch_length( -1 ),
+    branch_length( RbConstants::Double::nan ),
     children(),
     parent( NULL ),
     tree( NULL ),
@@ -36,7 +36,7 @@ TopologyNode::TopologyNode(size_t indx) :
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
     age( RbConstants::Double::nan ),
-    branch_length( -1 ),
+    branch_length( RbConstants::Double::nan ),
     children(),
     parent( NULL ),
     tree( NULL ),
@@ -54,7 +54,7 @@ TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const std::string& n, size_t indx) :
     age( RbConstants::Double::nan ),
-    branch_length( -1 ),
+    branch_length( RbConstants::Double::nan ),
     children(),
     parent( NULL ),
     tree( NULL ),
@@ -81,7 +81,8 @@ TopologyNode::TopologyNode(const TopologyNode &n) :
     tip_node( n.tip_node ),
     sampled_ancestor( n.sampled_ancestor ),
     node_comments( n.node_comments ),
-    branch_comments( n.branch_comments )
+    branch_comments( n.branch_comments ),
+    time_in_states( n.time_in_states )
 {
     
     // copy the children
@@ -133,6 +134,7 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n)
         root_node               = n.root_node;
         node_comments           = n.node_comments;
         branch_comments         = n.branch_comments;
+        time_in_states           = n.time_in_states;
         
         // copy the members
         parent          = n.parent;
@@ -221,11 +223,16 @@ void TopologyNode::addBranchParameters(std::string const &n, const std::vector<s
 
 
 /** Add a child node. We own it from here on. */
-void TopologyNode::addChild(TopologyNode* c)
+void TopologyNode::addChild(TopologyNode* c, size_t pos )
 {
-    
-    // add the child to our internal vector
-    children.push_back(c);
+    // add child to beginning if pos is out of bounds
+    if( pos > children.size() )
+    {
+        throw(RbException("Child position index out of bounds"));
+    }
+
+    // add the child at pos offset from the end
+    children.insert((children.rbegin() + pos).base(), c);
     
     // fire tree change event
     if ( tree != NULL )
@@ -235,15 +242,6 @@ void TopologyNode::addChild(TopologyNode* c)
     
     tip_node = false;
     interior_node = true;
-    
-//    bool child_sampled_ancestor = false;
-//    for (size_t i = 0; i < children.size(); i++)
-//    {
-//        child_sampled_ancestor |= ( children[i]->getAge() == age );
-//    }
-//    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );
-//    c->setFossil( c->getAge() > 0.0 && c->isTip() );
-//    fossil          = a < 0.0;
 
 }
 
@@ -339,6 +337,11 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
     
     std::vector<std::string> fossil_comments;
 
+    // ensure we have an updated copy of branch_length variables
+    if (!isRoot()) {
+        recomputeBranchLength();
+    }
+
     // test whether this is a internal or external node
     if ( tip_node == true )
     {
@@ -354,7 +357,7 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
         size_t j = 0;
         for (size_t i=0; i< children.size(); i++)
         {
-            if( RbSettings::userSettings().getCollapseSampledAncestors()
+            if ( RbSettings::userSettings().getCollapseSampledAncestors()
                     && children[i]->isSampledAncestor()
                     && (children[i]->getName() < fossil_name || fossil_name == "" ) )
             {
@@ -363,7 +366,7 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
             }
             else
             {
-                if(j > 0)
+                if (j > 0)
                 {
                     o << ",";
                 }
@@ -421,7 +424,12 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
     
     if ( simmap == false )
     {
-        o << ":" << getBranchLength();
+        double br = getBranchLength();
+
+        if( RevBayesCore::RbMath::isNan(br) == false )
+        {
+            o << ":" << br;
+        }
     }
     else
     {
@@ -539,7 +547,7 @@ std::string TopologyNode::computePlainNewick( void ) const
         for (size_t i = 0; i < getNumberOfChildren(); ++i)
         {
             const TopologyNode& child = getChild( i );
-            if( RbSettings::userSettings().getCollapseSampledAncestors()
+            if ( RbSettings::userSettings().getCollapseSampledAncestors()
                     && child.isSampledAncestor()
                     && (child.getName() < fossil || fossil == "") )
             {
@@ -610,7 +618,7 @@ bool TopologyNode::containsClade(const RbBitSet &your_taxa, bool strict) const
     
     if ( your_taxa.size() != my_taxa.size() )
     {
-        throw RbException("Problem in bit representation of clades.");
+        throw RbException("Cannot check if the clade is contained within a node because of a problem in bit representation of clades.");
     }
     
     // this node needs to have at least as many taxa to contain the other clade
@@ -708,7 +716,62 @@ bool TopologyNode::equals(const TopologyNode& node) const
 }
 
 
-void TopologyNode::fireTreeChangeEvent( const unsigned& m ) {
+/*
+ * Fill this map recursively with all clade indices.
+ */
+std::string TopologyNode::fillCladeIndices(std::map<std::string,size_t> &clade_index_map) const
+{
+    
+    std::string newick = "";
+    
+    if ( isTip() == true )
+    {
+        newick = taxon.getName();
+    }
+    else
+    {
+        std::string fossil = "";
+        newick = "(";
+        std::vector<std::string> child_newick;
+        for (size_t i = 0; i < getNumberOfChildren(); ++i)
+        {
+            const TopologyNode& child = getChild( i );
+            if ( RbSettings::userSettings().getCollapseSampledAncestors()
+                && child.isSampledAncestor()
+                && (child.getName() < fossil || fossil == "") )
+            {
+                fossil = child.getName();
+            }
+            else
+            {
+                child_newick.push_back( child.fillCladeIndices(clade_index_map) );
+            }
+        }
+        sort(child_newick.begin(), child_newick.end());
+        for (std::vector<std::string>::iterator it = child_newick.begin(); it != child_newick.end(); ++it)
+        {
+            if ( it != child_newick.begin() )
+            {
+                newick += ",";
+            }
+            newick += *it;
+        }
+        newick += ")";
+        newick += fossil;
+
+    }
+    
+    // now insert the newick string for this node/clade with the index of this node
+    clade_index_map.insert( std::pair<std::string,size_t>(newick,index) );
+    
+    
+    // finally return my newick string so that my parents can use it
+    return newick;
+}
+
+
+void TopologyNode::fireTreeChangeEvent( const unsigned& m )
+{
     
     // fire tree change event
     if ( tree != NULL )
@@ -766,14 +829,14 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
     // sanity check
     if ( your_taxa.size() != my_taxa.size() )
     {
-        throw RbException("Problem in bit representation of clades.");
+        throw RbException("Cannot compute the clade index because of a problem in bit representation of clades.");
     }
     
     // this node needs to have at least as many taxa to contain the other clade
     if ( your_taxa.getNumberSetBits() > my_taxa.getNumberSetBits() )
     {
         // quick negative abort to safe computational time
-        return RbConstants::Size_t::inf;
+        throw RbException("Node does not have at least as many taxa as input clade.");
     }
     
     // check that every taxon of the clade is in this subtree
@@ -783,7 +846,7 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
         // if I don't have any of your taxa then I cannot contain you.
         if ( your_taxa.isSet(i) == true && my_taxa.isSet(i) == false )
         {
-            return RbConstants::Size_t::inf;
+            throw RbException("Node does not contain any taxa in clade.");
         }
         
     }
@@ -799,17 +862,19 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
         {
             
             // check if the clade is contained in this child
-            size_t child_index = (*it)->getCladeIndex( c );
-            if ( RbMath::isFinite( child_index ) == true )
+            try
             {
-                // yeah, so we can abort and return the child index
-                return child_index;
+                return (*it)->getCladeIndex( c );
+            }
+            catch(RbException&)
+            {
+                continue;
             }
             
         }
     
         // the clade is not one of my children, and we require strict identity
-        return RbConstants::Size_t::inf;
+        throw RbException("Input clade is not a child node.");
         
     }
     
@@ -862,7 +927,7 @@ Clade TopologyNode::getClade( void ) const
     // get the clade taxa
     std::vector<Taxon> taxa;
 
-    if( tree != NULL )
+    if ( tree != NULL )
     {
         // initialize the clade bitset
         RbBitSet bitset( tree->getNumberOfTips() );
@@ -878,21 +943,28 @@ Clade TopologyNode::getClade( void ) const
 
     c.setAge( age );
 
-    std::vector<Taxon> mrca;
+    std::set<Taxon> mrca;
 
-    // if a child is a sampled ancestor, its taxon is a mrca
-    for(size_t i = 0; i < children.size(); i++)
+    if( isTip() )
     {
-        if( children[i]->isSampledAncestor() )
+        if( isSampledAncestor() )
         {
-            mrca.push_back( children[i]->getTaxon() );
+            mrca.insert( getTaxon() );
+        }
+    }
+    else
+    {
+        // if a child is a sampled ancestor, its taxon is a mrca
+        for (size_t i = 0; i < children.size(); i++)
+        {
+            if ( children[i]->isSampledAncestor() )
+            {
+                mrca.insert( children[i]->getTaxon() );
+            }
         }
     }
 
-    if( !mrca.empty() )
-    {
-        c.setMrca( mrca );
-    }
+    c.setMrca( mrca );
 
     return c;
 }
@@ -902,6 +974,34 @@ size_t TopologyNode::getIndex( void ) const
 {
     
     return index;
+}
+
+/**
+ * Get the indices of nodes contained in the subtree starting with this node as the root.
+ * This either returns 1 if this is a tip node (or 0 if we do not count tipes)
+ * or computes recursively the number of nodes in both children plus one for this node.
+ *
+ * \param[in]   countTips   Shall we count tips?
+ * \return                  Subtree size.
+ */
+void TopologyNode::getIndicesOfNodesInSubtree( bool countTips, std::vector<size_t>* indices ) const
+{
+    
+    if ( tip_node )
+    {
+        if (countTips)
+        {
+            indices->push_back(index);
+        }
+    }
+    else
+    {
+        indices->push_back(index);
+        // now call this function recursively for all your children
+        children[0]->getIndicesOfNodesInSubtree(countTips, indices);
+        children[1]->getIndicesOfNodesInSubtree(countTips, indices);
+    }
+    
 }
 
 
@@ -950,6 +1050,80 @@ const std::string& TopologyNode::getName( void ) const
 
 /**
  * Is the argument clade contained in the clade descending from this node?
+ */
+TopologyNode* TopologyNode::getMrca(const Clade &c)
+{
+    
+    return getNode( c, false );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ */
+const TopologyNode* TopologyNode::getMrca(const Clade &c) const
+{
+    
+    return getNode( c, false );
+}
+
+const TopologyNode* TopologyNode::getMrca(const Clade &c, bool strict) const
+{
+    
+    return getNode( c, strict );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ */
+const TopologyNode* TopologyNode::getMrca(const TopologyNode &n) const
+{
+    
+    return getNode( n, false );
+}
+
+
+///**
+// * Is the argument clade contained in the clade descending from this node?
+// */
+//const TopologyNode* TopologyNode::getMrca(const std::vector<Taxon> &t) const
+//{
+//
+//    return getNode( t, false );
+//}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+TopologyNode* TopologyNode::getNode(const TopologyNode &n, bool strict)
+{
+    
+    RbBitSet your_taxa = RbBitSet( tree->getNumberOfTips() );
+    n.getTaxa( your_taxa );
+    
+    return getNode( your_taxa, strict );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
+const TopologyNode* TopologyNode::getNode(const TopologyNode &n, bool strict) const
+{
+    
+    RbBitSet your_taxa = RbBitSet( tree->getNumberOfTips() );
+    n.getTaxa( your_taxa );
+    
+    return getNode( your_taxa, strict );
+}
+
+
+/**
+ * Is the argument clade contained in the clade descending from this node?
  * By strict we mean that the contained clade has to be monophyletic in the containing clade.
  */
 TopologyNode* TopologyNode::getNode(const Clade &c, bool strict)
@@ -971,7 +1145,7 @@ TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict)
     
     if ( your_taxa.size() != my_taxa.size() )
     {
-        throw RbException("Problem in bit representation of clades.");
+        throw RbException("Cannot retrieve a node because of a problem in bit representation of clades.");
     }
     
     // this node needs to have at least as many taxa to contain the other clade
@@ -993,31 +1167,34 @@ TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict)
         
     }
     
-    // now check, if required, that the contained clade is monophyletic in the containing clade.
-    if ( strict == true )
+   
+    // we already know from our check above that all taxa from the contained clade are present in this clade.
+    // so we just need to check if there are additional taxa in this clade
+    // and if so, then we need to check that the contained clade is contained in one of my children.
+    if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
     {
-        // we already know from our check above that all taxa from the contained clade are present in this clade.
-        // so we just need to check if there are additional taxa in this clade
-        // and if so, then we need to check that the contained clade is contained in one of my children.
-        if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
+            
+        // loop over all children
+        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
         {
-            
-            // loop over all children
-            for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
+            // check if the clade is contained in this child
+            TopologyNode *is_contained_in_child = (*it)->getNode( your_taxa, strict );
+            if ( is_contained_in_child != NULL )
             {
-                // check if the clade is contained in this child
-                TopologyNode *is_contained_in_child = (*it)->getNode( your_taxa, strict );
-                if ( is_contained_in_child != NULL )
-                {
-                    // yeah, so we can abort and return true
-                    return is_contained_in_child;
-                }
+                // yeah, so we can abort and return true
+                return is_contained_in_child;
             }
-            
-            return NULL;
         }
         
+        // now check, if required, that the contained clade is monophyletic in the containing clade.
+        // this will only be done if we haven't found the clade within one of our children
+        if ( strict == true )
+        {
+            return NULL;
+        }
+
     }
+    
     
     return this;
 }
@@ -1047,7 +1224,7 @@ const TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict
     
     if ( your_taxa.size() != my_taxa.size() )
     {
-        throw RbException("Problem in bit representation of clades.");
+        throw RbException("Cannot retrieve a (const) node because of a problem in bit representation of clades.");
     }
     
     // this node needs to have at least as many taxa to contain the other clade
@@ -1069,27 +1246,28 @@ const TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict
         
     }
     
-    // now check, if required, that the contained clade is monophyletic in the containing clade.
-    if ( strict == true )
+    // we already know from our check above that all taxa from the contained clade are present in this clade.
+    // so we just need to check if there are additional taxa in this clade
+    // and if so, then we need to check that the contained clade is contained in one of my children.
+    if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
     {
-        // we already know from our check above that all taxa from the contained clade are present in this clade.
-        // so we just need to check if there are additional taxa in this clade
-        // and if so, then we need to check that the contained clade is contained in one of my children.
-        if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
+            
+        // loop over all children
+        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
         {
-            
-            // loop over all children
-            for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
+            // check if the clade is contained in this child
+            TopologyNode *is_contained_in_child = (*it)->getNode( your_taxa, strict );
+            if ( is_contained_in_child != NULL )
             {
-                // check if the clade is contained in this child
-                TopologyNode *is_contained_in_child = (*it)->getNode( your_taxa, strict );
-                if ( is_contained_in_child != NULL )
-                {
-                    // yeah, so we can abort and return true
-                    return is_contained_in_child;
-                }
+                // yeah, so we can abort and return true
+                return is_contained_in_child;
             }
-            
+        }
+        
+        // now check, if required, that the contained clade is monophyletic in the containing clade.
+        // this will only be done if we haven't found the clade within one of our children
+        if ( strict == true )
+        {
             return NULL;
         }
         
@@ -1122,8 +1300,8 @@ size_t TopologyNode::getNumberOfChildren( void ) const
  * This either returns 1 if this is a tip node (or 0 if we do not count tipes)
  * or computes recursively the number of nodes in both children plus one for this node.
  *
- * \param[in]   tips       Shall we count tips?
- * \return                 Subtree size.
+ * \param[in]   countTips   Shall we count tips?
+ * \return                  Subtree size.
  */
 size_t TopologyNode::getNumberOfNodesInSubtree( bool countTips ) const
 {
@@ -1150,6 +1328,13 @@ const TopologyNode& TopologyNode::getParent(void) const
 {
     
     return *parent;
+}
+
+
+std::string TopologyNode::getIndividualName() const
+{
+    std::string name = taxon.getSpeciesName();
+    return name;
 }
 
 
@@ -1225,9 +1410,21 @@ void TopologyNode::getTaxa(std::vector<Taxon> &taxa, RbBitSet &bitset) const
 }
 
 
-const Taxon& TopologyNode::getTaxon() const
+const Taxon& TopologyNode::getTaxon( void ) const
 {
     return taxon;
+}
+
+
+Taxon& TopologyNode::getTaxon( void )
+{
+    return taxon;
+}
+
+
+std::vector<double> TopologyNode::getTimeInStates()
+{
+    return time_in_states;
 }
 
 
@@ -1320,10 +1517,19 @@ bool TopologyNode::isRoot( void ) const
 }
 
 
-bool TopologyNode::isSampledAncestor( void ) const
+bool TopologyNode::isSampledAncestor(  bool propagate ) const
 {
     
-    return sampled_ancestor;
+    bool sa = sampled_ancestor;
+    if( propagate == true )
+    {
+        for(size_t i = 0; i < children.size(); i++)
+        {
+            sa = sa || children[i]->isSampledAncestor(false);
+        }
+    }
+
+    return sa;
 }
 
 
@@ -1391,12 +1597,7 @@ void TopologyNode::recomputeBranchLength( void )
     {
         branch_length = 0.0;
     }
-    else if ( RbMath::isFinite( age ) == false )
-    {
-        // don't reset the branch length if this isn't a time tree (WP)
-        //branch_length = -1;
-    }
-    else
+    else if ( RbMath::isFinite( age ) == true )
     {
         branch_length = parent->getAge() - age;
     }
@@ -1426,12 +1627,15 @@ void TopologyNode::removeAllChildren(void)
 
 
 /** Remove a child from the vector of children */
-void TopologyNode::removeChild(TopologyNode* c)
+size_t TopologyNode::removeChild(TopologyNode* c)
 {
     
     std::vector<TopologyNode* >::iterator it = find(children.begin(), children.end(), c);
+    size_t pos = 0;
     if ( it != children.end() )
     {
+        // get offset from the end
+        pos = std::distance(it, children.end())-1;
         children.erase(it);
     }
     else
@@ -1449,15 +1653,8 @@ void TopologyNode::removeChild(TopologyNode* c)
         tree->getTreeChangeEventHandler().fire( *c, RevBayesCore::TreeChangeEventMessage::TOPOLOGY );
         tree->getTreeChangeEventHandler().fire( *this, RevBayesCore::TreeChangeEventMessage::TOPOLOGY );
     }
-    
-    /*bool child_sampled_ancestor = false;
-    for (size_t i = 0; i < children.size(); i++)
-    {
-        child_sampled_ancestor |= ( children[i]->getAge() == age );
-    }
-    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );*/
 
-
+    return pos;
 }
 
 
@@ -1500,7 +1697,7 @@ void TopologyNode::renameNodeParameter(const std::string &old_name, const std::s
 
 void TopologyNode::setAge(double a, bool propagate)
 {
-    if( sampled_ancestor && propagate )
+    if ( sampled_ancestor && propagate )
     {
         parent->setAge(a);
         return;
@@ -1515,7 +1712,7 @@ void TopologyNode::setAge(double a, bool propagate)
     for (std::vector<TopologyNode *>::iterator it = children.begin(); it != children.end(); ++it)
     {
         TopologyNode *child = *it;
-        if( child->isSampledAncestor() )
+        if ( child->isSampledAncestor() )
         {
             child->setAge(a, false);
         }
@@ -1534,14 +1731,14 @@ void TopologyNode::setAge(double a, bool propagate)
 }
 
 
-void TopologyNode::setBranchLength(double b)
+void TopologyNode::setBranchLength(double b, bool flag_dirty)
 {
     
     branch_length = b;
     
     
     // fire tree change event
-    if ( tree != NULL )
+    if ( flag_dirty == true && tree != NULL )
     {
         tree->getTreeChangeEventHandler().fire( *this, RevBayesCore::TreeChangeEventMessage::BRANCH_LENGTH );
     }
@@ -1609,6 +1806,12 @@ void TopologyNode::setTaxonIndices(const TaxonMap &tm)
     }
     
     
+}
+
+
+void TopologyNode::setTimeInStates(std::vector<double> t)
+{
+    time_in_states = t;
 }
 
 

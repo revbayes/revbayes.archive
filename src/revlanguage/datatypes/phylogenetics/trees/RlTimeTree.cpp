@@ -75,10 +75,22 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
     {
         found = true;
         
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        int index = (int)static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         
         bool tf = this->dag_node->getValue().getNode((size_t)index).isRoot();
         return new RevVariable( new RlBoolean( tf ) );
+    }
+    else if (name == "dropFossils")
+    {
+        found = true;
+
+        std::vector<RevBayesCore::Taxon> t = this->dag_node->getValue().getFossilTaxa();
+        for (size_t i = 0; i < t.size(); i++)
+        {
+            std::string taxon_name = t[i].getName();
+            this->dag_node->getValue().dropTipNodeWithName( taxon_name );
+        }
+        return NULL;
     }
     else if (name == "getFossils")
     {
@@ -94,7 +106,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         size_t n = this->dag_node->getValue().getNumberOfTips();
 
         size_t num = 0;
-        for(size_t i=0; i<n; i++){
+        for (size_t i=0; i<n; i++){
             RevBayesCore::TopologyNode &node = this->dag_node->getValue().getNode(i);
             num += node.isSampledAncestor();
         }
@@ -149,6 +161,9 @@ void TimeTree::initMethods( void )
     isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "isRoot", RlBoolean::getClassTypeSpec(), isRootArgRules ) );
 
+    ArgumentRules* dropFossilsArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "dropFossils", RlUtils::Void, dropFossilsArgRules ) );
+
     ArgumentRules* getFossilsArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "getFossils", ModelVector<Taxon>::getClassTypeSpec(), getFossilsArgRules ) );
 
@@ -166,5 +181,11 @@ void TimeTree::initMethods( void )
     ArgumentRules* nodeAgeArgRules = new ArgumentRules();
     nodeAgeArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<TimeTree, RealPos>( "nodeAge", this, nodeAgeArgRules   ) );
+
+    ArgumentRules* collessArgRules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<TimeTree, Natural>( "colless", this, collessArgRules ) );
+    
+    ArgumentRules* gArgRules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<TimeTree, Real>( "gammaStatistic", this, gArgRules ) );
 
 }

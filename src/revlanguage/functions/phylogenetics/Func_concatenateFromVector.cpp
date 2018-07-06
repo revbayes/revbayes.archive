@@ -36,16 +36,14 @@ Func_concatenateFromVector* Func_concatenateFromVector::clone( void ) const
 RevPtr<RevVariable> Func_concatenateFromVector::execute( void )
 {
     const ModelVector<AbstractHomologousDiscreteCharacterData>& v = static_cast<const ModelVector<AbstractHomologousDiscreteCharacterData> &>( args[0].getVariable()->getRevObject() );
-//    const WorkspaceVector<AbstractHomologousDiscreteCharacterData>& v = static_cast<const WorkspaceVector<AbstractHomologousDiscreteCharacterData> &>( args[0].getVariable()->getRevObject() );
     const std::string& type = static_cast<const RlString &>( args[1].getVariable()->getRevObject() ).getValue();
     
-    AbstractHomologousDiscreteCharacterData* a = static_cast<const AbstractHomologousDiscreteCharacterData &>( v[0] ).clone();
+    AbstractHomologousDiscreteCharacterData* a = dynamic_cast<const AbstractHomologousDiscreteCharacterData *>( v.getElement(0) )->clone();
     for (size_t i = 1; i < v.size(); ++i)
     {
-        const AbstractHomologousDiscreteCharacterData& b = static_cast<const AbstractHomologousDiscreteCharacterData &>( v[i] );
-//        const AbstractHomologousDiscreteCharacterData& b = v[i];
+        const AbstractHomologousDiscreteCharacterData* b = dynamic_cast<const AbstractHomologousDiscreteCharacterData *>( v.getElement(i) );
         
-        a->concatenate( b, type );
+        a->concatenate( *b, type );
         
     }
     
@@ -121,8 +119,8 @@ const TypeSpec& Func_concatenateFromVector::getTypeSpec( void ) const
 const TypeSpec& Func_concatenateFromVector::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlBoolean::getClassTypeSpec();
+    static TypeSpec return_typeSpec = RlBoolean::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

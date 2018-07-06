@@ -16,9 +16,7 @@ namespace RevBayesCore {
     /**
      * @brief Codon rate matrix class with different rates for synonymous and non-synonymous substitutions.
      *
-     * This class implements the special Jukes-Cantor rate matrix with the known analytical solution
-     * for the transition probabilities.
-     * The JC has no parameter but can be applied to any number of states.
+     * This class implements the special codon rate matrix.
      * The resulting rate matrix is computed by:
      *
      *		0: codon changes in more than one codon position (or stop codons)

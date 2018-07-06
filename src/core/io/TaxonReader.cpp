@@ -24,24 +24,24 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
     std::vector<std::string>& line = chars[0];
     std::map<std::string, int> column_map;
 
-    std::string arr[] = {"taxon","age","species","minage","maxage"};
+    std::string arr[] = {"taxon","age","species","min","max"};
     std::vector<std::string> fields (arr, arr + sizeof(arr) / sizeof(arr[0]) );
     
     for (size_t i = 0 ; i < line.size() ; ++i)
     {
         std::string tmp = line[i];
         StringUtilities::toLower( tmp );
-        if(std::find(fields.begin(), fields.end(), tmp) != fields.end())
+        if (std::find(fields.begin(), fields.end(), tmp) != fields.end())
         {
             column_map[tmp] = int(i);
         }
         else
         {
             std::stringstream field_stream;
-            for(size_t j = 0; j < fields.size(); j++)
+            for (size_t j = 0; j < fields.size(); j++)
             {
                 field_stream << "\"" << fields[j] << "\"";
-                if(j < fields.size() - 1)
+                if (j < fields.size() - 1)
                 {
                     field_stream << ", ";
                 }
@@ -55,22 +55,22 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         throw RbException("Missing header in the taxon definition file. It has to contain \"taxon\" field.");
     }
     
-    std::map<std::string,int>::iterator minit = column_map.find("minage");
-    std::map<std::string,int>::iterator maxit = column_map.find("maxage");
+    std::map<std::string,int>::iterator minit = column_map.find("min");
+    std::map<std::string,int>::iterator maxit = column_map.find("max");
 
     if ( (minit == column_map.end() || maxit == column_map.end()) && minit != maxit)
     {
-        throw RbException("Taxon definition file header must contain both \"minage\" and \"maxage\" age fields");
+        throw RbException("Taxon definition file header must contain both \"min\" and \"max\" age fields");
     }
     if ( (minit != column_map.end() || maxit != column_map.end()) && column_map.find("age") != column_map.end())
     {
-        throw RbException("Taxon definition file header cannot contain both \"age\" and (\"minage\" or \"maxage\") fields");
+        throw RbException("Taxon definition file header cannot contain both \"age\" and (\"min\" or \"max\") fields");
     }
 
     for (size_t i = 1; i < chars.size(); ++i) //going through all the lines
     {
         const std::vector<std::string>& line = chars[i];
-        if(line.size() != column_map.size())
+        if (line.size() != column_map.size())
         {
             std::stringstream err;
             err << "Line " << i+1 << " in taxon definition file does not contain "<<column_map.size()<<" elements";
@@ -78,20 +78,20 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         }
         Taxon t = Taxon( line[ column_map["taxon"] ] );
         
-        if ( column_map.find("minage") != column_map.end() )
+        if ( column_map.find("min") != column_map.end() )
         {
             double min = 0,max = 0;
             TimeInterval interval;
             std::stringstream ss;
 
-            ss.str( line[ column_map["minage"] ] );
+            ss.str( line[ column_map["min"] ] );
             ss >> min;
-            interval.setStart(min);
+            interval.setMin(min);
 
             ss.clear();
-            ss.str( line[ column_map["maxage"] ] );
+            ss.str( line[ column_map["max"] ] );
             ss >> max;
-            interval.setEnd(max);
+            interval.setMax(max);
 
             t.setAgeRange(interval);
         }
@@ -119,9 +119,9 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
 
     
     std::set<std::string> found;
-    for(size_t i = 0; i < taxa.size(); i++)
+    for (size_t i = 0; i < taxa.size(); i++)
     {
-        if(found.find(taxa[i].getName()) == found.end())
+        if (found.find(taxa[i].getName()) == found.end())
         {
             found.insert(taxa[i].getName());
         }
@@ -133,7 +133,6 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         }
     }
 
-    std::cerr << std::endl;
 }
 
 

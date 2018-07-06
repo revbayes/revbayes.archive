@@ -1,4 +1,5 @@
 #include "Clade.h"
+#include "DivergenceTimeCDF.h"
 #include "EpisodicBirthDeathProcess.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -7,6 +8,7 @@
 #include "RbMathLogic.h"
 #include "TopologyNode.h"
 
+#include <boost/math/tools/roots.hpp>
 #include <algorithm>
 #include <cmath>
 
@@ -27,6 +29,8 @@ EpisodicBirthDeathProcess::EpisodicBirthDeathProcess(const TypedDagNode<double> 
     addParameter( mu_rates );
     addParameter( mu_times );
     
+    prepareProbComputation();
+
     simulateTree();
     
 }
@@ -42,6 +46,60 @@ EpisodicBirthDeathProcess* EpisodicBirthDeathProcess::clone( void ) const
 {
     
     return new EpisodicBirthDeathProcess( *this );
+}
+
+
+double EpisodicBirthDeathProcess::computeProbabilitySurvival(double start, double end) const
+{
+    // do the integration of int_{start}^{end} ( mu(s) exp(rate(t,s)) ds )
+    // where rate(t,s) = int_{t}^{s} ( mu(x)-lambda(x) dx ) - sum_{for all t < m_i < s in massExtinctionTimes }( log(massExtinctionSurvivalProbability[i]) )
+    //
+    // we compute the integral stepwise for each epoch
+    
+    double accummulated_rate_time = 0.0;
+    double prev_time = start;
+    double den = 1.0;
+    
+    size_t num_episodes = rate_change_times.size();
+    double rate = 0.0;
+    for ( size_t j=0; j<num_episodes; ++j )
+    {
+        // compute the rate
+        rate = death[j] - birth[j];
+        
+        if ( (start < rate_change_times[j]) && (end >= rate_change_times[j]) )
+        {
+            // compute the integral for this time episode until the mass-extinction event
+//            den += ( exp(-rate*prev_time) * death[j] / rate * exp( accummulated_rate_time ) * ( exp(rate*rate_change_times[j]) - exp(rate*prev_time)));
+            den += ( death[j] / rate * exp( accummulated_rate_time ) * ( exp(rate * (rate_change_times[j]-prev_time)) - 1.0));
+
+            if ( RbMath::isFinite(den) == false )
+            {
+                return 0.0;
+            }
+            
+            accummulated_rate_time +=  (rate*(rate_change_times[j]-prev_time));
+            // store the current time so that we remember from which episode we need to integrate next
+            prev_time = rate_change_times[j];
+            // integrate over the tiny time interval of the mass-extinction event itself and add it to the integral
+            
+        }
+        
+    }
+    
+    size_t index = 0;
+    if ( rate_change_times.size() > 0 )
+    {
+        index = lower_index(end);
+    }
+    rate = death[index] - birth[index];
+    
+    // add the integral of the final epoch until the present time
+    den = den + exp(-rate*prev_time) * exp( accummulated_rate_time ) * death[index] / rate * ( exp(rate*end) - exp(rate*prev_time));
+    
+    double res = 1.0 / den;
+    
+    return res;
 }
 
 
@@ -253,54 +311,6 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
 }
 
 
-double EpisodicBirthDeathProcess::computeProbabilitySurvival(double start, double end) const
-{
-    // do the integration of int_{start}^{end} ( mu(s) exp(rate(t,s)) ds )
-    // where rate(t,s) = int_{t}^{s} ( mu(x)-lambda(x) dx ) - sum_{for all t < m_i < s in massExtinctionTimes }( log(massExtinctionSurvivalProbability[i]) )
-    //
-    // we compute the integral stepwise for each epoch
-    
-    double accummulated_rate_time = 0.0;
-    double prev_time = start;
-    double den = 1.0;
-    
-    size_t num_episodes = rate_change_times.size();
-    double rate = 0.0;
-    for ( size_t j=0; j<num_episodes; ++j )
-    {
-        // compute the rate
-        rate = death[j] - birth[j];
-        
-        if ( (start < rate_change_times[j]) && (end >= rate_change_times[j]) )
-        {
-            // compute the integral for this time episode until the mass-extinction event
-        
-            den += ( exp(-rate*prev_time) * death[j] / rate * exp( accummulated_rate_time ) * ( exp(rate* rate_change_times[j]) - exp(rate*prev_time)));
-            accummulated_rate_time +=  (rate*(rate_change_times[j]-prev_time));
-            // store the current time so that we remember from which episode we need to integrate next
-            prev_time = rate_change_times[j];
-            // integrate over the tiny time interval of the mass-extinction event itself and add it to the integral
-        
-        }
-        
-    }
-    
-    size_t index = 0;
-    if ( rate_change_times.size() > 0 )
-    {
-        index = lower_index(end);
-    }
-    rate = death[index] - birth[index];
-    
-    // add the integral of the final epoch until the present time
-    den = den + exp(-rate*prev_time) * exp( accummulated_rate_time ) * death[index] / rate * ( exp(rate*end) - exp(rate*prev_time));
-        
-    double res = 1.0 / den;
-    
-    return res;
-}
-
-
 void EpisodicBirthDeathProcess::prepareRateIntegral(double end) const
 {
     
@@ -400,14 +410,21 @@ double EpisodicBirthDeathProcess::rateIntegral(double start, double end) const
 
 double EpisodicBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
+    // incorrect placeholder for constant EBDP
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
+    size_t index = 0;
+    if ( rate_change_times.size() > 0 )
+    {
+        index = lower_index(present);
+    }
+
     // get the parameters
-    double age = present - origin;
-    double b = lambda_rates->getValue()[0];
-    double d = mu_rates->getValue()[0];
+    double age = origin - present;
+    double b = birth[index];
+    double d = death[index];
     double r = rho->getValue();
     
     
@@ -415,18 +432,60 @@ double EpisodicBirthDeathProcess::simulateDivergenceTime(double origin, double p
     double u = rng->uniform01();
     
     // compute the time for this draw
+    // see Hartmann et al. 2010 and Stadler 2011
     double t = 0.0;
     if ( b > d )
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     }
     else
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     }
     
+
+    DivergenceTimeCDF cdf = DivergenceTimeCDF(age, present, u, r, rate_change_times, birth, death);
+    typedef std::pair<double, double> Result;
+    boost::uintmax_t max_iter=100;
+    boost::math::tools::eps_tolerance<double> tol(10);
+//    DivergenceTimeCDF_tolerance<double> tol( (age - present) / 1000.0);
     
-    return present - t;
+    double low = cdf.operator()(present);
+    double high = cdf.operator()(age);
+    
+    if ( RbMath::isFinite( low ) == false || RbMath::isFinite(high) == false )
+    {
+        
+        throw RbException("Cannot simulate a tree under the EBD model for the given parameters.");
+        
+        double p_0_T = 1.0 - pSurvival(present,age,r) * exp( rateIntegral(present,age) ) / r;
+        double p_0_t = 1.0 - pSurvival(age-t,age,r) * exp( rateIntegral(age-t,age) ) / r;
+        double F_t   = p_0_t / p_0_T;
+        
+        double a1 = pSurvival(present,age,r);
+        double a2 = exp( rateIntegral(present,age) );
+        double a3 = pSurvival(age-t,age,r);
+        double a4 = exp( rateIntegral(age-t,age) );
+        double a5 = exp( lnProbSurvival(present,age,r) + rateIntegral(present, age) );
+        double a6 = exp( lnProbSurvival(age-t,age,r) + rateIntegral(age-t, age) );
+        
+        t = present;
+        
+        double p_0_T_low = 1.0 - pSurvival(present,age,r)  * exp( rateIntegral(present,age) ) / r;
+        double p_0_t_low = 1.0 - pSurvival(age-t,age,r) * exp( rateIntegral(age-t,age) ) / r;
+        double F_t_low   = p_0_t / p_0_T;
+        
+        t = age;
+        
+        double p_0_T_high = 1.0 - pSurvival(present,age,r)  * exp( rateIntegral(present,age) ) / r;
+        double p_0_t_high = 1.0 - pSurvival(age-t,age,r) * exp( rateIntegral(age-t,age) ) / r;
+        double F_t_high   = p_0_t / p_0_T;
+    }
+    
+    Result r1 = boost::math::tools::toms748_solve(cdf, present, age, tol, max_iter);
+//    Result r1 = boost::math::tools::bisect(cdf, present, age, tol, max_iter);
+
+    return present + (r1.first+r1.second)/2.0;
 }
 
 

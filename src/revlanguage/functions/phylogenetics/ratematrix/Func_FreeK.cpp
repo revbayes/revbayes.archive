@@ -77,7 +77,7 @@ const ArgumentRules& Func_FreeK::getArgumentRules( void ) const
         optionsMethod.push_back( "scalingAndSquaringTaylor" );
         optionsMethod.push_back( "uniformization" );
         optionsMethod.push_back( "eigen" );
-        argumentRules.push_back( new OptionRule( "matrixExponentialMethod", new RlString("scalingAndSquaring"), optionsMethod, "The method used to compute the matrix exponential." ) );
+        argumentRules.push_back( new OptionRule( "matrixExponentialMethod", new RlString("eigen"), optionsMethod, "The method used to compute the matrix exponential." ) );
         
         rules_set = true;
     }

@@ -2,6 +2,7 @@
 #include "OptionRule.h"
 #include "ConstantNode.h"
 #include "Func_summarizeCharacterMaps.h"
+#include "JointAncestralStateTrace.h"
 #include "ModelVector.h"
 #include "NexusWriter.h"
 #include "Probability.h"
@@ -14,9 +15,6 @@
 #include "RlAncestralStateTrace.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TreeSummary.h"
-#include "TraceTree.h"
-#include "AncestralStateTrace.h"
 #include "WorkspaceVector.h"
 
 #include <map>
@@ -60,17 +58,13 @@ RevPtr<RevVariable> Func_summarizeCharacterMaps::execute( void )
     }
     
     // get the tree trace
-    const TraceTree& treetrace = static_cast<const TraceTree&>( args[2].getVariable()->getRevObject() );
+    const TraceTree& tt = static_cast<const TraceTree&>( args[2].getVariable()->getRevObject() );
     
     // make a new tree summary object, using the tree trace if necessary
-    RevBayesCore::TreeSummary summary;
+    RevBayesCore::TraceTree tree_trace;
     if (args[2].getVariable()->getRevObject() != RevNullObject::getInstance())
     {
-        summary = treetrace.getValue();
-    }
-    else
-    {
-        summary = RevBayesCore::TreeSummary();
+        tree_trace = tt.getValue();
     }
     
     // get the filename to write output
@@ -81,7 +75,7 @@ RevPtr<RevVariable> Func_summarizeCharacterMaps::execute( void )
     RevObject& b = args[4].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
-        burnin = static_cast<const Integer &>(b).getValue();
+        burnin = (int)static_cast<const Integer &>(b).getValue();
     }
     else
     {
@@ -94,7 +88,10 @@ RevPtr<RevVariable> Func_summarizeCharacterMaps::execute( void )
     bool verbose = static_cast<const RlBoolean &>( args[6].getVariable()->getRevObject() ).getValue();
     
     // summarize stochastic character maps
-    summary.summarizeCharacterMaps(input_tree, ancestralstate_traces, filename, burnin, verbose, sep);
+    RevBayesCore::JointAncestralStateTrace joint_trace(ancestralstate_traces, tree_trace);
+    joint_trace.setBurnin(burnin);
+
+    joint_trace.summarizeCharacterMaps(input_tree, filename, verbose, sep);
 
     return NULL;
 }
@@ -175,7 +172,7 @@ const TypeSpec& Func_summarizeCharacterMaps::getTypeSpec( void ) const
 const TypeSpec& Func_summarizeCharacterMaps::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = Tree::getClassTypeSpec();
+    return return_typeSpec;
 }
 

@@ -26,7 +26,7 @@ namespace RevBayesCore {
         EssTest(double k=200);
         
         // implementen functions from convergence diagnostic
-        bool        assessConvergenceSingleChain(const std::vector<double>& values, std::size_t burnin);
+        bool        assessConvergence(const TraceNumeric& trace);
         
     private:
         

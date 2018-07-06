@@ -1,11 +1,13 @@
 #include "ArgumentRule.h"
 #include "Func_writeNexus.h"
+#include "ModelVector.h"
 #include "RbException.h"
 #include "RevNullObject.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
+#include "RlTimeTree.h"
 #include "RlTree.h"
 #include "NexusWriter.h"
 
@@ -61,6 +63,16 @@ RevPtr<RevVariable> Func_writeNexus::execute( void )
         const RevBayesCore::Tree &data = static_cast< const Tree & >( args[1].getVariable()->getRevObject() ).getValue();
         fw.writeNexusBlock( data );
     }
+    else if ( this->args[1].getVariable()->getRevObject().getTypeSpec().isDerivedOf( ModelVector<Tree>::getClassTypeSpec() ) )
+    {
+        const RevBayesCore::RbVector<RevBayesCore::Tree> &data = static_cast< const ModelVector<Tree> & >( args[1].getVariable()->getRevObject() ).getValue();
+        fw.writeNexusBlock( data );
+    }
+    else if ( this->args[1].getVariable()->getRevObject().getTypeSpec().isDerivedOf( ModelVector<TimeTree>::getClassTypeSpec() ) )
+    {
+        const RevBayesCore::RbVector<RevBayesCore::Tree> &data = static_cast< const ModelVector<TimeTree> & >( args[1].getVariable()->getRevObject() ).getValue();
+        fw.writeNexusBlock( data );
+    }
     else
     {
         fw.closeStream();
@@ -95,6 +107,8 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
         dataTypes.push_back( AbstractHomologousDiscreteCharacterData::getClassTypeSpec() );
         dataTypes.push_back( ContinuousCharacterData::getClassTypeSpec() );
         dataTypes.push_back( Tree::getClassTypeSpec() );
+        dataTypes.push_back( ModelVector<Tree>::getClassTypeSpec() );
+        dataTypes.push_back( ModelVector<TimeTree>::getClassTypeSpec() );
 
         argumentRules.push_back( new ArgumentRule( "data", dataTypes, "The character data matrix to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rules_set = true;
@@ -167,8 +181,8 @@ const TypeSpec& Func_writeNexus::getTypeSpec( void ) const
 const TypeSpec& Func_writeNexus::getReturnType( void ) const 
 {
     
-    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = RevNullObject::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

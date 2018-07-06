@@ -11,6 +11,7 @@
 #include "OptionRule.h"
 #include "ConstantNode.h"
 #include "Func_characterMapTree.h"
+#include "JointAncestralStateTrace.h"
 #include "ModelVector.h"
 #include "NexusWriter.h"
 #include "Probability.h"
@@ -23,9 +24,6 @@
 #include "RlAncestralStateTrace.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TreeSummary.h"
-#include "TraceTree.h"
-#include "AncestralStateTrace.h"
 #include "WorkspaceVector.h"
 
 #include <map>
@@ -67,14 +65,10 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
     const TraceTree& tt = static_cast<const TraceTree&>( args[2].getVariable()->getRevObject() );
     
     // make a new tree summary object
-    RevBayesCore::TreeSummary summary;
+    RevBayesCore::TraceTree tree_trace;
     if (args[2].getVariable()->getRevObject() != RevNullObject::getInstance())
     {
-        summary = tt.getValue();
-    }
-    else
-    {
-        summary = RevBayesCore::TreeSummary();
+        tree_trace = tt.getValue();
     }
     
     // get the filename for the tree with MAP character history
@@ -87,7 +81,7 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
     RevObject& b = args[5].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
-        burnin = static_cast<const Integer &>(b).getValue();
+        burnin = (int)static_cast<const Integer &>(b).getValue();
     }
     else
     {
@@ -106,13 +100,14 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
         throw RbException("Joint ancestral state summaries are not yet implemented. Coming soon!");
     }
     
-    int num_time_slices = static_cast<const Integer &>(args[7].getVariable()->getRevObject()).getValue();
+    int num_time_slices = (int)static_cast<const Integer &>(args[7].getVariable()->getRevObject()).getValue();
     
     bool verbose = static_cast<const RlBoolean &>(args[8].getVariable()->getRevObject()).getValue();
     
     // get the tree with ancestral states
-    RevBayesCore::Tree* tree;
-    tree = summary.characterMapTree(it->getValue(), ancestralstate_traces, burnin, num_time_slices, conditional, false, verbose);
+    RevBayesCore::JointAncestralStateTrace joint_trace(ancestralstate_traces, tree_trace);
+    joint_trace.setBurnin(burnin);
+    RevBayesCore::Tree* tree = joint_trace.characterMapTree(it->getValue(), num_time_slices, conditional, false, verbose);
     
     // write the SIMMAP newick strings
     std::ofstream out_stream;
@@ -223,7 +218,7 @@ const TypeSpec& Func_characterMapTree::getTypeSpec( void ) const
 const TypeSpec& Func_characterMapTree::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = Tree::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = Tree::getClassTypeSpec();
+    return return_typeSpec;
 }
 

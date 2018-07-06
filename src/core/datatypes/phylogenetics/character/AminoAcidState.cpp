@@ -1,7 +1,9 @@
 #include "AminoAcidState.h"
+#include "RbException.h"
 
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 
 using namespace RevBayesCore;
 
@@ -55,13 +57,26 @@ std::string AminoAcidState::getStateLabels( void ) const
 
 void AminoAcidState::addState(const std::string &symbol)
 {
-    ++num_observed_states;
+    if ( symbol[0] == '-' )
+    {
+        setGapState( true );
+    }
+    else if ( symbol[0] == '?' )
+    {
+        setMissingState( true );
+    }
+    else
+    {
+
+        ++num_observed_states;
     
-    std::string labels = getStateLabels();
-    size_t pos = labels.find(symbol);
+        std::string labels = getStateLabels();
+        size_t pos = labels.find(symbol);
+        
+        state.set( pos );
+        index_single_state = pos;
+    }
     
-    state.set( pos );
-    index_single_state = pos;
 }
 
 
@@ -118,8 +133,31 @@ void AminoAcidState::setState(const std::string &s)
         ++num_observed_states;
         
         size_t pos = labels.find(s[i]);
-        state.set(pos);
-        index_single_state = pos;
+        if ( pos >= 20  )
+        {
+            
+            if ( s[i] == '-' )
+            {
+                setGapState( true );
+            }
+            else if ( s[i] == '?' )
+            {
+                setMissingState( true );
+            }
+            else
+            {
+                std::stringstream ss;
+                ss << "Unknown state '" << s[i] << "' cannot be used for amino acid characters.";
+                throw RbException( ss.str() );
+            }
+            
+        }
+        else
+        {
+            state.set(pos);
+            index_single_state = pos;
+        }
+        
     }
     
 }

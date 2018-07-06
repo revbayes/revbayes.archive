@@ -54,7 +54,7 @@ RevPtr<RevVariable> Func_pomoStateConverter::execute() {
         gene2species[it->getName()] = it->getSpeciesName();
     }
     
-    AbstractHomologousDiscreteCharacterData PomoAln = c->convertData( aln->getValue(), n->getValue(), gene2species ) ;
+    AbstractHomologousDiscreteCharacterData PomoAln = c->convertData( aln->getValue(), (int)n->getValue(), gene2species ) ;
         
     return new RevVariable( new AbstractHomologousDiscreteCharacterData( PomoAln ) );
 }
@@ -115,9 +115,9 @@ std::string Func_pomoStateConverter::getFunctionName( void ) const
 const TypeSpec& Func_pomoStateConverter::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
+    static TypeSpec return_typeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 
 

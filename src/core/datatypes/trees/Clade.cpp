@@ -50,15 +50,61 @@ Clade::Clade( const Taxon &t, const RbBitSet &b ) :
 Clade::Clade(const std::vector<Taxon> &n, const RbBitSet &b) :
     age( 0.0 ),
     bitset( b ),
-    num_missing( b.size() > n.size() ? b.size() - n.size() : 0 ),
+    num_missing( b.size() > n.size() ? int(b.size()) - int(n.size()) : 0 ),
     taxa( n ),
     is_negative_constraint(false),
     is_optional_match(false)
 {
     
-    // for identifiability we always keep the taxon names sorted
-//    std::sort(taxa.begin(), taxa.end());
     VectorUtilities::sort( taxa );
+}
+
+
+/**
+ * Default constructor that instantiates the object.
+ * Additionally, we sort the vector of taxon names.
+ *
+ * \param[in]   n    The vector containing the taxon names.
+ */
+Clade::Clade(const std::set<Taxon> &n, const RbBitSet &b) :
+    age( 0.0 ),
+    bitset( b ),
+    num_missing( b.size() > n.size() ? int(b.size()) - int(n.size()) : 0 ),
+    taxa(),
+    is_negative_constraint(false),
+    is_optional_match(false)
+{
+    
+    for (std::set<Taxon>::const_iterator it=n.begin(); it!=n.end(); ++it)
+    {
+        taxa.push_back( *it );
+    }
+    
+    VectorUtilities::sort( taxa );
+}
+
+
+/**
+ * Default constructor that instantiates the object.
+ * Additionally, we sort the vector of taxon names.
+ *
+ * \param[in]   n    The vector containing the taxon names.
+ */
+Clade::Clade(const RbBitSet &b, const std::vector<Taxon> &n) :
+    age( 0.0 ),
+    bitset( b ),
+    num_missing( b.size() - b.getNumberSetBits() ),
+    is_negative_constraint(false),
+    is_optional_match(false)
+{
+
+    for (size_t i = 0; i < b.size(); i++)
+    {
+        if ( b.isSet(i) )
+        {
+            taxa.push_back(n[i]);
+        }
+    }
 }
 
 
@@ -251,7 +297,7 @@ const RbBitSet& Clade::getBitRepresentation( void ) const
  * \return       The mrca taxon
  *
  */
-const std::vector<Taxon>& Clade::getMrca(void) const
+const std::set<Taxon>& Clade::getMrca(void) const
 {
     return mrca;
 }
@@ -379,10 +425,6 @@ void Clade::resetTaxonBitset(const std::map<std::string, size_t> map)
         }
         else
         {
-            for (std::map<std::string, size_t >::const_iterator it=map.begin(); it != map.end(); ++it)
-            {
-                std::cerr << it->first << " -- " << it->second << std::endl;
-            }
             throw RbException("Missing taxon with name '" + taxa[i].getName() + "'.");
         }
     }
@@ -421,11 +463,9 @@ void Clade::setBitRepresentation( const RbBitSet &b )
  * \param[in]    t      The taxa to be set as the mrca
  *
  */
-void Clade::setMrca(const std::vector<Taxon>& t)
+void Clade::setMrca(const std::set<Taxon>& t)
 {
     mrca = t;
-
-    VectorUtilities::sort(mrca);
 }
 
 
@@ -516,7 +556,7 @@ std::string Clade::toString( void ) const
             s += ",";
         }
         s += taxa[i].getName();
-        if( std::find(mrca.begin(), mrca.end(), taxa[i]) != mrca.end() )
+        if ( std::find(mrca.begin(), mrca.end(), taxa[i]) != mrca.end() )
         {
             s += "*";
         }

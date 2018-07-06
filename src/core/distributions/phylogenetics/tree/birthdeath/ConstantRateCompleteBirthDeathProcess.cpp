@@ -49,12 +49,12 @@ double ConstantRateCompleteBirthDeathProcess::computeLnProbabilityTimes( void ) 
     size_t num_extant_left  = num_extant(value->getRoot().getChild(0), &ln_prob_times);
     size_t num_extant_right = num_extant(value->getRoot().getChild(1), &ln_prob_times);
 
-    if( use_mrca == true && (num_extant_left == 0 || num_extant_right == 0) )
+    if ( use_mrca == true && (num_extant_left == 0 || num_extant_right == 0) )
     {
         return RbConstants::Double::neginf;
     }
 
-    if( use_mrca == false )
+    if ( use_mrca == false )
     {
         ln_prob_times += getOriginAge() - getRootAge();
     }
@@ -66,7 +66,7 @@ double ConstantRateCompleteBirthDeathProcess::computeLnProbabilityTimes( void ) 
 
     size_t num_extinct = value->getNumberOfTips() - num_extant_left - num_extant_right;
 
-    if( extinction->getValue() > 0.0 )
+    if ( extinction->getValue() > 0.0 )
     {
         ln_prob_times += num_extinct * log( extinction->getValue() );
     }
@@ -79,18 +79,18 @@ size_t ConstantRateCompleteBirthDeathProcess::num_extant( const TopologyNode & n
 {
     size_t num = 0;
 
-    if( node.isRoot() == false )
+    if ( node.isRoot() == false )
     {
         *tl += node.getParent().getAge() - node.getAge();
     }
 
-    if(node.isTip())
+    if (node.isTip())
     {
         num = (node.getAge() == 0);
     }
     else
     {
-        for(size_t i = 0; i < node.getNumberOfChildren(); i++)
+        for (size_t i = 0; i < node.getNumberOfChildren(); i++)
         {
             num += num_extant(node.getChild(i), tl);
         }
@@ -104,9 +104,9 @@ size_t ConstantRateCompleteBirthDeathProcess::num_extant( const TopologyNode & n
  */
 double ConstantRateCompleteBirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const
 {
-    for( size_t i = 0; i < n; i++)
+    for ( size_t i = 0; i < n; i++)
     {
-        if( value->getNode(i).getAge() > 0 )
+        if ( value->getNode(i).getAge() > 0 )
         {
             n--;
         }
@@ -120,7 +120,7 @@ double ConstantRateCompleteBirthDeathProcess::lnProbNumTaxa(size_t n, double sta
 
     double u = b*(1.0 - d*e)/(b - d*e);
 
-    if( n == 0 )
+    if ( n == 0 )
     {
         return log(1.0 - pSurvival(start,end));
     }
@@ -135,19 +135,19 @@ double ConstantRateCompleteBirthDeathProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
     // so we convert to the probability of a (ranked) non-oriented tree with labeled extant tips
-    // by multiplying by 2^{n-1} / (n-m)!
-    // where n is the number of tips and m is the number of extinct tips
+    // by multiplying by 2^{n-1} / n!
+    // where n is the number of tips
 
-    size_t n = value->getNumberOfTips();
-    size_t m = value->getNumberOfExtinctTips();
+    int n = (int)value->getNumberOfTips();
+    int m = (int)value->getNumberOfExtinctTips();
 
     // condition on survival
-    if(n == m)
+    if (n == m)
     {
         return RbConstants::Double::neginf;
     }
 
-    return (n - 1) * RbConstants::LN2 - RbMath::lnFactorial(n - m) - RbMath::lnFactorial(m);
+    return (n - 1) * RbConstants::LN2 - RbMath::lnFactorial(n - m);
 }
 
 
@@ -178,7 +178,7 @@ double ConstantRateCompleteBirthDeathProcess::simulateDivergenceTime(double orig
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
-    double age = present - origin;
+    double age = origin - present;
     double b = speciation->getValue();
     double d = extinction->getValue();
     double r = 1.0;
@@ -188,18 +188,18 @@ double ConstantRateCompleteBirthDeathProcess::simulateDivergenceTime(double orig
 
     
     // compute the time for this draw
+    // see Hartmann et al. 2010 and Stadler 2011
     double t = 0.0;
     if ( b > d )
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     }
     else
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     }
     
-//    return present - t;
-    return origin + t;
+    return present + t;
 }
 
 

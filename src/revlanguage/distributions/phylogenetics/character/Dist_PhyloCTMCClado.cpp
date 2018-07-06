@@ -44,6 +44,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getValue();
     
     bool internal = static_cast<const RlBoolean &>( storeInternalNodes->getRevObject() ).getValue();
+    bool gapmatch = static_cast<const RlBoolean &>( gapMatchClamped->getRevObject() ).getValue();
     
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
@@ -65,55 +66,55 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     }
     
+    // get basic parameters that do not depend on data type
+    // we get the number of states from the rates matrix
+    // set the rate matrix
+    size_t nChars = 1;
+    size_t nCharsClado = 1;
+    if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
+        nChars = rm->getValue()[0].getNumberOfStates();
+    }
+    else
+    {
+        RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
+        nChars = rm->getValue().getNumberOfStates();
+    }
+    if ( cladoProbs->getRevObject().isType( ModelVector<CladogeneticProbabilityMatrix>::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::CladogeneticProbabilityMatrix> >* cp = static_cast<const ModelVector<CladogeneticProbabilityMatrix> &>( q->getRevObject() ).getDagNode();
+        nCharsClado = cp->getValue()[0].getNumberOfStates();
+    }
+    else
+    {
+        RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp = static_cast<const CladogeneticProbabilityMatrix &>( cladoProbs->getRevObject() ).getDagNode();
+        nCharsClado = cp->getValue().getNumberOfStates();
+    }
+    // state space size checks
+    if (rf != NULL) {
+        size_t rf_size = rf->getValue().size();
+        if (nChars != rf_size) {
+            throw RbException("The root frequencies vector and rate matrix do not have the same number of states.\n");
+        }
+        if (nCharsClado != rf_size) {
+            throw RbException("The root frequencies vector and cladogenetic probabilities do not have the same number of states.\n");
+        }
+        
+    }
+    
+    if (nChars != nCharsClado) {
+        throw RbException("The cladogenetic probabilities and rate matrix do not have the same number of states.\n");
+    }
+    
+
+    
     if ( dt == "NaturalNumbers" )
     {
-        // we get the number of states from the rates matrix
-        // set the rate matrix
-        size_t nChars = 1;
-        size_t nCharsClado = 1;
-        if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
-        {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
-            nChars = rm->getValue()[0].getNumberOfStates();
-        }
-        else
-        {
-            RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
-            nChars = rm->getValue().getNumberOfStates();
-        }
-        if ( cladoProbs->getRevObject().isType( ModelVector<CladogeneticProbabilityMatrix>::getClassTypeSpec() ) )
-        {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::CladogeneticProbabilityMatrix> >* cp = static_cast<const ModelVector<CladogeneticProbabilityMatrix> &>( q->getRevObject() ).getDagNode();
-            nCharsClado = cp->getValue()[0].getNumberOfStates();
-        }
-        else
-        {
-            RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp = static_cast<const CladogeneticProbabilityMatrix &>( cladoProbs->getRevObject() ).getDagNode();
-            nCharsClado = cp->getValue().getNumberOfStates();
-        }
-
         
-//        RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;A
+//        RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
         
-        // state space size checks
-        
-        if (rf != NULL) {
-            size_t rf_size = rf->getValue().size();
-            if (nChars != rf_size) {
-                throw RbException("The root frequencies vector and rate matrix do not have the same number of states.\n");
-            }
-            if (nCharsClado != rf_size) {
-                throw RbException("The root frequencies vector and cladogenetic probabilities do not have the same number of states.\n");
-            }
-            
-        }
-        
-        if (nChars != nCharsClado) {
-            throw RbException("The cladogenetic probabilities and rate matrix do not have the same number of states.\n");
-        }
-        
-        
-        RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState>(tau, nChars, true, n, ambig, internal);
+        RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState>(tau, nChars, true, n, ambig, internal, gapmatch);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -183,7 +184,84 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         
         d = dist;
     }
-    
+    else if (dt == "Standard")
+    {
+
+        
+        RevBayesCore::PhyloCTMCClado<RevBayesCore::StandardState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, internal, gapmatch);
+        
+        // set the root frequencies (by default these are NULL so this is OK)
+        dist->setRootFrequencies( rf );
+        
+        // set the probability for invariant site (by default this p_inv=0.0)
+        dist->setPInv( p_invNode );
+        
+        if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
+            
+            // sanity check
+            if ( (nNodes-1) != clockRates->getValue().size() )
+            {
+                throw RbException( "The number of clock rates does not match the number of branches" );
+            }
+            
+            dist->setClockRate( clockRates );
+        }
+        else
+        {
+            RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
+            dist->setClockRate( clockRate );
+        }
+        
+        // set the rate matrix
+        if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
+            
+            // sanity check
+            if ( (nNodes-1) != rm->getValue().size() )
+            {
+                throw RbException( "The number of substitution matrices does not match the number of branches" );
+            }
+            
+            dist->setRateMatrix( rm );
+        }
+        else
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
+            dist->setRateMatrix( rm );
+        }
+        
+        // set the clado probs
+        if ( cladoProbs->getRevObject().isType( ModelVector<CladogeneticProbabilityMatrix>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::CladogeneticProbabilityMatrix> >* cp = static_cast<const ModelVector<CladogeneticProbabilityMatrix> &>( cladoProbs->getRevObject() ).getDagNode();
+            
+            // sanity check
+            if ( (nNodes-1) != cp->getValue().size() )
+            {
+                throw RbException( "The number of cladogenesis probability matrices does not match the number of branches" );
+            }
+            dist->setCladogenesisMatrix( cp );
+        }
+        else
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp = static_cast<const CladogeneticProbabilityMatrix &>( cladoProbs->getRevObject() ).getDagNode();
+            dist->setCladogenesisMatrix( cp );
+        }
+        
+        if ( site_ratesNode != NULL && site_ratesNode->getValue().size() > 0 )
+        {
+            dist->setSiteRates( site_ratesNode );
+        }
+        
+        d = dist;
+    }
+    else
+    {
+        throw RbException("Datatype \"" + dt + "\" not currently supported!");
+    }
     
     return d;
 }
@@ -277,6 +355,8 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
         dist_member_rules.push_back( new ArgumentRule( "storeInternalNodes", RlBoolean::getClassTypeSpec(), "Should we store internal node states in the character matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        
+        dist_member_rules.push_back( new ArgumentRule( "gapMatchClamped", RlBoolean::getClassTypeSpec(), "Should we set the simulated character to gap or missing if the corresponding character in the clamped matrix is gap or missing?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         rules_set = true;
     }
@@ -382,6 +462,10 @@ void Dist_phyloCTMCClado::setConstParameter(const std::string& name, const RevPt
     else if ( name == "storeInternalNodes" )
     {
         storeInternalNodes = var;
+    }
+    else if ( name == "gapMatchClamped" )
+    {
+        gapMatchClamped = var;
     }
     else if ( name == "type" )
     {

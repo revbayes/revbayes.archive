@@ -17,9 +17,9 @@ namespace RevLanguage {
         std::list<std::string> lines; 
         int result;
         std::string message;
-        std::string functionName;
-        std::string argumentLabel;
-        RevPtr<RevVariable> baseVariable;
+        std::string function_name;
+        std::string argument_label;
+        RevPtr<RevVariable> base_variable;
     };
     
     class SyntaxElement;
@@ -79,7 +79,7 @@ namespace RevLanguage {
      *
      * The parser class also supports processing of a partial command line, to find out
      * the parser state at the end of the command line. Local variables, such as
-     * functionName, baseVariableExpression etc, as well as some of the public functions
+     * function_name, base_variable_expression etc, as well as some of the public functions
      * support this use case.
      */
         
@@ -98,11 +98,11 @@ namespace RevLanguage {
         int                 processCommand(std::string& command, Environment *env);                 //!< Process command with help from Bison
 
         // State checking functions
-        bool                isChecking(void) { return parserMode == CHECKING; }                     //!< Are we in state-checking mode?
-        void                setBaseVariable(SyntaxVariable* var) { baseVariableExpr = var; }        //!< Set base variable expression
+        bool                isChecking(void) { return parser_mode == CHECKING; }                     //!< Are we in state-checking mode?
+        void                setBaseVariable(SyntaxVariable* var) { base_variable_expr = var; }        //!< Set base variable expression
         void                executeBaseVariable(void);                                              //!< Execute base variable expression
-        void                setFunctionName( const std::string& n ) { functionName = n; }           //!< Set function name
-        void                setArgumentLabel( const std::string& n ) { argumentLabel = n; }         //!< Set argument label
+        void                setfunction_name( const std::string& n ) { function_name = n; }           //!< Set function name
+        void                setArgumentLabel( const std::string& n ) { argument_label = n; }         //!< Set argument label
         
         ParserInfo          checkCommand(std::string& command, Environment *env);                   //!< Parse command without executing it
         
@@ -124,11 +124,11 @@ namespace RevLanguage {
         void                setParserMode(ParserMode mode);                                         //!< Set the parser mode
         
         // Member variables
-        ParserMode          parserMode;                                             //!< The current parser mode
-        std::string         functionName;                                           //!< Function name of end state, if any
-        std::string         argumentLabel;                                          //!< Argument label of end state, if any
-        SyntaxVariable*     baseVariableExpr;                                       //!< Base variable expression of end state
-        RevPtr<RevVariable>    baseVariable;                                           //!< Base variable of end state
+        ParserMode          parser_mode;                                             //!< The current parser mode
+        std::string         function_name;                                           //!< Function name of end state, if any
+        std::string         argument_label;                                          //!< Argument label of end state, if any
+        SyntaxVariable*     base_variable_expr;                                       //!< Base variable expression of end state
+        RevPtr<RevVariable>    base_variable;                                           //!< Base variable of end state
 
     };
 

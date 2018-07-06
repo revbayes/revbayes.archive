@@ -104,7 +104,7 @@ RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* Re
     RevBayesCore::TypedDistribution<typename valType::valueType>* g0    = static_cast<RevBayesCore::TypedDistribution<typename valType::valueType>* >( rlDistribution.createDistribution() );    
     RevBayesCore::TypedDagNode<double>* cp								= static_cast<const RealPos &>( concentration->getRevObject() ).getDagNode();
 
-    int ne = static_cast<const Natural &>( numElements->getRevObject() ).getValue();
+    int ne = (int)static_cast<const Natural &>( numElements->getRevObject() ).getValue();
     RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* d		= new RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>(g0, cp, ne);
     
     return d;

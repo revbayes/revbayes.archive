@@ -16,11 +16,8 @@
 
 ###### This just defines a single model for all sites #######
 
-### Read in sequence data for both genes
-
-#data <- readDiscreteCharacterData("data/primates_cytb_inv.nex")
+### Read in sequence data
 data <- readDiscreteCharacterData("data/primates_cytb_small.nex")
-#data <- readDiscreteCharacterData("data/test_large.nex")
 
 # Get some useful variables from the data. We need these later on.
 taxa <- data.taxa()

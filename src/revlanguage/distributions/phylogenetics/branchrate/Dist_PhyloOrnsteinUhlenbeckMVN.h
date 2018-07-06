@@ -15,7 +15,7 @@ namespace RevLanguage {
         virtual ~Dist_PhyloOrnsteinUhlenbeckMVN();
         
         // Basic utility functions
-        Dist_PhyloOrnsteinUhlenbeckMVN*                          clone(void) const;                                                                      //!< Clone the object
+        Dist_PhyloOrnsteinUhlenbeckMVN*                 clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
@@ -35,13 +35,11 @@ namespace RevLanguage {
     private:
         
         RevPtr<const RevVariable>                       tree;
-        RevPtr<const RevVariable>                       branchRates;
-        RevPtr<const RevVariable>                       site_rates;
         RevPtr<const RevVariable>                       alpha;
         RevPtr<const RevVariable>                       theta;
         RevPtr<const RevVariable>                       sigma;
-        RevPtr<const RevVariable>                       rootStates;
-        RevPtr<const RevVariable>                       nSites;
+        RevPtr<const RevVariable>                       root_states;
+        RevPtr<const RevVariable>                       n_sites;
         
         
     };

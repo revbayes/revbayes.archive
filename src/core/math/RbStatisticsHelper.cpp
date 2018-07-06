@@ -117,7 +117,7 @@ double RbStatistics::Helper::pointChi2(double prob, double v) {
     double e = 0.5e-6, aa = 0.6931471805, p = prob;
     double ch, a, q, p1, p2, t, x, b, s1, s2, s3, s4, s5, s6;
     double epsi = .01;
-    if( p < 0.000002 || p > 1 - 0.000002)  {
+    if ( p < 0.000002 || p > 1 - 0.000002)  {
         epsi = .000001;
     }
     // if (p < 0.000002 || p > 0.999998 || v <= 0) {
@@ -363,7 +363,7 @@ double RbStatistics::Helper::rndGamma(double s, RandomNumberGenerator& rng) {
 //    }
 //    
 //    if (a < 1.) { /* GS algorithm for parameters a < 1 */
-//        if(a == 0)
+//        if (a == 0)
 //            return 0.;
 //        e = 1.0 + exp_m1 * a;
 //        while ( true ) {
@@ -603,11 +603,11 @@ double RbStatistics::Helper::rndGamma3(double a, RandomNumberGenerator& rng) {
     double e, p, q, r, t, u, v, w, x, ret_val;
     
     if (!RbMath::isFinite(a) || a < 0.0 ) {
-        throw RbException("Infinite parameters for rgamma.");
+        throw RbException("NaN produced in rgamma.");
     }
     
     if (a < 1.) { /* GS algorithm for parameters a < 1 */
-        if(a == 0)
+        if (a == 0)
             return 0.;
         e = 1.0 + exp_m1 * a;
         while ( true ) {
@@ -748,7 +748,7 @@ double RbStatistics::Helper::rndGamma4(double s, RandomNumberGenerator& rng) {
     // check that alpha is finite
     if ( !RbMath::isFinite(s) || s < 0.0 )
     {
-        throw RbException("Infinite parameters for rgamma.");
+        throw RbException("NaN produced in rgamma.");
     }
     
     // check if alpha is less than 1
@@ -772,7 +772,7 @@ double RbStatistics::Helper::rndGamma4(double s, RandomNumberGenerator& rng) {
         double v = pow(1 + c * z, 3);
         
         double u = rng.uniform01();
-        if( u < 1 - 0.0331 * pow(z, 4) )
+        if ( u < 1 - 0.0331 * pow(z, 4) )
         {
             x = d * v;
             break;
@@ -780,7 +780,7 @@ double RbStatistics::Helper::rndGamma4(double s, RandomNumberGenerator& rng) {
         
         double log_u = log(u);
         double rhs   = 0.5 * pow(z, 2) + d * (1 - v + log(v));
-        if( log_u < rhs )
+        if ( log_u < rhs )
         {
             x = d * v;
             break;
@@ -794,7 +794,7 @@ double RbStatistics::Helper::rndGamma4(double s, RandomNumberGenerator& rng) {
         x *= pow(u, 1 / s);
         
 //        // make sure that x cannot be exactly 0
-//        if(x == 0) {
+//        if (x == 0) {
 //            x = 1e-300;
 //        }
         

@@ -119,7 +119,7 @@ const TypeSpec& Func_readMatrix::getTypeSpec( void ) const
 const TypeSpec& Func_readMatrix::getReturnType( void ) const
 {
 	
-	static TypeSpec returnTypeSpec = MatrixReal::getClassTypeSpec();
-	return returnTypeSpec;
+	static TypeSpec return_typeSpec = MatrixReal::getClassTypeSpec();
+	return return_typeSpec;
 }
 

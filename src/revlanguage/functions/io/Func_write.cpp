@@ -73,11 +73,11 @@ RevPtr<RevVariable> Func_write::execute( void )
             }
             
             // print the arguments
-            args[0].getVariable()->getRevObject().printValue(out_stream, false);
+            args[0].getVariable()->getRevObject().printValue(out_stream, !false);
             for (size_t i = 4; i < args.size(); i++)
             {
                 out_stream << separator;
-                args[i].getVariable()->getRevObject().printValue( out_stream , false );
+                args[i].getVariable()->getRevObject().printValue( out_stream , !false );
             }
             
             out_stream.flush();
@@ -186,8 +186,8 @@ const TypeSpec& Func_write::getTypeSpec( void ) const
 const TypeSpec& Func_write::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = RevNullObject::getClassTypeSpec();
+    return return_typeSpec;
 }
 
 

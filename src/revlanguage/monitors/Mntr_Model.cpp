@@ -41,7 +41,7 @@ void Mntr_Model::constructInternalObject( void )
     // now allocate a new sliding move
     const std::string&                  fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string&                  sep     = static_cast<const RlString &>( separator->getRevObject() ).getValue();
-    int                                 g       = static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
+    int                                 g       = (int)static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
     bool                                pp      = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
     bool                                l       = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
     bool                                pr      = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();

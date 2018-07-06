@@ -102,7 +102,7 @@ double BetaSimplexProposal::propose( Simplex &value )
     
     double sum = 0.0;
     double ln_Hastings_ratio = 0.0;
-    for(size_t i = 0; i < cats; i++)
+    for (size_t i = 0; i < cats; i++)
     {
         if ( i != chosen_index )
         {
@@ -122,7 +122,7 @@ double BetaSimplexProposal::propose( Simplex &value )
     // simplex can gradually drift until it the sum
     // is substantially different from one.
     // normalize the vector to enforce sum = 1
-    for(size_t i = 0; i < cats; ++i)
+    for (size_t i = 0; i < cats; ++i)
     {
         value[i] /= sum;
     }
@@ -136,14 +136,14 @@ double BetaSimplexProposal::propose( Simplex &value )
         double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
         
         ln_Hastings_ratio = backward - forward;
+        
+        // include the Jacobian for the scaling of the other values
+        ln_Hastings_ratio += (cats - 2) * log(scaling_factor_other_values) - (cats - 1) * log(sum);
     }
     catch (RbException e)
     {
         ln_Hastings_ratio = RbConstants::Double::neginf;
     }
-
-    // include the Jacobian for the scaling of the other values
-    ln_Hastings_ratio += (cats - 2) * log(scaling_factor_other_values);
 
     return ln_Hastings_ratio;
 }

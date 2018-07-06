@@ -39,7 +39,7 @@ void GelmanRubinStoppingRule::constructInternalObject( void )
     
     // now allocate a new stopping rule
     double r = static_cast<const RealPos &>( R->getRevObject() ).getValue();
-    int fq = static_cast<const Natural &>( frequency->getRevObject() ).getValue();
+    int fq = (int)static_cast<const Natural &>( frequency->getRevObject() ).getValue();
     const std::string &fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     
     RevBayesCore::BurninEstimatorContinuous *burninEst = constructBurninEstimator();

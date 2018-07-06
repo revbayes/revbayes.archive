@@ -83,7 +83,7 @@ template <typename valType>
 RevBayesCore::TypedFunction< RevBayesCore::RbVector< typename valType::valueType> >* RevLanguage::Func_replicate<valType>::createFunction( void ) const
 {
     const RevBayesCore::TypedDagNode<typename valType::valueType>* v   = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    int n   = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
+    int n   = (int)static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
     
     RevBayesCore::ReplicateFunction<typename valType::valueType>* func = new RevBayesCore::ReplicateFunction<typename valType::valueType>( v, n );
     

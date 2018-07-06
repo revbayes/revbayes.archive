@@ -26,12 +26,16 @@ namespace RevBayesCore {
     
         namespace Cauchy {
         
-            double                      pdf(double location, double scale, double x, bool give_log);          /*!< Cauchy(a,b) probability density */
-            double                      pdf(double location, double scale, double x);                         /*!< Cauchy(a,b) probability density */
-            double                      lnPdf(double location, double scale, double x);                       /*!< Cauchy(a,b) log_e probability density */
-            double                      cdf(double a, double b, double x);                                    /*!< Cauchy(a,b) cumulative probability */
-            double                      quantile(double a, double b, double p);                               /*!< Cauchy(a,b) quantile */
-            double                      rv(double a, double b, RandomNumberGenerator& rng);             /*!< Cauchy(a,b) random variable */
+            double                      pdf(double x);                                                    /*!< Cauchy(a,b) probability density */
+            double                      pdf(double location, double scale, double x);                     /*!< Cauchy(a,b) probability density */
+            double                      lnPdf(double x);                                                  /*!< Cauchy(a,b) log_e probability density */
+            double                      lnPdf(double location, double scale, double x);                   /*!< Cauchy(a,b) log_e probability density */
+            double                      cdf(double x);                                                    /*!< Cauchy(a,b) cumulative probability */
+            double                      cdf(double location, double scale, double x);                     /*!< Cauchy(a,b) cumulative probability */
+            double                      quantile(double p);                                               /*!< Cauchy(a,b) quantile */
+            double                      quantile(double location, double scale, double p);                /*!< Cauchy(a,b) quantile */
+            double                      rv(RandomNumberGenerator& rng);                                   /*!< Cauchy(a,b) random variable */
+            double                      rv(double location, double scale, RandomNumberGenerator& rng);    /*!< Cauchy(a,b) random variable */
 	
         }
     }

@@ -42,7 +42,6 @@
 #include "RlMonitor.h"
 #include "Mntr_AncestralState.h"
 #include "Mntr_JointConditionalAncestralState.h"
-#include "Mntr_JointConditionalCharacterMapping.h"
 #include "Mntr_StochasticCharacterMapping.h"
 #include "Mntr_File.h"
 #include "Mntr_ExtendedNewickFile.h"
@@ -50,6 +49,8 @@
 #include "Mntr_Probability.h"
 #include "Mntr_Screen.h"
 #include "Mntr_StochasticVariable.h"
+#include "Mntr_StochasticBranchRate.h"
+#include "Mntr_CharacterHistoryTimeInStates.h"
 #include "Mntr_CharacterHistoryNewickFile.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
 
@@ -65,14 +66,15 @@ void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
 
 		addTypeWithConstructor( new Mntr_AncestralState()                       );
         addTypeWithConstructor( new Mntr_JointConditionalAncestralState()       );
-        addTypeWithConstructor( new Mntr_JointConditionalCharacterMapping()     );
         addTypeWithConstructor( new Mntr_StochasticCharacterMapping()           );
         addTypeWithConstructor( new Mntr_ExtendedNewickFile()                   );
         addTypeWithConstructor( new Mntr_File()                                 );
         addTypeWithConstructor( new Mntr_Model()                                );
         addTypeWithConstructor( new Mntr_Probability()                          );
         addTypeWithConstructor( new Mntr_Screen()                               );
+        addTypeWithConstructor( new Mntr_StochasticBranchRate()                 );
         addTypeWithConstructor( new Mntr_StochasticVariable()                   );
+        addTypeWithConstructor( new Mntr_CharacterHistoryTimeInStates()         );
         addTypeWithConstructor( new Mntr_CharacterHistoryNewickFile()           );
         addTypeWithConstructor( new Mntr_CharacterHistoryNhxFile()              );
 

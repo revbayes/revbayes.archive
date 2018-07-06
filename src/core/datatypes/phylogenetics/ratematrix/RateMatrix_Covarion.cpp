@@ -112,6 +112,20 @@ RateMatrix_Covarion& RateMatrix_Covarion::operator=(const RateMatrix_Covarion &r
 }
 
 
+RateMatrix_Covarion& RateMatrix_Covarion::assign(const Assignable &m)
+{
+    const RateMatrix_Covarion *rm = dynamic_cast<const RateMatrix_Covarion*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
+    
+}
+
 
 /** Do precalculations on eigenvectors */
 void RateMatrix_Covarion::calculateCijk(void)
@@ -369,7 +383,7 @@ void RateMatrix_Covarion::tiProbsEigens(double t, TransitionProbabilityMatrix& P
         for (size_t j=0; j<num_states; j++, ++p)
         {
             double sum = 0.0;
-            for(size_t s=0; s<num_states; s++)
+            for (size_t s=0; s<num_states; s++)
             {
                 sum += (*ptr++) * eigValExp[s];
             }
@@ -406,7 +420,7 @@ void RateMatrix_Covarion::tiProbsComplexEigens(double t, TransitionProbabilityMa
         for (size_t j=0; j<num_states; j++)
         {
             std::complex<double> sum = std::complex<double>(0.0, 0.0);
-            for(size_t s=0; s<num_states; s++)
+            for (size_t s=0; s<num_states; s++)
             {
                 sum += (*ptr++) * ceigValExp[s];
             }

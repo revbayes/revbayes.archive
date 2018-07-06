@@ -54,13 +54,13 @@ PiecewiseConstantHeterochronousCoalescent* PiecewiseConstantHeterochronousCoales
  */
 double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( void ) const
 {
-    
+
     // variable declarations and initialization
     double lnProbTimes = 0;
-    
+
     const RbVector<double> &popSizes  = Nes->getValue();
     const RbVector<double> &intervals = intervalStarts->getValue();
-    
+
     // retrieve the coalescence times
     std::vector<double> ages;
     for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i)
@@ -71,54 +71,48 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
     }
     // sort the vector of coalescence times in ascending order
     std::sort(ages.begin(), ages.end());
-    
+
     // retrieve the times of any serially sampled tips
     std::vector<double> serialTimes;
-    size_t numTaxaAtPresent = 0;
+    size_t num_taxaAtPresent = value->getNumberOfTips();
     for (size_t i = 0; i < value->getNumberOfTips(); ++i)
     {
         const TopologyNode& n = value->getTipNode( i );
         double a = n.getAge();
         if ( a > 0.0 ) {
             serialTimes.push_back(a);
-        } else {
-            ++numTaxaAtPresent;
+            --num_taxaAtPresent;
         }
     }
-    
+
     std::vector<double> combinedEventTimes;
-    std::vector<double> combinedEventTypes;
-    if (numTaxaAtPresent < num_taxa) {
-        
+    std::vector<int> combinedEventTypes;
+    if (num_taxaAtPresent < num_taxa) {
+
         // sort the vector of serial sampling times in ascending order
         std::sort(serialTimes.begin(), serialTimes.end());
-        
+
         size_t atAge = 0;
         size_t atSerialTime = 0;
         size_t atIntervalStart = 0;
         double nextAge = ages[atAge];
         double nextSerialTime = serialTimes[atSerialTime];
         double nextIntervalStart = intervals[atIntervalStart];
-        
+
         // create master list of event times and types
         // events are either a sample (lineage size up), coalescence (lineage size down), or theta changepoint (lineage size constant)
         do
         {
             nextAge = ages[atAge];
-            if (nextIntervalStart <= nextAge && nextIntervalStart <= nextSerialTime) {
-                // theta change
-                combinedEventTimes.push_back(nextIntervalStart);
-                combinedEventTypes.push_back(0.0);
-                ++atIntervalStart;
-                if (atIntervalStart < intervals.size()) {
-                    nextIntervalStart = intervals[atIntervalStart];
-                } else {
-                    nextIntervalStart = RbConstants::Double::inf;
-                }
+            if (nextAge <= nextSerialTime && nextAge <= nextIntervalStart) {
+                // coalescence
+                combinedEventTimes.push_back(nextAge);
+                combinedEventTypes.push_back(-1);
+                ++atAge;
             } else if (nextSerialTime <= nextAge && nextSerialTime <= nextIntervalStart) {
                 // serial sample
                 combinedEventTimes.push_back(nextSerialTime);
-                combinedEventTypes.push_back(1.0);
+                combinedEventTypes.push_back(1);
                 ++atSerialTime;
                 if (atSerialTime < serialTimes.size()) {
                     nextSerialTime = serialTimes[atSerialTime];
@@ -126,19 +120,24 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
                     nextSerialTime = RbConstants::Double::inf;
                 }
             } else {
-                // coalescence
-                combinedEventTimes.push_back(nextAge);
-                combinedEventTypes.push_back(-1.0);
-                ++atAge;
+                // theta change
+                combinedEventTimes.push_back(nextIntervalStart);
+                combinedEventTypes.push_back(0);
+                ++atIntervalStart;
+                if (atIntervalStart < intervals.size()) {
+                    nextIntervalStart = intervals[atIntervalStart];
+                } else {
+                    nextIntervalStart = RbConstants::Double::inf;
+                }
             }
         } while (atAge < ages.size());
-        
+
     } else {
         size_t atAge = 0;
         size_t atIntervalStart = 0;
         double nextAge = ages[atAge];
         double nextIntervalStart = intervals[atIntervalStart];
-        
+
         // create master list of event times and types
         // events are either a sample (lineage size up), coalescence (lineage size down), or theta changepoint (lineage size constant)
         do
@@ -147,7 +146,7 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
             if (nextIntervalStart <= nextAge) {
                 // theta change
                 combinedEventTimes.push_back(nextIntervalStart);
-                combinedEventTypes.push_back(0.0);
+                combinedEventTypes.push_back(0);
                 ++atIntervalStart;
                 if (atIntervalStart < intervals.size()) {
                     nextIntervalStart = intervals[atIntervalStart];
@@ -157,44 +156,196 @@ double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( voi
             } else {
                 // coalescence
                 combinedEventTimes.push_back(nextAge);
-                combinedEventTypes.push_back(-1.0);
+                combinedEventTypes.push_back(-1);
                 ++atAge;
             }
         } while (atAge < ages.size());
     }
-    
+
 
     size_t currentInterval = 0;
-    size_t j = numTaxaAtPresent;
+    size_t j = num_taxaAtPresent;
     double windowStart = 0.0;
-    
+
     for (size_t i = 0; i < combinedEventTimes.size(); ++i)
     {
+        
         double theta = popSizes[currentInterval];
         double nPairs = j * (j-1) / 2.0;
         
         double deltaAge = combinedEventTimes[i] - windowStart;
-        
-        if (combinedEventTypes[i] == 0.0) {
-            // theta change
-            lnProbTimes -= nPairs * deltaAge / theta ;
-            ++currentInterval;
-        } else if (combinedEventTypes[i] == 1.0) {
+
+        if (combinedEventTypes[i] == -1) {
+            // coalescence
+            lnProbTimes += log( 1.0 / theta ) - nPairs * deltaAge / theta;
+            --j;
+        } else if (combinedEventTypes[i] == 1) {
             // sampled ancestor
             lnProbTimes -= nPairs * deltaAge / theta ;
             ++j;
         } else {
-            // coalescence
-            lnProbTimes += log( 1.0 / theta ) - nPairs * deltaAge / theta;
-            --j;
+            // theta change
+            lnProbTimes -= nPairs * deltaAge / theta ;
+            ++currentInterval;
         }
-        
+
         windowStart = combinedEventTimes[i];
     }
-    
+
     return lnProbTimes;
-    
+
 }
+
+
+// Pre attempt at speed optimization
+///**
+// * Compute the log-transformed probability of the current times under the current parameter values.
+// *
+// * \return    The log-probability density.
+// */
+//double PiecewiseConstantHeterochronousCoalescent::computeLnProbabilityTimes( void ) const
+//{
+//    
+//    // variable declarations and initialization
+//    double lnProbTimes = 0;
+//    
+//    const RbVector<double> &popSizes  = Nes->getValue();
+//    const RbVector<double> &intervals = intervalStarts->getValue();
+//    
+//    // retrieve the coalescence times
+//    std::vector<double> ages;
+//    for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i)
+//    {
+//        const TopologyNode& n = value->getInteriorNode( i );
+//        double a = n.getAge();
+//        ages.push_back(a);
+//    }
+//    // sort the vector of coalescence times in ascending order
+//    std::sort(ages.begin(), ages.end());
+//    
+//    // retrieve the times of any serially sampled tips
+//    std::vector<double> serialTimes;
+//    size_t num_taxaAtPresent = 0;
+//    for (size_t i = 0; i < value->getNumberOfTips(); ++i)
+//    {
+//        const TopologyNode& n = value->getTipNode( i );
+//        double a = n.getAge();
+//        if ( a > 0.0 ) {
+//            serialTimes.push_back(a);
+//        } else {
+//            ++num_taxaAtPresent;
+//        }
+//    }
+//    
+//    std::vector<double> combinedEventTimes;
+//    std::vector<double> combinedEventTypes;
+//    if (num_taxaAtPresent < num_taxa) {
+//        
+//        // sort the vector of serial sampling times in ascending order
+//        std::sort(serialTimes.begin(), serialTimes.end());
+//        
+//        size_t atAge = 0;
+//        size_t atSerialTime = 0;
+//        size_t atIntervalStart = 0;
+//        double nextAge = ages[atAge];
+//        double nextSerialTime = serialTimes[atSerialTime];
+//        double nextIntervalStart = intervals[atIntervalStart];
+//        
+//        // create master list of event times and types
+//        // events are either a sample (lineage size up), coalescence (lineage size down), or theta changepoint (lineage size constant)
+//        do
+//        {
+//            nextAge = ages[atAge];
+//            if (nextIntervalStart <= nextAge && nextIntervalStart <= nextSerialTime) {
+//                // theta change
+//                combinedEventTimes.push_back(nextIntervalStart);
+//                combinedEventTypes.push_back(0.0);
+//                ++atIntervalStart;
+//                if (atIntervalStart < intervals.size()) {
+//                    nextIntervalStart = intervals[atIntervalStart];
+//                } else {
+//                    nextIntervalStart = RbConstants::Double::inf;
+//                }
+//            } else if (nextSerialTime <= nextAge && nextSerialTime <= nextIntervalStart) {
+//                // serial sample
+//                combinedEventTimes.push_back(nextSerialTime);
+//                combinedEventTypes.push_back(1.0);
+//                ++atSerialTime;
+//                if (atSerialTime < serialTimes.size()) {
+//                    nextSerialTime = serialTimes[atSerialTime];
+//                } else {
+//                    nextSerialTime = RbConstants::Double::inf;
+//                }
+//            } else {
+//                // coalescence
+//                combinedEventTimes.push_back(nextAge);
+//                combinedEventTypes.push_back(-1.0);
+//                ++atAge;
+//            }
+//        } while (atAge < ages.size());
+//        
+//    } else {
+//        size_t atAge = 0;
+//        size_t atIntervalStart = 0;
+//        double nextAge = ages[atAge];
+//        double nextIntervalStart = intervals[atIntervalStart];
+//        
+//        // create master list of event times and types
+//        // events are either a sample (lineage size up), coalescence (lineage size down), or theta changepoint (lineage size constant)
+//        do
+//        {
+//            nextAge = ages[atAge];
+//            if (nextIntervalStart <= nextAge) {
+//                // theta change
+//                combinedEventTimes.push_back(nextIntervalStart);
+//                combinedEventTypes.push_back(0.0);
+//                ++atIntervalStart;
+//                if (atIntervalStart < intervals.size()) {
+//                    nextIntervalStart = intervals[atIntervalStart];
+//                } else {
+//                    nextIntervalStart = RbConstants::Double::inf;
+//                }
+//            } else {
+//                // coalescence
+//                combinedEventTimes.push_back(nextAge);
+//                combinedEventTypes.push_back(-1.0);
+//                ++atAge;
+//            }
+//        } while (atAge < ages.size());
+//    }
+//    
+//
+//    size_t currentInterval = 0;
+//    size_t j = num_taxaAtPresent;
+//    double windowStart = 0.0;
+//    
+//    for (size_t i = 0; i < combinedEventTimes.size(); ++i)
+//    {
+//        double theta = popSizes[currentInterval];
+//        double nPairs = j * (j-1) / 2.0;
+//        
+//        double deltaAge = combinedEventTimes[i] - windowStart;
+//        
+//        if (combinedEventTypes[i] == 0.0) {
+//            // theta change
+//            lnProbTimes -= nPairs * deltaAge / theta ;
+//            ++currentInterval;
+//        } else if (combinedEventTypes[i] == 1.0) {
+//            // sampled ancestor
+//            lnProbTimes -= nPairs * deltaAge / theta ;
+//            ++j;
+//        } else {
+//            // coalescence
+//            lnProbTimes += log( 1.0 / theta ) - nPairs * deltaAge / theta;
+//            --j;
+//        }
+//        
+//        windowStart = combinedEventTimes[i];
+//    }
+//    
+//    return lnProbTimes;
+//    
+//}
 
 /**
  * Simulate new coalescent times.
@@ -214,21 +365,21 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
     
     // retrieve the times of any serially sampled tips
     std::vector<double> serialTimes;
-    size_t numTaxaAtPresent = 0;
+    size_t num_taxaAtPresent = 0;
     for (size_t i = 0; i < num_taxa; ++i)
     {
         double a = taxa[i].getAge();
         if ( a > 0.0 ) {
             serialTimes.push_back(a);
         } else {
-            ++numTaxaAtPresent;
+            ++num_taxaAtPresent;
         }
     }
     
     // Put sampling times and pop-size changes into a single vector of event times
     std::vector<double> combinedEventTimes;
     std::vector<double> combinedEventTypes;
-    if (numTaxaAtPresent < num_taxa) {
+    if (num_taxaAtPresent < num_taxa) {
         
         // sort the vector of serial sampling times in ascending order
         std::sort(serialTimes.begin(), serialTimes.end());
@@ -239,7 +390,7 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
         
         // create master list of event times and types
         // pre-defined events are either a sample (lineage size up) or theta changepoint (lineage size constant)
-        size_t nEvents = 0;
+        // size_t nEvents = 0;
         size_t nTotalEvents = intervals.size() + serialTimes.size();
         for (size_t nEvents = 0; nEvents < nTotalEvents; ++nEvents)
         {
@@ -279,7 +430,7 @@ std::vector<double> PiecewiseConstantHeterochronousCoalescent::simulateCoalescen
     
     size_t currentInterval = 0;
     size_t thetaInterval = 0;
-    size_t j = numTaxaAtPresent;
+    size_t j = num_taxaAtPresent;
     
     // the current age of the process
     double simAge = 0.0;

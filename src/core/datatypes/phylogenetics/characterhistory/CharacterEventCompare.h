@@ -8,7 +8,8 @@ namespace RevBayesCore {
     class CharacterEventCompare
     {
     public:
-        bool operator()(CharacterEvent* lhs, CharacterEvent* rhs) const { return (*lhs > *rhs); }
+        // make sure that we order the events by the most recent event first
+        bool operator()(CharacterEvent* lhs, CharacterEvent* rhs) const { return (*lhs < *rhs); }
     protected:
         // ...
     private:

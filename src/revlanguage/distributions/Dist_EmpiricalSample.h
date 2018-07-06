@@ -47,6 +47,7 @@ namespace RevLanguage {
 #include "ArgumentRules.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlDistributionMemberFunction.h"
 #include "RlSimplex.h"
 #include "StochasticNode.h"
 #include "TypedDistribution.h"
@@ -137,7 +138,14 @@ RevLanguage::MethodTable RevLanguage::Dist_EmpiricalSample<valType>::getDistribu
     const Distribution& rlDistribution = static_cast<const Distribution &>( baseDistribution->getRevObject() );
     
     
-    return rlDistribution.getDistributionMethods();
+    MethodTable methods = rlDistribution.getDistributionMethods();
+    
+    // member functions
+    ArgumentRules* sample_prob_arg_rules = new ArgumentRules();
+    sample_prob_arg_rules->push_back( new ArgumentRule( "log", RlBoolean::getClassTypeSpec(), "If we should return the log-transformed probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_EmpiricalSample<valType>, ModelVector<Real> >( "getSampleProbabilities", this->variable, sample_prob_arg_rules   ) );
+    
+    return methods;
 }
 
 /** Return member rules (no members) */

@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 
@@ -76,12 +77,12 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     
     int n = 1;
     double b = initialSpeciation->getValue();
-    int k = capacity->getValue();
+    int k = (int)capacity->getValue();
     double lastTime = 0.0;
     double speciationRate, timeInterval;
     for (size_t i = 1; i < value->getNumberOfTips()-1; ++i)
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
+        if ( RbMath::isNan(lnProbTimes) ||
             lnProbTimes == RbConstants::Double::inf || 
             lnProbTimes == RbConstants::Double::neginf ) 
         {
@@ -143,15 +144,15 @@ double DiversityDependentPureBirthProcess::simulateDivergenceTime(double origin,
     // this is not until actually an event happened but a uniform time before the next species would have been sampled.
     
     double rate = fmax( 1.0 - ((n+3)/k), 1E-8 ) * lambda;
-    double t = present;
+    double t = origin;
     
     do {
         t = RbStatistics::Exponential::rv(rate, *rng);
-    } while ( t + origin > present );
+    } while ( present + t > origin );
     
     
     
-    return origin + t;
+    return present + t;
     
 //    double lastEvent = t * rng->uniform01();
 //    

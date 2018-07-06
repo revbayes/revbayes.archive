@@ -1,11 +1,25 @@
 #include "TimeInterval.h"
 
+#include "RbConstants.h"
+#include "RbException.h"
+#include "RbMathLogic.h"
+
 using namespace RevBayesCore;
 
-TimeInterval::TimeInterval() : start(0), end(0)
+
+TimeInterval::TimeInterval() : min(RbConstants::Double::nan), max(RbConstants::Double::nan)
 {
-    
 }
+
+
+TimeInterval::TimeInterval(double mn, double mx) : min(mn), max(mx)
+{
+    if( max < min )
+    {
+        throw(RbException("Time interval max < min"));
+    }
+}
+
 
 /**
  * Equals operator.
@@ -14,12 +28,7 @@ TimeInterval::TimeInterval() : start(0), end(0)
 bool TimeInterval::operator==(const RevBayesCore::TimeInterval &t) const
 {
     
-    if ( start != t.start || end != t.end )
-    {
-        return false;
-    }
-        
-    return true;
+    return min == t.min && max == t.max;
 }
 
 
@@ -36,38 +45,55 @@ bool TimeInterval::operator!=(const RevBayesCore::TimeInterval &t) const
 /**
  * Get the beginning time of the interval
  */
-double TimeInterval::getStart(void) const
+double TimeInterval::getMin(void) const
 {
 
-    return start;
+    if( RbMath::isNan(min) )
+    {
+        return 0.0;
+    }
+
+    return min;
 }
 
 
 /**
  * Set the beginning time of the interval
  */
-void TimeInterval::setStart(double s)
+void TimeInterval::setMin(double s)
 {
+    if( max < s )
+    {
+        throw(RbException("Time interval max < min"));
+    }
 
-    start = s;
+    min = s;
 }
 
 
 /**
  * Get the beginning time of the interval
  */
-double TimeInterval::getEnd(void) const
+double TimeInterval::getMax(void) const
 {
+    if( RbMath::isNan(max) )
+    {
+        return getMin();
+    }
 
-    return end;
+    return max;
 }
 
 
 /**
  * Set the beginning time of the interval
  */
-void TimeInterval::setEnd(double s)
+void TimeInterval::setMax(double s)
 {
-    
-    end = s;
+    if( s < min )
+    {
+        throw(RbException("Time interval max < min"));
+    }
+
+    max = s;
 }

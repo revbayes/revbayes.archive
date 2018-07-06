@@ -18,7 +18,11 @@ namespace RevBayesCore {
     
         AbstractDiscreteTaxonData*              translateCharacters(const AbstractDiscreteTaxonData &d, const std::string& type);             
     
-        DiscreteTaxonData<DnaState>*            translateToDna(const AbstractDiscreteTaxonData &d);                                           
+        DiscreteTaxonData<CodonState>*          translateToCodon(const AbstractDiscreteTaxonData &d);
+        DiscreteTaxonData<CodonState>*          translateToCodonFromDna(const DiscreteTaxonData<DnaState> &d);
+        DiscreteTaxonData<CodonState>*          translateToCodonFromRna(const DiscreteTaxonData<RnaState> &d);
+
+        DiscreteTaxonData<DnaState>*            translateToDna(const AbstractDiscreteTaxonData &d);
 //        DiscreteTaxonData<DnaState>*            translateToDna(const DiscreteTaxonData<AminoAcidState> &d);                                   
 //        DiscreteTaxonData<DnaState>*            translateToDna(const DiscreteTaxonData<CodonState> &d);                                       
 //        DiscreteTaxonData<DnaState>*            translateToDna(const DiscreteTaxonData<DnaState> &d);                                         

@@ -1,5 +1,6 @@
 #include "CholeskyDecomposition.h"
 #include "MatrixReal.h"
+#include "RbMathMatrix.h"
 #include "RbConstants.h"
 
 #include <assert.h>
@@ -39,7 +40,9 @@ void CholeskyDecomposition::computeInverse( void )
 {
     
     // first, invert the lower cholesky factor
-    MatrixReal inverseLowerFactor = L.computeInverse();
+    MatrixReal inverseLowerFactor = MatrixReal(n, n, 0.0);
+    RbMath::matrixInverse(L, inverseLowerFactor);
+    //    MatrixReal inverseLowerFactor = L.computeInverse();
     
     // now, transpose the inverse lower factor
     MatrixReal inverseLowerFactorTranspose(n, n, 0.0);
@@ -62,7 +65,7 @@ double CholeskyDecomposition::computeLogDet(void)
     
     double logdet = 0.0;
     
-    for(int r = 0; r < n; ++r) {
+    for (int r = 0; r < n; ++r) {
         logdet += std::log(L[r][r]);
     }
     
@@ -100,7 +103,7 @@ void CholeskyDecomposition::decomposeMatrix( void )
                     sum += L[c][j] * L[c][j];
                 }
                 L[c][c] = std::sqrt((*qPtr)[c][c] - sum);
-                if( ((*qPtr)[c][c] - sum) < 0.0) {
+                if ( ((*qPtr)[c][c] - sum) < 0.0) {
                     is_positive_semidefinite = false;
                 }
             }

@@ -17,6 +17,9 @@
 #include "TreeUtilities.h"
 #include "RlUserInterface.h"
 
+#include <algorithm>
+#include <string>
+
 using namespace RevBayesCore;
 
 
@@ -101,8 +104,8 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
     
 	std::vector<AbstractCharacterData* > cmv;
     
-	size_t numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-	for (unsigned tBlck=0; tBlck<numTaxaBlocks; ++tBlck)
+	size_t num_taxaBlocks = nexusReader.GetNumTaxaBlocks();
+	for (unsigned tBlck=0; tBlck<num_taxaBlocks; ++tBlck)
     {
 		NxsTaxaBlock* taxaBlock = nexusReader.GetTaxaBlock(tBlck);
 		std::string taxaBlockTitle          = taxaBlock->GetTitle();
@@ -331,7 +334,7 @@ HomologousDiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatri
             {
                 size_t nStates = charblock->GetNumStates(origTaxIndex, *cit);
                 aaState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
-                for(unsigned s=1; s<nStates; s++)
+                for (unsigned s=1; s<nStates; s++)
                 {
                     aaState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
                 }
@@ -850,7 +853,7 @@ HomologousDiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(
             }
             else
             {
-                for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+                for (unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                 {
                     stdState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
                     for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
@@ -941,7 +944,8 @@ std::string NclReader::intuitDataType(std::string& s)
     // loop over the string (s) that contains the raw data we look at the state and try to determine if the
     // state rules out certain data types
     StringUtilities::toLower( s );
-
+    s.erase( std::remove_if( s.begin(), s.end(), ::isspace ), s.end() );
+    
     for (size_t i=0; i<s.size(); i++)
     {
         char c = s[i];
@@ -1055,6 +1059,10 @@ std::string NclReader::intuitDataType(std::string& s)
         else
             return "protein";
     }
+    else if ( notDna == false )
+    {
+        return "dna";
+    }
     //    std::cout << "HEHEHEE: "<< (double)nucCount / (s.size()-nMissing)  << " "<<nucCount << " " << s.size() << " " << nMissing <<std::endl;
     //std::cout << notDna << " " << notRna <<" "<< notAa << " " << notStd << std::endl;
     return "";
@@ -1078,7 +1086,8 @@ bool NclReader::isFastaFile(std::string& fn, std::string& dType)
     while (ch != EOF)
     {
 
-        std::getline(fStrm, word);
+        RevBayesCore::RbFileManager reader = RevBayesCore::RbFileManager();
+        reader.safeGetline(fStrm, word);
         
         // we know that the last character is an escape character
         if ( word.size() > 0 )
@@ -1926,8 +1935,8 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
     
     tau->makeInternalNodesBifurcating(true);
 
-    // trees with 2-degree root nodes should not be rerooted
-    tau->setRooted( root->getNumberOfChildren() == 2 || rooted);
+    // only trees with 2-degree root nodes are rooted trees.
+    tau->setRooted( root->getNumberOfChildren() == 2 );
 
     return tau;
     

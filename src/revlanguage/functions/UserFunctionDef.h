@@ -42,7 +42,7 @@ namespace RevLanguage {
         std::list<SyntaxElement*>*                  code;                                                   //!< The code
         std::string                                 name;                                                   //!< The function name
         int                                         referenceCount;                                         //!< Reference count
-        const TypeSpec                              returnType;                                             //!< The return type (complete specification)
+        const TypeSpec                              return_type;                                             //!< The return type (complete specification)
     };
     
 }

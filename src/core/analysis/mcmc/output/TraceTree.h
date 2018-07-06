@@ -1,101 +1,115 @@
 #ifndef TraceTree_H
 #define TraceTree_H
 
-#include "Tree.h"
+#include "Clade.h"
 #include "Trace.h"
-
-#include <string>
-#include <vector>
-
-#define FAILED 0
-#define PASSED 1
-#define NOT_CHECKED 2
+#include "Tree.h"
 
 namespace RevBayesCore {
 
-    class TraceTree : public Trace {
-    
+    class TraceTree : public Trace<Tree> {
+
+        /*
+         * This struct represents a value/count pair that is sorted by count
+         */
+        template <class T>
+        struct Sample : public std::pair<T, long>
+        {
+            Sample(T t, long l) : std::pair<T, long>(t,l) {}
+
+            inline bool operator<(const Sample<T>& rhs) const
+            {
+                if (this->second == rhs.second)
+                    return this->first < rhs.first;
+                else
+                    return this->second < rhs.second;
+            }
+        };
+
+        /*
+         * This struct represents a tree bipartition (split) that can be rooted or unrooted
+         */
+        struct Split : public std::pair<RbBitSet, std::set<Taxon> >
+        {
+            Split( RbBitSet b, std::set<Taxon> m, bool r) : std::pair<RbBitSet, std::set<Taxon> >( !r && b[0] ? ~b : b, m) {}
+
+            inline bool operator()(const Sample<Split>& s)
+            {
+                return (*this) == s.first;
+            }
+        };
+
     public:
-    
-        TraceTree( bool c );
-        virtual                    ~TraceTree();
-    
-        // overloaded functions from RbObject
-        TraceTree*                  clone(void) const;                                                          //!< Clone object
-        void                        printValue(std::ostream& o) const;                                          //!< Print value for user
-		
-        void                        addObject(Tree *d);
-        void                        addValueFromString(const std::string &s);
-        bool                        isCoveredInInterval(const std::string &v, double i, bool verbose) const;
-        const Tree&                 objectAt(size_t index) const                   { return values.at(index); }
-        void                        removeLastObject();
-        void                        removeObjectAtIndex(int index);
-        size_t                      size() const { return values.size(); }
-    
-        // getters and setters
-        int                         getBurnin() const                               { return burnin; }
-        double                      getEss() const                                  { return ess; }
-        std::string                 getFileName() const                             { return fileName; }
-        std::string                 getParameterName() const                        { return parmName; }
-        int                         getSamples() const                              { return (int)values.size(); }
-        int                         getStepSize() const                             { return stepSize; }
-        std::vector<Tree>           getValues() const                               { return values; }
-        int                         hasConverged() const                            { return converged; }
-        int                         hasPassedEssThreshold() const                   { return passedEssThreshold; }
-        int                         hasPassedGelmanRubinTest() const                { return passedGelmanRubinTest; }
-        int                         hasPassedGewekeTest() const                     { return passedGewekeTest; }
-        int                         hasPassedIidBetweenChainsStatistic() const      { return passedIidBetweenChainsStatistic; }
-        int                         hasPassedSemThreshold() const                   { return passedSemThreshold; }
-        int                         hasPassedStationarityTest() const               { return passedStationarityTest; }
-        bool                        isClock(void) const                             { return clock; }
         
-        void                        setBurnin(int b)                                { burnin = b; }
-        void                        setEss(double e)                                { ess = e; }
-        void                        setFileName(std::string fn)                     { fileName = fn; }
-        void                        setParameterName(std::string pm)                { parmName = pm; }
-        void                        setStepSize( int s)                             { stepSize = s; }
-        void                        setValues(const std::vector<Tree> &v)           { values = v; }
-        void                        setConverged(bool c)                            { converged = c; }
-        void                        setPassedEssThreshold(int p)                    { passedEssThreshold = p; }
-        void                        setPassedGelmanRubinTest(int p)                 { passedGelmanRubinTest = p; }
-        void                        setPassedGewekeTest(int p)                      { passedGewekeTest = p; }
-        void                        setPassedIidBetweenChainsStatistic(int p)       { passedIidBetweenChainsStatistic = p; }
-        void                        setPassedSemThreshold(int p)                    { passedSemThreshold = p; }
-        void                        setPassedStationarityTest(int p)                { passedStationarityTest = p; }
-    
-    protected:
-    
-        void                        invalidate();
-    
-    
+        /*
+         * This struct determines which annotations are reported in the summary tree
+         */
+        struct AnnotationReport
+        {
+            bool clade_probs;
+            bool conditional_clade_ages;
+            bool conditional_clade_probs;
+            bool conditional_tree_ages;
+            bool MAP_parameters;
+            bool node_ages;
+            bool mean_node_ages;
+            double node_ages_HPD;
+            bool sampled_ancestor_probs;
+            bool force_positive_branch_lengths;
+            
+            AnnotationReport();
+        };
+
+
+        /*
+         * Declaration of the TreeTrace class
+         */
+        TraceTree( bool c = true );
+        virtual ~TraceTree(){}
+        
+        TraceTree*                                 clone(void) const;
+        void                                       annotateTree(Tree &inputTree, AnnotationReport report, bool verbose );
+        double                                     cladeProbability(const Clade &c, bool verbose);
+        double                                     computeEntropy( double credible_interval_size, int num_taxa, bool verbose );
+        std::vector<double>                        computePairwiseRFDistance( double credible_interval_size, bool verbose );
+        std::vector<double>                        computeTreeLengths(void);
+        int                                        getBurnin(void) const;
+        std::vector<Clade>                         getUniqueClades(double ci=0.95, bool non_trivial_only=true, bool verbose=true);
+        std::vector<Tree>                          getUniqueTrees(double ci=0.95, bool verbose=true);
+        int                                        getTopologyFrequency(const Tree &t, bool verbose);
+        bool                                       isClock(void);
+        bool                                       isCoveredInInterval(const std::string &v, double size, bool verbose);
+        bool                                       isCoveredInInterval(const Tree &t, double size, bool verbose);
+        Tree*                                      mapTree(AnnotationReport report, bool verbose);
+        Tree*                                      mccTree(AnnotationReport report, bool verbose);
+        Tree*                                      mrTree(AnnotationReport report, double cutoff, bool verbose);
+        void                                       printTreeSummary(std::ostream& o, double ci=0.95, bool verbose=true);
+        void                                       printCladeSummary(std::ostream& o, double minP=0.05, bool verbose=true);
+
     private:
-    
-        std::vector<Tree>           values;                                     //!< the values of this TraceTree
-    
-        bool                        clock;
-        
-        std::string                 parmName;
-        std::string                 fileName;
-        std::string                 outgroup;                                   //!< The outgroup species for artificially rooting unrooted trees
-        
-        int                         burnin;
-        double                      ess;                                        //!< the effective sample saize for this TraceTree
-        int                         stepSize;                                   //!< the step size between samples
-    
-        int                         converged;                                  //!< Whether this parameter in itself has converged.
-        int                         passedStationarityTest;                     //!< Whether this parameter passed the stationarity test.
-        int                         passedGewekeTest;                           //!< Whether this parameter passed the Geweke statistic.
-        //    int                     passedHeidelbergerWelcheStatistic;          //!< Whether this parameter passed the Heidelberger-Welch statistic.
-        int                         passedEssThreshold;                         //!< Whether this parameter passed the threshold for the ESS.
-        int                         passedSemThreshold;                         //!< Whether this parameter passed the threshold for the SEM.
-        int                         passedIidBetweenChainsStatistic;            //!< Whether this parameter passed the iid test of chains.
-        int                         passedGelmanRubinTest;                      //!< Whether this parameter passed the Gelman-Rubin statistic.
-    
+
+        Split                                      collectTreeSample(const TopologyNode&, RbBitSet&, std::string, std::map<Split, long>&);
+        void                                       enforceNonnegativeBranchLengths(TopologyNode& tree) const;
+        long                                       splitFrequency(const Split &n) const;
+        TopologyNode*                              findParentNode(TopologyNode&, const Split &, std::vector<TopologyNode*>&, RbBitSet& ) const;
+        void                                       mapContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd, bool np, bool verbose ) const;
+        void                                       mapDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num, bool np, bool verbose ) const;
+        void                                       mapParameters(Tree &inputTree, bool verbose) const;
+        void                                       summarize(bool verbose);
+
+        bool                                       clock;
+        bool                                       rooted;
+
+        std::set<Sample<Split> >                   clade_samples;
+        std::map<Taxon, long >                     sampled_ancestor_counts;
+        std::set<Sample<std::string> >             tree_samples;
+
+        std::map<Split, std::vector<double> >                           clade_ages;
+        std::map<Split, std::map<Split, std::vector<double> > >         conditional_clade_ages;
+        std::map<std::string, std::map<Split, std::vector<double> > >   tree_clade_ages;
     };
 
-    
 }
-
 
 
 #endif

@@ -28,6 +28,10 @@ namespace RevBayesCore {
         TopologyConstrainedTreeDistribution(const TopologyConstrainedTreeDistribution &d);
         
         virtual ~TopologyConstrainedTreeDistribution(void);
+        
+        TopologyConstrainedTreeDistribution&                operator=(const TopologyConstrainedTreeDistribution &d);
+
+        
         // pure virtual member functions
         virtual TopologyConstrainedTreeDistribution*        clone(void) const;                                                                                  //!< Create an independent clone
         
@@ -44,6 +48,7 @@ namespace RevBayesCore {
     protected:
         
         void                                                initializeBitSets();
+        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                  //!< get affected nodes
         virtual void                                        keepSpecialization(DagNode* affecter);
         virtual void                                        restoreSpecialization(DagNode *restorer);
         virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);

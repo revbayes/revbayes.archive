@@ -1,14 +1,6 @@
-//
-//  DistanceRateModifier.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 8/8/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
 #include <iomanip>
 #include <cmath>
-#include "CharacterEvent.h"
+#include "CharacterEventDiscrete.h"
 #include "GeographicArea.h"
 #include "DistanceRateModifier.h"
 #include "RbConstants.h"
@@ -150,7 +142,7 @@ DistanceRateModifier& DistanceRateModifier::assign(const Assignable &m)
     }
 }
 
-double DistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double DistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *> currState, CharacterEventDiscrete* newState, double age)
 {
     unsigned epochIdx = getEpochIndex(age);
 
@@ -180,7 +172,7 @@ double DistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *>
             std::set<size_t>::iterator it;
             for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
             {
-                if (currState[*it]->getState() == 1)
+                if ( static_cast<CharacterEventDiscrete*>(currState[*it])->getState() == 1)
                 {
                     present.insert(currState[*it]);
                 }
@@ -268,7 +260,7 @@ double DistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *>
         {
             for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
             {
-                if (currState[*it]->getState() == 0)
+                if ( static_cast<CharacterEventDiscrete*>(currState[*it])->getState() == 0)
                 {
                     absent.insert(currState[*it]);
                 }
@@ -282,14 +274,14 @@ double DistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *>
         {
             for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
             {
-                if (currState[*it]->getState() == 1)
+                if ( static_cast<CharacterEventDiscrete*>(currState[*it])->getState() == 1)
                 {
                     std::set<size_t>::const_iterator it_adj;
                     const std::set<size_t> adj = adjacentAreaSet[epochIdx*numAreas + *it];
                     int n = 0;
                     for (it_adj = adj.begin(); it_adj != adj.end(); it_adj++)
                     {
-                        if (currState[*it_adj]->getState() == 0)
+                        if ( static_cast<CharacterEventDiscrete*>(currState[*it_adj])->getState() == 0)
                         {
                             absent.insert(currState[*it_adj]);
                             n++;
@@ -361,7 +353,7 @@ double DistanceRateModifier::computeRateMultiplier(std::vector<CharacterEvent *>
 //    return computeRateMultiplier(currState, newState, 0.0);
 //}
 
-double DistanceRateModifier::computeSiteRateMultiplier( CharacterEvent* currState, CharacterEvent* newState, double age)
+double DistanceRateModifier::computeSiteRateMultiplier( CharacterEvent* currState, CharacterEventDiscrete* newState, double age)
 {
     size_t s = newState->getState();
     size_t charIdx = newState->getSiteIndex();
@@ -598,7 +590,7 @@ unsigned DistanceRateModifier::getNumAvailableAreas( std::vector<CharacterEvent*
     std::set<size_t>::iterator it;
     for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
     {
-        if (currState[*it]->getState() == 0)
+        if ( static_cast<CharacterEventDiscrete*>(currState[*it])->getState() == 0)
         {
             absent.insert(currState[*it]);
         }
@@ -647,7 +639,7 @@ unsigned DistanceRateModifier::getNumEmigratableAreas( std::vector<CharacterEven
     std::set<size_t>::iterator it;
     for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
     {
-        if (currState[*it]->getState() == 0)
+        if ( static_cast<CharacterEventDiscrete*>(currState[*it])->getState() == 0)
         {
             absent.insert(currState[*it]);
         }

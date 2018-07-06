@@ -2,6 +2,7 @@
 #include "ArgumentRules.h"
 #include "ModelVector.h"
 #include "Model.h"
+#include "MonteCarloAnalysisOptions.h"
 #include "Natural.h"
 #include "Mcmc.h"
 #include "OptionRule.h"
@@ -59,12 +60,28 @@ void Mcmc::constructInternalObject( void )
         mvs.push_back( ws_vec_mvs[i].getValue() );
     }
     const std::string &                                     sched   = static_cast<const RlString &>( moveschedule->getRevObject() ).getValue();
-    int                                                     nreps   = static_cast<const Natural &>( num_runs->getRevObject() ).getValue();
+    int                                                     nreps   = (int)static_cast<const Natural &>( num_runs->getRevObject() ).getValue();
+    int                                                     ntries  = (int)static_cast<const Natural &>( num_init_attempts->getRevObject() ).getValue();
+    const std::string &                                     comb    = static_cast<const RlString &>( combine_traces->getRevObject() ).getValue();
+
+    RevBayesCore::MonteCarloAnalysisOptions::TraceCombinationTypes ct = RevBayesCore::MonteCarloAnalysisOptions::SEQUENTIAL;
+    if ( comb == "sequential" )
+    {
+        ct = RevBayesCore::MonteCarloAnalysisOptions::SEQUENTIAL;
+    }
+    else if ( comb == "mixed" )
+    {
+        ct = RevBayesCore::MonteCarloAnalysisOptions::MIXED;
+    }
+    else if ( comb == "none" )
+    {
+        ct = RevBayesCore::MonteCarloAnalysisOptions::NONE;
+    }
     
-    RevBayesCore::Mcmc *m = new RevBayesCore::Mcmc(mdl, mvs, mntr);
+    RevBayesCore::Mcmc *m = new RevBayesCore::Mcmc(mdl, mvs, mntr, ntries);
     m->setScheduleType( sched );
     
-    value = new RevBayesCore::MonteCarloAnalysis(m,nreps);
+    value = new RevBayesCore::MonteCarloAnalysis(m,nreps,ct);
     
 }
 

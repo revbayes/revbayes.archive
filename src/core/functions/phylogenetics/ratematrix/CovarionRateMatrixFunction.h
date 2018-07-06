@@ -34,7 +34,7 @@ namespace RevBayesCore {
     class CovarionRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        CovarionRateMatrixFunction(const TypedDagNode<RbVector<RateGenerator> > *rm, const TypedDagNode<RateGenerator> *sr, const TypedDagNode< RbVector<double> > *cr);
+        CovarionRateMatrixFunction(const TypedDagNode<RbVector<RateGenerator> > *rm, const TypedDagNode<RateGenerator> *sr, const TypedDagNode< RbVector<double> > *cr, bool rescaled);
         virtual                                            ~CovarionRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions

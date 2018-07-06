@@ -36,7 +36,7 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
         
-        int                                                 getDF() const {return df->getValue();}
+        long                                                getDF() const {return df->getValue();}
         
         
     protected:
@@ -49,8 +49,8 @@ namespace RevBayesCore {
         
         const TypedDagNode<MatrixReal>*                     omega0;
         const TypedDagNode<double>*                         kappa;
-        const TypedDagNode<long>*                            df;
-        const TypedDagNode<long>*                            dim;
+        const TypedDagNode<long>*                           df;
+        const TypedDagNode<long>*                           dim;
         
     };
     

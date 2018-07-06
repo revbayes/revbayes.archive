@@ -63,7 +63,7 @@ const std::string& CorrelationMatrixProposal::getProposalName( void ) const {
 /**
  * Perform the proposal.
  *
- * A sliding proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * A sliding proposal draws a random uniform number u ~ unif (-0.5,0.5)
  * and MatrixRealSingleElementSlidings the current vale by
  * delta = lambda * u
  * where lambda is the tuning parameter of the proposal to influence the size of the proposals.
@@ -138,9 +138,9 @@ double CorrelationMatrixProposal::doProposal( void ) {
     std::cout << v << std::endl;
     exit(1);
 
-    
-    variable->addTouchedElementIndex(idxA);
-    variable->addTouchedElementIndex(idxB);
+    // this code is commented out because it the exit(1) command ensures it is never called
+    // variable->addTouchedElementIndex(idxA);
+    // variable->addTouchedElementIndex(idxB);
     
     // this is a symmetric proposal so the hasting ratio is 0.0
     return 0.0;

@@ -36,10 +36,13 @@ namespace RevBayesCore {
         
         AbstractHomologousDiscreteCharacterData&                getCharacterData(void);
         const AbstractHomologousDiscreteCharacterData&          getCharacterData(void) const;
+        std::vector<double>                                     getTimeInStates(void);
         bool                                                    hasCharacterData(void) const;
         void                                                    setCharacterData(AbstractHomologousDiscreteCharacterData *d);
-        
+        void                                                    setTimeInStates(std::vector<double> t); 
         void                                                    setTree(const Tree &t);
+
+
     protected:
         // Utility functions
         
@@ -51,6 +54,7 @@ namespace RevBayesCore {
         
         // Member variables
         AbstractHomologousDiscreteCharacterData                 *character_data;
+        std::vector<double>                                     time_in_states;
 
     };
     

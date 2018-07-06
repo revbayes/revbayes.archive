@@ -63,6 +63,7 @@ AbstractHomologousDiscreteCharacterData::~AbstractHomologousDiscreteCharacterDat
 
 void AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d, std::string type) const
 {
+    
     const AbstractHomologousDiscreteCharacterData* tmp = dynamic_cast<const AbstractHomologousDiscreteCharacterData*>( &d );
     if ( tmp != NULL )
     {
@@ -79,11 +80,11 @@ void AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d, st
 void AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type) const
 {
     
-        // we need to make this a constant DAG node so that we can actually modify the value
-        // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
-        //    clone_obj->makeConstantValue();
-    
-        // now concatenate
+    // we need to make this a constant DAG node so that we can actually modify the value
+    // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
+    //    clone_obj->makeConstantValue();
+        
+    // now concatenate
     getDagNode()->getValue().concatenate( d.getValue(), type );
     
 }
@@ -99,6 +100,16 @@ AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData
 /* Map calls to member methods */
 RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
+    if ( name == "methods" )
+    {
+        found = true;
+        
+        // just print the method names (including inherited methods)
+        const MethodTable &m = getMethods();
+        m.printValue(std::cout, true);
+        
+        return NULL;
+    }
     
     RevPtr<RevVariable> retVal = dynamic_cast<RevMemberObject *>( dag_node )->executeMethod(name, args, found);
     
@@ -156,7 +167,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         found = true;
         
         const RevObject& argument = args[0].getVariable()->getRevObject();
-        int n = static_cast<const Natural&>( argument ).getValue();
+        long n = static_cast<const Natural&>( argument ).getValue();
         
         RevBayesCore::AbstractHomologousDiscreteCharacterData *trans_data = this->dag_node->getValue().expandCharacters( n );
         
@@ -408,14 +419,14 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
                 const RevBayesCore::AbstractDiscreteTaxonData& td = v.getTaxonData(j);
                 if ( td.getCharacter(i).isMissingState() == false && td.getCharacter(i).isGapState() == false)
                 {
-                    if(td.getCharacter(i).getNumberObservedStates() > 1)
+                    if (td.getCharacter(i).getNumberObservedStates() > 1)
                     {
                         const RevBayesCore::RbBitSet& state = td.getCharacter(i).getState();
-                        for(size_t k = 0; k < state.size(); k++)
+                        for (size_t k = 0; k < state.size(); k++)
                         {
-                            if(state.isSet(k) && k +1 > max)
+                            if (state.isSet(k) && k +1 > max)
                             {
-                                max = k+1;
+                                max = (int)(k+1);
                             }
                         }
                     }
@@ -548,7 +559,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     ArgumentRules* meanGcContentArgRules                = new ArgumentRules();
     ArgumentRules* meanGcContentByCodonPositionArgRules = new ArgumentRules();
     ArgumentRules* numInvariableBlocksArgRules          = new ArgumentRules();
-    ArgumentRules* numTaxaMissingSequenceArgRules       = new ArgumentRules();
+    ArgumentRules* num_taxaMissingSequenceArgRules       = new ArgumentRules();
     ArgumentRules* varGcContentArgRules                 = new ArgumentRules();
     ArgumentRules* varGcContentByCodonPositionArgRules  = new ArgumentRules();
     
@@ -575,7 +586,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     meanGcContentByCodonPositionArgRules->push_back(    new ArgumentRule( "index" , Natural::getClassTypeSpec()          , "The index of the codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
     meanGcContentByCodonPositionArgRules->push_back(    new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
     numInvariableBlocksArgRules->push_back(             new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
-    numTaxaMissingSequenceArgRules->push_back(          new ArgumentRule( "x" ,     Probability::getClassTypeSpec()          , "The percentage/threshold for the missing sequence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+    num_taxaMissingSequenceArgRules->push_back(          new ArgumentRule( "x" ,     Probability::getClassTypeSpec()          , "The percentage/threshold for the missing sequence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
     translateCharactersArgRules->push_back(             new ArgumentRule( "type" ,     RlString::getClassTypeSpec()          , "The character type into which we want to translate.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
     varGcContentArgRules->push_back(                    new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
     varGcContentByCodonPositionArgRules->push_back(     new ArgumentRule( "index" , Natural::getClassTypeSpec()          , "The index of the codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
@@ -602,7 +613,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     methods.addFunction( new MemberProcedure( "meanGcContent",                          Probability::getClassTypeSpec(),    meanGcContentArgRules                ) );
     methods.addFunction( new MemberProcedure( "meanGcContentByCodonPosition",           Probability::getClassTypeSpec(),    meanGcContentByCodonPositionArgRules                ) );
     methods.addFunction( new MemberProcedure( "numInvariableBlocks",                    Natural::getClassTypeSpec(),        numInvariableBlocksArgRules         ) );
-    methods.addFunction( new MemberProcedure( "numTaxaMissingSequence",                 Natural::getClassTypeSpec(),        numTaxaMissingSequenceArgRules         ) );
+    methods.addFunction( new MemberProcedure( "numTaxaMissingSequence",                 Natural::getClassTypeSpec(),        num_taxaMissingSequenceArgRules         ) );
     methods.addFunction( new MemberProcedure( "getStateDescriptions",                   ModelVector<RlString>::getClassTypeSpec(), getStateDescriptionsArgRules ) );
     methods.addFunction( new MemberProcedure( "translateCharacters",                    AbstractHomologousDiscreteCharacterData::getClassTypeSpec(),        translateCharactersArgRules         ) );
     methods.addFunction( new MemberProcedure( "varGcContent",                           Probability::getClassTypeSpec(),    varGcContentArgRules                ) );

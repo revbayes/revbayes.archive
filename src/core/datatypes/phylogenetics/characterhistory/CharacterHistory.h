@@ -17,39 +17,40 @@ namespace RevBayesCore {
     class CharacterHistory : public Cloneable {
         
     public:
-        //CharacterHistory(void);
-        CharacterHistory(Tree *t, size_t nc, size_t ns, bool rb = false);
+        
         virtual ~CharacterHistory(void);
         
-        const BranchHistory&                    operator[](size_t i) const;
-//        BranchHistory&                          operator[](size_t i);
-        
-        CharacterHistory*                       clone(void) const;
-        
+        virtual const BranchHistory&             operator[](size_t i) const;
+
+        // pure virtual methods
+        virtual CharacterHistory*               clone(void) const = 0;
+        virtual void                            setTree(Tree *t) = 0;
+
         void                                    addEvent(CharacterEvent *e, size_t bi);
         size_t                                  getNumberBranches(void) const;
         size_t                                  getNumberEvents(void) const;
-        size_t                                  getNumberStates(void) const;
         bool                                    hasRootBranch(void) const;
-        CharacterEvent*                         pickRandomEvent(size_t &bi);
+        virtual CharacterEvent*                 pickRandomEvent(size_t &bi);
         void                                    removeEvent(CharacterEvent *e, size_t bi);
-        void                                    setTree(Tree *t);
         
         
-    private:
-                
+    protected:
+        CharacterHistory(Tree *t, size_t nc, bool rb = false);
+        CharacterHistory(const CharacterHistory &ch);
+        CharacterHistory&                       operator=(const CharacterHistory &ch);
+
         Tree*                                   tree;
-        std::vector<BranchHistory>              histories;
+        std::vector<BranchHistory*>             histories;
         size_t                                  n_branches;
         size_t                                  n_character;
         size_t                                  n_events;
-        size_t                                  n_states;
-        bool                                    useRootBranch;
+        bool                                    use_root_branch;
         
         
     };
     
-    std::ostream& operator<<(std::ostream& o, const CharacterHistory& x);
 }
 
 #endif
+
+

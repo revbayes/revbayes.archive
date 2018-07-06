@@ -46,7 +46,7 @@ void MatrixReader::readData( size_t lines_to_skip )
     // bool firstLine = true;
     std::string read_line = "";
     size_t lines_skipped = 0;
-    while (std::getline(readStream,read_line))
+    while (f.safeGetline(readStream,read_line))
     {
         ++lines_skipped;
         if ( lines_skipped <= lines_to_skip)
@@ -55,7 +55,7 @@ void MatrixReader::readData( size_t lines_to_skip )
         }
         
         // skip blank lines
-        std::string::iterator first_nonspace = std::find_if(read_line.begin(), read_line.end(), std::not1(std::ptr_fun<int,int>(isspace)));
+        std::string::iterator first_nonspace = std::find_if (read_line.begin(), read_line.end(), std::not1(std::ptr_fun<int,int>(isspace)));
         if (first_nonspace == read_line.end())
         {
             continue;
@@ -67,15 +67,15 @@ void MatrixReader::readData( size_t lines_to_skip )
         int pos = 0;
         while ( std::getline(ss,field,delimiter) )
         {
-            field.erase(std::find_if(field.rbegin(), field.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), field.end());
-            field.erase(field.begin(), std::find_if(field.begin(), field.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+            field.erase(std::find_if (field.rbegin(), field.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), field.end());
+            field.erase(field.begin(), std::find_if (field.begin(), field.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
             tmpChars.push_back(field);
             pos++;
         }
         
         double nchar = tmpChars.size();
         std::vector<double> tmpValues(nchar);
-        for(size_t i = 0; i < nchar; ++i) {
+        for (size_t i = 0; i < nchar; ++i) {
             tmpValues[i] = atof( tmpChars[i].c_str() );
         }
         tmpMatrix.push_back(tmpValues);
@@ -88,9 +88,9 @@ void MatrixReader::readData( size_t lines_to_skip )
     // make sure that all the rows are of the same size
     size_t nrow = tmpMatrix.size();
     size_t ncol = tmpMatrix[0].size();
-    for(size_t i = 1; i < nrow; ++i)
+    for (size_t i = 1; i < nrow; ++i)
     {
-        if( tmpMatrix[i].size() != ncol )
+        if ( tmpMatrix[i].size() != ncol )
         {
             RbException("Error reading matrix file: not all rows contain the same number of columns.");
         }
@@ -100,9 +100,9 @@ void MatrixReader::readData( size_t lines_to_skip )
     
     // make the matrix
     matrix = MatrixReal(nrow, ncol);
-    for(size_t i = 0; i < nrow; ++i)
+    for (size_t i = 0; i < nrow; ++i)
     {
-        for(size_t j = 0; j < ncol; ++j)
+        for (size_t j = 0; j < ncol; ++j)
         {
             matrix[i][j] = tmpMatrix[i][j];
         }

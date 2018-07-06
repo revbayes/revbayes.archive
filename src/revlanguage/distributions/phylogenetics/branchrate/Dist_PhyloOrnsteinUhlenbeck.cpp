@@ -94,7 +94,8 @@ RevBayesCore::PhyloOrnsteinUhlenbeckProcess* Dist_PhyloOrnsteinUhlenbeck::create
 
 
 /* Get Rev type of object */
-const std::string& Dist_PhyloOrnsteinUhlenbeck::getClassType(void) {
+const std::string& Dist_PhyloOrnsteinUhlenbeck::getClassType(void)
+{
     
     static std::string rev_type = "Dist_PhyloOrnsteinUhlenbeck";
     

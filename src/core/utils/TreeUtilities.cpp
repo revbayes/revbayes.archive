@@ -1,4 +1,7 @@
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "MatrixReal.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "RbBitSet.h"
 #include "RbException.h"
 #include "StringUtilities.h"
@@ -7,6 +10,8 @@
 
 #include <algorithm>
 #include <iostream>
+#include <limits>
+#include <set>
 
 using namespace RevBayesCore;
 
@@ -162,6 +167,9 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t, bool
         nodes[i]->setAge( ages[i] );
     }
 
+    // copy the root edge
+    root->setBranchLength( bln.getBranchLength() );
+
     return tt;
 }
 
@@ -177,7 +185,7 @@ void RevBayesCore::TreeUtilities::getAges(Tree *t, TopologyNode *n, std::vector<
 
         // get both children ages
         std::vector<TopologyNode*> children = n->getChildren();
-        for(size_t i = 0; i < children.size(); i++)
+        for (size_t i = 0; i < children.size(); i++)
             getAges( t, children[i], ages);
     }
     else if (!internalsOnly) {
@@ -197,7 +205,7 @@ RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(con
 
     std::map< std::string, int > namesToId;
 
-    for(size_t i = 0; i < names.size(); ++i)
+    for (size_t i = 0; i < names.size(); ++i)
     {
         namesToId[ names[i].getName() ] = int(i);
     }
@@ -212,6 +220,27 @@ RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(con
     delete matrix;
 
     return distMat;
+}
+
+
+
+
+size_t RevBayesCore::TreeUtilities::getMrcaIndex(const TopologyNode *left, const TopologyNode *right)
+{
+    
+    if ( left == right )  //same
+    {
+        return left->getIndex();
+    }
+    else if ( left->getAge() < right->getAge() )
+    {
+        return RevBayesCore::TreeUtilities::getMrcaIndex( &left->getParent(), right );
+    }
+    else
+    {
+        return RevBayesCore::TreeUtilities::getMrcaIndex( left, &right->getParent() );
+    }
+    
 }
 
 
@@ -274,11 +303,87 @@ void RevBayesCore::TreeUtilities::offsetTree(Tree *t, TopologyNode *n, double fa
 
     // offset all children
     std::vector<TopologyNode*> children = n->getChildren();
-    for(size_t i = 0; i < children.size(); i++)
+    for (size_t i = 0; i < children.size(); i++)
     {
         offsetTree( t, children[i], factor);
     }
 
+}
+
+
+
+void RevBayesCore::TreeUtilities::makeUltrametric(Tree *t)
+{
+
+    double max = 0.0;
+    std::vector<double > ages ;
+    for (size_t i = 0; i < t->getNumberOfTips(); ++i)
+    {
+        TopologyNode* node = &(t->getTipNode( i ) );
+        double age = node->getBranchLength();
+        node = &(node->getParent());
+        
+        while (!node->isRoot() )
+        {
+            age += node->getBranchLength();
+            node = &(node->getParent());
+        }
+        if (age > max) {
+          max = age;
+        }
+        ages.push_back(age);
+
+    }
+
+    // We extend terminal branches
+    for (size_t i = 0; i < t->getNumberOfTips(); ++i)
+    {
+        t->getTipNode( i ).setBranchLength(t->getTipNode( i ).getBranchLength() + max - ages[i]);
+//        t->getTipNode( i ).setAge(0.0);
+    }
+    
+    setAgesRecursively(t, &(t->getRoot()), max);
+
+    // make sure that all the tips have an age of 0
+    for (size_t i = 0; i < t->getNumberOfTips(); ++i)
+    {
+        t->getTipNode( i ).setAge(0.0);
+    }
+    
+}
+
+
+int RevBayesCore::TreeUtilities::getNodalDistance(const TopologyNode *left, const TopologyNode *right)
+{
+    if ( left == right || &left->getParent() == right || left == &right->getParent() )
+    {
+        return 0;
+    }
+    else if ( left->getAge() < right->getAge() )
+    {
+        return 1 + RevBayesCore::TreeUtilities::getNodalDistance( &left->getParent(), right );
+    }
+    else
+    {
+        return 1 + RevBayesCore::TreeUtilities::getNodalDistance( left, &right->getParent() );
+    }
+}
+
+
+RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getNodalDistanceMatrix(const Tree& tree)
+{
+    RevBayesCore::MatrixReal matrix = MatrixReal( tree.getNumberOfTips() );
+
+    std::vector<Taxon> names = tree.getTaxa( ) ;
+    for (size_t i = 0; i < names.size(); i++)
+    {
+        for (size_t j = i + 1; j < names.size(); j++)
+        {
+            matrix[i][j] = matrix[j][i] = TreeUtilities::getNodalDistance(&tree.getTipNode(i), &tree.getTipNode(j));
+        }
+    }
+
+    return new DistanceMatrix(matrix, names);
 }
 
 
@@ -343,60 +448,34 @@ void RevBayesCore::TreeUtilities::setAges(Tree *t, TopologyNode *n, std::vector<
 
         // rescale both children
         std::vector<TopologyNode*> children = n->getChildren();
-        for(size_t i = 0; i < children.size(); i++)
+        for (size_t i = 0; i < children.size(); i++)
+        {
             setAges( t, children[i], ages);
-    }
-
-}
-
-
-std::string RevBayesCore::TreeUtilities::uniqueNewickTopology(const Tree &t)
-{
-    return uniqueNewickTopologyRecursive( t.getRoot() );
-}
-
-
-std::string RevBayesCore::TreeUtilities::uniqueNewickTopologyRecursive(const TopologyNode &n)
-{
-    // check whether this is an internal node
-    if ( n.isTip() )
-    {
-        return n.getName();
-    }
-    else
-    {
-        std::string fossil = "";
-        std::string newick = "(";
-        std::vector<std::string> child_newick;
-        for (size_t i = 0; i < n.getNumberOfChildren(); ++i)
-        {
-            const TopologyNode& child = n.getChild( i );
-            if( child.isSampledAncestor() && (child.getName() < fossil || fossil == "") )
-            {
-                fossil = child.getName();
-            }
-            else
-            {
-                child_newick.push_back( uniqueNewickTopologyRecursive( child ) );
-            }
         }
-        sort(child_newick.begin(), child_newick.end());
-        for (std::vector<std::string>::iterator it = child_newick.begin(); it != child_newick.end(); ++it)
-        {
-            if ( it != child_newick.begin() )
-            {
-                newick += ",";
-            }
-            newick += *it;
-        }
-        newick += ")";
-        newick += fossil;
-
-        return newick;
+        
     }
 
 }
 
+void RevBayesCore::TreeUtilities::setAgesRecursively(RevBayesCore::Tree *t, RevBayesCore::TopologyNode *n, double age)
+{
+    // first, we set the age of this node
+    n->setAge( age );
+    
+    // we only rescale internal nodes
+    if ( n->isTip() == false )
+    {
+        
+        // rescale both children
+        std::vector<TopologyNode*> children = n->getChildren();
+        for (size_t i = 0; i < children.size(); ++i)
+        {
+            setAgesRecursively( t, children[i], age-children[i]->getBranchLength());
+        }
+        
+    }
+    
+}
 
 
 void RevBayesCore::TreeUtilities::processDistsInSubtree(const RevBayesCore::TopologyNode& node, RevBayesCore::MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId)
@@ -536,4 +615,551 @@ double RevBayesCore::TreeUtilities::getAgeOfMRCA(const Tree &t, std::string firs
         return node1.getAge();
     }
 
+}
+
+
+int RevBayesCore::TreeUtilities::getCollessMetric(const TopologyNode & node, int& size)
+{
+    if( node.isTip() )
+    {
+        size = (node.getAge() == 0.0);
+        return 0.0;
+    }
+
+    const TopologyNode& left = node.getChild(0);
+    const TopologyNode& right = node.getChild(1);
+
+    int left_size  = 0;
+    int right_size = 0;
+
+    double left_metric  = getCollessMetric(left, left_size);
+    double right_metric = getCollessMetric(right, right_size);
+
+    size = left_size + right_size;
+
+    int metric = std::abs( left_size - right_size);
+
+    if( left_size == 0 || right_size == 0 )
+    {
+        metric = 0;
+    }
+
+    return left_metric + right_metric + metric;
+}
+
+
+/* 
+ * Gamma-statistic from Pybus & Harvey (2000) equation 1
+ */
+double RevBayesCore::TreeUtilities::getGammaStatistic(const Tree &t)
+{
+    std::vector<TopologyNode*> nodes = t.getNodes();
+
+    std::vector<double> ages;
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        ages.push_back(nodes[i]->getAge());
+    }
+
+    // calculate internode distances
+    std::sort(ages.begin(), ages.end());
+    std::vector<double> distances;
+    for (size_t i = (ages.size() - 1); i > 0; i--)
+    {
+        distances.push_back(ages[i] - ages[i - 1]);
+        if (ages[i - 1] == 0)
+        {
+            break;
+        }
+    }
+    
+    double n = t.getNumberOfTips();
+    if (n < 3)
+    {
+        //return NaN;
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+
+    double T = 0;
+    for (int j = 2; j <= n; j++)
+    {
+        T = T + (j * distances[j - 2]); 
+    }
+
+    double a = 1 / ( n - 2 );
+    double b = 0;
+    for (int i = 2; i <= (n - 1); i++)
+    {
+        double temp = 0;
+        for (int k = 2; k <= i; k++)
+        {
+            temp = temp + (k * distances[k - 2]);
+        }
+        b = b + temp; 
+    }
+    double num = (a * b) - (T / 2);
+    
+    double den = T * sqrt( (1 / (12 * (n - 2))) );
+
+
+    return num/den;
+}
+
+
+/* 
+ * Algorithm from Fitch (1970) "Distinguishing Homologous from Analogous Proteins"
+ */
+int RevBayesCore::TreeUtilities::getFitchScore(const Tree &t, const AbstractHomologousDiscreteCharacterData &c)
+{
+    int score = 0;
+    for (size_t i = 0; i < c.getNumberOfCharacters(); i++)
+    {
+        recursivelyComputeFitch(t.getRoot(), c, i, score);
+    }
+    return score;
+}
+
+
+std::set<size_t> RevBayesCore::TreeUtilities::recursivelyComputeFitch(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, size_t site, int &score)
+{
+    if (node.isTip() == true)
+    {
+        std::set<size_t> tip_set;
+        std::string n = node.getName();
+        size_t state = c.getTaxonData(n).getCharacter(site).getStateIndex();
+        tip_set.insert( state );
+        return tip_set;
+    }
+    else
+    {
+        if ( node.getNumberOfChildren() != 2 )
+        {
+            throw RbException("Fitch score calculation is only implemented for binary trees.");
+        }
+        std::set<size_t> l = recursivelyComputeFitch(node.getChild(0), c, site, score);
+        std::set<size_t> r = recursivelyComputeFitch(node.getChild(1), c, site, score);
+
+        std::set<size_t> intersect;
+        set_intersection(l.begin(), l.end(), r.begin(), r.end(), std::inserter(intersect, intersect.begin()));
+
+        if (intersect.size() == 0)
+        {
+            score++;
+            std::set<size_t> union_set;
+            set_union(l.begin(), l.end(), r.begin(), r.end(), std::inserter(union_set, union_set.begin()));
+            return union_set;
+        }
+        return intersect;
+    }
+}
+
+
+/* 
+ *
+ * The mean inverse equal splits metric for tips in a single state as described in:
+ * Rabosky and Goldberg (2017) "FiSSE: A simple nonparametric test for the effects of a binary character on lineage diversiﬁcation rates"
+ *
+ * This metric is typically calculated for a single character at a time, but here it is extended over multiple characters.
+ *
+ */
+double RevBayesCore::TreeUtilities::getMeanInverseES(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index)
+{
+    if (t.isRooted() == false)
+    {
+        throw RbException("Mean inverse ES can only be calculated on rooted trees.");
+    }
+
+    std::vector<double> summed_inverse_es = std::vector<double>(c.getNumberOfCharacters(), 0);
+    std::vector<double> num_tips_in_state = std::vector<double>(c.getNumberOfCharacters(), 0);
+    std::vector<std::string> tip_names = t.getTipNames();
+
+    // calculate equal splits (ES) measure for each tip as necessary
+    for (size_t i = 0; i < tip_names.size(); i++)
+    {
+        bool calculated_for_tip = false;
+        double tip_es = 0;
+        size_t node_index = t.getTipNodeWithName( tip_names[i] ).getIndex();
+
+        for (size_t j = 0; j < c.getNumberOfCharacters(); j++)
+        {
+            size_t state = c.getTaxonData(tip_names[i]).getCharacter(j).getStateIndex();
+            if (state == state_index)
+            {
+                num_tips_in_state[j] += 1;
+                if (calculated_for_tip == true)
+                {
+                    if (tip_es != 0)
+                    {
+                        summed_inverse_es[j] += 1/tip_es;
+                    }
+                }
+                else
+                {
+                    // traverse from tip to root
+                    double depth = 1;
+                    while (true)
+                    {
+                        if (t.getNode(node_index).isRoot() == true)
+                        {
+                            break;
+                        }
+                        tip_es += t.getNode(node_index).getBranchLength() * (1 / pow(2, depth - 1));
+                        node_index = t.getNode(node_index).getParent().getIndex();
+                        depth++;
+                    }
+                    if (tip_es != 0)
+                    {
+                        summed_inverse_es[j] += 1/tip_es;
+                    }
+                    calculated_for_tip = true;
+                }
+            }
+        }
+    }
+
+    // calculate mean inverse ES for the character state
+    double mean_inverse_es = 0;
+    for (size_t i = 0; i < c.getNumberOfCharacters(); i++)
+    {
+        if (num_tips_in_state[i] != 0)
+        {
+            mean_inverse_es += (1/num_tips_in_state[i]) * summed_inverse_es[i];
+        }
+    }
+    return mean_inverse_es;
+}
+
+
+/* 
+ * Returns the Parsimoniously Same State Paths (PSSP). This is the set of branch lengths 
+ * from clades parsimoniously reconstructed to have the same state. Given (((A,B),C),(D,E)), if A, B, 
+ * D, and E are in state 0, then PSSP(0) will contain the four branch lengths in (A,B) and (D,E). Uses 
+ * Fitch's (1970) algorithm for parsimony ancestral state reconstruction.
+ */
+std::vector<double> RevBayesCore::TreeUtilities::getPSSP(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index)
+{
+    std::vector<double> branch_lengths;
+    if ( c.getNumberOfCharacters() != 1 )
+    {
+        throw RbException("getPSSP is only implemented for character alignments with a single site.");
+    }
+    recursivelyGetPSSP(t.getRoot(), c, branch_lengths, state_index);
+    return branch_lengths;
+}
+
+
+std::set<size_t> RevBayesCore::TreeUtilities::recursivelyGetPSSP(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, std::vector<double> &branch_lengths, size_t state_index)
+{
+    if (node.isTip() == true)
+    {
+        std::set<size_t> tip_set;
+        std::string n = node.getName();
+        size_t state = c.getTaxonData(n).getCharacter(0).getStateIndex();
+        tip_set.insert( state );
+        return tip_set;
+    }
+    else
+    {
+        if ( node.getNumberOfChildren() != 2 )
+        {
+            throw RbException("getPSSP is only implemented for binary trees.");
+        }
+        std::set<size_t> l = recursivelyGetPSSP(node.getChild(0), c, branch_lengths, state_index);
+        std::set<size_t> r = recursivelyGetPSSP(node.getChild(1), c, branch_lengths, state_index);
+
+        std::set<size_t> intersect;
+        set_intersection(l.begin(), l.end(), r.begin(), r.end(), std::inserter(intersect, intersect.begin()));
+
+        if (intersect.size() == 0)
+        {
+            std::set<size_t> union_set;
+            set_union(l.begin(), l.end(), r.begin(), r.end(), std::inserter(union_set, union_set.begin()));
+            return union_set;
+        }
+        if (intersect.size() == 1)
+        {
+            if (intersect.find(state_index) != intersect.end())
+            {
+                branch_lengths.push_back(node.getChild(0).getBranchLength());
+                branch_lengths.push_back(node.getChild(1).getBranchLength());
+            }
+        }
+        return intersect;
+    }
+}
+
+
+/* 
+ *
+ * Calculate the Mean Pairwise Distance (MPD; Webb 2000; Webb et al 2002) for taxa with a certain observed character state.
+ * The z-score of the MPD (optionally calculated using randomizations) is equivalent to the Net Relatedness Index (NRI; Webb 2000).
+ *
+ */
+double RevBayesCore::TreeUtilities::calculateMPD(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool zscore, bool branch_lengths, size_t num_randomizations)
+{
+ 
+    // use either pairwise branch length or nodal distances
+    DistanceMatrix* distances;
+    if (branch_lengths == true)
+    {
+        distances = getDistanceMatrix(t);
+    }
+    else
+    {
+        distances = getNodalDistanceMatrix(t);
+    }
+
+    // get the mean pairwise distances of all taxa in the observed state
+    double total_dist = 0.0;
+    double num_dist = 0.0;
+    size_t num_taxa_in_state = 0;
+    std::vector<std::string> tip_names = t.getTipNames();
+    for (size_t i = 0; i < tip_names.size(); ++i)
+    {
+        std::string name1 = distances->getTaxa()[i].getName();
+        size_t state1 = c.getTaxonData(name1).getCharacter(site_index).getStateIndex();
+        if (state1 == state_index)
+        {
+            num_taxa_in_state += 1;
+            for (size_t j = i + 1; j < tip_names.size(); ++j)
+            {
+                std::string name2 = distances->getTaxa()[j].getName();
+                size_t state2 = c.getTaxonData(name2).getCharacter(site_index).getStateIndex();
+                if (state2 == state_index)
+                {
+                    total_dist += distances->getMatrix()[i][j];
+                    num_dist += 1.0;
+                }
+            }
+        }   
+    }
+    double obs_mean_distance = 0.0;
+    if (num_dist != 0)
+    {
+        obs_mean_distance = total_dist/num_dist;
+    }
+   
+    if (zscore == false)
+    {
+        return obs_mean_distance;
+    }
+
+    // randomizations to calculate z-score (NRI)
+    std::vector<double> random_mean_distances;
+    for (size_t k = 0; k < num_randomizations; ++k)
+    {
+        std::vector<std::string> new_tip_names;
+
+        // pick random taxa
+        while (new_tip_names.size() < num_taxa_in_state)
+        {
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            size_t u = rng->uniform01() * tip_names.size();
+            std::string new_name = tip_names[u];
+            if (std::find(new_tip_names.begin(), new_tip_names.end(), new_name) == new_tip_names.end())
+            {
+                new_tip_names.push_back(new_name);
+            }
+        }
+        
+        // calculate mean pairwise distances for the random taxa
+        double total_dist = 0.0;
+        double num_dist = 0.0;
+        for (size_t i = 0; i < tip_names.size(); ++i)
+        {
+            std::string name1 = distances->getTaxa()[i].getName();
+            if (std::find(new_tip_names.begin(), new_tip_names.end(), name1) != new_tip_names.end())
+            {
+                for (size_t j = i + 1; j < tip_names.size(); ++j)
+                {
+                    std::string name2 = distances->getTaxa()[j].getName();
+                    if (std::find(new_tip_names.begin(), new_tip_names.end(), name2) != new_tip_names.end())
+                    {
+                        total_dist += distances->getMatrix()[i][j];
+                        num_dist += 1.0;
+                    }
+                }
+            }   
+        }
+        
+        double temp_mean_distance = 0.0;
+        if (num_dist != 0)
+        {
+            temp_mean_distance = total_dist/num_dist;
+        }
+        random_mean_distances.push_back(temp_mean_distance); 
+    }
+
+    // zscore = (mpd_obs - mpd_rand_mean) / mpd_rand_sd
+    double random_mean = 0.0;
+    for (size_t i = 0; i < random_mean_distances.size(); ++i)
+    {
+        random_mean += random_mean_distances[i];
+    }
+    if (random_mean_distances.size() != 0)
+    {
+        random_mean /= random_mean_distances.size();
+    }
+    double random_stdv = 0.0;
+    for (size_t i = 0; i < random_mean_distances.size(); ++i)
+    {
+        random_stdv += pow(random_mean_distances[i] - random_mean, 2);
+    }
+    if (random_mean_distances.size() != 0)
+    {
+        random_stdv /= random_mean_distances.size();
+    }
+    random_stdv = sqrt(random_stdv);
+    if (random_stdv != 0.0)
+    {
+        return (obs_mean_distance - random_mean) / random_stdv;
+    }
+    return 0.0;
+}
+
+
+/* 
+ *
+ * Calculate the Mean Nearest Taxon Distance (MNTD; Webb 2000; Webb et al 2002) for taxa with a certain observed character state.
+ * The z-score of the MNTD (optionally calculated using randomizations) is equivalent to the Nearest Taxa Index (NTI; Webb 2000).
+ *
+ */
+double RevBayesCore::TreeUtilities::calculateMNTD(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool zscore, bool branch_lengths, size_t num_randomizations)
+{
+ 
+    // use either pairwise branch length or nodal distances
+    DistanceMatrix* distances;
+    if (branch_lengths == true)
+    {
+        distances = getDistanceMatrix(t);
+    }
+    else
+    {
+        distances = getNodalDistanceMatrix(t);
+    }
+
+    // get the distances of the closest relative of all taxa in the observed state
+    double total_dist = 0.0;
+    double num_dist = 0.0;
+    size_t num_taxa_in_state = 0;
+    std::vector<std::string> tip_names = t.getTipNames();
+    for (size_t i = 0; i < tip_names.size(); ++i)
+    {
+        std::string name1 = distances->getTaxa()[i].getName();
+        size_t state1 = c.getTaxonData(name1).getCharacter(site_index).getStateIndex();
+        if (state1 == state_index)
+        {
+            num_taxa_in_state += 1;
+            double min_dist = 0.0;
+            for (size_t j = 0; j < tip_names.size(); ++j)
+            {
+                if (j != i)
+                {
+                    std::string name2 = distances->getTaxa()[j].getName();
+                    size_t state2 = c.getTaxonData(name2).getCharacter(site_index).getStateIndex();
+                    if (state2 == state_index)
+                    {
+                        double this_dist = distances->getMatrix()[i][j];
+                        if (this_dist < min_dist || min_dist == 0.0)
+                        {
+                            min_dist = this_dist;
+                        }
+                    }
+                }
+            }
+            total_dist += min_dist;
+            num_dist += 1.0;
+        }   
+    }
+    double obs_mean_distance = 0.0;
+    if (num_dist != 0)
+    {
+        obs_mean_distance = total_dist/num_dist;
+    }
+   
+    if (zscore == false)
+    {
+        return obs_mean_distance;
+    }
+
+    // randomizations to calculate z-score (NTI)
+    std::vector<double> random_mean_distances;
+    for (size_t k = 0; k < num_randomizations; ++k)
+    {
+        double total_dist = 0.0;
+        double num_dist = 0.0;
+        std::vector<std::string> new_tip_names;
+
+        // pick random taxa
+        while (new_tip_names.size() < num_taxa_in_state)
+        {
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            size_t u = rng->uniform01() * tip_names.size();
+            std::string new_name = tip_names[u];
+            if (std::find(new_tip_names.begin(), new_tip_names.end(), new_name) == new_tip_names.end())
+            {
+                new_tip_names.push_back(new_name);
+            }
+        }
+        
+        // calculate mean nearest taxon distance for the random taxa
+        for (size_t i = 0; i < tip_names.size(); ++i)
+        {
+            std::string name1 = distances->getTaxa()[i].getName();
+            if (std::find(new_tip_names.begin(), new_tip_names.end(), name1) != new_tip_names.end())
+            {
+                double min_dist = 0.0;
+                for (size_t j = 0; j < tip_names.size(); ++j)
+                {
+                    if (j != i)
+                    {
+                        std::string name2 = distances->getTaxa()[j].getName();
+                        if (std::find(new_tip_names.begin(), new_tip_names.end(), name2) != new_tip_names.end())
+                        {
+                            double this_dist = distances->getMatrix()[i][j];
+                            if (this_dist < min_dist || min_dist == 0.0)
+                            {
+                                min_dist = this_dist;
+                            }
+                        }
+                    }
+                }
+                total_dist += min_dist;
+                num_dist += 1.0;
+            }   
+        }
+        
+        double temp_mean_distance = 0.0;
+        if (num_dist != 0)
+        {
+            temp_mean_distance = total_dist/num_dist;
+        }
+        random_mean_distances.push_back(temp_mean_distance); 
+    }
+
+    // zscore = (mntd_obs - mntd_rand_mean) / mntd_rand_sd
+    double random_mean = 0.0;
+    for (size_t i = 0; i < random_mean_distances.size(); ++i)
+    {
+        random_mean += random_mean_distances[i];
+    }
+    if (random_mean_distances.size() != 0)
+    {
+        random_mean /= random_mean_distances.size();
+    }
+    double random_stdv = 0.0;
+    for (size_t i = 0; i < random_mean_distances.size(); ++i)
+    {
+        random_stdv += pow(random_mean_distances[i] - random_mean, 2);
+    }
+    if (random_mean_distances.size() != 0)
+    {
+        random_stdv /= random_mean_distances.size();
+    }
+    random_stdv = sqrt(random_stdv);
+    if (random_stdv != 0.0)
+    {
+        return (obs_mean_distance - random_mean) / random_stdv;
+    }
+    return 0.0;
 }

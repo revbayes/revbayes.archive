@@ -1,6 +1,0 @@
-x ~ exponential(0.01)
-mymcmc <- mcmc(model(x),[mSlice(x)],[filemonitor(x,file="x.p")])
-mymcmc.burnin(1000,100)
-mymcmc.run(100000)
-mymcmc.operatorSummary()
-q()

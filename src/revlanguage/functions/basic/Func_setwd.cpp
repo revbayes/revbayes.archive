@@ -37,6 +37,8 @@ RevPtr<RevVariable> Func_setwd::execute( void )
     
     const std::string &wd = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
     
+    std::cerr << "Received directory:\t\t" << wd << std::endl;
+    
     RbSettings& s = RbSettings::userSettings();
     s.setWorkingDirectory( wd );
     
@@ -209,8 +211,8 @@ const TypeSpec& Func_setwd::getTypeSpec( void ) const
 const TypeSpec& Func_setwd::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlUtils::Void;
+    static TypeSpec return_typeSpec = RlUtils::Void;
     
-    return returnTypeSpec;
+    return return_typeSpec;
 }
 

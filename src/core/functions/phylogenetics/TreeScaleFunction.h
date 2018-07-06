@@ -1,11 +1,3 @@
-//
-//  TreeScaleFunction.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 2/6/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
 #ifndef TreeScaleFunction_H
 #define TreeScaleFunction_H
 

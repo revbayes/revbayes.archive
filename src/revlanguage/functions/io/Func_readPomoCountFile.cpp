@@ -119,6 +119,6 @@ const TypeSpec& Func_readPomoCountFile::getTypeSpec( void ) const
 const TypeSpec& Func_readPomoCountFile::getReturnType( void ) const
 {
 
-	static TypeSpec returnTypeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
-	return returnTypeSpec;
+	static TypeSpec return_typeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
+	return return_typeSpec;
 }

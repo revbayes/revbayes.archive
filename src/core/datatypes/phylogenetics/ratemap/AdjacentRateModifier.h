@@ -1,15 +1,8 @@
-//
-//  AdjacentRateModifier.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 8/8/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__AdjacentRateModifier__
-#define __rb_mlandis__AdjacentRateModifier__
+#ifndef AdjacentRateModifier_H
+#define AdjacentRateModifier_H
 
 #include "CharacterHistoryRateModifier.h"
+#include "MatrixReal.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
 
@@ -21,8 +14,6 @@
 namespace RevBayesCore
 {
     
-    
-    
     class AdjacentRateModifier : public CharacterHistoryRateModifier
     {
     public:
@@ -31,14 +22,17 @@ namespace RevBayesCore
         
         
         AdjacentRateModifier&               assign(const Assignable &m);
-        double                              computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age=0.0);
-        double                              computeSiteRateMultiplier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age=0.0);
+        double                              computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0);
+        double                              computeSiteRateMultiplier(const TopologyNode& node, CharacterEventDiscrete* currState, CharacterEventDiscrete* newState, double age=0.0);
         double                              computeSiteRateMultiplier(const TopologyNode& node, unsigned currState, unsigned newState, unsigned charIdx=0, double age=0.0);
         
-        double                              computeRateMultiplierUsingWidth(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age=0.0);
-        double                              computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEvent* newState, double age=0.0);
+        double                              computeRateMultiplierUsingWidth(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0);
+        double                              computeRateMultiplierUsingMatrix(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0);
+        virtual std::set<size_t>            getAffectedSites(CharacterEventDiscrete* newState) const;
+
         
-        void                                setContextMatrix(const RbVector<RbVector<double> >& c);
+        void                                setContextMatrix(const RbVector<RbVector<long> >& c);
+        void                                setContextMatrix(const MatrixReal& c);
         void                                setGainFactor(double f);
         void                                setLossFactor(double f);
         void                                setWidth(size_t w);
@@ -51,7 +45,7 @@ namespace RevBayesCore
        
         
     private:
-        void                                initializeContexts(RbVector<RbVector<double> > c);
+        void                                initializeContexts(RbVector<RbVector<long> > c);
         
         struct adjacency {
             size_t                          from;
@@ -60,11 +54,14 @@ namespace RevBayesCore
         };
         
         std::vector<std::vector<adjacency> > context_matrix;
-        size_t                               width;
-        double                               gain_factor;
-        double                               loss_factor;
+        size_t                              width;
+        double                              gain_factor;
+        double                              loss_factor;
+        std::vector<double>                 exp_gain_factors;
+        std::vector<double>                 exp_loss_factors;
+        std::vector<std::set<size_t> >      context_set;
         
-        std::string                          context_type;
+        std::string                         context_type;
     };
     
     std::ostream& operator<<(std::ostream& o, const AdjacentRateModifier& x);

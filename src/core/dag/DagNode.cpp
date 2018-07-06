@@ -194,7 +194,7 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
     newNodes[ this ] = copy;
     
     /* Make sure the children clone themselves */
-    for( std::vector<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); ++i )
+    for ( std::vector<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); ++i )
     {
         DagNode *child = (*i)->cloneDownstreamDag( newNodes );
         child->swapParent(this, copy);
@@ -213,6 +213,21 @@ size_t DagNode::decrementReferenceCount( void ) const
     --ref_count;
     
     return ref_count;
+}
+
+
+void DagNode::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const
+{
+    
+    if ( n == "lnProbability" )
+    {
+        rv = const_cast<DagNode *>(this)->getLnProbability();
+    }
+    else
+    {
+        throw RbException("A DAG node does not have a member method called '" + n + "'.");
+    }
+    
 }
 
 
@@ -793,8 +808,8 @@ void DagNode::replace( DagNode *n )
     // replace myself for all my moves
     while ( moves.empty() == false )
     {
-        Move *theMove = *moves.begin();
-        theMove->swapNode( this, n);
+        Move *the_move = *moves.begin();
+        the_move->swapNode( this, n);
     }
     
     // replace myself at all my children

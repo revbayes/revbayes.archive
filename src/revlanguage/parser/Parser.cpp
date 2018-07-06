@@ -64,6 +64,7 @@ RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& c
     while (buf.good()) {
 
         std::stringstream temp;
+        bool escaped = false;
 
         while (buf.good()) {
 
@@ -74,7 +75,7 @@ RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& c
                     throw RbException("End of line while in quote");
                 }
                 continue;
-            } else if (c == '"') {
+            } else if (escaped == false && c == '"') {
                 /* switch quote on or off if not in comment */
                 if (inQuote == true)
                     inQuote = false;
@@ -103,6 +104,7 @@ RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& c
                     c = char( buf.get());
                 break;
             }
+            escaped = (c == '\\');
 
             temp.put(c);
         }
@@ -216,9 +218,9 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
 /** Execute base variable expression to get the corresponding base variable */
 void RevLanguage::Parser::executeBaseVariable(void)
 {
-    if (baseVariableExpr != NULL)
+    if (base_variable_expr != NULL)
     {
-        baseVariable = baseVariableExpr->evaluateContent(Workspace::userWorkspace());
+        base_variable = base_variable_expr->evaluateContent(Workspace::userWorkspace());
     }
 }
 
@@ -337,12 +339,12 @@ extern int yyparse(void); // Defined in grammar.tab.cpp (from gammar.y)
  */
 void RevLanguage::Parser::setParserMode(ParserMode mode)
 {
-    baseVariable = NULL;
-    functionName = "";
-    argumentLabel = "";
-    baseVariableExpr = NULL;
+    base_variable = NULL;
+    function_name = "";
+    argument_label = "";
+    base_variable_expr = NULL;
 
-    parserMode = mode;
+    parser_mode = mode;
 }
 
 /**
@@ -359,12 +361,11 @@ void RevLanguage::Parser::setParserMode(ParserMode mode)
  *       signal is set to 2. Any remaining part of the command buffer
  *       is discarded.
  */
-int RevLanguage::Parser::processCommand(std::string& command, Environment* env) {
+int RevLanguage::Parser::processCommand(std::string& command, Environment* env)
+{
 
     // make sure mode is not checking
     this->setParserMode(EXECUTING);
-
-    //    extern Environment* executionEnvironment;
 
     executionEnvironment = env;
 
@@ -446,12 +447,12 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
         // NOTE! This code is only for testing the CHECKING mode of the parser
         // DO NOT UNCOMMENT IN NORMAL USE
         if (result == 1) {
-            std::cerr << "Function name is: " << functionName << std::endl;
-            std::cerr << "Argument label is: " << argumentLabel << std::endl;
-            if (baseVariable == NULL)
+            std::cerr << "Function name is: " << function_name << std::endl;
+            std::cerr << "Argument label is: " << argument_label << std::endl;
+            if (base_variable == NULL)
                 std::cerr << "No base variable" << std::endl;
             else
-                std::cerr << "Base variable is: " << baseVariable->getName() << std::endl;
+                std::cerr << "Base variable is: " << base_variable->getName() << std::endl;
         }
 #endif
 
@@ -575,9 +576,9 @@ ParserInfo Parser::checkCommand(std::string& command, Environment* env)
 
     // Call Bison code, which calls Flex code, which calls rrinput
     for (std::list<std::string>::iterator i = lines.begin(); i != lines.end(); i++) {
-        pi.functionName = functionName;
-        pi.baseVariable = NULL;
-        pi.argumentLabel = argumentLabel;
+        pi.function_name = function_name;
+        pi.base_variable = NULL;
+        pi.argument_label = argument_label;
         pi.result = 0;
 
 
@@ -609,9 +610,9 @@ ParserInfo Parser::checkCommand(std::string& command, Environment* env)
 
         if (result == 0 || result == 1) {
 
-            pi.functionName = functionName;
-            pi.baseVariable = baseVariable;
-            pi.argumentLabel = argumentLabel;
+            pi.function_name = function_name;
+            pi.base_variable = base_variable;
+            pi.argument_label = argument_label;
 
             // valid result, nothing more to do here?
             //break;

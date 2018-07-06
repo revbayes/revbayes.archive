@@ -4,7 +4,6 @@
 #include "ConstantNode.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
-#include "ModelTrace.h"
 #include "Model.h"
 #include "Natural.h"
 #include "OptionRule.h"
@@ -87,10 +86,10 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         }
 
         int currentGen = int(value->getCurrentGeneration());
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() + currentGen;
+        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() + currentGen;
         rules.push_back( RevBayesCore::MaxIterationStoppingRule(gen) );
         
-        int tuning_interval = static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
+        int tuning_interval = (int)static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
         bool prior = static_cast<const RlBoolean &>( args[3].getVariable()->getRevObject() ).getValue();
         if ( prior == true )
         {
@@ -112,8 +111,8 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         found = true;
         
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
+        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int tuningInterval = (int)static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         bool prior = static_cast<const RlBoolean &>( args[2].getVariable()->getRevObject() ).getValue();
 
         value->burnin( gen, tuningInterval, prior );
@@ -170,30 +169,42 @@ const TypeSpec& MonteCarloAnalysis::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& MonteCarloAnalysis::getParameterRules(void) const {
+const MemberRules& MonteCarloAnalysis::getParameterRules(void) const
+{
     
-    static MemberRules memberRules;
+    static MemberRules member_rules;
     static bool rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
         
-        memberRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), "The monitors used for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , "The moves used for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), "The monitors used for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , "The moves used for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
-        std::vector<std::string> options;
-        options.push_back( "sequential" );
-        options.push_back( "random" );
-        options.push_back( "single" );
+        std::vector<std::string> options_schedule;
+        options_schedule.push_back( "sequential" );
+        options_schedule.push_back( "random" );
+        options_schedule.push_back( "single" );
         
-        memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options, "The strategy how the moves are used." ) );
-        memberRules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec(), "The number of replicate analyses.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        member_rules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options_schedule, "The strategy how the moves are used." ) );
         
+        // the number of replicate runs (in parallel)
+        member_rules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec(), "The number of replicate analyses.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        
+        // the way how we combine several traces at the end of the run
+        std::vector<std::string> options_combine;
+        options_combine.push_back( "sequential" );
+        options_combine.push_back( "mixed" );
+        member_rules.push_back( new OptionRule( "combineTraces", new RlString( "sequential" ), options_combine, "The way how we combine the traces ones the simulation is finished." ) );
+
+        // the number of tries to initialize the MCMC until it fails
+        member_rules.push_back( new ArgumentRule("ntries"   , Natural::getClassTypeSpec(), "The number of initialization attempts.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1000) ) );
+
         rules_set = true;
     }
     
-    return memberRules;
+    return member_rules;
 }
 
 /** Get type spec */
@@ -268,6 +279,14 @@ void MonteCarloAnalysis::setConstParameter(const std::string& name, const RevPtr
     else if ( name == "nruns")
     {
         num_runs = var;
+    }
+    else if ( name == "combineTraces")
+    {
+        combine_traces = var;
+    }
+    else if ( name == "ntries")
+    {
+        num_init_attempts = var;
     }
     else
     {

@@ -20,7 +20,9 @@ namespace RevBayesCore {
         double                                              getMin(void) const;
         double                                              quantile(double p) const;                                                       //!< Qu
         void                                                redrawValue(void);
-        
+        const TypedDagNode<double>*                         getMean() const {return mean;}
+        const TypedDagNode<double>*                         getStDev() const {return sd;}
+
     protected:
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter

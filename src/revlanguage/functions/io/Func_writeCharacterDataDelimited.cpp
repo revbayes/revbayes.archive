@@ -3,6 +3,7 @@
 #include "RbException.h"
 #include "RevNullObject.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
+#include "RlContinuousCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
 #include "DelimitedCharacterDataWriter.h"
@@ -38,11 +39,21 @@ RevPtr<RevVariable> Func_writeCharacterDataDelimited::execute( void )
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
-    const RevBayesCore::AbstractHomologousDiscreteCharacterData &data = static_cast< const AbstractHomologousDiscreteCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
+    const RevBayesCore::HomologousCharacterData *data = NULL;
+    
+    if ( args[1].getVariable()->getRevObject().isType( AbstractHomologousDiscreteCharacterData::getClassTypeSpec() ) )
+    {
+        data = &static_cast< const AbstractHomologousDiscreteCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
+    }
+    else if ( args[1].getVariable()->getRevObject().isType( ContinuousCharacterData::getClassTypeSpec() ) )
+    {
+        data = &static_cast< const ContinuousCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
+    }
+    
     const std::string& del = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
     
     RevBayesCore::DelimitedCharacterDataWriter writer;
-    writer.writeData(fn.getValue(), data, del[0]);
+    writer.writeData(fn.getValue(), *data, del[0]);
     
     return NULL;
 }
@@ -60,18 +71,22 @@ RevPtr<RevVariable> Func_writeCharacterDataDelimited::execute( void )
 const ArgumentRules& Func_writeCharacterDataDelimited::getArgumentRules( void ) const
 {
     
-    static ArgumentRules argumentRules = ArgumentRules();
+    static ArgumentRules argument_rules = ArgumentRules();
     static bool rules_set = false;
     
-    if (!rules_set)
+    if ( rules_set == false )
     {
-        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "data"    , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character data object.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
+        argument_rules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        
+        std::vector<TypeSpec> data_arg_types;
+        data_arg_types.push_back( AbstractHomologousDiscreteCharacterData::getClassTypeSpec() );
+        data_arg_types.push_back( ContinuousCharacterData::getClassTypeSpec() );
+        argument_rules.push_back( new ArgumentRule( "data"    , data_arg_types, "The character data object.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         rules_set = true;
     }
     
-    return argumentRules;
+    return argument_rules;
 }
 
 
@@ -138,6 +153,6 @@ const TypeSpec& Func_writeCharacterDataDelimited::getTypeSpec( void ) const
 const TypeSpec& Func_writeCharacterDataDelimited::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = RevNullObject::getClassTypeSpec();
+    return return_typeSpec;
 }

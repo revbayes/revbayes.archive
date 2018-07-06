@@ -30,8 +30,10 @@ namespace RevBayesCore {
         void                                                update(void);
         void                                                setObservedTransitionRates(const TypedDagNode< RbVector<double> > *tr);
         void                                                setObservedTransitionRates(const TypedDagNode< RbVector<RbVector<double> > > *tr);
+        void                                                setObservedTransitionRates(const TypedDagNode< RevBayesCore::RateGenerator > *tr);
         void                                                setHiddenTransitionRates(const TypedDagNode< RbVector<double> > *tr);
         void                                                setHiddenTransitionRates(const TypedDagNode< RbVector<RbVector<double> > > *tr);
+        void                                                setHiddenTransitionRates(const TypedDagNode< RevBayesCore::RateGenerator > *tr);
         
     protected:
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
@@ -44,8 +46,10 @@ namespace RevBayesCore {
         size_t                                              num_hidden_states;
         const TypedDagNode<RbVector<RbVector<double> > >*   observed_transition_rates;
         const TypedDagNode<RbVector<double> >*              observed_transition_rates_flat;
+        const TypedDagNode<RateGenerator>*                  observed_rate_generator;
         const TypedDagNode<RbVector<RbVector<double> > >*   hidden_transition_rates;
         const TypedDagNode<RbVector<double> >*              hidden_transition_rates_flat;
+        const TypedDagNode<RateGenerator>*                  hidden_rate_generator;
         
     };
     

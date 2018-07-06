@@ -25,14 +25,13 @@ namespace RevBayesCore {
     class TipTimeSlideUniformProposal : public Proposal {
         
     public:
-        TipTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double>* o, bool dyn = false );  //!<  constructor
+        TipTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double>* o);                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
         TipTimeSlideUniformProposal*            clone(void) const;                                          //!< Clone object
         double                                  doProposal(void);                                           //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
-        double                                  getUpdateWeight(void) const;                                //!< Get the weight of the proposal.
         void                                    prepareProposal(void);                                      //!< Prepare the proposal
         void                                    printParameterSummary(std::ostream &o) const;               //!< Print the parameter summary
         void                                    tune(double r);                                             //!< Tune the proposal to achieve a better acceptance/rejection ratio
@@ -53,7 +52,6 @@ namespace RevBayesCore {
         TopologyNode*                           storedNode;
         double                                  storedAge;
         
-        bool                                    dynamic;
         bool                                    failed;
     };
     

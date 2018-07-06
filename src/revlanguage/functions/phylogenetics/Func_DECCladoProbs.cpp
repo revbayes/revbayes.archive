@@ -46,8 +46,8 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
     
     // supplied arguments
     RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* ep = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    unsigned nc = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
-    unsigned mrs = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
+    unsigned nc = (unsigned)static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
+    unsigned mrs = (unsigned)static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
     if (mrs <= 1) mrs = nc;
     std::string pt = static_cast<const RlString &> ( this->args[3].getVariable()->getRevObject() ).getValue();
     bool ept = (pt == "pattern");

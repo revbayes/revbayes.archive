@@ -10,6 +10,7 @@
 #define AdjacentRateModifierFunction_h
 
 #include "CharacterHistoryRateModifier.h"
+#include "MatrixReal.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -21,7 +22,9 @@ namespace RevBayesCore {
     class AdjacentRateModifierFunction : public TypedFunction<CharacterHistoryRateModifier> {
         
     public:
-        AdjacentRateModifierFunction(const TypedDagNode<double>* gf, const TypedDagNode<double>* lf, const TypedDagNode<long>* w, const TypedDagNode<RbVector<RbVector<double> > >* c, size_t ns, size_t nc);
+        AdjacentRateModifierFunction(const TypedDagNode<double>* gf, const TypedDagNode<double>* lf, const TypedDagNode<long>* w, const TypedDagNode<RbVector<RbVector<long> > >* c, size_t ns, size_t nc);
+        AdjacentRateModifierFunction(const TypedDagNode<double>* gf, const TypedDagNode<double>* lf, const TypedDagNode<long>* w, const TypedDagNode<MatrixReal>* c, size_t ns, size_t nc);
+        
         AdjacentRateModifierFunction(const AdjacentRateModifierFunction& m);
         virtual ~AdjacentRateModifierFunction(void);                                                                                                  //!< Virtual destructor
         
@@ -37,8 +40,9 @@ namespace RevBayesCore {
         // members
         const TypedDagNode<double>*                                       gainFactor;
         const TypedDagNode<double>*                                       lossFactor;
-        const TypedDagNode<long>*                                          width;
-        const TypedDagNode<RbVector<RbVector<double> > >*                 context_matrix;
+        const TypedDagNode<long>*                                         width;
+        const TypedDagNode<RbVector<RbVector<long> > >*                   context_array;
+        const TypedDagNode<MatrixReal>*                                   context_matrix;
         
         std::string context_type;
         

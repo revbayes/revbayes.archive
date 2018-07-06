@@ -120,7 +120,7 @@ RevBayesCore::DistanceMatrix* TreePairwiseDistances::getDistanceMatrix(const Typ
      
      std::map< std::string, int > namesToId;
      
-     for(size_t i = 0; i < names.size(); ++i) {
+     for (size_t i = 0; i < names.size(); ++i) {
      namesToId[ names[i] ] = i;
      }
      

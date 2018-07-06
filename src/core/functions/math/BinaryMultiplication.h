@@ -16,8 +16,8 @@ namespace RevBayesCore {
      * \since Version 1.0, 2012-08-13
      *
      */
-    template <class firstValueType, class secondValueType, class returnType>
-    class BinaryMultiplication : public TypedFunction<returnType> {
+    template <class firstValueType, class secondValueType, class return_type>
+    class BinaryMultiplication : public TypedFunction<return_type> {
         
     public:
         BinaryMultiplication(const TypedDagNode<firstValueType> *a, const TypedDagNode<secondValueType> *b);
@@ -34,22 +34,22 @@ namespace RevBayesCore {
     };
 }
 
-template <class firstValueType, class secondValueType, class returnType>
-RevBayesCore::BinaryMultiplication<firstValueType, secondValueType, returnType>::BinaryMultiplication(const TypedDagNode<firstValueType> *l, const TypedDagNode<secondValueType> *r) : TypedFunction<returnType>( new returnType() ), a( l ), b( r ) {
+template <class firstValueType, class secondValueType, class return_type>
+RevBayesCore::BinaryMultiplication<firstValueType, secondValueType, return_type>::BinaryMultiplication(const TypedDagNode<firstValueType> *l, const TypedDagNode<secondValueType> *r) : TypedFunction<return_type>( new return_type() ), a( l ), b( r ) {
     this->addParameter( l );
     this->addParameter( r );
 
 }
 
 
-template <class firstValueType, class secondValueType, class returnType>
-RevBayesCore::BinaryMultiplication<firstValueType, secondValueType, returnType>* RevBayesCore::BinaryMultiplication<firstValueType, secondValueType, returnType>::clone( void ) const
+template <class firstValueType, class secondValueType, class return_type>
+RevBayesCore::BinaryMultiplication<firstValueType, secondValueType, return_type>* RevBayesCore::BinaryMultiplication<firstValueType, secondValueType, return_type>::clone( void ) const
 {
     return new BinaryMultiplication(*this);
 }
 
-template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::BinaryMultiplication<firstValueType, secondValueType, returnType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+template<class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::BinaryMultiplication<firstValueType, secondValueType, return_type>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == a)
@@ -65,8 +65,8 @@ void RevBayesCore::BinaryMultiplication<firstValueType, secondValueType, returnT
 }
 
 
-template <class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::BinaryMultiplication<firstValueType, secondValueType, returnType>::update( void )
+template <class firstValueType, class secondValueType, class return_type>
+void RevBayesCore::BinaryMultiplication<firstValueType, secondValueType, return_type>::update( void )
 {
     *this->value = a->getValue() * b->getValue();
 }

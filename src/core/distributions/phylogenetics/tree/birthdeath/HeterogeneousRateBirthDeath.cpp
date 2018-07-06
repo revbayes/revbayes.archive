@@ -365,7 +365,7 @@ size_t HeterogeneousRateBirthDeath::computeStartIndex(size_t i) const
         const BranchHistory &bh = branch_histories[ node_index ];
         const std::multiset<CharacterEvent*, CharacterEventCompare> &h = bh.getHistory();
         CharacterEvent *event = *(h.begin());
-        return event->getState();
+        return static_cast<CharacterEventDiscrete*>(event)->getState();
     }
     else
     {
@@ -397,7 +397,7 @@ size_t HeterogeneousRateBirthDeath::computeStateIndex(size_t i, double time) con
             const std::multiset<CharacterEvent*, CharacterEventCompare> &h = bh.getHistory();
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=h.begin(); it!=h.end(); ++it)
             {
-                CharacterEvent* event = *it;
+                CharacterEventDiscrete* event = static_cast<CharacterEventDiscrete*>(*it);
                 double event_time = event->getAge();
                 if ( event_time > time )
                 {
@@ -500,7 +500,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             double branch_length = node.getBranchLength();
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
-                CharacterEvent* event = *it;
+                CharacterEventDiscrete* event = static_cast<CharacterEventDiscrete*>(*it);
                 double end_time = event->getAge() - node.getAge();
                 double time_interval = (end_time - begin_time) / branch_length;
                 
@@ -537,7 +537,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             double branch_length = node.getBranchLength();
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
-                CharacterEvent* event = *it;
+                CharacterEventDiscrete* event = static_cast<CharacterEventDiscrete*>(*it);
                 double end_time = event->getAge() - node.getAge();
                 double time_interval = (end_time - begin_time) / branch_length;
                 
@@ -566,7 +566,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
 /**
  * Get the character history object.
  */
-CharacterHistory& HeterogeneousRateBirthDeath::getCharacterHistory( void )
+CharacterHistoryDiscrete& HeterogeneousRateBirthDeath::getCharacterHistory( void )
 {
     
     return branch_histories;
@@ -575,7 +575,7 @@ CharacterHistory& HeterogeneousRateBirthDeath::getCharacterHistory( void )
 /**
  * Get the character history object.
  */
-CharacterHistory HeterogeneousRateBirthDeath::getCharacterHistory( void ) const
+const CharacterHistoryDiscrete& HeterogeneousRateBirthDeath::getCharacterHistory( void ) const
 {
     
     return branch_histories;

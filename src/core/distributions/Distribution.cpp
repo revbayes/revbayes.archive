@@ -1,6 +1,8 @@
 #include "DagNode.h"
 #include "Distribution.h"
 #include "RbException.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
 
 #include <algorithm>
 
@@ -106,9 +108,10 @@ void Distribution::addParameter(const DagNode *p)
 
 
 
-void Distribution::executeProcedure(const std::string &n, const std::vector<DagNode *> args, bool &f)
+RevLanguage::RevPtr<RevLanguage::RevVariable> Distribution::executeProcedure(const std::string &n, const std::vector<DagNode *> args, bool &f)
 {
     // no function found
+    return NULL;
 }
 
 
@@ -231,6 +234,12 @@ void Distribution::swapParameter(const DagNode *oldP, const DagNode *newP)
     }
     else
     {
+        
+//        std::cerr << "Could not find the distribution parameter to be swapped: " << oldP->getName() << "("<< oldP << ") to " << newP->getName() << "("<< newP <<")" << std::endl;
+//        for (size_t i=0; i<parameters.size(); ++i)
+//        {
+//            std::cerr << "Parameter["<< i <<"]:\t\t" << parameters[i]->getName() << "(" << parameters[i] << ")" << std::endl;
+//        }
         
         throw RbException("Could not find the distribution parameter to be swapped: " + oldP->getName() + " to " + newP->getName()) ;
     

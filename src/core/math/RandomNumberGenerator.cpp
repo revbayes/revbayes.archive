@@ -2,16 +2,19 @@
 #include "RbException.h"
 #include <ctime>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 using namespace RevBayesCore;
 
 /** Default constructor calling time to get the initial seeds */
 RandomNumberGenerator::RandomNumberGenerator(void) :
-        seed((unsigned int)( time(0) ) ),
         rng(),
         zeroone(rng)
 {
-
+    boost::posix_time::ptime t0(boost::posix_time::min_date_time);
+    boost::posix_time::ptime t1 = boost::posix_time::microsec_clock::local_time();
+    seed = (unsigned int) (t1-t0).total_microseconds();
+    
     rng.seed( seed );
     zeroone = boost::uniform_01<boost::rand48>(rng);
 

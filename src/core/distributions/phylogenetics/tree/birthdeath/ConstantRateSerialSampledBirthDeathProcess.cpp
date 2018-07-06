@@ -143,7 +143,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         }
         else if ( n.isInternal() && !n.getChild(0).isSampledAncestor() && !n.getChild(1).isSampledAncestor() )
         {
-            if(!n.isRoot() || use_origin)
+            if (!n.isRoot() || use_origin)
             {
                 // node is bifurcation event (a "true" node)
                 internal_node_ages.push_back( n.getAge() );
@@ -154,7 +154,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     // add the log probability for the serial sampling events
     if (serial_rate == 0.0)
     {
-        if( serial_tip_ages.size() + num_sampled_ancestors > 0 )
+        if ( serial_tip_ages.size() + num_sampled_ancestors > 0 )
         {
             return RbConstants::Double::neginf;
             //throw RbException("The serial sampling rate is zero, but the tree has serial sampled tips.");
@@ -173,20 +173,20 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
 
     // add the log probability for the internal node ages
     lnProbTimes += internal_node_ages.size() * log( birth_rate );
-    for(size_t i=0; i<internal_node_ages.size(); i++)
+    for (size_t i=0; i<internal_node_ages.size(); i++)
     {
         lnProbTimes -= lnQ(internal_node_ages[i], c1, c2);
     }
 
     // add the log probability for the serial tip ages
-    for(size_t i=0; i < serial_tip_ages.size(); i++)
+    for (size_t i=0; i < serial_tip_ages.size(); i++)
     {
         double t = serial_tip_ages[i];
         lnProbTimes += log(pZero(t, c1, c2)) + lnQ(t, c1, c2);
     }
 
     // condition on survival
-    if( condition == "survival")
+    if ( condition == "survival")
     {
         lnProbTimes -= num_initial_lineages * log(1.0 - pHatZero(process_time));
     }
@@ -204,15 +204,14 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
 double ConstantRateSerialSampledBirthDeathProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
-    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / (n!(m+k)!)
+    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / n!
     // where n is the number of extant tips, m is the number of sampled extinct tips
-    // and k is the number of sampled ancestors
 
-    size_t num_taxa = value->getNumberOfTips();
-    size_t num_extinct = value->getNumberOfExtinctTips();
-    size_t num_sa = value->getNumberOfSampledAncestors();
+    int num_taxa = (int)value->getNumberOfTips();
+    int num_extinct = (int)value->getNumberOfExtinctTips();
+    int num_sa = (int)value->getNumberOfSampledAncestors();
 
-    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct) - RbMath::lnFactorial(num_extinct);
+    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct);
 }
 
 
@@ -239,14 +238,12 @@ double ConstantRateSerialSampledBirthDeathProcess::simulateDivergenceTime(double
 {
 
     // incorrect placeholder for constant FBDP
-    // previous simSpeciations did not generate trees with defined likelihoods
-    
 
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
-    double age = present - origin;
+    double age = origin - present;
     double b = lambda->getValue();
     double d = mu->getValue();
     double r = rho->getValue();
@@ -256,18 +253,18 @@ double ConstantRateSerialSampledBirthDeathProcess::simulateDivergenceTime(double
     
     
     // compute the time for this draw
+    // see Hartmann et al. 2010 and Stadler 2011
     double t = 0.0;
     if ( b > d )
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     }
     else
     {
-        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     }
     
-    //    return present - t;
-    return present - t;
+    return present + t;
 }
 
 

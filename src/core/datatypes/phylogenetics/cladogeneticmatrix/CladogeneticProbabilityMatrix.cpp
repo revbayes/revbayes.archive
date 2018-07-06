@@ -66,7 +66,6 @@ CladogeneticProbabilityMatrix* CladogeneticProbabilityMatrix::clone( void ) cons
     return new CladogeneticProbabilityMatrix( *this );
 }
 
-
 std::map<std::vector<unsigned>, double> CladogeneticProbabilityMatrix::getEventMap(double t)
 {
     return eventMapProbs;

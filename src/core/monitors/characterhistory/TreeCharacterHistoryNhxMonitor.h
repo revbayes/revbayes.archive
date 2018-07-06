@@ -1,17 +1,9 @@
-//
-//  TreeCharacterHistoryNhxMonitor.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 5/6/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef rb_mlandis_TreeCharacterHistoryNhxMonitor_h
-#define rb_mlandis_TreeCharacterHistoryNhxMonitor_h
+#ifndef TreeCharacterHistoryNhxMonitor_H
+#define TreeCharacterHistoryNhxMonitor_H
 
 
 #include "Monitor.h"
-#include "BranchHistory.h"
+#include "BranchHistoryDiscrete.h"
 #include "StochasticNode.h"
 #include "TypedDagNode.h"
 #include "TimeAtlas.h"
@@ -191,13 +183,13 @@ void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::updateCharacterCoun
     {
         characters = bh.getChildCharacters();
         for (size_t i = 0; i < characters.size(); i++)
-            childCharacterCounts[n->getIndex()][i] += characters[i]->getState();
+            childCharacterCounts[n->getIndex()][i] += static_cast<CharacterEventDiscrete*>(characters[i])->getState();
     }
     else if (brEnd=="parent")
     {
         characters = bh.getParentCharacters();
         for (size_t i = 0; i < characters.size(); i++)
-            parentCharacterCounts[n->getIndex()][i] += characters[i]->getState();
+            parentCharacterCounts[n->getIndex()][i] += static_cast<CharacterEventDiscrete*>(characters[i])->getState();
     }
     
 }

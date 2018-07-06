@@ -295,12 +295,13 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
         }
         else
         {
+            std::stringstream o3;
+            o3 << "Error reading file '" << fn << "'";
+            RBOUT(o3.str());
+            RBOUT("No data matrix was read.");
             std::set<std::string> myWarnings = reader.getWarnings();
             if ( myWarnings.size() > 0 )
             {
-                std::stringstream o3;
-                o3 << "Error reading file '" << fn << "'";
-                RBOUT(o3.str());
                 for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
                 {
                     RBOUT("Error:   " + (*it));
@@ -375,7 +376,7 @@ const TypeSpec& Func_readDiscreteCharacterData::getTypeSpec( void ) const
 const TypeSpec& Func_readDiscreteCharacterData::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = ModelVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec();
-    return returnTypeSpec;
+    static TypeSpec return_typeSpec = ModelVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec();
+    return return_typeSpec;
 }
 

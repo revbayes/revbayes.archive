@@ -35,9 +35,9 @@ namespace RevBayesCore {
         // pure virtual public methods
         virtual MetropolisHastingsMove*                         clone(void) const;
         const std::string&                                      getMoveName(void) const;                                //!< Get the name of the move for summary printing
-        size_t                                                  getNumberAccepted(void) const;                        //!< Get update weight of InferenceMove
+        size_t                                                  getNumberAcceptedCurrentPeriod(void) const;             //!< Get update weight of InferenceMove
+        size_t                                                  getNumberAcceptedTotal(void) const;                     //!< Get update weight of InferenceMove
         Proposal&                                               getProposal(void);                                      //!< Get the proposal of the move
-        double                                                  getUpdateWeight(void) const;                            //!< Get update weight of move
         void                                                    printSummary(std::ostream &o) const;                    //!< Print the move summary
         void                                                    tune(void);                                             //!< Specific tuning of the move
         
@@ -52,7 +52,8 @@ namespace RevBayesCore {
     private:
         
         // parameters
-        unsigned int                                            num_accepted;                                            //!< Number of times accepted
+        unsigned int                                            num_accepted_current_period;                            //!< Number of times accepted
+        unsigned int                                            num_accepted_total;                                     //!< Number of times accepted
         Proposal*                                               proposal;                                               //!< The proposal distribution
     };
     

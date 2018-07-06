@@ -2,6 +2,7 @@
 #define DagNode_H
 
 #include "DagNodeMap.h"
+#include "MemberObject.h"
 #include "Parallelizable.h"
 #include "RbOrderedSet.h"
 
@@ -15,9 +16,9 @@ namespace RevBayesCore {
     class Distribution;
     class Monitor;
     class Move;
-    class Trace;
+    class AbstractTrace;
 
-    class DagNode : public Parallelizable {
+    class DagNode : public Parallelizable, public MemberObject<double> {
     
     public:
         
@@ -29,7 +30,7 @@ namespace RevBayesCore {
         virtual void                                                bootstrap(void) = 0;                                                                        //!< Bootstrap the current value of the node (applies only to stochastic nodes)
         virtual DagNode*                                            clone(void) const = 0;
         virtual DagNode*                                            cloneDAG(DagNodeMap &nodesMap, std::map<std::string, const DagNode* > &names) const = 0;    //!< Clone the entire DAG which is connected to this node
-        virtual Trace*                                              createTraceObject(void) const = 0;                                                          //!< Create an empty trace object of the right trace type
+        virtual AbstractTrace*                                      createTraceObject(void) const = 0;                                                          //!< Create an empty trace object of the right trace type
         virtual double                                              getLnProbability(void) = 0;
         virtual double                                              getLnProbabilityRatio(void) = 0;
         virtual size_t                                              getNumberOfElements(void) const = 0;                                                        //!< Get the number of elements for this value
@@ -51,6 +52,7 @@ namespace RevBayesCore {
         void                                                        clearTouchedElementIndices(void);
         DagNode*                                                    cloneDownstreamDag(std::map<const DagNode*, DagNode*> &nodesMap) const;                     //!< Clone the DAG which is downstream to this node (all children)
         size_t                                                      decrementReferenceCount(void) const;                                                        //!< Decrement the reference count for reference counting in smart pointers
+        void                                                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const; //!< Map the member methods to internal function calls
         void                                                        getAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
         const std::vector<DagNode*>&                                getChildren(void) const;                                                                    //!< Get the set of children
         DagNodeTypes                                                getDagNodeType(void) const;

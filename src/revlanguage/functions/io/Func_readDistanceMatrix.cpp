@@ -115,7 +115,7 @@ const TypeSpec& Func_readDistanceMatrix::getTypeSpec( void ) const
 const TypeSpec& Func_readDistanceMatrix::getReturnType( void ) const
 {
 	
-	static TypeSpec returnTypeSpec = DistanceMatrix::getClassTypeSpec();
-	return returnTypeSpec;
+	static TypeSpec return_typeSpec = DistanceMatrix::getClassTypeSpec();
+	return return_typeSpec;
 }
 
