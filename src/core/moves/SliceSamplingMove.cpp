@@ -405,9 +405,14 @@ void SliceSamplingMove::setMoveTuningParameter(double tp)
  */
 void SliceSamplingMove::tune( void ) 
 {
-  double predicted_window = 4.0*total_movement/num_tried_current_period;
-
-  double p = exp(-double(num_tried_current_period)*0.5);
-  window = p*window + (1.0-p)*predicted_window;
+    
+    if ( num_tried_current_period > 2 )
+    {
+        double predicted_window = 4.0*total_movement/num_tried_current_period;
+        
+        double p = exp(-double(num_tried_current_period)*0.5);
+        window = p*window + (1.0-p)*predicted_window;
+    }
+    
 }
 

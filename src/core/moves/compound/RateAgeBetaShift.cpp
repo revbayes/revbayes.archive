@@ -438,16 +438,21 @@ void RateAgeBetaShift::setNumberAcceptedTotal( size_t na )
 
 void RateAgeBetaShift::tune( void )
 {
-    double rate = numAccepted / double(num_tried_current_period);
     
-    if ( rate > 0.44 )
+    if ( num_tried_current_period > 2 )
     {
-        delta /= (1.0 + ((rate-0.44)/0.56) );
+        double rate = num_accepted_current_period / double(num_tried_current_period);
+        
+        if ( rate > 0.44 )
+        {
+            delta /= (1.0 + ((rate-0.44)/0.56) );
+        }
+        else
+        {
+            delta *= (2.0 - rate/0.44 );
+        }
     }
-    else
-    {
-        delta *= (2.0 - rate/0.44 );
-    }
+
 }
 
 

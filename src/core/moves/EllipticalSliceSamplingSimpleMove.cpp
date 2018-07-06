@@ -395,10 +395,13 @@ void EllipticalSliceSamplingSimpleMove::setMoveTuningParameter(double tp)
  */
 void EllipticalSliceSamplingSimpleMove::tune( void ) 
 {
-
-    if (numPr/num_tried_current_period > 9)
+    
+    if ( num_tried_current_period > 2 )
     {
-        window *= 0.9;
+        if (numPr/num_tried_current_period > 9)
+        {
+            window *= 0.9;
+        }
     }
 
 }
