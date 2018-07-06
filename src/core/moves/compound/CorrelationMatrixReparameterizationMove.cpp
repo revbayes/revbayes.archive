@@ -175,7 +175,7 @@ void CorrelationMatrixReparameterizationMove::performMcmcMove( double prHeat, do
     double new_ln_lik = dist->computeLnProbability();
 
     // compute the acceptance ratio
-    double ln_acceptance_ratio = ln_prior_ratio + ln_hastings_ratio;
+    double ln_acceptance_ratio = pHeat * prHeat * ln_prior_ratio + ln_hastings_ratio;
 //    ln_acceptance_ratio = -500.0;
     double acceptance_ratio = exp(ln_acceptance_ratio);
     

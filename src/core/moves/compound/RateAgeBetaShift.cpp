@@ -219,7 +219,7 @@ void RateAgeBetaShift::performMcmcMove( double prHeat, double lHeat, double pHea
     }
     
     double hastingsRatio = backward - forward + jacobian;
-    double ln_acceptance_ratio = lHeat * pHeat * (treeProbRatio + ratesProbRatio) + hastingsRatio;
+    double ln_acceptance_ratio = pHeat * prHeat * (treeProbRatio + ratesProbRatio) + hastingsRatio;
     
     if (ln_acceptance_ratio >= 0.0)
     {
