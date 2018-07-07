@@ -16,7 +16,9 @@ MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNod
     precision( prec),
     scale( sc ),
     observed(mean->getValue().size(),false),
-    observations(mean->getValue().size(),0.0)
+    observations(mean->getValue().size(),0.0),
+    active_matrix(0),
+    inverse_covariance_matrices( std::vector<MatrixReal>( 2, MatrixReal(mean->getValue().size()) ) )
 {
     // make sure that only either the covariance or the precision matrix are set
     if ( covariance == NULL && precision == NULL )
@@ -35,6 +37,16 @@ MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNod
     addParameter( covariance );
     addParameter( precision );
     addParameter( scale );
+    
+    // if we're using a covariance matrix, initialize the
+    // inverse of the covariance matrix
+    if ( covariance != NULL )
+    {
+        inverse_covariance_matrices[0] = covariance->getValue().computeInverse();
+        inverse_covariance_matrices[0].setCholesky(true);
+        inverse_covariance_matrices[1] = covariance->getValue().computeInverse();
+        inverse_covariance_matrices[1].setCholesky(true);
+    }
     
     redrawValue();
 }
@@ -103,7 +115,7 @@ double MultivariateNormalDistribution::computeLnProbability( void )
     
     if ( covariance != NULL )
     {
-        return RbStatistics::MultivariateNormal::lnPdfCovariance(mean->getValue(), covariance->getValue(), *value, scale->getValue() );
+        return RbStatistics::MultivariateNormal::lnPdfPrecision(mean->getValue(), inverse_covariance_matrices[active_matrix], *value, scale->getValue() );
     }
     else
     {
@@ -140,7 +152,7 @@ void MultivariateNormalDistribution::redrawValue( void )
 
     if ( covariance != NULL )
     {
-        *value = RbStatistics::MultivariateNormal::rvCovariance( mean->getValue(), covariance->getValue(), *rng, scale->getValue() );
+        *value = RbStatistics::MultivariateNormal::rvPrecision( mean->getValue(), inverse_covariance_matrices[active_matrix], *rng, scale->getValue() );
     }
     else
     {
@@ -158,6 +170,31 @@ void MultivariateNormalDistribution::redrawValue( void )
     
 }
 
+void MultivariateNormalDistribution::restoreSpecialization(DagNode *affecter)
+{
+    
+    // reset the precision matrix if necessary
+    if ( affecter == covariance )
+    {
+        active_matrix = (active_matrix == 0 ? 1 : 0);
+    }
+
+}
+
+void MultivariateNormalDistribution::touchSpecialization(DagNode *affecter, bool touchAll)
+{
+    
+    if ( affecter == covariance )
+    {
+        // compute the inverse variance-covariance matrix (the precision matrix)
+        active_matrix = (active_matrix == 0 ? 1 : 0);
+        inverse_covariance_matrices[active_matrix] = covariance->getValue().computeInverse();
+        inverse_covariance_matrices[active_matrix].setCholesky(true);
+    }
+    
+}
+
+
 /** Swap a parameter of the distribution */
 void MultivariateNormalDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
@@ -169,6 +206,11 @@ void MultivariateNormalDistribution::swapParameterInternal(const DagNode *oldP, 
     if (oldP == covariance)
     {
         covariance = static_cast<const TypedDagNode<MatrixReal >* >( newP );
+        active_matrix = 0;
+        inverse_covariance_matrices[0] = covariance->getValue().computeInverse();
+        inverse_covariance_matrices[0].setCholesky(true);
+        inverse_covariance_matrices[1] = covariance->getValue().computeInverse();
+        inverse_covariance_matrices[1].setCholesky(true);
     }
     if (oldP == precision)
     {

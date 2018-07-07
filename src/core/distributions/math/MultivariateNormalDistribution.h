@@ -47,6 +47,10 @@ namespace RevBayesCore {
         double                                                          computeLnProbability(void);
         void                                                            redrawValue(void);
 
+        virtual void                                                    restoreSpecialization(DagNode *restorer);
+        virtual void                                                    touchSpecialization(DagNode *toucher, bool touchAll);
+
+        
     protected:
         // Parameter management functions
         void                                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);                    //!< Swap a parameter
@@ -61,6 +65,9 @@ namespace RevBayesCore {
 
         std::vector<bool>                                               observed;
         std::vector<double>                                             observations;
+        
+        size_t                                                          active_matrix;
+        std::vector<MatrixReal>                                         inverse_covariance_matrices;
         
     };
     
