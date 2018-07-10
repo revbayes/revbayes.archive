@@ -349,7 +349,7 @@ void MonteCarloAnalysis::initializeFromTrace( RbVector<ModelTrace> traces )
 /**
  * Print out a summary of the current performance.
  */
-void MonteCarloAnalysis::printPerformanceSummary( void ) const
+void MonteCarloAnalysis::printPerformanceSummary( bool current_period ) const
 {
     
 #ifdef RB_MPI
@@ -358,7 +358,7 @@ void MonteCarloAnalysis::printPerformanceSummary( void ) const
     
     if ( runs[0] != NULL )
     {
-        runs[0]->printOperatorSummary();
+        runs[0]->printOperatorSummary( current_period );
     }
     
 #ifdef RB_MPI

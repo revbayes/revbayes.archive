@@ -68,7 +68,7 @@ void AbstractGibbsMove::performMcmcMove( double prHeat, double lHeat, double pHe
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void AbstractGibbsMove::printSummary(std::ostream &o) const
+void AbstractGibbsMove::printSummary(std::ostream &o, bool current_period) const
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -111,30 +111,36 @@ void AbstractGibbsMove::printSummary(std::ostream &o) const
     o << weight;
     o << " ";
     
+    size_t num_tried = num_tried_total;
+    if (current_period == true)
+    {
+        num_tried = num_tried_current_period;
+    }
+    
     // print the number of tries
     int t_length = 9;
-    if (num_tried_total > 0) t_length -= (int)log10(num_tried_total);
+    if (num_tried > 0) t_length -= (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << num_tried_total;
+    o << num_tried;
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
-    if (num_tried_total > 0) a_length -= (int)log10(num_tried_total);
+    if (num_tried > 0) a_length -= (int)log10(num_tried);
     
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << num_tried_total;
+    o << num_tried;
     o << " ";
     
     // print the acceptance ratio
     double ratio = 1.0;
-    if (num_tried_total == 0) ratio = 0;
+    if (num_tried == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)

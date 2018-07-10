@@ -633,7 +633,7 @@ void Mcmc::nextCycle(bool advance_cycle)
 
 
 
-void Mcmc::printOperatorSummary(void)
+void Mcmc::printOperatorSummary(bool current_period)
 {
     
     if ( process_active == true )
@@ -644,7 +644,7 @@ void Mcmc::printOperatorSummary(void)
         std::cout << "===============================================================================================================================" << std::endl;
         for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
         {
-            it->printSummary(std::cout);
+            it->printSummary(std::cout, current_period);
         }
         
         std::cout << std::endl;

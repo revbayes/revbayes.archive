@@ -33,7 +33,7 @@ namespace RevBayesCore {
         virtual EllipticalSliceSamplingLognormalIIDMove*              clone(void) const;
         const std::string&                                      getMoveName(void) const;                            //!< Get the name of the move for summary printing
         double                                                  getMoveTuningParameter(void) const;
-        void                                                    printSummary(std::ostream &o) const;                //!< Print the move summary
+        void                                                    printSummary(std::ostream &o, bool current_period) const;                //!< Print the move summary
         void                                                    setMoveTuningParameter(double tp);
         void                                                    tune(void);                                         //!< Specific tuning of the move
 

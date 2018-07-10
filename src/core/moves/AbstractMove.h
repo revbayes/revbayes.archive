@@ -38,7 +38,7 @@ namespace RevBayesCore {
         virtual AbstractMove*                                   clone(void) const = 0;
         virtual const std::string&                              getMoveName(void) const = 0;                                        //!< Get the name of the move for summary printing
         virtual double                                          getMoveTuningParameter(void) const = 0;
-        virtual void                                            printSummary(std::ostream &o) const = 0;                            //!< Print the move summary
+        virtual void                                            printSummary(std::ostream &o, bool current_period) const = 0;                            //!< Print the move summary
         virtual void                                            setMoveTuningParameter(double tp) = 0;
         
         // functions you should not override
@@ -82,8 +82,8 @@ namespace RevBayesCore {
         RbOrderedSet<DagNode*>                                  affected_nodes;                                                      //!< The affected nodes by this move.
         double                                                  weight;
         bool                                                    auto_tuning;
-        unsigned int                                            num_tried_current_period;                                            //!< Number of times tried
-        unsigned int                                            num_tried_total;                                                     //!< Number of times tried
+        size_t                                                  num_tried_current_period;                                            //!< Number of times tried
+        size_t                                                  num_tried_total;                                                     //!< Number of times tried
 
     };
     

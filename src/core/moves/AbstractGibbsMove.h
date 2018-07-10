@@ -27,7 +27,7 @@ namespace RevBayesCore {
     public:
         virtual                                                ~AbstractGibbsMove(void);                            //!< Destructor
         
-        void                                                    printSummary(std::ostream &o) const;                //!< Print the move summary
+        void                                                    printSummary(std::ostream &o, bool current_period) const;                //!< Print the move summary
         
         // pure virtual public methods
         virtual AbstractGibbsMove*                              clone(void) const = 0;

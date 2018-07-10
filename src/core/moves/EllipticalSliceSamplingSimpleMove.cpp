@@ -282,7 +282,7 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double prHeat, double l
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o) const 
+void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o, bool current_period) const 
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -328,13 +328,13 @@ void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o) const
     
     // print the average distance moved
     o<<"\n";
-    if (num_tried_total > 0)
+    if (num_tried_current_period > 0)
     {
       o<<"  Ave. cos(angle(x1,x2)) = "<<total_movement/num_tried_current_period<<std::endl;
     }
 
     // print the average distance moved
-    if (num_tried_total > 0)
+    if (num_tried_current_period > 0)
     {
       o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried_current_period<<std::endl;
     }

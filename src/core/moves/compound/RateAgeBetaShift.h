@@ -24,7 +24,7 @@ namespace RevBayesCore {
         double                                  getMoveTuningParameter(void) const;
         size_t                                  getNumberAcceptedCurrentPeriod(void) const;                         //!< Get update weight of InferenceMove
         size_t                                  getNumberAcceptedTotal(void) const;                                 //!< Get update weight of InferenceMove
-        void                                    printSummary(std::ostream &o) const;                                                //!< Print the move summary
+        void                                    printSummary(std::ostream &o, bool current_period) const;                                                //!< Print the move summary
         void                                    setMoveTuningParameter(double tp);
         void                                    setNumberAcceptedCurrentPeriod(size_t na);
         void                                    setNumberAcceptedTotal(size_t na);

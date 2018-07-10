@@ -46,7 +46,7 @@ namespace RevBayesCore {
 //        virtual void                                            perform(double lHeat, double pHeat) = 0;                  //!< Perform the move.
         virtual void                                            performMcmcStep(double prHeat, double lHeat, double pHeat) = 0;            //!< Perform the move.
         virtual void                                            performHillClimbingStep(double lHeat, double pHeat) = 0;    //!< Perform the move.
-        virtual void                                            printSummary(std::ostream &o) const = 0;                    //!< Print the move summary
+        virtual void                                            printSummary(std::ostream &o, bool current_period) const = 0;                    //!< Print the move summary
         virtual void                                            removeNode(DagNode* p) = 0;                                 //!< remove a node from the proposal
         virtual void                                            resetCounters(void) = 0;                                    //!< Reset the counters such as numTried and numAccepted.
         virtual void                                            setMoveTuningParameter(double tp) = 0;

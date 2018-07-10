@@ -280,7 +280,7 @@ void RateAgeBetaShift::performMcmcMove( double prHeat, double lHeat, double pHea
 }
 
 
-void RateAgeBetaShift::printSummary(std::ostream &o) const
+void RateAgeBetaShift::printSummary(std::ostream &o, bool current_period) const
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -318,30 +318,38 @@ void RateAgeBetaShift::printSummary(std::ostream &o) const
     o << weight;
     o << " ";
     
+    size_t num_tried = num_tried_total;
+    size_t num_accepted = num_accepted_total;
+    if (current_period == true)
+    {
+        num_tried = num_tried_current_period;
+        num_accepted = num_accepted_current_period;
+    }
+    
     // print the number of tries
     int t_length = 9;
-    if (num_tried_current_period > 0) t_length -= (int)log10(num_tried_current_period);
+    if (num_tried > 0) t_length -= (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << num_tried_current_period;
+    o << num_tried;
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
-    if (num_accepted_current_period > 0) a_length -= (int)log10(num_accepted_current_period);
+    if (num_accepted > 0) a_length -= (int)log10(num_accepted);
     
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << num_accepted_current_period;
+    o << num_accepted;
     o << " ";
     
     // print the acceptance ratio
-    double ratio = num_accepted_current_period / (double)num_tried_current_period;
-    if (num_tried_current_period == 0) ratio = 0;
+    double ratio = num_accepted / (double)num_tried;
+    if (num_tried == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)

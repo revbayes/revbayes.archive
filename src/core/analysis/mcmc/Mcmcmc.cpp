@@ -606,7 +606,7 @@ void Mcmcmc::printMoveSummary(std::ostream &o, size_t chainId, size_t moveId, Mo
 }
 
 
-void Mcmcmc::printOperatorSummary(void)
+void Mcmcmc::printOperatorSummary(bool current_period)
 {
     
     // send all chain heats to pid 0

@@ -60,7 +60,7 @@ namespace RevBayesCore {
         void                                                monitor(unsigned long g);
         void                                                nextCycle(bool advanceCycle);
         bool                                                isChainActive(void);
-        void                                                printOperatorSummary(void);
+        void                                                printOperatorSummary(bool current_period);
         void                                                redrawStartingValues(void);                                                             //!< Redraw the starting values.
         void                                                removeMonitors(void);
         void                                                reset(void);                                                                            //!< Reset the sampler and set all the counters back to 0.
