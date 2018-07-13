@@ -684,7 +684,7 @@ double AbstractPiecewiseConstantFossilizedRangeProcess::q( size_t i, double t, b
  */
 void AbstractPiecewiseConstantFossilizedRangeProcess::updateIntervals() const
 {
-    std::vector<bool> youngest(taxa.size(), true);
+    std::vector<bool> youngest(fbd_taxa.size(), true);
 
     for (int i = (int)num_intervals - 1; i >= 0; i--)
     {
@@ -721,7 +721,7 @@ void AbstractPiecewiseConstantFossilizedRangeProcess::updateIntervals() const
 
         if( presence_absence )
         {
-            for(size_t j = 0; j < taxa.size(); j++)
+            for(size_t j = 0; j < fbd_taxa.size(); j++)
             {
                 if( getFossilCount(i,j) > 0 )
                 {
