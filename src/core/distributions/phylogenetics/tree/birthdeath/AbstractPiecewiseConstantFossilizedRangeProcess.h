@@ -99,8 +99,6 @@ namespace RevBayesCore {
         mutable std::vector<double>                     q_tilde_i;
         mutable std::vector<double>                     p_i;
 
-        std::vector<Taxon>                              taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
-
         bool                                            marginalize_k;
         bool                                            presence_absence;
 
