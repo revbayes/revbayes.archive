@@ -33,7 +33,7 @@ AbstractPiecewiseConstantFossilizedRangeProcess::AbstractPiecewiseConstantFossil
                                                                                                  const TypedDagNode< RbVector<double> > *intimes,
                                                                                                  const std::vector<Taxon> &intaxa,
                                                                                                  bool pa ) :
-    ascending(false), homogeneous_rho(inrho), timeline( intimes ), taxa(intaxa), presence_absence(pa)
+    ascending(false), homogeneous_rho(inrho), timeline( intimes ), fbd_taxa(intaxa), presence_absence(pa)
 {
     // initialize all the pointers to NULL
     homogeneous_lambda             = NULL;
@@ -150,10 +150,10 @@ AbstractPiecewiseConstantFossilizedRangeProcess::AbstractPiecewiseConstantFossil
             ss << "Number of fossil counts (" << interval_fossil_counts->getValue().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
             throw(RbException(ss.str()));
         }
-        else if ( species_interval_fossil_counts != NULL && species_interval_fossil_counts->getValue().size() != taxa.size())
+        else if ( species_interval_fossil_counts != NULL && species_interval_fossil_counts->getValue().size() != fbd_taxa.size())
         {
             std::stringstream ss;
-            ss << "Number of species fossil counts (" << species_interval_fossil_counts->getValue().size() << ") does not match number of taxa (" << taxa.size() << ")";
+            ss << "Number of species fossil counts (" << species_interval_fossil_counts->getValue().size() << ") does not match number of taxa (" << fbd_taxa.size() << ")";
             throw(RbException(ss.str()));
         }
         else if ( species_interval_fossil_counts != NULL && species_interval_fossil_counts->getValue().front().size() != timeline->getValue().size() + 1)
@@ -188,10 +188,10 @@ AbstractPiecewiseConstantFossilizedRangeProcess::AbstractPiecewiseConstantFossil
         }
     }
 
-    b_i = std::vector<double>(taxa.size(), 0.0);
-    d_i = std::vector<double>(taxa.size(), 0.0);
+    b_i = std::vector<double>(fbd_taxa.size(), 0.0);
+    d_i = std::vector<double>(fbd_taxa.size(), 0.0);
 
-    if( presence_absence ) H = std::vector<double>(taxa.size(), 0.0);
+    if( presence_absence ) H = std::vector<double>(fbd_taxa.size(), 0.0);
 
     p_i         = std::vector<double>(num_intervals, 1.0);
     q_i         = std::vector<double>(num_intervals, 0.0);
@@ -202,8 +202,8 @@ AbstractPiecewiseConstantFossilizedRangeProcess::AbstractPiecewiseConstantFossil
     fossil      = std::vector<double>(num_intervals, 0.0);
     times       = std::vector<double>(num_intervals, 0.0);
 
-    oldest_intervals = std::vector<size_t>( taxa.size(), num_intervals - 1 );
-    youngest_intervals = std::vector<size_t>( taxa.size(), num_intervals - 1 );
+    oldest_intervals = std::vector<size_t>( fbd_taxa.size(), num_intervals - 1 );
+    youngest_intervals = std::vector<size_t>( fbd_taxa.size(), num_intervals - 1 );
 
     updateIntervals();
 }
@@ -231,12 +231,12 @@ double AbstractPiecewiseConstantFossilizedRangeProcess::computeLnProbabilityRang
     std::vector<double> L (num_intervals, 0.0);
 
     // add the fossil tip age terms
-    for (size_t i = 0; i < taxa.size(); ++i)
+    for (size_t i = 0; i < fbd_taxa.size(); ++i)
     {
         double b = b_i[i];
         double d = d_i[i];
-        double o = taxa[i].getAgeRange().getMax();
-        double y = taxa[i].getAgeRange().getMin();
+        double o = fbd_taxa[i].getAgeRange().getMax();
+        double y = fbd_taxa[i].getAgeRange().getMin();
 
         size_t bi = l(b);
         size_t di = l(d);
