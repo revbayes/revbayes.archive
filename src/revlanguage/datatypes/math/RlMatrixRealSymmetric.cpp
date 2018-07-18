@@ -79,9 +79,13 @@ RevPtr<RevVariable> MatrixRealSymmetric::executeMethod(std::string const &name, 
         
         //int n = (int)this->dag_node->getValue().getNumberOfCharacters();
 
-        RevBayesCore::MatrixReal& m = this->dag_node->getValue();
-        std::cout << m[0][0] << std::endl;
+//        RevBayesCore::MatrixReal& m = this->dag_node->getValue();
+//        std::cout << m[0][0] << std::endl;
 
+        this->dag_node->getValue().setCholesky(true);
+        RevBayesCore::MatrixReal p = this->dag_node->getValue().computeInverse();
+        return new RevVariable( new MatrixRealSymmetric( p ) );
+        
         // get the member with give index
         /*const RevBayesCore::MatrixReal& m = static_cast<const RevBayesCore::MatrixReal&>( args[0].getVariable()->getRevObject() );
         

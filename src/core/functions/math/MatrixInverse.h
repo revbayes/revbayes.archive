@@ -19,8 +19,8 @@
  */
 
 
-#ifndef UpperTriangle_H
-#define UpperTriangle_H
+#ifndef MatrixInverse_H
+#define MatrixInverse_H
 
 #include "RbVector.h"
 #include "MatrixReal.h"
@@ -31,14 +31,14 @@
 
 namespace RevBayesCore {
     
-    class UpperTriangle : public TypedFunction< RbVector<double> >{
+    class MatrixInverse : public TypedFunction< MatrixReal >{
         
     public:
-        UpperTriangle(const TypedDagNode< MatrixReal > * m);
-        virtual                                             ~UpperTriangle(void);                                //!< Virtual destructor
+        MatrixInverse(const TypedDagNode< MatrixReal > * m);
+        virtual                                             ~MatrixInverse(void);                                //!< Virtual destructor
         
         // public member functions
-        UpperTriangle*               clone(void) const;                                               //!< Create an independent clone
+        MatrixInverse*               clone(void) const;                                               //!< Create an independent clone
         void                                                update(void);
         
     protected:
@@ -48,7 +48,7 @@ namespace RevBayesCore {
         
         // members
         
-        const TypedDagNode< MatrixReal >*                   matrix;
+        const TypedDagNode< MatrixReal >*          matrix;
         
     };
     

@@ -1,9 +1,9 @@
-#include "UpperTriangle.h"
+#include "MatrixInverse.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
 
-UpperTriangle::UpperTriangle(const TypedDagNode< MatrixReal > *m) : TypedFunction< RbVector<double> >( new RbVector<double>(m->getValue().getDim(), 1.0) ),
+MatrixInverse::MatrixInverse(const TypedDagNode< MatrixReal > *m) : TypedFunction< MatrixReal >( new MatrixReal(m->getValue().getDim()) ),
     matrix( m )
 {
 
@@ -14,38 +14,41 @@ UpperTriangle::UpperTriangle(const TypedDagNode< MatrixReal > *m) : TypedFunctio
 }
 
 
-UpperTriangle::~UpperTriangle( void ) {
+MatrixInverse::~MatrixInverse( void ) {
 
 }
 
 
-UpperTriangle* UpperTriangle::clone( void ) const {
+MatrixInverse* MatrixInverse::clone( void ) const {
 
-    return new UpperTriangle( *this );
+    return new MatrixInverse( *this );
 }
 
 
-void UpperTriangle::update(void) {
+void MatrixInverse::update(void) {
 
-    const MatrixReal R = matrix->getValue();
-    size_t nrows = R.getDim();
-
-    value->clear();
-    value->resize( nrows * (nrows - 1) / 2 );
+    matrix->getValue().setCholesky(true);
+    *value = matrix->getValue().computeInverse();
     
-    size_t k = 0;
-    for (size_t i = 0; i < nrows; ++i)
-    {
-        for (size_t j = i + 1; j < nrows; ++j)
-        {
-            (*value)[k++] = R[i][j];
-        }
-    }
+//    const MatrixReal R = matrix->getValue();
+//    size_t nrows = R.getDim();
+//
+//    value->clear();
+//    value->resize( nrows * (nrows - 1) / 2 );
+//    
+//    size_t k = 0;
+//    for (size_t i = 0; i < nrows; ++i)
+//    {
+//        for (size_t j = i + 1; j < nrows; ++j)
+//        {
+//            (*value)[k++] = R[i][j];
+//        }
+//    }
 
 }
 
 
-void UpperTriangle::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void MatrixInverse::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
 
     // check dimensions here
     if (oldP == matrix)

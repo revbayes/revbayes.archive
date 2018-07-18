@@ -227,6 +227,7 @@
 #include "Func_log.h"
 #include "Func_logistic.h"
 #include "Func_matrix.h"
+#include "Func_matrixInverse.h"
 #include "Func_max.h"
 #include "Func_mean.h"
 #include "Func_meanPositive.h"
@@ -427,6 +428,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         
         // matrix function (converts into MatrixReal)
         addFunction( new Func_matrix() );
+        addFunction( new Func_matrixInverse() );
 
         // max function
         addFunction( new Func_max()  );

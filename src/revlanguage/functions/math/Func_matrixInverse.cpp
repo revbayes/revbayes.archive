@@ -1,6 +1,6 @@
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
-#include "Func_upperTriangle.h"
+#include "Func_matrixInverse.h"
 #include "Integer.h"
 #include "NormalizeVectorFunction.h"
 #include "MatrixReal.h"
@@ -12,35 +12,35 @@
 #include "RlMatrixRealSymmetric.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-
-#include "UpperTriangle.h"
+#include "MatrixInverse.h"
 
 
 using namespace RevLanguage;
 
-Func_upperTriangle::Func_upperTriangle() : TypedFunction< ModelVector< RealPos > >() {
+Func_matrixInverse::Func_matrixInverse() : TypedFunction< MatrixRealSymmetric >() {
     
 }
 
 /* Clone object */
-Func_upperTriangle* Func_upperTriangle::clone( void ) const
+Func_matrixInverse* Func_matrixInverse::clone( void ) const
 {
-    return new Func_upperTriangle( *this );
+    return new Func_matrixInverse( *this );
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_upperTriangle::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_matrixInverse::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* m = static_cast<const MatrixReal& >( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::UpperTriangle *func = new RevBayesCore::UpperTriangle( m );
+    RevBayesCore::MatrixInverse *func = new RevBayesCore::MatrixInverse( m );
     
     return func;
+    
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_upperTriangle::getArgumentRules( void ) const
+const ArgumentRules& Func_matrixInverse::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -57,17 +57,17 @@ const ArgumentRules& Func_upperTriangle::getArgumentRules( void ) const
 
 
 /** Get class name of object */
-const std::string& Func_upperTriangle::getClassName(void)
+const std::string& Func_matrixInverse::getClassName(void)
 {
     
-    static std::string rbClassName = "Func_upperTriangle";
+    static std::string rbClassName = "Func_matrixInverse";
     
 	return rbClassName; 
 }
 
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& Func_upperTriangle::getClassTypeSpec(void)
+const RevLanguage::TypeSpec& Func_matrixInverse::getClassTypeSpec(void)
 {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -79,17 +79,17 @@ const RevLanguage::TypeSpec& Func_upperTriangle::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_upperTriangle::getFunctionName( void ) const
+std::string Func_matrixInverse::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnUpperTriangle";
+    std::string f_name = "fnMatrixInverse";
     
     return f_name;
 }
 
 
 /** Get type spec */
-const TypeSpec& Func_upperTriangle::getTypeSpec( void ) const
+const TypeSpec& Func_matrixInverse::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
