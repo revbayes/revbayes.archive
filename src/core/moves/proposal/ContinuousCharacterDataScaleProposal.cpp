@@ -61,6 +61,12 @@ const std::string& ContinuousCharacterDataScaleProposal::getProposalName( void )
 }
 
 
+double ContinuousCharacterDataScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -114,10 +120,14 @@ void ContinuousCharacterDataScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ContinuousCharacterDataScaleProposal::printParameterSummary(std::ostream &o) const
+void ContinuousCharacterDataScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -150,6 +160,12 @@ void ContinuousCharacterDataScaleProposal::swapNodeInternal(DagNode *oldN, DagNo
     
     variable = static_cast< StochasticNode<ContinuousCharacterData>* >(newN) ;
     
+}
+
+
+void ContinuousCharacterDataScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

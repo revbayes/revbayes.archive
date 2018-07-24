@@ -1,6 +1,7 @@
 #include "SpeciesSubtreeScaleProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
@@ -92,6 +93,13 @@ const std::string& SpeciesSubtreeScaleProposal::getProposalName( void ) const
     static std::string name = "SpeciesSubtreeScale";
 
     return name;
+}
+
+
+double SpeciesSubtreeScaleProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -276,7 +284,7 @@ void SpeciesSubtreeScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SpeciesSubtreeScaleProposal::printParameterSummary(std::ostream &o) const
+void SpeciesSubtreeScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
 
     // no parameters
@@ -358,6 +366,12 @@ void SpeciesSubtreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
 
+}
+
+
+void SpeciesSubtreeScaleProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

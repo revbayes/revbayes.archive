@@ -62,6 +62,12 @@ const std::string& CorrelationMatrixRandomWalkProposal::getProposalName( void ) 
 }
 
 
+double CorrelationMatrixRandomWalkProposal::getProposalTuningParameter( void ) const
+{
+    return sigma;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -113,10 +119,14 @@ void CorrelationMatrixRandomWalkProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void CorrelationMatrixRandomWalkProposal::printParameterSummary(std::ostream &o) const
+void CorrelationMatrixRandomWalkProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "sigma = " << sigma;
+    o << "sigma = ";
+    if (name_only == false)
+    {
+        o << sigma;
+    }
     
 }
 
@@ -156,6 +166,12 @@ void CorrelationMatrixRandomWalkProposal::swapNodeInternal(DagNode *oldN, DagNod
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
     
+}
+
+
+void CorrelationMatrixRandomWalkProposal::setProposalTuningParameter(double tp)
+{
+    sigma = tp;
 }
 
 

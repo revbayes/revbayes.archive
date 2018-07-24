@@ -54,7 +54,7 @@ namespace RevBayesCore {
         virtual void                            initializeSampler(bool priorOnly=false) = 0;                //!< Initialize objects for mcmc sampling
         virtual void                            monitor(unsigned long g) = 0;
         virtual void                            nextCycle(bool advanceCycle) = 0;
-        virtual void                            printOperatorSummary(void) const = 0;
+        virtual void                            printOperatorSummary(bool current_period) = 0;
         virtual void                            redrawStartingValues(void) = 0;                             //!< Redraw the starting values.
         virtual void                            removeMonitors(void) = 0;
         virtual void                            reset(void) = 0;                                            //!< Reset the sampler for a new run.

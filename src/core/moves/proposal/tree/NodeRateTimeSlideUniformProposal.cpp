@@ -83,6 +83,12 @@ const std::string& NodeRateTimeSlideUniformProposal::getProposalName( void ) con
 }
 
 
+double NodeRateTimeSlideUniformProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
+}
+
 /**
  * Perform the proposal.
  *
@@ -197,7 +203,7 @@ void NodeRateTimeSlideUniformProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NodeRateTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
+void NodeRateTimeSlideUniformProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }
@@ -257,6 +263,12 @@ void NodeRateTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *
         }
     }
     
+}
+
+
+void NodeRateTimeSlideUniformProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

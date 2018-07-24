@@ -47,7 +47,7 @@ using namespace RevBayesCore;
 CorrespondenceAnalysis::CorrespondenceAnalysis(
                                                const MatrixReal& data,
                                                unsigned int nbAxes,
-                                               double tol) throw (RbException) :
+                                               double tol) :
 DualityDiagram(),
 n_()
 {

@@ -3,6 +3,7 @@
 #include "InverseWishartDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 
 #include <cmath>
 #include <iomanip>
@@ -13,7 +14,8 @@ CorrelationMatrixReparameterizationMove::CorrelationMatrixReparameterizationMove
     correlation_matrix( cm ),
     variance( v ),
     mvbm( mv ),
-    numAccepted( 0 ),
+    num_accepted_current_period( 0 ),
+    num_accepted_total( 0 ),
     stored_matrix( cm->getValue().getNumberOfRows() )
 {
     
@@ -61,8 +63,27 @@ const std::string& CorrelationMatrixReparameterizationMove::getMoveName( void ) 
 }
 
 
+double CorrelationMatrixReparameterizationMove::getMoveTuningParameter( void ) const
+{
+    // this move has no tuning parameter
+    return RbConstants::Double::nan;
+}
+
+
+size_t CorrelationMatrixReparameterizationMove::getNumberAcceptedCurrentPeriod( void ) const
+{
+    return num_accepted_current_period;
+}
+
+
+size_t CorrelationMatrixReparameterizationMove::getNumberAcceptedTotal( void ) const
+{
+    return num_accepted_total;
+}
+
+
 /** Perform the move */
-void CorrelationMatrixReparameterizationMove::performMcmcMove( double lHeat, double pHeat )
+void CorrelationMatrixReparameterizationMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
     
     stored_matrix = correlation_matrix->getValue();
@@ -154,14 +175,16 @@ void CorrelationMatrixReparameterizationMove::performMcmcMove( double lHeat, dou
     double new_ln_lik = dist->computeLnProbability();
 
     // compute the acceptance ratio
-    double ln_acceptance_ratio = ln_prior_ratio + ln_hastings_ratio;
+    double ln_acceptance_ratio = pHeat * prHeat * ln_prior_ratio + ln_hastings_ratio;
 //    ln_acceptance_ratio = -500.0;
     double acceptance_ratio = exp(ln_acceptance_ratio);
     
 
     if (ln_acceptance_ratio > 0.0)
     {
-        numAccepted++;
+        num_accepted_total++;
+        num_accepted_current_period++;
+        
         correlation_matrix->keep();
         mvbm->keep();
         double lnp = dist->computeLnProbability();
@@ -181,7 +204,9 @@ void CorrelationMatrixReparameterizationMove::performMcmcMove( double lHeat, dou
         double u = GLOBAL_RNG->uniform01();
         if (u < r)
         {
-            numAccepted++;
+            num_accepted_total++;
+            num_accepted_current_period++;
+            
             correlation_matrix->keep();
             mvbm->keep();
             double lnp = dist->computeLnProbability();
@@ -200,7 +225,7 @@ void CorrelationMatrixReparameterizationMove::performMcmcMove( double lHeat, dou
 }
 
 
-void CorrelationMatrixReparameterizationMove::printSummary(std::ostream &o) const
+void CorrelationMatrixReparameterizationMove::printSummary(std::ostream &o, bool current_period) const
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -238,30 +263,38 @@ void CorrelationMatrixReparameterizationMove::printSummary(std::ostream &o) cons
     o << weight;
     o << " ";
     
+    size_t num_tried = num_tried_total;
+    size_t num_accepted = num_accepted_total;
+    if (current_period == true)
+    {
+        num_tried = num_tried_current_period;
+        num_accepted = num_accepted_current_period;
+    }
+    
     // print the number of tries
     int t_length = 9;
-    if (num_tried_total > 0) t_length -= (int)log10(num_tried_total);
+    if (num_tried > 0) t_length -= (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << num_tried_total;
+    o << num_tried;
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
-    if (numAccepted > 0) a_length -= (int)log10(numAccepted);
+    if (num_accepted > 0) a_length -= (int)log10(num_accepted);
     
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << numAccepted;
+    o << num_accepted;
     o << " ";
     
     // print the acceptance ratio
-    double ratio = numAccepted / (double)num_tried_total;
-    if (num_tried_total == 0) ratio = 0;
+    double ratio = num_accepted / (double)num_tried;
+    if (num_tried == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)
@@ -293,7 +326,7 @@ void CorrelationMatrixReparameterizationMove::reject( void )
  */
 void CorrelationMatrixReparameterizationMove::resetMoveCounters( void )
 {
-    numAccepted = 0;
+    num_accepted_current_period = 0;
 }
 
 
@@ -313,6 +346,24 @@ void CorrelationMatrixReparameterizationMove::swapNodeInternal(DagNode *oldN, Da
         mvbm = static_cast<StochasticNode<ContinuousCharacterData>* >(newN) ;
     }
     
+}
+
+
+void CorrelationMatrixReparameterizationMove::setMoveTuningParameter(double tp)
+{
+    // this move has no tuning parameter: nothing to do
+}
+
+
+void CorrelationMatrixReparameterizationMove::setNumberAcceptedCurrentPeriod( size_t na )
+{
+    num_accepted_current_period = na;
+}
+
+
+void CorrelationMatrixReparameterizationMove::setNumberAcceptedTotal( size_t na )
+{
+    num_accepted_total = na;
 }
 
 

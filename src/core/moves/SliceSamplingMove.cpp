@@ -66,6 +66,13 @@ const std::string& SliceSamplingMove::getMoveName( void ) const
     return name;
 }
 
+
+double SliceSamplingMove::getMoveTuningParameter( void ) const
+{
+    return window;
+}
+
+
 double uniform()
 {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -98,6 +105,7 @@ class slice_function: public interval
   StochasticNode<double>* variable;
   double lHeat;
   double pHeat;
+  double prHeat;
   RbOrderedSet<DagNode*> affectedNodes;
   int num_evals;
 
@@ -123,7 +131,7 @@ public:
     }
 
     // 3. exponentiate with the chain heat
-    double lnPosterior = pHeat * (lHeat * lnLikelihood + lnPrior);
+    double lnPosterior = pHeat * (lHeat * lnLikelihood + prHeat * lnPrior);
 
     return lnPosterior;
   }
@@ -153,10 +161,11 @@ public:
     return variable->getValue();
   }
 
-  slice_function(StochasticNode<double> *n, double l, double p, bool pos_only=false)
+  slice_function(StochasticNode<double> *n, double pr, double l, double p, bool pos_only=false)
     :variable(n),
      lHeat(l),
      pHeat(p),
+     prHeat(pr),
      num_evals(0)
   {
     variable->getAffectedNodes( affectedNodes );
@@ -262,9 +271,9 @@ double slice_sample(double x0, slice_function& g,double w, int m)
 }
 
 
-void SliceSamplingMove::performMcmcMove( double lHeat, double pHeat )
+void SliceSamplingMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
-  slice_function g(variable, lHeat, pHeat);
+  slice_function g(variable, prHeat, lHeat, pHeat);
 
   double x1 = g.current_value();
 
@@ -291,7 +300,7 @@ void SliceSamplingMove::performMcmcMove( double lHeat, double pHeat )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SliceSamplingMove::printSummary(std::ostream &o) const 
+void SliceSamplingMove::printSummary(std::ostream &o, bool current_period) const
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -337,15 +346,15 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
     
     // print the average distance moved
     o<<"\n";
-    if (num_tried_total > 0)
+    if (num_tried_current_period > 0)
     {
-      o<<"  Ave. |x2-x1| = "<<total_movement/num_tried_total<<std::endl;
+      o<<"  Ave. |x2-x1| = "<<total_movement/num_tried_current_period<<std::endl;
     }
 
     // print the average distance moved
-    if (num_tried_total > 0)
+    if (num_tried_current_period > 0)
     {
-      o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried_total<<std::endl;
+      o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried_current_period<<std::endl;
     }
 
     //    proposal->printParameterSummary( o );
@@ -384,15 +393,26 @@ void SliceSamplingMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
 }
 
 
+void SliceSamplingMove::setMoveTuningParameter(double tp)
+{
+    window = tp;
+}
+
+
 /**
  * Tune the move to accept the desired acceptance ratio.
  * We only compute the acceptance ratio here and delegate the call to the proposal.
  */
 void SliceSamplingMove::tune( void ) 
 {
-  double predicted_window = 4.0*total_movement/num_tried_current_period;
-
-  double p = exp(-double(num_tried_current_period)*0.5);
-  window = p*window + (1.0-p)*predicted_window;
+    
+    if ( num_tried_current_period > 2 )
+    {
+        double predicted_window = 4.0*total_movement/num_tried_current_period;
+        
+        double p = exp(-double(num_tried_current_period)*0.5);
+        window = p*window + (1.0-p)*predicted_window;
+    }
+    
 }
 

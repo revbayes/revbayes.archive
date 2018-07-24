@@ -27,16 +27,19 @@ namespace RevBayesCore {
     public:
         virtual                                                ~AbstractGibbsMove(void);                            //!< Destructor
         
-        void                                                    printSummary(std::ostream &o) const;                //!< Print the move summary
+        void                                                    printSummary(std::ostream &o, bool current_period) const;                //!< Print the move summary
         
         // pure virtual public methods
         virtual AbstractGibbsMove*                              clone(void) const = 0;
         virtual const std::string&                              getMoveName(void) const = 0;                        //!< Get the name of the move for summary printing
         
+        virtual double                                          getMoveTuningParameter(void) const;
+        virtual void                                            setMoveTuningParameter(double tp);
+        
     protected:
         AbstractGibbsMove(double w);                                                         //!< Constructor
         
-        void                                                    performMcmcMove(double lHeat, double pHeat);            //!< Perform the move.
+        void                                                    performMcmcMove(double prHeat, double lHeat, double pHeat);            //!< Perform the move.
         void                                                    tune(void);                                     //!< Specific tuning of the move
         
         // pure virtual protected methods
