@@ -56,8 +56,12 @@ namespace RevBayesCore {
         void                                                        cleanProposal(void);
         double                                                      doProposal(void);                                               //!< Perform proposal
         const std::string&                                          getProposalName(void) const;                                    //!< Get the name of the proposal for summary printing
-        void                                                        printParameterSummary(std::ostream &o) const;                   //!< Print the parameter summary
+        void                                                        printParameterSummary(std::ostream &o, bool name_only) const;                   //!< Print the parameter summary
         void                                                        prepareProposal(void);                                          //!< Prepare the proposal
+        
+        double getProposalTuningParameter(void) const;
+        void setProposalTuningParameter(double tp);
+        
         
         void                                                        setSampledCharacters(const std::set<size_t>& s);
         void                                                        setRateGenerator(const TypedDagNode<RateGenerator> *d);         //!< Set the rate generator.
@@ -199,6 +203,18 @@ void RevBayesCore::BiogeographicCladogeneticRejectionSampleProposal<charType>::a
     node = nd;
 }
 
+
+template<class charType>
+double RevBayesCore::BiogeographicCladogeneticRejectionSampleProposal<charType>::getProposalTuningParameter(void) const
+{
+    return lambda;
+}
+
+template<class charType>
+void RevBayesCore::BiogeographicCladogeneticRejectionSampleProposal<charType>::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
+}
 
 template<class charType>
 double RevBayesCore::BiogeographicCladogeneticRejectionSampleProposal<charType>::computeAnagenesisConditionLnProposal(void)
@@ -836,7 +852,7 @@ void RevBayesCore::BiogeographicCladogeneticRejectionSampleProposal<charType>::p
  * \param[in]     o     The stream to which we print the summary.
  */
 template<class charType>
-void RevBayesCore::BiogeographicCladogeneticRejectionSampleProposal<charType>::printParameterSummary(std::ostream &o) const
+void RevBayesCore::BiogeographicCladogeneticRejectionSampleProposal<charType>::printParameterSummary(std::ostream &o, bool name_only) const
 {
     //    o << "lambda = " << lambda;
 }
