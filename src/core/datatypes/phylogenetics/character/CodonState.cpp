@@ -604,6 +604,10 @@ void CodonState::setState(const std::string &s)
                                 ++num_observed_states;
                                 size_t triplet_index = i*16 + j*4 + k;
                                 size_t codon_index = TRIPLET_TO_CODON_INDICES[triplet_index];
+                                if ( codon_index >= 61 )
+                                {
+                                    throw RbException("The symbol '"+s+"' is not a valid codon state.");
+                                }
                                 state.set( codon_index );
                                 index_single_state = codon_index;
                                 

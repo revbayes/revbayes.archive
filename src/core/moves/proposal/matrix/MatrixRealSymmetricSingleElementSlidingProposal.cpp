@@ -61,6 +61,12 @@ const std::string& MatrixRealSymmetricSingleElementSlidingProposal::getProposalN
 }
 
 
+double MatrixRealSymmetricSingleElementSlidingProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -119,10 +125,14 @@ void MatrixRealSymmetricSingleElementSlidingProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void MatrixRealSymmetricSingleElementSlidingProposal::printParameterSummary(std::ostream &o) const
+void MatrixRealSymmetricSingleElementSlidingProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "delta = " << delta;
+    o << "delta = ";
+    if (name_only == false)
+    {
+        o << delta;
+    }
     
 }
 
@@ -156,6 +166,12 @@ void MatrixRealSymmetricSingleElementSlidingProposal::swapNodeInternal(DagNode *
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
     
+}
+
+
+void MatrixRealSymmetricSingleElementSlidingProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

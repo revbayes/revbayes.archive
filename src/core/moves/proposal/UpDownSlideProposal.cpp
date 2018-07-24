@@ -109,6 +109,12 @@ const std::string& UpDownSlideProposal::getProposalName( void ) const
 }
 
 
+double UpDownSlideProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -190,10 +196,14 @@ void UpDownSlideProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void UpDownSlideProposal::printParameterSummary(std::ostream &o) const
+void UpDownSlideProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -332,6 +342,12 @@ void UpDownSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
+}
+
+
+void UpDownSlideProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

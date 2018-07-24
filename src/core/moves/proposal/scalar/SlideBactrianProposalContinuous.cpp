@@ -63,6 +63,12 @@ const std::string& SlideBactrianProposalContinuous::getProposalName( void ) cons
 }
 
 
+double SlideBactrianProposalContinuous::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -139,10 +145,14 @@ void SlideBactrianProposalContinuous::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SlideBactrianProposalContinuous::printParameterSummary(std::ostream &o) const
+void SlideBactrianProposalContinuous::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "sigma = " << lambda;
+    o << "sigma = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -173,6 +183,12 @@ void SlideBactrianProposalContinuous::swapNodeInternal(DagNode *oldN, DagNode *n
     
     variable = static_cast< ContinuousStochasticNode* >(newN) ;
     
+}
+
+
+void SlideBactrianProposalContinuous::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

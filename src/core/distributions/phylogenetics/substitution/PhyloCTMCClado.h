@@ -180,7 +180,7 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const PhyloCTMCClado &n) 
     cladogenesisTimes                   = n.cladogenesisTimes;
     
     // copy the partial likelihoods if necessary
-    if ( this->inMcmcMode == true )
+    if ( this->in_mcmc_mode == true )
     {
         cladoPartialLikelihoods = new double[2*this->num_nodes*this->num_site_rates*this->num_sites*this->num_chars*this->num_chars];
         memcpy(cladoPartialLikelihoods, n.cladoPartialLikelihoods, 2*this->num_nodes*this->num_site_rates*this->num_patterns*this->num_chars*this->num_chars*sizeof(double));
@@ -223,7 +223,7 @@ double RevBayesCore::PhyloCTMCClado<charType>::computeLnProbability( void )
 
     
     // if we are not in MCMC mode, then we need to (temporarily) allocate memory
-    if ( this->inMcmcMode == false )
+    if ( this->in_mcmc_mode == false )
     {
         cladoPartialLikelihoods = new double[2*this->num_nodes*this->num_site_rates*this->num_sites*this->num_chars*this->num_chars];
     }
@@ -231,7 +231,7 @@ double RevBayesCore::PhyloCTMCClado<charType>::computeLnProbability( void )
     double lnL = RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbability();
     
     // if we are not in MCMC mode, then we need to (temporarily) free memory
-    if ( this->inMcmcMode == false )
+    if ( this->in_mcmc_mode == false )
     {
         // free the partial likelihoods
         delete [] cladoPartialLikelihoods;
@@ -1079,7 +1079,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::resizeLikelihoodVectors( void )
     size_t n = this->num_nodes*this->num_site_rates*this->num_patterns*this->num_chars*this->num_chars;
     
     // only do this if we are in MCMC mode. This will safe memory
-    if ( this->inMcmcMode == true )
+    if ( this->in_mcmc_mode == true )
     {
         
         // we resize the partial likelihood vectors to the new dimensions

@@ -123,7 +123,9 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
     {
         found = true;
         
-        value->printPerformanceSummary();
+        bool current_period = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getValue();
+        
+        value->printPerformanceSummary( current_period );
         
         return NULL;
     }
@@ -235,6 +237,7 @@ void MonteCarloAnalysis::initializeMethods()
     methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
     
     ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
+    operatorSummaryArgRules->push_back( new ArgumentRule( "currentPeriod" , RlBoolean::getClassTypeSpec(), "Should the operator summary (number of tries and acceptance, and the acceptance ratio) of only the current period (i.e., after the last tuning) be printed?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
     methods.addFunction( new MemberProcedure( "operatorSummary", RlUtils::Void, operatorSummaryArgRules) );
     
     ArgumentRules* initializeTraceArgRules = new ArgumentRules();

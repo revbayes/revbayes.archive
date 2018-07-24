@@ -72,6 +72,13 @@ const std::string& CorrelationMatrixExpansionProposal::getProposalName( void ) c
 }
 
 
+double CorrelationMatrixExpansionProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -208,7 +215,7 @@ void CorrelationMatrixExpansionProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void CorrelationMatrixExpansionProposal::printParameterSummary(std::ostream &o) const
+void CorrelationMatrixExpansionProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     ;
 }
@@ -259,6 +266,12 @@ void CorrelationMatrixExpansionProposal::swapNodeInternal(DagNode *oldN, DagNode
         mvbm = static_cast<StochasticNode<ContinuousCharacterData>* >(newN) ;
     }
     
+}
+
+
+void CorrelationMatrixExpansionProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

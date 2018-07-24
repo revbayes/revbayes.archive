@@ -62,6 +62,12 @@ const std::string& RandomGeometricWalkProposal::getProposalName( void ) const
 }
 
 
+double RandomGeometricWalkProposal::getProposalTuningParameter( void ) const
+{
+    return alpha;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -113,10 +119,14 @@ void RandomGeometricWalkProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void RandomGeometricWalkProposal::printParameterSummary(std::ostream &o) const
+void RandomGeometricWalkProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "alpha = " << alpha;
+    o << "alpha = ";
+    if (name_only == false)
+    {
+        o << alpha;
+    }
     
 }
 
@@ -147,6 +157,12 @@ void RandomGeometricWalkProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<long>* >(newN) ;
     
+}
+
+
+void RandomGeometricWalkProposal::setProposalTuningParameter(double tp)
+{
+    alpha = tp;
 }
 
 

@@ -367,14 +367,14 @@ void AbstractMove::performHillClimbingStep( double lHeat, double pHeat )
  * Perform the move. 
  * Here we store some info and delegate to performMove.
  */
-void AbstractMove::performMcmcStep( double lHeat, double pHeat )
+void AbstractMove::performMcmcStep( double prHeat, double lHeat, double pHeat )
 {
     // increment the tries counter
     ++num_tried_current_period;
     ++num_tried_total;
     
     // delegate to derived class
-    performMcmcMove(lHeat, pHeat);
+    performMcmcMove(prHeat, lHeat, pHeat);
     
 }
 
@@ -499,6 +499,30 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
     
     swapNodeInternal(oldN, newN);
     
+}
+
+
+void AbstractMove::setNumberAcceptedCurrentPeriod( size_t na )
+{
+    num_tried_current_period = na;
+}
+
+
+void AbstractMove::setNumberAcceptedTotal( size_t na )
+{
+    num_tried_total = na;
+}
+
+
+void AbstractMove::setNumberTriedCurrentPeriod( size_t nt )
+{
+    num_tried_current_period = nt;
+}
+
+
+void AbstractMove::setNumberTriedTotal( size_t nt )
+{
+    num_tried_total = nt;
 }
 
 

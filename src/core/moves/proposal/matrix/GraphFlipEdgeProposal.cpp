@@ -81,6 +81,12 @@ const std::string& GraphFlipEdgeProposal::getProposalName( void ) const
 }
 
 
+double GraphFlipEdgeProposal::getProposalTuningParameter( void ) const
+{
+    return sampling_probability;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -153,10 +159,14 @@ void GraphFlipEdgeProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void GraphFlipEdgeProposal::printParameterSummary(std::ostream &o) const
+void GraphFlipEdgeProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "p = " << sampling_probability;
+    o << "p = ";
+    if (name_only == false)
+    {
+        o << sampling_probability;
+    }
     
 }
 
@@ -211,6 +221,12 @@ void GraphFlipEdgeProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         matrix = static_cast< StochasticNode<MatrixReal>* >(newN) ;
     }
     
+}
+
+
+void GraphFlipEdgeProposal::setProposalTuningParameter(double tp)
+{
+    sampling_probability = tp;
 }
 
 

@@ -67,6 +67,12 @@ const std::string& VectorSlideRecenterProposal::getProposalName( void ) const
 }
 
 
+double VectorSlideRecenterProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -120,10 +126,14 @@ void VectorSlideRecenterProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void VectorSlideRecenterProposal::printParameterSummary(std::ostream &o) const
+void VectorSlideRecenterProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "delta = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -173,6 +183,12 @@ void VectorSlideRecenterProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         mean = static_cast<StochasticNode<double> *>(newN);
     }
     
+}
+
+
+void VectorSlideRecenterProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

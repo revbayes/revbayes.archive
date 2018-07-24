@@ -72,15 +72,14 @@ namespace RevBayesCore
         CorrespondenceAnalysis(
                                const MatrixReal& data,
                                unsigned int nbAxes,
-                               double tol)
-        throw (RbException);
+                               double tol);
         
         virtual ~CorrespondenceAnalysis() {}
         
         CorrespondenceAnalysis* clone() const { return new CorrespondenceAnalysis(*this); }
         
     public:
-        double getSumOfAllValues() const throw (RbException) { return n_; }
+        double getSumOfAllValues() const { return n_; }
     
     private:
         double n_;

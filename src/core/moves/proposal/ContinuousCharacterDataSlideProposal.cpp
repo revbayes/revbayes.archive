@@ -61,6 +61,12 @@ const std::string& ContinuousCharacterDataSlideProposal::getProposalName( void )
 }
 
 
+double ContinuousCharacterDataSlideProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -116,10 +122,14 @@ void ContinuousCharacterDataSlideProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ContinuousCharacterDataSlideProposal::printParameterSummary(std::ostream &o) const
+void ContinuousCharacterDataSlideProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "delta = " << delta;
+    o << "delta = ";
+    if (name_only == false)
+    {
+        o << delta;
+    }
     
 }
 
@@ -152,6 +162,12 @@ void ContinuousCharacterDataSlideProposal::swapNodeInternal(DagNode *oldN, DagNo
     
     variable = static_cast< StochasticNode<ContinuousCharacterData>* >(newN) ;
     
+}
+
+
+void ContinuousCharacterDataSlideProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

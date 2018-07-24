@@ -1,6 +1,7 @@
 #include "TreeNodeAgeUpdateProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
@@ -90,6 +91,13 @@ const std::string& TreeNodeAgeUpdateProposal::getProposalName( void ) const
     static std::string name = "SpeciesNodeTimeSlideUniform";
 
     return name;
+}
+
+
+double TreeNodeAgeUpdateProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -336,7 +344,7 @@ void TreeNodeAgeUpdateProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void TreeNodeAgeUpdateProposal::printParameterSummary(std::ostream &o) const
+void TreeNodeAgeUpdateProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
 
     // no parameters
@@ -443,6 +451,12 @@ void TreeNodeAgeUpdateProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
 
+}
+
+
+void TreeNodeAgeUpdateProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

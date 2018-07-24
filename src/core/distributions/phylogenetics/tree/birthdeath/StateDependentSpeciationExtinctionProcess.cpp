@@ -1956,8 +1956,48 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
     for (size_t i = 0; i < tip_data.getNumberOfTaxa(); ++i)
     {
         TopologyNode* tip_node = new TopologyNode(i);
-        tip_node->setName(tip_data.getTaxa()[i].getName());
-        size_t state_index = tip_data.getTaxonData( tip_data.getTaxa()[i].getName() )[0].getStateIndex();
+        std::string tip_name = tip_data.getTaxa()[i].getName();
+        tip_node->setName(tip_name);
+        size_t state_index = 0;
+        if (tip_data.getTaxonData(tip_name)[0].isAmbiguous() == false)
+        {
+            state_index = tip_data.getTaxonData(tip_name)[0].getStateIndex();
+        }
+        else
+        {
+            // state is ambigious so sample one of the observed states randomly
+            double num_observed_states = tip_data.getTaxonData(tip_name)[0].getNumberObservedStates();
+            if (num_observed_states > 0)
+            {
+                double u = rng->uniform01() * num_observed_states;
+                for (size_t j = 0; j < num_states; ++j)
+                {
+                    if (tip_data.getTaxonData(tip_name)[0].isStateSet(j) == true)
+                    {
+                        --u;
+                        if (u < 0)
+                        {
+                            state_index = j;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                double u = rng->uniform01() * num_states;
+                for (size_t j = 0; j < num_states; ++j)
+                {
+                    --u;
+                    if (u < 0)
+                    {
+                        state_index = j;
+                        break;
+                    }
+                }
+            }
+        }
+        
         tip_node->setAge(t);
         tip_node->setNodeType(true, false, false);
         tip_node->setTimeInStates(std::vector<double>(num_states, 0.0));
